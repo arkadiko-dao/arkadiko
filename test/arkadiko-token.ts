@@ -3,7 +3,6 @@ import { assert } from "chai";
 
 describe("arkadiko token contract test suite", () => {
   let arkadikoTokenClient: Client;
-  let reserveClient: Client;
   let oracleClient: Client;
   let provider: Provider;
 
@@ -20,12 +19,10 @@ describe("arkadiko token contract test suite", () => {
     provider = await ProviderRegistry.createProvider();
     arkadikoTokenClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.arkadiko-token", "arkadiko-token", provider);
     oracleClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.oracle", "oracle", provider);
-    reserveClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.stx-reserve", "stx-reserve", provider);
   });
 
   it("should have a valid syntax", async () => {
     await oracleClient.deployContract();
-    await reserveClient.deployContract();
     await arkadikoTokenClient.checkContract();
   });
 

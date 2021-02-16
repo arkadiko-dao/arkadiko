@@ -1,6 +1,9 @@
 ;; Defines the Arkadiko Stablecoin according to the SRC20 Standard
 (define-fungible-token arkadiko)
 
+(define-constant mint-owner 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH)
+(define-constant err-not-white-listed u51)
+
 (define-read-only (total-supply)
   (ok (ft-get-supply arkadiko))
 )
@@ -38,12 +41,8 @@
   (begin
     (print recipient)
     (print amount)
-    (if
-      (and
-        (is-ok (contract-call? 'SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.stx-reserve collateralize amount tx-sender))
-        (is-ok (ft-mint? arkadiko amount recipient))
-      )
-      (ok amount)
+    (if (is-ok (ft-mint? arkadiko amount recipient))
+      (ok true)
       (err false)
     )
   )
