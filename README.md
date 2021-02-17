@@ -16,7 +16,7 @@ Whenever new $DIKO is minted, debt (as collateral) is created in the network. Wi
 
 - Debt​ ​Ceiling:​ A Debt Ceiling is the maximum amount of debt that can be created by a single collateral type. Arkadiko Governance assigns every collateral type a Debt Ceiling, which is used to ensure sufficient diversification of the Arkadiko Protocol collateral portfolio. Once a collateral type has reached its Debt Ceiling, it becomes impossible to create more debt unless some existing users pay back all or a portion of their Reserve debt.
 
-- Stability​ ​Fee:​ The Stability Fee is an annual percentage yield calculated on top of how much $DIKO has been generated against a Reserve's collateral. The fee is paid in $DIKO only, and then sent into the Arkadiko Buffer.
+- Stability​ ​Fee:​ The Stability Fee is an annual percentage yield calculated on top of how much $DIKO has been generated against a Reserve's collateral. The fee is paid in $STX, and then sent into the Arkadiko Buffer.
 
 - Liquidation​ ​Ratio:​ ​A low Liquidation Ratio means Arkadiko Governance expects low price volatility of the collateral; a high Liquidation Ratio means high volatility is expected.
 
@@ -35,3 +35,18 @@ The $ARE governance token is used to manage and vote on proposals put forward by
 - (TODO) Trigger Emergency Shutdown.
 - (TODO) Upgrade the system.
 - (TODO) Set the percentage threshold to distribute BTC earnings
+
+
+## Roadmap
+
+[x] Add STX reserve to collateralize STX and mint $DIKO
+[ ] Back-end that updates price feed oracle once per minute
+[ ] Liquidation Engine
+[ ] Ability for Stackers to buy up liquidated STX collateral
+[ ] Front-end with Blockstack account & wallet integration
+
+[ ] v2 - Stability Fees in $STX
+[ ] v2 - Stack collateralized $STX
+[ ] v2 - Option to choose to stack collateral or not
+[ ] v2 - Somos DAO with token
+[ ] v2 - Decentralize Oracle (Chainlink integration?)
