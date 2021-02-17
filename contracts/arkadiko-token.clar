@@ -35,14 +35,18 @@
 )
 
 (define-public (mint (recipient principal) (amount uint))
-  ;; accept collateral in STX tokens
-  ;; save STX in stx-reserve-address
-  ;; calculate price and collateralisation ratio
   (begin
     (print recipient)
     (print amount)
-    (if (is-ok (ft-mint? arkadiko amount recipient))
-      (ok true)
+    (print tx-sender)
+    (print contract-caller)
+    (print mint-owner)
+    (if
+      (and
+        (is-eq contract-caller 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH.stx-reserve)
+        (is-ok (ft-mint? arkadiko amount recipient))
+      )
+      (ok amount)
       (err false)
     )
   )
@@ -53,7 +57,11 @@
   (begin
     (print recipient)
     (print amount)
-    (if (is-ok (ft-burn? arkadiko amount recipient))
+    (if
+      (and
+        (is-eq contract-caller 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH.stx-reserve)
+        (is-ok (ft-burn? arkadiko amount recipient))
+      )
       (ok amount)
       (err false)
     )

@@ -1,5 +1,10 @@
 import { Client, Provider, ProviderRegistry, Result } from "@blockstack/clarity";
 import { assert } from "chai";
+import { deployContract, callContractFunction } from "./utils";
+import {
+  uintCV,
+  standardPrincipalCV
+} from "@stacks/transactions";
 
 describe("arkadiko token contract test suite", () => {
   let arkadikoTokenClient: Client;
@@ -61,6 +66,24 @@ describe("arkadiko token contract test suite", () => {
       const receipt = await arkadikoTokenClient.submitQuery(query);
       const result = Result.unwrapString(receipt, "utf8")
       assert.equal(result, "DIKO");
+    });
+  });
+
+  describe("testing on mocknet", () => {
+    before(async () => {
+      await deployContract('arkadiko-token');
+    });
+
+    it("should mint 5 tokens", async () => {
+      const value = 5;
+      console.log('Calling mint function');
+      const result = await callContractFunction(
+        'arkadiko-token',
+        'mint',
+        [standardPrincipalCV('ST3CECAKJ4BH08JYY7W53MC81BYDT4YDA5M7S5F53'), uintCV(value)]
+      );
+      console.log(result);
+      assert.equal(true, true);
     });
   });
 

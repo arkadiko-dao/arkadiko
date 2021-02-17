@@ -11,8 +11,8 @@
   (if (is-eq tx-sender oracle-owner)
     (begin
       (var-set last-price price)
-      (var-set last-block block-height)
-      (ok true)
+      (var-set last-block u0)
+      (ok price)
     )
     (err err-not-white-listed)
   )

@@ -4,9 +4,9 @@ ArkadikoDAO is a DAO inspired by MakerDAO and implements a stablecoin called Ark
 
 In order to mint $DIKO, you need to over-collateralise Stacks ($STX) tokens into the Arkadiko Stacks Reserve. The collateralisation ratio will be defined by a risk parameter decided upon by the community.
 
-Collateralised Stacks tokens can be used to stack in the Proof-of-Transfer (PoX) mechanism and get rewards in bitcoin for locking up tokens for a certain time. This will only be possible from the moment `min_amount_ustx` amount of tokens are stacked (see https://stacks-node-api.blockstack.org/v2/pox) in the Arkadiko Stacks Reserve. At the time of writing, the minimum amount of $STX to participate in stacking is 70,000 $STX tokens. This mechanism will incentivize $DIKO holders to keep and trade stablecoins, and at the same time earn Bitcoin on their stablecoins in a decentralised way (through the $STX collateral).
+Collateralised Stacks tokens can be used to stack in the Proof-of-Transfer (PoX) mechanism and get rewards in bitcoin for locking up tokens for a certain time. This will only be possible from the moment `min_amount_ustx` amount of tokens are collateralised (see https://stacks-node-api.blockstack.org/v2/pox) in the Arkadiko Stacks Reserve. At the time of writing, the minimum amount of $STX to participate in stacking is 70,000 $STX tokens. This mechanism will incentivize $DIKO holders to keep and trade stablecoins, and at the same time earn Bitcoin on their stablecoins in a decentralised way (through the $STX collateral).
 
-All bitcoin earned will go into a bitcoin reserve, where a percentage is paid out to $ARE owners. This threshold is voted on by the community.
+All bitcoin earned will go into a bitcoin reserve, where a percentage is paid out to $ARE owners once the reserve goes over a certain threshold. This threshold is voted on by the community.
 
 ## Diko: Arkadiko Stablecoin
 
