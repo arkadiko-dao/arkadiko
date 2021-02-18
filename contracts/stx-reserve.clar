@@ -9,7 +9,12 @@
 
 ;; Map of reserve entries
 ;; The entry consists of a user principal with their STX balance collateralized
-(define-map reserve { user: principal } { balance: uint })
+(define-map vaults { user: principal } { stx-collateral: uint, coins-minted: uint })
+
+(define-read-only (get-vault (user principal))
+  (unwrap-panic (map-get? vaults { user: user }))
+)
+
 
 ;; stx-amount * current-stx-price-in-cents == dollar-collateral-posted
 ;; (dollar-collateral-posted / liquidation-ratio) == stablecoins to mint
@@ -35,7 +40,7 @@
       success (match (print (as-contract (contract-call? .arkadiko-token mint sender (get amount coins))))
         transferred (begin
           (print "minted tokens! inserting into map now.")
-          (map-insert reserve { user: sender } { balance: stx-amount })
+          (map-set vaults { user: sender } { stx-collateral: stx-amount, coins-minted: (get amount coins) })
           (ok (get amount coins))
         )
         error (err err-transfer-failed)
@@ -46,9 +51,15 @@
 )
 
 (define-public (burn (stablecoin-amount uint) (sender principal))
-  (print "burn tokens and release collateral")
+  (begin
+    (print "burn tokens and release collateral")
+    (ok 1)
+  )
 )
 
 (define-public (liquidate (sender principal))
-  (print "burn tokens and auction collateral")
+  (begin
+    (print "burn tokens and auction collateral")
+    (ok 1)
+  )
 )
