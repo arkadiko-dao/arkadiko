@@ -44,3 +44,11 @@
     )
   )
 )
+
+(define-public (burn (stablecoin-amount uint) (sender principal))
+  (print "burn tokens and release collateral")
+)
+
+(define-public (liquidate (sender principal))
+  (print "burn tokens and auction collateral")
+)

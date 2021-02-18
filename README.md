@@ -41,10 +41,11 @@ The $ARE governance token is used to manage and vote on proposals put forward by
 
 [x] Add STX reserve to collateralize STX and mint $DIKO
 [ ] Back-end that updates price feed oracle once per minute
-[ ] Liquidation Engine
 [ ] Ability for Stackers to buy up liquidated STX collateral
 [ ] Front-end with Blockstack account & wallet integration
+[ ] Liquidation Engine
 
+[ ] v2 - Auction Engine
 [ ] v2 - Stability Fees in $STX
 [ ] v2 - Stack collateralized $STX
 [ ] v2 - Option to choose to stack collateral or not
