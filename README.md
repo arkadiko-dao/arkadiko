@@ -8,6 +8,13 @@ Collateralised Stacks tokens can be used to stack in the Proof-of-Transfer (PoX)
 
 All bitcoin earned will go into a bitcoin reserve, where a percentage is paid out to $ARE owners once the reserve goes over a certain threshold. This threshold is voted on by the community.
 
+## Architecture
+
+A high-level architecture would look as follows:
+
+![Architecture](https://github.com/philipdesmedt/arkadiko-dao/blob/master/architecture-high-level.png?raw=true)
+
+
 ## Diko: Arkadiko Stablecoin
 
 Whenever new $DIKO is minted, debt (as collateral) is created in the network. With every type of collateral (in principal only $STX will be accepted as collateral), a set of Risk parameters will be decided on by the community. These parameters can be voted on through the $ARE governance token. A total of 100,000 $ARE tokens will ever exist. Each token has 1 vote.
