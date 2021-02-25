@@ -3,10 +3,16 @@ import {
   callReadOnlyFunction,
   StacksTransaction,
   uintCV,
-  standardPrincipalCV
+  standardPrincipalCV,
+  cvToString,
 } from "@stacks/transactions";
 import { assert } from "chai";
-import { deployContract, callContractFunction } from "../utils";
+import {
+  deployContract,
+  callContractFunction,
+  contractAddress,
+  network,
+} from "../utils";
 
 describe("stacks reserve test suite", () => {
   let stxReserveClient: Client;
@@ -42,7 +48,18 @@ describe("stacks reserve test suite", () => {
         [uintCV(value), standardPrincipalCV(alice)]
       );
       console.log(result);
-      assert.equal(true, true);
+      const vault = await callReadOnlyFunction({
+        contractAddress: contractAddress,
+        contractName: "stx-reserve",
+        functionName: "get-vault",
+        functionArgs: [standardPrincipalCV(alice)],
+        senderAddress: contractAddress,
+        network: network,
+      });
+      assert.equal(
+        cvToString(vault),
+        "(tuple (coins-minted u1) (stx-collateral u5))"
+      );
     });
   });
 });
