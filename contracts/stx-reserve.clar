@@ -16,7 +16,6 @@
   (unwrap-panic (map-get? vaults { user: user }))
 )
 
-
 ;; stx-amount * current-stx-price-in-cents == dollar-collateral-posted
 ;; (dollar-collateral-posted / liquidation-ratio) == stablecoins to mint
 (define-read-only (calculate-arkadiko-count (stx-amount uint))
@@ -71,8 +70,13 @@
 ;; method assumes position has not been liquidated
 ;; and thus collateral to debt ratio > liquidation ratio
 (define-public (burn (stablecoin-amount uint) (sender principal))
-  (begin
-    (print "burn tokens and release collateral")
+  (let ((vault (map-get? vaults { user: sender })))
+    (match (print (as-contract (contract-call? .arkadiko-token burn sender (get vault coins-minted))))
+      success (begin
+        (map-delete vaults { user: sender })
+      )
+      error (err u550)
+    )
     (ok 1)
   )
 )

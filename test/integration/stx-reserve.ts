@@ -6,7 +6,7 @@ import {
   standardPrincipalCV
 } from "@stacks/transactions";
 import { assert } from "chai";
-import { deployContract, callContractFunction } from "./utils";
+import { deployContract, callContractFunction } from "../utils";
 
 describe("stacks reserve test suite", () => {
   let stxReserveClient: Client;
@@ -18,19 +18,6 @@ describe("stacks reserve test suite", () => {
     "ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH"
   ];
   const alice = addresses[0];
-
-  before(async () => {
-    provider = await ProviderRegistry.createProvider();
-    oracleClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.oracle", "oracle", provider);
-    tokenClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.arkadiko-token", "arkadiko-token", provider);
-    stxReserveClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.stx-reserve", "stx-reserve", provider);
-  });
-
-  // it("should have a valid syntax", async () => {
-  //   await tokenClient.deployContract();
-  //   await oracleClient.deployContract();
-  //   await stxReserveClient.checkContract();
-  // });
 
   describe("deploying an instance of the contract", () => {
     before(async () => {
@@ -57,9 +44,5 @@ describe("stacks reserve test suite", () => {
       console.log(result);
       assert.equal(true, true);
     });
-  });
-
-  after(async () => {
-    await provider.close();
   });
 });
