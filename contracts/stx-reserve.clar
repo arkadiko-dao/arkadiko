@@ -1,3 +1,5 @@
+(impl-trait .vault-trait.vault-trait)
+
 ;; addresses
 (define-constant stx-reserve-address 'S02J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKPVKG2CE)
 (define-constant stx-liquidation-reserve 'S02J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKPVKG2CE)
@@ -16,7 +18,7 @@
 
 ;; Map of vault entries
 ;; The entry consists of a user principal with their STX balance collateralized
-(define-map vaults { user: principal } { stx-collateral: uint, coins-minted: uint })
+(define-map vaults { user: principal } { stx-collateral: uint, coins-minted: uint, at-block-height: uint })
 
 ;; getters
 (define-read-only (get-vault (user principal))
@@ -25,6 +27,18 @@
 
 (define-read-only (get-liquidation-ratio)
   (ok (var-get liquidation-ratio))
+)
+
+(define-read-only (get-collateral-to-debt-ratio)
+  (ok (var-get collateral-to-debt-ratio))
+)
+
+(define-read-only (get-maximum-debt)
+  (ok (var-get maximum-debt))
+)
+
+(define-read-only (get-liquidation-penalty)
+  (ok (var-get liquidation-penalty))
 )
 
 ;; setters accessible only by DAO contract
@@ -100,7 +114,7 @@
       success (match (print (as-contract (contract-call? .arkadiko-token mint sender coins)))
         transferred (begin
           (print "minted tokens! inserting into map now.")
-          (map-set vaults { user: sender } { stx-collateral: ustx-amount, coins-minted: coins })
+          (map-set vaults { user: sender } { stx-collateral: ustx-amount, coins-minted: coins, at-block-height: block-height })
           (ok coins)
         )
         error (err err-transfer-failed)
@@ -113,7 +127,7 @@
 ;; burn stablecoin to free up STX tokens
 ;; method assumes position has not been liquidated
 ;; and thus collateral to debt ratio > liquidation ratio
-(define-public (burn (stablecoin-amount uint))
+(define-public (burn)
   (let ((vault (get-vault tx-sender)))
     (match (print (as-contract (contract-call? .arkadiko-token burn tx-sender (get coins-minted vault))))
       success (match (stx-transfer? (get stx-collateral vault) stx-reserve-address tx-sender)

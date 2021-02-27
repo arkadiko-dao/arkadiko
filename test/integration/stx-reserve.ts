@@ -1,10 +1,7 @@
-import { Client, Provider, ProviderRegistry, Result, Transaction } from "@blockstack/clarity";
 import {
   callReadOnlyFunction,
-  StacksTransaction,
   uintCV,
-  standardPrincipalCV,
-  cvToString,
+  standardPrincipalCV
 } from "@stacks/transactions";
 import { assert } from "chai";
 import {
@@ -15,11 +12,6 @@ import {
 } from "../utils";
 
 describe("stacks reserve test suite", () => {
-  let stxReserveClient: Client;
-  let oracleClient: Client;
-  let tokenClient: Client;
-  let provider: Provider;
-
   const addresses = [
     "ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH"
   ];
@@ -27,6 +19,7 @@ describe("stacks reserve test suite", () => {
 
   describe("deploying an instance of the contract", () => {
     before(async () => {
+      await deployContract('vault-trait');
       await deployContract('oracle');
       await deployContract('arkadiko-token');
       await deployContract('stx-reserve');
@@ -57,8 +50,12 @@ describe("stacks reserve test suite", () => {
         network: network,
       });
       assert.equal(
-        cvToString(vault),
-        "(tuple (coins-minted u1925000) (stx-collateral u5000000))"
+        vault['data']['coins-minted']['value'].toString(),
+        "1925000"
+      );
+      assert.equal(
+        vault['data']['stx-collateral']['value'].toString(),
+        "5000000"
       );
     });
   });

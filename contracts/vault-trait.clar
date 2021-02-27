@@ -4,22 +4,16 @@
     ;; calculate stablecoin count to mint from posted collateral
     (calculate-arkadiko-count (uint) (response uint uint))
 
-    ;; ;; Transfer from the caller to a new principal
-    ;; (transfer (uint principal principal) (response bool uint))
+    ;; calculate the current collateral to debt ratio against USD value of collateral
+    (calculate-current-collateral-to-debt-ratio (principal) (response uint uint))
 
-    ;; ;; the human readable name of the token
-    ;; (name () (response (string-ascii 32) uint))
+    ;; collateralize tokens and mint stablecoin according to collateral-to-debt ratio
+    (collateralize-and-mint (uint principal) (response uint uint))
 
-    ;; ;; the ticker symbol, or empty if none
-    ;; (symbol () (response (string-ascii 32) uint))
+    ;; burn all the stablecoin in the vault of tx-sender and return collateral
+    (burn () (response bool uint))
 
-    ;; ;; the number of decimals used, e.g. 6 would mean 1_000_000 represents 1 token
-    ;; (decimals () (response uint uint))
-
-    ;; ;; the balance of the passed principal
-    ;; (balance-of (principal) (response uint uint))
-
-    ;; ;; the current total supply (which does not need to be a constant)
-    ;; (total-supply () (response uint uint))
+    ;; liquidate the vault of principal. only callable by liquidator smart contract
+    (liquidate (principal) (response uint uint))
   )
 )
