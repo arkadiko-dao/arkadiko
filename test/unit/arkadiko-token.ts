@@ -1,6 +1,6 @@
 import { Client, Provider, ProviderRegistry, Result } from "@blockstack/clarity";
 import { assert } from "chai";
-import { deployContract, callContractFunction } from "./utils";
+import { deployContract, callContractFunction } from "../utils";
 import {
   uintCV,
   standardPrincipalCV

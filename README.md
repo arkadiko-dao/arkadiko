@@ -53,8 +53,8 @@ The $ARE governance token is used to manage and vote on proposals put forward by
 [ ] Liquidation Engine
 
 [ ] v2 - Auction Engine
-[ ] v2 - Stability Fees in $STX
-[ ] v2 - Stack collateralized $STX
+[ ] v2 - Stack collateralized $STX to earn BTC
 [ ] v2 - Option to choose to stack collateral or not
 [ ] v2 - Somos DAO with token
 [ ] v2 - Decentralize Oracle (Chainlink integration?)
+[ ] v2 - Stability Fees in $STX

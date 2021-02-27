@@ -32,15 +32,15 @@ describe("stacks reserve test suite", () => {
       await deployContract('stx-reserve');
     });
 
-    it("should mint 5 tokens through collateralize-and-mint", async () => {
-      console.log('Calling orcale set-price function');
+    it("should mint 1.925 dollar in stablecoin from 5000000 ustx at 77 cents/STX through collateralize-and-mint", async () => {
+      console.log('Calling orcale set-price function to set 1STX = 77 dollarcents');
       const orcaleResult = await callContractFunction(
         'oracle',
         'update-price',
         [uintCV(77)]
       );
 
-      const value = 5;
+      const value = 5000000; // equivalent to 5 STX
       console.log('Calling collateralize-and-mint function');
       const result = await callContractFunction(
         'stx-reserve',
@@ -58,7 +58,7 @@ describe("stacks reserve test suite", () => {
       });
       assert.equal(
         cvToString(vault),
-        "(tuple (coins-minted u1) (stx-collateral u5))"
+        "(tuple (coins-minted u1925000) (stx-collateral u5000000))"
       );
     });
   });

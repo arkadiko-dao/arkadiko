@@ -17,7 +17,7 @@
 )
 
 (define-read-only (decimals)
-  (ok u8)
+  (ok u6)
 )
 
 (define-public (balance-of (account principal))

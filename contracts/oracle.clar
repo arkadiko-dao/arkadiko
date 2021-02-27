@@ -2,7 +2,7 @@
 ;; Ideally, we implement a Chainlink Price Feed Oracle ASAP
 (define-constant err-not-white-listed u51)
 
-(define-data-var last-price uint u0)
+(define-data-var last-price-in-cents uint u0)
 (define-data-var last-block uint u0)
 
 (define-constant oracle-owner 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH)
@@ -10,7 +10,7 @@
 (define-public (update-price (price uint))
   (if (is-eq tx-sender oracle-owner)
     (begin
-      (var-set last-price price)
+      (var-set last-price-in-cents price)
       (var-set last-block u0)
       (ok price)
     )
@@ -19,5 +19,5 @@
 )
 
 (define-read-only (get-price)
-  { price: (var-get last-price), height: (var-get last-block) }
+  { price: (var-get last-price-in-cents), height: (var-get last-block) }
 )
