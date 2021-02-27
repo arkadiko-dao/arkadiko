@@ -114,9 +114,9 @@
 ;; method assumes position has not been liquidated
 ;; and thus collateral to debt ratio > liquidation ratio
 (define-public (burn (stablecoin-amount uint))
-  (let ((vault (map-get? vaults { user: tx-sender })))
-    (match (print (as-contract (contract-call? .arkadiko-token burn tx-sender (unwrap-panic (get coins-minted vault)))))
-      success (match (stx-transfer? (unwrap-panic (get stx-collateral vault)) stx-reserve-address tx-sender)
+  (let ((vault (get-vault tx-sender)))
+    (match (print (as-contract (contract-call? .arkadiko-token burn tx-sender (get coins-minted vault))))
+      success (match (stx-transfer? (get stx-collateral vault) stx-reserve-address tx-sender)
         transferred (begin
           (map-delete vaults { user: tx-sender })
           (ok true)
@@ -133,9 +133,9 @@
 (define-public (liquidate (vault-address principal))
   (if (is-eq contract-caller 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH.liquidator)
     (begin
-      (let ((vault (map-get? vaults { user: vault-address })))
-        (match (print (as-contract (contract-call? .arkadiko-token burn vault-address (unwrap-panic (get coins-minted vault)))))
-          success (match (stx-transfer? (unwrap-panic (get stx-collateral vault)) stx-reserve-address stx-liquidation-reserve)
+      (let ((vault (get-vault vault-address)))
+        (match (print (as-contract (contract-call? .arkadiko-token burn vault-address (get coins-minted vault))))
+          success (match (stx-transfer? (get stx-collateral vault) stx-reserve-address stx-liquidation-reserve)
             transferred (begin
               (let ((stx-collateral (get stx-collateral vault)))
                 (map-delete vaults { user: tx-sender })
