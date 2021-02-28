@@ -12,7 +12,7 @@ All bitcoin earned will go into a bitcoin reserve, where a percentage is paid ou
 
 A high-level architecture would look as follows:
 
-![Architecture](https://github.com/philipdesmedt/arkadiko-dao/blob/master/architecture-high-level.png?raw=true)
+![Architecture](https://github.com/philipdesmedt/arkadiko-dao/blob/master/docs/architecture-high-level.png?raw=true)
 
 
 ## Diko: Arkadiko Stablecoin

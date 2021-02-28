@@ -44,7 +44,7 @@ describe("arkadiko token contract test suite", () => {
     });
 
     it("should initialize Alice's balance (20 DIKO)", async () => {
-      const query = arkadikoTokenClient.createQuery({ atChainTip: true, method: { name: "balance-of", args: [`'${alice}`] } });
+      const query = arkadikoTokenClient.createQuery({ atChaintip: true, method: { name: "balance-of", args: [`'${alice}`] } });
       const receipt = await arkadikoTokenClient.submitQuery(query);
       const result = Result.unwrapUInt(receipt);
       assert.equal(result, 20);

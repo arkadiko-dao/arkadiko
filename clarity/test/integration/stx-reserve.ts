@@ -1,7 +1,8 @@
 import {
   callReadOnlyFunction,
-  uintCV,
-  standardPrincipalCV
+  standardPrincipalCV,
+  tupleCV,
+  uintCV
 } from "@stacks/transactions";
 import { assert } from "chai";
 import {
@@ -49,8 +50,9 @@ describe("stacks reserve test suite", () => {
         senderAddress: contractAddress,
         network: network,
       });
+      console.log(vault);
       assert.equal(
-        vault['data']['coins-minted']['value'].toString(),
+        tupleCV(vault).data['coins-minted']['value'].toString(),
         "1925000"
       );
       assert.equal(

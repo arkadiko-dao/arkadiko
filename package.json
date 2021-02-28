@@ -7,25 +7,5 @@
   },
   "repository": "https://github.com/philipdesmedt/arkadiko-dao.git",
   "private": true,
-  "engines": {
-    "node": ">=10"
-  },
-  "scripts": {
-    "test": "mocha",
-    "test:watch": "mocha --watch"
-  },
-  "devDependencies": {
-    "@stacks/transactions": "^1.2.2",
-    "@types/chai": "^4.1.7",
-    "@types/mocha": "^5.2.7",
-    "@types/node": "^10",
-    "chai": "^4.2.0",
-    "mocha": "^6.1.4",
-    "ts-node": "^8.2.0",
-    "typescript": "^3.5.2"
-  },
-  "dependencies": {
-    "@blockstack/clarity": "^0.3.7",
-    "@blockstack/clarity-native-bin": "^0.3.7"
-  }
+  "workspaces": ["clarity", "web"]
 }

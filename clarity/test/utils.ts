@@ -58,7 +58,7 @@ export async function handleTransaction(transaction: StacksTransaction) {
   return result as TxBroadcastResultOk;
 }
 
-export async function callContractFunction(contractName, functionName, args) {
+export async function callContractFunction(contractName: string, functionName: string, args: any) {
   const txOptions = {
     contractAddress: contractAddress,
     contractName: contractName,
@@ -76,7 +76,7 @@ export async function callContractFunction(contractName, functionName, args) {
   return handleTransaction(transaction);
 }
 
-export async function deployContract(contractName: string, changeCode: (string) => string = unchanged) {
+export async function deployContract(contractName: string, changeCode: (str: string) => string = unchanged) {
   const codeBody = fs
     .readFileSync(`./contracts/${contractName}.clar`)
     .toString();

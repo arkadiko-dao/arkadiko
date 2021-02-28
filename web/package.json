@@ -1,0 +1,60 @@
+{
+  "name": "arkadiko-dao-web",
+  "version": "0.0.1",
+  "author": {
+    "name": "Philip De Smedt",
+    "email": "philip.desmedt@gmail.com"
+  },
+  "repository": "https://github.com/philipdesmedt/arkadiko-dao.git",
+  "private": true,
+  "engines": {
+    "node": ">=14"
+  },
+  "devDependencies": {
+    "@blockstack/eslint-config": "^1.0.5",
+    "@blockstack/prettier-config": "0.0.6",
+    "@stacks/transactions": "^1.2.2",
+    "@types/node": "^10",
+    "eslint-config-react-app": "^5.2.1",
+    "ts-node": "^8.2.0",
+    "typescript": "^3.5.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint": "eslint src/**/*.{js,jsx}",
+    "lint:fix": "eslint src/**/*.{jsx,js} --fix"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "dependencies": {
+    "@blockstack/ui": "^2.12.14",
+    "@emotion/core": "^11.0.0",
+    "@emotion/css": "^11.0.0",
+    "@emotion/react": "^11.1.1",
+    "@emotion/styled": "^11.0.0",
+    "@stacks/connect": "^4.3.1",
+    "@stacks/profile": "^1.0.0-beta.19",
+    "blockstack": "^21.1.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "^3.4.1",
+    "styled-components": "^5.2.1"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
