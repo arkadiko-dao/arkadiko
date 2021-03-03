@@ -1,60 +1,78 @@
 {
-  "name": "arkadiko-dao-web",
-  "version": "0.0.1",
-  "author": {
-    "name": "Philip De Smedt",
-    "email": "philip.desmedt@gmail.com"
-  },
-  "repository": "https://github.com/philipdesmedt/arkadiko-dao.git",
+  "name": "root",
   "private": true,
-  "engines": {
-    "node": ">=14"
+  "scripts": {
+    "typecheck": "lerna run typecheck --parallel --no-bail --stream",
+    "dev": "NODE_ENV=development yarn lerna exec --parallel 'yarn dev' --scope web-app --scope @stacks/app",
+    "bootstrap": "lerna exec --parallel 'yarn'",
+    "build:connect": "lerna run build --scope @stacks/connect",
+    "build:connect-ui": "lerna run build --scope @stacks/connect-ui",
+    "build:app": "yarn build:connect-ui && lerna run prod:web --scope @stacks/app",
+    "build:web-app": "lerna run prod:web --scope web-app",
+    "build:test": "lerna run build:test --parallel --stream",
+    "build:test:watch": "lerna run build:test:watch --parallel --stream",
+    "build:extension": "lerna run prod:ext --stream",
+    "deploy-contracts": "lerna run deploy-contracts --stream",
+    "lint": "yarn lint:eslint && yarn lint:prettier",
+    "lint:eslint": "eslint \"packages/**/src/**/*.{ts,tsx}\"",
+    "lint:fix": "eslint \"packages/**/src/**/*.{ts,tsx}\" --fix",
+    "lint:prettier": "prettier --check \"packages/**/src/**/*.{ts,tsx}\" *.js",
+    "lint:prettier:fix": "prettier --write \"packages/**/src/**/*.{ts,tsx}\" *.js",
+    "postinstall": "yarn build:connect-ui",
+    "serve:test": "lerna run serve:test --parallel --stream"
   },
+  "prettier": "@blockstack/prettier-config",
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
     "@blockstack/eslint-config": "^1.0.5",
-    "@blockstack/prettier-config": "0.0.6",
-    "@stacks/transactions": "^1.2.2",
-    "@types/node": "^10",
+    "@blockstack/prettier-config": "^0.0.6",
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
+    "@commitlint/config-lerna-scopes": "^8.3.4",
+    "@typescript-eslint/eslint-plugin": "4.2.0",
+    "@typescript-eslint/parser": "4.2.0",
+    "babel-eslint": "^10.1.0",
+    "cross-env": "^7.0.2",
+    "eslint": "^7.0.0",
+    "eslint-config-prettier": "^6.11.0",
     "eslint-config-react-app": "^5.2.1",
-    "ts-node": "^8.2.0",
-    "typescript": "^3.5.2"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "lint": "eslint src/**/*.{js,jsx}",
-    "lint:fix": "eslint src/**/*.{jsx,js} --fix"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
+    "eslint-plugin-flowtype": "^4.7.0",
+    "eslint-plugin-import": "^2.21.2 ",
+    "eslint-plugin-jest": "^23.11.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.3",
+    "eslint-plugin-react": "^7.20.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "husky": "^4.2.3",
+    "http-server": "0.12.3",
+    "lerna": "^3.22.1",
+    "prettier": "^2.0.5",
+    "web-ext": "^5.4.1",
+    "typescript": "4.1.2",
+    "yalc": "^1.0.0-pre.42"
   },
   "dependencies": {
-    "@blockstack/ui": "^2.12.14",
-    "@emotion/core": "^11.0.0",
-    "@emotion/css": "^11.0.0",
-    "@emotion/react": "^11.1.1",
-    "@emotion/styled": "^11.0.0",
-    "@stacks/connect": "^4.3.1",
-    "@stacks/profile": "^1.0.0-beta.19",
-    "blockstack": "^21.1.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "^3.4.1",
-    "styled-components": "^5.2.1"
+    "@babel/preset-env": "^7.10.3",
+    "tsdx": "^0.14.1"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "resolutions": {
+    "@blockstack/eslint-config": "^1.0.5",
+    "@blockstack/prettier-config": "^0.0.6",
+    "@typescript-eslint/eslint-plugin": "4.2.0",
+    "@typescript-eslint/parser": "4.2.0",
+    "@types/node": "12.7.12",
+    "buffer": "5.6.0",
+    "typescript": "4.1.2",
+    "eslint-plugin-import": "2.21.2"
+  },
+  "webExt": {
+    "sourceDir": "packages/app/dist/"
   }
 }
