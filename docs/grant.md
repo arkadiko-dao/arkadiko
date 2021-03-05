@@ -77,7 +77,7 @@ Components & Technical Specs
 - I will work with a designer who can improve UI & UX
 - Until a production-ready Oracle is available, I will have to build out a mechanism that reliably updates the price feed oracle through a simple cron job
 
-A functional v0.1 can be tested at https://github.com/philipdesmedt/arkadiko-dao. It requires running mocknet.
+A functional v0.1 can be tested at https://github.com/philipdesmedt/arkadiko-dao. It requires running mocknet. A demo video can be seen here: TODO
 
 ### Success Metrics
 
@@ -90,76 +90,85 @@ Review meetings would likely start in the May - June timeframe as input & feedba
 1. As a user, I can authenticate with the protocol through the Stacks Wallet Browser Extension or similar
 
 #### Acceptance Criteria
-
-TODO
+After successfully authenticating with the Stacks Wallet browser extension, a stateful account exists that authenticates with Clarity smart contracts.
 
 2. As a user, I can create a vault that mints stablecoin and takes STX as collateral
 
 #### Acceptance Criteria
+the Clarity Contract must do the following, atomically:
+- Add the user's address to the map of vaults
+- Transfer STX to the STX reserve pool to stack in the Stacks protocol
+- Mint the amount of DIKO according to the collateral to debt ratio
 
-TODO
+After a successful response, the newly created vault is visible in the UI.
 
-- As a user, I can update my vault to post additional STX collateral to avoid liquidation
-
-#### Acceptance Criteria
-
-TODO
-
-- As a user, I can destroy a vault to burn the stablecoins, and return me the STX collateral minus the stability fee
+3. As a user, I can update my vault to post additional STX collateral to avoid liquidation
 
 #### Acceptance Criteria
 
 TODO
 
-- As a user, I can burn a partial stablecoin position
+4. As a user, I can destroy a vault to burn the stablecoins, and return me the STX collateral minus the stability fee
 
 #### Acceptance Criteria
 
 TODO
 
-- As a user, I can register to become a stacker and help liquidate risky positions
+5. As a user, I can burn a partial stablecoin position
 
 #### Acceptance Criteria
 
 TODO
 
-- As a user, I can transfer DIKO and it automatically updates the vault (and its collateral) to the new owner
+6. As a user, I can register to become a stacker and help liquidate risky positions
 
 #### Acceptance Criteria
 
 TODO
 
-- As a stacker, I can lookup the collateral to debt ratio of vaults and identify risky ones
+7. As a user, I can transfer DIKO and it automatically updates the vault (and its collateral) to the new owner
 
 #### Acceptance Criteria
 
 TODO
 
-- As a stacker, I can alert the liquidator for risky vaults
+8. As a stacker, I can lookup the collateral to debt ratio of vaults and identify risky ones
 
 #### Acceptance Criteria
 
 TODO
 
-- As a user, I can vote on risk parameters with a governance token
+9. As a stacker, I can alert the liquidator for risky vaults
 
 #### Acceptance Criteria
 
 TODO
 
-- As a user, I can submit a proposal if I hold at least 1% of the governance token supply
+10. As a user, I can vote on risk parameters with a governance token
 
 #### Acceptance Criteria
 
 TODO
 
-- As a user, I can vote on proposals (FOR or AGAINST)
+11. As a user, I can submit a proposal if I hold at least 1% of the governance token supply
 
 #### Acceptance Criteria
 
 TODO
 
-- As a user, I am eligible for stacked bitcoin yield relative to the amount of governance tokens I hold
+12. As a user, I can vote on proposals (FOR or AGAINST)
+
+#### Acceptance Criteria
+
+TODO
+
+13. As a user, I am eligible for stacked bitcoin yield relative to the amount of governance tokens I hold
+
+#### Acceptance Criteria
+
+TODO
+
+14. As a stacker, I can buy up liquidated STX tokens
 
 #### Acceptance Criteria
 
@@ -169,7 +178,16 @@ TODO
 ## Budget & Milestones
 **What grant amount are you seeking? How long will the project take in hours? If more than 20, please break down the project into milestones, with a clear output (e.g., low-fi mockup, MVP with two features) and include the estimated work hours for each milestone.**
 
-TODO
+This project will take hundreds of hours (probably more like thousands though). I am seeking a grant amount of $25,000 which would cover part of my time & expenses made in the next months. The project can be broken down into 3 big parts (Smart Contracts + UI). The parts are the following:
+
+1. Creating Vaults, Minting, Transferring & Burning (smart contract + UI)
+2. Auctioning of Liquidated Vaults
+3. Voting and other DAO functions
+
+| User Story     | Days         | Cost         |
+| :------------- | :----------: | -----------: |
+|  Cell Contents | More Stuff   | And Again    |
+| You Can Also   | Put Pipes In | Like this \| |
 
 ## Team
 
@@ -179,7 +197,7 @@ When the first version is ready to launch on mainnet and most risks (see below) 
 
 ## Usage
 
-- Trading Liquidity
+- Trading Liquidity & Market-Making
 - Enables stacking with a tradeable derivative (e.g. allows trading a productive asset that yields btc while the STX are locked up)
 - Lending & Borrowing liquidity milestone to build out Arkadiko Lending & Borrowing Platform which will support a multitude of assets (and SRC20 tokens)
 - Any application that wants to make use of stable prices & liquidity (e.g. games)
