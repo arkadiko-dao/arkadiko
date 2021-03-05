@@ -5,7 +5,7 @@
 (define-data-var last-price-in-cents uint u0)
 (define-data-var last-block uint u0)
 
-(define-constant oracle-owner 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH)
+(define-constant oracle-owner 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP)
 
 (define-public (update-price (price uint))
   (if (is-eq tx-sender oracle-owner)

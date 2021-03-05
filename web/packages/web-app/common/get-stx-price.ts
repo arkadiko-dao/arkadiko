@@ -12,7 +12,7 @@ export const getStxPrice = () => {
   useEffect(() => {
     const getStxPrice = async () => {
       const price = await callReadOnlyFunction({
-        contractAddress: 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH',
+        contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
         contractName: "oracle",
         functionName: "get-price",
         functionArgs: [],

@@ -1,135 +1,78 @@
-import React, { useState } from 'react';
-import { space, Box, Text, Button, ButtonGroup } from '@blockstack/ui';
+import React, { useEffect } from 'react';
+import { Box, Flex, Text, Button } from '@blockstack/ui';
 import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
-import BN from 'bn.js';
 import {
   uintCV,
-  broadcastTransaction,
-  createStacksPrivateKey,
-  standardPrincipalCV,
-  makeSTXTokenTransfer,
-  privateKeyToString,
+  standardPrincipalCV
 } from '@stacks/transactions';
-import { ExplorerLink } from './explorer-link';
+import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
 
-export const Vault = () => {
+interface VaultProps {
+  id: string;
+  address: string;
+  stxCollateral: number;
+  coinsMinted: number;
+  atBlockHeight: number;
+}
+
+export const Vault: React.FC<VaultProps> = ({ id, address, stxCollateral, coinsMinted, atBlockHeight }) => {
   const { doContractCall } = useConnect();
-  const address = useSTXAddress();
-  const [txId, setTxId] = useState<string>('');
-  const [txType, setTxType] = useState<string>('');
-  const env = process.env.REACT_APP_NETWORK_ENV;
-
-  const clearState = () => {
-    setTxId('');
-    setTxType('');
-  };
-
-  const setState = (type: string, id: string) => {
-    setTxId(id);
-    setTxType(type);
-  };
-
-  const callCollateralizeAndMint = async () => {
-    clearState();
-    const authOrigin = getAuthOrigin();
-    const args = [
-      uintCV(10 * 1000000),
-      standardPrincipalCV(address || '')
-    ];
-    await doContractCall({
-      network,
-      authOrigin,
-      contractAddress: 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH',
-      contractName: 'stx-reserve',
-      functionName: 'collateralize-and-mint',
-      functionArgs: args,
-      postConditionMode: 0x01,
-      finished: data => {
-        console.log('finished collateralizing!', data);
-        console.log(data.stacksTransaction.auth.spendingCondition?.nonce.toNumber());
-        setState('Contract Call', data.txId);
-      },
-    });
-  };
+  const senderAddress = useSTXAddress();
+  let debtRatio = '';
+  if (id) {
+    debtRatio = getCollateralToDebtRatio(id);
+  }
 
   const callBurn = async () => {
-    clearState();
     const authOrigin = getAuthOrigin();
     await doContractCall({
       network,
       authOrigin,
-      contractAddress: 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH',
+      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
       contractName: 'stx-reserve',
       functionName: 'burn',
-      functionArgs: [],
+      functionArgs: [uintCV(2), standardPrincipalCV(senderAddress || '')],
+      postConditionMode: 0x01,
       finished: data => {
         console.log('finished burn!', data);
         console.log(data.stacksTransaction.auth.spendingCondition?.nonce.toNumber());
-        setState('Contract Call', data.txId);
       },
     });
   };
 
-  const addMocknetStx = async () => {
-    clearState();
-    const key = '9aef533e754663a453984b69d36f109be817e9940519cc84979419e2be00864801';
-    const senderKey = createStacksPrivateKey(key);
-    console.log('Adding STX from mocknet address to', address, 'on network', network);
-
-    const transaction = await makeSTXTokenTransfer({
-      recipient: standardPrincipalCV(address || ''),
-      amount: new BN(10000000),
-      senderKey: privateKeyToString(senderKey),
-      network: network
-    });
-    console.log(transaction);
-    const result = await broadcastTransaction(transaction, network);
-    console.log(result);
-  }
-
+  // console.log(id, address, stxCollateral, coinsMinted, atBlockHeight);
   return (
-    <Box py={6}>
-      <Text as="h2" textStyle="display.small">
-        Mint and Burn
+    <Box p="5" maxWidth="320px" borderWidth="1px" mr={4}>
+      <Text mt={2} fontSize="xl" fontWeight="semibold" lineHeight="short">
+        Vault {id} (block height {atBlockHeight})
       </Text>
-      <Text textStyle="body.large" display="block">
-        Mint some stablecoin using uSTX, or burn them all
-      </Text>
-      <ExplorerLink
-        txId="ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH.stx-reserve"
-        text="View contract in explorer"
-        skipConfirmCheck
-      />
-      {txId && (
-        <Text textStyle="body.large" display="block" my={space('base')}>
-          <Text color="green" fontSize={1}>
-            Successfully broadcasted &quot;{txType}&quot;
-          </Text>
-          <ExplorerLink txId={txId} />
+      <Flex mt={2} align="center">
+        <Text ml={3} fontSize="sm">
+          <b>$STX in collateral</b>: {stxCollateral / 1000000}
         </Text>
-      )}
-
-      <Box>
-        <ButtonGroup spacing={4} my="base">
-          <Button mt={3} onClick={callCollateralizeAndMint}>
-            Mint Stablecoin w/ 10 STX
-          </Button>
-          <Button mt={3} onClick={() => callBurn()}>
-            Burn Stablecoin in Vault
-          </Button>
-          {env == 'mocknet' ? (
-            <Button mt={3} onClick={() => addMocknetStx()}>
-              Get 10 STX tokens from mocknet
-            </Button>
-          ) : (
-            <Button mt={3} onClick={() => addMocknetStx()}>
-              Drain the faucet on testnet
-            </Button>
-          )}
-        </ButtonGroup>
-      </Box>
+      </Flex>
+      <Flex mt={2} align="center">
+        <Text ml={3} fontSize="sm">
+          <b>$DIKO</b>: {coinsMinted / 1000000}
+        </Text>
+      </Flex>
+      <Flex mt={2} align="center">
+        <Text ml={3} fontSize="sm">
+          <b>Current Collateral to Debt</b>: {debtRatio.collateralToDebt}
+        </Text>
+      </Flex>
+      <Flex mt={2} align="center">
+        <Text ml={3} fontSize="sm">
+          <b>Liquidation Ratio</b>: 150
+        </Text>
+      </Flex>
+      <Flex mt={2} align="center">
+        <Button mt={3} onClick={() => callBurn()}>
+          Burn Stablecoin in Vault
+        </Button>
+      </Flex>
     </Box>
   );
 };

@@ -7,6 +7,7 @@ yarn-error.log*
 lerna-debug.log*
 docs/research.md
 docs/deploy.md
+docs/grant.md
 .DS_Store
 
 # Diagnostic reports (https://nodejs.org/api/report.html)

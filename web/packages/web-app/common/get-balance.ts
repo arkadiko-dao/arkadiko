@@ -14,7 +14,6 @@ export const getBalance = () => {
       if (stxAddress) {
         try {
           const account = await client.fetchBalances(stxAddress);
-          // console.log(account);
           setBalance({
             arkadiko: account.arkadiko.toString(),
             stx: account.stx.toString() 

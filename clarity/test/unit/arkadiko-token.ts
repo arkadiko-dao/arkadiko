@@ -69,23 +69,23 @@ describe("arkadiko token contract test suite", () => {
     });
   });
 
-  describe("testing on mocknet", () => {
-    before(async () => {
-      await deployContract('arkadiko-token');
-    });
+  // describe("testing on mocknet", () => {
+  //   before(async () => {
+  //     await deployContract('arkadiko-token');
+  //   });
 
-    it("should mint 5 tokens", async () => {
-      const value = 5;
-      console.log('Calling mint function');
-      const result = await callContractFunction(
-        'arkadiko-token',
-        'mint',
-        [standardPrincipalCV('ST3CECAKJ4BH08JYY7W53MC81BYDT4YDA5M7S5F53'), uintCV(value)]
-      );
-      console.log(result);
-      assert.equal(true, true);
-    });
-  });
+  //   it("should mint 5 tokens", async () => {
+  //     const value = 5;
+  //     console.log('Calling mint function');
+  //     const result = await callContractFunction(
+  //       'arkadiko-token',
+  //       'mint',
+  //       [standardPrincipalCV('ST3CECAKJ4BH08JYY7W53MC81BYDT4YDA5M7S5F53'), uintCV(value)]
+  //     );
+  //     console.log(result);
+  //     assert.equal(true, true);
+  //   });
+  // });
 
   after(async () => {
     await provider.close();

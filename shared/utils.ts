@@ -11,7 +11,7 @@ import { StacksTestnet } from "@stacks/network";
 import * as fs from "fs";
 const fetch = require("node-fetch");
 
-import { ADDR1, testnetKeyMap } from "./mocknet";
+import { ADDR1, ADDR4, testnetKeyMap } from "./mocknet";
 
 export const local = true;
 export const mocknet = true;
@@ -32,6 +32,9 @@ const keys = mocknet
 
 export const secretKey = mocknet ? keys.secretKey : keys.privateKey;
 export const contractAddress = mocknet ? keys.address : keys.address.STACKS;
+const deployKey = testnetKeyMap[ADDR4];
+export const deployContractAddress = mocknet ? deployKey.address : keys.address.STACKS;
+export const secretDeployKey = deployKey.secretKey;
 
 export async function handleTransaction(transaction: StacksTransaction) {
   const result = await broadcastTransaction(transaction, network);
@@ -58,13 +61,13 @@ export async function handleTransaction(transaction: StacksTransaction) {
   return result as TxBroadcastResultOk;
 }
 
-export async function callContractFunction(contractName: string, functionName: string, args: any) {
+export async function callContractFunction(contractName: string, functionName: string, sender: any, args: any) {
   const txOptions = {
-    contractAddress: contractAddress,
+    contractAddress: deployContractAddress,
     contractName: contractName,
     functionName: functionName,
     functionArgs: args,
-    senderKey: secretKey,
+    senderKey: sender,
     network,
     postConditionMode: 0x01 // PostconditionMode.Allow
   };
@@ -81,7 +84,7 @@ export async function deployContract(contractName: string, changeCode: (str: str
   var transaction = await makeContractDeploy({
     contractName,
     codeBody: changeCode(codeBody),
-    senderKey: secretKey,
+    senderKey: secretDeployKey,
     network,
   });
   console.log(`deploy contract ${contractName}`);
@@ -125,7 +128,7 @@ async function processingWithSidecar(
     console.log(value);
   }
 
-  if (count > 10) {
+  if (count > 20) {
     console.log("failed after 10 tries");
     console.log(value);
     return false;

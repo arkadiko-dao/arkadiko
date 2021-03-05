@@ -1,8 +1,8 @@
 ;; Defines the Arkadiko Stablecoin according to the SRC20 Standard
 (define-fungible-token arkadiko)
 
-(define-constant mint-owner 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH)
-(define-constant err-not-white-listed u51)
+(define-constant mint-owner 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP)
+(define-constant err-burn-failed u1)
 
 (define-read-only (total-supply)
   (ok (ft-get-supply arkadiko))
@@ -20,7 +20,7 @@
   (ok u6)
 )
 
-(define-public (balance-of (account principal))
+(define-read-only (balance-of (account principal))
   (ok (ft-get-balance arkadiko account))
 )
 
@@ -34,7 +34,7 @@
   )
 )
 
-(define-public (mint (recipient principal) (amount uint))
+(define-public (mint (amount uint) (recipient principal))
   (begin
     (print recipient)
     (print amount)
@@ -43,7 +43,7 @@
     (print mint-owner)
     (if
       (and
-        (is-eq contract-caller 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH.stx-reserve)
+        (is-eq contract-caller 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP.stx-reserve)
         (is-ok (ft-mint? arkadiko amount recipient))
       )
       (ok amount)
@@ -52,18 +52,18 @@
   )
 )
 
-(define-public (burn (recipient principal) (amount uint))
+(define-public (burn (amount uint) (sender principal))
   ;; burn the arkadiko stablecoin and return STX
   (begin
-    (print recipient)
-    (print amount)
-    (if
+    (if 
       (and
-        (is-eq contract-caller 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH.stx-reserve)
-        (is-ok (ft-burn? arkadiko amount recipient))
+        (is-eq contract-caller 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP.stx-reserve)
+        (is-ok (ft-transfer? arkadiko amount sender mint-owner))
       )
-      (ok amount)
-      (err false)
+      ;; TODO: burn does not work, so we will transfer for now. Burn tx gets stuck at "pending"
+      ;; (ok (as-contract (ft-burn? arkadiko amount mint-owner)))
+      (ok true)
+      (err err-burn-failed)
     )
   )
 )

@@ -1,7 +1,7 @@
 (impl-trait .vault-trait.vault-trait)
 
 ;; addresses
-(define-constant stx-reserve-address 'S02J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKPVKG2CE)
+(define-constant stx-reserve-address 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP)
 (define-constant stx-liquidation-reserve 'S02J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKPVKG2CE)
 
 ;; errors
@@ -18,11 +18,23 @@
 
 ;; Map of vault entries
 ;; The entry consists of a user principal with their STX balance collateralized
-(define-map vaults { user: principal } { stx-collateral: uint, coins-minted: uint, at-block-height: uint })
+(define-map vaults { id: uint } { id: uint, address: principal, stx-collateral: uint, coins-minted: uint, at-block-height: uint })
+(define-map vault-entries { user: principal } { ids: (list 2000 uint) })
+(define-data-var last-vault-id uint u0)
 
 ;; getters
-(define-read-only (get-vault (user principal))
-  (unwrap-panic (map-get? vaults { user: user }))
+(define-read-only (get-vault-by-id (id uint))
+  (unwrap! (map-get? vaults { id: id }) (tuple (id u0) (address 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP) (stx-collateral u0) (coins-minted u0) (at-block-height u0)))
+)
+
+(define-read-only (get-vault-entries (user principal))
+  (unwrap! (map-get? vault-entries { user: user }) (tuple (ids (list u0) )))
+)
+
+(define-read-only (get-vaults (user principal))
+  (let ((entries (get ids (get-vault-entries user))))
+    (ok (map get-vault-by-id entries))
+  )
 )
 
 (define-read-only (get-liquidation-ratio)
@@ -95,11 +107,12 @@
   )
 )
 
-(define-read-only (calculate-current-collateral-to-debt-ratio (user principal))
+(define-read-only (calculate-current-collateral-to-debt-ratio (vault-id uint))
   (let ((stx-price-in-cents (contract-call? .oracle get-price)))
-    (let ((current-vault (get-vault user)))
-      (let ((amount (/ (* (get stx-collateral current-vault) (get price stx-price-in-cents)) (get coins-minted current-vault))))
-        (ok amount)
+    (let ((vault (get-vault-by-id vault-id)))
+      (if (> (get coins-minted vault) u0)
+        (ok (/ (* (get stx-collateral vault) (get price stx-price-in-cents)) (get coins-minted vault)))
+        (err u0)
       )
     )
   )
@@ -110,12 +123,17 @@
 ;; calculate price and collateralisation ratio
 (define-public (collateralize-and-mint (ustx-amount uint) (sender principal))
   (let ((coins (unwrap-panic (calculate-arkadiko-count ustx-amount))))
-    (match (print (stx-transfer? ustx-amount sender stx-reserve-address))
-      success (match (print (as-contract (contract-call? .arkadiko-token mint sender coins)))
+    (match (print (stx-transfer? ustx-amount sender (as-contract tx-sender)))
+      success (match (print (as-contract (contract-call? .arkadiko-token mint coins sender)))
         transferred (begin
-          (print "minted tokens! inserting into map now.")
-          (map-set vaults { user: sender } { stx-collateral: ustx-amount, coins-minted: coins, at-block-height: block-height })
-          (ok coins)
+          (let ((vault-id (+ (var-get last-vault-id) u1)))
+            (let ((entries (get ids (get-vault-entries sender))))
+              (map-set vault-entries { user: sender } { ids: (unwrap-panic (as-max-len? (append entries vault-id) u2000)) })
+              (map-set vaults { id: vault-id } { id: vault-id, address: sender, stx-collateral: ustx-amount, coins-minted: coins, at-block-height: block-height })
+              (var-set last-vault-id vault-id)
+              (ok coins)
+            )
+          )
         )
         error (err err-transfer-failed)
       )
@@ -127,13 +145,17 @@
 ;; burn stablecoin to free up STX tokens
 ;; method assumes position has not been liquidated
 ;; and thus collateral to debt ratio > liquidation ratio
-(define-public (burn)
-  (let ((vault (get-vault tx-sender)))
-    (match (print (as-contract (contract-call? .arkadiko-token burn tx-sender (get coins-minted vault))))
-      success (match (stx-transfer? (get stx-collateral vault) stx-reserve-address tx-sender)
+(define-public (burn (vault-id uint) (vault-owner principal))
+  (let ((vault (get-vault-by-id vault-id)))
+    (match (print (as-contract (contract-call? .arkadiko-token burn (get coins-minted vault) vault-owner)))
+      success (match (print (as-contract (stx-transfer? (get stx-collateral vault) (as-contract tx-sender) vault-owner)))
         transferred (begin
-          (map-delete vaults { user: tx-sender })
-          (ok true)
+          (let ((entries (get ids (get-vault-entries vault-owner))))
+            (print (map-set vaults { id: vault-id } { id: vault-id, address: vault-owner, stx-collateral: u0, coins-minted: u0, at-block-height: (get at-block-height vault) } ))
+            ;; TODO: remove vault ID from vault entries
+            ;; (map-set vault-entries { user: tx-sender } { () })
+            (ok (map-delete vaults { id: vault-id }))
+          )
         )
         error (err err-transfer-failed)
       )
@@ -144,15 +166,15 @@
 
 ;; liquidate a vault-address' vault
 ;; should only be callable by the liquidator smart contract address
-(define-public (liquidate (vault-address principal))
+(define-public (liquidate (vault-id uint))
   (if (is-eq contract-caller 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH.liquidator)
     (begin
-      (let ((vault (get-vault vault-address)))
-        (match (print (as-contract (contract-call? .arkadiko-token burn vault-address (get coins-minted vault))))
+      (let ((vault (get-vault-by-id vault-id)))
+        (match (print (as-contract (contract-call? .arkadiko-token burn (get coins-minted vault) (get address vault))))
           success (match (stx-transfer? (get stx-collateral vault) stx-reserve-address stx-liquidation-reserve)
             transferred (begin
               (let ((stx-collateral (get stx-collateral vault)))
-                (map-delete vaults { user: tx-sender })
+                (map-delete vaults { id: vault-id })
                 (ok stx-collateral)
               )
             )

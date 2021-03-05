@@ -5,12 +5,11 @@ import { Auth } from './auth';
 import { Tab } from './tab';
 import { Borrow } from './borrow';
 import { Governance } from './governance';
-import { Vault } from './vault';
+import { Mint } from './mint';
 import { getBalance } from '@common/get-balance';
 import { getStxPrice } from '@common/get-stx-price';
-import { getVault } from '@common/get-vaults';
 
-type Tabs = 'borrow' | 'governance' | 'vault';
+type Tabs = 'borrow' | 'governance' | 'mint';
 
 const Container: React.FC<BoxProps> = ({ children, ...props }) => {
   return (
@@ -24,12 +23,11 @@ const Container: React.FC<BoxProps> = ({ children, ...props }) => {
 
 export const Home: React.FC = () => {
   const state = useContext(AppContext);
-  const [tab, setTab] = useState<Tabs>('vault');
+  const [tab, setTab] = useState<Tabs>('mint');
 
   const Page: React.FC = () => {
     const balance = getBalance();
     const price = parseFloat(getStxPrice().price);
-    // getVault();
 
     return (
       <>
@@ -45,14 +43,11 @@ export const Home: React.FC = () => {
               <Text textStyle="body.large" display="block">
                 Current $STX price: ${price / 100}
               </Text>
-              <Text textStyle="body.large" display="block" mb={5}>
-                Current Vault: 
-              </Text>
             </Box>
           ) : null }
           <Flex>
-            <Tab active={tab === 'vault'}>
-              <Text onClick={() => setTab('vault')}>Mint & Burn</Text>
+            <Tab active={tab === 'mint'}>
+              <Text onClick={() => setTab('mint')}>Mint & Burn</Text>
             </Tab>
             <Tab active={tab === 'borrow'}>
               <Text onClick={() => setTab('borrow')}>Borrow & Lend</Text>
@@ -65,7 +60,7 @@ export const Home: React.FC = () => {
         <Container>
           {tab === 'borrow' && <Borrow />}
           {tab === 'governance' && <Governance />}
-          {tab === 'vault' && <Vault />}
+          {tab === 'mint' && <Mint />}
         </Container>
       </>
     );
