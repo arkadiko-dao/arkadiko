@@ -1,0 +1,97 @@
+# ArkadikoDAO
+
+## Background
+**What problems do you aim to solve? How does it serve the mission of a user owned internet?**
+
+The Stacks (DeFi) ecosystem is quite new and does not have any of the crucial DeFi primitives or liquidity protocols yet. This project aims to solve the problem of liquidity through a stablecoin. It serves the mission of a user owned internet since it allows users to maintain price stability on their assets and earn a yield at the same time, without having to go through rigorous KYC/AML requirements.
+
+## Project Overview
+**What solution are you providing? Who will it serve?**
+
+Disclaimer: the name of the project and tokens are subject to change.
+
+Arkadiko implements a stablecoin called Arkadiko ($DIKO) and a Governance Token called Somos ($ARE) that create the foundational primitives for a lending/borrowing platform.
+
+The Arkadiko protocol trustlessly provides stable loans backed by Stacks Tokens ($STX), known as Arkadiko ($DIKO). In order to mint $DIKO, you need to over-collateralise Stacks ($STX) tokens into an Arkadiko Stacks Vault. In other words, $DIKO is a stablecoin, existing to maintain relative price stability in volatile markets. People repay their loans by returning $DIKO plus a little more to cover the variable interest on the loan (called the stability fee). The protocol enforces the price by selling off a person's $STX if its total value falls below 150 percent (liquidation ratio) of how ever much $STX the user borrowed. All $STX will be sold through auctions to stackers who are registered with the protocol.
+
+No more and no less $DIKO exist in the world than loans made in it at that time. Every single $DIKO is some piece of someone’s $STX, locked up on the Arkadiko protocol until the person who put in their $STX pays the $DIKO back. When $DIKO goes into the system to repay a loan, it just gets burnt and disappears forever. Only the interest (i.e. stability fee) remains for Arkadiko to use to reward $ARE holders or cover expenses for the protocol.
+
+When $STX are posted as collateral to mint stablecoins, the $STX tokens will automatically be used to stack natively on the Stacks protocol (either autonomously or through a delegation pool). The yield earned in bitcoin will be used for three purposes:
+1. Reward $DIKO stablecoin minters to HODL and use their stablecoins
+2. Go into the reserve of the DAO to cover expenses
+3. Distribute earnings among the $ARE governance token holders
+
+All numbers and parameters will eventually be voted and decided upon through the DAO (Decentralised Autonomous Organisation), where each $ARE token counts towards one vote. The following parameters can be decided upon (this list is not comprehensive and can expand as DAO development progresses):
+
+1. Risk Parameters for STX collateral
+  Liquidation Ratio
+  Collateral to Debt Ratio
+  Maximum Debt
+  Liquidation Pealty
+2. Yield distribution of $STX Stacking Reward
+
+The DAO will eventually be supported by a foundation, where the foundation will initiate a governance token sale for those interested. The amount of $ARE governance tokens has yet to be decided, and can be subject to low inflation that is fixed in the protocol.
+
+
+## Scope
+**What are the components or technical specs of the project? What will the final deliverable look like? How will you measure success?**
+
+A high-level architecture currently looks as follows:
+![Architecture](https://github.com/philipdesmedt/arkadiko-dao/blob/master/docs/architecture-high-level.png?raw=true)
+
+Components & Technical Specs
+- A set of around 10-15 Clarity smart contracts will be built (most are already built but need to be iterated upon).
+- 
+
+### User Stories
+
+As a user, I can authenticate with the protocol through the Stacks Wallet Browser Extension or similar
+As a user, I can create a vault that mints stablecoin and takes STX as collateral
+As a user, I can update my vault to post additional STX collateral to avoid liquidation
+As a user, I can destroy a vault to burn the stablecoins, and return me the STX collateral minus the stability fee
+As a user, I can register to become a stacker and help liquidate risky positions
+As a user, I can transfer $DIKO and it automatically updates the vault (and its collateral) to the new owner
+As a stacker, I can look at the collateral to debt ratio of vaults and identify risky ones
+As a stacker, I can alert the liquidator for risky vaults
+
+As a user, I can vote on risk parameters with a governance token
+As a user, I am eligible for stacked bitcoin yield relative to the amount of governance tokens I hold
+
+## Budget & Milestones
+**What grant amount are you seeking? How long will the project take in hours? If more than 20, please break down the project into milestones, with a clear output (e.g., low-fi mockup, MVP with two features) and include the estimated work hours for each milestone.**
+
+## Team
+
+## Usage
+
+- Trading Liquidity
+- Enables stacking with a tradeable derivative (e.g. allows trading a productive asset that yields btc while the STX are locked up)
+- Lending & Borrowing liquidity milestone to build out Arkadiko Lending & Borrowing Platform which will support a multitude of assets (and SRC20 tokens)
+- Any application that wants to make use of stable prices & liquidity (e.g. games, )
+
+## Risks
+
+- I am the sole developer on this right now. Having said that, I have built high performing teams in the past and have people close to me with (technical or operational) knowledge of cryptocurrency & DeFi. They are willing to join, but I prefer building the foundations of Arkadiko first to de-risk and make it easier to delegate certain tasks and future work.
+- This is a big effort. I am a successful developer, CTO and entrepreneur, but it the amount of work and complexity cannot be underestimated. Due to professional reasons, I cannot go full-time on this until July/August, but I will be then.
+- The Stacks Ecosystem as a whole is young. I am missing certain primitives that would block Arkadiko from launching on mainnet:
+  - An SRC20 token standard
+  - Decentralised Oracle support (e.g. Chainlink)
+  - Probably need another stablecoin (e.g. USDT, USDC, PAX) on Stacks to peg against at some point
+- The Discord community is still small (but active) so getting questions answered & debugging can take slightly longer
+- One tx-sender address can only stack once at the moment, as far as I'm aware. This would make stacking inefficient. I believe this will be fixed mid to long term on the Stacks stacking protocol.
+
+## Future Work (Outside Initial Grant Scope)
+
+- Once the stablecoin and DAO are live on mainnet, the next step would be to turn this into a real DeFi hub by building out a liquidity borrowing/lending protocol (i.e. similar to Aave or Compound on ETH). I do think if/when the stablecoin and DAO generate traction, this next step would be easier due to extra resources & having derisked above items
+- Collateralize multiple types of cryptocurrency (e.g. wrapped bitcoin or even a 2-of-2 multisig bitcoin that does not need to leave the base bitcoin layer)
+
+## Community and Supporting Materials
+Do you have previous projects, code commits, or experiences that are relevant to this application? What community feedback or input have you received? How do you plan to share your plan to the community over time and as the final deliverable?
+
+I initially submitted a very early version of Arkadiko to the 
+
+Example: https://github.com/stacksgov/Stacks-Grants/issues/54
+
+
+
+
