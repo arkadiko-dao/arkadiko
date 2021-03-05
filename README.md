@@ -35,21 +35,16 @@ Whenever new $DIKO is minted, debt (as collateral) is created in the network. Wi
 The $ARE governance token is used to manage and vote on proposals put forward by the community.
 
 - Add a​ ​new​ ​collateral asset ​type with a unique set of Risk Parameters.
-- (TODO) Change the Risk Parameters of one or more existing collateral asset types, or add new Risk Parameters to one or more existing collateral asset types.
-- (TODO) Modify​ ​the $ARE Savings Rate.
-- (TODO) Choose the set of Oracle Feeds.
-- (TODO) Choose the set of Emergency Oracles.
-- (TODO) Trigger Emergency Shutdown.
-- (TODO) Upgrade the system.
-- (TODO) Set the percentage threshold to distribute BTC earnings
-
+- Change the Risk Parameters of one or more existing collateral asset types
+- Set the percentage threshold to distribute BTC earnings
+- Trigger Emergency Shutdown
 
 ## Roadmap
 
 - [x] Add STX reserve to collateralize STX and mint $DIKO
 - [ ] Back-end that updates price feed oracle once per minute
 - [ ] Ability for Stackers to buy up liquidated STX collateral
-- [ ] Front-end with Blockstack account & wallet integration
+- [x] Front-end with Blockstack account & wallet integration
 - [ ] Liquidation Engine
 - [ ] Build trait to allow multiple vault types
 
