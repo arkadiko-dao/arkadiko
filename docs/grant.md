@@ -204,7 +204,7 @@ Apart from the above, there is a set of more generic risks (e.g. protocol risk w
 - Collateralize multiple types of cryptocurrency (e.g. wrapped bitcoin or even a 2-of-2 multisig bitcoin that does not need to leave the base bitcoin layer)
 
 ## Community and Supporting Materials
-Do you have previous projects, code commits, or experiences that are relevant to this application? What community feedback or input have you received? How do you plan to share your plan to the community over time and as the final deliverable?
+**Do you have previous projects, code commits, or experiences that are relevant to this application? What community feedback or input have you received? How do you plan to share your plan to the community over time and as the final deliverable?**
 
 I initially submitted a very early version of Arkadiko to the Stacks 2.0 Mainnet Clarity Smart Contract Challenge where it was chosen as one of the winners. I have received positive feedback from the community on the project, which is also one of the drivers & motivators to make this real on mainnet.
 
