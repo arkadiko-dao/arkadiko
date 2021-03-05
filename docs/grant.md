@@ -100,17 +100,71 @@ TODO
 TODO
 
 - As a user, I can update my vault to post additional STX collateral to avoid liquidation
+
+#### Acceptance Criteria
+
+TODO
+
 - As a user, I can destroy a vault to burn the stablecoins, and return me the STX collateral minus the stability fee
+
+#### Acceptance Criteria
+
+TODO
+
 - As a user, I can burn a partial stablecoin position
+
+#### Acceptance Criteria
+
+TODO
+
 - As a user, I can register to become a stacker and help liquidate risky positions
+
+#### Acceptance Criteria
+
+TODO
+
 - As a user, I can transfer DIKO and it automatically updates the vault (and its collateral) to the new owner
+
+#### Acceptance Criteria
+
+TODO
+
 - As a stacker, I can lookup the collateral to debt ratio of vaults and identify risky ones
+
+#### Acceptance Criteria
+
+TODO
+
 - As a stacker, I can alert the liquidator for risky vaults
 
+#### Acceptance Criteria
+
+TODO
+
 - As a user, I can vote on risk parameters with a governance token
+
+#### Acceptance Criteria
+
+TODO
+
 - As a user, I can submit a proposal if I hold at least 1% of the governance token supply
+
+#### Acceptance Criteria
+
+TODO
+
 - As a user, I can vote on proposals (FOR or AGAINST)
+
+#### Acceptance Criteria
+
+TODO
+
 - As a user, I am eligible for stacked bitcoin yield relative to the amount of governance tokens I hold
+
+#### Acceptance Criteria
+
+TODO
+
 
 ## Budget & Milestones
 **What grant amount are you seeking? How long will the project take in hours? If more than 20, please break down the project into milestones, with a clear output (e.g., low-fi mockup, MVP with two features) and include the estimated work hours for each milestone.**
