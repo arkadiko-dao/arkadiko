@@ -233,7 +233,7 @@ This project will take hundreds of hours (probably more like thousands for a mai
 | 15  | As a guest, I can browse the main page | 5 days  | $5000    |
 | | | 77 days | $ 77,000 |
 
-The above includes only application functionality and is an estimation after subtracting the work already done (see demo video). I have not included work on setting up a reliable CI pipeline to have automated testing on each build, documentation writing, legal work etc, which will take the total estimate over $100K. The total time and cost of this project exceeds the scope of the grant, but the grant would be deliver significant support to bootstrap the development.
+The above includes only application functionality and is an estimation after subtracting the work already done (see demo video). I have not included work on setting up a reliable CI pipeline to have automated testing on each build, documentation writing, legal work etc, which will take the total estimate over $100K. The total time and cost of this project exceeds the scope of the grant, but the grant would deliver significant support to bootstrap the development.
 
 Splitting up the above user stories in a simple yet pragmatic overview, I would propose the following milestones:
 
