@@ -214,26 +214,56 @@ This project will take hundreds of hours (probably more like thousands for a mai
 3. Voting and other DAO functions
 
 
-| User Story     | Days         | Cost         |
-| :------------- | :----------: | -----------: |
-| As a user, I can authenticate with the protocol through the Stacks Wallet Browser Extension or similar | 2 days  | $2000    |
-| As a user, I can create a vault that mints stablecoin and takes STX as collateral   | 5 days | $5000    |
-| As a user, I can update my vault to post additional STX collateral to avoid liquidation   | 4 days | $4000    |
-| As a user, I can destroy a vault to burn the stablecoins, and return me the STX collateral minus the stability fee   | 5 days | $5000    |
-| As a user, I can burn a partial stablecoin position   | 6 days | $6000    |
-| As a user, I can register to become a stacker and help liquidate risky positions   | 2 days | $2000    |
-| As a user, I can transfer DIKO   | 1 day | $1000    |
-| As a stacker, I can look up the collateral to debt ratio of vaults and identify risky ones   | 1 day | $1000    |
-| As a stacker, I can alert the liquidator (engine) for risky vaults  | 5 days | $5000    |
-| As a user, I can vote on risk parameters with a governance token  | 10 days | $10000    |
-| As a user, I can submit a proposal if I hold at least 1% of the governance token supply   | 7 days | $7000    |
-| As a user, I can vote on proposals (FOR or AGAINST)   | 3 days | $3000    |
-| As a user, I am eligible for stacked bitcoin yield relative to the amount of governance tokens I hold   | 20 days | $20000    |
-| As a stacker, I can buy up liquidated STX tokens in an auction   | 4 days | $4000    |
-| As a guest, I can browse the main page | 5 days  | $5000    |
-| | | $ 80,000 |
+| ID  | User Story     | Days         | Cost         |
+| :-: | :------------- | :----------: | -----------: |
+| 1   | As a user, I can authenticate with the protocol through the Stacks Wallet Browser Extension or similar | 3 days  | $3000    |
+| 2   | As a user, I can create a vault that mints stablecoin and takes STX as collateral   | 5 days | $5000    |
+| 3   | As a user, I can update my vault to post additional STX collateral to avoid liquidation   | 4 days | $4000    |
+| 4   | As a user, I can destroy a vault to burn the stablecoins, and return me the STX collateral minus the stability fee   | 6 days | $6000    |
+| 5   | As a user, I can burn a partial stablecoin position   | 6 days | $6000    |
+| 6   | As a user, I can register to become a stacker and help liquidate risky positions   | 2 days | $2000    |
+| 7   | As a user, I can transfer DIKO   | 1 day | $1000    |
+| 8   | As a stacker, I can look up the collateral to debt ratio of vaults and identify risky ones   | 1 day | $1000    |
+| 9   | As a stacker, I can alert the liquidator (engine) for risky vaults  | 5 days | $5000    |
+| 10  | As a user, I can vote on risk parameters with a governance token  | 10 days | $10000    |
+| 11  | As a user, I can submit a proposal if I hold at least 1% of the governance token supply   | 7 days | $7000    |
+| 12  | As a user, I can vote on proposals (FOR or AGAINST)   | 3 days | $3000    |
+| 13  | As a user, I am eligible for stacked bitcoin yield relative to the amount of governance tokens I hold   | 15 days | $15000    |
+| 14  | As a stacker, I can buy up liquidated STX tokens in an auction   | 4 days | $4000    |
+| 15  | As a guest, I can browse the main page | 5 days  | $5000    |
+| | | | $ 77,000 |
 
-The above includes only application functionality and is an estimation after subtracting the work already done (see demo video). I have not included work on setting up a reliable CI pipeline to have automated testing on each build, documentation writing, legal work etc. The total time and cost of this project would exceed the scope of the grant, but the grant would be a significant help to bootstrap the development.
+The above includes only application functionality and is an estimation after subtracting the work already done (see demo video). I have not included work on setting up a reliable CI pipeline to have automated testing on each build, documentation writing, legal work etc, which will take the total estimate over $100K. The total time and cost of this project exceeds the scope of the grant, but the grant would be deliver significant support to bootstrap the development.
+
+Splitting up the above user stories in a simple yet pragmatic overview, I would propose the following milestones:
+
+1. Milestone 1. Delivery mid-June ($10,000)
+
+- Main landing page set up, with link to Discord & capturing inbound interest
+- Working user stories: 1, 2, 3, 4, 6, 7, 15
+- Only mocknet & local repo cloning. No testnet version yet
+
+2. Milestone 2. Delivery end of August ($25,000)
+
+- Set up CI pipeline
+- First deployment of Testnet version with usable React front-end
+- Working user stories: all of the above + 5, 8, 9, 10, 12
+- Preliminary work on US 13
+
+3. Milestone 3. Delivery mid-September ($10,000)
+
+- Further deployment of Testnet version
+- Working user stories: all of the above + 11, 14
+- First Draft of a plan to launch on mainnet
+- Preliminary work on US 13
+
+4. Milestone 4. Delivery beginning of October ($5000)
+
+- Working user stories: all of the above + 13.
+- Documentation live
+- The reason US 13 is significantly higher than other ones is that it involves stacking (autonomously or through a pool) which requires testing Stacking, and it will likely be the last work on the MVP
+
+Once milestone 4 is reached, all of the risks (see section on Risks) should be derisked, where the blocking of Arkadiko dependencies on mainnet looks like a major item. The above timing is an estimate but should be on the conservative side, and thus doable.
 
 ## Team
 
