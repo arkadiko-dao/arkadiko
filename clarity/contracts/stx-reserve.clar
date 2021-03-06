@@ -15,6 +15,7 @@
 (define-data-var collateral-to-debt-ratio uint u200)
 (define-data-var maximum-debt uint u100000000)
 (define-data-var liquidation-penalty uint u13)
+(define-data-var stability-fee uint u0)
 
 ;; Map of vault entries
 ;; The entry consists of a user principal with their STX balance collateralized

@@ -105,89 +105,118 @@ After a successful response, the newly created vault is visible in the UI.
 3. As a user, I can update my vault to post additional STX collateral to avoid liquidation
 
 #### Acceptance Criteria
-
-TODO
+the Clarity Contract must do the following, atomically:
+- Transfer (`stx-transfer`) extra collateral in their vault
+- the vault is updated with the new stx-collateral amount and collateral to debt ratios are updated accordingly
 
 4. As a user, I can destroy a vault to burn the stablecoins, and return me the STX collateral minus the stability fee
 
 #### Acceptance Criteria
-
-TODO
+the Clarity Contract must do the following, atomically:
+- Burn the DIKO tokens in the vault
+- Transfer the STX tokens back to the user's principal address
+- Remove the vault from the map of vaults
 
 5. As a user, I can burn a partial stablecoin position
 
 #### Acceptance Criteria
-
-TODO
+the Clarity Contract must do the following, atomically:
+- Burn part of the DIKO tokens in the vault
+- Recalculate collateral to debt
 
 6. As a user, I can register to become a stacker and help liquidate risky positions
 
 #### Acceptance Criteria
+the Clarity Contract must do the following, atomically:
+- Add user's principal address to the registry (map) of stackers
 
-TODO
+Currently, there are no special prerequisites to become an Arkadiko Stacker. This might change (e.g. a minimum account balance somewhere). Having your address registered as an Arkadiko Stacker allows you to flag risky vaults and buy auctions.
 
-7. As a user, I can transfer DIKO and it automatically updates the vault (and its collateral) to the new owner
-
-#### Acceptance Criteria
-
-TODO
-
-8. As a stacker, I can lookup the collateral to debt ratio of vaults and identify risky ones
+7. As a user, I can transfer DIKO
 
 #### Acceptance Criteria
+the Clarity Contract must do the following, atomically:
+- Transfer DIKO to the new user's principal
 
-TODO
-
-9. As a stacker, I can alert the liquidator for risky vaults
+8. As a stacker, I can look up the collateral to debt ratio of vaults and identify risky ones
 
 #### Acceptance Criteria
+the Clarity Contract must do the following, atomically:
+- Call the read-only collateral to debt function and return the ratio
 
-TODO
+The collateral to debt function accepts a vault ID as input and returns its collateral to debt ratio. This is a public function accessible for everyone, but most useful for stackers who want to identify auction possibilities.
+
+9. As a stacker, I can alert the liquidator (engine) for risky vaults
+
+#### Acceptance Criteria
+the Clarity Contract must do the following, atomically:
+- The liquidator receiving the call will check the vault
+- If the identified vault is near or over liquidation (parameter TBD), it will call the STX Reserve liquidate function
+- The STX reserve liquidate function does the following:
+  - Transfer the STX collateral to a liquidation pool ready for auctioning
+  - Burn the DIKO
+  - Remove the vault (i.e. remove the vault ID from the map)
 
 10. As a user, I can vote on risk parameters with a governance token
 
 #### Acceptance Criteria
-
-TODO
+the Clarity Contract must do the following, atomically:
+- It registers a vote associated to each governance token in a map
 
 11. As a user, I can submit a proposal if I hold at least 1% of the governance token supply
 
 #### Acceptance Criteria
-
-TODO
+the Clarity Contract must do the following, atomically:
+- Register the proposal in the registry
+- Flag the proposal as open to vote
 
 12. As a user, I can vote on proposals (FOR or AGAINST)
 
 #### Acceptance Criteria
-
-TODO
+the Clarity Contract must do the following, atomically:
+- It registers the user's vote(s) proportional the amount of governance tokens they voted with 
 
 13. As a user, I am eligible for stacked bitcoin yield relative to the amount of governance tokens I hold
 
 #### Acceptance Criteria
+the Clarity Contract must do the following, atomically:
+- After posting STX collateral, the smart contract will put STX in the reserve pool
+- Where possible, the STX will be stacked on the Stacks protocol
+- The rewards in bitcoin will be paid every cycle, or periodically decided upon by the protocol governance
 
-TODO
-
-14. As a stacker, I can buy up liquidated STX tokens
+14. As a stacker, I can buy up liquidated STX tokens in an auction
 
 #### Acceptance Criteria
-
-TODO
-
+the Clarity Contract must do the following, atomically:
+- When a vault gets liquidated, the STX collateral is transferred to a STX liquidation reserve address
+- A simple bidding mechanism allows Stackers to buy up STX collateral at a discount, first come first serve 
 
 ## Budget & Milestones
 **What grant amount are you seeking? How long will the project take in hours? If more than 20, please break down the project into milestones, with a clear output (e.g., low-fi mockup, MVP with two features) and include the estimated work hours for each milestone.**
 
-This project will take hundreds of hours (probably more like thousands though). I am seeking a grant amount of $25,000 which would cover part of my time & expenses made in the next months. The project can be broken down into 3 big parts (Smart Contracts + UI). The parts are the following:
+This project will take hundreds of hours (probably more like thousands though). I am seeking a grant amount of $50,000 which would cover part of my time & expenses made in the next months. The project can be broken down into 3 big parts (Smart Contracts + UI). The parts are the following:
 
 1. Creating Vaults, Minting, Transferring & Burning (smart contract + UI)
 2. Auctioning of Liquidated Vaults
 3. Voting and other DAO functions
 
+
 | User Story     | Days         | Cost         |
 | :------------- | :----------: | -----------: |
-|  Cell Contents | More Stuff   | And Again    |
-| You Can Also   | Put Pipes In | Like this \| |
+| As a user, I can authenticate with the protocol through the Stacks Wallet Browser Extension or similar | More Stuff   | And Again    |
+| As a user, I can create a vault that mints stablecoin and takes STX as collateral   | Put Pipes In | Like this    |
+| As a user, I can update my vault to post additional STX collateral to avoid liquidation   | Put Pipes In | Like this    |
+| As a user, I can destroy a vault to burn the stablecoins, and return me the STX collateral minus the stability fee   | Put Pipes In | Like this    |
+| As a user, I can burn a partial stablecoin position   | Put Pipes In | Like this    |
+| As a user, I can register to become a stacker and help liquidate risky positions   | Put Pipes In | Like this    |
+| As a user, I can transfer DIKO   | Put Pipes In | Like this    |
+| As a stacker, I can look up the collateral to debt ratio of vaults and identify risky ones   | Put Pipes In | Like this    |
+| As a stacker, I can alert the liquidator (engine) for risky vaults  | Put Pipes In | Like this    |
+| As a user, I can vote on risk parameters with a governance token  | Put Pipes In | Like this    |
+| As a user, I can submit a proposal if I hold at least 1% of the governance token supply   | Put Pipes In | Like this    |
+| As a user, I can vote on proposals (FOR or AGAINST)   | Put Pipes In | Like this    |
+| As a user, I am eligible for stacked bitcoin yield relative to the amount of governance tokens I hold   | Put Pipes In | Like this    |
+| As a stacker, I can buy up liquidated STX tokens in an auction   | Put Pipes In | Like this    |
 
 ## Team
 
@@ -205,7 +234,7 @@ When the first version is ready to launch on mainnet and most risks (see below) 
 ## Risks
 
 - I am the sole developer on this right now. Having said that, I have built high performing teams in the past and have people close to me with (technical or operational) knowledge of cryptocurrency & DeFi. They are willing to join, but I prefer building the foundations of Arkadiko first to de-risk and make it easier to delegate certain tasks and future work.
-- This is a big effort. I am a successful developer, CTO and entrepreneur, but it the amount of work and complexity cannot be underestimated. Due to professional reasons, I cannot go full-time on this until July/August, but I will be then.
+- This is a big effort. I am a successful developer, CTO and entrepreneur, but the amount of work and complexity cannot be underestimated. Due to professional reasons, I cannot go full-time on this until July/August, but I will be then.
 - The Stacks Ecosystem as a whole is young. I am missing certain primitives that would block Arkadiko from launching on mainnet:
   - An SRC20 token standard
   - Decentralised Oracle support (e.g. Chainlink)
