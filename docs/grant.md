@@ -269,7 +269,9 @@ Once milestone 4 is reached, all of the risks (see section on Risks) should be d
 
 ## Team
 
-Currently I am working on this alone. In the last 7 years, I have successfully built and sold a SaaS company (~$3.5mio ARR) as the founding CTO. I built a team of ~20 devs and set up security efforts, served as lead architect, helped design the product lifecycle, raised money, led technical due diligence during the acquisition, liaised with customers and shareholders etc. I've seen most aspects of the business, which makes me qualified to build & launch the first version of Arkadiko, including initial go-to-market and follow-up.
+Currently I am working on this alone, but I am building a founding team of 3 - 4 people who will be working on this full time. The goals is to have a working mainnet MVP before autumn that I build with support from my co-founders.
+
+In the last 7 years, I have successfully built and sold a SaaS company (~$3.5mio ARR) as the founding CTO. I built a team of ~20 devs and set up security efforts, served as lead architect, helped design the product lifecycle, raised money, led technical due diligence during the acquisition, liaised with customers and shareholders etc. I've seen most aspects of the business, which makes me qualified to build & launch the first version of Arkadiko, including initial go-to-market and follow-up.
 
 When the first version is ready to launch on mainnet and most risks (see below) are resolved, it is likely that a Swiss foundation will be set up to lead Arkadiko in the beginning years.
 
