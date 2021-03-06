@@ -207,7 +207,7 @@ Up until now, we have always talked about a few personas (user, stacker, automat
 ## Budget & Milestones
 **What grant amount are you seeking? How long will the project take in hours? If more than 20, please break down the project into milestones, with a clear output (e.g., low-fi mockup, MVP with two features) and include the estimated work hours for each milestone.**
 
-This project will take hundreds of hours (probably more like thousands though). I am seeking a grant amount of $50,000 which would cover approximately 60% of my time & expenses made in the next 6 months. The project can be broken down into 3 big parts (Smart Contracts + UI). The parts are the following:
+This project will take hundreds of hours (probably more like thousands for a mainnet-ready version though). I am seeking a grant amount of $50,000 which would cover approximately 60% of my time & expenses made in the next 6 months. The project can be broken down into 3 big parts (Smart Contracts + UI). The parts are the following:
 
 1. Creating Vaults, Minting, Transferring & Burning (smart contract + UI)
 2. Auctioning of Liquidated Vaults
@@ -242,6 +242,8 @@ Currently I am working on this alone. In the last 7 years, I have successfully b
 When the first version is ready to launch on mainnet and most risks (see below) are resolved, it is likely that a Swiss foundation will be set up to lead Arkadiko in the beginning years.
 
 ## Usage
+
+A stablecoin and liquidity protocol is one of the cornerstones of DeFi, and will enable Stacks to expand the ecosystem as a whole. There are many use cases including, but not limited to:
 
 - Trading Liquidity & Market-Making
 - Enables stacking with a tradeable derivative (e.g. allows trading a productive asset that yields btc while the STX are locked up)
