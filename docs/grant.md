@@ -1,4 +1,4 @@
-# ArkadikoDAO
+# Arkadiko - A Stacks-Native Liquidity Protocol
 
 ## Background
 **What problems do you aim to solve? How does it serve the mission of a user owned internet?**
