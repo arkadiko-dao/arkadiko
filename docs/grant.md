@@ -204,7 +204,7 @@ Up until now, we have always talked about a few personas (user, stacker, automat
 ## Budget & Milestones
 **What grant amount are you seeking? How long will the project take in hours? If more than 20, please break down the project into milestones, with a clear output (e.g., low-fi mockup, MVP with two features) and include the estimated work hours for each milestone.**
 
-This project will take hundreds of hours (probably more like thousands though). I am seeking a grant amount of $50,000 which would cover part of my time & expenses made in the next months. The project can be broken down into 3 big parts (Smart Contracts + UI). The parts are the following:
+This project will take hundreds of hours (probably more like thousands though). I am seeking a grant amount of $50,000 which would cover approximately 60% of my time & expenses made in the next 6 months. The project can be broken down into 3 big parts (Smart Contracts + UI). The parts are the following:
 
 1. Creating Vaults, Minting, Transferring & Burning (smart contract + UI)
 2. Auctioning of Liquidated Vaults
@@ -213,21 +213,24 @@ This project will take hundreds of hours (probably more like thousands though). 
 
 | User Story     | Days         | Cost         |
 | :------------- | :----------: | -----------: |
-| As a user, I can authenticate with the protocol through the Stacks Wallet Browser Extension or similar | 1   | And Again    |
-| As a user, I can create a vault that mints stablecoin and takes STX as collateral   | Put Pipes In | Like this    |
-| As a user, I can update my vault to post additional STX collateral to avoid liquidation   | Put Pipes In | Like this    |
-| As a user, I can destroy a vault to burn the stablecoins, and return me the STX collateral minus the stability fee   | Put Pipes In | Like this    |
-| As a user, I can burn a partial stablecoin position   | Put Pipes In | Like this    |
-| As a user, I can register to become a stacker and help liquidate risky positions   | Put Pipes In | Like this    |
-| As a user, I can transfer DIKO   | Put Pipes In | Like this    |
-| As a stacker, I can look up the collateral to debt ratio of vaults and identify risky ones   | Put Pipes In | Like this    |
-| As a stacker, I can alert the liquidator (engine) for risky vaults  | Put Pipes In | Like this    |
-| As a user, I can vote on risk parameters with a governance token  | Put Pipes In | Like this    |
-| As a user, I can submit a proposal if I hold at least 1% of the governance token supply   | Put Pipes In | Like this    |
-| As a user, I can vote on proposals (FOR or AGAINST)   | Put Pipes In | Like this    |
-| As a user, I am eligible for stacked bitcoin yield relative to the amount of governance tokens I hold   | Put Pipes In | Like this    |
-| As a stacker, I can buy up liquidated STX tokens in an auction   | Put Pipes In | Like this    |
-| As a guest, I can browse the main page | 5 days  | And Again    |
+| As a user, I can authenticate with the protocol through the Stacks Wallet Browser Extension or similar | 2 days  | $2000    |
+| As a user, I can create a vault that mints stablecoin and takes STX as collateral   | 5 days | $5000    |
+| As a user, I can update my vault to post additional STX collateral to avoid liquidation   | 4 days | $4000    |
+| As a user, I can destroy a vault to burn the stablecoins, and return me the STX collateral minus the stability fee   | 5 days | $5000    |
+| As a user, I can burn a partial stablecoin position   | 6 days | $6000    |
+| As a user, I can register to become a stacker and help liquidate risky positions   | 2 days | $2000    |
+| As a user, I can transfer DIKO   | 1 day | $1000    |
+| As a stacker, I can look up the collateral to debt ratio of vaults and identify risky ones   | 1 day | $1000    |
+| As a stacker, I can alert the liquidator (engine) for risky vaults  | 5 days | $5000    |
+| As a user, I can vote on risk parameters with a governance token  | 10 days | $10000    |
+| As a user, I can submit a proposal if I hold at least 1% of the governance token supply   | 7 days | $7000    |
+| As a user, I can vote on proposals (FOR or AGAINST)   | 3 days | $3000    |
+| As a user, I am eligible for stacked bitcoin yield relative to the amount of governance tokens I hold   | 20 days | $20000    |
+| As a stacker, I can buy up liquidated STX tokens in an auction   | 4 days | $4000    |
+| As a guest, I can browse the main page | 5 days  | $5000    |
+| | | $ 80,000 |
+
+The above includes only application functionality and is an estimation after subtracting the work already done (see demo video). I have not included work on setting up a reliable CI pipeline to have automated testing on each build, documentation writing, legal work etc. The total time and cost of this project would exceed the scope of the grant, but the grant would be a significant help to bootstrap the development.
 
 ## Team
 
