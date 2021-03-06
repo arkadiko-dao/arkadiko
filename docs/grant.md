@@ -43,7 +43,7 @@ These parameters are subject to change.
 
 - Maximum Debt:​ A Debt Ceiling is the maximum amount of debt that can be created by a single collateral type. Arkadiko Governance assigns every collateral type a Debt Ceiling, which is used to ensure sufficient diversification of the Arkadiko Protocol collateral portfolio. Today, only one type of collateral is accepted (STX) but this will change as soon as more (SRC20) tokens get accepted by the community. Once a collateral type has reached its Debt Ceiling, it becomes impossible to create more debt unless some existing users pay back all their Vault debt (and thus burns their DIKO).
 
-- Stability​ ​Fee:​ The Stability Fee is an annual percentage yield calculated on top of how much DIKO has been generated against a Reserve's collateral. The fee is paid in STX, and then sent into the Arkadiko Buffer.
+- Stability​ ​Fee:​ The Stability Fee is an annual percentage yield calculated on top of how much DIKO has been generated against a Vault's collateral. The fee is paid in STX, and then sent into the Arkadiko Buffer.
 
 - Collateral to Debt Ratio: Indicates how much collateral needs to be posted to create an amount of debt. A collateral to debt of 200 means that two times as much collateral needs to be posted as the amount minted (e.g. $10 stablecoin needs $20 STX collateral).
 
@@ -62,10 +62,13 @@ The ARE governance token is used to manage and vote on proposals put forward by 
 - Set the percentage threshold to distribute BTC earnings
 - Trigger Emergency Shutdown
 
+ARE governance token holders will receive income in two ways: yield generated through stacking and stability fees, where applicable.
+
 ## Scope
 **What are the components or technical specs of the project? What will the final deliverable look like? How will you measure success?**
 
 A high-level architecture currently looks as follows:
+
 ![Architecture](https://github.com/philipdesmedt/arkadiko-dao/blob/master/docs/architecture-high-level.png?raw=true)
 
 Components & Technical Specs
@@ -73,7 +76,7 @@ Components & Technical Specs
 - A react UI will be built on the Stacks.js library hooking into the smart contracts. The initial UI will consist of three big sections:
   - Creating Vaults, Minting & Burning
   - Auctioning of Liquidated Vaults
-  - Voting and other DAO functions
+  - Voting and other DAO governance functions
 - Landing Page + Documentation
   - Documentation will be written as a Gitbook page
   - A set of great DeFi landing pages will be used as inspiration, e.g. https://yearn.finance/ and https://uniswap.org/. The landing page should be very succinct and simple, and acts as the product itself, with a clear call to action to connect your wallet.
@@ -84,7 +87,7 @@ A functional v0.1 can be tested at https://github.com/philipdesmedt/arkadiko-dao
 
 ### Success Metrics
 
-Success at this stage is measured by transparency of our process. The code and documentation are all open source. Furthermore, at the end of each sprint we hold a review for stakeholders - including an open invitation to community members. The reviews will present the work finished in the sprint and present an opportunity to discuss problems encountered and insights for future development. We will post invitations to our reviews on Discord and via direct messages to partners in the Foundation.
+Success at this stage is measured by transparency of the process. The code and documentation are all open source. Furthermore, at the end of each sprint we hold a review for stakeholders - including an open invitation to community members. The reviews will present the work finished in the sprint and present an opportunity to discuss problems encountered and insights for future development. We will post invitations to our reviews on Discord and via direct messages to partners in the Foundation.
 
 Review meetings would likely start in the May - June timeframe as input & feedback becomes more valuable.
 
