@@ -83,7 +83,7 @@ Components & Technical Specs
 - I will work with a designer who can improve UI & UX
 - Until a production-ready Oracle is available, I will have to build out a mechanism that reliably updates the price feed oracle through a simple cron job
 
-A functional v0.1 can be tested at https://github.com/philipdesmedt/arkadiko-dao. It requires running mocknet. A demo video can be seen here: TODO
+A functional v0.1 can be tested at https://github.com/philipdesmedt/arkadiko-dao. It requires running mocknet. A demo video can be seen here: https://www.loom.com/share/1100b5f51b8945d6b62100b774d77b23
 
 ### Success Metrics
 
@@ -243,24 +243,26 @@ Splitting up the above user stories in a simple yet pragmatic overview, I would 
 - Working user stories: 1, 2, 3, 4, 6, 7, 15
 - Only mocknet & local repo cloning. No testnet version yet
 
-2. Milestone 2. Delivery end of August ($25,000)
+2. Milestone 2. Delivery end of July ($25,000)
 
 - Set up CI pipeline
 - First deployment of Testnet version with usable React front-end
 - Working user stories: all of the above + 5, 8, 9, 10, 12
 - Preliminary work on US 13
 
-3. Milestone 3. Delivery mid-September ($10,000)
+3. Milestone 3. Delivery mid-August ($10,000)
 
 - Further deployment of Testnet version
 - Working user stories: all of the above + 11, 14
 - First Draft of a plan to launch on mainnet
 - Preliminary work on US 13
+- First documentation
 
-4. Milestone 4. Delivery beginning of October ($5000)
+4. Milestone 4. Delivery mid/end of September ($5000)
 
 - Working user stories: all of the above + 13.
 - Documentation live
+- Security Audit
 - The reason US 13 is significantly higher than other ones is that it involves stacking (autonomously or through a pool) which requires testing Stacking, and it will likely be the last work on the MVP
 
 Once milestone 4 is reached, all of the risks (see section on Risks) should be derisked, where the blocking of Arkadiko dependencies on mainnet looks like a major item. The above timing is an estimate but should be on the conservative side, and thus doable.
