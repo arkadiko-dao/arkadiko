@@ -74,6 +74,9 @@ Components & Technical Specs
   - Creating Vaults, Minting & Burning
   - Auctioning of Liquidated Vaults
   - Voting and other DAO functions
+- Landing Page + Documentation
+  - Documentation will be written as a Gitbook page
+  - A set of great DeFi landing pages will be used as inspiration, e.g. https://yearn.finance/ and https://uniswap.org/. The landing page should be very succinct and simple, and acts as the product itself, with a clear call to action to connect your wallet.
 - I will work with a designer who can improve UI & UX
 - Until a production-ready Oracle is available, I will have to build out a mechanism that reliably updates the price feed oracle through a simple cron job
 
@@ -84,6 +87,8 @@ A functional v0.1 can be tested at https://github.com/philipdesmedt/arkadiko-dao
 Success at this stage is measured by transparency of our process. The code and documentation are all open source. Furthermore, at the end of each sprint we hold a review for stakeholders - including an open invitation to community members. The reviews will present the work finished in the sprint and present an opportunity to discuss problems encountered and insights for future development. We will post invitations to our reviews on Discord and via direct messages to partners in the Foundation.
 
 Review meetings would likely start in the May - June timeframe as input & feedback becomes more valuable.
+
+The final deliverable will be based on the following user stories. As described above, the final artifact will be a set of smart contracts with a front-end that has great UI/UX.
 
 ### User Stories
 
@@ -191,6 +196,11 @@ the Clarity Contract must do the following, atomically:
 - When a vault gets liquidated, the STX collateral is transferred to a STX liquidation reserve address
 - A simple bidding mechanism allows Stackers to buy up STX collateral at a discount, first come first serve 
 
+15. As a guest, I can browse the main page and documentation
+
+Up until now, we have always talked about a few personas (user, stacker, automated liquidator), but not about an initial guest user yet. The guest can browse the web page and read documentation freely without authenticating with the Stacks Wallet browser extension.
+
+
 ## Budget & Milestones
 **What grant amount are you seeking? How long will the project take in hours? If more than 20, please break down the project into milestones, with a clear output (e.g., low-fi mockup, MVP with two features) and include the estimated work hours for each milestone.**
 
@@ -203,7 +213,7 @@ This project will take hundreds of hours (probably more like thousands though). 
 
 | User Story     | Days         | Cost         |
 | :------------- | :----------: | -----------: |
-| As a user, I can authenticate with the protocol through the Stacks Wallet Browser Extension or similar | More Stuff   | And Again    |
+| As a user, I can authenticate with the protocol through the Stacks Wallet Browser Extension or similar | 1   | And Again    |
 | As a user, I can create a vault that mints stablecoin and takes STX as collateral   | Put Pipes In | Like this    |
 | As a user, I can update my vault to post additional STX collateral to avoid liquidation   | Put Pipes In | Like this    |
 | As a user, I can destroy a vault to burn the stablecoins, and return me the STX collateral minus the stability fee   | Put Pipes In | Like this    |
@@ -217,10 +227,11 @@ This project will take hundreds of hours (probably more like thousands though). 
 | As a user, I can vote on proposals (FOR or AGAINST)   | Put Pipes In | Like this    |
 | As a user, I am eligible for stacked bitcoin yield relative to the amount of governance tokens I hold   | Put Pipes In | Like this    |
 | As a stacker, I can buy up liquidated STX tokens in an auction   | Put Pipes In | Like this    |
+| As a guest, I can browse the main page | 5 days  | And Again    |
 
 ## Team
 
-Currently I am working on this alone. In the last 7 years, I have successfully built and sold a SaaS company as the founding CTO. I built a team of ~20 devs and set up security efforts, served as lead architect, helped design the product lifecycle, raised money, led technical due diligence during the acquisition, liaised with customers and shareholders etc. I've seen most aspects of the business, which makes me qualified to build & launch the first version of Arkadiko, including initial go-to-market and follow-up.
+Currently I am working on this alone. In the last 7 years, I have successfully built and sold a SaaS company (~$3.5mio ARR) as the founding CTO. I built a team of ~20 devs and set up security efforts, served as lead architect, helped design the product lifecycle, raised money, led technical due diligence during the acquisition, liaised with customers and shareholders etc. I've seen most aspects of the business, which makes me qualified to build & launch the first version of Arkadiko, including initial go-to-market and follow-up.
 
 When the first version is ready to launch on mainnet and most risks (see below) are resolved, it is likely that a Swiss foundation will be set up to lead Arkadiko in the beginning years.
 
@@ -256,3 +267,5 @@ Apart from the above, there is a set of more generic risks (e.g. protocol risk w
 I initially submitted a very early version of Arkadiko to the Stacks 2.0 Mainnet Clarity Smart Contract Challenge where it was chosen as one of the winners. I have received positive feedback from the community on the project, which is also one of the drivers & motivators to make this real on mainnet.
 
 During the development of a testnet-ready version, I will provide updates every 3 weeks, with canary builds that can be tested by the community. Furthermore, it would be amazing if the grant would allow access to a group of dedicated testers who want to make a difference by testing early versions, and through office hours with tech & business experts on certain subjects.
+
+All source code developed under this grant (and the Arkadiko protocol as an extension) is open-sourced under the GPLv3 license
