@@ -3,6 +3,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CheckerPlugin = require('fork-ts-checker-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
@@ -160,6 +161,13 @@ module.exports = {
           },
         },
       },
+      {
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          "css-loader", "postcss-loader",
+          ],
+      },
     ],
   },
   devServer: {
@@ -173,11 +181,15 @@ module.exports = {
     new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/),
     new webpack.HashedModuleIdsPlugin(),
     new CheckerPlugin(),
+    new MiniCssExtractPlugin({
+      filename: "styles.css",
+      chunkFilename: "styles.css"
+    }),
     new HtmlWebpackPlugin({
       template: path.join(sourceRootPath, '../', 'public', 'html', 'index.html'),
       inject: 'body',
       filename: 'index.html',
-      title: 'ArkDAO',
+      title: 'Arkadiko',
       chunks: ['main', 'common'],
       ...hmtlProdOpts,
     }),

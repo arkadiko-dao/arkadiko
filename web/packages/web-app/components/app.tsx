@@ -7,6 +7,7 @@ import { UserSession, AppConfig } from '@stacks/auth';
 import { defaultState, AppContext, AppState } from '@common/context';
 import { Header } from '@components/header';
 import { Home } from '@components/home';
+import { Routes } from '@components/routes';
 
 const icon = '/assets/logo.png';
 export const App: React.FC = () => {
@@ -61,7 +62,7 @@ export const App: React.FC = () => {
     },
     authOrigin,
     appDetails: {
-      name: 'ArkDAO',
+      name: 'Arkadiko',
       icon,
     },
   };
@@ -76,8 +77,7 @@ export const App: React.FC = () => {
             {appPrivateKey && <input type="hidden" id="app-private-key" value={appPrivateKey} />}
 
             <Header signOut={signOut} />
-
-            <Home />
+            <Routes />
           </Flex>
         </AppContext.Provider>
       </ThemeProvider>
