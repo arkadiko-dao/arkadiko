@@ -10,20 +10,26 @@ export const getBalance = () => {
   const client = getRPCClient();
 
   useEffect(() => {
+    let mounted = true;
+
     const getBalance = async () => {
       if (stxAddress) {
         try {
           const account = await client.fetchBalances(stxAddress);
-          setBalance({
-            arkadiko: account.arkadiko.toString(),
-            stx: account.stx.toString() 
-          });
+          if (mounted) {
+            setBalance({
+              arkadiko: account.arkadiko.toString(),
+              stx: account.stx.toString()
+            });
+          }
         } catch (error) {
           console.error('Unable to connect to Stacks Blockchain');
         }
       }
     };
     void getBalance();
+
+    return () => { mounted = false; }
   }, [state.userData]);
 
   return {

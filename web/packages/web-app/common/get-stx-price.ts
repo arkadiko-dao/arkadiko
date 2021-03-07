@@ -10,19 +10,27 @@ export const getStxPrice = () => {
   const [price, setPrice] = useState('');
 
   useEffect(() => {
+    let mounted = true;
+
     const getStxPrice = async () => {
-      const price = await callReadOnlyFunction({
-        contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
-        contractName: "oracle",
-        functionName: "get-price",
-        functionArgs: [],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const json = cvToJSON(price);
-      setPrice(json.value.price.value);
+      if (mounted) {
+        const price = await callReadOnlyFunction({
+          contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+          contractName: "oracle",
+          functionName: "get-price",
+          functionArgs: [],
+          senderAddress: stxAddress || '',
+          network: network,
+        });
+        const json = cvToJSON(price);
+        if (mounted) {
+          setPrice(json.value.price.value);
+        }
+      }
     };
     void getStxPrice();
+
+    return () => { mounted = false; }
   }, [state.userData]);
 
   return {

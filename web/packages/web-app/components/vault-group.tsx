@@ -6,18 +6,21 @@ import { Flex } from '@blockstack/ui';
 export const VaultGroup: React.FC = () => {
   const vaults = getVaults();
 
+  const vaultItems = vaults.vaults.map((vault) =>
+    <Vault
+      key={vault.id.value}
+      id={vault.id.value}
+      address={vault.address.value}
+      stxCollateral={vault['stx-collateral'].value}
+      coinsMinted={vault['coins-minted'].value}
+      atBlockHeight={vault['at-block-height'].value}
+    />
+  );
   return (
     <Flex>
-      {vaults.vaults.map(
-        (vault) =>
-        <Vault
-          id={vault.id.value}
-          address={vault.address.value}
-          stxCollateral={vault['stx-collateral'].value}
-          coinsMinted={vault['coins-minted'].value}
-          atBlockHeight={vault['at-block-height'].value}
-        />
-      )}
+      <ul>
+        {vaultItems}
+      </ul>
     </Flex>
   );
 };

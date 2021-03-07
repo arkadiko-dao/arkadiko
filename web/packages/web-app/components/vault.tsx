@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Box, Flex, Text, Button } from '@blockstack/ui';
 import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
@@ -20,7 +20,7 @@ interface VaultProps {
 export const Vault: React.FC<VaultProps> = ({ id, address, stxCollateral, coinsMinted, atBlockHeight }) => {
   const { doContractCall } = useConnect();
   const senderAddress = useSTXAddress();
-  let debtRatio = '';
+  let debtRatio = {};
   if (id) {
     debtRatio = getCollateralToDebtRatio(id);
   }
