@@ -17,7 +17,7 @@ A high-level architecture would look as follows:
 
 ## Diko: Arkadiko Stablecoin
 
-Whenever new $DIKO is minted, debt (as collateral) is created in the network. With every type of collateral (in principal only $STX will be accepted as collateral), a set of Risk parameters will be decided on by the community. These parameters can be voted on through the $ARE governance token. A total of 100,000 $ARE tokens will ever exist. Each token has 1 vote.
+Whenever new $DIKO is minted, debt (as collateral) is created in the network. With every type of collateral (in principal only $STX will be accepted as collateral), a set of Risk parameters will be decided on by the community. These parameters can be voted on through the $ARE governance token. Each token has 1 vote.
 
 ### Stablecoin Risk Parameters
 
