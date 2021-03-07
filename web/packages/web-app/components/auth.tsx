@@ -14,7 +14,7 @@ export const Auth: React.FC = () => {
       </Text>
       <Box alignContent="center">
         <ButtonGroup spacing={space('base')} mt={space('base-loose')}>
-          <Button size="lg" mode="primary" onClick={() => doOpenAuth()} data-test="sign-up">
+          <Button size="lg" mode="primary" onClick={() => doOpenAuth()}>
             Connect Wallet
           </Button>
         </ButtonGroup>

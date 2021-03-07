@@ -6,7 +6,6 @@ import { getAuthOrigin } from '@common/utils';
 import { UserSession, AppConfig } from '@stacks/auth';
 import { defaultState, AppContext, AppState } from '@common/context';
 import { Header } from '@components/header';
-import { Home } from '@components/home';
 import { Routes } from '@components/routes';
 
 const icon = '/assets/logo.png';
