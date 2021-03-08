@@ -36,9 +36,9 @@ export const Landing: React.FC = () => {
                   ) : (
                     <div className="space-y-4 sm:space-y-0 sm:mx-auto sm:inline-grid sm:grid-cols-2 sm:gap-5">
                       <a href="https://github.com/philipdesmedt/arkadiko-dao/" target="_blank" className="flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-indigo-700 bg-white hover:bg-indigo-50 sm:px-8">
-                        View code on Github
+                        Learn more
                       </a>
-                      <a href="#" className="flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-500 bg-opacity-60 hover:bg-opacity-70 sm:px-8">
+                      <a href="https://forms.gle/3HSt7dNj92qEmXzf8" target="_blank" className="flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-500 bg-opacity-60 hover:bg-opacity-70 sm:px-8">
                         Participate
                       </a>
                     </div>

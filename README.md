@@ -1,12 +1,19 @@
-# ArkadikoDAO
+# Arkadiko
+https://www.arkadiko.finance/
 
-ArkadikoDAO is a DAO inspired by MakerDAO and implements a stablecoin called Arkadiko ($DIKO) and a Governance Token called Somos ($ARE).
+Arkadiko implements a stablecoin soft-pegged to 1 USD called xUSD and a Governance Token called Somos (ARE) that create the foundational primitives for a lending/borrowing platform.
 
-In order to mint $DIKO, you need to over-collateralise Stacks ($STX) tokens into the Arkadiko Stacks Reserve. The collateralisation ratio will be defined by a risk parameter decided upon by the community.
+The Arkadiko protocol trustlessly provides stable loans backed by Stacks Tokens (STX), known as xUSD. In order to mint xUSD, you need to over-collateralise Stacks (STX) tokens into an Arkadiko Stacks Vault. In other words, xUSD is a stablecoin, existing to maintain relative price stability in volatile markets. People repay their loans by returning xUSD plus a little more to cover the fixed interest on the loan (called the stability fee). The loan can be paid back anytime, as there is no repayment schedule. The protocol enforces the price by selling off a person's STX if its total value falls below 150 percent (liquidation ratio) of how ever much STX the user borrowed. All STX will be sold through auctions to stackers who are registered with the protocol.
 
-Collateralised Stacks tokens can be used to stack in the Proof-of-Transfer (PoX) mechanism and get rewards in bitcoin for locking up tokens for a certain time. This will only be possible from the moment `min_amount_ustx` amount of tokens are collateralised (see https://stacks-node-api.blockstack.org/v2/pox) in the Arkadiko Stacks Reserve. At the time of writing, the minimum amount of $STX to participate in stacking is 70,000 $STX tokens. This mechanism will incentivize $DIKO holders to keep and trade stablecoins, and at the same time earn Bitcoin on their stablecoins in a decentralised way (through the $STX collateral).
+No more and no less xUSD exist in the world than loans made in it at that time. Every single xUSD is some piece of someone’s STX, locked up on the Arkadiko protocol until the person who put in their STX pays the xUSD back. When xUSD goes into the system to repay a loan, it just gets burnt and disappears forever. Only the interest (i.e. stability fee) remains for Arkadiko to use to reward ARE holders or cover expenses for the protocol.
 
-All bitcoin earned will go into a bitcoin reserve, where a percentage is paid out to $ARE owners once the reserve goes over a certain threshold. This threshold is voted on by the community.
+When STX are posted as collateral to mint stablecoins, the STX tokens will automatically be used to stack natively on the Stacks protocol (either autonomously or through a delegation pool). The yield earned in bitcoin will be used for three purposes:
+
+1. Reward xUSD stablecoin minters to HODL and use their stablecoins (e.g. they take 80% of the yield)
+2. Go into the reserve of the DAO to cover expenses (e.g. the reserve takes 5% of the yield)
+3. Distribute earnings among the ARE governance token holders (e.g. the token holders get 15% of the yield)
+
+All yields, numbers and parameters will eventually be voted and decided upon through the DAO (Decentralised Autonomous Organisation), where each ARE token counts towards one vote.
 
 ## Architecture
 
@@ -15,19 +22,19 @@ A high-level architecture would look as follows:
 ![Architecture](https://github.com/philipdesmedt/arkadiko-dao/blob/master/docs/architecture-high-level.png?raw=true)
 
 
-## Diko: Arkadiko Stablecoin
+## xUSD: Arkadiko Stablecoin
 
-Whenever new $DIKO is minted, debt (as collateral) is created in the network. With every type of collateral (in principal only $STX will be accepted as collateral), a set of Risk parameters will be decided on by the community. These parameters can be voted on through the $ARE governance token. Each token has 1 vote.
+Whenever new xUSD is minted, debt (as collateral) is created in the network. With every type of collateral (in principal only $STX will be accepted as collateral), a set of Risk parameters will be decided on by the community. These parameters can be voted on through the $ARE governance token. Each token has 1 vote.
 
 ### Stablecoin Risk Parameters
 
 - Debt​ ​Ceiling:​ A Debt Ceiling is the maximum amount of debt that can be created by a single collateral type. Arkadiko Governance assigns every collateral type a Debt Ceiling, which is used to ensure sufficient diversification of the Arkadiko Protocol collateral portfolio. Once a collateral type has reached its Debt Ceiling, it becomes impossible to create more debt unless some existing users pay back all or a portion of their Reserve debt.
 
-- Stability​ ​Fee:​ The Stability Fee is an annual percentage yield calculated on top of how much $DIKO has been generated against a Reserve's collateral. The fee is paid in $STX, and then sent into the Arkadiko Buffer.
+- Stability​ ​Fee:​ The Stability Fee is an annual percentage yield calculated on top of how much xUSD has been generated against a Reserve's collateral. The fee is paid in $STX, and then sent into the Arkadiko Buffer.
 
 - Liquidation​ ​Ratio:​ ​A low Liquidation Ratio means Arkadiko Governance expects low price volatility of the collateral; a high Liquidation Ratio means high volatility is expected.
 
-- Liquidation Penalty:​ The Liquidation Penalty is a fee added to a Reserve's total outstanding generated $DIKO when a Liquidation occurs. The Liquidation Penalty is used to encourage $DIKO owners to keep appropriate collateral levels.
+- Liquidation Penalty:​ The Liquidation Penalty is a fee added to a Reserve's total outstanding generated xUSD when a Liquidation occurs. The Liquidation Penalty is used to encourage xUSD owners to keep appropriate collateral levels.
 
 
 ## Somos: Arkadiko Governance Token
@@ -41,7 +48,7 @@ The $ARE governance token is used to manage and vote on proposals put forward by
 
 ## Roadmap
 
-- [x] Add STX reserve to collateralize STX and mint $DIKO
+- [x] Add STX reserve to collateralize STX and mint xUSD
 - [ ] Back-end that updates price feed oracle once per minute
 - [ ] Ability for Stackers to buy up liquidated STX collateral
 - [x] Front-end with Blockstack account & wallet integration
