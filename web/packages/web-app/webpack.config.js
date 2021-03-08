@@ -65,6 +65,7 @@ module.exports = {
     path: distRootPath,
     chunkFilename: !isDevelopment ? '[name].[contenthash].chunk.js' : '[name].chunk.js',
     filename: !isDevelopment ? '[name].[contenthash].js' : '[name].js',
+    publicPath: '/'
   },
   resolve: {
     extensions: ['.js', '.ts', '.tsx', '.json'],
@@ -171,6 +172,7 @@ module.exports = {
     ],
   },
   devServer: {
+    historyApiFallback: true,
     contentBase: './dist',
     port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
   },

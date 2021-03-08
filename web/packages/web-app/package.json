@@ -30,6 +30,7 @@
     "@stacks/connect": "^4.3.15",
     "@stacks/network": "^1.0.2",
     "@stacks/rpc-client": "^0.8.15",
+    "@tailwindcss/forms": "^0.2.1",
     "autoprefixer": "^10.2.5",
     "css-loader": "^5.1.1",
     "dayjs": "^1.8.29",

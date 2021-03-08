@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Text, Flex, Box, Button } from '@blockstack/ui';
+import { Flex, Box, Button } from '@blockstack/ui';
 import { AppContext } from '@common/context';
 import { Link } from '@components/link';
 import { NavLink as RouterLink } from 'react-router-dom'
@@ -29,7 +29,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut }) => {
       <Box verticalAlign="center" display="inline-block" className={`px-4 py-2 rounded-md bg-amber-100 text-amber-700`}>
         <div className="flex items-center">
           <Box display="inline-block" mr={3}>
-            <img className="h-8 w-auto sm:h-10" src="assets/logo.png" alt="Arkadiko"></img>
+            <img className="h-8 w-auto sm:h-10" src="/assets/logo.png" alt="Arkadiko"></img>
           </Box>
           <span className="inline-block align-middle font-semibold">Arkadiko</span>
         </div>
@@ -46,13 +46,17 @@ export const Header: React.FC<HeaderProps> = ({ signOut }) => {
               <RouterLink to="/governance" exact activeClassName="border-b-2 border-indigo-500 pt-6">Governance</RouterLink>
             </Box>
             <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <RouterLink to="/profile" exact>Docs</RouterLink>
+              <a href="https://gitbook.io" target="_blank">
+                Docs
+              </a>
             </Box>
             <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <RouterLink to="/profile">Security</RouterLink>
+              <a href="https://github.com" target="_blank">
+                Security
+              </a>
             </Box>
             <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <RouterLink to="/profile">
+              <RouterLink to="/">
                 <span className="inline-block w-3 h-3 bg-green-400 border-2 border-white rounded-full mr-2 pt-2"></span>
                 {shortAddress()}
               </RouterLink>
@@ -72,10 +76,14 @@ export const Header: React.FC<HeaderProps> = ({ signOut }) => {
         ) :
           <Box display="inline-block">
             <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <RouterLink to="/profile" exact>Docs</RouterLink>
+              <a href="https://gitbook.io" target="_blank">
+                Docs
+              </a>
             </Box>
             <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <RouterLink to="/profile">Security</RouterLink>
+              <a href="https://github.com" target="_blank">
+                Security
+              </a>
             </Box>
 
             <Button ml={5} mode="secondary" onClick={() => doOpenAuth()}>

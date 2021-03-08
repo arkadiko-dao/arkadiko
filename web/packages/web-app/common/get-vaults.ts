@@ -22,7 +22,7 @@ export const getVaults = () => {
         network: network,
       });
       const json = cvToJSON(vaults);
-      let arr:Array<{}> = [];
+      let arr:Array<{ id: {}, address: {}, 'stx-collateral': {}, 'coins-minted': {}, 'at-block-height': {} }> = [];
       json.value.value.forEach(e => {
         const vault = tupleCV(e);
         const data = vault.data.value;
