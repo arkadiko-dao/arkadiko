@@ -2,6 +2,7 @@
   "name": "arkadiko-dao-web",
   "private": true,
   "scripts": {
+    "build": "cross-env NODE_ENV=production webpack --config webpack.config.js",
     "build:dev": "cross-env NODE_ENV=development EXT_ENV=development webpack --hot --mode development",
     "build:test": "cross-env NODE_ENV=test webpack -p",
     "build:test:watch": "cross-env NODE_ENV=test webpack -p --watch",

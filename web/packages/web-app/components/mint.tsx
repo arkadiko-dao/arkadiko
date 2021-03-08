@@ -128,11 +128,11 @@ export const Mint = () => {
                     <div className="ml-5 w-0 flex-1">
                       <dl>
                         <dt className="text-sm font-medium text-gray-500 truncate">
-                          sUSD balance
+                          xUSD balance
                         </dt>
                         <dd>
                           <div className="text-lg font-medium text-gray-900">
-                            {parseInt(balance.balance['arkadiko'], 10) / 1000000} sUSD
+                            {parseInt(balance.balance['arkadiko'], 10) / 1000000} xUSD
                           </div>
                         </dd>
                       </dl>

@@ -56,7 +56,7 @@ export const NewVault = () => {
           <div className="mt-8">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
               <h2 className="text-2xl font-bold text-gray-900 text-center">
-                Deposit Stacks and generate sUSD
+                Deposit Stacks and generate xUSD
               </h2>
               {txId && (
                 <Text textStyle="body.large" display="block" my={space('base')}>
@@ -77,7 +77,7 @@ export const NewVault = () => {
                       <div className="mt-2 sm:flex sm:items-start sm:justify-between">
                         <div className="max-w-xl text-sm text-gray-500">
                           <p>
-                            The amount of STX you deposit determines how much sUSD you can generate
+                            The amount of STX you deposit determines how much xUSD you can generate
                           </p>
                         </div>
                       </div>
@@ -100,7 +100,7 @@ export const NewVault = () => {
                       </div>
 
                       <h3 className="text-lg leading-6 font-medium text-gray-900 mt-10">
-                        How much sUSD would you like to mint?
+                        How much xUSD would you like to mint?
                       </h3>
                       <div className="mt-2 sm:flex sm:items-start sm:justify-between">
                         <div className="max-w-xl text-sm text-gray-500">

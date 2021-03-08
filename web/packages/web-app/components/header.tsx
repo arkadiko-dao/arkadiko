@@ -22,6 +22,7 @@ const shortAddress = () => {
 export const Header: React.FC<HeaderProps> = ({ signOut }) => {
   const state = useContext(AppContext);
   const env = process.env.REACT_APP_NETWORK_ENV;
+  const isMockNet = env == 'mocknet';
   const { doOpenAuth } = useConnect();
 
   return (
@@ -29,16 +30,15 @@ export const Header: React.FC<HeaderProps> = ({ signOut }) => {
       <Box verticalAlign="center" display="inline-block" className={`px-4 py-2 rounded-md bg-amber-100 text-amber-700`}>
         <div className="flex items-center">
           <Box display="inline-block" mr={3}>
-            <img className="h-8 w-auto sm:h-10" src="/assets/logo.png" alt="Arkadiko"></img>
+            <img className="h-8 w-auto sm:h-8" src="/assets/logo.png" alt="Arkadiko"></img>
           </Box>
           <span className="inline-block align-middle font-semibold">Arkadiko</span>
         </div>
       </Box>
       <Box>
-        <Box display="inline-block" color="feedback.success" textStyle="caption.small" mr={5}>using Arkadiko on {env}</Box>
         {state.userData ? (
           <Box display="inline-block" alignItems="right">
-
+            <Box display="inline-block" color="feedback.success" textStyle="caption.small" mr={5}>using Arkadiko on {env}</Box>
             <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
               <RouterLink to="/" exact activeClassName="border-b-2 border-indigo-500 pt-6">Vaults</RouterLink>
             </Box>
@@ -51,7 +51,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut }) => {
               </a>
             </Box>
             <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <a href="https://github.com" target="_blank">
+              <a href="https://github.com/philipdesmedt/arkadiko-dao/blob/master/SECURITY.md" target="_blank">
                 Security
               </a>
             </Box>
@@ -75,20 +75,19 @@ export const Header: React.FC<HeaderProps> = ({ signOut }) => {
           </Box>
         ) :
           <Box display="inline-block">
-            <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <a href="https://gitbook.io" target="_blank">
-                Docs
-              </a>
-            </Box>
-            <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <a href="https://github.com" target="_blank">
-                Security
-              </a>
-            </Box>
+            <a href="https://gitbook.io" target="_blank" className="text-base font-medium text-gray-900 hover:text-gray-700">
+              Docs
+            </a>
 
-            <Button ml={5} mode="secondary" onClick={() => doOpenAuth()}>
-              Connect Wallet
-            </Button>
+            <a href="https://github.com/philipdesmedt/arkadiko-dao/blob/master/SECURITY.md" target="_blank" className="ml-5 text-base font-medium text-gray-900 hover:text-gray-700">
+              Security
+            </a>
+
+            {isMockNet ? (
+              <Button ml={5} mode="secondary" onClick={() => doOpenAuth()}>
+                Connect Wallet
+              </Button>
+            ) : null}
           </Box>
         }
       </Box>

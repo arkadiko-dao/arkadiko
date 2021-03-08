@@ -44,7 +44,7 @@ export const Vault: React.FC<VaultProps> = ({ id, address, stxCollateral, coinsM
 
   // console.log(id, address, stxCollateral, coinsMinted, atBlockHeight);
   return (
-    <Box p="5" maxWidth="600px" borderWidth="1px" mr={4} className="bg-white">
+    <Box p="5" maxWidth="1200px" borderWidth="1px" mr={4} className="bg-white">
       <div className="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
         <div className="-ml-4 -mt-4 flex justify-between items-center flex-wrap sm:flex-nowrap">
           <div className="ml-4 mt-4">
@@ -69,7 +69,7 @@ export const Vault: React.FC<VaultProps> = ({ id, address, stxCollateral, coinsM
       </Flex>
       <Flex mt={2} align="center">
         <Text ml={3} fontSize="sm">
-          <b>$DIKO</b>: {coinsMinted / 1000000}
+          <b>xUSD</b>: {coinsMinted / 1000000}
         </Text>
       </Flex>
       <Flex mt={2} align="center">

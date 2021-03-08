@@ -3,6 +3,8 @@ import { useConnect } from '@stacks/connect-react';
 
 export const Landing: React.FC = () => {
   const { doOpenAuth } = useConnect();
+  const env = process.env.REACT_APP_NETWORK_ENV;
+  const isMockNet = env == 'mocknet';
 
   return (
     <div className="bg-white h-screen">
@@ -24,11 +26,24 @@ export const Landing: React.FC = () => {
                   An open source and non-custodial liquidity protocol for minting stablecoins, earning interest on deposits and borrowing assets on Stacks.
                 </p>
                 <div className="mt-10 max-w-sm mx-auto sm:max-w-none sm:flex sm:justify-center">
-                  <div className="space-y-4 sm:space-y-0 sm:mx-auto sm:inline-grid sm:grid-cols-1 sm:gap-5">
-                    <a href="#" onClick={() => doOpenAuth()} className="flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-indigo-700 bg-white hover:bg-indigo-50 sm:px-8">
-                      Connect Wallet
-                    </a>
-                  </div>
+
+                  {isMockNet ? (
+                    <div className="space-y-4 sm:space-y-0 sm:mx-auto sm:inline-grid sm:grid-cols-1 sm:gap-5">
+                      <a href="#" onClick={() => doOpenAuth()} className="flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-indigo-700 bg-white hover:bg-indigo-50 sm:px-8">
+                        Connect Wallet
+                      </a>
+                    </div>
+                  ) : (
+                    <div className="space-y-4 sm:space-y-0 sm:mx-auto sm:inline-grid sm:grid-cols-2 sm:gap-5">
+                      <a href="https://github.com/philipdesmedt/arkadiko-dao/" target="_blank" className="flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-indigo-700 bg-white hover:bg-indigo-50 sm:px-8">
+                        View code on Github
+                      </a>
+                      <a href="#" className="flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-500 bg-opacity-60 hover:bg-opacity-70 sm:px-8">
+                        Participate
+                      </a>
+                    </div>
+                  )}
+
                 </div>
               </div>
             </div>
