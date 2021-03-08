@@ -14,7 +14,7 @@ export const Landing: React.FC = () => {
           <div className="h-screen">
             <div className="relative shadow-xl sm:overflow-hidden h-screen">
               <div className="absolute inset-0 h-screen">
-                <img className="h-full w-full object-cover" src="/assets/bridge.jpeg" />
+                <img className="h-full w-full object-cover" src="/assets/bridge2.jpg" />
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-800 to-indigo-700" style={{mixBlendMode: 'multiply'}}></div>
               </div>
               <div className="relative px-4 py-16 sm:px-6 sm:py-24 lg:py-64 lg:px-8">
