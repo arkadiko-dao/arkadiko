@@ -81,7 +81,7 @@ export const NewVault = () => {
                           </p>
                         </div>
                       </div>
-                      <div className="mt-2 mb-5 sm:flex sm:items-start sm:justify-between">
+                      <div className="mt-2 mb-1 sm:flex sm:items-start sm:justify-between">
                         <div className="max-w-xl text-sm text-gray-500">
                           <div className="mt-1 relative rounded-md shadow-sm">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -98,6 +98,13 @@ export const NewVault = () => {
                           </div>
                         </div>
                       </div>
+                      <div className="sm:flex sm:items-start sm:justify-between">
+                        <div className="max-w-xl text-sm text-gray-500">
+                          <p>
+                            Your balance: 5 STX
+                          </p>
+                        </div>
+                      </div>
 
                       <h3 className="text-lg leading-6 font-medium text-gray-900 mt-10">
                         How much xUSD would you like to mint?
@@ -109,7 +116,7 @@ export const NewVault = () => {
                           </p>
                         </div>
                       </div>
-                      <div className="mt-2 sm:flex sm:items-start sm:justify-between">
+                      <div className="mt-2 mb-1 sm:flex sm:items-start sm:justify-between">
                         <div className="max-w-xl text-sm text-gray-500">
                           <div className="mt-1 relative rounded-md shadow-sm">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -120,10 +127,17 @@ export const NewVault = () => {
                             <input type="text" name="price" id="price" className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md" placeholder="0.00" aria-describedby="price-currency" />
                             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                               <span className="text-gray-500 sm:text-sm" id="price-currency">
-                                sUSD
+                                xUSD
                               </span>
                             </div>
                           </div>
+                        </div>
+                      </div>
+                      <div className="sm:flex sm:items-start sm:justify-between">
+                        <div className="max-w-xl text-sm text-gray-500">
+                          <p>
+                            Your balance: 0 xUSD
+                          </p>
                         </div>
                       </div>
 

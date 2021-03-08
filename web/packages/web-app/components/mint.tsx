@@ -245,17 +245,7 @@ export const Mint = () => {
             </div>
           </div>
 
-          <div className="hidden sm:block">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex flex-col mt-2">
-                <div className="align-middle min-w-full overflow-x-auto shadow overflow-hidden sm:rounded-lg"></div>
-                <Box>
-                  <VaultGroup />
-                </Box>
-              </div>
-            </div>
-          </div>
-
+          <VaultGroup />
         </div>
       </main>
     </Box>

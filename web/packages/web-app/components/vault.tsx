@@ -1,5 +1,4 @@
 import React from 'react';
-import { Box, Flex, Text } from '@blockstack/ui';
 import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
@@ -44,44 +43,32 @@ export const Vault: React.FC<VaultProps> = ({ id, address, stxCollateral, coinsM
 
   // console.log(id, address, stxCollateral, coinsMinted, atBlockHeight);
   return (
-    <Box p="5" maxWidth="1200px" borderWidth="1px" mr={4} className="bg-white">
-      <div className="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
-        <div className="-ml-4 -mt-4 flex justify-between items-center flex-wrap sm:flex-nowrap">
-          <div className="ml-4 mt-4">
-            <h3 className="text-lg leading-6 font-medium text-gray-900">
-              Vault {id}
-            </h3>
-            <p className="mt-1 text-sm text-gray-500">
-              (block height {atBlockHeight})
-            </p>
-          </div>
-          <div className="ml-4 mt-4 flex-shrink-0">
-            <button type="button" onClick={() => callBurn()} className="relative inline-flex items-center mt-3 px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-              Manage Vault
-            </button>
-          </div>
-        </div>
-      </div>
-      <Flex mt={5} align="center">
-        <Text ml={3} fontSize="sm">
-          <b>$STX in collateral</b>: {stxCollateral / 1000000}
-        </Text>
-      </Flex>
-      <Flex mt={2} align="center">
-        <Text ml={3} fontSize="sm">
-          <b>xUSD</b>: {coinsMinted / 1000000}
-        </Text>
-      </Flex>
-      <Flex mt={2} align="center">
-        <Text ml={3} fontSize="sm">
-          <b>Current Collateral to Debt</b>: {debtRatio.collateralToDebt}
-        </Text>
-      </Flex>
-      <Flex mt={2} align="center">
-        <Text ml={3} fontSize="sm">
-          <b>Liquidation Ratio</b>: 150
-        </Text>
-      </Flex>
-    </Box>
+    <tr className="bg-white">
+      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+        <span className="text-gray-900 font-medium">{id}</span>
+      </td>
+      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+        <span className="text-gray-900 font-medium">0.0%</span>
+      </td>
+      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-gray-500 md:block">
+        <span className="text-gray-900 font-medium">150%</span>
+      </td>
+      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+        <span className="text-gray-900 font-medium">TBD</span>
+      </td>
+      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+        <span className="text-gray-900 font-medium">{coinsMinted / 1000000}</span>
+      </td>
+      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+        <span className="text-gray-900 font-medium">{stxCollateral / 1000000}</span>
+      </td>
+      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+        <span className="text-gray-900 font-medium">
+          <button type="button" onClick={() => callBurn()} className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Manage
+          </button>
+        </span>
+      </td>
+    </tr>
   );
 };
