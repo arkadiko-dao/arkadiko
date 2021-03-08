@@ -46,7 +46,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut }) => {
               <RouterLink to="/governance" exact activeClassName="border-b-2 border-indigo-500 pt-6">Governance</RouterLink>
             </Box>
             <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <a href="https://gitbook.io" target="_blank">
+              <a href="https://docs.arkadiko.finance/" target="_blank">
                 Docs
               </a>
             </Box>
@@ -75,7 +75,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut }) => {
           </Box>
         ) :
           <Box display="inline-block">
-            <a href="https://gitbook.io" target="_blank" className="text-base font-medium text-gray-900 hover:text-gray-700">
+            <a href="https://docs.arkadiko.finance/" target="_blank" className="text-base font-medium text-gray-900 hover:text-gray-700">
               Docs
             </a>
 
