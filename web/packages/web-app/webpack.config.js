@@ -40,7 +40,7 @@ const hmtlProdOpts = !isDevelopment
   : {};
 
 const getSourceMap = () => {
-  if (extEnv === 'web') {
+  if (extEnv === 'web' && nodeEnv != 'production') { // do not generate for production for now
     return nodeEnv === 'production' ? 'eval' : 'cheap-source-map';
   }
   return 'none';
