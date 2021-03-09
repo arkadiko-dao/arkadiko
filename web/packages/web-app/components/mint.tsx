@@ -57,7 +57,18 @@ export const Mint = () => {
       <main className="flex-1 relative pb-8 z-0 overflow-y-auto">
         <div className="mt-8">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-lg leading-6 font-medium text-gray-900 mb-4">Overview</h2>
+            <h2 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+              Overview
+              {env == 'mocknet' ? (
+                <Link onClick={() => addMocknetStx()} color="blue" display="inline-block" my={3} ml={5}>
+                  (Get 50 STX tokens from mocknet)
+                </Link>
+              ) : (
+                <Link onClick={() => addMocknetStx()} color="blue" display="inline-block" my={3} ml={5}>
+                  Drain the faucet on testnet
+                </Link>
+              )}
+            </h2>
 
             {txId && (
               <Text textStyle="body.large" display="block" my={space('base')}>
@@ -230,15 +241,6 @@ export const Mint = () => {
                     <RouterLink to="/vaults/new" exact className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-5">
                       New Vault
                     </RouterLink>
-                    {env == 'mocknet' ? (
-                      <Link onClick={() => addMocknetStx()} color="blue" display="inline-block" my={3}>
-                        Get 50 STX tokens from mocknet
-                      </Link>
-                    ) : (
-                      <Link onClick={() => addMocknetStx()} color="blue" display="inline-block" my={3}>
-                        Drain the faucet on testnet
-                      </Link>
-                    )}
                   </ButtonGroup>
                 </Box>
               </div>

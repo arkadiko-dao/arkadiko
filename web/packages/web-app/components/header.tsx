@@ -32,7 +32,9 @@ export const Header: React.FC<HeaderProps> = ({ signOut }) => {
           <Box display="inline-block" mr={3}>
             <img className="h-8 w-auto sm:h-8" src="/assets/logo.png" alt="Arkadiko"></img>
           </Box>
-          <span className="inline-block align-middle font-semibold">Arkadiko</span>
+          <RouterLink to="/vaults">
+            <span className="inline-block align-middle font-semibold">Arkadiko</span>
+          </RouterLink>
         </div>
       </Box>
       <Box>
@@ -40,7 +42,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut }) => {
           <Box display="inline-block" alignItems="right">
             <Box display="inline-block" color="feedback.success" textStyle="caption.small" mr={5}>using Arkadiko on {env}</Box>
             <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <RouterLink to="/" exact activeClassName="border-b-2 border-indigo-500 pt-6">Vaults</RouterLink>
+              <RouterLink to="/vaults" activeClassName="border-b-2 border-indigo-500 pt-6">Vaults</RouterLink>
             </Box>
             <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
               <RouterLink to="/governance" exact activeClassName="border-b-2 border-indigo-500 pt-6">Governance</RouterLink>
