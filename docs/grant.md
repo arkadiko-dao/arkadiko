@@ -363,3 +363,20 @@ I initially submitted a very early version of Arkadiko to the Stacks 2.0 Mainnet
 During the development of a testnet-ready version, I will provide updates every 3 weeks, with canary builds that can be tested by the community. Furthermore, it would be amazing if the grant would allow access to a group of dedicated testers who want to make a difference by testing early versions, and through office hours with tech & business experts on certain subjects.
 
 All source code developed under this grant (and the Arkadiko protocol as an extension) is open-sourced under the GPLv3 license
+
+### Screenshots
+
+A simple landing page is up on https://www.arkadiko.finance. Two screenshots of creating and managing a vault can be seen below, to give an idea of the UX and functionality.
+
+#### Main Overview
+
+![Overview](https://github.com/philipdesmedt/arkadiko-dao/blob/master/docs/screenshots/overview.png?raw=true)
+
+#### New Vault
+
+![New Vault](https://github.com/philipdesmedt/arkadiko-dao/blob/master/docs/screenshots/new_vault.png?raw=true)
+
+#### Manage Vault
+
+![Manage Vault](https://github.com/philipdesmedt/arkadiko-dao/blob/master/docs/screenshots/manage_vault_ark.png?raw=true)
+
