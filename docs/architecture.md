@@ -8,9 +8,8 @@ In order to build the Arkadiko Stablecoin, we need the following
   - Transfer
   - Name
   - Symbol
-  - # of Decimals
+  - Number of decimals
   - Balance of a principal
   - Total Supply
   - Mint
   - Burn
-- 
