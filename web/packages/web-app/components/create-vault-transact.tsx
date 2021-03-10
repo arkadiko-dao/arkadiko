@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { space, Text, Box } from '@blockstack/ui';
 import { useConnect } from '@stacks/connect-react';
 import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
@@ -9,7 +9,7 @@ import {
 import { useSTXAddress } from '@common/use-stx-address';
 import { ExplorerLink } from './explorer-link';
 
-export const CreateVaultTransact = () => {
+export const CreateVaultTransact = ({ coinAmounts }) => {
   const [txId, setTxId] = useState<string>('');
   const [txType, setTxType] = useState<string>('');
   const { doContractCall } = useConnect();
@@ -29,7 +29,7 @@ export const CreateVaultTransact = () => {
     clearState();
     const authOrigin = getAuthOrigin();
     const args = [
-      uintCV(10 * 1000000),
+      uintCV(parseInt(coinAmounts['amounts']['stx'], 10) * 1000000),
       standardPrincipalCV(address || '')
     ];
     await doContractCall({
@@ -43,37 +43,43 @@ export const CreateVaultTransact = () => {
       finished: data => {
         console.log('finished collateralizing!', data);
         console.log(data.stacksTransaction.auth.spendingCondition?.nonce.toNumber());
-        setState('Contract Call', data.txId);
+        setState('Collateralize and Mint', data.txId);
       },
     });
   };
 
+  useEffect(() => {
+    callCollateralizeAndMint();
+  }, []);
+
   return (
     <Box>
       <h2 className="text-2xl font-bold text-gray-900 text-center">
-        Your vault is being minted.
+        {txId ? (
+          <span>Your vault is being minted.</span>
+        ) : (
+          <span>Confirm the transaction to create your new vault</span>
+        )}   
       </h2>
 
-      <div className="bg-white shadow sm:rounded-lg mt-5 w-full">
-        <div className="px-4 py-5 sm:p-6">
-          <div className="sm:flex sm:justify-between sm:items-baseline mt-4 mb-4">
-            <h3 className="text-lg leading-6 font-medium text-gray-900">
-              Depositing
-            </h3>
-            <p className="mt-1 text-sm text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
-              {txId && (
-                <Text textStyle="body.large" display="block" my={space('base')}>
-                  <Text color="green" fontSize={1}>
-                    Successfully broadcasted &quot;{txType}&quot;
+      {txId ? (
+        <div className="bg-white shadow sm:rounded-lg mt-5 w-full">
+          <div className="px-4 py-5 sm:p-6">
+            <div className="sm:flex sm:justify-between sm:items-baseline mt-4 mb-4">
+              <p className="mt-1 text-sm text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
+                {txId && (
+                  <Text textStyle="body.large" display="block" my={space('base')}>
+                    <Text color="green" fontSize={1}>
+                      Successfully broadcasted &quot;{txType}&quot;. This can take a few minutes.
+                    </Text>
+                    <ExplorerLink txId={txId} />
                   </Text>
-                  <ExplorerLink txId={txId} />
-                </Text>
-              )}
-            </p>
+                )}
+              </p>
+            </div>
           </div>
-
         </div>
-      </div>
+      ) : null }
 
     </Box>
   );

@@ -1,9 +1,10 @@
 import React, { useContext } from 'react';
-import { Flex, Box, Button } from '@blockstack/ui';
+import { Flex, Box, Button, Tooltip } from '@blockstack/ui';
 import { AppContext } from '@common/context';
 import { Link } from '@components/link';
 import { NavLink as RouterLink } from 'react-router-dom'
 import { useConnect } from '@stacks/connect-react';
+import { useSTXAddress } from '@common/use-stx-address';
 
 interface HeaderProps {
   signOut: () => void;
@@ -24,6 +25,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut }) => {
   const env = process.env.REACT_APP_NETWORK_ENV;
   const isMockNet = env == 'mocknet';
   const { doOpenAuth } = useConnect();
+  const address = useSTXAddress();
 
   return (
     <Flex as="nav" justifyContent="space-between" alignItems="center" height="64px" px={6} className="border-b-2 border-gray-100">
@@ -58,10 +60,12 @@ export const Header: React.FC<HeaderProps> = ({ signOut }) => {
               </a>
             </Box>
             <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <RouterLink to="/">
-                <span className="inline-block w-3 h-3 bg-green-400 border-2 border-white rounded-full mr-2 pt-2"></span>
-                {shortAddress()}
-              </RouterLink>
+              <Tooltip label={`Logged in as ${address}`}>
+                <RouterLink to="/">
+                  <span className="inline-block w-3 h-3 bg-green-400 border-2 border-white rounded-full mr-2 pt-2"></span>
+                  {shortAddress()}
+                </RouterLink>
+              </Tooltip>
             </Box>
             <Link
               display="inline-block"

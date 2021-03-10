@@ -1,17 +1,56 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Box } from '@blockstack/ui';
+import { AppContext } from '@common/context';
+import { getStxPrice } from '@common/get-stx-price';
+import { getLiquidationPrice, getCollateralToDebtRatio } from '@common/vault-utils';
 
 interface VaultProps {
-  setStep: () => void;
-  setCoinAmounts: () => void;
+  setStep: (arg: number) => void;
+  setCoinAmounts: (arg: object) => void;
 }
 
 export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmounts }) => {
+  const state = useContext(AppContext);
   const continueVault = () => {
-    console.log('blaat');
-    setCoinAmounts({ stx: 10, xusd: 5 });
+    setCoinAmounts({
+      amounts: { stx: stxAmount, xusd: coinAmount },
+      'liquidation-price': liquidationPrice,
+      'collateral-to-debt-ratio': collateralToDebt
+    });
     setStep(1);
   };
+  const [stxAmount, setStxAmount] = useState('');
+  const [coinAmount, setCoinAmount] = useState('');
+  const [maximumToMint, setMaximumToMint] = useState(0);
+  const [liquidationPrice, setLiquidationPrice] = useState(0);
+  const [collateralToDebt, setCollateralToDebt] = useState(0);
+  const price = parseFloat(getStxPrice().price);
+
+  const maximumCoinsToMint = (value: string) => {
+    const maxRatio = parseInt(state.riskParameters['liquidation-ratio'], 10) + 30;
+    const ustxAmount = parseInt(value, 10) * 1000000;
+    setMaximumToMint(Math.floor(ustxAmount * price / maxRatio));
+  };
+
+  const onInputChange = (event) => {
+    const name = event.target.name;
+    const value = event.target.value;
+
+    if (name === 'stx') {
+      setStxAmount(value);
+      maximumCoinsToMint(value);
+    } else {
+      setCoinAmount(value);
+    }
+  };
+
+  useEffect(() => {
+    if (stxAmount && coinAmount) {
+      const liquidationRatio = parseInt(state.riskParameters['liquidation-ratio'], 10);
+      setLiquidationPrice(getLiquidationPrice(liquidationRatio, parseInt(coinAmount, 10), parseInt(stxAmount, 10)));
+      setCollateralToDebt(getCollateralToDebtRatio(price, parseInt(coinAmount, 10), parseInt(stxAmount, 10)));
+    }
+  }, [stxAmount, coinAmount]);
 
   return (
     <Box>
@@ -38,12 +77,16 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                   <div className="mt-1 relative rounded-md shadow-sm">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <span className="text-gray-500 sm:text-sm">
-                        $
+                        
                       </span>
                     </div>
-                    <input type="text" name="price" id="price" className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md" placeholder="0.00" aria-describedby="price-currency" />
+                    <input type="text" name="stx" id="stxAmount"
+                           value={stxAmount}
+                           onChange={onInputChange}
+                           className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
+                           placeholder="0.00" aria-describedby="stx-currency" />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm" id="price-currency">
+                      <span className="text-gray-500 sm:text-sm" id="stx-currency">
                         STX
                       </span>
                     </div>
@@ -53,7 +96,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
               <div className="sm:flex sm:items-start sm:justify-between">
                 <div className="max-w-xl text-sm text-gray-500">
                   <p className="text-xs font-medium text-gray-500 uppercase">
-                    Your balance: 5 STX
+                    Your balance: {state.balance['stx'] / 1000000} STX
                   </p>
                 </div>
               </div>
@@ -76,9 +119,13 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                         $
                       </span>
                     </div>
-                    <input type="text" name="price" id="price" className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md" placeholder="0.00" aria-describedby="price-currency" />
+                    <input type="text" name="coins" id="coinAmount"
+                           value={coinAmount}
+                           onChange={onInputChange}
+                           className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
+                           placeholder="0.00" aria-describedby="coin-currency" />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm" id="price-currency">
+                      <span className="text-gray-500 sm:text-sm" id="coin-currency">
                         xUSD
                       </span>
                     </div>
@@ -88,7 +135,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
               <div className="sm:flex sm:items-start sm:justify-between">
                 <div className="max-w-xl text-sm text-gray-500">
                   <p className="text-xs font-medium text-gray-500 uppercase">
-                    Your balance: 0 xUSD
+                    Maximum to mint: {maximumToMint / 1000000} xUSD
                   </p>
                 </div>
               </div>
@@ -103,42 +150,42 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                 Collateral to Debt Ratio
               </h3>
               <p className="max-w-xl text-sm text-gray-500 mb-3">
-                200
+                {collateralToDebt}
               </p>
 
               <h3 className="text-md leading-6 font-medium text-gray-900">
                 Liquidation Price
               </h3>
               <p className="max-w-xl text-sm text-gray-500 mb-3">
-                $0
+                ${liquidationPrice}
               </p>
 
               <h3 className="text-md leading-6 font-medium text-gray-900">
-                Current Price
+                Current STX Price
               </h3>
               <p className="max-w-xl text-sm text-gray-500 mb-3">
-                $0
+                ${price / 100}
               </p>
 
               <h3 className="text-md leading-6 font-medium text-gray-900">
                 Stability Fee
               </h3>
               <p className="max-w-xl text-sm text-gray-500 mb-3">
-                0.0%
+                {state.riskParameters['stability-fee']}%
               </p>
 
               <h3 className="text-md leading-6 font-medium text-gray-900">
                 Liquidation Ratio
               </h3>
               <p className="max-w-xl text-sm text-gray-500 mb-3">
-                150
+                {state.riskParameters['liquidation-ratio']}%
               </p>
 
               <h3 className="text-md leading-6 font-medium text-gray-900">
                 Liquidation Penalty
               </h3>
               <p className="max-w-xl text-sm text-gray-500 mb-3">
-                13%
+                {state.riskParameters['liquidation-penalty']}%
               </p>
             </div>
           </div>
@@ -148,7 +195,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
       <div className="mt-5 ml-5 sm:flex sm:items-start sm:justify-between">
         <div className="max-w-xl text-sm text-gray-500">
           <div className="mt-5 sm:mt-0 sm:flex-shrink-0 sm:flex sm:items-right">
-            <button type="button" onClick={() => continueVault()} className="inline-flex items-right px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+            <button type="button" disabled={!coinAmount} onClick={() => continueVault()} className="inline-flex items-right px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
               Continue
             </button>
           </div>

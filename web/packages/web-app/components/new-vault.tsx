@@ -7,7 +7,11 @@ import { CreateVaultTransact } from './create-vault-transact';
 
 export const NewVault = () => {
   const [step, setStep] = useState(0);
-  const [coinAmounts, setCoinAmounts] = useState({ stx: 0, xusd: 0 });
+  const [coinAmounts, setCoinAmounts] = useState({
+    amounts: { stx: 0, xusd: 0 },
+    'collateral-to-debt-ratio': 0,
+    'liquidation-price': 0
+  });
 
   return (
     <Container>

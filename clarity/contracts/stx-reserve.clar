@@ -10,6 +10,8 @@
 (define-constant err-minter-failed u3)
 (define-constant err-burn-failed u4)
 (define-constant err-deposit-failed u5)
+(define-constant err-withdraw-failed u6)
+(define-constant err-mint-failed u7)
 
 ;; risk parameters
 (define-data-var liquidation-ratio uint u150)
@@ -164,7 +166,7 @@
         (let ((new-stx-collateral (+ ustx-amount (get stx-collateral vault))))
           (map-set vaults { id: vault-id } {
             id: vault-id, address: tx-sender,
-            stx-collateral: ustx-amount, coins-minted: (get coins-minted vault),
+            stx-collateral: new-stx-collateral, coins-minted: (get coins-minted vault),
             at-block-height: block-height }
           )
           (ok true)
@@ -175,9 +177,56 @@
   )
 )
 
+;; withdraw collateral (e.g. if collateral goes up in value)
+;; TODO: assert that tx-sender == vault owner
+;; TODO: make sure not more is withdrawn than collateral-to-debt-ratio
+;; TODO: make sure ustx-amount < stx-collateral in vault (and is positive)
+(define-public (withdraw (vault-id uint) (ustx-amount uint))
+  (let ((vault (get-vault-by-id vault-id)))
+    (match (print (as-contract (stx-transfer? ustx-amount (as-contract tx-sender) (get address vault))))
+      success (begin
+        (let ((new-stx-collateral (- ustx-amount (get stx-collateral vault))))
+          (map-set vaults { id: vault-id } {
+            id: vault-id, address: tx-sender,
+            stx-collateral: new-stx-collateral, coins-minted: (get coins-minted vault),
+            at-block-height: block-height }
+          )
+          (ok true)
+        )
+      )
+      error (err err-withdraw-failed)
+    )
+  )
+)
+
+;; mint new tokens when collateral to debt allows it (i.e. > collateral-to-debt-ratio)
+(define-public (mint (vault-id uint) (coins-amount uint))
+  (let ((vault (get-vault-by-id vault-id)))
+    (let ((coins (- (get coins-minted vault) (unwrap-panic (calculate-arkadiko-count (get stx-collateral vault))))))
+      (if (>= coins coins-amount)
+        (match (print (as-contract (contract-call? .arkadiko-token mint coins-amount (get address vault))))
+          success (begin
+            (let ((new-coins-amount (+ coins-amount (get coins-amount vault))))
+              (map-set vaults { id: vault-id } {
+                id: vault-id, address: (get address vault),
+                stx-collateral: (get stx-collateral vault), coins-minted: new-coins-amount,
+                at-block-height: block-height }
+              )
+              (ok true)
+            )
+          )
+          error (err err-mint-failed)
+        )
+      )
+      error (err err-mint-failed)
+    )
+  )
+)
+
 ;; burn stablecoin to free up STX tokens
 ;; method assumes position has not been liquidated
 ;; and thus collateral to debt ratio > liquidation ratio
+;; TODO: assert that tx-sender owns the vault
 (define-public (burn (vault-id uint) (vault-owner principal))
   (let ((vault (get-vault-by-id vault-id)))
     (match (print (as-contract (contract-call? .arkadiko-token burn (get coins-minted vault) vault-owner)))

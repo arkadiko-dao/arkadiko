@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Box } from '@blockstack/ui';
+import { AppContext } from '@common/context';
 
 export const CreateVaultConfirm = ({ setStep, coinAmounts }) => {
+  const state = useContext(AppContext);
+
   return (
     <Box>
       <h2 className="text-2xl font-bold text-gray-900 text-center">
@@ -15,7 +18,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts }) => {
               Depositing
             </h3>
             <p className="mt-1 text-sm text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
-              {coinAmounts['stx']} STX
+              {coinAmounts['amounts']['stx']} STX
             </p>
           </div>
           <hr/>
@@ -25,7 +28,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts }) => {
               Minting
             </h3>
             <p className="mt-1 text-sm text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
-              {coinAmounts['xusd']} xUSD
+              {coinAmounts['amounts']['xusd']} xUSD
             </p>
           </div>
           <hr/>
@@ -35,7 +38,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts }) => {
               Collateral to Debt Ratio
             </h3>
             <p className="mt-1 text-sm text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
-              200
+              {coinAmounts['collateral-to-debt-ratio']}%
             </p>
           </div>
           <hr/>
@@ -45,7 +48,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts }) => {
               Liquidation Ratio
             </h3>
             <p className="mt-1 text-sm text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
-              150
+              {state.riskParameters['liquidation-ratio']}%
             </p>
           </div>
           <hr/>
@@ -55,17 +58,17 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts }) => {
               Liquidation Price
             </h3>
             <p className="mt-1 text-sm text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
-              $0.7 / STX
+              ${coinAmounts['liquidation-price']} / STX
             </p>
           </div>
           <hr/>
 
           <div className="sm:flex sm:justify-between sm:items-baseline mt-4 mb-4">
             <h3 className="text-lg leading-6 font-medium text-gray-900">
-              Liquidation Fee
+              Liquidation Penalty
             </h3>
             <p className="mt-1 text-sm text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
-              $1
+              {state.riskParameters['liquidation-penalty']}%
             </p>
           </div>
           <hr/>
@@ -75,7 +78,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts }) => {
               Stability Fee
             </h3>
             <p className="mt-1 text-sm text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
-              0.0%
+              {state.riskParameters['stability-fee']}%
             </p>
           </div>
           <hr/>
