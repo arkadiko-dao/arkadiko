@@ -10,5 +10,6 @@
   "engines": {
     "node": ">=14"
   },
+  "type": "module",
   "workspaces": ["clarity", "web"]
 }

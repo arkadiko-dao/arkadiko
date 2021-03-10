@@ -1,48 +1,33 @@
-import React from 'react';
-import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
-import { useSTXAddress } from '@common/use-stx-address';
-import { useConnect } from '@stacks/connect-react';
-import {
-  uintCV,
-  standardPrincipalCV
-} from '@stacks/transactions';
+import React, { useContext } from 'react';
 import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
 import { NavLink as RouterLink } from 'react-router-dom'
+import { AppContext } from '@common/context';
 
 interface VaultProps {
   id: string;
-  address: string;
   stxCollateral: number;
   coinsMinted: number;
-  atBlockHeight: number;
 }
 
-export const Vault: React.FC<VaultProps> = ({ id, address, stxCollateral, coinsMinted, atBlockHeight }) => {
-  const { doContractCall } = useConnect();
-  const senderAddress = useSTXAddress();
-  let debtRatio = {};
-  if (id) {
-    debtRatio = getCollateralToDebtRatio(id);
+export const debtClass = (ratio: number) => {
+  if (ratio >= 200) {
+    return 'text-green-400';
+  } else if (ratio >= 180) {
+    return 'text-orange-400';
+  } else if (ratio > 160) {
+    return 'text-red-400';
   }
 
-  const callBurn = async () => {
-    const authOrigin = getAuthOrigin();
-    await doContractCall({
-      network,
-      authOrigin,
-      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
-      contractName: 'stx-reserve',
-      functionName: 'burn',
-      functionArgs: [uintCV(2), standardPrincipalCV(senderAddress || '')],
-      postConditionMode: 0x01,
-      finished: data => {
-        console.log('finished burn!', data);
-        console.log(data.stacksTransaction.auth.spendingCondition?.nonce.toNumber());
-      },
-    });
-  };
+  return 'text-red-400';
+};
 
-  // console.log(id, address, stxCollateral, coinsMinted, atBlockHeight);
+export const Vault: React.FC<VaultProps> = ({ id, stxCollateral, coinsMinted }) => {
+  const state = useContext(AppContext);
+  let debtRatio = 0;
+  if (id) {
+    debtRatio = getCollateralToDebtRatio(id)?.collateralToDebt;
+  }
+
   return (
     <tr className="bg-white">
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
@@ -53,13 +38,13 @@ export const Vault: React.FC<VaultProps> = ({ id, address, stxCollateral, coinsM
         </span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">0.0%</span>
+        <span className="text-gray-900 font-medium">{state.riskParameters['stability-fee']}%</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">150%</span>
+        <span className="text-gray-900 font-medium">{state.riskParameters['liquidation-ratio']}%</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">TBD</span>
+        <span className={`${debtClass(debtRatio)} font-medium`}>{debtRatio}%</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         <span className="text-gray-900 font-medium">{coinsMinted / 1000000}</span>

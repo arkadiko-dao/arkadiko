@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { space, Box, Text, ButtonGroup } from '@blockstack/ui';
-import { stacksNetwork as network } from '@common/utils';
+import React, { useState, useContext } from 'react';
+import { space, Box, Text } from '@blockstack/ui';
+import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import BN from 'bn.js';
 import {
@@ -9,21 +9,24 @@ import {
   standardPrincipalCV,
   makeSTXTokenTransfer,
   privateKeyToString,
+  uintCV
 } from '@stacks/transactions';
 import { ExplorerLink } from './explorer-link';
 import { VaultGroup } from './vault-group';
-import { getBalance } from '@common/get-balance';
 import { getStxPrice } from '@common/get-stx-price';
 import { Link } from '@components/link';
 import { NavLink as RouterLink } from 'react-router-dom'
+import { AppContext } from '@common/context';
+import { useConnect } from '@stacks/connect-react';
 
 export const Mint = () => {
   const address = useSTXAddress();
   const [txId, setTxId] = useState<string>('');
   const [txType, setTxType] = useState<string>('');
   const env = process.env.REACT_APP_NETWORK_ENV;
-  const balance = getBalance();
   const price = parseFloat(getStxPrice().price);
+  const state = useContext(AppContext);
+  const { doContractCall } = useConnect();
 
   const clearState = () => {
     setTxId('');
@@ -52,6 +55,29 @@ export const Mint = () => {
     console.log(result);
   }
 
+  const callCollateralizeAndMint = async () => {
+    clearState();
+    const authOrigin = getAuthOrigin();
+    const args = [
+      uintCV(10 * 1000000),
+      standardPrincipalCV(address || '')
+    ];
+    await doContractCall({
+      network,
+      authOrigin,
+      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractName: 'stx-reserve',
+      functionName: 'collateralize-and-mint',
+      functionArgs: args,
+      postConditionMode: 0x01,
+      finished: data => {
+        console.log('finished collateralizing!', data);
+        console.log(data.stacksTransaction.auth.spendingCondition?.nonce.toNumber());
+        setState('Contract Call', data.txId);
+      },
+    });
+  };
+
   return (
     <Box py={6}>
       <main className="flex-1 relative pb-8 z-0 overflow-y-auto">
@@ -60,9 +86,14 @@ export const Mint = () => {
             <h2 className="text-lg leading-6 font-medium text-gray-900 mb-4">
               Overview
               {env == 'mocknet' ? (
-                <Link onClick={() => addMocknetStx()} color="blue" display="inline-block" my={3} ml={5}>
-                  (Get 50 STX tokens from mocknet)
-                </Link>
+                <Box>
+                  <Link onClick={() => addMocknetStx()} color="blue" display="inline-block" my={3} ml={5}>
+                    (Get 50 STX tokens from mocknet)
+                  </Link>
+                  <Link onClick={() => callCollateralizeAndMint()} color="blue" display="inline-block" my={3} ml={5}>
+                    (Create test vault)
+                  </Link>
+                </Box>
               ) : (
                 <Link onClick={() => addMocknetStx()} color="blue" display="inline-block" my={3} ml={5}>
                   Drain the faucet on testnet
@@ -95,7 +126,7 @@ export const Mint = () => {
                         </dt>
                         <dd>
                           <div className="text-lg font-medium text-gray-900">
-                            {parseInt(balance.balance['stx'], 10) / 1000000} STX
+                            {parseInt(state.balance['stx'], 10) / 1000000} STX
                           </div>
                         </dd>
                       </dl>
@@ -143,7 +174,7 @@ export const Mint = () => {
                         </dt>
                         <dd>
                           <div className="text-lg font-medium text-gray-900">
-                            {parseInt(balance.balance['arkadiko'], 10) / 1000000} xUSD
+                            {parseInt(state.balance['arkadiko'], 10) / 1000000} xUSD
                           </div>
                         </dd>
                       </dl>
@@ -175,9 +206,6 @@ export const Mint = () => {
                           Liq. Ratio
                         </th>
                         <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Coll./Debt Ratio
-                        </th>
-                        <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Liq. Fee
                         </th>
                         <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -192,7 +220,7 @@ export const Mint = () => {
                       <tr className="bg-white">
                         <td className="max-w-0 px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           <div className="flex">
-                            <a href="#" className="group inline-flex space-x-2 truncate text-sm">
+                            <a href="https://www.stacks.co/" target="_blank" className="group inline-flex space-x-2 truncate text-sm">
                               <svg className="flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                               </svg>
@@ -203,19 +231,16 @@ export const Mint = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-                          <span className="text-gray-900 font-medium">0.0%</span>
+                          <span className="text-gray-900 font-medium">{state.riskParameters['stability-fee']}%</span>
                         </td>
                         <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-gray-500 md:block">
-                          <span className="text-gray-900 font-medium">150</span>
+                          <span className="text-gray-900 font-medium">{state.riskParameters['liquidation-ratio']}%</span>
                         </td>
                         <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-                          <span className="text-gray-900 font-medium">200</span>
+                          <span className="text-gray-900 font-medium">{state.riskParameters['liquidation-fee']}%</span>
                         </td>
                         <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-                          <span className="text-gray-900 font-medium">13.0%</span>
-                        </td>
-                        <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-                          <span className="text-gray-900 font-medium">$100 million</span>
+                          <span className="text-gray-900 font-medium">${parseInt(state.riskParameters['maximum-debt'], 10)/1000000} million</span>
                         </td>
                         <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
                           <span className="text-gray-900 font-medium">$0 million</span>
@@ -236,13 +261,11 @@ export const Mint = () => {
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex flex-col">
                 <div className="align-middle min-w-full overflow-x-auto shadow overflow-hidden sm:rounded-lg"></div>
-                <Box>
-                  <ButtonGroup spacing={4} my="base">
+                  <Box my="base">
                     <RouterLink to="/vaults/new" exact className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-5">
                       New Vault
                     </RouterLink>
-                  </ButtonGroup>
-                </Box>
+                  </Box>
               </div>
             </div>
           </div>

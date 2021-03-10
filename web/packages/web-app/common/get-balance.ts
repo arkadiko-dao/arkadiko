@@ -3,36 +3,12 @@ import { AppContext } from '@common/context';
 import { getRPCClient } from './utils';
 import { useSTXAddress } from './use-stx-address';
 
-export const getBalance = () => {
-  const stxAddress = useSTXAddress();
-  const state = useContext(AppContext);
-  const [balance, setBalance] = useState({ stx: '0', arkadiko: '0' });
+export const fetchBalances = async (stxAddress: string) => {
   const client = getRPCClient();
 
-  useEffect(() => {
-    let mounted = true;
-
-    const getBalance = async () => {
-      if (stxAddress) {
-        try {
-          const account = await client.fetchBalances(stxAddress);
-          if (mounted) {
-            setBalance({
-              arkadiko: account.arkadiko.toString(),
-              stx: account.stx.toString()
-            });
-          }
-        } catch (error) {
-          console.error('Unable to connect to Stacks Blockchain');
-        }
-      }
-    };
-    void getBalance();
-
-    return () => { mounted = false; }
-  }, [state.userData]);
-
+  const account = await client.fetchBalances(stxAddress);
   return {
-    balance,
+    arkadiko: account.arkadiko.toString(),
+    stx: account.stx.toString()
   };
 };

@@ -1,18 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Vault } from './vault';
-import { getVaults } from '@common/get-vaults';
+import { AppContext } from '@common/context';
 
 export const VaultGroup: React.FC = () => {
-  const vaults = getVaults();
+  const state = useContext(AppContext);
 
-  const vaultItems = vaults.vaults.map((vault) =>
+  const vaultItems = state.vaults.map((vault: object) =>
     <Vault
-      key={vault.id.value}
-      id={vault.id.value}
-      address={vault.address.value}
-      stxCollateral={vault['stx-collateral'].value}
-      coinsMinted={vault['coins-minted'].value}
-      atBlockHeight={vault['at-block-height'].value}
+      key={vault.id}
+      id={vault.id}
+      stxCollateral={vault['stx-collateral']}
+      coinsMinted={vault['coins-minted']}
     />
   );
   return (
