@@ -270,7 +270,15 @@ export const Mint = () => {
             </div>
           </div>
 
-          <VaultGroup />
+          {state.vaults.length ? (
+            <VaultGroup />
+          ): (
+            <div className="hidden sm:block">
+              <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <p>You currently have no open vaults</p>
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </Box>

@@ -4,7 +4,7 @@ import { UserSession, AppConfig, UserData } from '@stacks/auth';
 export interface AppState {
   userData: UserData | null;
   balance: object | null;
-  vaults: object;
+  vaults: object[];
   riskParameters: object;
 }
 

@@ -4,15 +4,13 @@ import { Container } from './home';
 import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
-import {
-  uintCV,
-  standardPrincipalCV
-} from '@stacks/transactions';
+import { uintCV, standardPrincipalCV } from '@stacks/transactions';
 import { AppContext } from '@common/context';
 import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
 import { debtClass } from './vault';
 import { getStxPrice } from '@common/get-stx-price';
-import { getLiquidationPrice } from '@common/vault-utils';
+import { getLiquidationPrice, availableStxToWithdraw, availableCoinsToMint } from '@common/vault-utils';
+import { Link } from '@components/link';
 
 export const ManageVault = ({ match }) => {
   const { doContractCall } = useConnect();
@@ -101,27 +99,62 @@ export const ManageVault = ({ match }) => {
     return 0;
   }
 
-  const availableToMint = () => {
-    const collToDebt = parseInt(state.riskParameters['collateral-to-debt-ratio'], 10);
-    if (debtRatio > collToDebt) {
-      return (((debtRatio - collToDebt) / debtRatio) * (100 / 10 / 2)).toFixed(2);
-    }
-
-    return 0;
-  }
-
-  const availableToWithdraw = () => {
-    const collToDebt = parseInt(state.riskParameters['collateral-to-debt-ratio'], 10);
-    if (debtRatio > collToDebt) {
-      return (((debtRatio - collToDebt - 5) / debtRatio) * (price / 10 / 2)).toFixed(4);
-    }
-
-    return 0;
-  };
-
   const onInputChange = (event) => {
     const value = event.target.value;
     setExtraStxDeposit(value);
+  };
+
+  const callMint = async () => {
+    const value = availableCoinsToMint(price, stxLocked(), outstandingDebt(), state.riskParameters['collateral-to-debt-ratio'])
+
+    const authOrigin = getAuthOrigin();
+    await doContractCall({
+      network,
+      authOrigin,
+      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractName: 'stx-reserve',
+      functionName: 'mint',
+      functionArgs: [uintCV(match.params.id), uintCV(parseFloat(value) * 1000000)],
+      postConditionMode: 0x01,
+      finished: data => {
+        console.log('finished mint!', data);
+        console.log(data.stacksTransaction.auth.spendingCondition?.nonce.toNumber());
+      },
+    });
+  };
+
+  const callWithdraw = async () => {
+    const value = availableStxToWithdraw(price, stxLocked(), outstandingDebt(), state.riskParameters['collateral-to-debt-ratio']);
+
+    const authOrigin = getAuthOrigin();
+    await doContractCall({
+      network,
+      authOrigin,
+      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractName: 'stx-reserve',
+      functionName: 'withdraw',
+      functionArgs: [uintCV(match.params.id), uintCV(parseFloat(value) * 1000000)],
+      postConditionMode: 0x01,
+      finished: data => {
+        console.log('finished withdraw!', data);
+      },
+    });
+  };
+
+  const callNotifyRisky = async () => {
+    const authOrigin = getAuthOrigin();
+    await doContractCall({
+      network,
+      authOrigin,
+      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractName: 'liquidator',
+      functionName: 'notify-risky-vault',
+      functionArgs: [uintCV(match.params.id)],
+      postConditionMode: 0x01,
+      finished: data => {
+        console.log('finished notify risky reserve!', data);
+      },
+    });
   };
 
   return (
@@ -194,6 +227,9 @@ export const ManageVault = ({ match }) => {
               <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8 mb-4">
                 Collateral to Debt Ratio
               </h2>
+              <Link onClick={() => callNotifyRisky()} color="blue" display="inline-block" mt={8} ml={5}>
+                (Notify Vault as Risky)
+              </Link>
             </li>
           </ul>
 
@@ -332,13 +368,13 @@ export const ManageVault = ({ match }) => {
 
                     <div className="text-sm text-gray-500">
                       <p>
-                        {availableToWithdraw()} STX
+                        {availableStxToWithdraw(price, stxLocked(), outstandingDebt(), state.riskParameters['collateral-to-debt-ratio'])} STX
                       </p>
                     </div>
 
                     <div className="max-w-xl text-sm text-gray-500">
                       <p>
-                        <Text onClick={() => callBurn()}
+                        <Text onClick={() => callWithdraw()}
                               _hover={{ cursor: 'pointer'}}
                               className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                           Withdraw
@@ -388,13 +424,13 @@ export const ManageVault = ({ match }) => {
 
                     <div className="max-w-xl text-sm text-gray-500">
                       <p>
-                        {availableToMint()} xUSD
+                        {availableCoinsToMint(price, stxLocked(), outstandingDebt(), state.riskParameters['collateral-to-debt-ratio'])} xUSD
                       </p>
                     </div>
 
                     <div className="max-w-xl text-sm text-gray-500">
                       <p>
-                        <Text onClick={() => callBurn()}
+                        <Text onClick={() => callMint()}
                               _hover={{ cursor: 'pointer'}}
                               className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                           Mint

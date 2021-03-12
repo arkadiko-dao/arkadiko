@@ -11,7 +11,7 @@
     "node": ">=14"
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha --timeout 20000 --require ts-node/register",
+    "test": "./node_modules/.bin/mocha --timeout 60000 --require ts-node/register",
     "test:watch": "mocha --watch"
   },
   "type": "module",
