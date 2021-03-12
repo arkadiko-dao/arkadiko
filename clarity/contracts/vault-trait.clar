@@ -2,7 +2,7 @@
 (define-trait vault-trait
   (
     ;; calculate stablecoin count to mint from posted collateral
-    (calculate-arkadiko-count (uint) (response uint uint))
+    (calculate-xusd-count (uint) (response uint uint))
 
     ;; calculate the current collateral to debt ratio against USD value of collateral
     (calculate-current-collateral-to-debt-ratio (uint) (response uint uint))

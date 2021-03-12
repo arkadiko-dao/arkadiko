@@ -15,7 +15,7 @@ export const defaultState = (): AppState => {
   if (userSession.isUserSignedIn()) {
     return {
       userData: userSession.loadUserData(),
-      balance: { stx: 0, arkadiko: 0 },
+      balance: { stx: 0, xusd: 0 },
       vaults: [],
       riskParameters: { 'stability-fee': 0, 'liquidation-ratio': 0, 'collateral-to-debt-ratio': 0, 'maximum-debt': 0 }
     };

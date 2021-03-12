@@ -1,16 +1,16 @@
 import { Client, Provider, ProviderRegistry } from "@blockstack/clarity";
 
 describe("stacker registry unit test suite", () => {
-  let stackerRegistryClient: Client;
+  let daoClient: Client;
   let provider: Provider;
 
   before(async () => {
     provider = await ProviderRegistry.createProvider();
-    stackerRegistryClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.stacker-registry", "stacker-registry", provider);
+    daoClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.dao", "dao", provider);
   });
 
   it("should have a valid syntax", async () => {
-    await stackerRegistryClient.checkContract();
+    await daoClient.checkContract();
   });
 
   after(async () => {

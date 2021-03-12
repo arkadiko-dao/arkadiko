@@ -6,8 +6,8 @@ import {
   standardPrincipalCV
 } from "@stacks/transactions";
 
-describe("arkadiko token contract test suite", () => {
-  let arkadikoTokenClient: Client;
+describe("xusd token contract test suite", () => {
+  let xusdTokenClient: Client;
   let oracleClient: Client;
   let provider: Provider;
 
@@ -22,63 +22,63 @@ describe("arkadiko token contract test suite", () => {
 
   before(async () => {
     provider = await ProviderRegistry.createProvider();
-    arkadikoTokenClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.arkadiko-token", "arkadiko-token", provider);
+    xusdTokenClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.xusd-token", "xusd-token", provider);
     oracleClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.oracle", "oracle", provider);
   });
 
   it("should have a valid syntax", async () => {
     await oracleClient.deployContract();
-    await arkadikoTokenClient.checkContract();
+    await xusdTokenClient.checkContract();
   });
 
   describe("deploying an instance of the contract", () => {
     before(async () => {
-      await arkadikoTokenClient.deployContract();
+      await xusdTokenClient.deployContract();
     });
 
     it("should return total supply of 30", async () => {
-      const query = arkadikoTokenClient.createQuery({ method: { name: "total-supply", args: [] } });
-      const receipt = await arkadikoTokenClient.submitQuery(query);
+      const query = xusdTokenClient.createQuery({ method: { name: "total-supply", args: [] } });
+      const receipt = await xusdTokenClient.submitQuery(query);
       const result = Result.unwrapUInt(receipt);
       assert.equal(result, 30);
     });
 
     it("should initialize Alice's balance (20 DIKO)", async () => {
-      const query = arkadikoTokenClient.createQuery({ atChaintip: true, method: { name: "balance-of", args: [`'${alice}`] } });
-      const receipt = await arkadikoTokenClient.submitQuery(query);
+      const query = xusdTokenClient.createQuery({ atChaintip: true, method: { name: "balance-of", args: [`'${alice}`] } });
+      const receipt = await xusdTokenClient.submitQuery(query);
       const result = Result.unwrapUInt(receipt);
       assert.equal(result, 20);
     });
 
     it("should return name", async () => {
-      const query = arkadikoTokenClient.createQuery({
+      const query = xusdTokenClient.createQuery({
         method: { name: "name", args: [] }
       });
-      const receipt = await arkadikoTokenClient.submitQuery(query);
+      const receipt = await xusdTokenClient.submitQuery(query);
       const result = Result.unwrapString(receipt, "utf8")
-      assert.equal(result, "Arkadiko");
+      assert.equal(result, "xUSD");
     });
 
     it("should return symbol", async () => {
-      const query = arkadikoTokenClient.createQuery({
+      const query = xusdTokenClient.createQuery({
         method: { name: "symbol", args: [] }
       });
-      const receipt = await arkadikoTokenClient.submitQuery(query);
+      const receipt = await xusdTokenClient.submitQuery(query);
       const result = Result.unwrapString(receipt, "utf8")
-      assert.equal(result, "DIKO");
+      assert.equal(result, "xUSD");
     });
   });
 
   // describe("testing on mocknet", () => {
   //   before(async () => {
-  //     await deployContract('arkadiko-token');
+  //     await deployContract('xusd-token');
   //   });
 
   //   it("should mint 5 tokens", async () => {
   //     const value = 5;
   //     console.log('Calling mint function');
   //     const result = await callContractFunction(
-  //       'arkadiko-token',
+  //       'xusd-token',
   //       'mint',
   //       [standardPrincipalCV('ST3CECAKJ4BH08JYY7W53MC81BYDT4YDA5M7S5F53'), uintCV(value)]
   //     );

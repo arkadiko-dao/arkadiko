@@ -174,7 +174,7 @@ export const Mint = () => {
                         </dt>
                         <dd>
                           <div className="text-lg font-medium text-gray-900">
-                            {parseInt(state.balance['arkadiko'], 10) / 1000000} xUSD
+                            {parseInt(state.balance['xusd'], 10) / 1000000} xUSD
                           </div>
                         </dd>
                       </dl>

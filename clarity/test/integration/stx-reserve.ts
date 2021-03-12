@@ -25,7 +25,7 @@ describe("stacks reserve test suite", () => {
     before(async () => {
       await deployContract('vault-trait');
       await deployContract('oracle');
-      await deployContract('arkadiko-token');
+      await deployContract('xusd-token');
       await deployContract('stx-reserve');
     });
 
@@ -76,7 +76,7 @@ describe("stacks reserve test suite", () => {
 
       const supply = await callReadOnlyFunction({
         contractAddress: deployContractAddress,
-        contractName: "arkadiko-token",
+        contractName: "xusd-token",
         functionName: "total-supply",
         functionArgs: [],
         senderAddress: contractAddress,
@@ -91,7 +91,7 @@ describe("stacks reserve test suite", () => {
 
       const balanceBefore = await callReadOnlyFunction({
         contractAddress: deployContractAddress,
-        contractName: "arkadiko-token",
+        contractName: "xusd-token",
         functionName: "balance-of",
         functionArgs: [standardPrincipalCV(alice)],
         senderAddress: contractAddress,
@@ -110,7 +110,7 @@ describe("stacks reserve test suite", () => {
 
       const balanceAfter = await callReadOnlyFunction({
         contractAddress: deployContractAddress,
-        contractName: "arkadiko-token",
+        contractName: "xusd-token",
         functionName: "balance-of",
         functionArgs: [standardPrincipalCV(alice)],
         senderAddress: contractAddress,

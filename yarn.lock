@@ -2,20 +2,20 @@
 # yarn lockfile v1
 
 
-"@blockstack/clarity-native-bin@^0.3.7":
-  version "0.3.7"
-  resolved "https://registry.yarnpkg.com/@blockstack/clarity-native-bin/-/clarity-native-bin-0.3.7.tgz#31f35ad3ca834e60e334e784c9bc104eb129563b"
-  integrity sha512-epWRIV+cP97EeUrcxtn/rUNBMyoOttQz/1uDhRBZI26ecLRmMNh+4xjkIdnsbIC1s5Ufdy6kuB8Fiq+Zw9UKag==
+"@blockstack/clarity-native-bin@^0.3.9":
+  version "0.3.9"
+  resolved "https://registry.yarnpkg.com/@blockstack/clarity-native-bin/-/clarity-native-bin-0.3.9.tgz#704d9f8e9f3d5a0299b83a962838dec4b06f6438"
+  integrity sha512-bvkcnpNFx1IlwsnzW2BX7rB7C/1Uvh6aMktvL39cL+3Jx/MxuWghFVibIVoLmdLRg3WhBvyDZX7CZPkMM3YiDQ==
   dependencies:
     fs-extra "^8.0.1"
     node-fetch "^2.6.0"
     semver "^6.1.1"
     unzipper "^0.10.11"
 
-"@blockstack/clarity@^0.3.7":
-  version "0.3.7"
-  resolved "https://registry.yarnpkg.com/@blockstack/clarity/-/clarity-0.3.7.tgz#8c7e4aadb79545dac9376788233aa6d1952f9c5e"
-  integrity sha512-Mb3B32ZawG2BhIcigqOrWPqNiQRSA7NzpVHpQKWgruYbYESfltB7HHL4Hcuw62X3PBB2+DUEXBQH6CczTJ8ZRg==
+"@blockstack/clarity@^0.3.9":
+  version "0.3.9"
+  resolved "https://registry.yarnpkg.com/@blockstack/clarity/-/clarity-0.3.9.tgz#ed2e313dd8fc05765bd604f203fc9aaadca7d79a"
+  integrity sha512-DIL8Ur9k0ctbr+983IupHc9aGTnD0BQ5gnHijPBrsNUIGSAdcyb/j7tg5uF+P09gV4rZptXJDTIkHD6Z6AxY3A==
 
 "@stacks/common@^1.2.2":
   version "1.2.2"

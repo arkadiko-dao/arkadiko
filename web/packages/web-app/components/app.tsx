@@ -75,7 +75,7 @@ export const App: React.FC = () => {
             setState({
               userData,
               balance: {
-                arkadiko: account.arkadiko.toString(),
+                xusd: account.xusd.toString(),
                 stx: account.stx.toString()
               },
               vaults: arr,

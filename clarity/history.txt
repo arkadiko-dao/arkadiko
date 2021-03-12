@@ -1,0 +1,2 @@
+#V2
+(define-map votes-by-member ({ proposal-index: uint } { member: principal }) { has-voted: (optional bool) })

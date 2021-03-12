@@ -3,7 +3,7 @@ import { deployContract } from "./utils";
 export async function deploy() {
   await deployContract('vault-trait');
   await deployContract('oracle');
-  await deployContract('arkadiko-token');
+  await deployContract('xusd-token');
   await deployContract('stx-reserve');
 
   await deployContract('auction-engine');

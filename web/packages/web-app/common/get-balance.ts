@@ -5,7 +5,7 @@ export const fetchBalances = async (stxAddress: string) => {
 
   const account = await client.fetchBalances(stxAddress);
   return {
-    arkadiko: account.arkadiko.toString(),
+    xusd: account.xusd.toString(),
     stx: account.stx.toString()
   };
 };
