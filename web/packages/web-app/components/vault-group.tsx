@@ -9,8 +9,8 @@ export const VaultGroup: React.FC = () => {
     <Vault
       key={vault.id}
       id={vault.id}
-      stxCollateral={vault['stx-collateral']}
-      coinsMinted={vault['coins-minted']}
+      collateral={vault['collateral']}
+      debt={vault['debt']}
     />
   );
   return (

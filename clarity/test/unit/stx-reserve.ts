@@ -1,4 +1,4 @@
-import { Client, Provider, ProviderRegistry, Result, Transaction } from "@blockstack/clarity";
+import { Client, Provider, ProviderRegistry } from "@blockstack/clarity";
 
 describe("stacks reserve test suite", () => {
   let vaultTrait: Client;

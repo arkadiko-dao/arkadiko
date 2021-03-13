@@ -5,8 +5,8 @@ import { AppContext } from '@common/context';
 
 interface VaultProps {
   id: string;
-  stxCollateral: number;
-  coinsMinted: number;
+  collateral: number;
+  debt: number;
 }
 
 export const debtClass = (ratio: number) => {
@@ -21,7 +21,7 @@ export const debtClass = (ratio: number) => {
   return 'text-red-400';
 };
 
-export const Vault: React.FC<VaultProps> = ({ id, stxCollateral, coinsMinted }) => {
+export const Vault: React.FC<VaultProps> = ({ id, collateral, debt }) => {
   const state = useContext(AppContext);
   let debtRatio = 0;
   if (id) {
@@ -47,10 +47,10 @@ export const Vault: React.FC<VaultProps> = ({ id, stxCollateral, coinsMinted }) 
         <span className={`${debtClass(debtRatio)} font-medium`}>{debtRatio}%</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">{coinsMinted / 1000000}</span>
+        <span className="text-gray-900 font-medium">{debt / 1000000}</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">{stxCollateral / 1000000}</span>
+        <span className="text-gray-900 font-medium">{collateral / 1000000}</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         <span className="text-gray-900 font-medium">

@@ -4,12 +4,12 @@
 
 ;; TODO: only callable by a registered stacker?
 (define-public (notify-risky-vault (vault-id uint))
-  (let ((collateral-to-debt-ratio (unwrap-panic (contract-call? .stx-reserve calculate-current-collateral-to-debt-ratio vault-id))))
+  (let ((collateral-to-debt-ratio (unwrap-panic (contract-call? .freddie calculate-current-collateral-to-debt-ratio vault-id))))
     (let ((liquidation-ratio (unwrap-panic (contract-call? .stx-reserve get-liquidation-ratio))))
       (if (>= liquidation-ratio collateral-to-debt-ratio)
         (begin
           (print "Vault is in danger. Time to liquidate.")
-          (let ((amounts (unwrap-panic (as-contract (contract-call? .stx-reserve liquidate vault-id)))))
+          (let ((amounts (unwrap-panic (as-contract (contract-call? .freddie liquidate vault-id)))))
             (if (unwrap-panic (contract-call? .auction-engine start-auction vault-id (get ustx-amount amounts) (get debt amounts)))
               (ok true)
               (err err-liquidation-failed)

@@ -2,11 +2,11 @@
 (define-constant err-not-registered u2)
 (define-map stackers { user: principal } { added-on-block-height: uint })
 
-(define-public (is-stacker (user principal))
+(define-read-only (is-stacker (user principal))
   (ok (is-some (map-get? stackers { user: user })))
 )
 
-(define-public (is-not-stacker (user principal))
+(define-read-only (is-not-stacker (user principal))
   (ok (is-none (map-get? stackers { user: user })))
 )
 

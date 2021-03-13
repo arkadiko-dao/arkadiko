@@ -6,6 +6,7 @@ export interface AppState {
   balance: object | null;
   vaults: object[];
   riskParameters: object;
+  isStacker: boolean;
 }
 
 export const defaultState = (): AppState => {
@@ -17,10 +18,11 @@ export const defaultState = (): AppState => {
       userData: userSession.loadUserData(),
       balance: { stx: 0, xusd: 0 },
       vaults: [],
-      riskParameters: { 'stability-fee': 0, 'liquidation-ratio': 0, 'collateral-to-debt-ratio': 0, 'maximum-debt': 0 }
+      riskParameters: { 'stability-fee': 0, 'liquidation-ratio': 0, 'collateral-to-debt-ratio': 0, 'maximum-debt': 0 },
+      isStacker: false
     };
   }
-  return { userData: null, balance: null, vaults: [], riskParameters: {} };
+  return { userData: null, balance: null, vaults: [], riskParameters: {}, isStacker: false };
 };
 
 export const AppContext = createContext<AppState>(defaultState());

@@ -2,7 +2,8 @@ import {
   callReadOnlyFunction,
   standardPrincipalCV,
   cvToJSON,
-  uintCV
+  uintCV,
+  stringAsciiCV
 } from "@stacks/transactions";
 import { assert } from "chai";
 import {
@@ -27,6 +28,7 @@ describe("stacks reserve test suite", () => {
       await deployContract('oracle');
       await deployContract('xusd-token');
       await deployContract('stx-reserve');
+      await deployContract('freddie');
 
       await deployContract('stacker-registry');
       await deployContract('auction-engine');
@@ -44,10 +46,10 @@ describe("stacks reserve test suite", () => {
 
       console.log('Calling collateralize-and-mint function');
       await callContractFunction(
-        'stx-reserve',
+        'freddie',
         'collateralize-and-mint',
         secretKey,
-        [uintCV(5000000), standardPrincipalCV(alice)]
+        [uintCV(5000000), standardPrincipalCV(alice), stringAsciiCV('stx')]
       );
       
       console.log('Crash price to 55 dollarcents');

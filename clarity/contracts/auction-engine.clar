@@ -31,6 +31,7 @@
     )
     (print "Added new open auction")
     (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u2000)))
+    (var-set last-auction-id auction-id)
     (ok true)
   )
 )

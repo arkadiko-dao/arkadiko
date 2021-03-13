@@ -5,6 +5,7 @@ export async function deploy() {
   await deployContract('oracle');
   await deployContract('xusd-token');
   await deployContract('stx-reserve');
+  await deployContract('freddie');
 
   await deployContract('auction-engine');
   await deployContract('liquidator');

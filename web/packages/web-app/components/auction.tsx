@@ -4,7 +4,7 @@ import { NavLink as RouterLink } from 'react-router-dom'
 
 export const Auction: React.FC<AuctionProps> = ({ id, ustx, price, debt }) => {
   const minimumBidAmount = () => {
-    return (ustx / 1000000) * (price / 100);
+    return ((ustx / 1000000) * (price / 100)).toFixed(2);
   }
 
   return (

@@ -13,7 +13,7 @@ export const getCollateralToDebtRatio = (vaultId: string) => {
     const getCollateralToDebtRatio = async () => {
       const collToDebt = await callReadOnlyFunction({
         contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
-        contractName: "stx-reserve",
+        contractName: "freddie",
         functionName: "calculate-current-collateral-to-debt-ratio",
         functionArgs: [uintCV(vaultId)],
         senderAddress: stxAddress || '',

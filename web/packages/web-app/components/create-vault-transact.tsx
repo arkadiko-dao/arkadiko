@@ -4,7 +4,8 @@ import { useConnect } from '@stacks/connect-react';
 import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
 import {
   standardPrincipalCV,
-  uintCV
+  uintCV,
+  stringAsciiCV
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ExplorerLink } from './explorer-link';
@@ -30,13 +31,14 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
     const authOrigin = getAuthOrigin();
     const args = [
       uintCV(parseInt(coinAmounts['amounts']['stx'], 10) * 1000000),
-      standardPrincipalCV(address || '')
+      standardPrincipalCV(address || ''),
+      stringAsciiCV('stx')
     ];
     await doContractCall({
       network,
       authOrigin,
       contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
-      contractName: 'stx-reserve',
+      contractName: 'freddie',
       functionName: 'collateralize-and-mint',
       functionArgs: args,
       postConditionMode: 0x01,

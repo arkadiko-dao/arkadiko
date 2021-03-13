@@ -81,13 +81,17 @@ export const Auctions: React.FC = () => {
                   <div className="hidden sm:block mb-5">
                     <div className="flex flex-col">
                       <div className="align-middle min-w-full overflow-x-auto shadow overflow-hidden sm:rounded-lg"></div>
-                      <Box my="base">
-                        <Text onClick={() => registerStacker()}
-                              _hover={{ cursor: 'pointer'}}
-                              className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-5">
-                          Register as Stacker
-                        </Text>
-                      </Box>
+                      {state.isStacker ? (
+                        <p>You are a registered stacker and are able to buy up auctions.</p>
+                      ) : (
+                        <Box my="base">
+                          <Text onClick={() => registerStacker()}
+                                _hover={{ cursor: 'pointer'}}
+                                className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-5">
+                            Register as Stacker
+                          </Text>
+                        </Box>
+                      )}
                     </div>
                   </div>
 

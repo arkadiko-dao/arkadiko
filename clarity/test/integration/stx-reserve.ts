@@ -2,7 +2,8 @@ import {
   callReadOnlyFunction,
   standardPrincipalCV,
   cvToJSON,
-  uintCV
+  uintCV,
+  stringAsciiCV
 } from "@stacks/transactions";
 import { assert } from "chai";
 import {
@@ -27,6 +28,7 @@ describe("stacks reserve test suite", () => {
       await deployContract('oracle');
       await deployContract('xusd-token');
       await deployContract('stx-reserve');
+      await deployContract('freddie');
     });
 
     it("should mint 1.925 dollar in stablecoin from 5000000 ustx at 77 cents/STX through collateralize-and-mint", async () => {
@@ -41,15 +43,15 @@ describe("stacks reserve test suite", () => {
       const value = 5000000; // equivalent to 5 STX
       console.log('Calling collateralize-and-mint function');
       const result = await callContractFunction(
-        'stx-reserve',
+        'freddie',
         'collateralize-and-mint',
         secretKey,
-        [uintCV(value), standardPrincipalCV(alice)]
+        [uintCV(value), standardPrincipalCV(alice), stringAsciiCV('stx')]
       );
       console.log(result);
       const vaultEntries = await callReadOnlyFunction({
         contractAddress: deployContractAddress,
-        contractName: "stx-reserve",
+        contractName: "freddie",
         functionName: "get-vault-entries",
         functionArgs: [standardPrincipalCV(alice)],
         senderAddress: contractAddress,
@@ -58,7 +60,7 @@ describe("stacks reserve test suite", () => {
       const arr = cvToJSON(vaultEntries).value.ids.value;
       const vault = await callReadOnlyFunction({
         contractAddress: deployContractAddress,
-        contractName: "stx-reserve",
+        contractName: "freddie",
         functionName: "get-vault-by-id",
         functionArgs: [uintCV(arr[arr.length - 1].value)],
         senderAddress: contractAddress,
@@ -66,11 +68,11 @@ describe("stacks reserve test suite", () => {
       });
 
       assert.equal(
-        cvToJSON(vault).value['coins-minted']['value'].toString(),
+        cvToJSON(vault).value['debt']['value'].toString(),
         "1925000"
       );
       assert.equal(
-        cvToJSON(vault).value['stx-collateral']['value'].toString(),
+        cvToJSON(vault).value['collateral']['value'].toString(),
         "5000000"
       );
 
@@ -101,7 +103,7 @@ describe("stacks reserve test suite", () => {
       console.log(balanceValueBefore);
 
       const result = await callContractFunction(
-        'stx-reserve',
+        'freddie',
         'burn',
         secretKey,
         [uintCV(1), standardPrincipalCV(alice)]

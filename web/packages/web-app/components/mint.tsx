@@ -9,7 +9,8 @@ import {
   standardPrincipalCV,
   makeSTXTokenTransfer,
   privateKeyToString,
-  uintCV
+  uintCV,
+  stringAsciiCV
 } from '@stacks/transactions';
 import { ExplorerLink } from './explorer-link';
 import { VaultGroup } from './vault-group';
@@ -60,13 +61,14 @@ export const Mint = () => {
     const authOrigin = getAuthOrigin();
     const args = [
       uintCV(10 * 1000000),
-      standardPrincipalCV(address || '')
+      standardPrincipalCV(address || ''),
+      stringAsciiCV('stx')
     ];
     await doContractCall({
       network,
       authOrigin,
       contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
-      contractName: 'stx-reserve',
+      contractName: 'freddie',
       functionName: 'collateralize-and-mint',
       functionArgs: args,
       postConditionMode: 0x01,

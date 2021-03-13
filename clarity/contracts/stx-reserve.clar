@@ -20,44 +20,6 @@
 (define-data-var liquidation-penalty uint u13)
 (define-data-var stability-fee uint u0)
 
-;; Map of vault entries
-;; The entry consists of a user principal with their STX balance collateralized
-(define-map vaults { id: uint } {
-  id: uint, address: principal,
-  stx-collateral: uint, coins-minted: uint,
-  created-at-block-height: uint,
-  updated-at-block-height: uint,
-  is-liquidated: bool
-})
-(define-map vault-entries { user: principal } { ids: (list 2000 uint) })
-(define-data-var last-vault-id uint u0)
-
-;; getters
-(define-read-only (get-vault-by-id (id uint))
-  (unwrap!
-    (map-get? vaults { id: id })
-    (tuple
-      (id u0)
-      (address 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP)
-      (stx-collateral u0)
-      (coins-minted u0)
-      (created-at-block-height u0)
-      (updated-at-block-height u0)
-      (is-liquidated false)
-    )
-  )
-)
-
-(define-read-only (get-vault-entries (user principal))
-  (unwrap! (map-get? vault-entries { user: user }) (tuple (ids (list u0) )))
-)
-
-(define-read-only (get-vaults (user principal))
-  (let ((entries (get ids (get-vault-entries user))))
-    (ok (map get-vault-by-id entries))
-  )
-)
-
 (define-read-only (get-risk-parameters)
   (ok (tuple
     (liquidation-ratio (var-get liquidation-ratio))
@@ -139,13 +101,11 @@
   )
 )
 
-(define-read-only (calculate-current-collateral-to-debt-ratio (vault-id uint))
+(define-read-only (calculate-current-collateral-to-debt-ratio (debt uint) (ustx uint))
   (let ((stx-price-in-cents (contract-call? .oracle get-price)))
-    (let ((vault (get-vault-by-id vault-id)))
-      (if (> (get coins-minted vault) u0)
-        (ok (/ (* (get stx-collateral vault) (get price stx-price-in-cents)) (get coins-minted vault)))
-        (err u0)
-      )
+    (if (> debt u0)
+      (ok (/ (* ustx (get price stx-price-in-cents)) debt))
+      (err u0)
     )
   )
 )
@@ -154,28 +114,10 @@
 ;; save STX in stx-reserve-address
 ;; calculate price and collateralisation ratio
 (define-public (collateralize-and-mint (ustx-amount uint) (sender principal))
-  (let ((coins (unwrap-panic (calculate-xusd-count ustx-amount))))
+  (let ((debt (unwrap-panic (calculate-xusd-count ustx-amount))))
     (match (print (stx-transfer? ustx-amount sender (as-contract tx-sender)))
-      success (match (print (as-contract (contract-call? .xusd-token mint coins sender)))
-        transferred (begin
-          (let ((vault-id (+ (var-get last-vault-id) u1)))
-            (let ((entries (get ids (get-vault-entries sender))))
-              (map-set vault-entries { user: sender } { ids: (unwrap-panic (as-max-len? (append entries vault-id) u2000)) })
-              (map-set vaults
-                { id: vault-id }
-                {
-                  id: vault-id, address: sender,
-                  stx-collateral: ustx-amount, coins-minted: coins,
-                  created-at-block-height: block-height,
-                  updated-at-block-height: block-height,
-                  is-liquidated: false
-                }
-              )
-              (var-set last-vault-id vault-id)
-              (ok coins)
-            )
-          )
-        )
+      success (match (print (as-contract (contract-call? .xusd-token mint debt sender)))
+        transferred (ok debt)
         error (err err-transfer-failed)
       )
       error (err err-minter-failed)
@@ -185,23 +127,10 @@
 
 ;; deposit extra collateral in vault
 ;; TODO: assert that tx-sender == vault owner
-(define-public (deposit (vault-id uint) (ustx-amount uint))
-  (let ((vault (get-vault-by-id vault-id)))
-    (match (print (stx-transfer? ustx-amount tx-sender (as-contract tx-sender)))
-      success (begin
-        (let ((new-stx-collateral (+ ustx-amount (get stx-collateral vault))))
-          (map-set vaults { id: vault-id } {
-            id: vault-id, address: tx-sender,
-            stx-collateral: new-stx-collateral, coins-minted: (get coins-minted vault),
-            created-at-block-height: (get created-at-block-height vault),
-            updated-at-block-height: block-height,
-            is-liquidated: false }
-          )
-          (ok true)
-        )
-      )
-      error (err err-deposit-failed)
-    )
+(define-public (deposit (additional-ustx-amount uint))
+  (match (print (stx-transfer? additional-ustx-amount tx-sender (as-contract tx-sender)))
+    success (ok true)
+    error (err err-deposit-failed)
   )
 )
 
@@ -209,48 +138,22 @@
 ;; TODO: assert that tx-sender == vault owner
 ;; TODO: make sure not more is withdrawn than collateral-to-debt-ratio
 ;; TODO: make sure ustx-amount < stx-collateral in vault (and is positive)
-(define-public (withdraw (vault-id uint) (ustx-amount uint))
-  (let ((vault (get-vault-by-id vault-id)))
-    (match (print (as-contract (stx-transfer? ustx-amount (as-contract tx-sender) (get address vault))))
-      success (begin
-        (let ((new-stx-collateral (- (get stx-collateral vault) ustx-amount)))
-          (map-set vaults { id: vault-id } {
-            id: vault-id, address: tx-sender,
-            stx-collateral: new-stx-collateral, coins-minted: (get coins-minted vault),
-            created-at-block-height: (get created-at-block-height vault),
-            updated-at-block-height: block-height,
-            is-liquidated: false }
-          )
-          (ok true)
-        )
-      )
-      error (err err-withdraw-failed)
-    )
+(define-public (withdraw (vault-owner principal) (ustx-amount uint))
+  (match (print (as-contract (stx-transfer? ustx-amount (as-contract tx-sender) vault-owner)))
+    success (ok true)
+    error (err err-withdraw-failed)
   )
 )
 
 ;; mint new tokens when collateral to debt allows it (i.e. > collateral-to-debt-ratio)
-(define-public (mint (vault-id uint) (coins-amount uint))
-  (let ((vault (get-vault-by-id vault-id)))
-    (let ((coins (- (unwrap-panic (calculate-xusd-count (get stx-collateral vault))) (get coins-minted vault))))
-      (if (>= coins coins-amount)
-        (match (print (as-contract (contract-call? .xusd-token mint coins-amount (get address vault))))
-          success (begin
-            (let ((new-coins-amount (+ coins-amount (get coins-minted vault))))
-              (map-set vaults { id: vault-id } {
-                id: vault-id, address: (get address vault),
-                stx-collateral: (get stx-collateral vault), coins-minted: new-coins-amount,
-                created-at-block-height: (get created-at-block-height vault),
-                updated-at-block-height: block-height,
-                is-liquidated: false }
-              )
-              (ok true)
-            )
-          )
-          error (err err-mint-failed)
-        )
-        (err err-mint-failed)
+(define-public (mint (vault-owner principal) (ustx-amount uint) (current-debt uint) (extra-debt uint))
+  (let ((max-new-debt (- (unwrap-panic (calculate-xusd-count ustx-amount)) current-debt)))
+    (if (>= max-new-debt extra-debt)
+      (match (print (as-contract (contract-call? .xusd-token mint extra-debt vault-owner)))
+        success (ok true)
+        error (err err-mint-failed)
       )
+      (err err-mint-failed)
     )
   )
 )
@@ -259,28 +162,13 @@
 ;; method assumes position has not been liquidated
 ;; and thus collateral to debt ratio > liquidation ratio
 ;; TODO: assert that tx-sender owns the vault
-(define-public (burn (vault-id uint) (vault-owner principal))
-  (let ((vault (get-vault-by-id vault-id)))
-    (match (print (as-contract (contract-call? .xusd-token burn (get coins-minted vault) vault-owner)))
-      success (match (print (as-contract (stx-transfer? (get stx-collateral vault) (as-contract tx-sender) vault-owner)))
-        transferred (begin
-          (let ((entries (get ids (get-vault-entries vault-owner))))
-            (print (map-set vaults { id: vault-id } {
-              id: vault-id, address: vault-owner,
-              stx-collateral: u0, coins-minted: u0,
-              created-at-block-height: (get created-at-block-height vault),
-              updated-at-block-height: block-height,
-              is-liquidated: false
-            } ))
-            ;; TODO: remove vault ID from vault entries
-            ;; (map-set vault-entries { user: tx-sender } { () })
-            (ok (map-delete vaults { id: vault-id }))
-          )
-        )
-        error (err err-transfer-failed)
-      )
-      error (err err-burn-failed)
+(define-public (burn (vault-owner principal) (debt-to-burn uint) (collateral-to-return uint))
+  (match (print (as-contract (contract-call? .xusd-token burn debt-to-burn vault-owner)))
+    success (match (print (as-contract (stx-transfer? collateral-to-return (as-contract tx-sender) vault-owner)))
+      transferred (ok true)
+      error (err err-transfer-failed)
     )
+    error (err err-burn-failed)
   )
 )
 
@@ -290,27 +178,16 @@
 ;; by xUSD earned through auctioning off the collateral in the current vault
 ;; 1. Mark vault as liquidated?
 ;; 2. Send collateral into the liquidator's liquidation reserve
-(define-public (liquidate (vault-id uint))
-  (if (is-eq contract-caller 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP.liquidator)
+(define-public (liquidate (stx-collateral uint) (current-debt uint))
+  (if (is-eq contract-caller 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP.freddie)
     (begin
-      (let ((vault (get-vault-by-id vault-id)))
-        (match (as-contract (stx-transfer? (get stx-collateral vault) (as-contract tx-sender) stx-liquidation-reserve))
-          success (begin
-            (let ((stx-collateral (get stx-collateral vault)))
-              (print (map-set vaults { id: vault-id } {
-                id: vault-id, address: (get address vault),
-                stx-collateral: u0, coins-minted: (get coins-minted vault),
-                created-at-block-height: (get created-at-block-height vault),
-                updated-at-block-height: block-height,
-                is-liquidated: true
-              } ))
-              (let ((debt (/ (* (var-get liquidation-penalty) (get coins-minted vault)) u100)))
-                (ok (tuple (ustx-amount stx-collateral) (debt (+ debt (get coins-minted vault)))))
-              )
-            )
+      (match (as-contract (stx-transfer? stx-collateral (as-contract tx-sender) stx-liquidation-reserve))
+        success (begin
+          (let ((new-debt (/ (* (var-get liquidation-penalty) current-debt) u100)))
+            (ok (tuple (ustx-amount stx-collateral) (debt (+ new-debt current-debt))))
           )
-          error (err err-transfer-failed)
         )
+        error (err err-transfer-failed)
       )
     )
     (err err-unauthorized)

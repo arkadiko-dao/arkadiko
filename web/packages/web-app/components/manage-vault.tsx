@@ -36,7 +36,7 @@ export const ManageVault = ({ match }) => {
       network,
       authOrigin,
       contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
-      contractName: 'stx-reserve',
+      contractName: 'freddie',
       functionName: 'burn',
       functionArgs: [uintCV(match.params.id), standardPrincipalCV(senderAddress || '')],
       postConditionMode: 0x01,
@@ -62,7 +62,7 @@ export const ManageVault = ({ match }) => {
       network,
       authOrigin,
       contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
-      contractName: 'stx-reserve',
+      contractName: 'freddie',
       functionName: 'deposit',
       functionArgs: [uintCV(match.params.id), uintCV(parseFloat(extraStxDeposit) * 1000000)],
       postConditionMode: 0x01,
@@ -77,7 +77,7 @@ export const ManageVault = ({ match }) => {
     if (vault) {
       // (liquidationRatio * coinsMinted) / stxCollateral = rekt
       const liquidationRatio = parseInt(state.riskParameters['liquidation-ratio'], 10);
-      return getLiquidationPrice(liquidationRatio, vault['coins-minted'], vault['stx-collateral']);
+      return getLiquidationPrice(liquidationRatio, vault['debt'], vault['collateral']);
     }
 
     return 0;
@@ -85,7 +85,7 @@ export const ManageVault = ({ match }) => {
 
   const stxLocked = () => {
     if (vault) {
-      return parseInt(vault['stx-collateral'], 10) / 1000000;
+      return parseInt(vault['collateral'], 10) / 1000000;
     }
 
     return 0;
@@ -93,7 +93,7 @@ export const ManageVault = ({ match }) => {
 
   const outstandingDebt = () => {
     if (vault) {
-      return parseInt(vault['coins-minted'], 10) / 1000000;
+      return parseInt(vault['debt'], 10) / 1000000;
     }
 
     return 0;
@@ -112,7 +112,7 @@ export const ManageVault = ({ match }) => {
       network,
       authOrigin,
       contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
-      contractName: 'stx-reserve',
+      contractName: 'freddie',
       functionName: 'mint',
       functionArgs: [uintCV(match.params.id), uintCV(parseFloat(value) * 1000000)],
       postConditionMode: 0x01,
@@ -131,7 +131,7 @@ export const ManageVault = ({ match }) => {
       network,
       authOrigin,
       contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
-      contractName: 'stx-reserve',
+      contractName: 'freddie',
       functionName: 'withdraw',
       functionArgs: [uintCV(match.params.id), uintCV(parseFloat(value) * 1000000)],
       postConditionMode: 0x01,
