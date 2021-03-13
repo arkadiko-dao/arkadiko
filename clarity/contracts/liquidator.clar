@@ -9,8 +9,8 @@
       (if (>= liquidation-ratio collateral-to-debt-ratio)
         (begin
           (print "Vault is in danger. Time to liquidate.")
-          (let ((stx-collateral (unwrap-panic (as-contract (contract-call? .stx-reserve liquidate vault-id)))))
-            (if (unwrap-panic (contract-call? .auction-engine start-auction stx-collateral vault-id))
+          (let ((amounts (unwrap-panic (as-contract (contract-call? .stx-reserve liquidate vault-id)))))
+            (if (unwrap-panic (contract-call? .auction-engine start-auction vault-id (get ustx-amount amounts) (get debt amounts)))
               (ok true)
               (err err-liquidation-failed)
             )

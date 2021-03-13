@@ -23,11 +23,11 @@
 ;; stx-collateral has been posted in stx-liquidation-reserve principal
 ;; 1. Create auction object in map
 ;; 2. Add auction ID to list (to show in UI)
-(define-public (start-auction (ustx-amount uint) (vault-id uint))
+(define-public (start-auction (vault-id uint) (ustx-amount uint) (debt-to-raise uint))
   (let ((auction-id (+ (var-get last-auction-id) u1)))
     (map-set auctions
       { id: auction-id }
-      { id: auction-id, ustx-amount: ustx-amount, debt-to-raise: u10, vault-id: vault-id, is-open: true }
+      { id: auction-id, ustx-amount: ustx-amount, debt-to-raise: debt-to-raise, vault-id: vault-id, is-open: true }
     )
     (print "Added new open auction")
     (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u2000)))

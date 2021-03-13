@@ -304,7 +304,9 @@
                 updated-at-block-height: block-height,
                 is-liquidated: true
               } ))
-              (ok stx-collateral)
+              (let ((debt (/ (* (var-get liquidation-penalty) (get coins-minted vault)) u100)))
+                (ok (tuple (ustx-amount stx-collateral) (debt (+ debt (get coins-minted vault)))))
+              )
             )
           )
           error (err err-transfer-failed)

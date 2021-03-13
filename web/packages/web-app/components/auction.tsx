@@ -2,9 +2,9 @@ import React from 'react';
 import { AuctionProps} from './auction-group';
 import { NavLink as RouterLink } from 'react-router-dom'
 
-export const Auction: React.FC<AuctionProps> = ({ id, ustxAmount, price }) => {
+export const Auction: React.FC<AuctionProps> = ({ id, ustx, price, debt }) => {
   const minimumBidAmount = () => {
-    return (ustxAmount / 1000000) * (price / 100);
+    return (ustx / 1000000) * (price / 100);
   }
 
   return (
@@ -15,10 +15,13 @@ export const Auction: React.FC<AuctionProps> = ({ id, ustxAmount, price }) => {
         </span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">{ustxAmount / 1000000} STX</span>
+        <span className="text-gray-900 font-medium">{ustx / 1000000} STX</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         <span className="text-gray-900 font-medium">${price / 100}</span>
+      </td>
+      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+        <span className="text-gray-900 font-medium">${debt / 1000000}</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         <span className="text-gray-900 font-medium">${minimumBidAmount()}</span>

@@ -45,14 +45,15 @@ export const Auctions: React.FC = () => {
         network: network,
       });
       const json = cvToJSON(auctions);
-      let serializedAuctions:Array<{ id: string, 'ustx-amount': string }> = [];
+      let serializedAuctions:Array<{ id: string, 'ustx-amount': string, 'debt': string }> = [];
       json.value.value.forEach((e: object) => {
         const vault = tupleCV(e);
         const data = vault.data.value;
         if (data['is-open'].value) {
           serializedAuctions.push({
             id: data['id'].value,
-            'ustx-amount': data['ustx-amount'].value
+            'ustx-amount': data['ustx-amount'].value,
+            'debt': data['debt-to-raise'].value
           });
         }
       });

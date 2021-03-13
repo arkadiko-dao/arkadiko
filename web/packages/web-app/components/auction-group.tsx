@@ -4,7 +4,9 @@ import { getStxPrice } from '@common/get-stx-price';
 
 export interface AuctionProps {
   id: string;
-  'ustx-amount': string;
+  ustx: string;
+  price: string;
+  debt: string;
 }
 
 export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
@@ -13,7 +15,8 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
     <Auction
       key={auction.id}
       id={auction.id}
-      ustxAmount={auction['ustx-amount']}
+      ustx={auction['ustx-amount']}
+      debt={auction['debt']}
       price={price}
     />
   );
@@ -32,6 +35,9 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
                 </th>
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Current $ Price/STX
+                </th>
+                <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Debt to Raise
                 </th>
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Minimum Bid
