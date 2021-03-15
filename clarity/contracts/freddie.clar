@@ -21,7 +21,9 @@
   debt: uint,
   created-at-block-height: uint,
   updated-at-block-height: uint,
-  is-liquidated: bool
+  is-liquidated: bool,
+  auction-ended: bool,
+  leftover-collateral: uint
 })
 (define-map vault-entries { user: principal } { ids: (list 2000 uint) })
 (define-data-var last-vault-id uint u0)
@@ -38,6 +40,7 @@
       (created-at-block-height u0)
       (updated-at-block-height u0)
       (is-liquidated false)
+      (leftover-collateral u0)
     )
   )
 )
@@ -72,7 +75,9 @@
             debt: (unwrap-panic debt),
             created-at-block-height: block-height,
             updated-at-block-height: block-height,
-            is-liquidated: false
+            is-liquidated: false,
+            auction-ended: false,
+            leftover-collateral: u0
           }
         )
         (var-set last-vault-id vault-id)
@@ -87,14 +92,19 @@
     (if (unwrap-panic (contract-call? .stx-reserve deposit uamount))
       (begin
         (let ((new-collateral (+ uamount (get collateral vault))))
-          (map-set vaults { id: vault-id } {
-            id: vault-id,
-            owner: tx-sender,
-            collateral: new-collateral,
-            debt: (get debt vault),
-            created-at-block-height: (get created-at-block-height vault),
-            updated-at-block-height: block-height,
-            is-liquidated: false }
+          (map-set vaults
+            { id: vault-id }
+            {
+              id: vault-id,
+              owner: tx-sender,
+              collateral: new-collateral,
+              debt: (get debt vault),
+              created-at-block-height: (get created-at-block-height vault),
+              updated-at-block-height: block-height,
+              is-liquidated: false,
+              auction-ended: false,
+              leftover-collateral: u0
+            }
           )
           (ok true)
         )
@@ -106,17 +116,24 @@
 
 (define-public (withdraw (vault-id uint) (uamount uint))
   (let ((vault (get-vault-by-id vault-id)))
+    (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
+
     (if (unwrap-panic (contract-call? .stx-reserve withdraw (get owner vault) uamount))
       (begin
         (let ((new-collateral (- (get collateral vault) uamount)))
-          (map-set vaults { id: vault-id } {
-            id: vault-id,
-            owner: tx-sender,
-            collateral: new-collateral,
-            debt: (get debt vault),
-            created-at-block-height: (get created-at-block-height vault),
-            updated-at-block-height: block-height,
-            is-liquidated: false }
+          (map-set vaults
+            { id: vault-id }
+            {
+              id: vault-id,
+              owner: tx-sender,
+              collateral: new-collateral,
+              debt: (get debt vault),
+              created-at-block-height: (get created-at-block-height vault),
+              updated-at-block-height: block-height,
+              is-liquidated: false,
+              auction-ended: false,
+              leftover-collateral: u0
+            }
           )
           (ok true)
         )
@@ -128,17 +145,24 @@
 
 (define-public (mint (vault-id uint) (extra-debt uint))
   (let ((vault (get-vault-by-id vault-id)))
+    (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
+
     (if (unwrap-panic (contract-call? .stx-reserve mint (get owner vault) (get collateral vault) (get debt vault) extra-debt))
       (begin
         (let ((new-total-debt (+ extra-debt (get debt vault))))
-          (map-set vaults { id: vault-id } {
-            id: vault-id,
-            owner: (get owner vault),
-            collateral: (get collateral vault),
-            debt: new-total-debt,
-            created-at-block-height: (get created-at-block-height vault),
-            updated-at-block-height: block-height,
-            is-liquidated: false }
+          (map-set vaults
+            { id: vault-id }
+            {
+              id: vault-id,
+              owner: (get owner vault),
+              collateral: (get collateral vault),
+              debt: new-total-debt,
+              created-at-block-height: (get created-at-block-height vault),
+              updated-at-block-height: block-height,
+              is-liquidated: false,
+              auction-ended: false,
+              leftover-collateral: u0
+            }
           )
           (ok true)
         )
@@ -150,18 +174,25 @@
 
 (define-public (burn (vault-id uint) (vault-owner principal))
   (let ((vault (get-vault-by-id vault-id)))
+    (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
+
     (if (unwrap-panic (contract-call? .stx-reserve burn (get owner vault) (get debt vault) (get collateral vault)))
       (begin
         (let ((entries (get ids (get-vault-entries vault-owner))))
-          (print (map-set vaults { id: vault-id } {
-            id: vault-id,
-            owner: vault-owner,
-            collateral: u0,
-            debt: u0,
-            created-at-block-height: (get created-at-block-height vault),
-            updated-at-block-height: block-height,
-            is-liquidated: false
-          } ))
+          (map-set vaults
+            { id: vault-id }
+            {
+              id: vault-id,
+              owner: vault-owner,
+              collateral: u0,
+              debt: u0,
+              created-at-block-height: (get created-at-block-height vault),
+              updated-at-block-height: block-height,
+              is-liquidated: false,
+              auction-ended: false,
+              leftover-collateral: u0
+            }
+          )
           ;; TODO: remove vault ID from vault entries
           ;; (map-set vault-entries { user: tx-sender } { () })
           (ok (map-delete vaults { id: vault-id }))
@@ -179,15 +210,20 @@
         (if (is-ok (contract-call? .stx-reserve liquidate (get collateral vault) (get debt vault)))
           (begin
             (let ((collateral (get collateral vault)))
-              (print (map-set vaults { id: vault-id } {
-                id: vault-id,
-                owner: (get owner vault),
-                collateral: u0,
-                debt: (get debt vault),
-                created-at-block-height: (get created-at-block-height vault),
-                updated-at-block-height: block-height,
-                is-liquidated: true
-              } ))
+              (map-set vaults
+                { id: vault-id }
+                {
+                  id: vault-id,
+                  owner: (get owner vault),
+                  collateral: u0,
+                  debt: (get debt vault),
+                  created-at-block-height: (get created-at-block-height vault),
+                  updated-at-block-height: block-height,
+                  is-liquidated: true,
+                  auction-ended: false,
+                  leftover-collateral: u0
+                }
+              )
               (let ((debt (/ (* u13 (get debt vault)) u100)))
                 (ok (tuple (ustx-amount collateral) (debt (+ debt (get debt vault)))))
               )
@@ -198,5 +234,54 @@
       )
     )
     (err err-unauthorized)
+  )
+)
+
+(define-public (finalize-liquidation (vault-id uint) (leftover-collateral uint))
+  (if (is-eq contract-caller 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP.auction-engine)
+    (let ((vault (get-vault-by-id vault-id)))
+      (map-set vaults
+        { id: vault-id }
+        {
+          id: vault-id,
+          owner: (get owner vault),
+          collateral: u0,
+          debt: (get debt vault),
+          created-at-block-height: (get created-at-block-height vault),
+          updated-at-block-height: block-height,
+          is-liquidated: true,
+          auction-ended: true,
+          leftover-collateral: leftover-collateral
+        }
+      )
+      (ok true)
+    )
+    (err err-unauthorized)
+  )
+)
+
+(define-public (withdraw-leftover-collateral (vault-id uint))
+  (let ((vault (get-vault-by-id vault-id)))
+    (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
+    (if (unwrap-panic (contract-call? .stx-reserve withdraw (get owner vault) (get leftover-collateral vault)))
+      (begin
+        (map-set vaults
+          { id: vault-id }
+          {
+            id: vault-id,
+            owner: tx-sender,
+            collateral: (get collateral vault),
+            debt: (get debt vault),
+            created-at-block-height: (get created-at-block-height vault),
+            updated-at-block-height: block-height,
+            is-liquidated: true,
+            auction-ended: true,
+            leftover-collateral: u0
+          }
+        )
+        (ok true)
+      )
+      (err err-withdraw-failed)
+    )
   )
 )

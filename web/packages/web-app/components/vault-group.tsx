@@ -11,6 +11,8 @@ export const VaultGroup: React.FC = () => {
       id={vault.id}
       collateral={vault['collateral']}
       debt={vault['debt']}
+      isLiquidated={vault['is-liquidated']}
+      auctionEnded={vault['auction-ended']}
     />
   );
   return (

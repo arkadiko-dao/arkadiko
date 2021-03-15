@@ -30,7 +30,7 @@
     (print amount)
     (print tx-sender)
     (print recipient)
-    (print (ft-transfer? xusd amount tx-sender recipient))
+    (ft-transfer? xusd amount tx-sender recipient)
   )
 )
 

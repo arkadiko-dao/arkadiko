@@ -48,15 +48,18 @@ export const App: React.FC = () => {
             network: network,
           });
           const json = cvToJSON(vaults);
-          let arr:Array<{ id: string, owner: string, collateral: string, debt: string }> = [];
+          let arr:Array<{ id: string, owner: string, collateral: string, debt: string, 'is-liquidated': string, 'auction-ended': string }> = [];
           json.value.value.forEach((e: object) => {
             const vault = tupleCV(e);
             const data = vault.data.value;
-            if (data['collateral'].value !== 0) {
+            if (data['id'].value !== 0) {
               arr.push({
                 id: data['id'].value,
                 owner: data['owner'].value,
                 collateral: data['collateral'].value,
+                'is-liquidated': data['is-liquidated'].value,
+                'auction-ended': data['auction-ended'].value,
+                'leftover-collateral': data['leftover-collateral'].value,
                 debt: data['debt'].value
               });
             }
@@ -113,7 +116,7 @@ export const App: React.FC = () => {
     if (userSession.isSignInPending()) {
       const userData = await userSession.handlePendingSignIn();
       const balance = await fetchBalances(userData?.profile?.stxAddress?.testnet);
-      setState({ userData, balance: balance, vaults: [] });
+      setState({ userData, balance: balance, vaults: [], riskParameters: {}, isStacker: false });
       setAppPrivateKey(userData.appPrivateKey);
     } else if (userSession.isUserSignedIn()) {
       setAppPrivateKey(userSession.loadUserData().appPrivateKey);
@@ -132,7 +135,7 @@ export const App: React.FC = () => {
       const userData = userSession.loadUserData();
       setAppPrivateKey(userSession.loadUserData().appPrivateKey);
       setAuthResponse(authResponse);
-      setState({ userData, balance: {}, vaults: [] });
+      setState({ userData, balance: {}, vaults: [], riskParameters: {}, isStacker: false });
       console.log(userData);
     },
     onCancel: () => {

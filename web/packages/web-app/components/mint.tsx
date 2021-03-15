@@ -47,7 +47,7 @@ export const Mint = () => {
 
     const transaction = await makeSTXTokenTransfer({
       recipient: standardPrincipalCV(address || ''),
-      amount: new BN(50000000),
+      amount: new BN(5000000000),
       senderKey: privateKeyToString(senderKey),
       network: network
     });
@@ -90,7 +90,7 @@ export const Mint = () => {
               {env == 'mocknet' ? (
                 <Box>
                   <Link onClick={() => addMocknetStx()} color="blue" display="inline-block" my={3} ml={5}>
-                    (Get 50 STX tokens from mocknet)
+                    (Get 5000 STX tokens from mocknet)
                   </Link>
                   <Link onClick={() => callCollateralizeAndMint()} color="blue" display="inline-block" my={3} ml={5}>
                     (Create test vault)

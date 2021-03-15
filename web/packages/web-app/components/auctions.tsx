@@ -45,16 +45,21 @@ export const Auctions: React.FC = () => {
         network: network,
       });
       const json = cvToJSON(auctions);
-      let serializedAuctions:Array<{ id: string, 'ustx-amount': string, 'debt': string }> = [];
+      let serializedAuctions:Array<{ id: string, 'lot-id':string, 'collateral-amount': string, 'debt': string, 'ends-at': string }> = [];
       json.value.value.forEach((e: object) => {
         const vault = tupleCV(e);
         const data = vault.data.value;
         if (data['is-open'].value) {
-          serializedAuctions.push({
-            id: data['id'].value,
-            'ustx-amount': data['ustx-amount'].value,
-            'debt': data['debt-to-raise'].value
-          });
+          const lotSize = parseInt(data['lots'].value, 10);
+          for (let index = 0; index < lotSize; index++) {
+            serializedAuctions.push({
+              id: data['id'].value,
+              'lot-id': index,
+              'collateral-amount': parseFloat(data['collateral-amount'].value) / lotSize,
+              'debt': parseFloat(data['debt-to-raise'].value) / lotSize,
+              'ends-at': data['ends-at'].value
+            }); 
+          }
         }
       });
 
@@ -95,7 +100,7 @@ export const Auctions: React.FC = () => {
                     </div>
                   </div>
 
-                  {auctions ? (
+                  {auctions.length > 0 ? (
                     <AuctionGroup auctions={auctions} />
                   ) : (
                     <p>There are currently no open auctions</p>

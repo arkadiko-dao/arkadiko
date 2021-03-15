@@ -80,7 +80,7 @@ describe("stacks reserve test suite", () => {
       const auction = cvToJSON(auctions).value.value[1];
 
       assert.equal(
-        auction.value['ustx-amount']['value'].toString(),
+        auction.value['collateral-amount']['value'].toString(),
         "5000000"
       );
     });
