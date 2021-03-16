@@ -317,7 +317,7 @@ Splitting up the above user stories in a simple yet pragmatic overview, I would 
 - Security Audit
 - The reason US 13 (and 16 to an extent) is significantly higher than other ones is that it involves stacking (autonomously or through a pool) which requires testing Stacking, and it will likely be the last work on the MVP
 
-Once milestone 4 is reached, all of the risks (see section on Risks) should be derisked, where the blocking of Arkadiko dependencies on mainnet looks like a major item. The above timing is an estimate but should be on the conservative side, and thus doable.
+Once milestone 4 is reached, all of the risks (see section on Risks) should be derisked, where the blocking of Arkadiko dependencies on mainnet looks like a major item. The above timing is an estimate but should be on the conservative side, and thus doable. I'm open to feedback or a variation of above milestones if certain things could be delivered more efficiently or in a different manner.
 
 ## Team
 
