@@ -11,8 +11,6 @@ The Stacks (DeFi) ecosystem is quite new and does not have any of the crucial De
 ## Project Overview
 **What solution are you providing? Who will it serve?**
 
-Disclaimer: the name of the project and tokens are subject to change.
-
 Arkadiko implements a stablecoin soft-pegged to 1 USD called xUSD and a Governance Token called DIKO that create the foundational primitives for a lending/borrowing platform.
 
 The Arkadiko protocol trustlessly provides stable loans backed by the Stacks Tokens (STX), known as Arkadiko xUSD. In order to mint xUSD, you need to over-collateralise Stacks (STX) tokens into an Arkadiko Stacks Vault. In other words, xUSD is a stablecoin, existing to maintain relative price stability in volatile markets. People repay their loans by returning xUSD plus a little more to cover the fixed interest on the loan (called the stability fee). The loan can be paid back anytime, as there is no repayment schedule. The protocol enforces the price by selling off a person's STX if its total value falls below 150 percent (liquidation ratio) of how ever much STX the user borrowed. All STX will be sold through auctions to stackers who are registered with the protocol.
