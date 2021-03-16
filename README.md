@@ -1,17 +1,17 @@
 # Arkadiko
 https://www.arkadiko.finance/
 
-Arkadiko implements a stablecoin soft-pegged to 1 USD called xUSD and a Governance Token called Somos (ARE) that create the foundational primitives for a lending/borrowing platform.
+Arkadiko implements a stablecoin soft-pegged to 1 USD called xUSD and a Governance Token DIKO that create the foundational primitives for a lending/borrowing platform.
 
 The Arkadiko protocol trustlessly provides stable loans backed by Stacks Tokens (STX), known as xUSD. In order to mint xUSD, you need to over-collateralise Stacks (STX) tokens into an Arkadiko Stacks Vault. In other words, xUSD is a stablecoin, existing to maintain relative price stability in volatile markets. People repay their loans by returning xUSD plus a little more to cover the fixed interest on the loan (called the stability fee). The loan can be paid back anytime, as there is no repayment schedule. The protocol enforces the price by selling off a person's STX if its total value falls below 150 percent (liquidation ratio) of how ever much STX the user borrowed. All STX will be sold through auctions to stackers who are registered with the protocol.
 
-No more and no less xUSD exist in the world than loans made in it at that time. Every single xUSD is some piece of someone’s STX, locked up on the Arkadiko protocol until the person who put in their STX pays the xUSD back. When xUSD goes into the system to repay a loan, it just gets burnt and disappears forever. Only the interest (i.e. stability fee) remains for Arkadiko to use to reward ARE holders or cover expenses for the protocol.
+No more and no less xUSD exist in the world than loans made in it at that time. Every single xUSD is some piece of someone’s STX, locked up on the Arkadiko protocol until the person who put in their STX pays the xUSD back. When xUSD goes into the system to repay a loan, it just gets burnt and disappears forever. Only the interest (i.e. stability fee) remains for Arkadiko to use to reward DIKO holders or cover expenses for the protocol.
 
 When STX are posted as collateral to mint stablecoins, the STX tokens will automatically be used to stack natively on the Stacks protocol (either autonomously or through a delegation pool). The yield earned in bitcoin will be used for three purposes:
 
 1. Reward xUSD stablecoin minters to HODL and use their stablecoins (e.g. they take 80% of the yield)
 2. Go into the reserve of the DAO to cover expenses (e.g. the reserve takes 5% of the yield)
-3. Distribute earnings among the ARE governance token holders (e.g. the token holders get 15% of the yield)
+3. Distribute earnings among the DIKO governance token holders (e.g. the token holders get 15% of the yield)
 
 All yields, numbers and parameters will eventually be voted and decided upon through the DAO (Decentralised Autonomous Organisation), where each ARE token counts towards one vote.
 
@@ -24,7 +24,7 @@ A high-level architecture would look as follows:
 
 ## xUSD: Arkadiko Stablecoin
 
-Whenever new xUSD is minted, debt (as collateral) is created in the network. With every type of collateral (in principal only $STX will be accepted as collateral), a set of Risk parameters will be decided on by the community. These parameters can be voted on through the $ARE governance token. Each token has 1 vote.
+Whenever new xUSD is minted, debt (as collateral) is created in the network. With every type of collateral (in principal only $STX will be accepted as collateral), a set of Risk parameters will be decided on by the community. These parameters can be voted on through the DIKO governance token. Each token has 1 vote.
 
 ### Stablecoin Risk Parameters
 

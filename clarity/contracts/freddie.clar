@@ -13,11 +13,12 @@
 (define-constant err-liquidation-failed u8)
 
 ;; Map of vault entries
-;; The entry consists of a user principal with their STX balance collateralized
+;; The entry consists of a user principal with their collateral and debt balance
 (define-map vaults { id: uint } {
   id: uint,
   owner: principal,
   collateral: uint,
+  collateral-type: (string-ascii 4),
   debt: uint,
   created-at-block-height: uint,
   updated-at-block-height: uint,
@@ -25,7 +26,7 @@
   auction-ended: bool,
   leftover-collateral: uint
 })
-(define-map vault-entries { user: principal } { ids: (list 2000 uint) })
+(define-map vault-entries { user: principal } { ids: (list 1500 uint) })
 (define-data-var last-vault-id uint u0)
 
 ;; getters
@@ -36,6 +37,7 @@
       (id u0)
       (owner 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP)
       (collateral u0)
+      (collateral-type "")
       (debt u0)
       (created-at-block-height u0)
       (updated-at-block-height u0)
@@ -61,17 +63,18 @@
   )
 )
 
-(define-public (collateralize-and-mint (uamount uint) (sender principal) (collateral-type (string-ascii 10)))
+(define-public (collateralize-and-mint (uamount uint) (sender principal) (collateral-type (string-ascii 4)))
   (let ((debt (contract-call? .stx-reserve collateralize-and-mint uamount sender)))
     (let ((vault-id (+ (var-get last-vault-id) u1)))
       (let ((entries (get ids (get-vault-entries sender))))
-        (map-set vault-entries { user: sender } { ids: (unwrap-panic (as-max-len? (append entries vault-id) u2000)) })
+        (map-set vault-entries { user: sender } { ids: (unwrap-panic (as-max-len? (append entries vault-id) u1500)) })
         (map-set vaults
           { id: vault-id }
           {
             id: vault-id,
             owner: sender,
             collateral: uamount,
+            collateral-type: collateral-type,
             debt: (unwrap-panic debt),
             created-at-block-height: block-height,
             updated-at-block-height: block-height,
@@ -98,6 +101,7 @@
               id: vault-id,
               owner: tx-sender,
               collateral: new-collateral,
+              collateral-type: (get collateral-type vault),
               debt: (get debt vault),
               created-at-block-height: (get created-at-block-height vault),
               updated-at-block-height: block-height,
@@ -127,6 +131,7 @@
               id: vault-id,
               owner: tx-sender,
               collateral: new-collateral,
+              collateral-type: (get collateral-type vault),
               debt: (get debt vault),
               created-at-block-height: (get created-at-block-height vault),
               updated-at-block-height: block-height,
@@ -156,6 +161,7 @@
               id: vault-id,
               owner: (get owner vault),
               collateral: (get collateral vault),
+              collateral-type: (get collateral-type vault),
               debt: new-total-debt,
               created-at-block-height: (get created-at-block-height vault),
               updated-at-block-height: block-height,
@@ -185,6 +191,7 @@
               id: vault-id,
               owner: vault-owner,
               collateral: u0,
+              collateral-type: (get collateral-type vault),
               debt: u0,
               created-at-block-height: (get created-at-block-height vault),
               updated-at-block-height: block-height,
@@ -216,6 +223,7 @@
                   id: vault-id,
                   owner: (get owner vault),
                   collateral: u0,
+                  collateral-type: (get collateral-type vault),
                   debt: (get debt vault),
                   created-at-block-height: (get created-at-block-height vault),
                   updated-at-block-height: block-height,
@@ -224,7 +232,7 @@
                   leftover-collateral: u0
                 }
               )
-              (let ((debt (/ (* u13 (get debt vault)) u100)))
+              (let ((debt (/ (* (unwrap-panic (contract-call? .dao get-liquidation-ratio "stx")) (get debt vault)) u100)))
                 (ok (tuple (ustx-amount collateral) (debt (+ debt (get debt vault)))))
               )
             )
@@ -246,6 +254,7 @@
           id: vault-id,
           owner: (get owner vault),
           collateral: u0,
+          collateral-type: (get collateral-type vault),
           debt: (get debt vault),
           created-at-block-height: (get created-at-block-height vault),
           updated-at-block-height: block-height,
@@ -271,6 +280,7 @@
             id: vault-id,
             owner: tx-sender,
             collateral: (get collateral vault),
+            collateral-type: (get collateral-type vault),
             debt: (get debt vault),
             created-at-block-height: (get created-at-block-height vault),
             updated-at-block-height: block-height,

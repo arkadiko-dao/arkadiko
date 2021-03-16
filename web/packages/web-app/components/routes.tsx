@@ -6,6 +6,7 @@ import { Auctions } from './auctions';
 import { Governance } from './governance';
 import { NewVault } from './new-vault';
 import { ManageVault } from './manage-vault';
+import { ViewProposal } from './view-proposal';
 
 export const routerConfig = [
   {
@@ -23,6 +24,7 @@ export function Routes() {
       <Route exact path="/governance" component={Governance} />
       <Route exact path="/vaults/new" component={NewVault} />
       <Route path="/vaults/:id" component={ManageVault} />
+      <Route path="/governance/:id" component={ViewProposal} />
       <Redirect to="/" />
     </Switch>
   );

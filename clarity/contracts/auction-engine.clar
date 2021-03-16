@@ -226,6 +226,7 @@
 ;; DONE 4. update vault to allow vault owner to withdraw leftover collateral (if any)
 ;; 5. if not all vault debt is covered: auction off collateral again (if any left)
 ;; 6. if not all vault debt is covered and no collateral is left: cover xUSD with gov token
+;; TODO: maybe keep an extra map with bids and (bidder, auction id, lot id) tuple as key with all their bids
 (define-private (close-auction (auction-id uint))
   (let ((auction (get-auction-by-id auction-id)))
     (map-set auctions

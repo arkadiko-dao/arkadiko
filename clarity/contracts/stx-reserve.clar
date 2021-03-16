@@ -13,79 +13,8 @@
 (define-constant err-withdraw-failed u6)
 (define-constant err-mint-failed u7)
 
-;; risk parameters
-(define-data-var liquidation-ratio uint u150)
-(define-data-var collateral-to-debt-ratio uint u200)
-(define-data-var maximum-debt uint u100000000)
-(define-data-var liquidation-penalty uint u13)
-(define-data-var stability-fee uint u0)
-
 (define-read-only (get-risk-parameters)
-  (ok (tuple
-    (liquidation-ratio (var-get liquidation-ratio))
-    (collateral-to-debt-ratio (var-get collateral-to-debt-ratio))
-    (maximum-debt (var-get maximum-debt))
-    (liquidation-penalty (var-get liquidation-penalty))
-    (stability-fee (var-get stability-fee))
-    )
-  )
-)
-
-(define-read-only (get-liquidation-ratio)
-  (ok (var-get liquidation-ratio))
-)
-
-(define-read-only (get-collateral-to-debt-ratio)
-  (ok (var-get collateral-to-debt-ratio))
-)
-
-(define-read-only (get-maximum-debt)
-  (ok (var-get maximum-debt))
-)
-
-(define-read-only (get-liquidation-penalty)
-  (ok (var-get liquidation-penalty))
-)
-
-;; setters accessible only by DAO contract
-(define-public (set-liquidation-ratio (ratio uint))
-  (if (is-eq contract-caller 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH.dao)
-    (begin
-      (var-set liquidation-ratio ratio)
-      (ok (var-get liquidation-ratio))
-    )
-    (ok (var-get liquidation-ratio))
-  )
-)
-
-(define-public (set-collateral-to-debt-ratio (ratio uint))
-  (if (is-eq contract-caller 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH.dao)
-    (begin
-      (var-set collateral-to-debt-ratio ratio)
-      (ok (var-get collateral-to-debt-ratio))
-    )
-    (ok (var-get collateral-to-debt-ratio))
-  )
-)
-
-(define-public (set-maximum-debt (debt uint))
-  (if (is-eq contract-caller 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH.dao)
-    (begin
-      (var-set maximum-debt debt)
-      (ok (var-get maximum-debt))
-    )
-    (ok (var-get maximum-debt))
-  )
-)
-
-(define-public (set-liquidation-penalty (penalty uint))
-  (if (is-eq contract-caller 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH.dao)
-    (begin
-      (var-set liquidation-penalty penalty)
-      (ok (var-get liquidation-penalty))
-    )
-    (ok (var-get liquidation-penalty))
-  )
+  (ok (contract-call? .dao get-risk-parameters "stx"))
 )
 
 ;; MAIN LOGIC
@@ -95,7 +24,11 @@
 ;; (dollar-collateral-posted-in-cents / collateral-to-debt-ratio) == stablecoins to mint
 (define-read-only (calculate-xusd-count (ustx-amount uint))
   (let ((stx-price-in-cents (contract-call? .oracle get-price)))
-    (let ((amount (/ (* ustx-amount (get price stx-price-in-cents)) (var-get collateral-to-debt-ratio))))
+    (let ((amount
+      (/
+        (* ustx-amount (get price stx-price-in-cents))
+        (unwrap-panic (contract-call? .dao get-collateral-to-debt-ratio "stx"))
+      )))
       (ok amount)
     )
   )
@@ -183,7 +116,7 @@
     (begin
       (match (as-contract (stx-transfer? stx-collateral (as-contract tx-sender) stx-liquidation-reserve))
         success (begin
-          (let ((new-debt (/ (* (var-get liquidation-penalty) current-debt) u100)))
+          (let ((new-debt (/ (* (unwrap-panic (contract-call? .dao get-liquidation-penalty "stx")) current-debt) u100)))
             (ok (tuple (ustx-amount stx-collateral) (debt (+ new-debt current-debt))))
           )
         )
