@@ -344,6 +344,7 @@ A stablecoin and liquidity protocol is one of the cornerstones of DeFi, and will
 - Trading Liquidity (e.g. can be the standard to trade against on Stacks DEXes) & Market-Making
 - Enables stacking with a tradeable derivative (i.e. allows trading a productive asset that yields btc while the STX are locked up)
 - Lending & Borrowing liquidity milestone to build out Arkadiko Lending & Borrowing Platform which will support a multitude of assets (and SRC20 tokens)
+- Integration into apps like Pravica which could turn it into a WeChat-like platform with chat, xUSD stablecoin payments (e-commerce?) etc
 - Any application that wants to make use of stable prices & liquidity (e.g. games, prediction markets)
 - When a Stacks-native peg against another stablecoin exists (e.g. USDT/USDC/...), you could even trade the xUSD for it, transfer the coins to a CEX, cash out into "real fiat" and use it to cover real-life investments and expenses. Your STX (or other forms of collateral) will be there for you unless you get liquidated.
 
