@@ -8,12 +8,14 @@ import { useConnect } from '@stacks/connect-react';
 import { callReadOnlyFunction, uintCV, stringAsciiCV, listCV, tupleCV, cvToJSON } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ProposalGroup } from '@components/proposal-group';
+import { Link } from '@components/link';
 
 export const Governance = () => {
   const state = useContext(AppContext);
   const { doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
   const [proposals, setProposals] = useState([]);
+  const env = process.env.REACT_APP_NETWORK_ENV;
 
   const callAddProposal = async () => {
     const authOrigin = getAuthOrigin();
@@ -22,7 +24,6 @@ export const Governance = () => {
     const list = listCV([
       tupleCV({
         key: stringAsciiCV("liquidation_penalty"),
-        'old-value': uintCV(13),
         'new-value': uintCV(15)
       })
     ])
@@ -66,21 +67,23 @@ export const Governance = () => {
       }> = [];
       const data = json.value;
 
-      serializedProposals.push({
-        id: data['id'].value,
-        proposer: data['proposer'].value,
-        forVotes: data['yes-votes'].value,
-        against: data['no-votes'].value,
-        token: data['token'].value,
-        type: data['type'].value,
-        changes: [{
-          key: data['changes'].value[0].value['key'].value,
-          'old-value': 0,
-          'new-value': data['changes'].value[0].value['new-value'].value
-        }],
-        'start-block-height': data['start-block-height'].value,
-        'end-block-height': data['end-block-height'].value
-      });
+      if (data['id'].value != 0) {
+        serializedProposals.push({
+          id: data['id'].value,
+          proposer: data['proposer'].value,
+          forVotes: data['yes-votes'].value,
+          against: data['no-votes'].value,
+          token: data['token'].value,
+          type: data['type'].value,
+          changes: [{
+            key: data['changes'].value[0].value['key'].value,
+            'old-value': 0,
+            'new-value': data['changes'].value[0].value['new-value'].value
+          }],
+          startBlockHeight: data['start-block-height'].value,
+          endBlockHeight: data['end-block-height'].value
+        });
+      }
       setProposals(serializedProposals);
     };
     if (mounted) {
@@ -105,12 +108,22 @@ export const Governance = () => {
                         <span className="block">Arkadiko Governance</span>
                       </h2>
                       <p className="mt-4 text-lg leading-6 text-indigo-200">
-                        DIKO tokens represent voting shares in Arkadiko governance. You can vote on each proposal yourself and cannot delegate any votes.
+                        DIKO tokens represent voting shares in Arkadiko governance. You can vote on each proposal and cannot delegate any votes.
                       </p>
                     </div>
                   </div>
 
-                  <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8">Proposals</h2>
+                  <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8">
+                    Current Open Proposals
+
+                    {env == 'mocknet' ? (
+                      <Box>
+                        <Link onClick={() => callAddProposal()} color="blue" display="inline-block" my={3} ml={5}>
+                          (Get 5000 DIKO tokens from mocknet)
+                        </Link>
+                      </Box>
+                    ) : ``}
+                  </h2>
                   {proposals.length > 0 ? (
                     <ProposalGroup proposals={proposals} />
                   ) : (

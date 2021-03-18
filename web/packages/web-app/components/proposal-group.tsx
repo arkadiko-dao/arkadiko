@@ -8,6 +8,8 @@ export interface ProposalProps {
   against: number;
   token: string;
   type: string;
+  startBlockHeight: number;
+  endBlockHeight: number;
   changes: object[];
 }
 
@@ -21,13 +23,17 @@ export const ProposalGroup: React.FC<ProposalProps[]> = ({ proposals }) => {
       against={proposal.against}
       token={proposal.token}
       type={proposal.type}
+      startBlockHeight={proposal.startBlockHeight}
+      endBlockHeight={proposal.endBlockHeight}
       changes={proposal.changes}
     />
   );
 
   return (
-    <div>
-      {proposalItems}
+    <div className="bg-white shadow overflow-hidden mt-5 sm:rounded-md">
+      <ul className="divide-y divide-gray-200">
+        {proposalItems}
+      </ul>
     </div>
   );
 };
