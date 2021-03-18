@@ -13,7 +13,7 @@ When STX are posted as collateral to mint stablecoins, the STX tokens will autom
 2. Go into the reserve of the DAO to cover expenses (e.g. the reserve takes 5% of the yield)
 3. Distribute earnings among the DIKO governance token holders (e.g. the token holders get 15% of the yield)
 
-All yields, numbers and parameters will eventually be voted and decided upon through the DAO (Decentralised Autonomous Organisation), where each ARE token counts towards one vote.
+All yields, numbers and parameters will eventually be voted and decided upon through the DAO (Decentralised Autonomous Organisation), where each DIKO token counts towards one vote.
 
 ## Architecture
 
@@ -37,9 +37,9 @@ Whenever new xUSD is minted, debt (as collateral) is created in the network. Wit
 - Liquidation Penalty:​ The Liquidation Penalty is a fee added to a Reserve's total outstanding generated xUSD when a Liquidation occurs. The Liquidation Penalty is used to encourage xUSD owners to keep appropriate collateral levels.
 
 
-## Somos: Arkadiko Governance Token
+## Arkadiko Governance Token
 
-The $ARE governance token is used to manage and vote on proposals put forward by the community.
+The DIKO governance token is used to manage and vote on proposals put forward by the community.
 
 - Add a​ ​new​ ​collateral asset ​type with a unique set of Risk Parameters.
 - Change the Risk Parameters of one or more existing collateral asset types
