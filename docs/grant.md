@@ -253,6 +253,17 @@ the Clarity Contract must do the following, atomically:
 
 ---
 
+17. As a stacker, I can buy up collateral from liquidated vaults in lots of 100 xUSD
+
+When a vault gets liquidated, the collateral will be auctioned off for xUSD, to keep the debt in the system in balance. By default, this auction will be split up in lots of 100 xUSD, but this is yet another configurable parameter by the DAO. Once all collateral is auctioned off, the protocol should have raised enough xUSD to burn and keep the system in balance.
+
+#### Acceptance Criteria
+the Clarity Contract must do the following, atomically:
+- Split up the collateral in lots of 100 xUSD
+- Allow bids on the collateral. If the bid is 100 xUSD or more, the bid is automatically accepted and the collateral is assigned to the winning stacker
+
+---
+
 ## Budget & Milestones
 **What grant amount are you seeking? How long will the project take in hours? If more than 20, please break down the project into milestones, with a clear output (e.g., low-fi mockup, MVP with two features) and include the estimated work hours for each milestone.**
 
@@ -281,7 +292,7 @@ This project will take hundreds of hours (probably more like thousands for a mai
 | 14  | As a stacker, I can buy up liquidated STX tokens in an auction   | 4 days | $4000    |
 | 15  | As a guest, I can browse the main page | 5 days  | $5000    |
 | 16  | As a user, I can take out collateral when my collateral to debt ratio goes over 200 | 6 days | $6000 |
-| 17  | As a stacker, I can buy up collateral from liquidated vaults in lots of 100 STX | 6 days | $6000 |
+| 17  | As a stacker, I can buy up collateral from liquidated vaults in lots of 100 xUSD | 6 days | $6000 |
 | | | 89 days | $ 89,000 |
 
 The above includes only application functionality and is an estimation after subtracting the work already done. I have not included work on setting up a reliable CI pipeline to have automated testing on each build, documentation writing, legal work etc, which will take the total estimate over $100K. The total time and cost of this project exceeds the scope of the grant, but the grant would deliver significant support to bootstrap the development.
