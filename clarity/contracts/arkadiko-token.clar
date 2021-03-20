@@ -41,3 +41,10 @@
 (define-public (burn (amount uint) (sender principal))
   (ok (as-contract (ft-burn? diko amount sender)))
 )
+
+;; Initialize the contract
+(begin
+  ;; mint 1 million tokens
+  (try! (ft-mint? diko u990000000000 'S02J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKPVKG2CE))
+  (try! (ft-mint? diko u10000000000 'ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF))
+)

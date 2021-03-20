@@ -52,7 +52,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
     if (!bidAmount) {
       return;
     }
-    console.log('ADding with bid amount', bidAmount);
+    console.log('Adding with bid amount', bidAmount);
 
     const authOrigin = getAuthOrigin();
     await doContractCall({
@@ -61,11 +61,10 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
       contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
       contractName: 'auction-engine',
       functionName: 'bid',
-      functionArgs: [uintCV(bidAuctionId), uintCV(bidLotId), uintCV(bidAmount * 1000000), uintCV(collateralAmount * 100)],
+      functionArgs: [uintCV(bidAuctionId), uintCV(bidLotId), uintCV(bidAmount * 1000000), uintCV(collateralAmount)],
       postConditionMode: 0x01,
       finished: data => {
-        console.log('finished deposit!', data);
-        console.log(data.stacksTransaction.auth.spendingCondition?.nonce.toNumber());
+        console.log('finished bidding!', data);
       },
     });
   };

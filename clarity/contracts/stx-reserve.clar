@@ -1,9 +1,5 @@
 ;; (impl-trait .vault-trait.vault-trait)
 
-;; addresses
-(define-constant stx-reserve-address 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP)
-(define-constant stx-liquidation-reserve 'S02J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKPVKG2CE)
-
 ;; errors
 (define-constant err-unauthorized u1)
 (define-constant err-transfer-failed u2)
@@ -114,15 +110,15 @@
 (define-public (liquidate (stx-collateral uint) (current-debt uint))
   (if (is-eq contract-caller 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP.freddie)
     (begin
-      (match (as-contract (stx-transfer? stx-collateral (as-contract tx-sender) stx-liquidation-reserve))
-        success (begin
-          (let ((new-debt (/ (* (unwrap-panic (contract-call? .dao get-liquidation-penalty "stx")) current-debt) u100)))
-            (ok (tuple (ustx-amount stx-collateral) (debt (+ new-debt current-debt))))
-          )
-        )
-        error (err err-transfer-failed)
+      (let ((new-debt (/ (* (unwrap-panic (contract-call? .dao get-liquidation-penalty "stx")) current-debt) u100)))
+        (ok (tuple (ustx-amount stx-collateral) (debt (+ new-debt current-debt))))
       )
     )
     (err err-unauthorized)
   )
+)
+
+;; TODO: add secure asserts - this should be very limited in terms of access
+(define-public (redeem-collateral (stx-collateral uint) (owner principal))
+  (ok (as-contract (stx-transfer? stx-collateral (as-contract tx-sender) owner)))
 )

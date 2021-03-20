@@ -30,6 +30,8 @@ export const ManageVault = ({ match }) => {
         return vault;
       }
     }
+
+    return null;
   }
   const vault = searchVault(match.params.id);
 

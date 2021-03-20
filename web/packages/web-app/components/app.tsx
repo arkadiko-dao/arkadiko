@@ -89,6 +89,7 @@ export const App: React.FC = () => {
               userData,
               balance: {
                 xusd: account.xusd.toString(),
+                diko: account.diko.toString(),
                 stx: account.stx.toString()
               },
               vaults: arr,

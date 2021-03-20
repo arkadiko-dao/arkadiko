@@ -9,6 +9,7 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, ustx, price, debt, 
   const [currentBid, setCurrentBid] = useState(0);
   const [isClosed, setIsClosed] = useState(false);
   const [acceptedCollateral, setAcceptedCollateral] = useState(0);
+  const [debtToRaise, setDebtToRaise] = useState(debt);
   const stxAddress = useSTXAddress();
 
   useEffect(() => {
@@ -26,6 +27,10 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, ustx, price, debt, 
 
       const collJson = cvToJSON(minimumCollateralAmount);
       setMinimumCollateralAmount(collJson.value.value);
+      // const debtNeeded = collJson.value.value * (price / 100);
+      // if (debtToRaise > debtNeeded) {
+      //   setDebtToRaise(debtNeeded);
+      // }
 
       const currentBid = await callReadOnlyFunction({
         contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
@@ -47,12 +52,12 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, ustx, price, debt, 
     }
 
     return () => { mounted = false; }
-  }, []);
+  }, [price]);
 
   const setBidParams = () => {
     setBidAuctionId(id);
     setBidLotId(lotId);
-    setPreferredBid(debt / 1000000);
+    setPreferredBid(debtToRaise / 1000000);
     setShowBidModal(true);
     setCollateralAmount(minimumCollateralAmount);
   };
@@ -77,7 +82,7 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, ustx, price, debt, 
           {isClosed ? (
             <span>{acceptedCollateral / 1000000} STX</span>
             ) : (
-            <span>{minimumCollateralAmount / 10000} STX</span>
+            <span>{minimumCollateralAmount / 1000000} STX</span>
           )}
         </span>
       </td>

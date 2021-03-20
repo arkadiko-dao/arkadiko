@@ -5,15 +5,17 @@ import { Redirect } from 'react-router-dom';
 import { Container } from './home'
 import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
-import { callReadOnlyFunction, cvToJSON, tupleCV } from '@stacks/transactions';
+import { callReadOnlyFunction, cvToJSON, tupleCV, uintCV, standardPrincipalCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { AuctionGroup } from '@components/auction-group';
+import { LotGroup } from '@components/lot-group';
 
 export const Auctions: React.FC = () => {
   const state = useContext(AppContext);
   const { doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
   const [auctions, setAuctions] = useState([]);
+  const [lots, setLots] = useState([]);
 
   const registerStacker = async () => {
     const authOrigin = getAuthOrigin();
@@ -49,7 +51,7 @@ export const Auctions: React.FC = () => {
       json.value.value.forEach((e: object) => {
         const vault = tupleCV(e);
         const data = vault.data.value;
-        if (data['is-open'].value) {
+        if (true) { //data['is-open'].value) {
           const lotSize = parseInt(data['lots'].value, 10);
           for (let index = 0; index < lotSize; index++) {
             serializedAuctions.push({
@@ -63,6 +65,48 @@ export const Auctions: React.FC = () => {
         }
       });
 
+      const getLot = async (auctionId:number, lotId:number) => {
+        const lot = await callReadOnlyFunction({
+          contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+          contractName: "auction-engine",
+          functionName: "get-last-bid",
+          functionArgs: [uintCV(auctionId), uintCV(lotId)],
+          senderAddress: stxAddress || '',
+          network: network,
+        });
+
+        return cvToJSON(lot);
+      };
+
+      const lots = await callReadOnlyFunction({
+        contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+        contractName: "auction-engine",
+        functionName: "get-winning-lots",
+        functionArgs: [standardPrincipalCV(stxAddress || '')],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const jsonLots = cvToJSON(lots);
+      let winLot;
+
+      let serializedLots:Array<{ 'lot-id':string, 'auction-id': string, 'collateral-amount': number, 'xusd': number }> = [];
+      jsonLots.value.ids.value.forEach(async (e: object) => {
+        const lot = tupleCV(e);
+        const data = lot.data.value;
+        if (data['auction-id'].value !== 0) {
+          winLot = await getLot(data['auction-id'].value, data['lot-index'].value);
+
+          if (winLot && winLot.value['is-accepted'].value) {
+            serializedLots.push({
+              'lot-id': data['lot-index'].value,
+              'auction-id': data['auction-id'].value,
+              'collateral-amount': winLot.value['collateral-amount'].value,
+              'xusd': winLot.value['xusd'].value
+            });
+            setLots(serializedLots);
+          }
+        }
+      });
       setAuctions(serializedAuctions);
     };
     if (mounted) {
@@ -79,6 +123,16 @@ export const Auctions: React.FC = () => {
           <Box py={6}>
             <main className="flex-1 relative pb-8 z-0 overflow-y-auto">
               <div className="mt-8">
+
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8">Your Winning Lots</h2>
+
+                  {lots.length > 0 ? (
+                    <LotGroup lots={lots} />
+                  ) : (
+                    <p className="mt-2">You have no winning lots you can redeem.</p>
+                  )}
+                </div>
 
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                   <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8">Auctions</h2>

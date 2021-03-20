@@ -8,6 +8,7 @@
 (define-constant err-transfer-failed u2)
 
 ;; proposal variables
+(define-constant diko-reserve 'S02J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKPVKG2CE)
 (define-constant proposal-reserve 'S02J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKPVKG2CE)
 (define-constant emergency-lockup-address 'S02J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKPVKG2CE)
 (define-map proposals
@@ -27,8 +28,17 @@
   }
 )
 (define-data-var proposal-count uint u0)
-(define-map votes-by-member { proposal-id: uint, member: principal } { has-voted: bool })
+(define-map votes-by-member { proposal-id: uint, member: principal } { vote-count: uint })
 (define-data-var emergency-shutdown-activated bool false)
+
+(define-read-only (get-votes-by-member-by-id (proposal-id uint) (member principal))
+  (unwrap!
+    (map-get? votes-by-member {proposal-id: proposal-id, member: member})
+    (tuple
+      (vote-count u0)
+    )
+  )
+)
 
 (define-read-only (get-proposal-by-id (proposal-id uint))
   (unwrap!
@@ -273,64 +283,60 @@
 
 (define-public (vote-for (proposal-id uint) (amount uint))
   (let ((proposal (get-proposal-by-id proposal-id)))
-    (if 
-      (and
-        (is-none (map-get? votes-by-member { proposal-id: proposal-id, member: tx-sender }))
-        (unwrap-panic (contract-call? .arkadiko-token transfer proposal-reserve amount))
-      )
-      (begin
-        (map-set proposals
-          { id: proposal-id }
-          {
-            id: proposal-id,
-            proposer: (get proposer proposal),
-            is-open: true,
-            start-block-height: (get start-block-height proposal),
-            end-block-height: (get end-block-height proposal),
-            yes-votes: (+ amount (get yes-votes proposal)),
-            no-votes: (get no-votes proposal),
-            token: (get token proposal),
-            type: (get type proposal),
-            changes: (get changes proposal),
-            details: (get details proposal)
-          }
+    (let ((vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender))))
+      (if (unwrap-panic (contract-call? .arkadiko-token transfer proposal-reserve amount))
+        (begin
+          (map-set proposals
+            { id: proposal-id }
+            {
+              id: proposal-id,
+              proposer: (get proposer proposal),
+              is-open: true,
+              start-block-height: (get start-block-height proposal),
+              end-block-height: (get end-block-height proposal),
+              yes-votes: (+ amount (get yes-votes proposal)),
+              no-votes: (get no-votes proposal),
+              token: (get token proposal),
+              type: (get type proposal),
+              changes: (get changes proposal),
+              details: (get details proposal)
+            }
+          )
+          (map-set votes-by-member { proposal-id: proposal-id, member: tx-sender } { vote-count: (+ vote-count amount) })
+          (ok true)
         )
-        (map-set votes-by-member { proposal-id: proposal-id, member: tx-sender } { has-voted: true })
-        (ok true)
+        (err err-transfer-failed)
       )
-      (err err-transfer-failed)
     )
   )
 )
 
 (define-public (vote-against (proposal-id uint) (amount uint))
   (let ((proposal (get-proposal-by-id proposal-id)))
-    (if 
-      (and
-        (is-none (map-get? votes-by-member { proposal-id: proposal-id, member: tx-sender }))
-        (unwrap-panic (contract-call? .arkadiko-token transfer proposal-reserve amount))
-      )
-      (begin
-        (map-set proposals
-          { id: proposal-id }
-          {
-            id: proposal-id,
-            proposer: (get proposer proposal),
-            is-open: true,
-            start-block-height: (get start-block-height proposal),
-            end-block-height: (get end-block-height proposal),
-            yes-votes: (get yes-votes proposal),
-            no-votes: (+ amount (get no-votes proposal)),
-            token: (get token proposal),
-            type: (get type proposal),
-            changes: (get changes proposal),
-            details: (get details proposal)
-          }
+    (let ((vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender))))
+      (if (unwrap-panic (contract-call? .arkadiko-token transfer proposal-reserve amount))
+        (begin
+          (map-set proposals
+            { id: proposal-id }
+            {
+              id: proposal-id,
+              proposer: (get proposer proposal),
+              is-open: true,
+              start-block-height: (get start-block-height proposal),
+              end-block-height: (get end-block-height proposal),
+              yes-votes: (get yes-votes proposal),
+              no-votes: (+ amount (get no-votes proposal)),
+              token: (get token proposal),
+              type: (get type proposal),
+              changes: (get changes proposal),
+              details: (get details proposal)
+            }
+          )
+          (map-set votes-by-member { proposal-id: proposal-id, member: tx-sender } { vote-count: (+ vote-count amount) })
+          (ok true)
         )
-        (map-set votes-by-member { proposal-id: proposal-id, member: tx-sender } { has-voted: true })
-        (ok true)
+        (err err-transfer-failed)
       )
-      (err err-transfer-failed)
     )
   )
 )
@@ -362,7 +368,7 @@
   (map-set proposal-types
     { type: "change_risk_parameter" }
     {
-      changes-keys: (list "token" "liquidation-ratio" "collateral-to-debt-ratio" "maximum-debt" "liquidation-penalty" "stability-fee")
+      changes-keys: (list "liquidation-ratio" "collateral-to-debt-ratio" "maximum-debt" "liquidation-penalty" "stability-fee")
     }
   )
   (map-set proposal-types

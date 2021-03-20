@@ -1,5 +1,5 @@
 ;; addresses
-(define-constant auction-reserve 'S02J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKPVKG2CE)
+(define-constant auction-reserve 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP)
 
 ;; errors
 (define-constant err-bid-declined u1)
@@ -33,6 +33,15 @@
     is-accepted: bool
   }
 )
+(define-map winning-lots
+  { user: principal }
+  { ids: (list 100 (tuple (auction-id uint) (lot-index uint))) }
+)
+(define-map redeeming-lot
+  { user: principal }
+  { auction-id: uint, lot-index: uint }
+)
+
 (define-data-var last-auction-id uint u0)
 (define-data-var auction-ids (list 2000 uint) (list u0))
 (define-data-var lot-size uint u100000000) ;; 100 STX
@@ -55,10 +64,6 @@
       (ends-at u0)
     )
   )
-)
-
-(define-read-only (get-auction-id)
-  (ok (var-get auction-ids))
 )
 
 (define-read-only (get-auctions)
@@ -109,8 +114,8 @@
   (let ((stx-price-in-cents (contract-call? .oracle get-price)))
     (let ((auction (get-auction-by-id auction-id)))
       (let ((amount (/ (/ (get debt-to-raise auction) (get price stx-price-in-cents)) (get lots auction))))
-        (if (> (get collateral-amount auction) amount)
-          (ok amount)
+        (if (> (get collateral-amount auction) (* u100 amount))
+          (ok (* u100 amount))
           (ok (get collateral-amount auction))
         )
       )
@@ -126,6 +131,15 @@
       (collateral-amount u0)
       (owner 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP)
       (is-accepted false)
+    )
+  )
+)
+
+(define-read-only (get-winning-lots (owner principal))
+  (unwrap!
+    (map-get? winning-lots { user: owner })
+    (tuple
+      (ids (list (tuple (auction-id u0) (lot-index u0))))
     )
   )
 )
@@ -158,6 +172,13 @@
   )
 )
 
+(define-private (is-lot-sold (accepted-bid bool))
+  (if accepted-bid
+    (ok u1)
+    (ok u0)
+  )
+)
+
 (define-private (accept-bid (auction-id uint) (lot-index uint) (xusd uint) (collateral-amount uint))
   (let ((auction (get-auction-by-id auction-id)))
     (let ((last-bid (get-last-bid auction-id lot-index)))
@@ -177,7 +198,7 @@
                   lot-size: (get lot-size auction),
                   lots: (get lots auction),
                   last-lot-size: (get last-lot-size auction),
-                  lots-sold: (+ u1 (get lots-sold auction)),
+                  lots-sold: (+ (unwrap-panic (is-lot-sold accepted-bid)) (get lots-sold auction)),
                   ends-at: (get ends-at auction),
                   total-collateral-auctioned: (- (+ collateral-amount (get total-collateral-auctioned auction)) (get collateral-amount last-bid)),
                   total-debt-raised: (- (+ xusd (get total-debt-raised auction)) (get xusd last-bid)),
@@ -193,10 +214,23 @@
                   is-accepted: accepted-bid
                 }
               )
+              (if accepted-bid
+                (begin
+                  (let ((lots (get-winning-lots tx-sender)))
+                    (map-set winning-lots
+                      { user: tx-sender }
+                      {
+                        ids: (unwrap-panic (as-max-len? (append (get ids lots) (tuple (auction-id auction-id) (lot-index lot-index))) u100))
+                      }
+                    )
+                  )
+                )
+                true
+              )
               (if
                 (or
                   (>= block-height (get ends-at auction))
-                  (>= (+ u1 (get lots-sold auction)) (get lots auction))
+                  (>= (+ (unwrap-panic (is-lot-sold accepted-bid)) (get lots-sold auction)) (get lots auction))
                 )
                 ;; auction is over - close all bids
                 ;; send collateral to winning bidders
@@ -212,6 +246,45 @@
   )
 )
 
+(define-private (remove-winning-lot (lot (tuple (auction-id uint) (lot-index uint))))
+  (let ((current-lot (unwrap-panic (map-get? redeeming-lot { user: tx-sender }))))
+    (if 
+      (and
+        (is-eq (get auction-id lot) (get auction-id current-lot))
+        (is-eq (get lot-index lot) (get lot-index current-lot))
+      )
+      false
+      true
+    )
+  )
+)
+
+(define-public (redeem-lot-collateral (auction-id uint) (lot-index uint))
+  (let ((last-bid (get-last-bid auction-id lot-index)))
+    (if
+      (and
+        (is-eq tx-sender (get owner last-bid))
+        (get is-accepted last-bid)
+      )
+      (begin
+        (let ((lots (get-winning-lots tx-sender)))
+          (print "Yahoo!")
+          (print (as-contract tx-sender))
+          (map-set redeeming-lot { user: tx-sender } { auction-id: auction-id, lot-index: lot-index})
+          (if (map-set winning-lots { user: tx-sender } { ids: (filter remove-winning-lot (get ids lots)) })
+            (begin
+              ;; send collateral to tx-sender
+              (ok (contract-call? .stx-reserve redeem-collateral (get collateral-amount last-bid) tx-sender))
+            )
+            (err false)
+          )
+        )
+      )
+      (err false)
+    )
+  )
+)
+
 (define-private (return-collateral (owner principal) (xusd uint))
   (if (> u0 xusd)
     (ok (unwrap-panic (as-contract (contract-call? .xusd-token transfer owner xusd))))
@@ -219,13 +292,13 @@
   )
 )
 
-;; DONE 1. flag auction on map as closed
-;; N/A  2a. go over each lot (0 to lot-size) and send collateral to winning address
-;; TODO 2b. OR allow person to collect collateral from reserve manually
-;; TODO 3. check if vault debt is covered (sum of xUSD in lots >= debt-to-raise)
-;; DONE 4. update vault to allow vault owner to withdraw leftover collateral (if any)
-;; 5. if not all vault debt is covered: auction off collateral again (if any left)
-;; 6. if not all vault debt is covered and no collateral is left: cover xUSD with gov token
+;; DONE     1. flag auction on map as closed
+;; SCRIPT   2a. go over each lot (0 to lot-size) and send collateral to winning address
+;; DONE     2b. OR allow person to collect collateral from reserve manually
+;; TODO     3. check if vault debt is covered (sum of xUSD in lots >= debt-to-raise)
+;; DONE     4. update vault to allow vault owner to withdraw leftover collateral (if any)
+;; TODO     5. if not all vault debt is covered: auction off collateral again (if any left)
+;; TODO     6. if not all vault debt is covered and no collateral is left: cover xUSD with gov token
 ;; TODO: maybe keep an extra map with bids and (bidder, auction id, lot id) tuple as key with all their bids
 (define-private (close-auction (auction-id uint))
   (let ((auction (get-auction-by-id auction-id)))

@@ -8,14 +8,12 @@ import { useConnect } from '@stacks/connect-react';
 import { callReadOnlyFunction, uintCV, stringAsciiCV, listCV, tupleCV, cvToJSON } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ProposalGroup } from '@components/proposal-group';
-import { Link } from '@components/link';
 
 export const Governance = () => {
   const state = useContext(AppContext);
   const { doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
   const [proposals, setProposals] = useState([]);
-  const env = process.env.REACT_APP_NETWORK_ENV;
 
   const callAddProposal = async () => {
     const authOrigin = getAuthOrigin();
@@ -115,14 +113,6 @@ export const Governance = () => {
 
                   <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8">
                     Current Open Proposals
-
-                    {env == 'mocknet' ? (
-                      <Box>
-                        <Link onClick={() => callAddProposal()} color="blue" display="inline-block" my={3} ml={5}>
-                          (Get 5000 DIKO tokens from mocknet)
-                        </Link>
-                      </Box>
-                    ) : ``}
                   </h2>
                   {proposals.length > 0 ? (
                     <ProposalGroup proposals={proposals} />
