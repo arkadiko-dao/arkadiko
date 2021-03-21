@@ -1,7 +1,6 @@
 ;; Defines the xUSD Stablecoin according to the SRC20 Standard
 (define-fungible-token xusd)
 
-(define-constant mint-owner 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP)
 (define-constant err-burn-failed u1)
 
 (define-read-only (total-supply)
@@ -36,11 +35,6 @@
 
 (define-public (mint (amount uint) (recipient principal))
   (begin
-    (print recipient)
-    (print amount)
-    (print tx-sender)
-    (print contract-caller)
-    (print mint-owner)
     (if
       (and
         (is-eq contract-caller 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP.freddie)
