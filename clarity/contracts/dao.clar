@@ -351,7 +351,7 @@
         collateral-to-debt-ratio: u200,
         maximum-debt: u10000000,
         liquidation-penalty: u13,
-        stability-fee: u0
+        stability-fee: u2726 ;; 0.002726155% daily percentage == 1% APY
       }
     )
       (ok true)

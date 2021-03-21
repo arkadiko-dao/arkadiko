@@ -12,6 +12,9 @@
 (define-constant err-mint-failed u7)
 (define-constant err-liquidation-failed u8)
 
+;; constants
+(define-constant blocks-per-day u144)
+
 ;; Map of vault entries
 ;; The entry consists of a user principal with their collateral and debt balance
 (define-map vaults { id: uint } {
@@ -22,6 +25,7 @@
   debt: uint,
   created-at-block-height: uint,
   updated-at-block-height: uint,
+  stability-fee-last-paid: uint, ;; indicates the block height at which the stability fee was last paid
   is-liquidated: bool,
   auction-ended: bool,
   leftover-collateral: uint
@@ -41,6 +45,7 @@
       (debt u0)
       (created-at-block-height u0)
       (updated-at-block-height u0)
+      (stability-fee-last-paid u0)
       (is-liquidated false)
       (leftover-collateral u0)
     )
@@ -78,6 +83,7 @@
             debt: (unwrap-panic debt),
             created-at-block-height: block-height,
             updated-at-block-height: block-height,
+            stability-fee-last-paid: block-height,
             is-liquidated: false,
             auction-ended: false,
             leftover-collateral: u0
@@ -105,6 +111,7 @@
               debt: (get debt vault),
               created-at-block-height: (get created-at-block-height vault),
               updated-at-block-height: block-height,
+              stability-fee-last-paid: (get stability-fee-last-paid vault),
               is-liquidated: false,
               auction-ended: false,
               leftover-collateral: u0
@@ -135,6 +142,7 @@
               debt: (get debt vault),
               created-at-block-height: (get created-at-block-height vault),
               updated-at-block-height: block-height,
+              stability-fee-last-paid: (get stability-fee-last-paid vault),
               is-liquidated: false,
               auction-ended: false,
               leftover-collateral: u0
@@ -165,6 +173,7 @@
               debt: new-total-debt,
               created-at-block-height: (get created-at-block-height vault),
               updated-at-block-height: block-height,
+              stability-fee-last-paid: (get stability-fee-last-paid vault),
               is-liquidated: false,
               auction-ended: false,
               leftover-collateral: u0
@@ -195,6 +204,7 @@
               debt: u0,
               created-at-block-height: (get created-at-block-height vault),
               updated-at-block-height: block-height,
+              stability-fee-last-paid: (get stability-fee-last-paid vault),
               is-liquidated: false,
               auction-ended: false,
               leftover-collateral: u0
@@ -206,6 +216,23 @@
         )
       )
       (err err-burn-failed)
+    )
+  )
+)
+
+;; Calculate stability fee based on time
+;; 144 blocks = 1 day
+;; to be fair, this is a very rough approximation
+;; the goal is not to get the exact interest,
+;; but rather to (dis)incentivize the user to mint stablecoins or not
+(define-read-only (get-stability-fee-for-vault (vault-id uint))
+  (let ((vault (get-vault-by-id vault-id)))
+    (let ((days (/ (- block-height (get stability-fee-last-paid vault)) blocks-per-day)))
+      (let ((debt (/ (get debt vault) u10000))) ;; we can round to 2 numbers after comma, e.g. 1925000 uxUSD == 1.92 xUSD
+        (let ((daily-interest (/ (* debt (unwrap-panic (contract-call? .dao get-stability-fee "stx"))) u100)))
+          (ok (tuple (fee (* daily-interest days)) (decimals u8) (days days))) ;; 8 decimals so u5233 means 5233/10^8 xUSD daily interest
+        )
+      )
     )
   )
 )
@@ -227,6 +254,7 @@
                   debt: (get debt vault),
                   created-at-block-height: (get created-at-block-height vault),
                   updated-at-block-height: block-height,
+                  stability-fee-last-paid: (get stability-fee-last-paid vault),
                   is-liquidated: true,
                   auction-ended: false,
                   leftover-collateral: u0
@@ -258,6 +286,7 @@
           debt: (get debt vault),
           created-at-block-height: (get created-at-block-height vault),
           updated-at-block-height: block-height,
+          stability-fee-last-paid: (get stability-fee-last-paid vault),
           is-liquidated: true,
           auction-ended: true,
           leftover-collateral: leftover-collateral
@@ -284,6 +313,7 @@
             debt: (get debt vault),
             created-at-block-height: (get created-at-block-height vault),
             updated-at-block-height: block-height,
+            stability-fee-last-paid: (get stability-fee-last-paid vault),
             is-liquidated: true,
             auction-ended: true,
             leftover-collateral: u0
