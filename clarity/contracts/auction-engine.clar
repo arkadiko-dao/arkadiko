@@ -76,16 +76,16 @@
 ;; we wanna sell as little collateral as possible to cover the vault's debt
 ;; if we cannot cover the vault's debt with the collateral sale,
 ;; we will have to sell some governance or STX tokens from the reserve
-(define-public (start-auction (vault-id uint) (ustx-amount uint) (debt-to-raise uint))
+(define-public (start-auction (vault-id uint) (uamount uint) (debt-to-raise uint))
   (let ((auction-id (+ (var-get last-auction-id) u1)))
     ;; 500 collateral => 500 / 100 = 5 lots
-    (let ((amount-of-lots (+ u1 (/ ustx-amount (var-get lot-size)))))
-      (let ((last-lot (mod ustx-amount (var-get lot-size))))
+    (let ((amount-of-lots (+ u1 (/ uamount (var-get lot-size)))))
+      (let ((last-lot (mod uamount (var-get lot-size))))
         (map-set auctions
           { id: auction-id }
           {
             id: auction-id,
-            collateral-amount: ustx-amount,
+            collateral-amount: uamount,
             debt-to-raise: debt-to-raise,
             vault-id: vault-id,
             lot-size: (var-get lot-size),
@@ -185,7 +185,7 @@
       (let ((accepted-bid (>= xusd (/ (get debt-to-raise auction) (get lots auction)))))
         ;; if this bid is at least (total debt to raise / lot-size) amount, accept it as final - we don't need to be greedy
         (begin
-          ;; (return-collateral (get owner last-bid) (get xusd last-bid))
+          ;; TODO: return xUSD of last bid to (now lost) bidder (return-collateral (get owner last-bid) (get xusd last-bid))
           (if (unwrap-panic (contract-call? .xusd-token transfer auction-reserve xusd))
             (begin
               (map-set auctions
@@ -319,13 +319,28 @@
         is-open: false
       }
     )
-    (ok
-      (unwrap-panic
-        (contract-call?
-          .freddie
-          finalize-liquidation
-          (get vault-id auction)
-          (- (get collateral-amount auction) (get total-collateral-auctioned auction))
+    (if (>= (get total-debt-raised auction) (get debt-to-raise auction))
+      (ok
+        (unwrap-panic
+          (contract-call?
+            .freddie
+            finalize-liquidation
+            (get vault-id auction)
+            (- (get collateral-amount auction) (get total-collateral-auctioned auction))
+          )
+        )
+      )
+      (begin
+        (if (or
+          (<= (get lots-sold auction) (get lots auction)) ;; not all lots are sold
+          (<= (get total-collateral-auctioned auction) (get collateral-amount auction)) ;; we have some collateral left to auction
+        ) ;; if any collateral left to auction
+          (ok (unwrap-panic (start-auction
+            (get vault-id auction)
+            (- (get collateral-amount auction) (get total-collateral-auctioned auction))
+            (- (get debt-to-raise auction) (get total-debt-raised auction))
+          )))
+          (ok true) ;; TODO: no collateral left and/or all current lots are sold. Need to sell governance token to raise more xUSD
         )
       )
     )
