@@ -45,11 +45,8 @@
 (define-public (collateralize-and-mint (ustx-amount uint) (sender principal))
   (let ((debt (unwrap-panic (calculate-xusd-count ustx-amount))))
     (match (print (stx-transfer? ustx-amount sender (as-contract tx-sender)))
-      success (match (print (as-contract (contract-call? .xusd-token mint debt sender)))
-        transferred (ok debt)
-        error (err err-transfer-failed)
-      )
-      error (err err-minter-failed)
+      success (ok debt)
+      error (err err-transfer-failed)
     )
   )
 )
@@ -91,13 +88,10 @@
 ;; method assumes position has not been liquidated
 ;; and thus collateral to debt ratio > liquidation ratio
 ;; TODO: assert that tx-sender owns the vault
-(define-public (burn (vault-owner principal) (debt-to-burn uint) (collateral-to-return uint))
-  (match (print (as-contract (contract-call? .xusd-token burn debt-to-burn vault-owner)))
-    success (match (print (as-contract (stx-transfer? collateral-to-return (as-contract tx-sender) vault-owner)))
-      transferred (ok true)
-      error (err err-transfer-failed)
-    )
-    error (err err-burn-failed)
+(define-public (burn (vault-owner principal) (collateral-to-return uint))
+  (match (print (as-contract (stx-transfer? collateral-to-return (as-contract tx-sender) vault-owner)))
+    transferred (ok true)
+    error (err err-transfer-failed)
   )
 )
 

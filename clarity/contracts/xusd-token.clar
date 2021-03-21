@@ -43,7 +43,7 @@
     (print mint-owner)
     (if
       (and
-        (is-eq contract-caller 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP.stx-reserve)
+        (is-eq contract-caller 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP.freddie)
         (is-ok (ft-mint? xusd amount recipient))
       )
       (ok amount)
@@ -53,15 +53,12 @@
 )
 
 (define-public (burn (amount uint) (sender principal))
-  ;; burn the xusd stablecoin and return STX
   (begin
     (if 
       (and
-        (is-eq contract-caller 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP.stx-reserve)
-        (is-ok (ft-transfer? xusd amount sender mint-owner))
+        (is-eq contract-caller 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP.freddie)
+        (is-ok (ft-burn? xusd amount sender))
       )
-      ;; TODO: burn does not work, so we will transfer for now. Burn tx gets stuck at "pending"
-      ;; (ok (as-contract (ft-burn? xusd amount mint-owner)))
       (ok true)
       (err err-burn-failed)
     )

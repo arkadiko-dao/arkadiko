@@ -70,28 +70,33 @@
 
 (define-public (collateralize-and-mint (uamount uint) (sender principal) (collateral-type (string-ascii 4)))
   (let ((debt (contract-call? .stx-reserve collateralize-and-mint uamount sender)))
-    (let ((vault-id (+ (var-get last-vault-id) u1)))
-      (let ((entries (get ids (get-vault-entries sender))))
-        (map-set vault-entries { user: sender } { ids: (unwrap-panic (as-max-len? (append entries vault-id) u1500)) })
-        (map-set vaults
-          { id: vault-id }
-          {
-            id: vault-id,
-            owner: sender,
-            collateral: uamount,
-            collateral-type: collateral-type,
-            debt: (unwrap-panic debt),
-            created-at-block-height: block-height,
-            updated-at-block-height: block-height,
-            stability-fee-last-paid: block-height,
-            is-liquidated: false,
-            auction-ended: false,
-            leftover-collateral: u0
-          }
+    (if (is-ok (as-contract (contract-call? .xusd-token mint (unwrap-panic debt) sender)))
+      (begin
+        (let ((vault-id (+ (var-get last-vault-id) u1)))
+          (let ((entries (get ids (get-vault-entries sender))))
+            (map-set vault-entries { user: sender } { ids: (unwrap-panic (as-max-len? (append entries vault-id) u1500)) })
+            (map-set vaults
+              { id: vault-id }
+              {
+                id: vault-id,
+                owner: sender,
+                collateral: uamount,
+                collateral-type: collateral-type,
+                debt: (unwrap-panic debt),
+                created-at-block-height: block-height,
+                updated-at-block-height: block-height,
+                stability-fee-last-paid: block-height,
+                is-liquidated: false,
+                auction-ended: false,
+                leftover-collateral: u0
+              }
+            )
+            (var-set last-vault-id vault-id)
+            (ok debt)
+          )
         )
-        (var-set last-vault-id vault-id)
-        (ok debt)
       )
+      (err err-minter-failed)
     )
   )
 )
@@ -187,33 +192,37 @@
   )
 )
 
+;; TODO: is this atomic? e.g. if xUSD burn succeeds but STX reserve burn fails, what then?
 (define-public (burn (vault-id uint) (vault-owner principal))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
 
-    (if (unwrap-panic (contract-call? .stx-reserve burn (get owner vault) (get debt vault) (get collateral vault)))
-      (begin
-        (let ((entries (get ids (get-vault-entries vault-owner))))
-          (map-set vaults
-            { id: vault-id }
-            {
-              id: vault-id,
-              owner: vault-owner,
-              collateral: u0,
-              collateral-type: (get collateral-type vault),
-              debt: u0,
-              created-at-block-height: (get created-at-block-height vault),
-              updated-at-block-height: block-height,
-              stability-fee-last-paid: (get stability-fee-last-paid vault),
-              is-liquidated: false,
-              auction-ended: false,
-              leftover-collateral: u0
-            }
+    (if (unwrap-panic (contract-call? .xusd-token burn (get debt vault) (get owner vault)))
+      (if (unwrap-panic (contract-call? .stx-reserve burn (get owner vault) (get collateral vault)))
+        (begin
+          (let ((entries (get ids (get-vault-entries vault-owner))))
+            (map-set vaults
+              { id: vault-id }
+              {
+                id: vault-id,
+                owner: vault-owner,
+                collateral: u0,
+                collateral-type: (get collateral-type vault),
+                debt: u0,
+                created-at-block-height: (get created-at-block-height vault),
+                updated-at-block-height: block-height,
+                stability-fee-last-paid: (get stability-fee-last-paid vault),
+                is-liquidated: false,
+                auction-ended: false,
+                leftover-collateral: u0
+              }
+            )
+            ;; TODO: remove vault ID from vault entries
+            ;; (map-set vault-entries { user: tx-sender } { () })
+            (ok (map-delete vaults { id: vault-id }))
           )
-          ;; TODO: remove vault ID from vault entries
-          ;; (map-set vault-entries { user: tx-sender } { () })
-          (ok (map-delete vaults { id: vault-id }))
         )
+        (err err-burn-failed)
       )
       (err err-burn-failed)
     )

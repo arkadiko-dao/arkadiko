@@ -40,7 +40,7 @@ describe("xusd token contract test suite", () => {
       const query = xusdTokenClient.createQuery({ method: { name: "total-supply", args: [] } });
       const receipt = await xusdTokenClient.submitQuery(query);
       const result = Result.unwrapUInt(receipt);
-      assert.equal(result, 30);
+      assert.equal(result, 10000000030);
     });
 
     it("should initialize Alice's balance (20 DIKO)", async () => {
