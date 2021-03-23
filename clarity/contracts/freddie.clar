@@ -248,7 +248,7 @@
 )
 
 (define-public (liquidate (vault-id uint))
-  (if (is-eq contract-caller 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP.liquidator)
+  (if (is-eq contract-caller .liquidator)
     (begin
       (let ((vault (get-vault-by-id vault-id)))
         (if (is-ok (contract-call? .stx-reserve liquidate (get collateral vault) (get debt vault)))
@@ -284,7 +284,7 @@
 )
 
 (define-public (finalize-liquidation (vault-id uint) (leftover-collateral uint) (debt-raised uint))
-  (if (is-eq contract-caller 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP.auction-engine)
+  (if (is-eq contract-caller .auction-engine)
     (let ((vault (get-vault-by-id vault-id)))
       (if (is-ok (contract-call? .xusd-token burn debt-raised mint-owner))
         (begin

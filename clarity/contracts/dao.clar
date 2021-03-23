@@ -137,7 +137,7 @@
 
 ;; setters accessible only by DAO contract
 (define-public (set-liquidation-ratio (token (string-ascii 4)) (ratio uint))
-  (if (is-eq contract-caller 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH.dao)
+  (if (is-eq contract-caller .dao)
     (begin
       (let ((params (get-risk-parameters token)))
         (map-set risk-parameters
@@ -158,7 +158,7 @@
 )
 
 (define-public (set-collateral-to-debt-ratio (token (string-ascii 4)) (ratio uint))
-  (if (is-eq contract-caller 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH.dao)
+  (if (is-eq contract-caller .dao)
     (begin
       (let ((params (get-risk-parameters token)))
         (map-set risk-parameters
@@ -179,7 +179,7 @@
 )
 
 (define-public (set-maximum-debt (token (string-ascii 4)) (debt uint))
-  (if (is-eq contract-caller 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH.dao)
+  (if (is-eq contract-caller .dao)
     (begin
       (let ((params (get-risk-parameters token)))
         (map-set risk-parameters
@@ -200,7 +200,7 @@
 )
 
 (define-public (set-liquidation-penalty (token (string-ascii 4)) (penalty uint))
-  (if (is-eq contract-caller 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH.dao)
+  (if (is-eq contract-caller .dao)
     (begin
       (let ((params (get-risk-parameters token)))
         (map-set risk-parameters
@@ -221,7 +221,7 @@
 )
 
 (define-public (set-stability-fee (token (string-ascii 4)) (fee uint))
-  (if (is-eq contract-caller 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH.dao)
+  (if (is-eq contract-caller .dao)
     (begin
       (let ((params (get-risk-parameters token)))
         (map-set risk-parameters

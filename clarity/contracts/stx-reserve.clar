@@ -102,7 +102,7 @@
 ;; 1. Mark vault as liquidated?
 ;; 2. Send collateral into the liquidator's liquidation reserve
 (define-public (liquidate (stx-collateral uint) (current-debt uint))
-  (if (is-eq contract-caller 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP.freddie)
+  (if (is-eq contract-caller .freddie)
     (begin
       (let ((new-debt (/ (* (unwrap-panic (contract-call? .dao get-liquidation-penalty "stx")) current-debt) u100)))
         (ok (tuple (ustx-amount stx-collateral) (debt (+ new-debt current-debt))))

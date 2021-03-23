@@ -37,7 +37,7 @@
   (begin
     (if
       (and
-        (is-eq contract-caller 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP.freddie)
+        (is-eq contract-caller .freddie)
         (is-ok (ft-mint? xusd amount recipient))
       )
       (ok amount)
@@ -47,7 +47,7 @@
 )
 
 (define-public (burn (amount uint) (sender principal))
-  (if (is-eq contract-caller 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP.freddie)
+  (if (is-eq contract-caller .freddie)
     (ok (unwrap! (ft-burn? xusd amount sender) (err err-burn-failed)))
     (err err-burn-failed)
   )
