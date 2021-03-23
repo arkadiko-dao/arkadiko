@@ -31,6 +31,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
     const authOrigin = getAuthOrigin();
     const args = [
       uintCV(parseInt(coinAmounts['amounts']['stx'], 10) * 1000000),
+      uintCV(parseInt(coinAmounts['amounts']['xusd'], 10) * 1000000),
       standardPrincipalCV(address || ''),
       stringAsciiCV('stx')
     ];

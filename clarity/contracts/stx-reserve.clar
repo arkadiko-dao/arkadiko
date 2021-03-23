@@ -42,12 +42,10 @@
 ;; accept collateral in STX tokens
 ;; save STX in stx-reserve-address
 ;; calculate price and collateralisation ratio
-(define-public (collateralize-and-mint (ustx-amount uint) (sender principal))
-  (let ((debt (unwrap-panic (calculate-xusd-count ustx-amount))))
-    (match (print (stx-transfer? ustx-amount sender (as-contract tx-sender)))
-      success (ok debt)
-      error (err err-transfer-failed)
-    )
+(define-public (collateralize-and-mint (ustx-amount uint) (debt uint) (sender principal))
+  (match (print (stx-transfer? ustx-amount sender (as-contract tx-sender)))
+    success (ok debt)
+    error (err err-transfer-failed)
   )
 )
 

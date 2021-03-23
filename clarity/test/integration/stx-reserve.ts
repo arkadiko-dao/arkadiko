@@ -27,8 +27,15 @@ describe("stacks reserve test suite", () => {
       await deployContract('vault-trait');
       await deployContract('oracle');
       await deployContract('xusd-token');
+      await deployContract('arkadiko-token');
+      await deployContract('dao');
+
       await deployContract('stx-reserve');
       await deployContract('freddie');
+
+      await deployContract('stacker-registry');
+      await deployContract('auction-engine');
+      await deployContract('liquidator');
     });
 
     it("should mint 1.925 dollar in stablecoin from 5000000 ustx at 77 cents/STX through collateralize-and-mint", async () => {
@@ -46,7 +53,7 @@ describe("stacks reserve test suite", () => {
         'freddie',
         'collateralize-and-mint',
         secretKey,
-        [uintCV(value), standardPrincipalCV(alice), stringAsciiCV('stx')]
+        [uintCV(value), uintCV(1925000), standardPrincipalCV(alice), stringAsciiCV('stx')]
       );
       console.log(result);
       const vaultEntries = await callReadOnlyFunction({

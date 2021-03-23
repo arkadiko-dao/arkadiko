@@ -11,6 +11,7 @@
 (define-constant err-withdraw-failed u6)
 (define-constant err-mint-failed u7)
 (define-constant err-liquidation-failed u8)
+(define-constant err-insufficient-collateral u9)
 
 ;; constants
 (define-constant blocks-per-day u144)
@@ -65,39 +66,43 @@
 
 (define-read-only (calculate-current-collateral-to-debt-ratio (vault-id uint))
   (let ((vault (get-vault-by-id vault-id)))
-    (ok (unwrap-panic (contract-call? .stx-reserve calculate-current-collateral-to-debt-ratio (get debt vault) (get collateral vault))))
+    (ok (unwrap! (contract-call? .stx-reserve calculate-current-collateral-to-debt-ratio (get debt vault) (get collateral vault)) (ok u0)))
   )
 )
 
-(define-public (collateralize-and-mint (uamount uint) (sender principal) (collateral-type (string-ascii 4)))
-  (let ((debt (contract-call? .stx-reserve collateralize-and-mint uamount sender)))
-    (if (is-ok (as-contract (contract-call? .xusd-token mint (unwrap-panic debt) sender)))
-      (begin
-        (let ((vault-id (+ (var-get last-vault-id) u1)))
-          (let ((entries (get ids (get-vault-entries sender))))
-            (map-set vault-entries { user: sender } { ids: (unwrap-panic (as-max-len? (append entries vault-id) u1500)) })
-            (map-set vaults
-              { id: vault-id }
-              {
-                id: vault-id,
-                owner: sender,
-                collateral: uamount,
-                collateral-type: collateral-type,
-                debt: (unwrap-panic debt),
-                created-at-block-height: block-height,
-                updated-at-block-height: block-height,
-                stability-fee-last-paid: block-height,
-                is-liquidated: false,
-                auction-ended: false,
-                leftover-collateral: u0
-              }
+(define-public (collateralize-and-mint (collateral-amount uint) (debt uint) (sender principal) (collateral-type (string-ascii 4)))
+  (let ((ratio (unwrap-panic (contract-call? .stx-reserve calculate-current-collateral-to-debt-ratio debt collateral-amount))))
+    (asserts! (>= ratio (unwrap-panic (contract-call? .dao get-liquidation-ratio "stx"))) (err err-insufficient-collateral))
+
+    (let ((debt-created (contract-call? .stx-reserve collateralize-and-mint collateral-amount debt sender)))
+      (if (is-ok (as-contract (contract-call? .xusd-token mint debt sender)))
+        (begin
+          (let ((vault-id (+ (var-get last-vault-id) u1)))
+            (let ((entries (get ids (get-vault-entries sender))))
+              (map-set vault-entries { user: sender } { ids: (unwrap-panic (as-max-len? (append entries vault-id) u1500)) })
+              (map-set vaults
+                { id: vault-id }
+                {
+                  id: vault-id,
+                  owner: sender,
+                  collateral: collateral-amount,
+                  collateral-type: collateral-type,
+                  debt: debt,
+                  created-at-block-height: block-height,
+                  updated-at-block-height: block-height,
+                  stability-fee-last-paid: block-height,
+                  is-liquidated: false,
+                  auction-ended: false,
+                  leftover-collateral: u0
+                }
+              )
+              (var-set last-vault-id vault-id)
+              (ok debt)
             )
-            (var-set last-vault-id vault-id)
-            (ok debt)
           )
         )
+        (err err-minter-failed)
       )
-      (err err-minter-failed)
     )
   )
 )

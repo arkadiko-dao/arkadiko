@@ -52,7 +52,7 @@ describe("stacks reserve test suite", () => {
         'freddie',
         'collateralize-and-mint',
         secretKey,
-        [uintCV(5000000), standardPrincipalCV(alice), stringAsciiCV('stx')]
+        [uintCV(5000000), uintCV(1925000), standardPrincipalCV(alice), stringAsciiCV('stx')]
       );
       
       console.log('Crash price to 55 dollarcents');
