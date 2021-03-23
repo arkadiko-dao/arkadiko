@@ -68,7 +68,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
         <div className="bg-white shadow sm:rounded-lg mt-5 w-full">
           <div className="px-4 py-5 sm:p-6">
             <div className="sm:flex sm:justify-between sm:items-baseline mt-4 mb-4">
-              <p className="mt-1 text-sm text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
+              <div className="mt-1 text-sm text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
                 {txId && (
                   <Text textStyle="body.large" display="block" my={space('base')}>
                     <Text color="green" fontSize={1}>
@@ -77,7 +77,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
                     <ExplorerLink txId={txId} />
                   </Text>
                 )}
-              </p>
+              </div>
             </div>
           </div>
         </div>
