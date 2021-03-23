@@ -47,15 +47,9 @@
 )
 
 (define-public (burn (amount uint) (sender principal))
-  (begin
-    (if 
-      (and
-        (is-eq contract-caller 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP.freddie)
-        (is-ok (ft-burn? xusd amount sender))
-      )
-      (ok true)
-      (err err-burn-failed)
-    )
+  (if (is-eq contract-caller 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP.freddie)
+    (ok (unwrap! (ft-burn? xusd amount sender) (err err-burn-failed)))
+    (err err-burn-failed)
   )
 )
 

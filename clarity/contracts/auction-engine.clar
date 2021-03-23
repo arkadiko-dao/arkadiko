@@ -320,15 +320,12 @@
       }
     )
     (if (>= (get total-debt-raised auction) (get debt-to-raise auction))
-      (ok
-        (unwrap-panic
-          (contract-call?
-            .freddie
-            finalize-liquidation
-            (get vault-id auction)
-            (- (get collateral-amount auction) (get total-collateral-auctioned auction))
-          )
-        )
+      (contract-call?
+        .freddie
+        finalize-liquidation
+        (get vault-id auction)
+        (- (get collateral-amount auction) (get total-collateral-auctioned auction))
+        (get total-debt-raised auction)
       )
       (begin
         (if (or
