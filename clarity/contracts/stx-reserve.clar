@@ -50,7 +50,6 @@
 )
 
 ;; deposit extra collateral in vault
-;; TODO: assert that tx-sender == vault owner
 (define-public (deposit (additional-ustx-amount uint))
   (match (print (stx-transfer? additional-ustx-amount tx-sender (as-contract tx-sender)))
     success (ok true)
@@ -59,25 +58,30 @@
 )
 
 ;; withdraw collateral (e.g. if collateral goes up in value)
-;; TODO: assert that tx-sender == vault owner
-;; TODO: make sure not more is withdrawn than collateral-to-debt-ratio
-;; TODO: make sure ustx-amount < stx-collateral in vault (and is positive)
 (define-public (withdraw (vault-owner principal) (ustx-amount uint))
-  (match (print (as-contract (stx-transfer? ustx-amount (as-contract tx-sender) vault-owner)))
-    success (ok true)
-    error (err err-withdraw-failed)
+  (begin
+    (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
+
+    (match (print (as-contract (stx-transfer? ustx-amount (as-contract tx-sender) vault-owner)))
+      success (ok true)
+      error (err err-withdraw-failed)
+    )
   )
 )
 
 ;; mint new tokens when collateral to debt allows it (i.e. > collateral-to-debt-ratio)
 (define-public (mint (vault-owner principal) (ustx-amount uint) (current-debt uint) (extra-debt uint))
-  (let ((max-new-debt (- (unwrap-panic (calculate-xusd-count ustx-amount)) current-debt)))
-    (if (>= max-new-debt extra-debt)
-      (match (print (as-contract (contract-call? .xusd-token mint extra-debt vault-owner)))
-        success (ok true)
-        error (err err-mint-failed)
+  (begin
+    (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
+
+    (let ((max-new-debt (- (unwrap-panic (calculate-xusd-count ustx-amount)) current-debt)))
+      (if (>= max-new-debt extra-debt)
+        (match (print (as-contract (contract-call? .xusd-token mint extra-debt vault-owner)))
+          success (ok true)
+          error (err err-mint-failed)
+        )
+        (err err-mint-failed)
       )
-      (err err-mint-failed)
     )
   )
 )
@@ -85,11 +89,14 @@
 ;; burn stablecoin to free up STX tokens
 ;; method assumes position has not been liquidated
 ;; and thus collateral to debt ratio > liquidation ratio
-;; TODO: assert that tx-sender owns the vault
 (define-public (burn (vault-owner principal) (collateral-to-return uint))
-  (match (print (as-contract (stx-transfer? collateral-to-return (as-contract tx-sender) vault-owner)))
-    transferred (ok true)
-    error (err err-transfer-failed)
+  (begin
+    (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
+
+    (match (print (as-contract (stx-transfer? collateral-to-return (as-contract tx-sender) vault-owner)))
+      transferred (ok true)
+      error (err err-transfer-failed)
+    )
   )
 )
 
@@ -110,7 +117,9 @@
   )
 )
 
-;; TODO: add secure asserts - this should be very limited in terms of access
 (define-public (redeem-collateral (stx-collateral uint) (owner principal))
-  (ok (as-contract (stx-transfer? stx-collateral (as-contract tx-sender) owner)))
+  (begin
+    (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
+    (ok (as-contract (stx-transfer? stx-collateral (as-contract tx-sender) owner)))
+  )
 )

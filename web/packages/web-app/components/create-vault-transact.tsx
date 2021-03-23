@@ -45,7 +45,6 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       postConditionMode: 0x01,
       finished: data => {
         console.log('finished collateralizing!', data);
-        console.log(data.stacksTransaction.auth.spendingCondition?.nonce.toNumber());
         setState('Collateralize and Mint', data.txId);
       },
     });

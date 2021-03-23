@@ -39,7 +39,7 @@
 )
 
 (define-public (burn (amount uint) (sender principal))
-  (ok (as-contract (ft-burn? diko amount sender)))
+  (ok (ft-burn? diko amount sender))
 )
 
 ;; Initialize the contract

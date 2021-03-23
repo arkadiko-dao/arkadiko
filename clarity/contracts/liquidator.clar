@@ -1,7 +1,6 @@
 ;; errors
 (define-constant err-liquidation-failed u1)
 
-;; TODO: only callable by a registered stacker?
 (define-public (notify-risky-vault (vault-id uint))
   (let ((collateral-to-debt-ratio (unwrap-panic (contract-call? .freddie calculate-current-collateral-to-debt-ratio vault-id))))
     (let ((liquidation-ratio (unwrap-panic (contract-call? .dao get-liquidation-ratio "stx"))))

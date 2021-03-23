@@ -6,6 +6,9 @@
 (define-constant err-lot-sold u2)
 (define-constant err-poor-bid u3)
 (define-constant err-xusd-transfer-failed u4)
+(define-constant err-auction-not-allowed u5)
+(define-constant err-insufficient-collateral u6)
+(define-constant err-not-authorized u7)
 
 (define-map auctions
   { id: uint }
@@ -77,31 +80,36 @@
 ;; if we cannot cover the vault's debt with the collateral sale,
 ;; we will have to sell some governance or STX tokens from the reserve
 (define-public (start-auction (vault-id uint) (uamount uint) (debt-to-raise uint))
-  (let ((auction-id (+ (var-get last-auction-id) u1)))
-    ;; 500 collateral => 500 / 100 = 5 lots
-    (let ((amount-of-lots (+ u1 (/ uamount (var-get lot-size)))))
-      (let ((last-lot (mod uamount (var-get lot-size))))
-        (map-set auctions
-          { id: auction-id }
-          {
-            id: auction-id,
-            collateral-amount: uamount,
-            debt-to-raise: debt-to-raise,
-            vault-id: vault-id,
-            lot-size: (var-get lot-size),
-            lots: amount-of-lots,
-            last-lot-size: last-lot,
-            lots-sold: u0,
-            ends-at: (+ block-height u10000),
-            total-collateral-auctioned: u0,
-            total-debt-raised: u0,
-            is-open: true
-          }
+  (let ((vault (contract-call? .freddie get-vault-by-id vault-id)))
+    (asserts! (is-eq contract-caller .liquidator) (err err-not-authorized))
+    (asserts! (is-eq (get is-liquidated vault) true) (err err-auction-not-allowed))
+
+    (let ((auction-id (+ (var-get last-auction-id) u1)))
+      ;; 500 collateral => 500 / 100 = 5 lots
+      (let ((amount-of-lots (+ u1 (/ uamount (var-get lot-size)))))
+        (let ((last-lot (mod uamount (var-get lot-size))))
+          (map-set auctions
+            { id: auction-id }
+            {
+              id: auction-id,
+              collateral-amount: uamount,
+              debt-to-raise: debt-to-raise,
+              vault-id: vault-id,
+              lot-size: (var-get lot-size),
+              lots: amount-of-lots,
+              last-lot-size: last-lot,
+              lots-sold: u0,
+              ends-at: (+ block-height u10000),
+              total-collateral-auctioned: u0,
+              total-debt-raised: u0,
+              is-open: true
+            }
+          )
+          (print "Added new open auction")
+          (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u2000)))
+          (var-set last-auction-id auction-id)
+          (ok true)
         )
-        (print "Added new open auction")
-        (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u2000)))
-        (var-set last-auction-id auction-id)
-        (ok true)
       )
     )
   )
@@ -268,14 +276,9 @@
       )
       (begin
         (let ((lots (get-winning-lots tx-sender)))
-          (print "Yahoo!")
-          (print (as-contract tx-sender))
           (map-set redeeming-lot { user: tx-sender } { auction-id: auction-id, lot-index: lot-index})
           (if (map-set winning-lots { user: tx-sender } { ids: (filter remove-winning-lot (get ids lots)) })
-            (begin
-              ;; send collateral to tx-sender
-              (ok (contract-call? .stx-reserve redeem-collateral (get collateral-amount last-bid) tx-sender))
-            )
+            (ok (contract-call? .stx-reserve redeem-collateral (get collateral-amount last-bid) tx-sender))
             (err false)
           )
         )
@@ -297,9 +300,8 @@
 ;; DONE     2b. OR allow person to collect collateral from reserve manually
 ;; TODO     3. check if vault debt is covered (sum of xUSD in lots >= debt-to-raise)
 ;; DONE     4. update vault to allow vault owner to withdraw leftover collateral (if any)
-;; TODO     5. if not all vault debt is covered: auction off collateral again (if any left)
+;; DONE     5. if not all vault debt is covered: auction off collateral again (if any left)
 ;; TODO     6. if not all vault debt is covered and no collateral is left: cover xUSD with gov token
-;; TODO: maybe keep an extra map with bids and (bidder, auction id, lot id) tuple as key with all their bids
 (define-private (close-auction (auction-id uint))
   (let ((auction (get-auction-by-id auction-id)))
     (map-set auctions
