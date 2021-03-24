@@ -1,10 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Lot } from './lot';
-import { getStxPrice } from '@common/get-stx-price';
-import { Modal } from '@blockstack/ui';
-import { uintCV } from '@stacks/transactions';
-import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
-import { useConnect } from '@stacks/connect-react';
 
 export interface LotProps {
   id: string;
