@@ -119,7 +119,7 @@
 
 (define-public (redeem-collateral (stx-collateral uint) (owner principal))
   (begin
-    (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
+    (asserts! (is-eq contract-caller .auction-engine) (err err-unauthorized))
     (ok (as-contract (stx-transfer? stx-collateral (as-contract tx-sender) owner)))
   )
 )
