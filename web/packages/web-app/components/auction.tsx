@@ -11,13 +11,14 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, ustx, price, debt, 
   const [acceptedCollateral, setAcceptedCollateral] = useState(0);
   const [debtToRaise, setDebtToRaise] = useState(debt);
   const stxAddress = useSTXAddress();
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   useEffect(() => {
     let mounted = true;
 
     const getData = async () => {
       const minimumCollateralAmount = await callReadOnlyFunction({
-        contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+        contractAddress,
         contractName: "auction-engine",
         functionName: "calculate-minimum-collateral-amount",
         functionArgs: [uintCV(id)],
@@ -33,7 +34,7 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, ustx, price, debt, 
       // }
 
       const currentBid = await callReadOnlyFunction({
-        contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+        contractAddress,
         contractName: "auction-engine",
         functionName: "get-last-bid",
         functionArgs: [uintCV(id), uintCV(lotId)],

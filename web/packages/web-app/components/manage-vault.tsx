@@ -25,6 +25,7 @@ export const ManageVault = ({ match }) => {
   const [auctionEnded, setAuctionEnded] = useState(false);
   const [txId, setTxId] = useState<string>('');
   const [txStatus, setTxStatus] = useState<string>('');
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   const searchVault = (id: string) => {
     for (let i = 0; i < state.vaults.length; i++) {
@@ -75,7 +76,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       authOrigin,
-      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractAddress,
       contractName: 'freddie',
       functionName: 'burn',
       functionArgs: [uintCV(match.params.id), standardPrincipalCV(senderAddress || '')],
@@ -101,7 +102,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       authOrigin,
-      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractAddress,
       contractName: 'freddie',
       functionName: 'deposit',
       functionArgs: [uintCV(match.params.id), uintCV(parseFloat(extraStxDeposit) * 1000000)],
@@ -152,7 +153,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       authOrigin,
-      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractAddress,
       contractName: 'freddie',
       functionName: 'mint',
       functionArgs: [uintCV(match.params.id), uintCV(parseFloat(value) * 1000000)],
@@ -172,7 +173,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       authOrigin,
-      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractAddress,
       contractName: 'freddie',
       functionName: 'withdraw',
       functionArgs: [uintCV(match.params.id), uintCV(parseFloat(value) * 1000000)],
@@ -190,7 +191,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       authOrigin,
-      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractAddress,
       contractName: 'liquidator',
       functionName: 'notify-risky-vault',
       functionArgs: [uintCV(match.params.id)],

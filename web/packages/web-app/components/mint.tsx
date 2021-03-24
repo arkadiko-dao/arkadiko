@@ -26,6 +26,7 @@ export const Mint = () => {
   const state = useContext(AppContext);
   const { vaults } = useContext(AppContext);
   const { doContractCall } = useConnect();
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   const addMocknetStx = async () => {
     const key = '9aef533e754663a453984b69d36f109be817e9940519cc84979419e2be00864801';
@@ -52,7 +53,7 @@ export const Mint = () => {
     await doContractCall({
       network,
       authOrigin,
-      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractAddress,
       contractName: 'freddie',
       functionName: 'collateralize-and-mint',
       functionArgs: args,

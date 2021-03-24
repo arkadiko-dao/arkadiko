@@ -16,6 +16,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
   const [txType, setTxType] = useState<string>('');
   const { doContractCall } = useConnect();
   const address = useSTXAddress();
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   const clearState = () => {
     setTxId('');
@@ -58,7 +59,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
     await doContractCall({
       network,
       authOrigin,
-      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractAddress,
       contractName: 'freddie',
       functionName: 'collateralize-and-mint',
       functionArgs: args,

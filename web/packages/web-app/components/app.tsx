@@ -20,6 +20,7 @@ export const App: React.FC = () => {
   const [state, setState] = React.useState<AppState>(defaultState());
   const [authResponse, setAuthResponse] = React.useState('');
   const [appPrivateKey, setAppPrivateKey] = React.useState('');
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   const appConfig = new AppConfig(['store_write', 'publish_data'], document.location.href);
   const userSession = new UserSession({ appConfig });
@@ -31,7 +32,7 @@ export const App: React.FC = () => {
   const authOrigin = getAuthOrigin();
   const fetchVaults = async (address: string) => {
     const vaults = await callReadOnlyFunction({
-      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractAddress,
       contractName: "freddie",
       functionName: "get-vaults",
       functionArgs: [standardPrincipalCV(address)],
@@ -79,7 +80,7 @@ export const App: React.FC = () => {
 
   const fetchCollateralTypes = async (address: string) => {
     const types = await callReadOnlyFunction({
-      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractAddress,
       contractName: "dao",
       functionName: "get-collateral-type-by-token",
       functionArgs: [stringAsciiCV('stx')],
@@ -112,7 +113,7 @@ export const App: React.FC = () => {
           fetchCollateralTypes(userData?.profile?.stxAddress?.testnet || '');
 
           const riskParameters = await callReadOnlyFunction({
-            contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+            contractAddress,
             contractName: "stx-reserve",
             functionName: "get-risk-parameters",
             functionArgs: [],
@@ -122,7 +123,7 @@ export const App: React.FC = () => {
           const params = cvToJSON(riskParameters).value.value;
 
           const isStacker = await callReadOnlyFunction({
-            contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+            contractAddress,
             contractName: "stacker-registry",
             functionName: "is-stacker",
             functionArgs: [standardPrincipalCV(userData?.profile?.stxAddress?.testnet || '')],

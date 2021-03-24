@@ -9,13 +9,14 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, xusd }) =
   const { doContractCall } = useConnect();
   const [txId, setTxId] = useState<string>('');
   const [txStatus, setTxStatus] = useState<string>('');
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   const redeemLot = async () => {
     const authOrigin = getAuthOrigin();
     await doContractCall({
       network,
       authOrigin,
-      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractAddress,
       contractName: 'auction-engine',
       functionName: 'redeem-lot-collateral',
       functionArgs: [uintCV(id), uintCV(lotId)],

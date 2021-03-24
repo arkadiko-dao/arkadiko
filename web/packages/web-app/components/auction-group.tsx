@@ -27,6 +27,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
   const [collateralAmount, setCollateralAmount] = useState(0);
   const [txId, setTxId] = useState<string>('');
   const [txStatus, setTxStatus] = useState<string>('');
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   const auctionItems = auctions.map((auction: object) =>
     <Auction
@@ -82,7 +83,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
     await doContractCall({
       network,
       authOrigin,
-      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractAddress,
       contractName: 'auction-engine',
       functionName: 'bid',
       functionArgs: [uintCV(bidAuctionId), uintCV(bidLotId), uintCV(bidAmount * 1000000), uintCV(collateralAmount)],

@@ -16,13 +16,14 @@ export const Auctions: React.FC = () => {
   const stxAddress = useSTXAddress();
   const [auctions, setAuctions] = useState([]);
   const [lots, setLots] = useState([]);
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   const registerStacker = async () => {
     const authOrigin = getAuthOrigin();
     await doContractCall({
       network,
       authOrigin,
-      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractAddress,
       contractName: 'stacker-registry',
       functionName: 'register',
       functionArgs: [],
@@ -39,7 +40,7 @@ export const Auctions: React.FC = () => {
 
     const getData = async () => {
       const auctions = await callReadOnlyFunction({
-        contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+        contractAddress,
         contractName: "auction-engine",
         functionName: "get-auctions",
         functionArgs: [],
@@ -67,7 +68,7 @@ export const Auctions: React.FC = () => {
 
       const getLot = async (auctionId:number, lotId:number) => {
         const lot = await callReadOnlyFunction({
-          contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+          contractAddress,
           contractName: "auction-engine",
           functionName: "get-last-bid",
           functionArgs: [uintCV(auctionId), uintCV(lotId)],
@@ -79,7 +80,7 @@ export const Auctions: React.FC = () => {
       };
 
       const lots = await callReadOnlyFunction({
-        contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+        contractAddress,
         contractName: "auction-engine",
         functionName: "get-winning-lots",
         functionArgs: [standardPrincipalCV(stxAddress || '')],

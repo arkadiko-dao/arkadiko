@@ -8,11 +8,12 @@ export const getCollateralToDebtRatio = (vaultId: string) => {
   const stxAddress = useSTXAddress();
   const state = useContext(AppContext);
   const [collateralToDebt, setCollateralToDebt] = useState(0);
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   useEffect(() => {
     const getCollateralToDebtRatio = async () => {
       const collToDebt = await callReadOnlyFunction({
-        contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+        contractAddress,
         contractName: "freddie",
         functionName: "calculate-current-collateral-to-debt-ratio",
         functionArgs: [uintCV(vaultId)],

@@ -40,6 +40,8 @@ export const debtBackgroundClass = (ratio: number) => {
 export const Vault: React.FC<VaultProps> = ({ id, collateral, debt, isLiquidated, auctionEnded, leftoverCollateral }) => {
   const state = useContext(AppContext);
   const { doContractCall } = useConnect();
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+
   let debtRatio = 0;
   if (id) {
     debtRatio = getCollateralToDebtRatio(id)?.collateralToDebt;
@@ -50,7 +52,7 @@ export const Vault: React.FC<VaultProps> = ({ id, collateral, debt, isLiquidated
     await doContractCall({
       network,
       authOrigin,
-      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractAddress,
       contractName: 'freddie',
       functionName: 'withdraw-leftover-collateral',
       functionArgs: [uintCV(id)],

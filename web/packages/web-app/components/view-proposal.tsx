@@ -12,13 +12,14 @@ export const ViewProposal = ({ match }) => {
   const [showVoteModal, setShowVoteModal] = useState(false);
   const [amountOfVotes, setAmountOfVotes] = useState('');
   const { doContractCall } = useConnect();
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   useEffect(() => {
     let mounted = true;
 
     const getData = async () => {
       const proposal = await callReadOnlyFunction({
-        contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+        contractAddress,
         contractName: "dao",
         functionName: "get-proposal-by-id",
         functionArgs: [uintCV(match.params.id)],
@@ -64,7 +65,7 @@ export const ViewProposal = ({ match }) => {
     await doContractCall({
       network,
       authOrigin,
-      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractAddress,
       contractName: 'dao',
       functionName: 'vote-for',
       functionArgs: [uintCV(match.params.id), uintCV(amountOfVotes * 1000000)],
@@ -81,7 +82,7 @@ export const ViewProposal = ({ match }) => {
     await doContractCall({
       network,
       authOrigin,
-      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractAddress,
       contractName: 'dao',
       functionName: 'vote-against',
       functionArgs: [uintCV(match.params.id), uintCV(amountOfVotes * 1000000)],

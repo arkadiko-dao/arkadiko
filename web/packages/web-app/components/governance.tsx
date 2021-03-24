@@ -14,6 +14,7 @@ export const Governance = () => {
   const { doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
   const [proposals, setProposals] = useState([]);
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   const callAddProposal = async () => {
     const authOrigin = getAuthOrigin();
@@ -28,7 +29,7 @@ export const Governance = () => {
     await doContractCall({
       network,
       authOrigin,
-      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractAddress,
       contractName: 'dao',
       functionName: 'propose',
       functionArgs: [uintCV(200), stringAsciiCV(content), stringAsciiCV("change_risk_parameter"), list],
@@ -44,7 +45,7 @@ export const Governance = () => {
 
     const getData = async () => {
       const proposal = await callReadOnlyFunction({
-        contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+        contractAddress,
         contractName: "dao",
         functionName: "get-proposal-by-id",
         functionArgs: [uintCV(1)],

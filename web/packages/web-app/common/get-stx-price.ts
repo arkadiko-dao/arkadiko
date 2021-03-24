@@ -8,6 +8,7 @@ export const getStxPrice = () => {
   const stxAddress = useSTXAddress();
   const state = useContext(AppContext);
   const [price, setPrice] = useState('');
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   useEffect(() => {
     let mounted = true;
@@ -15,7 +16,7 @@ export const getStxPrice = () => {
     const getStxPrice = async () => {
       if (mounted) {
         const price = await callReadOnlyFunction({
-          contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+          contractAddress,
           contractName: "oracle",
           functionName: "get-price",
           functionArgs: [],
