@@ -74,38 +74,37 @@
   (let ((ratio (unwrap-panic (contract-call? .stx-reserve calculate-current-collateral-to-debt-ratio debt collateral-amount))))
     (asserts! (is-eq tx-sender sender) (err err-unauthorized))
     (asserts! (>= ratio (unwrap-panic (contract-call? .dao get-liquidation-ratio "stx"))) (err err-insufficient-collateral))
+    (try! (contract-call? .stx-reserve collateralize-and-mint collateral-amount debt sender))
 
-    (let ((debt-created (contract-call? .stx-reserve collateralize-and-mint collateral-amount debt sender)))
-      (if (is-ok (as-contract (contract-call? .xusd-token mint debt sender)))
-        (begin
-          (let ((vault-id (+ (var-get last-vault-id) u1)))
-            (let ((entries (get ids (get-vault-entries sender))))
-              (map-set vault-entries { user: sender } { ids: (unwrap-panic (as-max-len? (append entries vault-id) u1500)) })
-              (map-set vaults
-                { id: vault-id }
-                {
-                  id: vault-id,
-                  owner: sender,
-                  collateral: collateral-amount,
-                  collateral-type: collateral-type,
-                  debt: debt,
-                  created-at-block-height: block-height,
-                  updated-at-block-height: block-height,
-                  stability-fee-last-paid: block-height,
-                  is-liquidated: false,
-                  auction-ended: false,
-                  leftover-collateral: u0
-                }
-              )
-              (var-set last-vault-id vault-id)
-              (let ((result (contract-call? .dao add-debt-to-collateral-type "stx" debt)))
-                (ok debt)
-              )
+    (if (is-ok (as-contract (contract-call? .xusd-token mint debt sender)))
+      (begin
+        (let ((vault-id (+ (var-get last-vault-id) u1)))
+          (let ((entries (get ids (get-vault-entries sender))))
+            (map-set vault-entries { user: sender } { ids: (unwrap-panic (as-max-len? (append entries vault-id) u1500)) })
+            (map-set vaults
+              { id: vault-id }
+              {
+                id: vault-id,
+                owner: sender,
+                collateral: collateral-amount,
+                collateral-type: collateral-type,
+                debt: debt,
+                created-at-block-height: block-height,
+                updated-at-block-height: block-height,
+                stability-fee-last-paid: block-height,
+                is-liquidated: false,
+                auction-ended: false,
+                leftover-collateral: u0
+              }
+            )
+            (var-set last-vault-id vault-id)
+            (let ((result (contract-call? .dao add-debt-to-collateral-type "stx" debt)))
+              (ok debt)
             )
           )
         )
-        (err err-minter-failed)
       )
+      (err err-minter-failed)
     )
   )
 )
