@@ -78,7 +78,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts }) => {
               Stability Fee
             </h3>
             <p className="mt-1 text-sm text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
-              {state.riskParameters['stability-fee']}%
+              {state.riskParameters['stability-fee-apy']}%
             </p>
           </div>
           <hr/>
