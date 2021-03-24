@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { space, Box, Text } from '@blockstack/ui';
+import React, { useContext } from 'react';
+import { Box } from '@blockstack/ui';
 import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import BN from 'bn.js';
@@ -12,7 +12,6 @@ import {
   uintCV,
   stringAsciiCV
 } from '@stacks/transactions';
-import { ExplorerLink } from './explorer-link';
 import { VaultGroup } from './vault-group';
 import { getStxPrice } from '@common/get-stx-price';
 import { Link } from '@components/link';
@@ -22,25 +21,13 @@ import { useConnect } from '@stacks/connect-react';
 
 export const Mint = () => {
   const address = useSTXAddress();
-  const [txId, setTxId] = useState<string>('');
-  const [txType, setTxType] = useState<string>('');
   const env = process.env.REACT_APP_NETWORK_ENV;
   const price = parseFloat(getStxPrice().price);
   const state = useContext(AppContext);
+  const { vaults } = useContext(AppContext);
   const { doContractCall } = useConnect();
 
-  const clearState = () => {
-    setTxId('');
-    setTxType('');
-  };
-
-  const setState = (type: string, id: string) => {
-    setTxId(id);
-    setTxType(type);
-  };
-
   const addMocknetStx = async () => {
-    clearState();
     const key = '9aef533e754663a453984b69d36f109be817e9940519cc84979419e2be00864801';
     const senderKey = createStacksPrivateKey(key);
     console.log('Adding STX from mocknet address to', address, 'on network', network);
@@ -51,16 +38,14 @@ export const Mint = () => {
       senderKey: privateKeyToString(senderKey),
       network: network
     });
-    console.log(transaction);
-    const result = await broadcastTransaction(transaction, network);
-    console.log(result);
-  }
+    await broadcastTransaction(transaction, network);
+  };
 
   const callCollateralizeAndMint = async () => {
-    clearState();
     const authOrigin = getAuthOrigin();
     const args = [
       uintCV(10 * 1000000),
+      uintCV(1000000),
       standardPrincipalCV(address || ''),
       stringAsciiCV('stx')
     ];
@@ -71,12 +56,7 @@ export const Mint = () => {
       contractName: 'freddie',
       functionName: 'collateralize-and-mint',
       functionArgs: args,
-      postConditionMode: 0x01,
-      finished: data => {
-        console.log('finished collateralizing!', data);
-        console.log(data.stacksTransaction.auth.spendingCondition?.nonce.toNumber());
-        setState('Contract Call', data.txId);
-      },
+      postConditionMode: 0x01
     });
   };
 
@@ -103,15 +83,6 @@ export const Mint = () => {
               )}
             </h2>
 
-            {txId && (
-              <Text textStyle="body.large" display="block" my={space('base')}>
-                <Text color="green" fontSize={1}>
-                  Successfully broadcasted &quot;{txType}&quot;
-                </Text>
-                <ExplorerLink txId={txId} />
-              </Text>
-            )}
-
             <div className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-4 lg:grid-cols-4">
               <div className="bg-white overflow-hidden shadow rounded-lg">
                 <div className="p-5">
@@ -128,7 +99,7 @@ export const Mint = () => {
                         </dt>
                         <dd>
                           <div className="text-lg font-medium text-gray-900">
-                            {parseInt(state.balance['stx'], 10) / 1000000} STX
+                            {state.balance['stx'] / 1000000} STX
                           </div>
                         </dd>
                       </dl>
@@ -176,7 +147,7 @@ export const Mint = () => {
                         </dt>
                         <dd>
                           <div className="text-lg font-medium text-gray-900">
-                            {parseInt(state.balance['xusd'], 10) / 1000000} xUSD
+                            {state.balance['xusd'] / 1000000} xUSD
                           </div>
                         </dd>
                       </dl>
@@ -200,7 +171,7 @@ export const Mint = () => {
                         </dt>
                         <dd>
                           <div className="text-lg font-medium text-gray-900">
-                            {parseInt(state.balance['diko'], 10) / 1000000} DIKO
+                            {state.balance['diko'] / 1000000} DIKO
                           </div>
                         </dd>
                       </dl>
@@ -244,35 +215,37 @@ export const Mint = () => {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      <tr className="bg-white">
-                        <td className="max-w-0 px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          <div className="flex">
-                            <a href="https://www.stacks.co/" target="_blank" className="group inline-flex space-x-2 truncate text-sm">
-                              <svg className="flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                              </svg>
-                              <p className="text-gray-500 truncate group-hover:text-gray-900">
-                                Stacks (STX)
-                              </p>
-                            </a>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-                          <span className="text-gray-900 font-medium">{state.riskParameters['stability-fee']}%</span>
-                        </td>
-                        <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-gray-500 md:block">
-                          <span className="text-gray-900 font-medium">{state.riskParameters['liquidation-ratio']}%</span>
-                        </td>
-                        <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-                          <span className="text-gray-900 font-medium">{state.riskParameters['liquidation-penalty']}%</span>
-                        </td>
-                        <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-                          <span className="text-gray-900 font-medium">${parseInt(state.riskParameters['maximum-debt'], 10)/1000000} million</span>
-                        </td>
-                        <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-                          <span className="text-gray-900 font-medium">$0 million</span>
-                        </td>
-                      </tr>
+                      {state.collateralTypes.length > 0 ? (
+                        <tr className="bg-white">
+                          <td className="max-w-0 px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <div className="flex">
+                              <a href={`${state.collateralTypes[0]['url']}`} target="_blank" className="group inline-flex space-x-2 truncate text-sm">
+                                <svg className="flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                  <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                                </svg>
+                                <p className="text-gray-500 truncate group-hover:text-gray-900">
+                                  {state.collateralTypes[0]['name']} ({state.collateralTypes[0]['token']})
+                                </p>
+                              </a>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+                            <span className="text-gray-900 font-medium">{state.riskParameters['stability-fee-apy']}%</span>
+                          </td>
+                          <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-gray-500 md:block">
+                            <span className="text-gray-900 font-medium">{state.riskParameters['liquidation-ratio']}%</span>
+                          </td>
+                          <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+                            <span className="text-gray-900 font-medium">{state.riskParameters['liquidation-penalty']}%</span>
+                          </td>
+                          <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+                            <span className="text-gray-900 font-medium">${state.riskParameters['maximum-debt'] / 1000000} million</span>
+                          </td>
+                          <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+                            <span className="text-gray-900 font-medium">${state.collateralTypes[0]['total-debt'] / 1000000}</span>
+                          </td>
+                        </tr>
+                      ): null }
                     </tbody>
                   </table>
                 </div>
@@ -297,8 +270,8 @@ export const Mint = () => {
             </div>
           </div>
 
-          {state.vaults.length ? (
-            <VaultGroup />
+          {vaults.length ? (
+            <VaultGroup vaults={vaults} />
           ): (
             <div className="hidden sm:block">
               <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

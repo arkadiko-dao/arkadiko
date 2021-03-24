@@ -4,13 +4,16 @@ import { Connect } from '@stacks/connect-react';
 import { AuthOptions } from '@stacks/connect';
 import { getAuthOrigin } from '@common/utils';
 import { UserSession, AppConfig } from '@stacks/auth';
-import { defaultState, AppContext, AppState } from '@common/context';
+import { defaultState, AppContext, AppState, defaultRiskParameters, defaultBalance } from '@common/context';
 import { Header } from '@components/header';
 import { Routes } from '@components/routes';
 import { fetchBalances } from '@common/get-balance';
 import { getRPCClient } from '@common/utils';
 import { stacksNetwork as network } from '@common/utils';
-import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, tupleCV } from '@stacks/transactions';
+import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, tupleCV, ClarityValue, stringAsciiCV } from '@stacks/transactions';
+import { VaultProps } from './vault';
+
+type TupleData = { [key: string]: ClarityValue };
 
 const icon = '/assets/logo.png';
 export const App: React.FC = () => {
@@ -23,47 +26,90 @@ export const App: React.FC = () => {
 
   const signOut = () => {
     userSession.signUserOut();
-    setState({ userData: null, balance: null, vaults: [], riskParameters: {} });
+    setState(defaultState());
+  };
+  const authOrigin = getAuthOrigin();
+  const fetchVaults = async (address: string) => {
+    const vaults = await callReadOnlyFunction({
+      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractName: "freddie",
+      functionName: "get-vaults",
+      functionArgs: [standardPrincipalCV(address)],
+      senderAddress: address,
+      network: network,
+    });
+    const json = cvToJSON(vaults);
+    let arr:Array<VaultProps> = [];
+
+    json.value.value.forEach((e: TupleData) => {
+      const vault = tupleCV(e);
+      const data = (vault.data.value as object);
+      if (data['id'].value !== 0) {
+        arr.push({
+          id: data['id'].value,
+          owner: data['owner'].value,
+          collateral: data['collateral'].value,
+          isLiquidated: data['is-liquidated'].value,
+          auctionEnded: data['auction-ended'].value,
+          leftoverCollateral: data['leftover-collateral'].value,
+          debt: data['debt'].value
+        });
+      }
+    });
+
+    setState(prevState => ({
+      ...prevState,
+      vaults: arr
+    }));
   };
 
-  const authOrigin = getAuthOrigin();
+  const fetchBalance = async (address: string) => {
+    const client = getRPCClient();
+    const account = await client.fetchBalances(address);
+
+    setState(prevState => ({
+      ...prevState,
+      balance: {
+        xusd: account.xusd.toString(),
+        diko: account.diko.toString(),
+        stx: account.stx.toString()
+      }
+    }));
+  };
+
+  const fetchCollateralTypes = async (address: string) => {
+    const types = await callReadOnlyFunction({
+      contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      contractName: "dao",
+      functionName: "get-collateral-type-by-token",
+      functionArgs: [stringAsciiCV('stx')],
+      senderAddress: address,
+      network: network,
+    });
+    const json = cvToJSON(types);
+
+    setState(prevState => ({
+      ...prevState,
+      collateralTypes: [{
+        name: json.value['name'].value,
+        token: json.value['token'].value,
+        url: json.value['url'].value,
+        'total-debt': json.value['total-debt'].value
+      }]
+    }));
+  };
 
   useEffect(() => {
     let mounted = true;
 
     if (userSession.isUserSignedIn()) {
       const userData = userSession.loadUserData();
-      const client = getRPCClient();
 
       const getData = async () => {
         try {
-          const account = await client.fetchBalances(userData?.profile?.stxAddress?.testnet);
-
-          const vaults = await callReadOnlyFunction({
-            contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
-            contractName: "freddie",
-            functionName: "get-vaults",
-            functionArgs: [standardPrincipalCV(userData?.profile?.stxAddress?.testnet || '')],
-            senderAddress: userData?.profile?.stxAddress?.testnet || '',
-            network: network,
-          });
-          const json = cvToJSON(vaults);
-          let arr:Array<{ id: string, owner: string, collateral: string, debt: string, 'is-liquidated': string, 'auction-ended': string }> = [];
-          json.value.value.forEach((e: object) => {
-            const vault = tupleCV(e);
-            const data = vault.data.value;
-            if (data['id'].value !== 0) {
-              arr.push({
-                id: data['id'].value,
-                owner: data['owner'].value,
-                collateral: data['collateral'].value,
-                'is-liquidated': data['is-liquidated'].value,
-                'auction-ended': data['auction-ended'].value,
-                'leftover-collateral': data['leftover-collateral'].value,
-                debt: data['debt'].value
-              });
-            }
-          });
+          fetchBalance(userData?.profile?.stxAddress?.testnet || '');
+          fetchVaults(userData?.profile?.stxAddress?.testnet || '');
+          fetchCollateralTypes(userData?.profile?.stxAddress?.testnet || '');
 
           const riskParameters = await callReadOnlyFunction({
             contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
@@ -85,23 +131,20 @@ export const App: React.FC = () => {
           });
 
           if (mounted) {
-            setState({
+            setState(prevState => ({
+              ...prevState,
               userData,
-              balance: {
-                xusd: account.xusd.toString(),
-                diko: account.diko.toString(),
-                stx: account.stx.toString()
-              },
-              vaults: arr,
               riskParameters: {
                 'collateral-to-debt-ratio': params['collateral-to-debt-ratio'].value,
                 'liquidation-penalty': params['liquidation-penalty'].value,
                 'liquidation-ratio': params['liquidation-ratio'].value,
                 'maximum-debt': params['maximum-debt'].value,
-                'stability-fee': params['stability-fee'].value
+                'stability-fee': params['stability-fee'].value,
+                'stability-fee-apy': params['stability-fee-apy'].value
               },
-              isStacker: cvToJSON(isStacker).value.value
-            });
+              isStacker: cvToJSON(isStacker).value.value,
+              currentTxId: ''
+            }));
           }
         } catch (error) {
           console.error(error);
@@ -117,7 +160,10 @@ export const App: React.FC = () => {
     if (userSession.isSignInPending()) {
       const userData = await userSession.handlePendingSignIn();
       const balance = await fetchBalances(userData?.profile?.stxAddress?.testnet);
-      setState({ userData, balance: balance, vaults: [], riskParameters: {}, isStacker: false });
+      fetchBalance(userData?.profile?.stxAddress?.testnet || '');
+      fetchVaults(userData?.profile?.stxAddress?.testnet || '');
+      fetchCollateralTypes(userData?.profile?.stxAddress?.testnet || '');
+      setState(prevState => ({ ...prevState, userData, balance: balance, riskParameters: defaultRiskParameters(), isStacker: false }));
       setAppPrivateKey(userData.appPrivateKey);
     } else if (userSession.isUserSignedIn()) {
       setAppPrivateKey(userSession.loadUserData().appPrivateKey);
@@ -136,8 +182,10 @@ export const App: React.FC = () => {
       const userData = userSession.loadUserData();
       setAppPrivateKey(userSession.loadUserData().appPrivateKey);
       setAuthResponse(authResponse);
-      setState({ userData, balance: {}, vaults: [], riskParameters: {}, isStacker: false });
-      console.log(userData);
+      fetchBalance(userData?.profile?.stxAddress?.testnet || '');
+      fetchVaults(userData?.profile?.stxAddress?.testnet || '');
+      fetchCollateralTypes(userData?.profile?.stxAddress?.testnet || '');
+      setState(prevState => ({ ...prevState, userData, balance: defaultBalance(), riskParameters: defaultRiskParameters(), isStacker: false }));
     },
     onCancel: () => {
       console.log('popup closed!');

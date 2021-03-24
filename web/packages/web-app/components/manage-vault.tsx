@@ -12,6 +12,7 @@ import { getStxPrice } from '@common/get-stx-price';
 import { getLiquidationPrice, availableStxToWithdraw, availableCoinsToMint } from '@common/vault-utils';
 import { Link } from '@components/link';
 import { Redirect } from 'react-router-dom';
+import { connectWebSocketClient } from '@stacks/blockchain-api-client';
 
 export const ManageVault = ({ match }) => {
   const { doContractCall } = useConnect();
@@ -22,6 +23,8 @@ export const ManageVault = ({ match }) => {
   const [extraStxDeposit, setExtraStxDeposit] = useState('');
   const [isLiquidated, setIsLiquidated] = useState(false);
   const [auctionEnded, setAuctionEnded] = useState(false);
+  const [txId, setTxId] = useState<string>('');
+  const [txStatus, setTxStatus] = useState<string>('');
 
   const searchVault = (id: string) => {
     for (let i = 0; i < state.vaults.length; i++) {
@@ -39,11 +42,33 @@ export const ManageVault = ({ match }) => {
     let mounted = true;
 
     if (mounted && vault) {
-      setIsLiquidated(vault['is-liquidated']);
-      setAuctionEnded(vault['auction-ended']);
+      setIsLiquidated(vault['isLiquidated']);
+      setAuctionEnded(vault['auctionEnded']);
     }
     return () => { mounted = false; }
   }, [vault]);
+
+  useEffect(() => {
+    let sub;
+
+    const subscribe = async (txId:string) => {
+      const client = await connectWebSocketClient('ws://localhost:3999');
+      sub = await client.subscribeTxUpdates(txId, update => {
+        console.log('Got an update:', update);
+        if (update['tx_status'] == 'success') {
+          window.location.reload(true);
+        } else if (update['tx_status'] == 'abort_by_response') {
+          setTxStatus('error');
+        }
+      });
+      console.log({ client, sub });
+    };
+    if (txId) {
+      console.log('Subscribing on updates with TX id:', txId);
+      subscribe(txId);
+      setShowDepositModal(false);
+    }
+  }, [txId]);
 
   const callBurn = async () => {
     const authOrigin = getAuthOrigin();
@@ -57,8 +82,8 @@ export const ManageVault = ({ match }) => {
       postConditionMode: 0x01,
       finished: data => {
         console.log('finished burn!', data);
-        console.log(data.stacksTransaction.auth.spendingCondition?.nonce.toNumber());
-        window.location.href = '/';
+        setTxId(data.txId);
+        setTxStatus('pending');
       },
     });
   };
@@ -83,7 +108,8 @@ export const ManageVault = ({ match }) => {
       postConditionMode: 0x01,
       finished: data => {
         console.log('finished deposit!', data);
-        console.log(data.stacksTransaction.auth.spendingCondition?.nonce.toNumber());
+        setTxId(data.txId);
+        setTxStatus('pending');
       },
     });
   };
@@ -91,7 +117,7 @@ export const ManageVault = ({ match }) => {
   const liquidationPrice = () => {
     if (vault) {
       // (liquidationRatio * coinsMinted) / stxCollateral = rekt
-      const liquidationRatio = parseInt(state.riskParameters['liquidation-ratio'], 10);
+      const liquidationRatio = state.riskParameters['liquidation-ratio'];
       return getLiquidationPrice(liquidationRatio, vault['debt'], vault['collateral']);
     }
 
@@ -100,7 +126,7 @@ export const ManageVault = ({ match }) => {
 
   const stxLocked = () => {
     if (vault) {
-      return parseInt(vault['collateral'], 10) / 1000000;
+      return vault['collateral'] / 1000000;
     }
 
     return 0;
@@ -114,7 +140,7 @@ export const ManageVault = ({ match }) => {
     return 0;
   }
 
-  const onInputChange = (event) => {
+  const onInputChange = (event: { target: { value: any; }; }) => {
     const value = event.target.value;
     setExtraStxDeposit(value);
   };
@@ -132,8 +158,9 @@ export const ManageVault = ({ match }) => {
       functionArgs: [uintCV(match.params.id), uintCV(parseFloat(value) * 1000000)],
       postConditionMode: 0x01,
       finished: data => {
-        console.log('finished mint!', data);
-        console.log(data.stacksTransaction.auth.spendingCondition?.nonce.toNumber());
+        console.log('finished mint!', data, data.txId);
+        setTxId(data.txId);
+        setTxStatus('pending');
       },
     });
   };
@@ -152,6 +179,8 @@ export const ManageVault = ({ match }) => {
       postConditionMode: 0x01,
       finished: data => {
         console.log('finished withdraw!', data);
+        setTxId(data.txId);
+        setTxStatus('pending');
       },
     });
   };
@@ -168,6 +197,8 @@ export const ManageVault = ({ match }) => {
       postConditionMode: 0x01,
       finished: data => {
         console.log('finished notify risky reserve!', data);
+        setTxId(data.txId);
+        setTxStatus('pending');
       },
     });
   };
@@ -175,6 +206,33 @@ export const ManageVault = ({ match }) => {
   return (
     <Container>
       {auctionEnded && <Redirect to="/vaults" />}
+
+      {txId ? (
+        <div className="fixed inset-0 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end">
+          <div className="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden">
+            <div className="p-4">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <svg className="h-6 w-6 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div className="ml-3 w-0 flex-1 pt-0.5">
+                  <p className="text-sm font-medium text-gray-900">
+                    Successfully broadcasted transaction!
+                  </p>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Status: {txStatus}
+                  </p>
+                  <p className="mt-1 text-sm text-gray-500">
+                    This page will be reloaded automatically when the transaction succeeds.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null }
 
       <Modal isOpen={showDepositModal}>
         <div className="flex pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -266,7 +324,7 @@ export const ManageVault = ({ match }) => {
 
                     <div className="max-w-xl text-sm text-gray-500">
                       <p>
-                        ${parseFloat(price / 100)} USD
+                        ${price / 100} USD
                       </p>
                     </div>
                   </div>

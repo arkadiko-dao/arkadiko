@@ -37,7 +37,10 @@
   (begin
     (if
       (and
-        (is-eq contract-caller .freddie)
+        (or
+          (is-eq contract-caller .freddie)
+          (is-eq contract-caller .stx-reserve)
+        )
         (is-ok (ft-mint? xusd amount recipient))
       )
       (ok amount)

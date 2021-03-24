@@ -7,8 +7,9 @@ import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { uintCV } from '@stacks/transactions';
 
-interface VaultProps {
+export interface VaultProps {
   id: string;
+  owner: string;
   collateral: number;
   debt: number;
   isLiquidated: boolean;
@@ -29,7 +30,7 @@ export const debtClass = (ratio: number) => {
 };
 
 export const debtBackgroundClass = (ratio: number) => {
-  if (ratio < 150) {
+  if (ratio && ratio < 150) {
     return 'bg-red-300';
   }
 
@@ -70,7 +71,7 @@ export const Vault: React.FC<VaultProps> = ({ id, collateral, debt, isLiquidated
         </span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">{state.riskParameters['stability-fee']}%</span>
+        <span className="text-gray-900 font-medium">{state.riskParameters['stability-fee-apy']}%</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         <span className="text-gray-900 font-medium">{state.riskParameters['liquidation-ratio']}%</span>

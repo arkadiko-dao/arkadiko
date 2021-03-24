@@ -1,18 +1,21 @@
-import React, { useContext } from 'react';
-import { Vault } from './vault';
-import { AppContext } from '@common/context';
+import React from 'react';
+import { Vault, VaultProps } from './vault';
 
-export const VaultGroup: React.FC = () => {
-  const state = useContext(AppContext);
+interface VaultGroupProps {
+  vaults: VaultProps[];
+}
 
-  const vaultItems = state.vaults.map((vault: object) =>
+export const VaultGroup: React.FC<VaultGroupProps> = ({ vaults }) => {
+  const vaultItems = vaults.map((vault: VaultProps) =>
     <Vault
       key={vault.id}
       id={vault.id}
+      owner={vault['owner']}
       collateral={vault['collateral']}
       debt={vault['debt']}
-      isLiquidated={vault['is-liquidated']}
-      auctionEnded={vault['auction-ended']}
+      isLiquidated={vault['isLiquidated']}
+      auctionEnded={vault['auctionEnded']}
+      leftoverCollateral={vault['leftoverCollateral']}
     />
   );
   return (

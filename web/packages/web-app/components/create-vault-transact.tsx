@@ -9,6 +9,7 @@ import {
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ExplorerLink } from './explorer-link';
+import { connectWebSocketClient } from '@stacks/blockchain-api-client';
 
 export const CreateVaultTransact = ({ coinAmounts }) => {
   const [txId, setTxId] = useState<string>('');
@@ -25,6 +26,25 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
     setTxId(id);
     setTxType(type);
   };
+
+  useEffect(() => {
+    let sub;
+
+    const subscribe = async (txId:string) => {
+      const client = await connectWebSocketClient('ws://localhost:3999');
+      sub = await client.subscribeTxUpdates(txId, update => {
+        console.log('Got an update:', update);
+        if (update['tx_status'] == 'success') {
+          window.location.href = '/';
+        }
+      });
+      console.log({ client, sub });
+    };
+    if (txId) {
+      console.log('Subscribing on updates with TX id:', txId);
+      subscribe(txId);
+    }
+  }, [txId]);
 
   const callCollateralizeAndMint = async () => {
     clearState();
@@ -73,6 +93,10 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
                   <Text textStyle="body.large" display="block" my={space('base')}>
                     <Text color="green" fontSize={1}>
                       Successfully broadcasted &quot;{txType}&quot;. This can take a few minutes.
+                    </Text>
+                    <br/>
+                    <Text color="green" fontSize={1}>
+                      Keep this window open. We will refresh your page automatically when minting finishes.
                     </Text>
                     <ExplorerLink txId={txId} />
                   </Text>

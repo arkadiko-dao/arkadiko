@@ -171,7 +171,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                 Stability Fee
               </h3>
               <p className="max-w-xl text-sm text-gray-500 mb-3">
-                {state.riskParameters['stability-fee']}%
+                {state.riskParameters['stability-fee-apy']}%
               </p>
 
               <h3 className="text-md leading-6 font-medium text-gray-900">
