@@ -284,7 +284,7 @@
                   leftover-collateral: u0
                 }
               )
-              (let ((debt (/ (* (unwrap-panic (contract-call? .dao get-liquidation-ratio "stx")) (get debt vault)) u100)))
+              (let ((debt (/ (* (unwrap-panic (contract-call? .dao get-liquidation-penalty "stx")) (get debt vault)) u100)))
                 (ok (tuple (ustx-amount collateral) (debt (+ debt (get debt vault)))))
               )
             )

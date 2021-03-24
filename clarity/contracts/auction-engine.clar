@@ -86,29 +86,58 @@
 
     (let ((auction-id (+ (var-get last-auction-id) u1)))
       ;; 500 collateral => 500 / 100 = 5 lots
-      (let ((amount-of-lots (+ u1 (/ uamount (var-get lot-size)))))
-        (let ((last-lot (mod uamount (var-get lot-size))))
-          (map-set auctions
-            { id: auction-id }
-            {
-              id: auction-id,
-              collateral-amount: uamount,
-              debt-to-raise: debt-to-raise,
-              vault-id: vault-id,
-              lot-size: (var-get lot-size),
-              lots: amount-of-lots,
-              last-lot-size: last-lot,
-              lots-sold: u0,
-              ends-at: (+ block-height u10000),
-              total-collateral-auctioned: u0,
-              total-debt-raised: u0,
-              is-open: true
-            }
+      (let ((amount-of-lots (/ uamount (var-get lot-size))))
+        (if (< (* amount-of-lots (var-get lot-size)) uamount)
+          (begin
+            ;; need to add +1 to amount of lots
+            (let ((last-lot-size (mod uamount (var-get lot-size))))
+              (map-set auctions
+                { id: auction-id }
+                {
+                  id: auction-id,
+                  collateral-amount: uamount,
+                  debt-to-raise: debt-to-raise,
+                  vault-id: vault-id,
+                  lot-size: (var-get lot-size),
+                  lots: (+ u1 amount-of-lots),
+                  last-lot-size: last-lot-size,
+                  lots-sold: u0,
+                  ends-at: (+ block-height u10000),
+                  total-collateral-auctioned: u0,
+                  total-debt-raised: u0,
+                  is-open: true
+                }
+              )
+              (print "Added new open auction")
+              (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u2000)))
+              (var-set last-auction-id auction-id)
+              (ok true)
+            )
           )
-          (print "Added new open auction")
-          (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u2000)))
-          (var-set last-auction-id auction-id)
-          (ok true)
+          (begin
+            ;; the collateral amount is exactly divisible by lot-size (no remainder after division)
+            (map-set auctions
+              { id: auction-id }
+              {
+                id: auction-id,
+                collateral-amount: uamount,
+                debt-to-raise: debt-to-raise,
+                vault-id: vault-id,
+                lot-size: (var-get lot-size),
+                lots: amount-of-lots,
+                last-lot-size: u0,
+                lots-sold: u0,
+                ends-at: (+ block-height u10000),
+                total-collateral-auctioned: u0,
+                total-debt-raised: u0,
+                is-open: true
+              }
+            )
+            (print "Added new open auction")
+            (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u2000)))
+            (var-set last-auction-id auction-id)
+            (ok true)
+          )
         )
       )
     )
@@ -122,9 +151,9 @@
   (let ((stx-price-in-cents (contract-call? .oracle get-price)))
     (let ((auction (get-auction-by-id auction-id)))
       (let ((amount (/ (/ (get debt-to-raise auction) (get price stx-price-in-cents)) (get lots auction))))
-        (if (> (get collateral-amount auction) (* u100 amount))
+        (if (> (/ (get collateral-amount auction) (get lots auction)) (* u100 amount))
           (ok (* u100 amount))
-          (ok (get collateral-amount auction))
+          (ok (/ (get collateral-amount auction) (get lots auction)))
         )
       )
     )
