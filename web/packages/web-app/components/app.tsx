@@ -109,16 +109,16 @@ export const App: React.FC = () => {
 
       const getData = async () => {
         try {
-          fetchBalance(userData?.profile?.stxAddress?.testnet || '');
-          fetchVaults(userData?.profile?.stxAddress?.testnet || '');
-          fetchCollateralTypes(userData?.profile?.stxAddress?.testnet || '');
+          fetchBalance(resolveSTXAddress(userData));
+          fetchVaults(resolveSTXAddress(userData));
+          fetchCollateralTypes(resolveSTXAddress(userData));
 
           const riskParameters = await callReadOnlyFunction({
             contractAddress,
             contractName: "stx-reserve",
             functionName: "get-risk-parameters",
             functionArgs: [],
-            senderAddress: userData?.profile?.stxAddress?.testnet || '',
+            senderAddress: resolveSTXAddress(userData),
             network: network,
           });
           const params = cvToJSON(riskParameters).value.value;
@@ -127,8 +127,8 @@ export const App: React.FC = () => {
             contractAddress,
             contractName: "stacker-registry",
             functionName: "is-stacker",
-            functionArgs: [standardPrincipalCV(userData?.profile?.stxAddress?.testnet || '')],
-            senderAddress: userData?.profile?.stxAddress?.testnet || '',
+            functionArgs: [standardPrincipalCV(resolveSTXAddress(userData))],
+            senderAddress: resolveSTXAddress(userData),
             network: network,
           });
 
@@ -162,8 +162,8 @@ export const App: React.FC = () => {
     if (userSession.isSignInPending()) {
       const userData = await userSession.handlePendingSignIn();
       fetchBalance(resolveSTXAddress(userData));
-      fetchVaults(userData?.profile?.stxAddress?.testnet || '');
-      fetchCollateralTypes(userData?.profile?.stxAddress?.testnet || '');
+      fetchVaults(resolveSTXAddress(userData));
+      fetchCollateralTypes(resolveSTXAddress(userData));
       setState(prevState => ({ ...prevState, userData, riskParameters: defaultRiskParameters(), isStacker: false }));
       setAppPrivateKey(userData.appPrivateKey);
     } else if (userSession.isUserSignedIn()) {
@@ -183,9 +183,9 @@ export const App: React.FC = () => {
       const userData = userSession.loadUserData();
       setAppPrivateKey(userSession.loadUserData().appPrivateKey);
       setAuthResponse(authResponse);
-      fetchBalance(userData?.profile?.stxAddress?.testnet || '');
-      fetchVaults(userData?.profile?.stxAddress?.testnet || '');
-      fetchCollateralTypes(userData?.profile?.stxAddress?.testnet || '');
+      fetchBalance(resolveSTXAddress(userData));
+      fetchVaults(resolveSTXAddress(userData));
+      fetchCollateralTypes(resolveSTXAddress(userData));
       setState(prevState => ({ ...prevState, userData, balance: defaultBalance(), riskParameters: defaultRiskParameters(), isStacker: false }));
     },
     onCancel: () => {
