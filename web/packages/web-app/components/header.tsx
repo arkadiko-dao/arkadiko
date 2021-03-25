@@ -10,11 +10,9 @@ interface HeaderProps {
   signOut: () => void;
 }
 
-const shortAddress = () => {
-  const state = useContext(AppContext);
-  if (state.userData) {
-    const addr = state.userData.profile.stxAddress['testnet']
-    return `${addr.substring(0, 5)}...${addr.substring(addr.length - 1, addr.length - 6)}`;
+const shortAddress = (address: string | null) => {
+  if (address) {
+    return `${address.substring(0, 5)}...${address.substring(address.length - 1, address.length - 6)}`;
   }
 
   return '';
@@ -66,7 +64,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut }) => {
               <Tooltip label={`Logged in as ${address}`}>
                 <RouterLink to="/">
                   <span className="inline-block w-3 h-3 bg-green-400 border-2 border-white rounded-full mr-2 pt-2"></span>
-                  {shortAddress()}
+                  {shortAddress(address)}
                 </RouterLink>
               </Tooltip>
             </Box>

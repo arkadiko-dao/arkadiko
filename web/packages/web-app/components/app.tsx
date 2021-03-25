@@ -12,6 +12,7 @@ import { getRPCClient } from '@common/utils';
 import { stacksNetwork as network } from '@common/utils';
 import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, tupleCV, ClarityValue, stringAsciiCV } from '@stacks/transactions';
 import { VaultProps } from './vault';
+import { resolveSTXAddress } from '@common/use-stx-address';
 
 type TupleData = { [key: string]: ClarityValue };
 
@@ -160,11 +161,10 @@ export const App: React.FC = () => {
   const handleRedirectAuth = async () => {
     if (userSession.isSignInPending()) {
       const userData = await userSession.handlePendingSignIn();
-      const balance = await fetchBalances(userData?.profile?.stxAddress?.testnet);
-      fetchBalance(userData?.profile?.stxAddress?.testnet || '');
+      fetchBalance(resolveSTXAddress(userData));
       fetchVaults(userData?.profile?.stxAddress?.testnet || '');
       fetchCollateralTypes(userData?.profile?.stxAddress?.testnet || '');
-      setState(prevState => ({ ...prevState, userData, balance: balance, riskParameters: defaultRiskParameters(), isStacker: false }));
+      setState(prevState => ({ ...prevState, userData, riskParameters: defaultRiskParameters(), isStacker: false }));
       setAppPrivateKey(userData.appPrivateKey);
     } else if (userSession.isUserSignedIn()) {
       setAppPrivateKey(userSession.loadUserData().appPrivateKey);
