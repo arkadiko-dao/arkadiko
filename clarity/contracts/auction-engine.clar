@@ -222,7 +222,7 @@
       (let ((accepted-bid (>= xusd (/ (get debt-to-raise auction) (get lots auction)))))
         ;; if this bid is at least (total debt to raise / lot-size) amount, accept it as final - we don't need to be greedy
         (begin
-          ;; TODO: return xUSD of last bid to (now lost) bidder (return-collateral (get owner last-bid) (get xusd last-bid))
+          ;; (return-collateral (get owner last-bid) (get xusd last-bid)) ;; return xUSD of last bid to (now lost) bidder
           (if (unwrap-panic (contract-call? .xusd-token transfer auction-reserve xusd))
             (begin
               (map-set auctions
@@ -331,8 +331,16 @@
 ;; DONE     4. update vault to allow vault owner to withdraw leftover collateral (if any)
 ;; DONE     5. if not all vault debt is covered: auction off collateral again (if any left)
 ;; TODO     6. if not all vault debt is covered and no collateral is left: cover xUSD with gov token
-(define-private (close-auction (auction-id uint))
+(define-public (close-auction (auction-id uint))
   (let ((auction (get-auction-by-id auction-id)))
+    (asserts!
+      (or
+        (>= block-height (get ends-at auction))
+        (is-eq (get lots-sold auction) (get lots auction))
+      )
+      (err err-not-authorized)
+    )
+
     (map-set auctions
       { id: auction-id }
       {
