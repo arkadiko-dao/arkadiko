@@ -4,10 +4,9 @@ import { Connect } from '@stacks/connect-react';
 import { AuthOptions } from '@stacks/connect';
 import { getAuthOrigin } from '@common/utils';
 import { UserSession, AppConfig } from '@stacks/auth';
-import { defaultState, AppContext, AppState, defaultRiskParameters, defaultBalance } from '@common/context';
+import { defaultState, AppContext, AppState } from '@common/context';
 import { Header } from '@components/header';
 import { Routes } from '@components/routes';
-import { fetchBalances } from '@common/get-balance';
 import { getRPCClient } from '@common/utils';
 import { stacksNetwork as network } from '@common/utils';
 import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, tupleCV, ClarityValue, stringAsciiCV } from '@stacks/transactions';
@@ -101,6 +100,30 @@ export const App: React.FC = () => {
     }));
   };
 
+  const fetchRiskParameters = async (address: string) => {
+    const riskParameters = await callReadOnlyFunction({
+      contractAddress,
+      contractName: "stx-reserve",
+      functionName: "get-risk-parameters",
+      functionArgs: [],
+      senderAddress: address,
+      network: network
+    });
+    const params = cvToJSON(riskParameters).value.value;
+
+    setState(prevState => ({
+      ...prevState,
+      riskParameters: {
+        'collateral-to-debt-ratio': params['collateral-to-debt-ratio'].value,
+        'liquidation-penalty': params['liquidation-penalty'].value,
+        'liquidation-ratio': params['liquidation-ratio'].value,
+        'maximum-debt': params['maximum-debt'].value,
+        'stability-fee': params['stability-fee'].value,
+        'stability-fee-apy': params['stability-fee-apy'].value
+      }
+    }));
+  };
+
   useEffect(() => {
     let mounted = true;
 
@@ -112,16 +135,7 @@ export const App: React.FC = () => {
           fetchBalance(resolveSTXAddress(userData));
           fetchVaults(resolveSTXAddress(userData));
           fetchCollateralTypes(resolveSTXAddress(userData));
-
-          const riskParameters = await callReadOnlyFunction({
-            contractAddress,
-            contractName: "stx-reserve",
-            functionName: "get-risk-parameters",
-            functionArgs: [],
-            senderAddress: resolveSTXAddress(userData),
-            network: network,
-          });
-          const params = cvToJSON(riskParameters).value.value;
+          fetchRiskParameters(resolveSTXAddress(userData));
 
           const isStacker = await callReadOnlyFunction({
             contractAddress,
@@ -136,16 +150,7 @@ export const App: React.FC = () => {
             setState(prevState => ({
               ...prevState,
               userData,
-              riskParameters: {
-                'collateral-to-debt-ratio': params['collateral-to-debt-ratio'].value,
-                'liquidation-penalty': params['liquidation-penalty'].value,
-                'liquidation-ratio': params['liquidation-ratio'].value,
-                'maximum-debt': params['maximum-debt'].value,
-                'stability-fee': params['stability-fee'].value,
-                'stability-fee-apy': params['stability-fee-apy'].value
-              },
-              isStacker: cvToJSON(isStacker).value.value,
-              currentTxId: ''
+              isStacker: cvToJSON(isStacker).value.value
             }));
           }
         } catch (error) {
@@ -164,7 +169,8 @@ export const App: React.FC = () => {
       fetchBalance(resolveSTXAddress(userData));
       fetchVaults(resolveSTXAddress(userData));
       fetchCollateralTypes(resolveSTXAddress(userData));
-      setState(prevState => ({ ...prevState, userData, riskParameters: defaultRiskParameters(), isStacker: false }));
+      fetchRiskParameters(resolveSTXAddress(userData));
+      setState(prevState => ({ ...prevState, userData, isStacker: false }));
       setAppPrivateKey(userData.appPrivateKey);
     } else if (userSession.isUserSignedIn()) {
       setAppPrivateKey(userSession.loadUserData().appPrivateKey);
@@ -186,7 +192,8 @@ export const App: React.FC = () => {
       fetchBalance(resolveSTXAddress(userData));
       fetchVaults(resolveSTXAddress(userData));
       fetchCollateralTypes(resolveSTXAddress(userData));
-      setState(prevState => ({ ...prevState, userData, balance: defaultBalance(), riskParameters: defaultRiskParameters(), isStacker: false }));
+      fetchRiskParameters(resolveSTXAddress(userData));
+      setState(prevState => ({ ...prevState, userData, isStacker: false }));
     },
     onCancel: () => {
       console.log('popup closed!');
