@@ -6,6 +6,8 @@
 ;; errors
 (define-constant err-not-enough-balance u1)
 (define-constant err-transfer-failed u2)
+(define-constant err-unauthorized u401)
+(define-constant status-ok u200)
 
 ;; proposal variables
 (define-constant diko-reserve 'S02J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKPVKG2CE)
@@ -323,6 +325,9 @@
 
 (define-public (vote-for (proposal-id uint) (amount uint))
   (let ((proposal (get-proposal-by-id proposal-id)))
+    (asserts! (is-eq (get is-open proposal) true) (err err-unauthorized))
+    (asserts! (>= block-height (get start-block-height proposal)) (err err-unauthorized))
+
     (let ((vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender))))
       (if (unwrap-panic (contract-call? .arkadiko-token transfer proposal-reserve amount))
         (begin
@@ -343,7 +348,7 @@
             }
           )
           (map-set votes-by-member { proposal-id: proposal-id, member: tx-sender } { vote-count: (+ vote-count amount) })
-          (ok true)
+          (ok status-ok)
         )
         (err err-transfer-failed)
       )
@@ -353,6 +358,9 @@
 
 (define-public (vote-against (proposal-id uint) (amount uint))
   (let ((proposal (get-proposal-by-id proposal-id)))
+    (asserts! (is-eq (get is-open proposal) true) (err err-unauthorized))
+    (asserts! (>= block-height (get start-block-height proposal)) (err err-unauthorized))
+
     (let ((vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender))))
       (if (unwrap-panic (contract-call? .arkadiko-token transfer proposal-reserve amount))
         (begin
@@ -373,11 +381,38 @@
             }
           )
           (map-set votes-by-member { proposal-id: proposal-id, member: tx-sender } { vote-count: (+ vote-count amount) })
-          (ok true)
+          (ok status-ok)
         )
         (err err-transfer-failed)
       )
     )
+  )
+)
+
+(define-public (end-proposal (proposal-id uint))
+  (let ((proposal (get-proposal-by-id proposal-id)))
+    (asserts! (not (is-eq (get id proposal) u0)) (err err-unauthorized))
+    (asserts! (is-eq (get is-open proposal) true) (err err-unauthorized))
+    (asserts! (>= block-height (get end-block-height proposal)) (err err-unauthorized))
+
+    (map-set proposals
+      { id: proposal-id }
+      {
+        id: proposal-id,
+        proposer: (get proposer proposal),
+        is-open: false,
+        start-block-height: (get start-block-height proposal),
+        end-block-height: (get end-block-height proposal),
+        yes-votes: (get yes-votes proposal),
+        no-votes: (get no-votes proposal),
+        token: (get token proposal),
+        type: (get type proposal),
+        changes: (get changes proposal),
+        details: (get details proposal)
+      }
+    )
+
+    (ok status-ok)
   )
 )
 
