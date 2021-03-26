@@ -1,7 +1,6 @@
 const CONTRACT_ADDRESS = 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP';
 const CONTRACT_NAME = 'oracle';
 const FUNCTION_NAME = 'update-price';
-const PAYMENT_KEY = '9aef533e754663a453984b69d36f109be817e9940519cc84979419e2be00864801';
 const rp = require('request-promise');
 const tx = require('@stacks/transactions');
 const BN = require('bn.js');
@@ -31,7 +30,7 @@ rp(requestOptions).then(async (response) => {
     contractName: CONTRACT_NAME,
     functionName: FUNCTION_NAME,
     functionArgs: [tx.uintCV(new BN(price.toFixed(2) * 100))],
-    senderKey: PAYMENT_KEY,
+    senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network
   };

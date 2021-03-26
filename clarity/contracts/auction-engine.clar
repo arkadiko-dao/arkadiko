@@ -340,6 +340,7 @@
       )
       (err err-not-authorized)
     )
+    (asserts! (is-eq (get is-open auction) true) (err err-not-authorized))
 
     (map-set auctions
       { id: auction-id }
