@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "request": "^2.88.2",
+    "request-promise": "4.2.6",
+    "@stacks/network": "^1.2.2",
+    "@stacks/transactions": "^1.3.3"
+  }
+}
