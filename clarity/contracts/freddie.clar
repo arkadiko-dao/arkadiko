@@ -66,7 +66,10 @@
 
 (define-read-only (calculate-current-collateral-to-debt-ratio (vault-id uint))
   (let ((vault (get-vault-by-id vault-id)))
-    (ok (unwrap! (contract-call? .stx-reserve calculate-current-collateral-to-debt-ratio (get debt vault) (get collateral vault)) (ok u0)))
+    (if (is-eq (get is-liquidated vault) true)
+      (ok u999)
+      (ok (unwrap! (contract-call? .stx-reserve calculate-current-collateral-to-debt-ratio (get debt vault) (get collateral vault)) (ok u0)))
+    )
   )
 )
 
