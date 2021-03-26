@@ -2,11 +2,11 @@ const CONTRACT_ADDRESS = 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP';
 const CONTRACT_NAME = 'oracle';
 const FUNCTION_NAME = 'update-price';
 const PAYMENT_KEY = '9aef533e754663a453984b69d36f109be817e9940519cc84979419e2be00864801';
-const CMC_API_KEY = 'KEY_HERE';
 const rp = require('request-promise');
 const tx = require('@stacks/transactions');
 const BN = require('bn.js');
 const utils = require('./utils');
+require('dotenv').config();
 
 const requestOptions = {
   method: 'GET',
@@ -16,7 +16,7 @@ const requestOptions = {
     'convert': 'USD'
   },
   headers: {
-    'X-CMC_PRO_API_KEY': CMC_API_KEY
+    'X-CMC_PRO_API_KEY': process.env.CMC_API_KEY
   },
   json: true,
   gzip: true
