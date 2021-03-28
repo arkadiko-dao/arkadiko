@@ -45,6 +45,7 @@ The DIKO governance token is used to manage and vote on proposals put forward by
 - Change the Risk Parameters of one or more existing collateral asset types
 - Set the percentage threshold to distribute BTC earnings
 - Trigger Emergency Shutdown
+- Regulate Stacks stacking & payouts
 
 ## Roadmap
 
