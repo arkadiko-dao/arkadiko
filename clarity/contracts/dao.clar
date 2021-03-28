@@ -2,6 +2,7 @@
 ;; 1. See all proposals
 ;; 2. Vote on a proposal
 ;; 3. Submit new proposal (hold token supply >= 1%)
+;; 4. Initiate Stacking
 
 ;; errors
 (define-constant err-not-enough-balance u1)
@@ -414,6 +415,19 @@
 
     (ok status-ok)
   )
+)
+
+;; DAO can initiate stacking for the STX reserve
+(define-public (stack)
+  (ok true)
+)
+
+;; Pay all parties:
+;; - Owners of vaults
+;; - DAO Reserve
+;; - Owners of gov tokens
+(define-public (payout)
+  (ok true)
 )
 
 ;; Initialize the contract
