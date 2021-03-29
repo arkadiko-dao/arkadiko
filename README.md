@@ -47,6 +47,12 @@ The DIKO governance token is used to manage and vote on proposals put forward by
 - Trigger Emergency Shutdown
 - Regulate Stacks stacking & payouts
 
+## Tests and Mocking
+
+Tests are present in the `test` folder (using `mocha` in TypeScript) and some very early test in the `tests` folder which uses Clarinet (a Clarity build tool). The mocha tests can be ran easily like this: `npm test clarity/test/integration/liquidator.ts`.
+
+Some of the smart contracts (such as PoX and fungible token trait) are mocked contracts/traits. These should not be deployed to mainnet when a production-ready version is ready to be deployed.
+
 ## Roadmap
 
 A public Trello roadmap will be published soon
