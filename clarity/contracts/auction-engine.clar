@@ -223,7 +223,7 @@
         ;; if this bid is at least (total debt to raise / lot-size) amount, accept it as final - we don't need to be greedy
         (begin
           ;; (return-collateral (get owner last-bid) (get xusd last-bid)) ;; return xUSD of last bid to (now lost) bidder
-          (if (unwrap-panic (contract-call? .xusd-token transfer auction-reserve xusd))
+          (if (unwrap-panic (contract-call? .xusd-token transfer xusd tx-sender auction-reserve))
             (begin
               (map-set auctions
                 { id: auction-id }
@@ -319,7 +319,7 @@
 
 (define-private (return-collateral (owner principal) (xusd uint))
   (if (> u0 xusd)
-    (ok (unwrap-panic (as-contract (contract-call? .xusd-token transfer owner xusd))))
+    (ok (unwrap-panic (as-contract (contract-call? .xusd-token transfer xusd tx-sender owner))))
     (err false)
   )
 )

@@ -1,17 +1,20 @@
 import { Client, Provider, ProviderRegistry } from "@blockstack/clarity";
 
 describe("DAO unit test suite", () => {
+  let trait: Client;
   let daoClient: Client;
   let arkadikoToken: Client;
   let provider: Provider;
 
   before(async () => {
     provider = await ProviderRegistry.createProvider();
-    daoClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.dao", "dao", provider);
+    trait = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.mock-ft-trait", "mock-ft-trait", provider);
     arkadikoToken = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.arkadiko-token", "arkadiko-token", provider);
+    daoClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.dao", "dao", provider);
   });
 
   it("should have a valid syntax", async () => {
+    await trait.deployContract();
     await arkadikoToken.deployContract();
     await daoClient.checkContract();
   });

@@ -25,6 +25,8 @@ describe("stacks reserve test suite", () => {
   describe("deploying an instance of the contract", () => {
     before(async () => {
       await deployContract('vault-trait');
+      await deployContract('mock-ft-trait');
+
       await deployContract('oracle');
       await deployContract('xusd-token');
       await deployContract('arkadiko-token');

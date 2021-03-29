@@ -7,6 +7,7 @@ import {
 } from "@stacks/transactions";
 
 describe("xusd token contract test suite", () => {
+  let trait: Client;
   let xusdTokenClient: Client;
   let oracleClient: Client;
   let provider: Provider;
@@ -17,16 +18,16 @@ describe("xusd token contract test suite", () => {
     "SZ2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKQ9H6DPR"
   ];
   const alice = addresses[0];
-  const bob = addresses[1];
-  const zoe = addresses[2];
 
   before(async () => {
     provider = await ProviderRegistry.createProvider();
+    trait = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.mock-ft-trait", "mock-ft-trait", provider);
     xusdTokenClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.xusd-token", "xusd-token", provider);
     oracleClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.oracle", "oracle", provider);
   });
 
   it("should have a valid syntax", async () => {
+    await trait.deployContract();
     await oracleClient.deployContract();
     await xusdTokenClient.checkContract();
   });
@@ -37,14 +38,14 @@ describe("xusd token contract test suite", () => {
     });
 
     it("should return total supply of 30", async () => {
-      const query = xusdTokenClient.createQuery({ method: { name: "total-supply", args: [] } });
+      const query = xusdTokenClient.createQuery({ method: { name: "get-total-supply", args: [] } });
       const receipt = await xusdTokenClient.submitQuery(query);
       const result = Result.unwrapUInt(receipt);
       assert.equal(result, 10000000030);
     });
 
     it("should initialize Alice's balance (20 DIKO)", async () => {
-      const query = xusdTokenClient.createQuery({ atChaintip: true, method: { name: "balance-of", args: [`'${alice}`] } });
+      const query = xusdTokenClient.createQuery({ atChaintip: true, method: { name: "get-balance-of", args: [`'${alice}`] } });
       const receipt = await xusdTokenClient.submitQuery(query);
       const result = Result.unwrapUInt(receipt);
       assert.equal(result, 20);
@@ -52,7 +53,7 @@ describe("xusd token contract test suite", () => {
 
     it("should return name", async () => {
       const query = xusdTokenClient.createQuery({
-        method: { name: "name", args: [] }
+        method: { name: "get-name", args: [] }
       });
       const receipt = await xusdTokenClient.submitQuery(query);
       const result = Result.unwrapString(receipt, "utf8")
@@ -61,7 +62,7 @@ describe("xusd token contract test suite", () => {
 
     it("should return symbol", async () => {
       const query = xusdTokenClient.createQuery({
-        method: { name: "symbol", args: [] }
+        method: { name: "get-symbol", args: [] }
       });
       const receipt = await xusdTokenClient.submitQuery(query);
       const result = Result.unwrapString(receipt, "utf8")

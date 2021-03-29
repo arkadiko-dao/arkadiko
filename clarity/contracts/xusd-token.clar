@@ -1,35 +1,38 @@
+(impl-trait .mock-ft-trait.mock-ft-trait)
+
 ;; Defines the xUSD Stablecoin according to the SRC20 Standard
 (define-fungible-token xusd)
 
 (define-constant err-burn-failed u1)
 
-(define-read-only (total-supply)
+(define-read-only (get-total-supply)
   (ok (ft-get-supply xusd))
 )
 
-(define-read-only (name)
+(define-read-only (get-name)
   (ok "xUSD")
 )
 
-(define-read-only (symbol)
+(define-read-only (get-symbol)
   (ok "xUSD")
 )
 
-(define-read-only (decimals)
+(define-read-only (get-decimals)
   (ok u6)
 )
 
-(define-read-only (balance-of (account principal))
+(define-read-only (get-balance-of (account principal))
   (ok (ft-get-balance xusd account))
 )
 
-(define-public (transfer (recipient principal) (amount uint))
+;; TODO - finalize before mainnet deployment
+(define-read-only (get-token-uri)
+  (ok none)
+)
+
+(define-public (transfer (amount uint) (sender principal) (recipient principal))
   (begin
-    (print "xusd.transfer")
-    (print amount)
-    (print tx-sender)
-    (print recipient)
-    (ft-transfer? xusd amount tx-sender recipient)
+    (ft-transfer? xusd amount sender recipient)
   )
 )
 

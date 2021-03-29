@@ -1,4 +1,4 @@
-(define-trait ft-trait
+(define-trait mock-ft-trait
   (
     ;; Transfer from the caller to a new principal
     (transfer (uint principal principal) (response bool uint))

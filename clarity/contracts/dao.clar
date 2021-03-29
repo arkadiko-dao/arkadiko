@@ -294,8 +294,8 @@
     (type (string-ascii 200))
     (changes (list 10 (tuple (key (string-ascii 256)) (new-value uint))))
   )
-  (let ((proposer-balance (unwrap-panic (contract-call? .arkadiko-token balance-of tx-sender))))
-    (let ((supply (unwrap-panic (contract-call? .arkadiko-token total-supply))))
+  (let ((proposer-balance (unwrap-panic (contract-call? .arkadiko-token get-balance-of tx-sender))))
+    (let ((supply (unwrap-panic (contract-call? .arkadiko-token get-total-supply))))
       (let ((proposal-id (+ u1 (var-get proposal-count))))
         (if (>= (* proposer-balance u100) supply)
           (begin
@@ -330,7 +330,7 @@
     (asserts! (>= block-height (get start-block-height proposal)) (err err-unauthorized))
 
     (let ((vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender))))
-      (if (unwrap-panic (contract-call? .arkadiko-token transfer proposal-reserve amount))
+      (if (unwrap-panic (contract-call? .arkadiko-token transfer amount tx-sender proposal-reserve))
         (begin
           (map-set proposals
             { id: proposal-id }
@@ -363,7 +363,7 @@
     (asserts! (>= block-height (get start-block-height proposal)) (err err-unauthorized))
 
     (let ((vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender))))
-      (if (unwrap-panic (contract-call? .arkadiko-token transfer proposal-reserve amount))
+      (if (unwrap-panic (contract-call? .arkadiko-token transfer amount tx-sender proposal-reserve))
         (begin
           (map-set proposals
             { id: proposal-id }
