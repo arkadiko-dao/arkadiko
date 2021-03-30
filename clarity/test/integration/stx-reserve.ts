@@ -1,5 +1,6 @@
 import {
   callReadOnlyFunction,
+  contractPrincipalCV,
   standardPrincipalCV,
   cvToJSON,
   uintCV,
@@ -44,7 +45,7 @@ describe("stacks reserve test suite", () => {
         'oracle',
         'update-price',
         secretDeployKey,
-        [uintCV(77)]
+        [stringAsciiCV('stx'), uintCV(77)]
       );
 
       const value = 5000000; // equivalent to 5 STX
@@ -53,7 +54,11 @@ describe("stacks reserve test suite", () => {
         'freddie',
         'collateralize-and-mint',
         secretKey,
-        [uintCV(value), uintCV(1925000), standardPrincipalCV(alice), stringAsciiCV('stx')]
+        [
+          uintCV(value), uintCV(1925000),
+          standardPrincipalCV(alice), stringAsciiCV('stx'),
+          contractPrincipalCV(deployContractAddress, 'stx-reserve')
+        ]
       );
       console.log(result);
       const vaultEntries = await callReadOnlyFunction({
@@ -86,7 +91,7 @@ describe("stacks reserve test suite", () => {
       const supply = await callReadOnlyFunction({
         contractAddress: deployContractAddress,
         contractName: "xusd-token",
-        functionName: "total-supply",
+        functionName: "get-total-supply",
         functionArgs: [],
         senderAddress: contractAddress,
         network: network,
@@ -101,7 +106,7 @@ describe("stacks reserve test suite", () => {
       const balanceBefore = await callReadOnlyFunction({
         contractAddress: deployContractAddress,
         contractName: "xusd-token",
-        functionName: "balance-of",
+        functionName: "get-balance-of",
         functionArgs: [standardPrincipalCV(alice)],
         senderAddress: contractAddress,
         network: network,
@@ -120,7 +125,7 @@ describe("stacks reserve test suite", () => {
       const balanceAfter = await callReadOnlyFunction({
         contractAddress: deployContractAddress,
         contractName: "xusd-token",
-        functionName: "balance-of",
+        functionName: "get-balance-of",
         functionArgs: [standardPrincipalCV(alice)],
         senderAddress: contractAddress,
         network: network,

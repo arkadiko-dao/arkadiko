@@ -1,4 +1,4 @@
-;; (impl-trait .vault-trait.vault-trait)
+(impl-trait .vault-trait.vault-trait)
 
 ;; errors
 (define-constant err-unauthorized u1)
@@ -19,10 +19,10 @@
 ;; ustx-amount * stx-price-in-cents == dollar-collateral-posted-in-cents
 ;; (dollar-collateral-posted-in-cents / collateral-to-debt-ratio) == stablecoins to mint
 (define-read-only (calculate-xusd-count (ustx-amount uint))
-  (let ((stx-price-in-cents (contract-call? .oracle get-price)))
+  (let ((stx-price-in-cents (contract-call? .oracle get-price "stx")))
     (let ((amount
       (/
-        (* ustx-amount (get price stx-price-in-cents))
+        (* ustx-amount (get last-price-in-cents stx-price-in-cents))
         (unwrap-panic (contract-call? .dao get-collateral-to-debt-ratio "stx"))
       )))
       (ok amount)
@@ -31,9 +31,9 @@
 )
 
 (define-read-only (calculate-current-collateral-to-debt-ratio (debt uint) (ustx uint))
-  (let ((stx-price-in-cents (contract-call? .oracle get-price)))
+  (let ((stx-price-in-cents (contract-call? .oracle get-price "stx")))
     (if (> debt u0)
-      (ok (/ (* ustx (get price stx-price-in-cents)) debt))
+      (ok (/ (* ustx (get last-price-in-cents stx-price-in-cents)) debt))
       (err u0)
     )
   )
@@ -120,6 +120,6 @@
 (define-public (redeem-collateral (stx-collateral uint) (owner principal))
   (begin
     (asserts! (is-eq contract-caller .auction-engine) (err err-unauthorized))
-    (ok (as-contract (stx-transfer? stx-collateral (as-contract tx-sender) owner)))
+    (as-contract (stx-transfer? stx-collateral (as-contract tx-sender) owner))
   )
 )

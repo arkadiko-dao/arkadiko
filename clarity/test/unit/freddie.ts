@@ -1,6 +1,7 @@
 import { Client, Provider, ProviderRegistry } from "@blockstack/clarity";
 
 describe("freddie test suite", () => {
+  let trait: Client;
   let vaultTrait: Client;
   let daoClient: Client;
   let arkadikoToken: Client;
@@ -12,6 +13,7 @@ describe("freddie test suite", () => {
 
   before(async () => {
     provider = await ProviderRegistry.createProvider();
+    trait = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.mock-ft-trait", "mock-ft-trait", provider);
     vaultTrait = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.vault-trait", "vault-trait", provider);
     oracleClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.oracle", "oracle", provider);
     daoClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.dao", "dao", provider);
@@ -22,6 +24,7 @@ describe("freddie test suite", () => {
   });
 
   it("should have a valid syntax", async () => {
+    await trait.deployContract();
     await vaultTrait.deployContract();
     await tokenClient.deployContract();
     await arkadikoToken.deployContract();

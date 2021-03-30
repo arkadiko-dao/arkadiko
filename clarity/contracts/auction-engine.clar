@@ -148,9 +148,9 @@
 ;; e.g. if we need to cover 10 xUSD debt, and we have 20 STX at $1/STX,
 ;; we only need to auction off 10 STX
 (define-read-only (calculate-minimum-collateral-amount (auction-id uint))
-  (let ((stx-price-in-cents (contract-call? .oracle get-price)))
+  (let ((stx-price-in-cents (contract-call? .oracle get-price "stx")))
     (let ((auction (get-auction-by-id auction-id)))
-      (let ((amount (/ (/ (get debt-to-raise auction) (get price stx-price-in-cents)) (get lots auction))))
+      (let ((amount (/ (/ (get debt-to-raise auction) (get last-price-in-cents stx-price-in-cents)) (get lots auction))))
         (if (> (/ (get collateral-amount auction) (get lots auction)) (* u100 amount))
           (ok (* u100 amount))
           (ok (/ (get collateral-amount auction) (get lots auction)))

@@ -4,6 +4,7 @@ import { useConnect } from '@stacks/connect-react';
 import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
 import {
   standardPrincipalCV,
+  contractPrincipalCV,
   uintCV,
   stringAsciiCV
 } from '@stacks/transactions';
@@ -48,13 +49,15 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
   }, [txId]);
 
   const callCollateralizeAndMint = async () => {
+    console.log(process.env);
     clearState();
     const authOrigin = getAuthOrigin();
     const args = [
       uintCV(parseInt(coinAmounts['amounts']['stx'], 10) * 1000000),
       uintCV(parseInt(coinAmounts['amounts']['xusd'], 10) * 1000000),
       standardPrincipalCV(address || ''),
-      stringAsciiCV('stx')
+      stringAsciiCV('stx'),
+      contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stx-reserve')
     ];
     await doContractCall({
       network,

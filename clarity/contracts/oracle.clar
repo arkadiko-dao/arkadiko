@@ -7,17 +7,24 @@
 
 (define-constant oracle-owner 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP)
 
-(define-public (update-price (price uint))
+(define-map prices
+  { token: (string-ascii 4) }
+  {
+    last-price-in-cents: uint,
+    last-block: uint
+  }
+)
+
+(define-public (update-price (token (string-ascii 4)) (price uint))
   (if (is-eq tx-sender oracle-owner)
     (begin
-      (var-set last-price-in-cents price)
-      (var-set last-block u0)
+      (map-set prices { token: token } { last-price-in-cents: price, last-block: u0 })
       (ok price)
     )
     (err err-not-white-listed)
   )
 )
 
-(define-read-only (get-price)
-  { price: (var-get last-price-in-cents), height: (var-get last-block) }
+(define-read-only (get-price (token (string-ascii 4)))
+  (unwrap! (map-get? prices {token: token }) { last-price-in-cents: u0, last-block: u0 })
 )

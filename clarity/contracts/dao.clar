@@ -1,3 +1,4 @@
+(use-trait vault-trait .vault-trait.vault-trait)
 ;; Arkadiko DAO
 ;; 1. See all proposals
 ;; 2. Vote on a proposal
@@ -70,6 +71,7 @@
       (token "")
       (url "")
       (total-debt u0)
+      (vault-principal .stx-reserve)
     )
   )
 )
@@ -93,7 +95,8 @@
     name: (string-ascii 256),
     token: (string-ascii 4),
     url: (string-ascii 256),
-    total-debt: uint
+    total-debt: uint,
+    vault-principal: principal
   }
 )
 
@@ -167,7 +170,8 @@
         name: (get name collateral-type),
         token: (get token collateral-type),
         url: (get url collateral-type),
-        total-debt: (+ debt (get total-debt collateral-type))
+        total-debt: (+ debt (get total-debt collateral-type)),
+        vault-principal: (get vault-principal collateral-type)
       }
     )
     (ok debt)
@@ -454,7 +458,8 @@
       name: "Stacks",
       token: "STX",
       url: "https://www.stacks.co/",
-      total-debt: u0
+      total-debt: u0,
+      vault-principal: .stx-reserve
     }
   )
   (map-set proposal-types

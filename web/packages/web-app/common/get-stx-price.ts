@@ -2,7 +2,7 @@ import { useContext, useState, useEffect } from 'react';
 import { AppContext } from '@common/context';
 import { useSTXAddress } from './use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
-import { callReadOnlyFunction, cvToJSON } from '@stacks/transactions';
+import { callReadOnlyFunction, stringAsciiCV, cvToJSON } from '@stacks/transactions';
 
 export const getStxPrice = () => {
   const stxAddress = useSTXAddress();
@@ -19,13 +19,13 @@ export const getStxPrice = () => {
           contractAddress,
           contractName: "oracle",
           functionName: "get-price",
-          functionArgs: [],
+          functionArgs: [stringAsciiCV('stx')],
           senderAddress: stxAddress || '',
           network: network,
         });
         const json = cvToJSON(price);
         if (mounted) {
-          setPrice(json.value.price.value);
+          setPrice(json.value['last-price-in-cents'].value);
         }
       }
     };

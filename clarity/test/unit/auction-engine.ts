@@ -2,6 +2,7 @@ import { Client, Provider, ProviderRegistry, Result, Transaction } from "@blocks
 import { assert } from "chai";
 
 describe("auction engine unit test suite", () => {
+  let trait: Client;
   let vaultTrait: Client;
   let auctionEngineClient: Client;
   let arkadikoClient: Client;
@@ -14,6 +15,7 @@ describe("auction engine unit test suite", () => {
 
   before(async () => {
     provider = await ProviderRegistry.createProvider();
+    trait = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.mock-ft-trait", "mock-ft-trait", provider);
     vaultTrait = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.vault-trait", "vault-trait", provider);
     oracleClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.oracle", "oracle", provider);
     tokenClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.xusd-token", "xusd-token", provider);
@@ -25,6 +27,7 @@ describe("auction engine unit test suite", () => {
   });
 
   it("should have a valid syntax", async () => {
+    await trait.deployContract();
     await vaultTrait.deployContract();
     await oracleClient.deployContract();
     await tokenClient.deployContract();

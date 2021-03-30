@@ -1,3 +1,4 @@
+(use-trait vault-trait .vault-trait.vault-trait)
 ;; Freddie - The Vault Manager
 ;; Freddie is an abstraction layer that interacts with collateral type reserves (initially only STX)
 ;; Ideally, collateral reserves should never be called from outside. Only manager layers should be interacted with from clients
@@ -64,20 +65,33 @@
   )
 )
 
+(define-read-only (get-collateral-type-for-vault (vault-id uint))
+  (let ((vault (get-vault-by-id vault-id)))
+    (get collateral-type vault)
+  )
+)
+
 (define-read-only (calculate-current-collateral-to-debt-ratio (vault-id uint))
   (let ((vault (get-vault-by-id vault-id)))
     (if (is-eq (get is-liquidated vault) true)
       (ok u999)
-      (ok (unwrap! (contract-call? .stx-reserve calculate-current-collateral-to-debt-ratio (get debt vault) (get collateral vault)) (ok u0)))
+      (begin
+        (let ((stx-price-in-cents (contract-call? .oracle get-price (get collateral-type vault))))
+          (if (> (get debt vault) u0)
+            (ok (/ (* (get collateral vault) (get last-price-in-cents stx-price-in-cents)) (get debt vault)))
+            (err u0)
+          )
+        )
+      )
     )
   )
 )
 
-(define-public (collateralize-and-mint (collateral-amount uint) (debt uint) (sender principal) (collateral-type (string-ascii 4)))
-  (let ((ratio (unwrap-panic (contract-call? .stx-reserve calculate-current-collateral-to-debt-ratio debt collateral-amount))))
+(define-public (collateralize-and-mint (collateral-amount uint) (debt uint) (sender principal) (collateral-type (string-ascii 4)) (reserve <vault-trait>))
+  (let ((ratio (unwrap-panic (contract-call? reserve calculate-current-collateral-to-debt-ratio debt collateral-amount))))
     (asserts! (is-eq tx-sender sender) (err err-unauthorized))
-    (asserts! (>= ratio (unwrap-panic (contract-call? .dao get-liquidation-ratio "stx"))) (err err-insufficient-collateral))
-    (try! (contract-call? .stx-reserve collateralize-and-mint collateral-amount debt sender))
+    (asserts! (>= ratio (unwrap-panic (contract-call? .dao get-liquidation-ratio collateral-type))) (err err-insufficient-collateral))
+    (try! (contract-call? reserve collateralize-and-mint collateral-amount debt sender))
 
     (if (is-ok (as-contract (contract-call? .xusd-token mint debt sender)))
       (begin
@@ -101,7 +115,7 @@
               }
             )
             (var-set last-vault-id vault-id)
-            (let ((result (contract-call? .dao add-debt-to-collateral-type "stx" debt)))
+            (let ((result (contract-call? .dao add-debt-to-collateral-type collateral-type debt)))
               (ok debt)
             )
           )
@@ -112,9 +126,9 @@
   )
 )
 
-(define-public (deposit (vault-id uint) (uamount uint))
+(define-public (deposit (vault-id uint) (uamount uint) (reserve <vault-trait>))
   (let ((vault (get-vault-by-id vault-id)))
-    (if (unwrap-panic (contract-call? .stx-reserve deposit uamount))
+    (if (unwrap-panic (contract-call? reserve deposit uamount))
       (begin
         (let ((new-collateral (+ uamount (get collateral vault))))
           (map-set vaults
@@ -141,16 +155,16 @@
   )
 )
 
-(define-public (withdraw (vault-id uint) (uamount uint))
+(define-public (withdraw (vault-id uint) (uamount uint) (reserve <vault-trait>))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
     (asserts! (> uamount u0) (err err-insufficient-collateral))
     (asserts! (<= uamount (get collateral vault)) (err err-insufficient-collateral))
 
-    (let ((ratio (unwrap-panic (contract-call? .stx-reserve calculate-current-collateral-to-debt-ratio (get debt vault) (- (get collateral vault) uamount)))))
+    (let ((ratio (unwrap-panic (contract-call? reserve calculate-current-collateral-to-debt-ratio (get debt vault) (- (get collateral vault) uamount)))))
       (asserts! (>= ratio (unwrap-panic (contract-call? .dao get-collateral-to-debt-ratio "stx"))) (err err-insufficient-collateral))
 
-      (if (unwrap-panic (contract-call? .stx-reserve withdraw (get owner vault) uamount))
+      (if (unwrap-panic (contract-call? reserve withdraw (get owner vault) uamount))
         (begin
           (let ((new-collateral (- (get collateral vault) uamount)))
             (map-set vaults
@@ -178,11 +192,11 @@
   )
 )
 
-(define-public (mint (vault-id uint) (extra-debt uint))
+(define-public (mint (vault-id uint) (extra-debt uint) (reserve <vault-trait>))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
 
-    (if (unwrap! (contract-call? .stx-reserve mint (get owner vault) (get collateral vault) (get debt vault) extra-debt) (err u5))
+    (if (unwrap! (contract-call? reserve mint (get owner vault) (get collateral vault) (get debt vault) extra-debt) (err u5))
       (begin
         (let ((new-total-debt (+ extra-debt (get debt vault))))
           (map-set vaults
@@ -210,12 +224,12 @@
 )
 
 ;; TODO: is this atomic? e.g. if xUSD burn succeeds but STX reserve burn fails, what then?
-(define-public (burn (vault-id uint) (vault-owner principal))
+(define-public (burn (vault-id uint) (vault-owner principal) (reserve <vault-trait>))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
 
     (if (is-ok (contract-call? .xusd-token burn (get debt vault) (get owner vault)))
-      (if (unwrap-panic (contract-call? .stx-reserve burn (get owner vault) (get collateral vault)))
+      (if (unwrap-panic (contract-call? reserve burn (get owner vault) (get collateral vault)))
         (begin
           (let ((entries (get ids (get-vault-entries vault-owner))))
             (map-set vaults
@@ -255,7 +269,7 @@
   (let ((vault (get-vault-by-id vault-id)))
     (let ((days (/ (- block-height (get stability-fee-last-paid vault)) blocks-per-day)))
       (let ((debt (/ (get debt vault) u10000))) ;; we can round to 2 numbers after comma, e.g. 1925000 uxUSD == 1.92 xUSD
-        (let ((daily-interest (/ (* debt (unwrap-panic (contract-call? .dao get-stability-fee "stx"))) u100)))
+        (let ((daily-interest (/ (* debt (unwrap-panic (contract-call? .dao get-stability-fee (get collateral-type vault)))) u100)))
           (ok (tuple (fee (* daily-interest days)) (decimals u8) (days days))) ;; 8 decimals so u5233 means 5233/10^8 xUSD daily interest
         )
       )
@@ -267,31 +281,28 @@
   (if (is-eq contract-caller .liquidator)
     (begin
       (let ((vault (get-vault-by-id vault-id)))
-        (if (is-ok (contract-call? .stx-reserve liquidate (get collateral vault) (get debt vault)))
-          (begin
-            (let ((collateral (get collateral vault)))
-              (map-set vaults
-                { id: vault-id }
-                {
-                  id: vault-id,
-                  owner: (get owner vault),
-                  collateral: u0,
-                  collateral-type: (get collateral-type vault),
-                  debt: (get debt vault),
-                  created-at-block-height: (get created-at-block-height vault),
-                  updated-at-block-height: block-height,
-                  stability-fee-last-paid: (get stability-fee-last-paid vault),
-                  is-liquidated: true,
-                  auction-ended: false,
-                  leftover-collateral: u0
-                }
-              )
-              (let ((debt (/ (* (unwrap-panic (contract-call? .dao get-liquidation-penalty "stx")) (get debt vault)) u100)))
-                (ok (tuple (ustx-amount collateral) (debt (+ debt (get debt vault)))))
-              )
+        (begin
+          (let ((collateral (get collateral vault)))
+            (map-set vaults
+              { id: vault-id }
+              {
+                id: vault-id,
+                owner: (get owner vault),
+                collateral: u0,
+                collateral-type: (get collateral-type vault),
+                debt: (get debt vault),
+                created-at-block-height: (get created-at-block-height vault),
+                updated-at-block-height: block-height,
+                stability-fee-last-paid: (get stability-fee-last-paid vault),
+                is-liquidated: true,
+                auction-ended: false,
+                leftover-collateral: u0
+              }
+            )
+            (let ((debt (/ (* (unwrap-panic (contract-call? .dao get-liquidation-penalty (get collateral-type vault))) (get debt vault)) u100)))
+              (ok (tuple (ustx-amount collateral) (debt (+ debt (get debt vault)))))
             )
           )
-          (err err-liquidation-failed)
         )
       )
     )
@@ -329,11 +340,11 @@
   )
 )
 
-(define-public (withdraw-leftover-collateral (vault-id uint))
+(define-public (withdraw-leftover-collateral (vault-id uint) (reserve <vault-trait>))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
 
-    (if (unwrap-panic (contract-call? .stx-reserve withdraw (get owner vault) (get leftover-collateral vault)))
+    (if (unwrap-panic (contract-call? reserve withdraw (get owner vault) (get leftover-collateral vault)))
       (begin
         (map-set vaults
           { id: vault-id }

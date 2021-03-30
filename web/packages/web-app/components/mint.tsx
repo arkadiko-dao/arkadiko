@@ -10,7 +10,8 @@ import {
   makeSTXTokenTransfer,
   privateKeyToString,
   uintCV,
-  stringAsciiCV
+  stringAsciiCV,
+  contractPrincipalCV
 } from '@stacks/transactions';
 import { VaultGroup } from './vault-group';
 import { getStxPrice } from '@common/get-stx-price';
@@ -48,7 +49,8 @@ export const Mint = () => {
       uintCV(10 * 1000000),
       uintCV(1000000),
       standardPrincipalCV(address || ''),
-      stringAsciiCV('stx')
+      stringAsciiCV('stx'),
+      contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stx-reserve')
     ];
     await doContractCall({
       network,

@@ -1,7 +1,10 @@
 import { Client, Provider, ProviderRegistry, Result, Transaction } from "@blockstack/clarity";
 
 describe("liquidator unit test suite", () => {
+  let trait: Client;
   let vaultTrait: Client;
+  let daoClient: Client;
+  let arkadikoToken: Client;
   let liquidatorClient: Client;
   let oracleClient: Client;
   let tokenClient: Client;
@@ -12,7 +15,10 @@ describe("liquidator unit test suite", () => {
 
   before(async () => {
     provider = await ProviderRegistry.createProvider();
+    trait = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.mock-ft-trait", "mock-ft-trait", provider);
     vaultTrait = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.vault-trait", "vault-trait", provider);
+    daoClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.dao", "dao", provider);
+    arkadikoToken = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.arkadiko-token", "arkadiko-token", provider);
     auctionEngine = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.auction-engine", "auction-engine", provider);
     oracleClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.oracle", "oracle", provider);
     tokenClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.xusd-token", "xusd-token", provider);
@@ -22,12 +28,18 @@ describe("liquidator unit test suite", () => {
   });
 
   it("should have a valid syntax", async () => {
+    await trait.deployContract();
     await vaultTrait.deployContract();
-    await auctionEngine.deployContract();
-    await oracleClient.deployContract();
+
+    await arkadikoToken.deployContract();
     await tokenClient.deployContract();
+
+    await oracleClient.deployContract();
+    await daoClient.deployContract();
     await stxReserveClient.deployContract();
+
     await freddieClient.deployContract();
+    await auctionEngine.deployContract();
     await liquidatorClient.checkContract();
   });
 

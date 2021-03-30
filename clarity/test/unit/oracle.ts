@@ -1,5 +1,4 @@
 import { Client, Provider, ProviderRegistry, Result } from "@blockstack/clarity";
-import { assert } from "chai";
 
 describe("oracle contract test suite", () => {
   let oracleClient: Client;

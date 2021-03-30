@@ -4,7 +4,7 @@ import { Container } from './home';
 import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
-import { uintCV, standardPrincipalCV } from '@stacks/transactions';
+import { uintCV, contractPrincipalCV, standardPrincipalCV } from '@stacks/transactions';
 import { AppContext } from '@common/context';
 import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
 import { debtClass } from './vault';
@@ -79,7 +79,11 @@ export const ManageVault = ({ match }) => {
       contractAddress,
       contractName: 'freddie',
       functionName: 'burn',
-      functionArgs: [uintCV(match.params.id), standardPrincipalCV(senderAddress || '')],
+      functionArgs: [
+        uintCV(match.params.id),
+        standardPrincipalCV(senderAddress || ''),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stx-reserve')
+      ],
       postConditionMode: 0x01,
       finished: data => {
         console.log('finished burn!', data);
@@ -105,7 +109,11 @@ export const ManageVault = ({ match }) => {
       contractAddress,
       contractName: 'freddie',
       functionName: 'deposit',
-      functionArgs: [uintCV(match.params.id), uintCV(parseFloat(extraStxDeposit) * 1000000)],
+      functionArgs: [
+        uintCV(match.params.id),
+        uintCV(parseFloat(extraStxDeposit) * 1000000),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stx-reserve')
+      ],
       postConditionMode: 0x01,
       finished: data => {
         console.log('finished deposit!', data);
@@ -156,7 +164,11 @@ export const ManageVault = ({ match }) => {
       contractAddress,
       contractName: 'freddie',
       functionName: 'mint',
-      functionArgs: [uintCV(match.params.id), uintCV(parseFloat(value) * 1000000)],
+      functionArgs: [
+        uintCV(match.params.id),
+        uintCV(parseFloat(value) * 1000000),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stx-reserve')
+      ],
       postConditionMode: 0x01,
       finished: data => {
         console.log('finished mint!', data, data.txId);
@@ -176,7 +188,11 @@ export const ManageVault = ({ match }) => {
       contractAddress,
       contractName: 'freddie',
       functionName: 'withdraw',
-      functionArgs: [uintCV(match.params.id), uintCV(parseFloat(value) * 1000000)],
+      functionArgs: [
+        uintCV(match.params.id),
+        uintCV(parseFloat(value) * 1000000),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stx-reserve')
+      ],
       postConditionMode: 0x01,
       finished: data => {
         console.log('finished withdraw!', data);
