@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Auction } from './auction';
-import { getStxPrice } from '@common/get-stx-price';
+import { getPrice } from '@common/get-price';
 import { Modal } from '@blockstack/ui';
 import { uintCV } from '@stacks/transactions';
 import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
@@ -18,7 +18,7 @@ export interface AuctionProps {
 
 export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
   const { doContractCall } = useConnect();
-  const price = parseFloat(getStxPrice().price);
+  const price = parseFloat(getPrice().price);
   const [showBidModal, setShowBidModal] = useState(false);
   const [bidAmount, setBidAmount] = useState('');
   const [bidAuctionId, setBidAuctionId] = useState(0);

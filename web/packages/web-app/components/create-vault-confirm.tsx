@@ -1,10 +1,7 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Box } from '@blockstack/ui';
-import { AppContext } from '@common/context';
 
 export const CreateVaultConfirm = ({ setStep, coinAmounts }) => {
-  const state = useContext(AppContext);
-
   return (
     <Box>
       <h2 className="text-2xl font-bold text-gray-900 text-center">
@@ -18,7 +15,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts }) => {
               Depositing
             </h3>
             <p className="mt-1 text-sm text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
-              {coinAmounts['amounts']['stx']} STX
+              {coinAmounts['amounts']['collateral']} {coinAmounts['token-name']}
             </p>
           </div>
           <hr/>
@@ -48,7 +45,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts }) => {
               Liquidation Ratio
             </h3>
             <p className="mt-1 text-sm text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
-              {state.riskParameters['liquidation-ratio']}%
+              {coinAmounts['liquidation-ratio']}%
             </p>
           </div>
           <hr/>
@@ -58,7 +55,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts }) => {
               Liquidation Price
             </h3>
             <p className="mt-1 text-sm text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
-              ${coinAmounts['liquidation-price']} / STX
+              ${coinAmounts['liquidation-price']} / {coinAmounts['token-name']}
             </p>
           </div>
           <hr/>
@@ -68,7 +65,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts }) => {
               Liquidation Penalty
             </h3>
             <p className="mt-1 text-sm text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
-              {state.riskParameters['liquidation-penalty']}%
+              {coinAmounts['liquidation-penalty']}%
             </p>
           </div>
           <hr/>
@@ -78,7 +75,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts }) => {
               Stability Fee
             </h3>
             <p className="mt-1 text-sm text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
-              {state.riskParameters['stability-fee-apy']}%
+              {coinAmounts['stability-fee-apy'] / 100}%
             </p>
           </div>
           <hr/>

@@ -6,7 +6,7 @@ export const getCollateralToDebtRatio = (price:number, coinsMinted:number, stxCo
   return (stxCollateral * price) / coinsMinted;
 };
 
-export const availableStxToWithdraw = (price:number, currentStxCollateral:number, coinsMinted:number, collateralToDebt:number) => {
+export const availableCollateralToWithdraw = (price:number, currentStxCollateral:number, coinsMinted:number, collateralToDebt:number) => {
   // 200 = (stxCollateral * 111) / 5
   const minimumStxCollateral = (collateralToDebt * coinsMinted) / price;
   if (currentStxCollateral - minimumStxCollateral > 0) {
@@ -23,4 +23,12 @@ export const availableCoinsToMint = (price:number, stxCollateral:number, current
   }
 
   return 0;
+};
+
+export const resolveReserveName = (collateralToken: string) => {
+  if (collateralToken.toLowerCase().startsWith('stx')) {
+    return 'stx-reserve';
+  } else {
+    return 'sip10-reserve'; // we have only two reserves: 1 for STX and 1 for all other SIP10 FTs
+  }
 };

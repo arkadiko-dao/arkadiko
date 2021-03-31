@@ -10,7 +10,7 @@
 (define-constant err-mint-failed u7)
 
 (define-read-only (get-risk-parameters)
-  (ok (contract-call? .dao get-risk-parameters "stx"))
+  (ok (contract-call? .dao get-collateral-type-by-token "stx"))
 )
 
 ;; MAIN LOGIC

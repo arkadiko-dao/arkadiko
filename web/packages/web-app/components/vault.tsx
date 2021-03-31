@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
 import { NavLink as RouterLink } from 'react-router-dom'
 import { AppContext } from '@common/context';
@@ -11,36 +11,47 @@ export interface VaultProps {
   id: string;
   owner: string;
   collateral: number;
+  collateralType: string;
+  collateralToken: string;
   debt: number;
   isLiquidated: boolean;
   auctionEnded: boolean;
   leftoverCollateral: number;
 }
 
-export const debtClass = (ratio: number) => {
-  if (ratio >= 200) {
+export const debtClass = (liquidationRatio: number, ratio: number) => {
+  if (ratio > liquidationRatio + 50) {
     return 'text-green-400';
-  } else if (ratio >= 180) {
+  } else if (ratio >= liquidationRatio + 30) {
     return 'text-orange-400';
-  } else if (ratio > 160) {
+  } else if (ratio > liquidationRatio + 10) {
     return 'text-red-900';
   }
 
   return 'text-red-900';
 };
 
-export const debtBackgroundClass = (ratio: number) => {
-  if (ratio && ratio < 150) {
-    return 'bg-red-300';
-  }
-
-  return 'bg-white';
-};
-
-export const Vault: React.FC<VaultProps> = ({ id, collateral, debt, isLiquidated, auctionEnded, leftoverCollateral }) => {
+export const Vault: React.FC<VaultProps> = ({ id, collateral, collateralType, collateralToken, debt, isLiquidated, auctionEnded, leftoverCollateral }) => {
   const state = useContext(AppContext);
   const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const [stabilityFeeApy, setStabilityFeeApy] = useState(0);
+  const [liquidationRatio, setLiquidationRatio] = useState(0);
+
+  const debtBackgroundClass = (ratio: number) => {
+    if (ratio && ratio < liquidationRatio) {
+      return 'bg-red-300';
+    }
+
+    return 'bg-white';
+  };
+
+  useEffect(() => {
+    if (state.collateralTypes[collateralType.toLowerCase()]) {
+      setStabilityFeeApy(state.collateralTypes[collateralType.toLowerCase()].stabilityFeeApy);
+      setLiquidationRatio(state.collateralTypes[collateralType.toLowerCase()].liquidationRatio);
+    }
+  }, [state.collateralTypes]);
 
   let debtRatio = 0;
   if (id) {
@@ -73,19 +84,16 @@ export const Vault: React.FC<VaultProps> = ({ id, collateral, debt, isLiquidated
         </span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">{state.riskParameters['stability-fee-apy']}%</span>
+        <span className="text-gray-900 font-medium">{collateralType.toUpperCase()}</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">{state.riskParameters['liquidation-ratio']}%</span>
-      </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className={`${debtClass(debtRatio)} font-medium`}>{debtRatio}%</span>
+        <span className={`${debtClass(liquidationRatio, debtRatio)} font-medium`}>{debtRatio}% (&gt; {liquidationRatio}%)</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         <span className="text-gray-900 font-medium">${debt / 1000000} xUSD</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">{collateral / 1000000} STX</span>
+        <span className="text-gray-900 font-medium">{collateral / 1000000} {collateralToken.toUpperCase()}</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-900">
         <span className="text-gray-900 font-medium">

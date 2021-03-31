@@ -50,6 +50,8 @@ export const App: React.FC = () => {
           id: data['id'].value,
           owner: data['owner'].value,
           collateral: data['collateral'].value,
+          collateralType: data['collateral-type'].value,
+          collateralToken: data['collateral-token'].value,
           isLiquidated: data['is-liquidated'].value,
           auctionEnded: data['auction-ended'].value,
           leftoverCollateral: data['leftover-collateral'].value,
@@ -79,49 +81,37 @@ export const App: React.FC = () => {
   };
 
   const fetchCollateralTypes = async (address: string) => {
-    const types = await callReadOnlyFunction({
-      contractAddress,
-      contractName: "dao",
-      functionName: "get-collateral-type-by-token",
-      functionArgs: [stringAsciiCV('stx')],
-      senderAddress: address,
-      network: network,
-    });
-    const json = cvToJSON(types);
-
-    setState(prevState => ({
-      ...prevState,
-      collateralTypes: [{
+    let collTypes = {};
+    ['stx-a', 'stx-b', 'diko-a'].forEach(async (token) => {
+      const types = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "dao",
+        functionName: "get-collateral-type-by-token",
+        functionArgs: [stringAsciiCV(token)],
+        senderAddress: address,
+        network: network,
+      });
+      const json = cvToJSON(types);
+      // console.log('coll type: ', json);
+      collTypes[token] = {
         name: json.value['name'].value,
         token: json.value['token'].value,
+        tokenType: json.value['token-type'].value,
         url: json.value['url'].value,
-        'total-debt': json.value['total-debt'].value
-      }]
-    }));
-  };
+        totalDebt: json.value['total-debt'].value,
+        collateralToDebtRatio: json.value['collateral-to-debt-ratio'].value,
+        liquidationPenalty: json.value['liquidation-penalty'].value,
+        liquidationRatio: json.value['liquidation-ratio'].value,
+        maximumDebt: json.value['maximum-debt'].value,
+        stabilityFee: json.value['stability-fee'].value,
+        stabilityFeeApy: json.value['stability-fee-apy'].value
+      };
 
-  const fetchRiskParameters = async (address: string) => {
-    const riskParameters = await callReadOnlyFunction({
-      contractAddress,
-      contractName: "stx-reserve",
-      functionName: "get-risk-parameters",
-      functionArgs: [],
-      senderAddress: address,
-      network: network
+      setState(prevState => ({
+        ...prevState,
+        collateralTypes: collTypes
+      }));
     });
-    const params = cvToJSON(riskParameters).value.value;
-
-    setState(prevState => ({
-      ...prevState,
-      riskParameters: {
-        'collateral-to-debt-ratio': params['collateral-to-debt-ratio'].value,
-        'liquidation-penalty': params['liquidation-penalty'].value,
-        'liquidation-ratio': params['liquidation-ratio'].value,
-        'maximum-debt': params['maximum-debt'].value,
-        'stability-fee': params['stability-fee'].value,
-        'stability-fee-apy': params['stability-fee-apy'].value
-      }
-    }));
   };
 
   useEffect(() => {
@@ -135,7 +125,6 @@ export const App: React.FC = () => {
           fetchBalance(resolveSTXAddress(userData));
           fetchVaults(resolveSTXAddress(userData));
           fetchCollateralTypes(resolveSTXAddress(userData));
-          fetchRiskParameters(resolveSTXAddress(userData));
 
           const isStacker = await callReadOnlyFunction({
             contractAddress,
@@ -169,7 +158,6 @@ export const App: React.FC = () => {
       fetchBalance(resolveSTXAddress(userData));
       fetchVaults(resolveSTXAddress(userData));
       fetchCollateralTypes(resolveSTXAddress(userData));
-      fetchRiskParameters(resolveSTXAddress(userData));
       setState(prevState => ({ ...prevState, userData, isStacker: false }));
       setAppPrivateKey(userData.appPrivateKey);
     } else if (userSession.isUserSignedIn()) {
@@ -192,7 +180,6 @@ export const App: React.FC = () => {
       fetchBalance(resolveSTXAddress(userData));
       fetchVaults(resolveSTXAddress(userData));
       fetchCollateralTypes(resolveSTXAddress(userData));
-      fetchRiskParameters(resolveSTXAddress(userData));
       setState(prevState => ({ ...prevState, userData, isStacker: false }));
     },
     onCancel: () => {

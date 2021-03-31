@@ -4,7 +4,7 @@ import { useSTXAddress } from './use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { callReadOnlyFunction, stringAsciiCV, cvToJSON } from '@stacks/transactions';
 
-export const getStxPrice = () => {
+export const getPrice = (symbol: string) => {
   const stxAddress = useSTXAddress();
   const state = useContext(AppContext);
   const [price, setPrice] = useState('');
@@ -13,13 +13,13 @@ export const getStxPrice = () => {
   useEffect(() => {
     let mounted = true;
 
-    const getStxPrice = async () => {
+    const getPrice = async () => {
       if (mounted) {
         const price = await callReadOnlyFunction({
           contractAddress,
           contractName: "oracle",
           functionName: "get-price",
-          functionArgs: [stringAsciiCV('stx')],
+          functionArgs: [stringAsciiCV(symbol || 'stx')],
           senderAddress: stxAddress || '',
           network: network,
         });
@@ -29,7 +29,7 @@ export const getStxPrice = () => {
         }
       }
     };
-    void getStxPrice();
+    void getPrice();
 
     return () => { mounted = false; }
   }, [state.userData]);

@@ -7,7 +7,7 @@ import { Mint } from './mint';
 export const Container: React.FC<BoxProps> = ({ children, ...props }) => {
   return (
     <Box className="bg-gray-100 h-screen" width="100%" px={6} {...props}>
-      <Box maxWidth="1200px" mx="auto">
+      <Box maxWidth="1400px" mx="auto">
         {children}
       </Box>
     </Box>

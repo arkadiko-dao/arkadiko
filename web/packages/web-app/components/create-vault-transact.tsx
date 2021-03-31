@@ -11,6 +11,7 @@ import {
 import { useSTXAddress } from '@common/use-stx-address';
 import { ExplorerLink } from './explorer-link';
 import { connectWebSocketClient } from '@stacks/blockchain-api-client';
+import { resolveReserveName } from '@common/vault-utils';
 
 export const CreateVaultTransact = ({ coinAmounts }) => {
   const [txId, setTxId] = useState<string>('');
@@ -53,11 +54,12 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
     clearState();
     const authOrigin = getAuthOrigin();
     const args = [
-      uintCV(parseInt(coinAmounts['amounts']['stx'], 10) * 1000000),
+      uintCV(parseInt(coinAmounts['amounts']['collateral'], 10) * 1000000),
       uintCV(parseInt(coinAmounts['amounts']['xusd'], 10) * 1000000),
       standardPrincipalCV(address || ''),
-      stringAsciiCV('stx'),
-      contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stx-reserve')
+      stringAsciiCV(coinAmounts['token-type'].toLowerCase()),
+      stringAsciiCV(coinAmounts['token-name'].toLowerCase()),
+      contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', resolveReserveName(coinAmounts['token-name'].toLowerCase()))
     ];
     await doContractCall({
       network,
