@@ -1,4 +1,10 @@
 
+## Version 0.1.1
+
+### Bug fixes
+
+- Fix minting extra debt (xUSD) based on the correct collateral type
+
 ## Version 0.1.0
 
 ### New features

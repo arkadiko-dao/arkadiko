@@ -211,7 +211,7 @@
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
 
-    (if (unwrap! (contract-call? reserve mint token (get owner vault) (get collateral vault) (get debt vault) extra-debt) (err u5))
+    (if (unwrap! (contract-call? reserve mint token (get owner vault) (get collateral vault) (get debt vault) extra-debt (get collateral-type vault)) (err u5))
       (begin
         (let ((new-total-debt (+ extra-debt (get debt vault))))
           (map-set vaults

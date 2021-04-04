@@ -19,7 +19,7 @@
     (withdraw (<mock-ft-trait> principal uint) (response bool uint))
 
     ;; mint additional stablecoin
-    (mint ((string-ascii 12) principal uint uint uint) (response bool uint))
+    (mint ((string-ascii 12) principal uint uint uint (string-ascii 12)) (response bool uint))
 
     ;; burn all the stablecoin in the vault of tx-sender and return collateral
     (burn (<mock-ft-trait> principal uint) (response bool uint))

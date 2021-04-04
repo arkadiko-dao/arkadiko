@@ -64,11 +64,11 @@
   )
 )
 
-(define-public (mint (token (string-ascii 12)) (vault-owner principal) (ucollateral-amount uint) (current-debt uint) (extra-debt uint))
+(define-public (mint (token (string-ascii 12)) (vault-owner principal) (ucollateral-amount uint) (current-debt uint) (extra-debt uint) (collateral-type (string-ascii 12)))
   (begin
     (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
 
-    (let ((max-new-debt (- (unwrap-panic (calculate-xusd-count token ucollateral-amount)) current-debt)))
+    (let ((max-new-debt (- (unwrap-panic (calculate-xusd-count token ucollateral-amount collateral-type)) current-debt)))
       (if (>= max-new-debt extra-debt)
         (match (print (as-contract (contract-call? .xusd-token mint extra-debt vault-owner)))
           success (ok true)

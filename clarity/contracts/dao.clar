@@ -493,7 +493,7 @@
       url: "https://www.arkadiko.finance/",
       total-debt: u0,
       liquidation-ratio: u200,
-      collateral-to-debt-ratio: u400,
+      collateral-to-debt-ratio: u300,
       maximum-debt: u10000000,
       liquidation-penalty: u13,
       stability-fee: u2726, ;; 0.002726155% daily percentage == 1% APY
