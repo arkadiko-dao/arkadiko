@@ -25,8 +25,8 @@ describe("stacks reserve test suite", () => {
 
   describe("deploying an instance of the contract", () => {
     before(async () => {
-      await deployContract('vault-trait');
       await deployContract('mock-ft-trait');
+      await deployContract('vault-trait');
 
       await deployContract('oracle');
       await deployContract('xusd-token');
@@ -34,6 +34,7 @@ describe("stacks reserve test suite", () => {
       await deployContract('dao');
 
       await deployContract('stx-reserve');
+      await deployContract('sip10-reserve');
       await deployContract('freddie');
 
       await deployContract('stacker-registry');
@@ -60,7 +61,8 @@ describe("stacks reserve test suite", () => {
           standardPrincipalCV(alice),
           stringAsciiCV('stx-a'),
           stringAsciiCV('stx'),
-          contractPrincipalCV(deployContractAddress, 'stx-reserve')
+          contractPrincipalCV(deployContractAddress, 'stx-reserve'),
+          contractPrincipalCV(deployContractAddress, 'arkadiko-token')
         ]
       );
       

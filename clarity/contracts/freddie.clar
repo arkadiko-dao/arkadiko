@@ -1,4 +1,6 @@
 (use-trait vault-trait .vault-trait.vault-trait)
+(use-trait mock-ft-trait .mock-ft-trait.mock-ft-trait)
+
 ;; Freddie - The Vault Manager
 ;; Freddie is an abstraction layer that interacts with collateral type reserves (initially only STX)
 ;; Ideally, collateral reserves should never be called from outside. Only manager layers should be interacted with from clients
@@ -89,11 +91,19 @@
   )
 )
 
-(define-public (collateralize-and-mint (collateral-amount uint) (debt uint) (sender principal) (collateral-type (string-ascii 12)) (collateral-token (string-ascii 12)) (reserve <vault-trait>))
-  (let ((ratio (unwrap-panic (contract-call? reserve calculate-current-collateral-to-debt-ratio debt collateral-amount))))
+(define-public (collateralize-and-mint
+    (collateral-amount uint)
+    (debt uint)
+    (sender principal)
+    (collateral-type (string-ascii 12))
+    (collateral-token (string-ascii 12))
+    (reserve <vault-trait>)
+    (ft <mock-ft-trait>)
+  )
+  (let ((ratio (unwrap-panic (contract-call? reserve calculate-current-collateral-to-debt-ratio collateral-token debt collateral-amount))))
     (asserts! (is-eq tx-sender sender) (err err-unauthorized))
     (asserts! (>= ratio (unwrap-panic (contract-call? .dao get-liquidation-ratio collateral-type))) (err err-insufficient-collateral))
-    (try! (contract-call? reserve collateralize-and-mint collateral-amount debt sender))
+    (try! (contract-call? reserve collateralize-and-mint ft collateral-amount debt sender))
 
     (if (is-ok (as-contract (contract-call? .xusd-token mint debt sender)))
       (begin
@@ -129,9 +139,9 @@
   )
 )
 
-(define-public (deposit (vault-id uint) (uamount uint) (reserve <vault-trait>))
+(define-public (deposit (vault-id uint) (uamount uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
   (let ((vault (get-vault-by-id vault-id)))
-    (if (unwrap-panic (contract-call? reserve deposit uamount))
+    (if (unwrap-panic (contract-call? reserve deposit ft uamount))
       (begin
         (let ((new-collateral (+ uamount (get collateral vault))))
           (map-set vaults
@@ -159,16 +169,16 @@
   )
 )
 
-(define-public (withdraw (vault-id uint) (uamount uint) (reserve <vault-trait>))
+(define-public (withdraw (vault-id uint) (uamount uint) (reserve <vault-trait>) (ft <mock-ft-trait>) (collateral-token (string-ascii 12)))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
     (asserts! (> uamount u0) (err err-insufficient-collateral))
     (asserts! (<= uamount (get collateral vault)) (err err-insufficient-collateral))
 
-    (let ((ratio (unwrap-panic (contract-call? reserve calculate-current-collateral-to-debt-ratio (get debt vault) (- (get collateral vault) uamount)))))
+    (let ((ratio (unwrap-panic (contract-call? reserve calculate-current-collateral-to-debt-ratio collateral-token (get debt vault) (- (get collateral vault) uamount)))))
       (asserts! (>= ratio (unwrap-panic (contract-call? .dao get-collateral-to-debt-ratio "stx"))) (err err-insufficient-collateral))
 
-      (if (unwrap-panic (contract-call? reserve withdraw (get owner vault) uamount))
+      (if (unwrap-panic (contract-call? reserve withdraw ft (get owner vault) uamount))
         (begin
           (let ((new-collateral (- (get collateral vault) uamount)))
             (map-set vaults
@@ -197,11 +207,11 @@
   )
 )
 
-(define-public (mint (vault-id uint) (extra-debt uint) (reserve <vault-trait>))
+(define-public (mint (vault-id uint) (extra-debt uint) (reserve <vault-trait>) (token (string-ascii 12)))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
 
-    (if (unwrap! (contract-call? reserve mint (get owner vault) (get collateral vault) (get debt vault) extra-debt) (err u5))
+    (if (unwrap! (contract-call? reserve mint token (get owner vault) (get collateral vault) (get debt vault) extra-debt) (err u5))
       (begin
         (let ((new-total-debt (+ extra-debt (get debt vault))))
           (map-set vaults
@@ -229,13 +239,12 @@
   )
 )
 
-;; TODO: is this atomic? e.g. if xUSD burn succeeds but STX reserve burn fails, what then?
-(define-public (burn (vault-id uint) (vault-owner principal) (reserve <vault-trait>))
+(define-public (burn (vault-id uint) (vault-owner principal) (reserve <vault-trait>) (ft <mock-ft-trait>))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
 
     (if (is-ok (contract-call? .xusd-token burn (get debt vault) (get owner vault)))
-      (if (unwrap-panic (contract-call? reserve burn (get owner vault) (get collateral vault)))
+      (if (unwrap-panic (contract-call? reserve burn ft (get owner vault) (get collateral vault)))
         (begin
           (let ((entries (get ids (get-vault-entries vault-owner))))
             (map-set vaults
@@ -349,11 +358,11 @@
   )
 )
 
-(define-public (withdraw-leftover-collateral (vault-id uint) (reserve <vault-trait>))
+(define-public (withdraw-leftover-collateral (vault-id uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
 
-    (if (unwrap-panic (contract-call? reserve withdraw (get owner vault) (get leftover-collateral vault)))
+    (if (unwrap-panic (contract-call? reserve withdraw ft (get owner vault) (get leftover-collateral vault)))
       (begin
         (map-set vaults
           { id: vault-id }

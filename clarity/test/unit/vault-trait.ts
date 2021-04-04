@@ -1,5 +1,4 @@
 import { Client, Provider, ProviderRegistry, Result, Transaction } from "@blockstack/clarity";
-import { assert } from "chai";
 
 describe("vault trait unit test suite", () => {
   let vaultTraitClient: Client;

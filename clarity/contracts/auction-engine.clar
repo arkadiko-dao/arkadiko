@@ -1,3 +1,5 @@
+(use-trait mock-ft-trait .mock-ft-trait.mock-ft-trait)
+
 ;; addresses
 (define-constant auction-reserve 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP)
 
@@ -296,7 +298,7 @@
   )
 )
 
-(define-public (redeem-lot-collateral (auction-id uint) (lot-index uint))
+(define-public (redeem-lot-collateral (ft <mock-ft-trait>) (auction-id uint) (lot-index uint))
   (let ((last-bid (get-last-bid auction-id lot-index)))
     (if
       (and
@@ -307,7 +309,7 @@
         (let ((lots (get-winning-lots tx-sender)))
           (map-set redeeming-lot { user: tx-sender } { auction-id: auction-id, lot-index: lot-index})
           (if (map-set winning-lots { user: tx-sender } { ids: (filter remove-winning-lot (get ids lots)) })
-            (ok (contract-call? .stx-reserve redeem-collateral (get collateral-amount last-bid) tx-sender))
+            (ok (contract-call? .stx-reserve redeem-collateral ft (get collateral-amount last-bid) tx-sender))
             (err false)
           )
         )
