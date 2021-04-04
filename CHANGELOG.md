@@ -1,4 +1,11 @@
 
+## Version 0.1.2
+
+### New Features
+
+- Calculate stability fees weekly and show them in UI
+- Pay back stability fees
+
 ## Version 0.1.1
 
 ### Bug fixes

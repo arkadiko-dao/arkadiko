@@ -54,6 +54,7 @@ export const ManageVault = ({ match }) => {
           collateral: data['collateral'].value,
           collateralType: data['collateral-type'].value,
           collateralToken: data['collateral-token'].value,
+          stabilityFee: data['stability-fee'].value,
           isLiquidated: data['is-liquidated'].value,
           auctionEnded: data['auction-ended'].value,
           leftoverCollateral: data['leftover-collateral'].value,
@@ -122,6 +123,27 @@ export const ManageVault = ({ match }) => {
       setShowDepositModal(false);
     }
   }, [txId]);
+
+  const payStabilityFee = async () => {
+    const authOrigin = getAuthOrigin();
+
+    await doContractCall({
+      network,
+      authOrigin,
+      contractAddress,
+      contractName: 'freddie',
+      functionName: 'pay-stability-fee',
+      functionArgs: [
+        uintCV(match.params.id)
+      ],
+      postConditionMode: 0x01,
+      finished: data => {
+        console.log('finished paying stability fee!', data);
+        setTxId(data.txId);
+        setTxStatus('pending');
+      },
+    });
+  };
 
   const callBurn = async () => {
     const authOrigin = getAuthOrigin();
@@ -517,7 +539,7 @@ export const ManageVault = ({ match }) => {
               <li className="relative col-span-2 flex shadow-sm rounded-md">
                 <div className="bg-white shadow sm:rounded-lg w-full">
                   <div className="px-4 py-5 sm:p-6">
-                    <div className="mt-2 sm:flex sm:items-start sm:justify-between mb-5">
+                    <div className="mt-2 sm:flex sm:items-start sm:justify-between mb-10">
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
                         {vault?.collateralToken.toUpperCase()} Locked
@@ -542,7 +564,7 @@ export const ManageVault = ({ match }) => {
                     </div>
                     <hr/>
 
-                    <div className="mt-5 sm:flex sm:items-start sm:justify-between">
+                    <div className="mt-10 sm:flex sm:items-start sm:justify-between">
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
                           Able to withdraw
@@ -598,7 +620,7 @@ export const ManageVault = ({ match }) => {
                     </div>
                     <hr/>
 
-                    <div className="mt-5 sm:flex sm:items-start sm:justify-between">
+                    <div className="mt-5 sm:flex sm:items-start sm:justify-between mb-5">
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
                           Available to mint
@@ -617,6 +639,31 @@ export const ManageVault = ({ match }) => {
                                 _hover={{ cursor: 'pointer'}}
                                 className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                             Mint
+                          </Text>
+                        </p>
+                      </div>
+                    </div>
+                    <hr/>
+
+                    <div className="mt-5 sm:flex sm:items-start sm:justify-between">
+                      <div className="max-w-xl text-sm text-gray-500">
+                        <p>
+                          Outstanding Stability Fees
+                        </p>
+                      </div>
+
+                      <div className="max-w-xl text-sm text-gray-500">
+                        <p>
+                        ${vault?.stabilityFee / 1000000} xUSD
+                        </p>
+                      </div>
+
+                      <div className="max-w-xl text-sm text-gray-500">
+                        <p>
+                          <Text onClick={() => payStabilityFee()}
+                                _hover={{ cursor: 'pointer'}}
+                                className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Pay back
                           </Text>
                         </p>
                       </div>

@@ -12,6 +12,7 @@ export interface VaultProps {
   collateral: number;
   collateralType: string;
   collateralToken: string;
+  stabilityFee: number;
   debt: number;
   isLiquidated: boolean;
   auctionEnded: boolean;
@@ -31,7 +32,7 @@ export const debtClass = (liquidationRatio: number, ratio: number) => {
   return 'text-red-900';
 };
 
-export const Vault: React.FC<VaultProps> = ({ id, collateral, collateralType, collateralToken, debt, isLiquidated, auctionEnded, leftoverCollateral, collateralData }) => {
+export const Vault: React.FC<VaultProps> = ({ id, collateral, collateralType, collateralToken, stabilityFee, debt, isLiquidated, auctionEnded, leftoverCollateral, collateralData }) => {
   const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
@@ -78,6 +79,9 @@ export const Vault: React.FC<VaultProps> = ({ id, collateral, collateralType, co
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         <span className={`${debtClass(collateralData.liquidationRatio, debtRatio)} font-medium`}>{debtRatio}% (&gt; {collateralData['liquidationRatio']}%)</span>
+      </td>
+      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+        <span className="text-gray-900 font-medium">${stabilityFee / 1000000} xUSD</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         <span className="text-gray-900 font-medium">${debt / 1000000} xUSD</span>
