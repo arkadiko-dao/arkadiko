@@ -1,3 +1,4 @@
+(use-trait vault-trait .vault-trait.vault-trait)
 (use-trait mock-ft-trait .mock-ft-trait.mock-ft-trait)
 
 ;; addresses
@@ -17,6 +18,7 @@
   {
     id: uint,
     collateral-amount: uint,
+    collateral-token: (string-ascii 12),
     debt-to-raise: uint,
     vault-id: uint,
     lot-size: uint,
@@ -34,6 +36,7 @@
   {
     xusd: uint,
     collateral-amount: uint,
+    collateral-token: (string-ascii 12),
     owner: principal,
     is-accepted: bool
   }
@@ -48,8 +51,8 @@
 )
 
 (define-data-var last-auction-id uint u0)
-(define-data-var auction-ids (list 2000 uint) (list u0))
-(define-data-var lot-size uint u100000000) ;; 100 STX
+(define-data-var auction-ids (list 1800 uint) (list u0))
+(define-data-var lot-size uint u100000000) ;; 100 xUSD
 
 (define-read-only (get-auction-by-id (id uint))
   (unwrap!
@@ -57,6 +60,7 @@
     (tuple
       (id u0)
       (collateral-amount u0)
+      (collateral-token "")
       (debt-to-raise u0)
       (vault-id u0)
       (lot-size u0)
@@ -75,8 +79,7 @@
   (ok (map get-auction-by-id (var-get auction-ids)))
 )
 
-;; stx-collateral has been posted in stx-liquidation-reserve principal
-;; 1. Create auction object in map per 100 STX
+;; 1. Create auction object in map per 100 xUSD
 ;; 2. Add auction ID to list (to show in UI)
 ;; we wanna sell as little collateral as possible to cover the vault's debt
 ;; if we cannot cover the vault's debt with the collateral sale,
@@ -87,17 +90,18 @@
     (asserts! (is-eq (get is-liquidated vault) true) (err err-auction-not-allowed))
 
     (let ((auction-id (+ (var-get last-auction-id) u1)))
-      ;; 500 collateral => 500 / 100 = 5 lots
-      (let ((amount-of-lots (/ uamount (var-get lot-size))))
-        (if (< (* amount-of-lots (var-get lot-size)) uamount)
+      ;; 500 xUSD debt => 500 / 100 = 5 lots
+      (let ((amount-of-lots (/ debt-to-raise (var-get lot-size))))
+        (if (< (* amount-of-lots (var-get lot-size)) debt-to-raise)
           (begin
             ;; need to add +1 to amount of lots
-            (let ((last-lot-size (mod uamount (var-get lot-size))))
+            (let ((last-lot-size (mod debt-to-raise (var-get lot-size))))
               (map-set auctions
                 { id: auction-id }
                 {
                   id: auction-id,
                   collateral-amount: uamount,
+                  collateral-token: (get collateral-token vault),
                   debt-to-raise: debt-to-raise,
                   vault-id: vault-id,
                   lot-size: (var-get lot-size),
@@ -111,7 +115,7 @@
                 }
               )
               (print "Added new open auction")
-              (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u2000)))
+              (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u1800)))
               (var-set last-auction-id auction-id)
               (ok true)
             )
@@ -123,6 +127,7 @@
               {
                 id: auction-id,
                 collateral-amount: uamount,
+                collateral-token: (get collateral-token vault),
                 debt-to-raise: debt-to-raise,
                 vault-id: vault-id,
                 lot-size: (var-get lot-size),
@@ -136,7 +141,7 @@
               }
             )
             (print "Added new open auction")
-            (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u2000)))
+            (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u1800)))
             (var-set last-auction-id auction-id)
             (ok true)
           )
@@ -150,9 +155,9 @@
 ;; e.g. if we need to cover 10 xUSD debt, and we have 20 STX at $1/STX,
 ;; we only need to auction off 10 STX
 (define-read-only (calculate-minimum-collateral-amount (auction-id uint))
-  (let ((stx-price-in-cents (contract-call? .oracle get-price "stx")))
-    (let ((auction (get-auction-by-id auction-id)))
-      (let ((amount (/ (/ (get debt-to-raise auction) (get last-price-in-cents stx-price-in-cents)) (get lots auction))))
+  (let ((auction (get-auction-by-id auction-id)))
+    (let ((price-in-cents (contract-call? .oracle get-price (get collateral-token auction))))
+      (let ((amount (/ (/ (get debt-to-raise auction) (get last-price-in-cents price-in-cents)) (get lots auction))))
         (if (> (/ (get collateral-amount auction) (get lots auction)) (* u100 amount))
           (ok (* u100 amount))
           (ok (/ (get collateral-amount auction) (get lots auction)))
@@ -168,6 +173,7 @@
     (tuple
       (xusd u0)
       (collateral-amount u0)
+      (collateral-token "")
       (owner 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP)
       (is-accepted false)
     )
@@ -232,6 +238,7 @@
                 {
                   id: auction-id,
                   collateral-amount: (get collateral-amount auction),
+                  collateral-token: (get collateral-token auction),
                   debt-to-raise: (get debt-to-raise auction),
                   vault-id: (get vault-id auction),
                   lot-size: (get lot-size auction),
@@ -249,6 +256,7 @@
                 {
                   xusd: xusd,
                   collateral-amount: collateral-amount,
+                  collateral-token: (get collateral-token auction),
                   owner: tx-sender,
                   is-accepted: accepted-bid
                 }
@@ -298,7 +306,7 @@
   )
 )
 
-(define-public (redeem-lot-collateral (ft <mock-ft-trait>) (auction-id uint) (lot-index uint))
+(define-public (redeem-lot-collateral (ft <mock-ft-trait>) (reserve <vault-trait>) (auction-id uint) (lot-index uint))
   (let ((last-bid (get-last-bid auction-id lot-index)))
     (if
       (and
@@ -309,7 +317,7 @@
         (let ((lots (get-winning-lots tx-sender)))
           (map-set redeeming-lot { user: tx-sender } { auction-id: auction-id, lot-index: lot-index})
           (if (map-set winning-lots { user: tx-sender } { ids: (filter remove-winning-lot (get ids lots)) })
-            (ok (contract-call? .stx-reserve redeem-collateral ft (get collateral-amount last-bid) tx-sender))
+            (ok (contract-call? reserve redeem-collateral ft (get collateral-amount last-bid) tx-sender))
             (err false)
           )
         )
@@ -349,6 +357,7 @@
       {
         id: auction-id,
         collateral-amount: (get collateral-amount auction),
+        collateral-token: (get collateral-token auction),
         debt-to-raise: (get debt-to-raise auction),
         vault-id: (get vault-id auction),
         lot-size: (get lot-size auction),

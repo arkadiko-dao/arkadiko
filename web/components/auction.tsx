@@ -3,15 +3,26 @@ import { AuctionProps} from './auction-group';
 import { callReadOnlyFunction, cvToJSON, uintCV } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
+import { getPrice } from '@common/get-price';
 
-export const Auction: React.FC<AuctionProps> = ({ id, lotId, ustx, price, debt, endsAt, setShowBidModal, setBidAuctionId, setBidLotId, setPreferredBid, setCollateralAmount }) => {
+export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, debt, endsAt, setShowBidModal, setBidAuctionId, setBidLotId, setPreferredBid, setCollateralAmount }) => {
   const [minimumCollateralAmount, setMinimumCollateralAmount] = useState(0);
   const [currentBid, setCurrentBid] = useState(0);
   const [isClosed, setIsClosed] = useState(false);
   const [acceptedCollateral, setAcceptedCollateral] = useState(0);
   const [debtToRaise, setDebtToRaise] = useState(debt);
+  const [price, setPrice] = useState(0.0);
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+
+  useEffect(() => {
+    const fetchPrice = async () => {
+      let price = await getPrice(collateralToken.toLowerCase());
+      setPrice(price);
+    };
+
+    fetchPrice();
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -81,9 +92,9 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, ustx, price, debt, 
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         <span className="text-gray-900 font-medium">
           {isClosed ? (
-            <span>{acceptedCollateral / 1000000} STX</span>
+            <span>{acceptedCollateral / 1000000} {collateralToken.toUpperCase()}</span>
             ) : (
-            <span>{minimumCollateralAmount / 1000000} STX</span>
+            <span>{minimumCollateralAmount / 1000000} {collateralToken.toUpperCase()}</span>
           )}
         </span>
       </td>

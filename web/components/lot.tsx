@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { LotProps } from './lot-group';
-import { uintCV } from '@stacks/transactions';
+import { contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useConnect } from '@stacks/connect-react';
 import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
 import { connectWebSocketClient } from '@stacks/blockchain-api-client';
+import { resolveReserveName, tokenTraits } from '@common/vault-utils';
 
-export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, xusd }) => {
+export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collateralToken, xusd }) => {
   const { doContractCall } = useConnect();
   const [txId, setTxId] = useState<string>('');
   const [txStatus, setTxStatus] = useState<string>('');
@@ -13,13 +14,20 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, xusd }) =
 
   const redeemLot = async () => {
     const authOrigin = getAuthOrigin();
+    const token = tokenTraits[collateralToken.toLowerCase()]['name'];
+
     await doContractCall({
       network,
       authOrigin,
       contractAddress,
       contractName: 'auction-engine',
       functionName: 'redeem-lot-collateral',
-      functionArgs: [uintCV(id), uintCV(lotId)],
+      functionArgs: [
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', resolveReserveName(collateralToken.toLowerCase())),
+        uintCV(id),
+        uintCV(lotId)
+      ],
       postConditionMode: 0x01,
       finished: data => {
         console.log('finished redeeming lot!', data);

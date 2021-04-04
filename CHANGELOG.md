@@ -1,4 +1,14 @@
 
+## Version 0.1.3
+
+### New Features
+
+- Split up auction in lots of 100 xUSD instead of 100 STX
+
+### Bug Fixes
+
+- Fix auctioning off multiple collateral types
+
 ## Version 0.1.2
 
 ### New Features

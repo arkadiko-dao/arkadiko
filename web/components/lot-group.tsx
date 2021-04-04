@@ -5,6 +5,7 @@ export interface LotProps {
   id: string;
   lotId: string;
   collateralAmount: number;
+  collateralToken: string;
   xusd: number;
 }
 
@@ -15,6 +16,7 @@ export const LotGroup: React.FC<LotProps[]> = ({ lots }) => {
       id={lot['auction-id']}
       lotId={lot['lot-id']}
       collateralAmount={lot['collateral-amount']}
+      collateralToken={lot['collateral-token']}
       xusd={lot['xusd']}
     />
   );
@@ -29,7 +31,7 @@ export const LotGroup: React.FC<LotProps[]> = ({ lots }) => {
                 Auction ID
               </th>
               <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                STX Won
+                Collateral Won
               </th>
               <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 xUSD spent

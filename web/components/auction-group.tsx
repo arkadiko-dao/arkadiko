@@ -9,8 +9,8 @@ import { connectWebSocketClient } from '@stacks/blockchain-api-client';
 export interface AuctionProps {
   id: string;
   lotId: string;
-  ustx: string;
-  price: number;
+  collateralAmount: string;
+  collateralToken: string;
   debt: string;
   endsAt: string;
 }
@@ -32,10 +32,10 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
       key={`${auction.id}-${auction['lot-id']}`}
       id={auction.id}
       lotId={auction['lot-id']}
-      ustx={auction['collateral-amount']}
+      collateralAmount={auction['collateral-amount']}
+      collateralToken={auction['collateral-token']}
       debt={auction['debt']}
       endsAt={auction['ends-at']}
-      price={0.0}
       setShowBidModal={setShowBidModal}
       setBidAuctionId={setBidAuctionId}
       setBidLotId={setBidLotId}
@@ -182,10 +182,10 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
                   Auction ID
                 </th>
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  STX Auctioned
+                  Collateral Auctioned
                 </th>
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Current $ Price/STX
+                  Current $ Price/Token
                 </th>
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Debt to Raise
