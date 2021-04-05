@@ -1,4 +1,10 @@
 
+## Version 0.1.4
+
+### New Features
+
+- Node.js script that queries all vaults, identifies the risky ones and liquidates them
+
 ## Version 0.1.3
 
 ### New Features
