@@ -84,7 +84,7 @@
 (define-read-only (calculate-current-collateral-to-debt-ratio (vault-id uint))
   (let ((vault (get-vault-by-id vault-id)))
     (if (is-eq (get is-liquidated vault) true)
-      (ok u999)
+      (ok u0)
       (begin
         (let ((stx-price-in-cents (contract-call? .oracle get-price (get collateral-token vault))))
           (if (> (get debt vault) u0)
