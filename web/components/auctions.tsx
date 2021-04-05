@@ -33,7 +33,7 @@ export const Auctions: React.FC = () => {
       json.value.value.forEach((e: object) => {
         const vault = tupleCV(e);
         const data = vault.data.value;
-        if (true) { //data['is-open'].value) {
+        if (data['is-open'].value) {
           const lotSize = parseInt(data['lots'].value, 10);
           for (let index = 0; index < lotSize; index++) {
             serializedAuctions.push({
