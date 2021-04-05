@@ -65,6 +65,10 @@
   (unwrap! (map-get? vault-entries { user: user }) (tuple (ids (list u0) )))
 )
 
+(define-read-only (get-last-vault-id)
+  (var-get last-vault-id)
+)
+
 (define-read-only (get-vaults (user principal))
   (let ((entries (get ids (get-vault-entries user))))
     (ok (map get-vault-by-id entries))
