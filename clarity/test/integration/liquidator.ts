@@ -17,7 +17,7 @@ import {
   secretDeployKey
 } from "../../../shared/utils";
 
-describe("stacks reserve test suite", () => {
+describe("liquidator test suite", () => {
   const addresses = [
     "ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH"
   ];

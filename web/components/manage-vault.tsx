@@ -173,7 +173,6 @@ export const ManageVault = ({ match }) => {
       functionName: 'burn',
       functionArgs: [
         uintCV(match.params.id),
-        standardPrincipalCV(senderAddress || ''),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token)
       ],
@@ -314,8 +313,7 @@ export const ManageVault = ({ match }) => {
         uintCV(match.params.id),
         uintCV(parseFloat(value) * 1000000),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
-        stringAsciiCV(vault.collateralToken.toLowerCase())
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token)
       ],
       postConditionMode: 0x01,
       finished: data => {

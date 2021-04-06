@@ -177,13 +177,13 @@
   )
 )
 
-(define-public (withdraw (vault-id uint) (uamount uint) (reserve <vault-trait>) (ft <mock-ft-trait>) (collateral-token (string-ascii 12)))
+(define-public (withdraw (vault-id uint) (uamount uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
     (asserts! (> uamount u0) (err err-insufficient-collateral))
     (asserts! (<= uamount (get collateral vault)) (err err-insufficient-collateral))
 
-    (let ((ratio (unwrap-panic (contract-call? reserve calculate-current-collateral-to-debt-ratio collateral-token (get debt vault) (- (get collateral vault) uamount)))))
+    (let ((ratio (unwrap-panic (contract-call? reserve calculate-current-collateral-to-debt-ratio (get collateral-token vault) (get debt vault) (- (get collateral vault) uamount)))))
       (asserts! (>= ratio (unwrap-panic (contract-call? .dao get-collateral-to-debt-ratio "stx"))) (err err-insufficient-collateral))
 
       (if (unwrap-panic (contract-call? reserve withdraw ft (get owner vault) uamount))
@@ -216,11 +216,11 @@
   )
 )
 
-(define-public (mint (vault-id uint) (extra-debt uint) (reserve <vault-trait>) (token (string-ascii 12)))
+(define-public (mint (vault-id uint) (extra-debt uint) (reserve <vault-trait>))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
 
-    (if (unwrap! (contract-call? reserve mint token (get owner vault) (get collateral vault) (get debt vault) extra-debt (get collateral-type vault)) (err u5))
+    (if (unwrap! (contract-call? reserve mint (get collateral-token vault) (get owner vault) (get collateral vault) (get debt vault) extra-debt (get collateral-type vault)) (err u5))
       (begin
         (let ((new-total-debt (+ extra-debt (get debt vault))))
           (map-set vaults
@@ -249,7 +249,7 @@
   )
 )
 
-(define-public (burn (vault-id uint) (vault-owner principal) (reserve <vault-trait>) (ft <mock-ft-trait>))
+(define-public (burn (vault-id uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
     (asserts! (is-eq u0 (get stability-fee vault)) (err err-unauthorized))
@@ -257,12 +257,12 @@
     (if (is-ok (contract-call? .xusd-token burn (get debt vault) (get owner vault)))
       (if (unwrap-panic (contract-call? reserve burn ft (get owner vault) (get collateral vault)))
         (begin
-          (let ((entries (get ids (get-vault-entries vault-owner))))
+          (let ((entries (get ids (get-vault-entries (get owner vault)))))
             (map-set vaults
               { id: vault-id }
               {
                 id: vault-id,
-                owner: vault-owner,
+                owner: (get owner vault),
                 collateral: u0,
                 collateral-type: (get collateral-type vault),
                 collateral-token: (get collateral-token vault),
