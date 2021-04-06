@@ -1,4 +1,10 @@
 
+## Version 0.1.5
+
+### New Features
+
+- Do not allow minting xUSD if maximum debt of a collateral type is reached
+
 ## Version 0.1.4
 
 ### New Features

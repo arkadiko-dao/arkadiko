@@ -118,6 +118,10 @@
   (ok (get maximum-debt (get-collateral-type-by-token token)))
 )
 
+(define-read-only (get-total-debt (token (string-ascii 12)))
+  (ok (get total-debt (get-collateral-type-by-token token)))
+)
+
 (define-read-only (get-liquidation-penalty (token (string-ascii 12)))
   (ok (get liquidation-penalty (get-collateral-type-by-token token)))
 )
@@ -157,6 +161,28 @@
         token-type: (get token-type collateral-type),
         url: (get url collateral-type),
         total-debt: (+ debt (get total-debt collateral-type)),
+        liquidation-ratio: (get liquidation-ratio collateral-type),
+        collateral-to-debt-ratio: (get collateral-to-debt-ratio collateral-type),
+        maximum-debt: (get maximum-debt collateral-type),
+        liquidation-penalty: (get liquidation-penalty collateral-type),
+        stability-fee: (get stability-fee collateral-type),
+        stability-fee-apy: (get stability-fee-apy collateral-type)
+      }
+    )
+    (ok debt)
+  )
+)
+
+(define-public (subtract-debt-from-collateral-type (token (string-ascii 12)) (debt uint))
+  (let ((collateral-type (get-collateral-type-by-token token)))
+    (map-set collateral-types
+      { token: token }
+      {
+        name: (get name collateral-type),
+        token: (get token collateral-type),
+        token-type: (get token-type collateral-type),
+        url: (get url collateral-type),
+        total-debt: (- debt (get total-debt collateral-type)),
         liquidation-ratio: (get liquidation-ratio collateral-type),
         collateral-to-debt-ratio: (get collateral-to-debt-ratio collateral-type),
         maximum-debt: (get maximum-debt collateral-type),

@@ -15,6 +15,7 @@
 (define-constant err-mint-failed u7)
 (define-constant err-liquidation-failed u8)
 (define-constant err-insufficient-collateral u9)
+(define-constant err-maximum-debt-reached u10)
 
 ;; constants
 (define-constant blocks-per-day u144)
@@ -109,6 +110,13 @@
   (let ((ratio (unwrap-panic (contract-call? reserve calculate-current-collateral-to-debt-ratio collateral-token debt collateral-amount))))
     (asserts! (is-eq tx-sender sender) (err err-unauthorized))
     (asserts! (>= ratio (unwrap-panic (contract-call? .dao get-liquidation-ratio collateral-type))) (err err-insufficient-collateral))
+    (asserts!
+      (<
+        (unwrap-panic (contract-call? .dao get-total-debt collateral-type))
+        (unwrap-panic (contract-call? .dao get-maximum-debt collateral-type))
+      )
+      (err err-maximum-debt-reached)
+    )
     (try! (contract-call? reserve collateralize-and-mint ft collateral-amount debt sender))
 
     (if (is-ok (as-contract (contract-call? .xusd-token mint debt sender)))
@@ -219,6 +227,13 @@
 (define-public (mint (vault-id uint) (extra-debt uint) (reserve <vault-trait>))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
+    (asserts!
+      (<
+        (unwrap-panic (contract-call? .dao get-total-debt (get collateral-type vault)))
+        (unwrap-panic (contract-call? .dao get-maximum-debt (get collateral-type vault)))
+      )
+      (err err-maximum-debt-reached)
+    )
 
     (if (unwrap! (contract-call? reserve mint (get collateral-token vault) (get owner vault) (get collateral vault) (get debt vault) extra-debt (get collateral-type vault)) (err u5))
       (begin
@@ -241,7 +256,9 @@
               leftover-collateral: u0
             }
           )
-          (ok true)
+          (let ((result (contract-call? .dao add-debt-to-collateral-type (get collateral-type vault) extra-debt)))
+            (ok true)
+          )
         )
       )
       (err err-mint-failed)
@@ -258,27 +275,30 @@
       (if (unwrap-panic (contract-call? reserve burn ft (get owner vault) (get collateral vault)))
         (begin
           (let ((entries (get ids (get-vault-entries (get owner vault)))))
-            (map-set vaults
-              { id: vault-id }
-              {
-                id: vault-id,
-                owner: (get owner vault),
-                collateral: u0,
-                collateral-type: (get collateral-type vault),
-                collateral-token: (get collateral-token vault),
-                debt: u0,
-                created-at-block-height: (get created-at-block-height vault),
-                updated-at-block-height: block-height,
-                stability-fee: (get stability-fee vault),
-                stability-fee-last-accrued: (get stability-fee-last-accrued vault),
-                is-liquidated: false,
-                auction-ended: false,
-                leftover-collateral: u0
-              }
+            (let ((result (contract-call? .dao subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault))))
+              (map-set vaults
+                { id: vault-id }
+                {
+                  id: vault-id,
+                  owner: (get owner vault),
+                  collateral: u0,
+                  collateral-type: (get collateral-type vault),
+                  collateral-token: (get collateral-token vault),
+                  debt: u0,
+                  created-at-block-height: (get created-at-block-height vault),
+                  updated-at-block-height: block-height,
+                  stability-fee: (get stability-fee vault),
+                  stability-fee-last-accrued: (get stability-fee-last-accrued vault),
+                  is-liquidated: false,
+                  auction-ended: false,
+                  leftover-collateral: u0
+                }
+              )
+              ;; TODO: remove vault ID from vault entries
+              ;; (map-set vault-entries { user: tx-sender } { () })
+
+              (ok (map-delete vaults { id: vault-id }))
             )
-            ;; TODO: remove vault ID from vault entries
-            ;; (map-set vault-entries { user: tx-sender } { () })
-            (ok (map-delete vaults { id: vault-id }))
           )
         )
         (err err-burn-failed)
@@ -424,7 +444,9 @@
               leftover-collateral: leftover-collateral
             }
           )
-          (ok true)
+          (let ((result (contract-call? .dao subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault))))
+            (ok true)
+          )
         )
         (err err-liquidation-failed)
       )
