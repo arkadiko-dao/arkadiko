@@ -252,6 +252,7 @@
 (define-public (burn (vault-id uint) (vault-owner principal) (reserve <vault-trait>) (ft <mock-ft-trait>))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
+    (asserts! (is-eq u0 (get stability-fee vault)) (err err-unauthorized))
 
     (if (is-ok (contract-call? .xusd-token burn (get debt vault) (get owner vault)))
       (if (unwrap-panic (contract-call? reserve burn ft (get owner vault) (get collateral vault)))
