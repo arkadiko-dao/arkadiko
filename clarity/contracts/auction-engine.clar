@@ -151,6 +151,38 @@
   )
 )
 
+;; start an auction to sell off DIKO gov tokens
+;; this is a private function since it should only be called
+;; when a normal collateral liquidation auction can't raise enough debt
+(define-private (start-debt-auction (vault-id uint) (debt-to-raise uint))
+  (let ((vault (contract-call? .freddie get-vault-by-id vault-id)))
+    (asserts! (is-eq (get is-liquidated vault) true) (err err-auction-not-allowed))
+    (let ((collateral-uamount u5))
+      (let ((auction-id (+ (var-get last-auction-id) u1)))
+        (map-set auctions
+          { id: auction-id }
+          {
+            id: auction-id,
+            collateral-amount: collateral-uamount,
+            collateral-token: "diko",
+            debt-to-raise: debt-to-raise,
+            vault-id: vault-id,
+            lot-size: (var-get lot-size),
+            lots: (+ u1 (/ debt-to-raise (var-get lot-size))), ;; lot-size / price of diko
+            last-lot-size: u0,
+            lots-sold: u0,
+            ends-at: (+ block-height u10000),
+            total-collateral-auctioned: u0,
+            total-debt-raised: u0,
+            is-open: true
+          }
+        )
+      )
+    )
+    (ok true)
+  )
+)
+
 ;; calculates the minimum collateral amount to sell
 ;; e.g. if we need to cover 10 xUSD debt, and we have 20 STX at $1/STX,
 ;; we only need to auction off 10 STX
@@ -388,7 +420,13 @@
             (- (get collateral-amount auction) (get total-collateral-auctioned auction))
             (- (get debt-to-raise auction) (get total-debt-raised auction))
           )))
-          (ok true) ;; TODO: no collateral left and/or all current lots are sold. Need to sell governance token to raise more xUSD
+          (begin
+            ;; no collateral left and/or all current lots are sold. Need to sell governance token to raise more xUSD
+            (ok (unwrap-panic (start-debt-auction
+              (get vault-id auction)
+              (get debt-to-raise auction)
+            )))
+          )
         )
       )
     )
