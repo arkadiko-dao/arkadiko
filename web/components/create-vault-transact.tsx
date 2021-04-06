@@ -6,12 +6,17 @@ import {
   standardPrincipalCV,
   contractPrincipalCV,
   uintCV,
-  stringAsciiCV
+  stringAsciiCV,
+  makeStandardSTXPostCondition,
+  makeStandardFungiblePostCondition,
+  FungibleConditionCode,
+  createAssetInfo
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ExplorerLink } from './explorer-link';
 import { connectWebSocketClient } from '@stacks/blockchain-api-client';
 import { resolveReserveName, tokenTraits } from '@common/vault-utils';
+import BN from 'bn.js';
 
 export const CreateVaultTransact = ({ coinAmounts }) => {
   const [txId, setTxId] = useState<string>('');
@@ -50,7 +55,6 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
   }, [txId]);
 
   const callCollateralizeAndMint = async () => {
-    console.log(process.env);
     clearState();
     const authOrigin = getAuthOrigin();
     const token = tokenTraits[coinAmounts['token-name'].toLowerCase()]['name'];
@@ -63,6 +67,33 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', resolveReserveName(coinAmounts['token-name'].toLowerCase())),
       contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token)
     ];
+
+    let postConditions = [];
+    if (coinAmounts['token-name'].toLowerCase() === 'stx') {
+      postConditions = [
+        makeStandardSTXPostCondition(
+          address || '',
+          FungibleConditionCode.Equal,
+          new BN(coinAmounts['amounts']['collateral'] * 1000000)
+        )
+      ];
+    } else {
+      // TODO: fix
+      // postConditions = [
+      //   makeStandardFungiblePostCondition(
+      //     address || '',
+      //     FungibleConditionCode.Equal,
+      //     new BN(coinAmounts['amounts']['collateral'] * 1000000),
+      //     createAssetInfo(
+      //       "ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP",
+      //       "arkadiko-token",
+      //       coinAmounts['token-name'].toUpperCase()
+      //     )
+      //   )
+      // ];
+
+    }
+
     await doContractCall({
       network,
       authOrigin,
@@ -71,6 +102,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       functionName: 'collateralize-and-mint',
       functionArgs: args,
       postConditionMode: 0x01,
+      postConditions,
       finished: data => {
         console.log('finished collateralizing!', data);
         setState('Collateralize and Mint', data.txId);

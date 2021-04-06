@@ -4,7 +4,10 @@ import { Container } from './home';
 import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
-import { uintCV, stringAsciiCV, contractPrincipalCV, cvToJSON, standardPrincipalCV, callReadOnlyFunction } from '@stacks/transactions';
+import {
+  uintCV, stringAsciiCV, contractPrincipalCV, cvToJSON,
+  standardPrincipalCV, callReadOnlyFunction, makeStandardFungiblePostCondition,
+  createAssetInfo, FungibleConditionCode, makeStandardSTXPostCondition } from '@stacks/transactions';
 import { AppContext, CollateralTypeProps } from '@common/context';
 import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
 import { debtClass, VaultProps } from './vault';
@@ -14,6 +17,7 @@ import { Link } from '@components/link';
 import { Redirect } from 'react-router-dom';
 import { connectWebSocketClient } from '@stacks/blockchain-api-client';
 import { resolveReserveName, tokenTraits } from '@common/vault-utils';
+import BN from 'bn.js';
 
 export const ManageVault = ({ match }) => {
   const { doContractCall } = useConnect();
@@ -34,8 +38,6 @@ export const ManageVault = ({ match }) => {
   const [collateralType, setCollateralType] = useState<CollateralTypeProps>();
 
   useEffect(() => {
-    console.log('1');
-
     const fetchVault = async () => {
       const serializedVault = await callReadOnlyFunction({
         contractAddress,
@@ -127,6 +129,19 @@ export const ManageVault = ({ match }) => {
   const payStabilityFee = async () => {
     const authOrigin = getAuthOrigin();
 
+    // const postConditions = [
+    //   makeStandardFungiblePostCondition(
+    //     senderAddress || '',
+    //     FungibleConditionCode.Equal,
+    //     new BN(vault.stabilityFee),
+    //     createAssetInfo(
+    //       "ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP",
+    //       "xusd-token",
+    //       "xUSD"
+    //     )
+    //   )
+    // ];
+
     await doContractCall({
       network,
       authOrigin,
@@ -137,6 +152,7 @@ export const ManageVault = ({ match }) => {
         uintCV(match.params.id)
       ],
       postConditionMode: 0x01,
+      // postConditions,
       finished: data => {
         console.log('finished paying stability fee!', data);
         setTxId(data.txId);
@@ -181,6 +197,31 @@ export const ManageVault = ({ match }) => {
 
     const authOrigin = getAuthOrigin();
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
+
+    let postConditions = [];
+    if (vault['collateralToken'].toLowerCase() === 'stx') {
+      postConditions = [
+        makeStandardSTXPostCondition(
+          senderAddress || '',
+          FungibleConditionCode.Equal,
+          new BN(parseFloat(extraCollateralDeposit) * 1000000)
+        )
+      ];
+    } else {
+      // postConditions = [
+      //   makeStandardFungiblePostCondition(
+      //     senderAddress || '',
+      //     FungibleConditionCode.Equal,
+      //     new BN(parseFloat(extraCollateralDeposit) * 1000000),
+      //     createAssetInfo(
+      //       "ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP",
+      //       token,
+      //       vault['collateralToken'].toUpperCase()
+      //     )
+      //   )
+      // ];
+    }
+
     await doContractCall({
       network,
       authOrigin,
@@ -194,6 +235,7 @@ export const ManageVault = ({ match }) => {
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token)
       ],
       postConditionMode: 0x01,
+      postConditions,
       finished: data => {
         console.log('finished deposit!', data);
         setTxId(data.txId);
