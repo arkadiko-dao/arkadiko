@@ -1,4 +1,12 @@
 
+## Version 0.1.6
+
+### New Features
+
+- Allow partial withdrawal of collateral from a vault
+- Allow minting xUSD without hitting the maximum collateralization ratio
+- Burn partial debt, or all debt to close a vault
+
 ## Version 0.1.5
 
 ### New Features

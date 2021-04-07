@@ -266,39 +266,62 @@
   )
 )
 
-(define-public (burn (vault-id uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
+(define-public (burn (vault-id uint) (debt uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
     (asserts! (is-eq u0 (get stability-fee vault)) (err err-unauthorized))
 
-    (if (is-ok (contract-call? .xusd-token burn (get debt vault) (get owner vault)))
+    (if (is-ok (contract-call? .xusd-token burn debt (get owner vault)))
       (if (unwrap-panic (contract-call? reserve burn ft (get owner vault) (get collateral vault)))
-        (begin
-          (let ((entries (get ids (get-vault-entries (get owner vault)))))
-            (let ((result (contract-call? .dao subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault))))
-              (map-set vaults
-                { id: vault-id }
-                {
-                  id: vault-id,
-                  owner: (get owner vault),
-                  collateral: u0,
-                  collateral-type: (get collateral-type vault),
-                  collateral-token: (get collateral-token vault),
-                  debt: u0,
-                  created-at-block-height: (get created-at-block-height vault),
-                  updated-at-block-height: block-height,
-                  stability-fee: (get stability-fee vault),
-                  stability-fee-last-accrued: (get stability-fee-last-accrued vault),
-                  is-liquidated: false,
-                  auction-ended: false,
-                  leftover-collateral: u0
-                }
-              )
-              ;; TODO: remove vault ID from vault entries
-              ;; (map-set vault-entries { user: tx-sender } { () })
+        (if (is-eq debt (get debt vault))
+          (begin
+            (let ((entries (get ids (get-vault-entries (get owner vault)))))
+              (let ((result (contract-call? .dao subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault))))
+                (map-set vaults
+                  { id: vault-id }
+                  {
+                    id: vault-id,
+                    owner: (get owner vault),
+                    collateral: u0,
+                    collateral-type: (get collateral-type vault),
+                    collateral-token: (get collateral-token vault),
+                    debt: u0,
+                    created-at-block-height: (get created-at-block-height vault),
+                    updated-at-block-height: block-height,
+                    stability-fee: (get stability-fee vault),
+                    stability-fee-last-accrued: (get stability-fee-last-accrued vault),
+                    is-liquidated: false,
+                    auction-ended: false,
+                    leftover-collateral: u0
+                  }
+                )
+                ;; TODO: remove vault ID from vault entries
+                ;; (map-set vault-entries { user: tx-sender } { () })
 
-              (ok (map-delete vaults { id: vault-id }))
+                (ok (map-delete vaults { id: vault-id }))
+              )
             )
+          )
+          (begin
+            (map-set vaults
+              { id: vault-id }
+              {
+                id: vault-id,
+                owner: (get owner vault),
+                collateral: (get collateral vault),
+                collateral-type: (get collateral-type vault),
+                collateral-token: (get collateral-token vault),
+                debt: (- (get debt vault) debt),
+                created-at-block-height: (get created-at-block-height vault),
+                updated-at-block-height: block-height,
+                stability-fee: (get stability-fee vault),
+                stability-fee-last-accrued: (get stability-fee-last-accrued vault),
+                is-liquidated: false,
+                auction-ended: false,
+                leftover-collateral: u0
+              }
+            )
+            (ok true)
           )
         )
         (err err-burn-failed)

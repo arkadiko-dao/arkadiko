@@ -120,7 +120,7 @@ describe("stacks reserve test suite", () => {
         'freddie',
         'burn',
         secretKey,
-        [uintCV(1), standardPrincipalCV(alice)]
+        [uintCV(1), uintCV(1925000), standardPrincipalCV(alice)]
       );
       console.log(result);
 

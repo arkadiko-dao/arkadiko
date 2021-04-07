@@ -255,6 +255,7 @@ describe("freddie test suite", () => {
         secretKey,
         [
           uintCV(arr[arr.length - 1].value),
+          uintCV(6000000),
           contractPrincipalCV(deployContractAddress, 'sip10-reserve'),
           contractPrincipalCV(deployContractAddress, 'arkadiko-token')
         ]
