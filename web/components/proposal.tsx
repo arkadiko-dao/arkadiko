@@ -1,20 +1,27 @@
 import React from 'react';
 import { ProposalProps } from './proposal-group';
-import { NavLink as RouterLink } from 'react-router-dom'
+import { NavLink as RouterLink } from 'react-router-dom';
+import { typeToReadableName, deductTitle } from '@common/proposal-utils';
 
-export const Proposal: React.FC<ProposalProps> = ({ id, proposer, type, token, endBlockHeight }) => {
+export const Proposal: React.FC<ProposalProps> = ({ id, proposer, type, isOpen, collateralType, endBlockHeight }) => {
   return (
     <li>
       <RouterLink to={`governance/${id}`} exact className="block hover:bg-gray-50">
         <div className="px-4 py-4 sm:px-6">
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium text-indigo-600 truncate">
-              Proposal {id} on token {token.toUpperCase()}
+              Proposal {deductTitle(type)} {collateralType?.toUpperCase()}
             </p>
             <div className="ml-2 flex-shrink-0 flex">
-              <p className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                Open for Voting
-              </p>
+              {isOpen ? (
+                <p className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                  Open for Voting
+                </p>
+              ) : (
+                <p className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                  Voting Closed
+                </p>
+              )}
             </div>
           </div>
           <div className="mt-2 sm:flex sm:justify-between">
@@ -29,7 +36,7 @@ export const Proposal: React.FC<ProposalProps> = ({ id, proposer, type, token, e
                 <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                 </svg>
-                {type}
+                {typeToReadableName(type)}
               </p>
             </div>
             <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">

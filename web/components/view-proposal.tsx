@@ -5,6 +5,7 @@ import { callReadOnlyFunction, uintCV, cvToJSON } from '@stacks/transactions';
 import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
+import { typeToReadableName, deductTitle } from '@common/proposal-utils';
 
 export const ViewProposal = ({ match }) => {
   const stxAddress = useSTXAddress();
@@ -35,12 +36,14 @@ export const ViewProposal = ({ match }) => {
         forVotes: data['yes-votes'].value,
         against: data['no-votes'].value,
         token: data['token'].value,
+        collateralType: data['collateral-type'].value,
         type: data['type'].value,
         changes: [{
           key: data['changes'].value[0].value['key'].value,
           'old-value': 0,
           'new-value': data['changes'].value[0].value['new-value'].value
         }],
+        isOpen: data['is-open'].value,
         startBlockHeight: data['start-block-height'].value,
         endBlockHeight: data['end-block-height'].value
       });
@@ -166,7 +169,9 @@ export const ViewProposal = ({ match }) => {
                 <div className="bg-white shadow sm:rounded-lg mt-5 w-full">
                   <div className="px-4 py-5 sm:p-6">
                     <h3 className="text-lg leading-6 font-medium text-gray-900">
-                      Change Risk Parameter "Liquidation Penalty" for STX collateral
+                      {proposal.changes ? (
+                        `Change ${changeKeyToHumanReadable(proposal.changes[0].key)} ${deductTitle(proposal?.type)} ${proposal?.collateralType.toUpperCase()}`
+                      ) : `` }
                     </h3>
                     <div className="mt-2 sm:flex sm:items-start sm:justify-between">
                       <div className="max-w-xl text-sm text-gray-500">
@@ -203,10 +208,13 @@ export const ViewProposal = ({ match }) => {
                       Proposer: {proposal.proposer}
                     </div>
                     <div className="mt-2 sm:flex sm:items-start sm:justify-between">
-                      Token: {proposal.token}
+                      Token: {proposal?.token?.toUpperCase()}
                     </div>
                     <div className="mt-2 sm:flex sm:items-start sm:justify-between">
-                      Type: {proposal.type}
+                      Collateral Type: {proposal?.collateralType?.toUpperCase()}
+                    </div>
+                    <div className="mt-2 sm:flex sm:items-start sm:justify-between">
+                      Type: {typeToReadableName(proposal.type)}
                     </div>
                     {proposal.changes ? (
                       <div className="mt-2 sm:flex sm:items-start sm:justify-between">

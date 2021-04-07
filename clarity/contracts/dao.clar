@@ -26,12 +26,14 @@
     yes-votes: uint,
     no-votes: uint,
     token: (string-ascii 12),
+    collateral-type: (string-ascii 12),
     type: (string-ascii 200),
     changes: (list 10 (tuple (key (string-ascii 256)) (new-value uint))),
     details: (string-ascii 256)
   }
 )
 (define-data-var proposal-count uint u0)
+(define-data-var proposal-ids (list 220 uint) (list u0))
 (define-map votes-by-member { proposal-id: uint, member: principal } { vote-count: uint })
 (define-data-var emergency-shutdown-activated bool false)
 
@@ -56,11 +58,20 @@
       (yes-votes u0)
       (no-votes u0)
       (token "")
+      (collateral-type "")
       (type "")
       (changes (list (tuple (key "") (new-value u0))))
       (details (unwrap-panic (as-max-len? "" u256)))
     )
   )
+)
+
+(define-read-only (get-proposals)
+  (ok (map get-proposal-by-id (var-get proposal-ids)))
+)
+
+(define-read-only (get-proposal-ids)
+  (ok (var-get proposal-ids))
 )
 
 (define-read-only (get-collateral-type-by-token (token (string-ascii 12)))
@@ -339,6 +350,8 @@
     (details (string-ascii 256))
     (type (string-ascii 200))
     (changes (list 10 (tuple (key (string-ascii 256)) (new-value uint))))
+    (token (string-ascii 12))
+    (collateral-type (string-ascii 12))
   )
   (let ((proposer-balance (unwrap-panic (contract-call? .arkadiko-token get-balance-of tx-sender))))
     (let ((supply (unwrap-panic (contract-call? .arkadiko-token get-total-supply))))
@@ -355,12 +368,14 @@
                 end-block-height: (+ start-block-height u1440),
                 yes-votes: u0,
                 no-votes: u0,
-                token: "stx",
+                token: token,
+                collateral-type: collateral-type,
                 type: type,
                 changes: changes,
                 details: details
               }
             )
+            (var-set proposal-ids (unwrap-panic (as-max-len? (append (var-get proposal-ids) proposal-id) u220)))
             (ok true)
           )
           (err err-not-enough-balance) ;; need at least 1% 
@@ -389,6 +404,7 @@
               yes-votes: (+ amount (get yes-votes proposal)),
               no-votes: (get no-votes proposal),
               token: (get token proposal),
+              collateral-type: (get collateral-type proposal),
               type: (get type proposal),
               changes: (get changes proposal),
               details: (get details proposal)
@@ -422,6 +438,7 @@
               yes-votes: (get yes-votes proposal),
               no-votes: (+ amount (get no-votes proposal)),
               token: (get token proposal),
+              collateral-type: (get collateral-type proposal),
               type: (get type proposal),
               changes: (get changes proposal),
               details: (get details proposal)
@@ -453,6 +470,7 @@
         yes-votes: (get yes-votes proposal),
         no-votes: (get no-votes proposal),
         token: (get token proposal),
+        collateral-type: (get collateral-type proposal),
         type: (get type proposal),
         changes: (get changes proposal),
         details: (get details proposal)
@@ -529,13 +547,22 @@
   (map-set proposal-types
     { type: "change_risk_parameter" }
     {
-      changes-keys: (list "liquidation-ratio" "collateral-to-debt-ratio" "maximum-debt" "liquidation-penalty" "stability-fee-apy")
+      changes-keys: (list "liquidation-ratio" "collateral-to-debt-ratio" "maximum-debt" "liquidation-penalty" "stability-fee-apy" "minimum-vault-debt")
     }
   )
   (map-set proposal-types
     { type: "add_collateral_type" }
     {
-      changes-keys: (list "collateral_token" "collateral_name" "liquidation-ratio" "collateral-to-debt-ratio" "maximum-debt" "liquidation-penalty" "stability-fee-apy")
+      changes-keys: (list
+        "collateral_token"
+        "collateral_name"
+        "liquidation-ratio"
+        "collateral-to-debt-ratio"
+        "maximum-debt"
+        "liquidation-penalty"
+        "stability-fee-apy"
+        "minimum-vault-debt"
+      )
     }
   )
   (map-set proposal-types
