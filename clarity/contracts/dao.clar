@@ -515,10 +515,10 @@
   )
 )
 
-(define-private (return-diko (data (tuple (proposal-id uint) (member principal))))
-  (map-set votes-by-member { proposal-id: proposal-id, member: principal } { vote-count: (+ vote-count amount) })
-  (ok true)
-)
+;; (define-private (return-diko (data (tuple (proposal-id uint) (member principal))))
+;;   (map-set votes-by-member { proposal-id: proposal-id, member: principal } { vote-count: (+ vote-count amount) })
+;;   (ok true)
+;; )
 
 ;; DAO can initiate stacking for the STX reserve
 (define-public (stack)
