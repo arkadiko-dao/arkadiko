@@ -36,6 +36,10 @@
 (define-data-var proposal-ids (list 220 uint) (list u0))
 (define-map votes-by-member { proposal-id: uint, member: principal } { vote-count: uint })
 (define-data-var emergency-shutdown-activated bool false)
+(define-data-var stacker-yield uint u80)
+(define-data-var governance-token-yield uint u80)
+(define-data-var governance-reserve-yield uint u80)
+(define-data-var maximum-debt-surplus uint u100000000)
 
 (define-read-only (get-votes-by-member-by-id (proposal-id uint) (member principal))
   (unwrap!
@@ -146,22 +150,51 @@
 )
 
 (define-read-only (get-stacker-yield)
-  (ok u80) ;; stacker gets 80% of the yield
+  (ok (var-get stacker-yield)) ;; stacker gets 80% of the yield
 )
 
 (define-read-only (get-governance-token-yield)
-  (ok u10) ;; token holders get 10% of the yield
+  (ok (var-get governance-token-yield)) ;; token holders get 10% of the yield
 )
 
 (define-read-only (get-governance-reserve-yield)
-  (ok u10) ;; reserve gets 10% of the yield
+  (ok (var-get governance-reserve-yield)) ;; reserve gets 10% of the yield
 )
 
 (define-read-only (get-emergency-shutdown-activated)
   (ok (var-get emergency-shutdown-activated))
 )
 
+(define-read-only (get-maximum-debt-surplus)
+  (ok (var-get maximum-debt-surplus))
+)
+
 ;; setters accessible only by DAO contract
+(define-public (add-collateral-type (token (string-ascii 12)) (collateral-type (string-ascii 12)))
+  (if (is-eq contract-caller .dao)
+    (begin
+      (map-set collateral-types
+        { token: collateral-type }
+        {
+          name: "Stacks",
+          token: token,
+          token-type: collateral-type,
+          url: "https://www.stacks.co/",
+          total-debt: u0,
+          liquidation-ratio: u150,
+          collateral-to-debt-ratio: u200,
+          maximum-debt: u100000000000000,
+          liquidation-penalty: u13,
+          stability-fee: u1363, ;; 0.001363077% daily percentage == 1% APY
+          stability-fee-apy: u50 ;; 50 basis points
+        }
+      )
+      (ok true)
+    )
+    (err false)
+  )
+)
+
 (define-public (add-debt-to-collateral-type (token (string-ascii 12)) (debt uint))
   (let ((collateral-type (get-collateral-type-by-token token)))
     (map-set collateral-types
@@ -375,6 +408,7 @@
                 details: details
               }
             )
+            (var-set proposal-count proposal-id)
             (var-set proposal-ids (unwrap-panic (as-max-len? (append (var-get proposal-ids) proposal-id) u220)))
             (ok true)
           )
@@ -481,6 +515,11 @@
   )
 )
 
+(define-private (return-diko (data (tuple (proposal-id uint) (member principal))))
+  (map-set votes-by-member { proposal-id: proposal-id, member: principal } { vote-count: (+ vote-count amount) })
+  (ok true)
+)
+
 ;; DAO can initiate stacking for the STX reserve
 (define-public (stack)
   (ok true)
@@ -563,12 +602,6 @@
         "stability-fee-apy"
         "minimum-vault-debt"
       )
-    }
-  )
-  (map-set proposal-types
-    { type: "stacking_distribution" }
-    {
-      changes-keys: (list "stacker_yield" "governance_token_yield" "governance_reserve_yield")
     }
   )
   (map-set proposal-types

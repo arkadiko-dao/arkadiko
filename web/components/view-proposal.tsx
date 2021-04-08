@@ -5,7 +5,8 @@ import { callReadOnlyFunction, uintCV, cvToJSON } from '@stacks/transactions';
 import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
-import { typeToReadableName, deductTitle } from '@common/proposal-utils';
+import { typeToReadableName, deductTitle, changeKeyToHumanReadable } from '@common/proposal-utils';
+import { connectWebSocketClient } from '@stacks/blockchain-api-client';
 
 export const ViewProposal = ({ match }) => {
   const stxAddress = useSTXAddress();
@@ -14,6 +15,8 @@ export const ViewProposal = ({ match }) => {
   const [amountOfVotes, setAmountOfVotes] = useState('');
   const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const [txId, setTxId] = useState<string>('');
+  const [txStatus, setTxStatus] = useState<string>('');
 
   useEffect(() => {
     let mounted = true;
@@ -55,13 +58,26 @@ export const ViewProposal = ({ match }) => {
     return () => { mounted = false; }
   }, []);
 
-  const changeKeyToHumanReadable = (keyName: string) => {
-    if (keyName === 'liquidation_penalty') {
-      return 'Liquidation Penalty';
-    }
+  useEffect(() => {
+    let sub;
 
-    return 'unknown';
-  };
+    const subscribe = async (txId:string) => {
+      const client = await connectWebSocketClient('ws://localhost:3999');
+      sub = await client.subscribeTxUpdates(txId, update => {
+        console.log('Got an update:', update);
+        if (update['tx_status'] == 'success') {
+          window.location.reload(true);
+        } else if (update['tx_status'] == 'abort_by_response') {
+          setTxStatus('error');
+        }
+      });
+      console.log({ client, sub });
+    };
+    if (txId) {
+      console.log('Subscribing on updates with TX id:', txId);
+      subscribe(txId);
+    }
+  }, [txId]);
 
   const addVoteFor = async () => {
     const authOrigin = getAuthOrigin();
@@ -75,7 +91,9 @@ export const ViewProposal = ({ match }) => {
       postConditionMode: 0x01,
       finished: data => {
         console.log('finished adding vote for!', data);
-        console.log(data.stacksTransaction.auth.spendingCondition?.nonce.toNumber());
+        setTxId(data.txId);
+        setTxStatus('pending');
+        setShowVoteModal(false);
       },
     });
   };
@@ -92,7 +110,9 @@ export const ViewProposal = ({ match }) => {
       postConditionMode: 0x01,
       finished: data => {
         console.log('finished adding vote for!', data);
-        console.log(data.stacksTransaction.auth.spendingCondition?.nonce.toNumber());
+        setTxId(data.txId);
+        setTxStatus('pending');
+        setShowVoteModal(false);
       },
     });
   };
@@ -105,6 +125,33 @@ export const ViewProposal = ({ match }) => {
   return (
     <Container>
       <Box py={6}>
+        {txId ? (
+          <div className="fixed inset-0 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end">
+            <div className="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden">
+              <div className="p-4">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0">
+                    <svg className="h-6 w-6 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div className="ml-3 w-0 flex-1 pt-0.5">
+                    <p className="text-sm font-medium text-gray-900">
+                      Successfully broadcasted transaction!
+                    </p>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Status: {txStatus}
+                    </p>
+                    <p className="mt-1 text-sm text-gray-500">
+                      This page will be reloaded automatically when the transaction succeeds.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null }
+
         <Modal isOpen={showVoteModal}>
           <div className="flex pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div className="inline-block align-bottom bg-white rounded-lg px-2 pt-5 pb-4 text-left overflow-hidden sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
@@ -170,7 +217,7 @@ export const ViewProposal = ({ match }) => {
                   <div className="px-4 py-5 sm:p-6">
                     <h3 className="text-lg leading-6 font-medium text-gray-900">
                       {proposal.changes ? (
-                        `Change ${changeKeyToHumanReadable(proposal.changes[0].key)} ${deductTitle(proposal?.type)} ${proposal?.collateralType.toUpperCase()}`
+                        `${changeKeyToHumanReadable(proposal.changes[0].key)} ${deductTitle(proposal?.type)} ${proposal?.collateralType.toUpperCase()}`
                       ) : `` }
                     </h3>
                     <div className="mt-2 sm:flex sm:items-start sm:justify-between">
@@ -218,7 +265,7 @@ export const ViewProposal = ({ match }) => {
                     </div>
                     {proposal.changes ? (
                       <div className="mt-2 sm:flex sm:items-start sm:justify-between">
-                        Changes: Change {changeKeyToHumanReadable(proposal.changes[0].key)} to {proposal.changes[0]['new-value']}%
+                        Changes: Change {changeKeyToHumanReadable(proposal.changes[0].key)} to {proposal.changes[0]['new-value']}
                       </div>
                     ): `` }
                   </div>

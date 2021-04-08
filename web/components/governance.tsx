@@ -42,7 +42,7 @@ export const Governance = () => {
       }> = [];
       const data = json.value.value;
 
-      data.forEach(element => {
+      data.forEach((element: object) => {
         if (element.value['id'].value != 0) {
           serializedProposals.push({
             id: element.value['id'].value,
@@ -52,11 +52,7 @@ export const Governance = () => {
             token: element.value['token'].value,
             collateralType: element.value['collateral-type'].value,
             type: element.value['type'].value,
-            changes: [{
-              key: element.value['changes'].value[0].value['key'].value,
-              'old-value': 0,
-              'new-value': element.value['changes'].value[0].value['new-value'].value
-            }],
+            changes: extractChanges(element.value['changes']),
             isOpen: element.value['is-open'].value,
             startBlockHeight: element.value['start-block-height'].value,
             endBlockHeight: element.value['end-block-height'].value
@@ -64,6 +60,10 @@ export const Governance = () => {
         }
       });
       setProposals(serializedProposals);
+    };
+    const extractChanges = (changes) => {
+      console.log(changes);
+      return [];
     };
     if (mounted) {
       void getData();
