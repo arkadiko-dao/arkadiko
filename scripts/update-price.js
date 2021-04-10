@@ -1,11 +1,11 @@
-const CONTRACT_ADDRESS = 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP';
+require('dotenv').config();
+const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const CONTRACT_NAME = 'oracle';
 const FUNCTION_NAME = 'update-price';
 const rp = require('request-promise');
 const tx = require('@stacks/transactions');
 const BN = require('bn.js');
 const utils = require('./utils');
-require('dotenv').config();
 
 const requestOptions = {
   method: 'GET',
@@ -23,8 +23,8 @@ const requestOptions = {
 const network = utils.resolveNetwork();
 
 rp(requestOptions).then(async (response) => {
-  // const price = response['data']['4847']['quote']['USD']['price'];
-  const price = 1.13;
+  const price = response['data']['4847']['quote']['USD']['price'];
+  // const price = 1.13;
 
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,

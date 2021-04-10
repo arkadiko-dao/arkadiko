@@ -1,8 +1,8 @@
-const CONTRACT_ADDRESS = 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP';
+require('dotenv').config();
+const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
-require('dotenv').config();
 
 async function getLastVaultId() {
   const lastVaultTx = await tx.callReadOnlyFunction({

@@ -1,10 +1,10 @@
-const CONTRACT_ADDRESS = 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP';
+require('dotenv').config();
+const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const CONTRACT_NAME = 'auction-engine';
 const FUNCTION_NAME = 'close-auction';
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
-require('dotenv').config();
 
 const auctionId = process.argv.slice(2)[0];
 console.log('Trying to end auction with ID', auctionId);

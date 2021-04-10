@@ -1,10 +1,10 @@
-const CONTRACT_ADDRESS = 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP';
+require('dotenv').config();
+const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const CONTRACT_NAME = 'liquidator';
 const FUNCTION_NAME = 'notify-risky-vault';
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
-require('dotenv').config();
 
 const vaultId = process.argv.slice(2)[0];
 console.log('Trying to liquidate vault with ID', vaultId);

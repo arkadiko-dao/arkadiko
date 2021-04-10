@@ -1,9 +1,9 @@
 // node proposal-change-risk-parameter.js maximum_debt 1000000000000000 stx stx-a
-const CONTRACT_ADDRESS = 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP';
+require('dotenv').config();
+const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
-require('dotenv').config();
 
 const risk_parameter = process.argv.slice(2)[0];
 const new_value = process.argv.slice(2)[1];

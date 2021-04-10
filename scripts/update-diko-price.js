@@ -1,10 +1,10 @@
-const CONTRACT_ADDRESS = 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP';
+require('dotenv').config();
+const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const CONTRACT_NAME = 'oracle';
 const FUNCTION_NAME = 'update-price';
 const tx = require('@stacks/transactions');
 const BN = require('bn.js');
 const utils = require('./utils');
-require('dotenv').config();
 const network = utils.resolveNetwork();
 
 const updateDiko = async () => {

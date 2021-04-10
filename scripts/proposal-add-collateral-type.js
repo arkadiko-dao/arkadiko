@@ -1,9 +1,9 @@
 // node proposal-add-collateral-type.js stx stx-c 100000000000 300 0 0
-const CONTRACT_ADDRESS = 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP';
+require('dotenv').config();
+const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
-require('dotenv').config();
 
 const token = process.argv.slice(2)[0];
 const collateral_type = process.argv.slice(2)[1];

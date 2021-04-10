@@ -1,9 +1,9 @@
 // node proposal-change-stacking-distribution.js 60 30 10
-const CONTRACT_ADDRESS = 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP';
+require('dotenv').config();
+const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
-require('dotenv').config();
 
 const stacker_yield = process.argv.slice(2)[0];
 const governance_token_yield = process.argv.slice(2)[1];

@@ -1,12 +1,13 @@
 import { deployContract } from "./utils";
 
 export async function deploy() {
-  await deployContract('vault-trait');
   await deployContract('mock-ft-trait');
+  await deployContract('vault-trait');
 
   await deployContract('oracle');
   await deployContract('xusd-token');
   await deployContract('arkadiko-token');
+  await deployContract('mock-pox');
   await deployContract('dao');
 
   await deployContract('stx-reserve');
