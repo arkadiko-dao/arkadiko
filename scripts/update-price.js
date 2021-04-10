@@ -23,8 +23,8 @@ const requestOptions = {
 const network = utils.resolveNetwork();
 
 rp(requestOptions).then(async (response) => {
-  const price = response['data']['4847']['quote']['USD']['price'];
-  // const price = 1.13;
+  let price = response['data']['4847']['quote']['USD']['price'];
+  // price = 1.6;
 
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,

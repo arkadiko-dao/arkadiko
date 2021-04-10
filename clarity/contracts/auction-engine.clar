@@ -1,9 +1,6 @@
 (use-trait vault-trait .vault-trait.vault-trait)
 (use-trait mock-ft-trait .mock-ft-trait.mock-ft-trait)
 
-;; addresses
-(define-constant auction-reserve 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP)
-
 ;; errors
 (define-constant err-bid-declined u1)
 (define-constant err-lot-sold u2)
@@ -270,8 +267,11 @@
       (let ((accepted-bid (>= xusd (/ (get debt-to-raise auction) (get lots auction)))))
         ;; if this bid is at least (total debt to raise / lot-size) amount, accept it as final - we don't need to be greedy
         (begin
-          (try! (return-collateral (get owner last-bid) (get xusd last-bid))) ;; return xUSD of last bid to (now lost) bidder
-          (if (unwrap! (contract-call? .xusd-token transfer xusd tx-sender auction-reserve) (err u1237))
+          (if (> (get xusd last-bid) u0)
+            (try! (return-collateral (get owner last-bid) (get xusd last-bid))) ;; return xUSD of last bid to (now lost) bidder
+            true
+          )
+          (if (unwrap! (contract-call? .xusd-token transfer xusd tx-sender (as-contract tx-sender)) (err u1237))
             (begin
               (map-set auctions
                 { id: auction-id }
@@ -368,9 +368,9 @@
 )
 
 (define-private (return-collateral (owner principal) (xusd uint))
-  (if (> u0 xusd)
+  (if (> xusd u0)
     (ok (unwrap-panic (as-contract (contract-call? .xusd-token transfer xusd (as-contract tx-sender) owner))))
-    (err u1234)
+    (err u0) ;; don't really care if this fails.
   )
 )
 
