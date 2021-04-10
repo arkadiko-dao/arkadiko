@@ -12,9 +12,6 @@
 (define-constant status-ok u200)
 
 ;; proposal variables
-(define-constant diko-reserve 'S02J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKPVKG2CE)
-(define-constant proposal-reserve 'S02J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKPVKG2CE)
-(define-constant emergency-lockup-address 'S02J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKPVKG2CE)
 (define-map proposals
   { id: uint }
   {
@@ -431,7 +428,7 @@
     (asserts! (>= block-height (get start-block-height proposal)) (err err-unauthorized))
 
     (let ((vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender))))
-      (if (unwrap-panic (contract-call? .arkadiko-token transfer amount tx-sender proposal-reserve))
+      (if (unwrap-panic (contract-call? .arkadiko-token transfer amount tx-sender (as-contract tx-sender)))
         (begin
           (map-set proposals
             { id: proposal-id }
@@ -465,7 +462,7 @@
     (asserts! (>= block-height (get start-block-height proposal)) (err err-unauthorized))
 
     (let ((vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender))))
-      (if (unwrap-panic (contract-call? .arkadiko-token transfer amount tx-sender proposal-reserve))
+      (if (unwrap-panic (contract-call? .arkadiko-token transfer amount tx-sender (as-contract tx-sender)))
         (begin
           (map-set proposals
             { id: proposal-id }
