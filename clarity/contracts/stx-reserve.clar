@@ -45,7 +45,10 @@
 ;; calculate price and collateralisation ratio
 (define-public (collateralize-and-mint (token <mock-ft-trait>) (ustx-amount uint) (debt uint) (sender principal))
   (match (print (stx-transfer? ustx-amount sender (as-contract tx-sender)))
-    success (ok debt)
+    success (begin
+      (try! (contract-call? .dao add-tokens-to-stack ustx-amount))
+      (ok debt)
+    )
     error (err err-transfer-failed)
   )
 )
@@ -53,7 +56,10 @@
 ;; deposit extra collateral in vault
 (define-public (deposit (token <mock-ft-trait>) (additional-ustx-amount uint))
   (match (print (stx-transfer? additional-ustx-amount tx-sender (as-contract tx-sender)))
-    success (ok true)
+    success (begin
+      (try! (contract-call? .dao add-tokens-to-stack additional-ustx-amount))
+      (ok true)
+    )
     error (err err-deposit-failed)
   )
 )

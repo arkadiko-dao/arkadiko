@@ -183,13 +183,21 @@
   )
 )
 
+(define-public (discounted-auction-price (price-in-cents uint))
+  ;; price * 3% = price * 3 / 100
+  (let ((discount (/ (* price-in-cents u3) u100)))
+    (ok (- price-in-cents discount))
+  )
+)
+
 ;; calculates the minimum collateral amount to sell
 ;; e.g. if we need to cover 10 xUSD debt, and we have 20 STX at $1/STX,
 ;; we only need to auction off 10 STX
+;; but we give a 3% discount to incentivise people TODO:
 (define-read-only (calculate-minimum-collateral-amount (auction-id uint))
   (let ((auction (get-auction-by-id auction-id)))
     (let ((price-in-cents (contract-call? .oracle get-price (get collateral-token auction))))
-      (let ((amount (/ (/ (get debt-to-raise auction) (get last-price-in-cents price-in-cents)) (get lots auction))))
+      (let ((amount (/ (/ (get debt-to-raise auction) (unwrap-panic (discounted-auction-price (get last-price-in-cents price-in-cents)))) (get lots auction))))
         (if (> (/ (get collateral-amount auction) (get lots auction)) (* u100 amount))
           (ok (* u100 amount))
           (ok (/ (get collateral-amount auction) (get lots auction)))
@@ -263,7 +271,7 @@
         ;; if this bid is at least (total debt to raise / lot-size) amount, accept it as final - we don't need to be greedy
         (begin
           ;; (return-collateral (get owner last-bid) (get xusd last-bid)) ;; return xUSD of last bid to (now lost) bidder
-          (if (unwrap-panic (contract-call? .xusd-token transfer xusd tx-sender auction-reserve))
+          (if (unwrap! (contract-call? .xusd-token transfer xusd tx-sender auction-reserve) (err u1237))
             (begin
               (map-set auctions
                 { id: auction-id }
@@ -313,7 +321,7 @@
                 )
                 ;; auction is over - close all bids
                 ;; send collateral to winning bidders
-                (ok (unwrap-panic (close-auction auction-id)))
+                (ok (unwrap! (close-auction auction-id) (err u666)))
                 (err u0)
               )
             )

@@ -56,7 +56,9 @@ export const App: React.FC = () => {
           isLiquidated: data['is-liquidated'].value,
           auctionEnded: data['auction-ended'].value,
           leftoverCollateral: data['leftover-collateral'].value,
-          debt: data['debt'].value
+          debt: data['debt'].value,
+          stackedTokens: data['stacked-tokens'].value,
+          collateralData: {}
         });
       }
     });

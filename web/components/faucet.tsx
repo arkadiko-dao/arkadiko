@@ -26,7 +26,7 @@ export const Faucet = ({ address: _address = '' }: { address: string }) => {
     if (origin.includes('localhost')) {
       return 'http://localhost:3999';
     }
-    return 'https://stacks-node-api.blockstack.org';
+    return 'https://stacks-node-api.blockstack.org'; // https://stacks-node-api.testnet.stacks.co or mainnet
   };
 
   const waitForBalance = async (currentBalance: number, attempts: number) => {

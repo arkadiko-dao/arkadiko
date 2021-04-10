@@ -5,6 +5,7 @@ describe("DAO unit test suite", () => {
   let vaultTrait: Client;
   let daoClient: Client;
   let arkadikoToken: Client;
+  let mockPox: Client;
   let provider: Provider;
 
   before(async () => {
@@ -12,6 +13,7 @@ describe("DAO unit test suite", () => {
     trait = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.mock-ft-trait", "mock-ft-trait", provider);
     vaultTrait = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.vault-trait", "vault-trait", provider);
     arkadikoToken = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.arkadiko-token", "arkadiko-token", provider);
+    mockPox = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.mock-pox", "mock-pox", provider);
     daoClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.dao", "dao", provider);
   });
 
@@ -19,6 +21,7 @@ describe("DAO unit test suite", () => {
     await trait.deployContract();
     await vaultTrait.deployContract();
     await arkadikoToken.deployContract();
+    await mockPox.deployContract();
     await daoClient.checkContract();
   });
 

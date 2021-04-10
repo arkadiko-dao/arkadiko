@@ -21,6 +21,10 @@ From here on, the DAO will distribute the earned yield as follows:
   - % that goes to the DAO reserve (for expenses, emergencies etc)
   - % that goes to the DAO governance token holders
 
+## Starting a stacking cycle
+
+## Ending a stacking cycle
+
 ## Liquidations
 
 When a vault gets liquidated, enough STX collateral will need to be auctioned to cover the xUSD debt of the vault. 

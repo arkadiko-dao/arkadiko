@@ -1,11 +1,18 @@
-(define-public (delegate-stack-stx
-  (stacker principal) (amount-ustx uint)
-  (pox-addr (tuple (hashbytes (buff 20)) (version (buff 1))))
-  (start-burn-ht uint)
-  (lock-period uint))
+(define-public (stack-stx (amount-ustx uint)
+                          (pox-addr (tuple (version (buff 1)) (hashbytes (buff 20))))
+                          (start-burn-ht uint)
+                          (lock-period uint))
   (if true
-    (ok {lock-amount: amount-ustx, stacker: stacker, unlock-burn-height: (+ start-burn-ht u100)})
-    (err 1))
+    (ok { stacker: tx-sender, lock-amount: amount-ustx, unlock-burn-height: u680000 })
+    (err 1)
+  )
+)
+
+(define-read-only (can-stack-stx (pox-addr (tuple (version (buff 1)) (hashbytes (buff 20))))
+                                  (amount-ustx uint)
+                                  (first-reward-cycle uint)
+                                  (num-cycles uint))
+  (ok true)
 )
 
 (define-public (delegate-stx (amount-ustx uint) (delegate-to principal) (until-burn-ht (optional uint))

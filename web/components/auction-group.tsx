@@ -138,7 +138,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Bidding ${preferredBid.toFixed(2)} will close the lot and assign you the collateral.
+                    Bidding ${preferredBid.toFixed(4)} will close the lot and assign you the collateral.
                   </p>
 
                   <div className="mt-4 relative rounded-md shadow-sm">
@@ -185,7 +185,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
                   Collateral Auctioned
                 </th>
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Current $ Price/Token
+                  $/Token
                 </th>
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Debt to Raise

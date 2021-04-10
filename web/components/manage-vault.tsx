@@ -42,6 +42,7 @@ export const ManageVault = ({ match }) => {
   const [vault, setVault] = useState<VaultProps>();
   const [price, setPrice] = useState(0);
   const [collateralType, setCollateralType] = useState<CollateralTypeProps>();
+  const [isVaultOwner, setIsVaultOwner] = useState(false);
 
   useEffect(() => {
     const fetchVault = async () => {
@@ -67,11 +68,14 @@ export const ManageVault = ({ match }) => {
           auctionEnded: data['auction-ended'].value,
           leftoverCollateral: data['leftover-collateral'].value,
           debt: data['debt'].value,
-          collateralData: {}
+          stackedTokens: data['stacked-tokens'].value,
+          revokedStacking: data['revoked-stacking'].value,
+          collateralData: {},
         });
         setReserveName(resolveReserveName(data['collateral-token'].value));
         setIsLiquidated(data['is-liquidated'].value);
         setAuctionEnded(data['auction-ended'].value);
+        setIsVaultOwner(data['owner'].value === senderAddress);
 
         let price = await getPrice(data['collateral-token'].value);
         setPrice(price);
@@ -106,7 +110,11 @@ export const ManageVault = ({ match }) => {
 
   useEffect(() => {
     if (vault && collateralType?.collateralToDebtRatio) {
-      setMaximumCollateralToWithdraw(availableCollateralToWithdraw(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio));
+      if (vault.stackedTokens === 0) {
+        setMaximumCollateralToWithdraw(availableCollateralToWithdraw(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio));
+      } else {
+        setMaximumCollateralToWithdraw(0);
+      }
     }
   }, [collateralType?.collateralToDebtRatio, price]);
 
@@ -308,6 +316,42 @@ export const ManageVault = ({ match }) => {
         setTxId(data.txId);
         setTxStatus('pending');
         setShowMintModal(false);
+      },
+    });
+  };
+
+  const callToggleStacking = async () => {
+    const authOrigin = getAuthOrigin();
+    await doContractCall({
+      network,
+      authOrigin,
+      contractAddress,
+      contractName: 'freddie',
+      functionName: 'toggle-stacking',
+      functionArgs: [uintCV(match.params.id)],
+      postConditionMode: 0x01,
+      finished: data => {
+        console.log('finished toggling stacking!', data, data.txId);
+        setTxId(data.txId);
+        setTxStatus('pending');
+      },
+    });
+  };
+
+  const stackCollateral = async () => {
+    const authOrigin = getAuthOrigin();
+    await doContractCall({
+      network,
+      authOrigin,
+      contractAddress,
+      contractName: 'freddie',
+      functionName: 'stack-collateral',
+      functionArgs: [uintCV(match.params.id)],
+      postConditionMode: 0x01,
+      finished: data => {
+        console.log('finished stacking!', data, data.txId);
+        setTxId(data.txId);
+        setTxStatus('pending');
       },
     });
   };
@@ -702,13 +746,15 @@ export const ManageVault = ({ match }) => {
                   </h2>
 
                   <div className="max-w-xl text-sm text-gray-500">
-                    <p>
-                      <Text onClick={() => callWithdraw()}
-                            _hover={{ cursor: 'pointer'}}
-                            className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Withdraw Leftover Collateral
-                      </Text>
-                    </p>
+                    {isVaultOwner ? (
+                      <p>
+                        <Text onClick={() => callWithdraw()}
+                              _hover={{ cursor: 'pointer'}}
+                              className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                          Withdraw Leftover Collateral
+                        </Text>
+                      </p>
+                    ): null }
                   </div>
                 </li>
               </ul>
@@ -756,19 +802,21 @@ export const ManageVault = ({ match }) => {
                         </p>
                       </div>
 
-                      <div className="max-w-xl text-sm text-gray-500">
-                        <p>
-                          <Text onClick={() => setShowDepositModal(true)}
-                                _hover={{ cursor: 'pointer'}}
-                                className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Deposit
-                          </Text>
-                        </p>
-                      </div>
+                      {isVaultOwner ? (
+                        <div className="max-w-xl text-sm text-gray-500">
+                          <p>
+                            <Text onClick={() => setShowDepositModal(true)}
+                                  _hover={{ cursor: 'pointer'}}
+                                  className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                              Deposit
+                            </Text>
+                          </p>
+                        </div>
+                      ) : null }
                     </div>
                     <hr/>
 
-                    <div className="mt-10 sm:flex sm:items-start sm:justify-between">
+                    <div className="mt-8 sm:flex sm:items-start sm:justify-between">
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
                           Able to withdraw
@@ -781,17 +829,84 @@ export const ManageVault = ({ match }) => {
                         </p>
                       </div>
 
-                      <div className="max-w-xl text-sm text-gray-500">
-                        <p>
-                          <Text onClick={() => setShowWithdrawModal(true)}
-                                _hover={{ cursor: 'pointer'}}
-                                className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Withdraw
-                          </Text>
-                        </p>
-                      </div>
+                      {isVaultOwner ? (
+                        <div className="max-w-xl text-sm text-gray-500">
+                          <p>
+                            {maximumCollateralToWithdraw > 0 ? (
+                              <Text onClick={() => setShowWithdrawModal(true)}
+                                    _hover={{ cursor: 'pointer'}}
+                                    className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Withdraw
+                              </Text>
+                            ) : null}
+                          </p>
+                        </div>
+                      ) : null }
                     </div>
 
+                    {isVaultOwner && vault?.stackedTokens > 0 && !vault?.revokedStacking ? (
+                      <div className="mt-8 sm:flex sm:items-start sm:justify-between">
+                        <div className="max-w-xl text-sm text-gray-500">
+                          <p>
+                            You cannot withdraw your collateral since it is stacked until this 2-week cycle ends. <br/>
+                            Unstack your collateral to unlock it for withdrawal.
+                          </p>
+                        </div>
+
+                        <div className="max-w-xl text-sm text-gray-500">
+                          {isVaultOwner ? (
+                            <p>
+                              <Text onClick={() => callToggleStacking()}
+                                    _hover={{ cursor: 'pointer'}}
+                                    className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Unstack
+                              </Text>
+                            </p>
+                           ) : null }
+                        </div>
+                      </div>
+                    ) : isVaultOwner && vault?.stackedTokens > 0 && vault?.revokedStacking ? (
+                      <div className="mt-8 sm:flex sm:items-start sm:justify-between">
+                        <div className="max-w-xl text-sm text-gray-500">
+                          <p>
+                            You cannot withdraw your collateral since it is stacked until this 2-week cycle ends. <br/>
+                            You have unstacked your collateral, so it will be unlocked for withdrawal soon.
+                          </p>
+                        </div>
+
+                        <div className="max-w-xl text-sm text-gray-500">
+                          {isVaultOwner ? (
+                            <p>
+                              <Text onClick={() => callToggleStacking()}
+                                    _hover={{ cursor: 'pointer'}}
+                                    className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Restack
+                              </Text>
+                            </p>
+                          ) : null }
+                        </div>
+                      </div>
+                    ) : isVaultOwner ? (
+                      <div className="mt-8 sm:flex sm:items-start sm:justify-between">
+                        <div className="max-w-xl text-sm text-gray-500">
+                          <p>
+                            You are not stacking your collateral.
+                          </p>
+                        </div>
+
+                        <div className="max-w-xl text-sm text-gray-500">
+                          {isVaultOwner ? (
+                            <p>
+                              <Text onClick={() => stackCollateral()}
+                                    _hover={{ cursor: 'pointer'}}
+                                    className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Stack
+                              </Text>
+                            </p>
+                          ) : null }
+                        </div>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               </li>
@@ -812,15 +927,17 @@ export const ManageVault = ({ match }) => {
                         </p>
                       </div>
 
-                      <div className="max-w-xl text-sm text-gray-500">
-                        <p>
-                          <Text onClick={() => setShowBurnModal(true)}
-                                _hover={{ cursor: 'pointer'}}
-                                className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Pay back
-                          </Text>
-                        </p>
-                      </div>
+                      {isVaultOwner ? (
+                        <div className="max-w-xl text-sm text-gray-500">
+                          <p>
+                            <Text onClick={() => setShowBurnModal(true)}
+                                  _hover={{ cursor: 'pointer'}}
+                                  className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                              Pay back
+                            </Text>
+                          </p>
+                        </div>
+                      ) : null }
                     </div>
                     <hr/>
 
@@ -837,15 +954,17 @@ export const ManageVault = ({ match }) => {
                         </p>
                       </div>
 
-                      <div className="max-w-xl text-sm text-gray-500">
-                        <p>
-                          <Text onClick={() => setShowMintModal(true)}
-                                _hover={{ cursor: 'pointer'}}
-                                className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Mint
-                          </Text>
-                        </p>
-                      </div>
+                      {isVaultOwner ? (
+                        <div className="max-w-xl text-sm text-gray-500">
+                          <p>
+                            <Text onClick={() => setShowMintModal(true)}
+                                  _hover={{ cursor: 'pointer'}}
+                                  className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                              Mint
+                            </Text>
+                          </p>
+                        </div>
+                      ) : null }
                     </div>
                     <hr/>
 
@@ -862,15 +981,17 @@ export const ManageVault = ({ match }) => {
                         </p>
                       </div>
 
-                      <div className="max-w-xl text-sm text-gray-500">
-                        <p>
-                          <Text onClick={() => payStabilityFee()}
-                                _hover={{ cursor: 'pointer'}}
-                                className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Pay back
-                          </Text>
-                        </p>
-                      </div>
+                      {isVaultOwner ? (
+                        <div className="max-w-xl text-sm text-gray-500">
+                          <p>
+                            <Text onClick={() => payStabilityFee()}
+                                  _hover={{ cursor: 'pointer'}}
+                                  className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                              Pay back
+                            </Text>
+                          </p>
+                        </div>
+                      ) : null }
                     </div>
 
                   </div>

@@ -18,6 +18,8 @@ export interface VaultProps {
   auctionEnded: boolean;
   leftoverCollateral: number;
   collateralData: object;
+  stackedTokens: number;
+  revokedStacking: boolean;
 }
 
 export const debtClass = (liquidationRatio: number, ratio: number) => {
@@ -32,7 +34,10 @@ export const debtClass = (liquidationRatio: number, ratio: number) => {
   return 'text-red-900';
 };
 
-export const Vault: React.FC<VaultProps> = ({ id, collateral, collateralType, collateralToken, stabilityFee, debt, isLiquidated, auctionEnded, leftoverCollateral, collateralData }) => {
+export const Vault: React.FC<VaultProps> = ({
+  id, collateral, collateralType, collateralToken, stabilityFee, debt,
+  isLiquidated, auctionEnded, leftoverCollateral, collateralData
+}) => {
   const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
