@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Auction } from './auction';
 import { Modal } from '@blockstack/ui';
 import { uintCV } from '@stacks/transactions';
-import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { connectWebSocketClient } from '@stacks/blockchain-api-client';
 
@@ -77,10 +77,8 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
     }
     console.log('Adding with bid amount', bidAmount);
 
-    const authOrigin = getAuthOrigin();
     await doContractCall({
       network,
-      authOrigin,
       contractAddress,
       contractName: 'auction-engine',
       functionName: 'bid',

@@ -2,7 +2,7 @@ import React from 'react';
 import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { Text } from '@blockstack/ui';
-import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { uintCV, contractPrincipalCV } from '@stacks/transactions';
 import { resolveReserveName } from '@common/vault-utils';
@@ -56,10 +56,8 @@ export const Vault: React.FC<VaultProps> = ({
   }
 
   const callWithdrawLeftoverCollateral = async () => {
-    const authOrigin = getAuthOrigin();
     await doContractCall({
       network,
-      authOrigin,
       contractAddress,
       contractName: 'freddie',
       functionName: 'withdraw-leftover-collateral',

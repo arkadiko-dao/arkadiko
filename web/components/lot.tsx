@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { LotProps } from './lot-group';
 import { contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useConnect } from '@stacks/connect-react';
-import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network } from '@common/utils';
 import { connectWebSocketClient } from '@stacks/blockchain-api-client';
 import { resolveReserveName, tokenTraits } from '@common/vault-utils';
 
@@ -13,12 +13,10 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collatera
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   const redeemLot = async () => {
-    const authOrigin = getAuthOrigin();
     const token = tokenTraits[collateralToken.toLowerCase()]['name'];
 
     await doContractCall({
       network,
-      authOrigin,
       contractAddress,
       contractName: 'auction-engine',
       functionName: 'redeem-lot-collateral',

@@ -31,7 +31,7 @@ export const tokenTraits = {
   'diko': {
     'address': {
       'mocknet': 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
-      'testnet': '',
+      'testnet': 'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H',
       'mainnet': ''
     },
     'name': 'arkadiko-token'
@@ -39,7 +39,7 @@ export const tokenTraits = {
   'stx': {
     'address': {
       'mocknet': 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
-      'testnet': '',
+      'testnet': 'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H',
       'mainnet': ''
     },
     'name': 'arkadiko-token'

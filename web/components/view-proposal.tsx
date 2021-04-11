@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Modal } from '@blockstack/ui';
 import { Container } from './home';
 import { callReadOnlyFunction, uintCV, cvToJSON } from '@stacks/transactions';
-import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
 import { typeToReadableName, deductTitle, changeKeyToHumanReadable } from '@common/proposal-utils';
@@ -80,10 +80,8 @@ export const ViewProposal = ({ match }) => {
   }, [txId]);
 
   const addVoteFor = async () => {
-    const authOrigin = getAuthOrigin();
     await doContractCall({
       network,
-      authOrigin,
       contractAddress,
       contractName: 'dao',
       functionName: 'vote-for',
@@ -99,10 +97,8 @@ export const ViewProposal = ({ match }) => {
   };
 
   const addVoteAgainst = async () => {
-    const authOrigin = getAuthOrigin();
     await doContractCall({
       network,
-      authOrigin,
       contractAddress,
       contractName: 'dao',
       functionName: 'vote-against',

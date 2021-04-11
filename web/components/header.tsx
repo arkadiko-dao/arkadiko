@@ -20,8 +20,7 @@ const shortAddress = (address: string | null) => {
 
 export const Header: React.FC<HeaderProps> = ({ signOut }) => {
   const state = useContext(AppContext);
-  const env = process.env.REACT_APP_NETWORK_ENV;
-  const isMockNet = env == 'mocknet';
+  const showWallet = process.env.REACT_APP_SHOW_CONNECT_WALLET === 'true';
   const { doOpenAuth } = useConnect();
   const address = useSTXAddress();
 
@@ -40,7 +39,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut }) => {
       <Box>
         {state.userData ? (
           <Box display="inline-block" alignItems="right">
-            <Box display="inline-block" color="feedback.success" textStyle="caption.small" mr={5}>using Arkadiko on {env}</Box>
+            <Box display="inline-block" color="feedback.success" textStyle="caption.small" mr={5}>using Arkadiko on {process.env.REACT_APP_NETWORK_ENV}</Box>
             <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
               <RouterLink to="/vaults" activeClassName="border-b-2 border-indigo-500 pt-6">Vaults</RouterLink>
             </Box>
@@ -90,7 +89,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut }) => {
               Security
             </a>
 
-            {isMockNet ? (
+            {showWallet ? (
               <Button ml={5} mode="secondary" onClick={() => doOpenAuth()}>
                 Connect Wallet
               </Button>

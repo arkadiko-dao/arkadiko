@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Box } from '@blockstack/ui';
-import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import BN from 'bn.js';
 import {
@@ -58,8 +58,14 @@ export const Mint = () => {
     await broadcastTransaction(transaction, network);
   };
 
+  const addTestnetStx = async () => {
+    const url = `https://stacks-node-api.testnet.stacks.co/extended/v1/debug/faucet?address=${address}`;
+    await fetch(url, {
+      method: 'POST',
+    });
+  };
+
   const callCollateralizeAndMint = async () => {
-    const authOrigin = getAuthOrigin();
     const args = [
       uintCV(10 * 1000000),
       uintCV(1000000),
@@ -70,7 +76,6 @@ export const Mint = () => {
     ];
     await doContractCall({
       network,
-      authOrigin,
       contractAddress,
       contractName: 'freddie',
       functionName: 'collateralize-and-mint',
@@ -96,8 +101,8 @@ export const Mint = () => {
                   </Link>
                 </Box>
               ) : (
-                <Link onClick={() => addMocknetStx()} color="blue" display="inline-block" my={3} ml={5}>
-                  Drain the faucet on testnet
+                <Link onClick={() => addTestnetStx()} color="blue" display="inline-block" my={3} ml={5}>
+                  (Get STX from testnet)
                 </Link>
               )}
             </h2>

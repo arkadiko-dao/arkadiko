@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { space, Text, Box } from '@blockstack/ui';
 import { useConnect } from '@stacks/connect-react';
-import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network } from '@common/utils';
 import {
   standardPrincipalCV,
   contractPrincipalCV,
@@ -56,7 +56,6 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
 
   const callCollateralizeAndMint = async () => {
     clearState();
-    const authOrigin = getAuthOrigin();
     const token = tokenTraits[coinAmounts['token-name'].toLowerCase()]['name'];
     const args = [
       uintCV(parseInt(coinAmounts['amounts']['collateral'], 10) * 1000000),
@@ -96,7 +95,6 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
 
     await doContractCall({
       network,
-      authOrigin,
       contractAddress,
       contractName: 'freddie',
       functionName: 'collateralize-and-mint',

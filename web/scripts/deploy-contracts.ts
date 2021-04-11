@@ -20,19 +20,44 @@ interface Contract {
 
 const contracts: Contract[] = [
   {
-    name: 'connect-token',
-    file: 'token',
+    name: 'mock-ft-trait'
   },
   {
-    name: 'counter',
+    name: 'vault-trait',
   },
   {
-    name: 'faker',
+    name: 'oracle',
   },
   {
-    name: 'status-2',
-    file: 'status',
+    name: 'xusd-token'
   },
+  {
+    name: 'arkadiko-token'
+  },
+  {
+    name: 'mock-pox'
+  },
+  {
+    name: 'dao'
+  },
+  {
+    name: 'stx-reserve'
+  },
+  {
+    name: 'sip10-reserve'
+  },
+  {
+    name: 'freddie'
+  },
+  {
+    name: 'stacker-registry'
+  },
+  {
+    name: 'auction-engine'
+  },
+  {
+    name: 'liquidator'
+  }
 ];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');
@@ -73,7 +98,7 @@ const run = async () => {
 
     console.log(`Deploying ${contractId}`);
 
-    const source = await readFile(`./contracts/${contract.file || contract.name}.clar`);
+    const source = await readFile(`../../clarity/contracts/${contract.file || contract.name}.clar`);
     const tx = await makeContractDeploy({
       contractName: contract.name,
       codeBody: source.toString('utf8'),

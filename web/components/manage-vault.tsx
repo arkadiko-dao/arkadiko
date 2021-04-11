@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Box, Modal, Text } from '@blockstack/ui';
 import { Container } from './home';
-import { getAuthOrigin, stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
 import {
@@ -141,8 +141,6 @@ export const ManageVault = ({ match }) => {
   }, [txId]);
 
   const payStabilityFee = async () => {
-    const authOrigin = getAuthOrigin();
-
     // const postConditions = [
     //   makeStandardFungiblePostCondition(
     //     senderAddress || '',
@@ -158,7 +156,6 @@ export const ManageVault = ({ match }) => {
 
     await doContractCall({
       network,
-      authOrigin,
       contractAddress,
       contractName: 'freddie',
       functionName: 'pay-stability-fee',
@@ -176,12 +173,10 @@ export const ManageVault = ({ match }) => {
   };
 
   const callBurn = async () => {
-    const authOrigin = getAuthOrigin();
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
 
     await doContractCall({
       network,
-      authOrigin,
       contractAddress,
       contractName: 'freddie',
       functionName: 'burn',
@@ -209,8 +204,6 @@ export const ManageVault = ({ match }) => {
     if (!extraCollateralDeposit) {
       return;
     }
-
-    const authOrigin = getAuthOrigin();
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
 
     let postConditions = [];
@@ -239,7 +232,6 @@ export const ManageVault = ({ match }) => {
 
     await doContractCall({
       network,
-      authOrigin,
       contractAddress,
       contractName: 'freddie',
       functionName: 'deposit',
@@ -298,10 +290,8 @@ export const ManageVault = ({ match }) => {
   };
 
   const callMint = async () => {
-    const authOrigin = getAuthOrigin();
     await doContractCall({
       network,
-      authOrigin,
       contractAddress,
       contractName: 'freddie',
       functionName: 'mint',
@@ -321,10 +311,8 @@ export const ManageVault = ({ match }) => {
   };
 
   const callToggleStacking = async () => {
-    const authOrigin = getAuthOrigin();
     await doContractCall({
       network,
-      authOrigin,
       contractAddress,
       contractName: 'freddie',
       functionName: 'toggle-stacking',
@@ -339,10 +327,8 @@ export const ManageVault = ({ match }) => {
   };
 
   const stackCollateral = async () => {
-    const authOrigin = getAuthOrigin();
     await doContractCall({
       network,
-      authOrigin,
       contractAddress,
       contractName: 'freddie',
       functionName: 'stack-collateral',
@@ -361,11 +347,9 @@ export const ManageVault = ({ match }) => {
       return;
     }
 
-    const authOrigin = getAuthOrigin();
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
     await doContractCall({
       network,
-      authOrigin,
       contractAddress,
       contractName: 'freddie',
       functionName: 'withdraw',
@@ -386,10 +370,8 @@ export const ManageVault = ({ match }) => {
   };
 
   const callNotifyRisky = async () => {
-    const authOrigin = getAuthOrigin();
     await doContractCall({
       network,
-      authOrigin,
       contractAddress,
       contractName: 'liquidator',
       functionName: 'notify-risky-vault',
