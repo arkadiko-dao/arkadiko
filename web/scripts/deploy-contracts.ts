@@ -1,3 +1,4 @@
+// TS_NODE_COMPILER_OPTIONS='{"module":"commonjs","target":"es2019"}' ts-node deploy-contracts.ts
 import { readFile as readFileFn } from 'fs';
 import { promisify } from 'util';
 import { RPCClient } from '@stacks/rpc-client';
@@ -7,9 +8,8 @@ import {
   makeContractDeploy,
   StacksTestnet,
 } from '@blockstack/stacks-transactions';
-import * as BN from 'bn.js';
-import * as dotenv from 'dotenv';
-dotenv.config();
+import BN from 'bn.js';
+require('dotenv').config();
 
 const readFile = promisify(readFileFn);
 

@@ -120,6 +120,11 @@ const testnetKeyMap = [
     pubKey: '0495aa2863e5536254a949484382eaf17a736b71fdc865c35df9ff45b98536d0866aeae1139bdcdb79ad415a15a406c5fa2cb6b051e0c3daac49c9000f1d69077a'
   }
 ];
+// const getNonce = async (address: string) => {
+//   const url = `http://localhost:3999/v2/accounts/${address}?proof=0`;
+//   const result = await request(url, { json: true });
+//   return result.nonce;
+// }
 const addMocknetStx = async (address: string) => {
   const key = '9aef533e754663a453984b69d36f109be817e9940519cc84979419e2be00864801';
   const senderKey = createStacksPrivateKey(key);
@@ -162,11 +167,11 @@ describe("environment prep", () => {
       };
 
       // 1. Add a list of (e.g. 20) addresses
-      // testnetKeyMap.forEach(async (element) => {
-      //   // get balance with curl "http://localhost:3999/extended/v1/address/ST2P6TJW3N5BZQ819WSJBWT7EG01CR5XTMYQ3W09Z/balances"
-      //   setTimeout(() => addMocknetStx(element.address), index * 10000);
-      //   index += 1;
-      // });
+      testnetKeyMap.forEach(async (element) => {
+        // get balance with curl "http://localhost:3999/extended/v1/address/ST2P6TJW3N5BZQ819WSJBWT7EG01CR5XTMYQ3W09Z/balances"
+        setTimeout(() => addMocknetStx(element.address), index * 10000);
+        index += 1;
+      });
 
       // 2. Set the price of STX
       // const txOptions = {

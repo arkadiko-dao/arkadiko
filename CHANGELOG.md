@@ -1,4 +1,11 @@
 
+## Version 0.1.7
+
+### Bug Fixes
+
+- Fix burning xUSD debt after running auction
+- Show only one lot for sale in an auction at once
+
 ## Version 0.1.6
 
 ### New Features

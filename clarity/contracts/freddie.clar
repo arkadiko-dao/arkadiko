@@ -19,7 +19,6 @@
 
 ;; constants
 (define-constant blocks-per-day u144)
-(define-constant mint-owner 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP)
 
 ;; Map of vault entries
 ;; The entry consists of a user principal with their collateral and debt balance
@@ -579,33 +578,30 @@
 (define-public (finalize-liquidation (vault-id uint) (leftover-collateral uint) (debt-raised uint))
   (if (is-eq contract-caller .auction-engine)
     (let ((vault (get-vault-by-id vault-id)))
-      (if (is-ok (contract-call? .xusd-token burn debt-raised mint-owner))
-        (begin
-          (map-set vaults
-            { id: vault-id }
-            {
-              id: vault-id,
-              owner: (get owner vault),
-              collateral: u0,
-              collateral-type: (get collateral-type vault),
-              collateral-token: (get collateral-token vault),
-              stacked-tokens: (get stacked-tokens vault),
-              revoked-stacking: (get revoked-stacking vault),
-              debt: (get debt vault),
-              created-at-block-height: (get created-at-block-height vault),
-              updated-at-block-height: block-height,
-              stability-fee: (get stability-fee vault),
-              stability-fee-last-accrued: (get stability-fee-last-accrued vault),
-              is-liquidated: true,
-              auction-ended: true,
-              leftover-collateral: leftover-collateral
-            }
-          )
-          (let ((result (contract-call? .dao subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault))))
-            (ok true)
-          )
+      (begin
+        (map-set vaults
+          { id: vault-id }
+          {
+            id: vault-id,
+            owner: (get owner vault),
+            collateral: u0,
+            collateral-type: (get collateral-type vault),
+            collateral-token: (get collateral-token vault),
+            stacked-tokens: (get stacked-tokens vault),
+            revoked-stacking: (get revoked-stacking vault),
+            debt: (get debt vault),
+            created-at-block-height: (get created-at-block-height vault),
+            updated-at-block-height: block-height,
+            stability-fee: (get stability-fee vault),
+            stability-fee-last-accrued: (get stability-fee-last-accrued vault),
+            is-liquidated: true,
+            auction-ended: true,
+            leftover-collateral: leftover-collateral
+          }
         )
-        (err err-liquidation-failed)
+        (let ((result (contract-call? .dao subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault))))
+          (ok true)
+        )
       )
     )
     (err err-unauthorized)

@@ -317,12 +317,12 @@
               (if
                 (or
                   (>= block-height (get ends-at auction))
-                  (>= (+ (unwrap-panic (is-lot-sold accepted-bid)) (get lots-sold auction)) (get lots auction))
+                  (>= (- (+ xusd (get total-debt-raised auction)) (get xusd last-bid)) (get debt-to-raise auction))
                 )
                 ;; auction is over - close all bids
                 ;; send collateral to winning bidders
                 (ok (unwrap! (close-auction auction-id) (err u666)))
-                (err u0)
+                (ok false)
               )
             )
             (err err-xusd-transfer-failed)
@@ -386,7 +386,7 @@
     (asserts!
       (or
         (>= block-height (get ends-at auction))
-        (is-eq (get lots-sold auction) (get lots auction))
+        (>= (get total-debt-raised auction) (get debt-to-raise auction))
       )
       (err err-not-authorized)
     )
@@ -411,18 +411,19 @@
       }
     )
     (if (>= (get total-debt-raised auction) (get debt-to-raise auction))
-      (contract-call?
-        .freddie
-        finalize-liquidation
-        (get vault-id auction)
-        (- (get collateral-amount auction) (get total-collateral-auctioned auction))
-        (get total-debt-raised auction)
+      (begin
+        (try! (contract-call? .xusd-token burn (get total-debt-raised auction) (as-contract tx-sender)))
+        (contract-call?
+          .freddie
+          finalize-liquidation
+          (get vault-id auction)
+          (- (get collateral-amount auction) (get total-collateral-auctioned auction))
+          (get total-debt-raised auction)
+        )
       )
       (begin
-        (if (or
-          (<= (get lots-sold auction) (get lots auction)) ;; not all lots are sold
-          (<= (get total-collateral-auctioned auction) (get collateral-amount auction)) ;; we have some collateral left to auction
-        ) ;; if any collateral left to auction
+        (if (<= (get total-collateral-auctioned auction) (get collateral-amount auction)) ;; we have some collateral left to auction
+          ;; if any collateral left to auction
           (ok (unwrap-panic (start-auction
             (get vault-id auction)
             (- (get collateral-amount auction) (get total-collateral-auctioned auction))

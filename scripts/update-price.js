@@ -24,7 +24,7 @@ const network = utils.resolveNetwork();
 
 rp(requestOptions).then(async (response) => {
   let price = response['data']['4847']['quote']['USD']['price'];
-  // price = 1.6;
+  // price = 1.57;
 
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,

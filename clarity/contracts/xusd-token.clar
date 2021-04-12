@@ -54,7 +54,10 @@
 )
 
 (define-public (burn (amount uint) (sender principal))
-  (if (is-eq contract-caller .freddie)
+  (if (or
+    (is-eq contract-caller .freddie)
+    (is-eq contract-caller .auction-engine)
+  )
     (ok (unwrap! (ft-burn? xusd amount sender) (err err-burn-failed)))
     (err err-burn-failed)
   )
