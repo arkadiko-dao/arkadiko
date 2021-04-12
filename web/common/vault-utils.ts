@@ -25,23 +25,11 @@ export const availableCoinsToMint = (price:number, stxCollateral:number, current
   return 0;
 };
 
-// TODO
-// Refactor for mainnet + testnet
 export const tokenTraits = {
   'diko': {
-    'address': {
-      'mocknet': 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
-      'testnet': 'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H',
-      'mainnet': ''
-    },
     'name': 'arkadiko-token'
   },
   'stx': {
-    'address': {
-      'mocknet': 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
-      'testnet': 'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H',
-      'mainnet': ''
-    },
     'name': 'arkadiko-token'
   }
 };

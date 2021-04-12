@@ -84,7 +84,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       //     FungibleConditionCode.Equal,
       //     new BN(coinAmounts['amounts']['collateral'] * 1000000),
       //     createAssetInfo(
-      //       "ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP",
+      //       "CONTRACT_ADDRESS",
       //       "arkadiko-token",
       //       coinAmounts['token-name'].toUpperCase()
       //     )

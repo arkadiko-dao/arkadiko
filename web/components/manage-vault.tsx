@@ -147,7 +147,7 @@ export const ManageVault = ({ match }) => {
     //     FungibleConditionCode.Equal,
     //     new BN(vault.stabilityFee),
     //     createAssetInfo(
-    //       "ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP",
+    //       "CONTRACT_ADDRESS",
     //       "xusd-token",
     //       "xUSD"
     //     )
@@ -222,7 +222,7 @@ export const ManageVault = ({ match }) => {
       //     FungibleConditionCode.Equal,
       //     new BN(parseFloat(extraCollateralDeposit) * 1000000),
       //     createAssetInfo(
-      //       "ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP",
+      //       "CONTRACT_ADDRESS",
       //       token,
       //       vault['collateralToken'].toUpperCase()
       //     )

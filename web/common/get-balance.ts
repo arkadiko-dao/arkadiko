@@ -7,8 +7,9 @@ export const fetchBalances = async (stxAddress: string) => {
   const response = await fetch(url, { credentials: 'omit' });
   const data = await response.json();
   // console.log(data);
-  const dikoBalance = data.fungible_tokens['ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP.arkadiko-token::diko'];
-  const xusdBalance = data.fungible_tokens['ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP.xusd-token::xusd'];
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
+  const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
+  const xusdBalance = data.fungible_tokens[`${contractAddress}.xusd-token::xusd`];
   const account = {
     stx: data.stx.balance,
     xusd: xusdBalance ? xusdBalance.balance : 0,
