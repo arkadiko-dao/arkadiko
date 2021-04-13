@@ -197,7 +197,7 @@
 ;; calculates the minimum collateral amount to sell
 ;; e.g. if we need to cover 10 xUSD debt, and we have 20 STX at $1/STX,
 ;; we only need to auction off 10 STX
-;; but we give a 3% discount to incentivise people TODO:
+;; but we give a 3% discount to incentivise people
 (define-read-only (calculate-minimum-collateral-amount (auction-id uint))
   (let ((auction (get-auction-by-id auction-id)))
     (let ((price-in-cents (contract-call? .oracle get-price (collateral-token (get collateral-token auction)))))
@@ -384,7 +384,7 @@
 ;; DONE     1. flag auction on map as closed
 ;; SCRIPT   2a. go over each lot (0 to lot-size) and send collateral to winning address
 ;; DONE     2b. OR allow person to collect collateral from reserve manually
-;; TODO     3. check if vault debt is covered (sum of xUSD in lots >= debt-to-raise)
+;; DONE     3. check if vault debt is covered (sum of xUSD in lots >= debt-to-raise)
 ;; DONE     4. update vault to allow vault owner to withdraw leftover collateral (if any)
 ;; DONE     5. if not all vault debt is covered: auction off collateral again (if any left)
 ;; TODO     6. if not all vault debt is covered and no collateral is left: cover xUSD with gov token

@@ -583,6 +583,7 @@ export const ManageVault = ({ match }) => {
 
                   <div className="mt-4 relative rounded-md shadow-sm">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      $
                     </div>
                     <input type="text" name="burnDebt" id="burnAmount"
                            value={usdToBurn}
@@ -591,7 +592,7 @@ export const ManageVault = ({ match }) => {
                            placeholder="0.00" aria-describedby="collateral-burn-currency" />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                       <span className="text-gray-500 sm:text-sm" id="collateral-burn-currency">
-                        {vault?.collateralToken.toUpperCase()}
+                        xUSD
                       </span>
                     </div>
                   </div>

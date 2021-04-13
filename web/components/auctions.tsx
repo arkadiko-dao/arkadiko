@@ -99,7 +99,7 @@ export const Auctions: React.FC = () => {
 
       const stxRedeemable = await callReadOnlyFunction({
         contractAddress,
-        contractName: "dao",
+        contractName: "freddie",
         functionName: "get-stx-redeemable",
         functionArgs: [],
         senderAddress: stxAddress || '',

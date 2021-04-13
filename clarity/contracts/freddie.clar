@@ -5,9 +5,6 @@
 ;; Freddie is an abstraction layer that interacts with collateral type reserves (initially only STX)
 ;; Ideally, collateral reserves should never be called from outside. Only manager layers should be interacted with from clients
 
-(define-constant vault-owner 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP) ;; mocknet
-;; (define-constant vault-owner 'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H) ;; testnet
-
 ;; errors
 (define-constant err-unauthorized u1)
 (define-constant err-transfer-failed u2)
@@ -22,6 +19,8 @@
 
 ;; constants
 (define-constant blocks-per-day u144)
+(define-constant vault-owner 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP) ;; mocknet
+;; (define-constant vault-owner 'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H) ;; testnet
 
 ;; Map of vault entries
 ;; The entry consists of a user principal with their collateral and debt balance
@@ -43,7 +42,14 @@
   leftover-collateral: uint
 })
 (define-map vault-entries { user: principal } { ids: (list 1200 uint) })
+(define-map closing-vault
+  { user: principal }
+  { vault-id: uint }
+)
+
 (define-data-var last-vault-id uint u0)
+(define-data-var unlock-burn-height uint u0)
+(define-data-var stx-redeemable uint u0)
 
 ;; getters
 (define-read-only (get-vault-by-id (id uint))
@@ -66,6 +72,24 @@
       (auction-ended false)
       (leftover-collateral u0)
     )
+  )
+)
+
+(define-read-only (get-stx-redeemable)
+  (ok (var-get stx-redeemable))
+)
+
+(define-private (add-stx-redeemable (token-amount uint))
+  (if true
+    (ok (var-set stx-redeemable (+ token-amount (var-get stx-redeemable))))
+    (err u0)
+  )
+)
+
+(define-private (subtract-stx-redeemable (token-amount uint))
+  (if true
+    (ok (var-set stx-redeemable (- (var-get stx-redeemable) token-amount)))
+    (err u0)
   )
 )
 
@@ -116,11 +140,8 @@
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
     (asserts! (is-eq "stx" (get collateral-token vault)) (err err-unauthorized))
+    (try! (contract-call? .stx-reserve toggle-stacking (get revoked-stacking vault) (get collateral vault)))
 
-    (if (is-eq true (get revoked-stacking vault))
-      (try! (contract-call? .dao add-tokens-to-stack (get collateral vault)))
-      (try! (contract-call? .dao subtract-tokens-to-stack (get collateral vault)))
-    )
     (map-set vaults
       { id: vault-id }
       {
@@ -150,7 +171,7 @@
     (asserts! (is-eq "stx" (get collateral-token vault)) (err err-unauthorized))
     (asserts! (is-eq false (get is-liquidated vault)) (err err-unauthorized))
 
-    (try! (contract-call? .dao add-tokens-to-stack (get collateral vault)))
+    (try! (contract-call? .stx-reserve add-tokens-to-stack (get collateral vault)))
     (map-set vaults
       { id: vault-id }
       {
@@ -222,7 +243,7 @@
     (asserts! (is-eq true (get is-liquidated vault)) (err err-unauthorized))
     (asserts! (> (get stacked-tokens vault) u0) (err err-unauthorized))
 
-    (try! (contract-call? .dao add-stx-redeemable (get stacked-tokens vault)))
+    (try! (add-stx-redeemable (get stacked-tokens vault)))
     (map-set vaults
       { id: vault-id }
       {
@@ -254,16 +275,53 @@
 
 ;; redeem stx (and burn xSTX)
 (define-public (redeem-stx (ustx-amount uint))
-  (let ((stx-redeemable (unwrap-panic (contract-call? .dao get-stx-redeemable))))
-    (if (> stx-redeemable u0)
+  (let ((stx (var-get stx-redeemable)))
+    (if (> stx u0)
       (begin
-        (try! (contract-call? .sip10-reserve burn-xstx (min-of stx-redeemable ustx-amount) tx-sender))
-        (try! (contract-call? .stx-reserve redeem-xstx (min-of stx-redeemable ustx-amount) tx-sender))
-        (try! (contract-call? .dao subtract-stx-redeemable (min-of stx-redeemable ustx-amount)))
+        (try! (contract-call? .sip10-reserve burn-xstx (min-of stx ustx-amount) tx-sender))
+        (try! (contract-call? .stx-reserve redeem-xstx (min-of stx ustx-amount) tx-sender))
+        (try! (subtract-stx-redeemable (min-of stx ustx-amount)))
         (ok true)
       )
       (ok false)
     )
+  )
+)
+
+;; DAO can initiate stacking for the STX reserve
+;; Iterate over all vaults that are not initiated yet
+;; to calculate the amount to stack
+;; Stacks the STX tokens in POX
+;; pox contract: SP000000000000000000002Q6VF78.pox
+;; https://explorer.stacks.co/txid/0x41356e380d164c5233dd9388799a5508aae929ee1a7e6ea0c18f5359ce7b8c33?chain=mainnet
+;; v1
+;;  Stack for 1 cycle a time
+;;  This way we miss each other cycle (i.e. we stack 1/2) but we can stack everyone's STX.
+;;  We cannot stack continuously right now
+;; v2
+;;  Ideally we can stack more tokens on the same principal
+;;  to stay eligible for future increases of reward slot thresholds.
+;; random addr to use for hashbytes
+;; 0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac
+;; 0x00
+(define-public (initiate-stacking (pox-addr (tuple (version (buff 1)) (hashbytes (buff 20))))
+                                  (start-burn-ht uint)
+                                  (lock-period uint))
+  ;; 1. check `get-stacking-minimum` to see if we have > minimum tokens
+  ;; 2. call `stack-stx` for 1 `lock-period` fixed
+  (if (is-eq tx-sender vault-owner)
+    (let ((tokens-to-stack (unwrap! (contract-call? .stx-reserve get-tokens-to-stack) (ok u0))))
+      (if (unwrap! (contract-call? .mock-pox can-stack-stx pox-addr tokens-to-stack start-burn-ht lock-period) (err u0))
+        (begin
+          (let ((result (unwrap-panic (contract-call? .mock-pox stack-stx tokens-to-stack pox-addr start-burn-ht lock-period))))
+            (var-set unlock-burn-height (get unlock-burn-height result))
+            (ok (get lock-amount result))
+          )
+        )
+        (err u0) ;; cannot stack yet - probably cause we have not reached the minimum with (var-get tokens-to-stack)
+      )
+    )
+    (err err-unauthorized)
   )
 )
 
@@ -444,74 +502,93 @@
   )
 )
 
+(define-private (remove-burned-vault (vault-id uint))
+  (let ((current-vault (unwrap-panic (map-get? closing-vault { user: tx-sender }))))
+    (if (is-eq vault-id (get vault-id current-vault))
+      false
+      true
+    )
+  )
+)
+
 (define-public (burn (vault-id uint) (debt uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq tx-sender (get owner vault)) (err err-unauthorized))
     (asserts! (is-eq u0 (get stability-fee vault)) (err err-unauthorized))
-     ;; TODO: only allow burn to burn a partial xUSD position
-    (asserts! (is-eq u0 (get stacked-tokens vault)) (err err-unauthorized))
+    (asserts! (<= debt (get debt vault)) (err err-unauthorized))
 
-    (if (is-ok (contract-call? .xusd-token burn debt (get owner vault)))
-      (if (unwrap-panic (contract-call? reserve burn ft (get owner vault) (get collateral vault)))
-        (if (is-eq debt (get debt vault))
-          (begin
-            (let ((entries (get ids (get-vault-entries (get owner vault)))))
-              (let ((result (contract-call? .dao subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault))))
-                (map-set vaults
-                  { id: vault-id }
-                  {
-                    id: vault-id,
-                    owner: (get owner vault),
-                    collateral: u0,
-                    collateral-type: (get collateral-type vault),
-                    collateral-token: (get collateral-token vault),
-                    stacked-tokens: (get stacked-tokens vault),
-                    revoked-stacking: (get revoked-stacking vault),
-                    debt: u0,
-                    created-at-block-height: (get created-at-block-height vault),
-                    updated-at-block-height: block-height,
-                    stability-fee: (get stability-fee vault),
-                    stability-fee-last-accrued: (get stability-fee-last-accrued vault),
-                    is-liquidated: false,
-                    auction-ended: false,
-                    leftover-collateral: u0
-                  }
-                )
-                ;; TODO: remove vault ID from vault entries
-                ;; (map-set vault-entries { user: tx-sender } { () })
-
-                (ok (map-delete vaults { id: vault-id }))
-              )
-            )
-          )
-          (begin
-            (map-set vaults
-              { id: vault-id }
-              {
-                id: vault-id,
-                owner: (get owner vault),
-                collateral: (get collateral vault),
-                collateral-type: (get collateral-type vault),
-                collateral-token: (get collateral-token vault),
-                stacked-tokens: (get stacked-tokens vault),
-                revoked-stacking: (get revoked-stacking vault),
-                debt: (- (get debt vault) debt),
-                created-at-block-height: (get created-at-block-height vault),
-                updated-at-block-height: block-height,
-                stability-fee: (get stability-fee vault),
-                stability-fee-last-accrued: (get stability-fee-last-accrued vault),
-                is-liquidated: false,
-                auction-ended: false,
-                leftover-collateral: u0
-              }
-            )
-            (ok true)
-          )
-        )
-        (err err-burn-failed)
-      )
-      (err err-burn-failed)
+    (if (is-eq debt (get debt vault))
+      (close-vault vault-id reserve ft)
+      (burn-partial-debt vault-id debt reserve ft)
     )
+  )
+)
+
+(define-private (close-vault (vault-id uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
+  (let ((vault (get-vault-by-id vault-id)))
+    (asserts! (is-eq u0 (get stacked-tokens vault)) (err err-unauthorized))
+    (try! (contract-call? .xusd-token burn (get debt vault) (get owner vault)))
+    (try! (contract-call? reserve burn ft (get owner vault) (get collateral vault)))
+
+    (let ((entries (get ids (get-vault-entries (get owner vault)))))
+      (let ((result (contract-call? .dao subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault))))
+        (map-set vaults
+          { id: vault-id }
+          {
+            id: vault-id,
+            owner: (get owner vault),
+            collateral: u0,
+            collateral-type: (get collateral-type vault),
+            collateral-token: (get collateral-token vault),
+            stacked-tokens: (get stacked-tokens vault),
+            revoked-stacking: (get revoked-stacking vault),
+            debt: u0,
+            created-at-block-height: (get created-at-block-height vault),
+            updated-at-block-height: block-height,
+            stability-fee: (get stability-fee vault),
+            stability-fee-last-accrued: (get stability-fee-last-accrued vault),
+            is-liquidated: false,
+            auction-ended: false,
+            leftover-collateral: u0
+          }
+        )
+
+        (map-set closing-vault { user: (get owner vault) } { vault-id: vault-id })
+        (if (map-set vault-entries { user: tx-sender } { ids: (filter remove-burned-vault entries) })
+          (ok (map-delete vaults { id: vault-id }))
+          (err u0)
+        )
+      )
+    )
+  )
+)
+
+(define-private (burn-partial-debt (vault-id uint) (debt uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
+  (let ((vault (get-vault-by-id vault-id)))
+    (try! (contract-call? .xusd-token burn debt (get owner vault)))
+    (try! (contract-call? reserve burn ft (get owner vault) (get collateral vault)))
+
+    (map-set vaults
+      { id: vault-id }
+      {
+        id: vault-id,
+        owner: (get owner vault),
+        collateral: (get collateral vault),
+        collateral-type: (get collateral-type vault),
+        collateral-token: (get collateral-token vault),
+        stacked-tokens: (get stacked-tokens vault),
+        revoked-stacking: (get revoked-stacking vault),
+        debt: (- (get debt vault) debt),
+        created-at-block-height: (get created-at-block-height vault),
+        updated-at-block-height: block-height,
+        stability-fee: (get stability-fee vault),
+        stability-fee-last-accrued: (get stability-fee-last-accrued vault),
+        is-liquidated: false,
+        auction-ended: false,
+        leftover-collateral: u0
+      }
+    )
+    (ok true)
   )
 )
 
@@ -598,9 +675,9 @@
 )
 
 (define-public (liquidate (vault-id uint))
-  ;; TODO: fix this (asserts! (is-eq contract-caller .liquidator) (err err-unauthorized))
-
   (let ((vault (get-vault-by-id vault-id)))
+    (asserts! (is-eq contract-caller .liquidator) (err err-unauthorized))
+
     (let ((collateral (get collateral vault)))
       (if
         (and
