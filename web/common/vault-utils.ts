@@ -31,6 +31,9 @@ export const tokenTraits = {
   },
   'stx': {
     'name': 'arkadiko-token'
+  },
+  'xstx': {
+    'name': 'xstx-token'
   }
 };
 

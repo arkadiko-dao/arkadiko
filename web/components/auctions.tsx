@@ -3,6 +3,7 @@ import { AppContext } from '@common/context';
 import { Box } from '@blockstack/ui';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home'
+import { useConnect } from '@stacks/connect-react';
 import { stacksNetwork as network } from '@common/utils';
 import { callReadOnlyFunction, cvToJSON, tupleCV, uintCV, standardPrincipalCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
@@ -10,10 +11,12 @@ import { AuctionGroup } from '@components/auction-group';
 import { LotGroup } from '@components/lot-group';
 
 export const Auctions: React.FC = () => {
+  const { doContractCall } = useConnect();
   const state = useContext(AppContext);
   const stxAddress = useSTXAddress();
   const [auctions, setAuctions] = useState([]);
   const [lots, setLots] = useState([]);
+  const [redeemableStx, setRedeemableStx] = useState(0);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   useEffect(() => {
@@ -91,7 +94,19 @@ export const Auctions: React.FC = () => {
           }
         }
       });
+
       setAuctions(serializedAuctions);
+
+      const stxRedeemable = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "dao",
+        functionName: "get-stx-redeemable",
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const jsonStxRedeemable = cvToJSON(stxRedeemable);
+      setRedeemableStx(jsonStxRedeemable.value.value);
     };
     if (mounted) {
       void getData();
@@ -100,6 +115,23 @@ export const Auctions: React.FC = () => {
     return () => { mounted = false; }
   }, []);
 
+  const redeemStx = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      contractName: 'freddie',
+      functionName: 'redeem-stx',
+      functionArgs: [
+        uintCV(state.balance['xstx'])
+      ],
+      postConditionMode: 0x01,
+      finished: data => {
+        console.log('finished redeeming stx!', data);
+        // setTxId(data.txId);
+      },
+    });
+  };
+
   return (
     <Box>
       {state.userData ? (
@@ -107,6 +139,23 @@ export const Auctions: React.FC = () => {
           <Box py={6}>
             <main className="flex-1 relative pb-8 z-0 overflow-y-auto">
               <div className="mt-8">
+
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8">Trade xSTX for STX</h2>
+
+                  {state.balance['xstx'] > 0 ? (
+                    <p className="mt-2">
+                      There are {redeemableStx / 1000000} STX redeemable in the pool. <br/>
+                      You have {state.balance['xstx'] / 1000000} xSTX. <br/>
+
+                      <button type="button" onClick={() => redeemStx()} className="mt-2 px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Redeem
+                      </button>
+                    </p>
+                  ) : (
+                    <p className="mt-2">You have no xSTX you can trade</p>
+                  )}
+                </div>
 
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                   <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8">Your Winning Lots</h2>

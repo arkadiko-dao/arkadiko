@@ -10,10 +10,6 @@
 (define-constant err-withdraw-failed u6)
 (define-constant err-mint-failed u7)
 
-(define-read-only (get-risk-parameters)
-  (ok (contract-call? .dao get-collateral-type-by-token "stx"))
-)
-
 ;; MAIN LOGIC
 
 ;; calculate the amount of stablecoins to mint, based on posted STX amount
@@ -128,5 +124,16 @@
   (begin
     (asserts! (is-eq contract-caller .auction-engine) (err err-unauthorized))
     (as-contract (stx-transfer? stx-collateral (as-contract tx-sender) owner))
+  )
+)
+
+(define-public (redeem-xstx (ustx-amount uint) (sender principal))
+  (begin
+    (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
+
+    (match (print (as-contract (stx-transfer? ustx-amount (as-contract tx-sender) sender)))
+      transferred (ok true)
+      error (err err-transfer-failed)
+    )
   )
 )

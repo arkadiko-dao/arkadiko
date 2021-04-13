@@ -6,6 +6,7 @@ import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { uintCV, contractPrincipalCV } from '@stacks/transactions';
 import { resolveReserveName } from '@common/vault-utils';
+import { tokenTraits } from '@common/vault-utils';
 
 export interface VaultProps {
   id: string;
@@ -56,6 +57,7 @@ export const Vault: React.FC<VaultProps> = ({
   }
 
   const callWithdrawLeftoverCollateral = async () => {
+    const token = tokenTraits[collateralToken.toLowerCase()]['name'];
     await doContractCall({
       network,
       contractAddress,
@@ -64,7 +66,7 @@ export const Vault: React.FC<VaultProps> = ({
       functionArgs: [
         uintCV(id),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', resolveReserveName(collateralToken)),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token')
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token)
       ],
       postConditionMode: 0x01,
       finished: data => {

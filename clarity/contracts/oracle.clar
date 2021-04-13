@@ -5,8 +5,8 @@
 (define-data-var last-price-in-cents uint u0)
 (define-data-var last-block uint u0)
 
-;; (define-constant oracle-owner 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP) ;; mocknet
-(define-constant oracle-owner 'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H) ;; testnet
+(define-constant oracle-owner 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP) ;; mocknet
+;; (define-constant oracle-owner 'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H) ;; testnet
 
 (define-map prices
   { token: (string-ascii 12) }

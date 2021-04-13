@@ -93,7 +93,23 @@
 
 (define-public (redeem-collateral (token <mock-ft-trait>) (ucollateral uint) (owner principal))
   (begin
-    (asserts! (is-eq contract-caller .auction-engine) (err err-unauthorized))
+    (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
     (as-contract (contract-call? token transfer ucollateral (as-contract tx-sender) owner))
+  )
+)
+
+(define-public (mint-xstx (collateral uint))
+  (begin
+    (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
+    (contract-call? .xstx-token mint collateral (as-contract tx-sender))
+  )
+)
+
+;; redeem stx (and burn xSTX)
+(define-public (burn-xstx (ustx-amount uint) (sender principal))
+  (begin
+    (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
+    (try! (contract-call? .xstx-token burn ustx-amount sender))
+    (ok true)
   )
 )

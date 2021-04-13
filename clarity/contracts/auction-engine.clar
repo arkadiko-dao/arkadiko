@@ -187,13 +187,20 @@
   )
 )
 
+(define-read-only (collateral-token (token (string-ascii 12)))
+  (if (is-eq token "xstx")
+    "stx"
+    token
+  )
+)
+
 ;; calculates the minimum collateral amount to sell
 ;; e.g. if we need to cover 10 xUSD debt, and we have 20 STX at $1/STX,
 ;; we only need to auction off 10 STX
 ;; but we give a 3% discount to incentivise people TODO:
 (define-read-only (calculate-minimum-collateral-amount (auction-id uint))
   (let ((auction (get-auction-by-id auction-id)))
-    (let ((price-in-cents (contract-call? .oracle get-price (get collateral-token auction))))
+    (let ((price-in-cents (contract-call? .oracle get-price (collateral-token (get collateral-token auction)))))
       (let ((amount (/ (/ (get debt-to-raise auction) (unwrap-panic (discounted-auction-price (get last-price-in-cents price-in-cents)))) (get lots auction))))
         (if (> (/ (get collateral-amount auction) (get lots auction)) (* u100 amount))
           (ok (* u100 amount))
@@ -357,7 +364,7 @@
         (let ((lots (get-winning-lots tx-sender)))
           (map-set redeeming-lot { user: tx-sender } { auction-id: auction-id, lot-index: lot-index})
           (if (map-set winning-lots { user: tx-sender } { ids: (filter remove-winning-lot (get ids lots)) })
-            (ok (contract-call? reserve redeem-collateral ft (get collateral-amount last-bid) tx-sender))
+            (ok (contract-call? .freddie redeem-auction-collateral ft reserve (get collateral-amount last-bid) tx-sender))
             (err false)
           )
         )

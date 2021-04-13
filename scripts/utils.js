@@ -30,8 +30,8 @@ async function processing(broadcastedResult, tx, count) {
   }, 3000);
 }
 
-async function getNonce() {
-  const url = `${utils.resolveUrl()}/v2/accounts/${CONTRACT_ADDRESS}?proof=0`;
+async function getNonce(address) {
+  const url = `${resolveUrl()}/v2/accounts/${address}?proof=0`;
   const result = await request(url, { json: true });
   return result.nonce;
 }

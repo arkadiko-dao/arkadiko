@@ -5,6 +5,7 @@ import { VaultProps } from '@components/vault';
 interface UserBalance {
   stx: number;
   xusd: number;
+  xstx: number;
   diko: number;
 }
 
@@ -32,7 +33,7 @@ export interface AppState {
 }
 
 export const defaultBalance = () => {
-  return { stx: 0, xusd: 0, diko: 0 };
+  return { stx: 0, xusd: 0, diko: 0, xstx: 0 };
 };
 
 export const defaultState = (): AppState => {
@@ -52,7 +53,7 @@ export const defaultState = (): AppState => {
 
   return {
     userData: null,
-    balance: { stx: 0, xusd: 0, diko: 0 },
+    balance: { stx: 0, xusd: 0, diko: 0, xstx: 0 },
     vaults: [],
     definedCollateralTypes: ['stx-a', 'stx-b', 'diko-a'],
     collateralTypes: [],

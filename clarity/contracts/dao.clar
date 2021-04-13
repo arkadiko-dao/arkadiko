@@ -38,6 +38,7 @@
 (define-data-var governance-reserve-yield uint u5)
 (define-data-var maximum-debt-surplus uint u100000000)
 (define-data-var tokens-to-stack uint u0)
+(define-data-var stx-redeemable uint u0)
 (define-data-var unlock-burn-height uint u0)
 
 (define-read-only (get-votes-by-member-by-id (proposal-id uint) (member principal))
@@ -170,6 +171,10 @@
 
 (define-read-only (get-tokens-to-stack)
   (ok (var-get tokens-to-stack))
+)
+
+(define-read-only (get-stx-redeemable)
+  (ok (var-get stx-redeemable))
 )
 
 ;; setters accessible only by DAO contract
@@ -535,6 +540,22 @@
 (define-public (subtract-tokens-to-stack (token-amount uint))
   (if true
     (ok (var-set tokens-to-stack (- (var-get tokens-to-stack) token-amount)))
+    (err u0)
+  )
+)
+
+;; TODO - add security!
+(define-public (add-stx-redeemable (token-amount uint))
+  (if true
+    (ok (var-set stx-redeemable (+ token-amount (var-get stx-redeemable))))
+    (err u0)
+  )
+)
+
+;; TODO - add security!
+(define-public (subtract-stx-redeemable (token-amount uint))
+  (if true
+    (ok (var-set stx-redeemable (- (var-get stx-redeemable) token-amount)))
     (err u0)
   )
 )

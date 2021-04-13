@@ -88,7 +88,7 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collatera
         <span className="text-gray-900 font-medium">{id}.{lotId + 1}</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">{collateralAmount / 1000000} STX</span>
+        <span className="text-gray-900 font-medium">{collateralAmount / 1000000} {collateralToken.toUpperCase()}</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         <span className="text-gray-900 font-medium">{xusd / 1000000} xUSD</span>

@@ -58,7 +58,7 @@ async function getLiquidationRatio(collateralType) {
 }
 
 async function liquidateVault(vaultId) {
-  const nonce = await utils.getNonce();
+  const nonce = await utils.getNonce(CONTRACT_ADDRESS);
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
     contractName: "liquidator",

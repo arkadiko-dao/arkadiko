@@ -1,4 +1,10 @@
 
+## Version 0.2.0
+
+### New Features
+
+- When STX collateral is stacked in PoX and a vault needs to be liquidated, an equivalent amount of xSTX tokens will be minted that are interchangeable for STX once they get unlocked from PoX. Instead of STX, the xSTX tokens will be auctioned off. Owning the xSTX will also make you eligible to get the rewards from PoX for the corresponding STX tokens.
+
 ## Version 0.1.7
 
 ### Bug Fixes

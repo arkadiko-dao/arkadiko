@@ -65,25 +65,6 @@ export const Mint = () => {
     });
   };
 
-  const callCollateralizeAndMint = async () => {
-    const args = [
-      uintCV(10 * 1000000),
-      uintCV(1000000),
-      standardPrincipalCV(address || ''),
-      stringAsciiCV('stx-a'),
-      stringAsciiCV('stx'),
-      contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', resolveReserveName('stx'))
-    ];
-    await doContractCall({
-      network,
-      contractAddress,
-      contractName: 'freddie',
-      functionName: 'collateralize-and-mint',
-      functionArgs: args,
-      postConditionMode: 0x01
-    });
-  };
-
   return (
     <Box py={6}>
       <main className="flex-1 relative pb-8 z-0 overflow-y-auto">
@@ -95,9 +76,6 @@ export const Mint = () => {
                 <Box>
                   <Link onClick={() => addMocknetStx()} color="blue" display="inline-block" my={3} ml={5}>
                     (Get 5000 STX tokens from mocknet)
-                  </Link>
-                  <Link onClick={() => callCollateralizeAndMint()} color="blue" display="inline-block" my={3} ml={5}>
-                    (Create test vault)
                   </Link>
                 </Box>
               ) : (
