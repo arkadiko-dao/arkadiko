@@ -1,4 +1,10 @@
 
+## Version 0.3.0
+
+### New Features
+
+- Improve auction logic by selling lots of 100 xUSD
+
 ## Version 0.2.0
 
 ### New Features

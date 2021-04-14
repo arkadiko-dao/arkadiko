@@ -19,11 +19,9 @@
     debt-to-raise: uint,
     vault-id: uint,
     lot-size: uint,
-    lots: uint,
-    last-lot-size: uint,
     lots-sold: uint,
     is-open: bool,
-    total-collateral-auctioned: uint,
+    total-collateral-sold: uint,
     total-debt-raised: uint,
     ends-at: uint
   }
@@ -61,11 +59,9 @@
       (debt-to-raise u0)
       (vault-id u0)
       (lot-size u0)
-      (lots u0)
-      (last-lot-size u0)
       (lots-sold u0)
       (is-open false)
-      (total-collateral-auctioned u0)
+      (total-collateral-sold u0)
       (total-debt-raised u0)
       (ends-at u0)
     )
@@ -87,62 +83,27 @@
     (asserts! (is-eq (get is-liquidated vault) true) (err err-auction-not-allowed))
 
     (let ((auction-id (+ (var-get last-auction-id) u1)))
-      ;; 500 xUSD debt => 500 / 100 = 5 lots
-      (let ((amount-of-lots (/ debt-to-raise (var-get lot-size))))
-        (if (< (* amount-of-lots (var-get lot-size)) debt-to-raise)
-          (begin
-            ;; need to add +1 to amount of lots
-            (let ((last-lot-size (mod debt-to-raise (var-get lot-size))))
-              (map-set auctions
-                { id: auction-id }
-                {
-                  id: auction-id,
-                  collateral-amount: uamount,
-                  collateral-token: (get collateral-token vault),
-                  debt-to-raise: debt-to-raise,
-                  vault-id: vault-id,
-                  lot-size: (var-get lot-size),
-                  lots: (+ u1 amount-of-lots),
-                  last-lot-size: last-lot-size,
-                  lots-sold: u0,
-                  ends-at: (+ block-height u10000),
-                  total-collateral-auctioned: u0,
-                  total-debt-raised: u0,
-                  is-open: true
-                }
-              )
-              (print "Added new open auction")
-              (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u1800)))
-              (var-set last-auction-id auction-id)
-              (ok true)
-            )
-          )
-          (begin
-            ;; the collateral amount is exactly divisible by lot-size (no remainder after division)
-            (map-set auctions
-              { id: auction-id }
-              {
-                id: auction-id,
-                collateral-amount: uamount,
-                collateral-token: (get collateral-token vault),
-                debt-to-raise: debt-to-raise,
-                vault-id: vault-id,
-                lot-size: (var-get lot-size),
-                lots: amount-of-lots,
-                last-lot-size: u0,
-                lots-sold: u0,
-                ends-at: (+ block-height u10000),
-                total-collateral-auctioned: u0,
-                total-debt-raised: u0,
-                is-open: true
-              }
-            )
-            (print "Added new open auction")
-            (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u1800)))
-            (var-set last-auction-id auction-id)
-            (ok true)
-          )
+      (begin
+        (map-set auctions
+          { id: auction-id }
+          {
+            id: auction-id,
+            collateral-amount: uamount,
+            collateral-token: (get collateral-token vault),
+            debt-to-raise: debt-to-raise,
+            vault-id: vault-id,
+            lot-size: (var-get lot-size),
+            lots-sold: u0,
+            ends-at: (+ block-height u144),
+            total-collateral-sold: u0,
+            total-debt-raised: u0,
+            is-open: true
+          }
         )
+        (print "Added new open auction")
+        (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u1800)))
+        (var-set last-auction-id auction-id)
+        (ok true)
       )
     )
   )
@@ -154,36 +115,40 @@
 (define-private (start-debt-auction (vault-id uint) (debt-to-raise uint))
   (let ((vault (contract-call? .freddie get-vault-by-id vault-id)))
     (asserts! (is-eq (get is-liquidated vault) true) (err err-auction-not-allowed))
-    (let ((collateral-uamount u5))
-      (let ((auction-id (+ (var-get last-auction-id) u1)))
-        (map-set auctions
-          { id: auction-id }
-          {
-            id: auction-id,
-            collateral-amount: collateral-uamount,
-            collateral-token: "diko",
-            debt-to-raise: debt-to-raise,
-            vault-id: vault-id,
-            lot-size: (var-get lot-size),
-            lots: (+ u1 (/ debt-to-raise (var-get lot-size))), ;; lot-size / price of diko
-            last-lot-size: u0,
-            lots-sold: u0,
-            ends-at: (+ block-height u10000),
-            total-collateral-auctioned: u0,
-            total-debt-raised: u0,
-            is-open: true
-          }
-        )
+
+    (let (
+      (auction-id (+ (var-get last-auction-id) u1))
+      (price-in-cents u10)
+    )
+      (map-set auctions
+        { id: auction-id }
+        {
+          id: auction-id,
+          collateral-amount: (/ (* u100 debt-to-raise) price-in-cents),
+          collateral-token: "diko",
+          debt-to-raise: debt-to-raise,
+          vault-id: vault-id,
+          lot-size: (var-get lot-size),
+          lots-sold: u0,
+          ends-at: (+ block-height u144),
+          total-collateral-sold: u0,
+          total-debt-raised: u0,
+          is-open: true
+        }
       )
+
+      (print "Added new open auction")
+      (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u1800)))
+      (var-set last-auction-id auction-id)
     )
     (ok true)
   )
 )
 
-(define-public (discounted-auction-price (price-in-cents uint))
+(define-read-only (discounted-auction-price (price-in-cents uint))
   ;; price * 3% = price * 3 / 100
-  (let ((discount (/ (* price-in-cents u3) u100)))
-    (ok (- price-in-cents discount))
+  (let ((discount (* price-in-cents u3)))
+    (ok (/ (- (* u100 price-in-cents) discount) u100))
   )
 )
 
@@ -199,12 +164,27 @@
 ;; we only need to auction off 10 STX
 ;; but we give a 3% discount to incentivise people
 (define-read-only (calculate-minimum-collateral-amount (auction-id uint))
-  (let ((auction (get-auction-by-id auction-id)))
-    (let ((price-in-cents (contract-call? .oracle get-price (collateral-token (get collateral-token auction)))))
-      (let ((amount (/ (/ (get debt-to-raise auction) (unwrap-panic (discounted-auction-price (get last-price-in-cents price-in-cents)))) (get lots auction))))
-        (if (> (/ (get collateral-amount auction) (get lots auction)) (* u100 amount))
-          (ok (* u100 amount))
-          (ok (/ (get collateral-amount auction) (get lots auction)))
+  (let (
+    (auction (get-auction-by-id auction-id))
+    (price-in-cents (contract-call? .oracle get-price (collateral-token (get collateral-token auction))))
+    (collateral-left (- (get collateral-amount auction) (get total-collateral-sold auction)))
+    (debt-left-to-raise (- (get debt-to-raise auction) (get total-debt-raised auction)))
+  )
+    (if (< debt-left-to-raise u100000000)
+      (begin
+        (let ((collateral-amount (/ (* u100 debt-left-to-raise) (unwrap-panic (discounted-auction-price (get last-price-in-cents price-in-cents))))))
+          (if (> collateral-amount collateral-left)
+            (ok collateral-left)
+            (ok collateral-amount)
+          )
+        )
+      )
+      (begin
+        (let ((collateral-amount (/ (* u100 (get lot-size auction)) (unwrap-panic (discounted-auction-price (get last-price-in-cents price-in-cents))))))
+          (if (> collateral-amount collateral-left)
+            (ok collateral-left)
+            (ok collateral-amount)
+          )
         )
       )
     )
@@ -233,26 +213,25 @@
   )
 )
 
-(define-public (bid (auction-id uint) (lot-index uint) (xusd uint) (collateral-amount uint))
+(define-public (bid (auction-id uint) (lot-index uint) (xusd uint))
   (let ((auction (get-auction-by-id auction-id)))
     (if
       (and
-        (< lot-index (get lots auction))
+        (is-eq lot-index (get lots-sold auction))
         (is-eq (get is-open auction) true)
-        (<= collateral-amount (/ (get collateral-amount auction) (get lots auction)))
       )
-      (ok (register-bid auction-id lot-index xusd collateral-amount))
+      (ok (register-bid auction-id lot-index xusd))
       (err err-bid-declined) ;; just silently exit
     )
   )
 )
 
-(define-private (register-bid (auction-id uint) (lot-index uint) (xusd uint) (collateral-amount uint))
+(define-private (register-bid (auction-id uint) (lot-index uint) (xusd uint))
   (let ((auction (get-auction-by-id auction-id)))
     (let ((last-bid (get-last-bid auction-id lot-index)))
       (if (not (get is-accepted last-bid))
         (if (> xusd (get xusd last-bid)) ;; we have a better bid and the previous one was not accepted!
-          (ok (accept-bid auction-id lot-index xusd collateral-amount))
+          (ok (accept-bid auction-id lot-index xusd))
           (err err-poor-bid) ;; don't care cause either the bid is already over or it was a poor bid
         )
         (err err-lot-sold) ;; lot is already sold
@@ -268,73 +247,77 @@
   )
 )
 
-(define-private (accept-bid (auction-id uint) (lot-index uint) (xusd uint) (collateral-amount uint))
-  (let ((auction (get-auction-by-id auction-id)))
-    (let ((last-bid (get-last-bid auction-id lot-index)))
-      (let ((accepted-bid (>= xusd (/ (get debt-to-raise auction) (get lots auction)))))
-        ;; if this bid is at least (total debt to raise / lot-size) amount, accept it as final - we don't need to be greedy
+(define-private (accept-bid (auction-id uint) (lot-index uint) (xusd uint))
+  (let (
+    (auction (get-auction-by-id auction-id))
+    (last-bid (get-last-bid auction-id lot-index))
+    (collateral-amount (unwrap-panic (calculate-minimum-collateral-amount auction-id)))
+    (accepted-bid
+      (or
+        (is-eq xusd (get lot-size auction))
+        (>= xusd (- (get debt-to-raise auction) (get total-debt-raised auction)))
+      )
+    )
+  )
+    ;; if this bid is at least (total debt to raise / lot-size) amount, accept it as final - we don't need to be greedy
+    (begin
+      (if (> (get xusd last-bid) u0)
+        (try! (return-xusd (get owner last-bid) (get xusd last-bid))) ;; return xUSD of last bid to (now lost) bidder
+        true
+      )
+      (if (unwrap! (contract-call? .xusd-token transfer xusd tx-sender (as-contract tx-sender)) (err u1237))
         (begin
-          (if (> (get xusd last-bid) u0)
-            (try! (return-collateral (get owner last-bid) (get xusd last-bid))) ;; return xUSD of last bid to (now lost) bidder
-            true
+          (map-set auctions
+            { id: auction-id }
+            {
+              id: auction-id,
+              collateral-amount: (get collateral-amount auction),
+              collateral-token: (get collateral-token auction),
+              debt-to-raise: (get debt-to-raise auction),
+              vault-id: (get vault-id auction),
+              lot-size: (get lot-size auction),
+              lots-sold: (+ (unwrap-panic (is-lot-sold accepted-bid)) (get lots-sold auction)),
+              ends-at: (get ends-at auction),
+              total-collateral-sold: (- (+ collateral-amount (get total-collateral-sold auction)) (get collateral-amount last-bid)),
+              total-debt-raised: (- (+ xusd (get total-debt-raised auction)) (get xusd last-bid)),
+              is-open: true
+            }
           )
-          (if (unwrap! (contract-call? .xusd-token transfer xusd tx-sender (as-contract tx-sender)) (err u1237))
+          (map-set bids
+            { auction-id: auction-id, lot-index: lot-index }
+            {
+              xusd: xusd,
+              collateral-amount: collateral-amount,
+              collateral-token: (get collateral-token auction),
+              owner: tx-sender,
+              is-accepted: accepted-bid
+            }
+          )
+          (if accepted-bid
             (begin
-              (map-set auctions
-                { id: auction-id }
-                {
-                  id: auction-id,
-                  collateral-amount: (get collateral-amount auction),
-                  collateral-token: (get collateral-token auction),
-                  debt-to-raise: (get debt-to-raise auction),
-                  vault-id: (get vault-id auction),
-                  lot-size: (get lot-size auction),
-                  lots: (get lots auction),
-                  last-lot-size: (get last-lot-size auction),
-                  lots-sold: (+ (unwrap-panic (is-lot-sold accepted-bid)) (get lots-sold auction)),
-                  ends-at: (get ends-at auction),
-                  total-collateral-auctioned: (- (+ collateral-amount (get total-collateral-auctioned auction)) (get collateral-amount last-bid)),
-                  total-debt-raised: (- (+ xusd (get total-debt-raised auction)) (get xusd last-bid)),
-                  is-open: true
-                }
-              )
-              (map-set bids
-                { auction-id: auction-id, lot-index: lot-index }
-                {
-                  xusd: xusd,
-                  collateral-amount: collateral-amount,
-                  collateral-token: (get collateral-token auction),
-                  owner: tx-sender,
-                  is-accepted: accepted-bid
-                }
-              )
-              (if accepted-bid
-                (begin
-                  (let ((lots (get-winning-lots tx-sender)))
-                    (map-set winning-lots
-                      { user: tx-sender }
-                      {
-                        ids: (unwrap-panic (as-max-len? (append (get ids lots) (tuple (auction-id auction-id) (lot-index lot-index))) u100))
-                      }
-                    )
-                  )
+              (let ((lots (get-winning-lots tx-sender)))
+                (map-set winning-lots
+                  { user: tx-sender }
+                  {
+                    ids: (unwrap-panic (as-max-len? (append (get ids lots) (tuple (auction-id auction-id) (lot-index lot-index))) u100))
+                  }
                 )
-                true
-              )
-              (if
-                (or
-                  (>= block-height (get ends-at auction))
-                  (>= (- (+ xusd (get total-debt-raised auction)) (get xusd last-bid)) (get debt-to-raise auction))
-                )
-                ;; auction is over - close all bids
-                ;; send collateral to winning bidders
-                (ok (unwrap! (close-auction auction-id) (err u666)))
-                (ok false)
               )
             )
-            (err err-xusd-transfer-failed)
+            true
+          )
+          (if
+            (or
+              (>= block-height (get ends-at auction))
+              (>= (- (+ xusd (get total-debt-raised auction)) (get xusd last-bid)) (get debt-to-raise auction))
+            )
+            ;; auction is over - close all bids
+            ;; send collateral to winning bidders
+            (ok (unwrap! (close-auction auction-id) (err u666)))
+            (ok false)
           )
         )
+        (err err-xusd-transfer-failed)
       )
     )
   )
@@ -374,7 +357,7 @@
   )
 )
 
-(define-private (return-collateral (owner principal) (xusd uint))
+(define-private (return-xusd (owner principal) (xusd uint))
   (if (> xusd u0)
     (ok (unwrap-panic (as-contract (contract-call? .xusd-token transfer xusd (as-contract tx-sender) owner))))
     (err u0) ;; don't really care if this fails.
@@ -382,8 +365,7 @@
 )
 
 ;; DONE     1. flag auction on map as closed
-;; SCRIPT   2a. go over each lot (0 to lot-size) and send collateral to winning address
-;; DONE     2b. OR allow person to collect collateral from reserve manually
+;; DONE     2. allow person to collect collateral from reserve manually
 ;; DONE     3. check if vault debt is covered (sum of xUSD in lots >= debt-to-raise)
 ;; DONE     4. update vault to allow vault owner to withdraw leftover collateral (if any)
 ;; DONE     5. if not all vault debt is covered: auction off collateral again (if any left)
@@ -408,43 +390,85 @@
         debt-to-raise: (get debt-to-raise auction),
         vault-id: (get vault-id auction),
         lot-size: (get lot-size auction),
-        lots: (get lots auction),
-        last-lot-size: (get last-lot-size auction),
         lots-sold: (get lots-sold auction),
         ends-at: (get ends-at auction),
-        total-collateral-auctioned: (get total-collateral-auctioned auction),
+        total-collateral-sold: (get total-collateral-sold auction),
         total-debt-raised: (get total-debt-raised auction),
         is-open: false
       }
     )
+    (try! (contract-call? .xusd-token burn (get total-debt-raised auction) (as-contract tx-sender)))
     (if (>= (get total-debt-raised auction) (get debt-to-raise auction))
       (begin
-        (try! (contract-call? .xusd-token burn (get total-debt-raised auction) (as-contract tx-sender)))
         (contract-call?
           .freddie
           finalize-liquidation
           (get vault-id auction)
-          (- (get collateral-amount auction) (get total-collateral-auctioned auction))
+          (- (get collateral-amount auction) (get total-collateral-sold auction))
           (get total-debt-raised auction)
         )
       )
       (begin
-        (if (<= (get total-collateral-auctioned auction) (get collateral-amount auction)) ;; we have some collateral left to auction
-          ;; if any collateral left to auction
-          (ok (unwrap-panic (start-auction
+        (if (< (get total-collateral-sold auction) (get collateral-amount auction)) ;; we have some collateral left to auction
+          ;; start new auction with collateral that is left
+          (start-auction
             (get vault-id auction)
-            (- (get collateral-amount auction) (get total-collateral-auctioned auction))
+            (- (get collateral-amount auction) (get total-collateral-sold auction))
             (- (get debt-to-raise auction) (get total-debt-raised auction))
-          )))
-          (begin
-            ;; no collateral left and/or all current lots are sold. Need to sell governance token to raise more xUSD
-            (ok (unwrap-panic (start-debt-auction
-              (get vault-id auction)
-              (get debt-to-raise auction)
-            )))
+          )
+          ;; no collateral left. Need to sell governance token to raise more xUSD
+          (start-debt-auction
+            (get vault-id auction)
+            (get debt-to-raise auction)
           )
         )
       )
     )
+  )
+)
+
+(define-public (unlock-winning-lots (auction-id uint) (lot-index uint))
+  (let (
+    (auction (get-auction-by-id auction-id))
+    (last-bid (get-last-bid auction-id lot-index))
+    (lots (get-winning-lots (get owner last-bid)))
+  )
+    (asserts! (is-eq (get is-open auction) false) (err err-not-authorized))
+    (asserts! (> (get xusd last-bid) u0) (err err-not-authorized))
+    (asserts! (is-eq (get is-accepted last-bid) false) (err err-not-authorized))
+
+    (map-set auctions
+      { id: auction-id }
+      {
+        id: auction-id,
+        collateral-amount: (get collateral-amount auction),
+        collateral-token: (get collateral-token auction),
+        debt-to-raise: (get debt-to-raise auction),
+        vault-id: (get vault-id auction),
+        lot-size: (get lot-size auction),
+        lots-sold: (+ u1 (get lots-sold auction)),
+        ends-at: (get ends-at auction),
+        total-collateral-sold: (get total-collateral-sold auction),
+        total-debt-raised: (get total-debt-raised auction),
+        is-open: (get is-open auction)
+      }
+    )
+    (map-set bids
+      { auction-id: auction-id, lot-index: lot-index }
+      {
+        xusd: (get xusd last-bid),
+        collateral-amount: (get collateral-amount last-bid),
+        collateral-token: (get collateral-token auction),
+        owner: (get owner last-bid),
+        is-accepted: true
+      }
+    )
+    (map-set winning-lots
+      { user: (get owner last-bid) }
+      {
+        ids: (unwrap-panic (as-max-len? (append (get ids lots) (tuple (auction-id auction-id) (lot-index lot-index))) u100))
+      }
+    )
+    (ok true)
   )
 )

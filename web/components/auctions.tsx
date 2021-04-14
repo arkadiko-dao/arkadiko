@@ -37,17 +37,12 @@ export const Auctions: React.FC = () => {
         const vault = tupleCV(e);
         const data = vault.data.value;
         if (data['is-open'].value) {
-          const lotSize = parseInt(data['lots'].value, 10);
-          // for (let index = 0; index < lotSize; index++) {
-            serializedAuctions.push({
-              id: data['id'].value,
-              'lot-id': data['lots-sold'].value,
-              'collateral-amount': parseFloat(data['collateral-amount'].value) / lotSize,
-              'collateral-token': data['collateral-token'].value,
-              'debt': parseFloat(data['debt-to-raise'].value) / lotSize,
-              'ends-at': data['ends-at'].value
-            }); 
-          // }
+          serializedAuctions.push({
+            id: data['id'].value,
+            'lot-id': data['lots-sold'].value,
+            'collateral-token': data['collateral-token'].value,
+            'ends-at': data['ends-at'].value
+          });
         }
       });
 
@@ -145,7 +140,7 @@ export const Auctions: React.FC = () => {
 
                   {state.balance['xstx'] > 0 ? (
                     <p className="mt-2">
-                      There are {redeemableStx / 1000000} STX redeemable in the pool. <br/>
+                      There are {redeemableStx / 1000000} STX redeemable in the Arkadiko pool. <br/>
                       You have {state.balance['xstx'] / 1000000} xSTX. <br/>
 
                       <button type="button" onClick={() => redeemStx()} className="mt-2 px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">

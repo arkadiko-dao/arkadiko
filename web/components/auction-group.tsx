@@ -22,7 +22,6 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
   const [bidAuctionId, setBidAuctionId] = useState(0);
   const [bidLotId, setBidLotId] = useState(0);
   const [preferredBid, setPreferredBid] = useState(0);
-  const [collateralAmount, setCollateralAmount] = useState(0);
   const [txId, setTxId] = useState<string>('');
   const [txStatus, setTxStatus] = useState<string>('');
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -32,15 +31,12 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
       key={`${auction.id}-${auction['lot-id']}`}
       id={auction.id}
       lotId={auction['lot-id']}
-      collateralAmount={auction['collateral-amount']}
       collateralToken={auction['collateral-token']}
-      debt={auction['debt']}
       endsAt={auction['ends-at']}
       setShowBidModal={setShowBidModal}
       setBidAuctionId={setBidAuctionId}
       setBidLotId={setBidLotId}
       setPreferredBid={setPreferredBid}
-      setCollateralAmount={setCollateralAmount}
     />
   );
 
@@ -82,7 +78,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
       contractAddress,
       contractName: 'auction-engine',
       functionName: 'bid',
-      functionArgs: [uintCV(bidAuctionId), uintCV(bidLotId), uintCV(bidAmount * 1000000), uintCV(collateralAmount)],
+      functionArgs: [uintCV(bidAuctionId), uintCV(bidLotId), uintCV(bidAmount * 1000000)],
       postConditionMode: 0x01,
       finished: data => {
         console.log('finished bidding!', data);

@@ -13,6 +13,7 @@ describe("auction engine unit test suite", () => {
   let xstxTokenClient: Client;
   let tokenClient: Client;
   let stxReserveClient: Client;
+  let sip10ReserveClient: Client;
   let provider: Provider;
 
   before(async () => {
@@ -26,6 +27,7 @@ describe("auction engine unit test suite", () => {
     mockPox = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.mock-pox", "mock-pox", provider);
     daoClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.dao", "dao", provider);
     stxReserveClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.stx-reserve", "stx-reserve", provider);
+    sip10ReserveClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.sip10-reserve", "sip10-reserve", provider);
     freddie = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.freddie", "freddie", provider);
     auctionEngineClient = new Client("SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.auction-engine", "auction-engine", provider);
   });
@@ -40,6 +42,7 @@ describe("auction engine unit test suite", () => {
     await arkadikoClient.deployContract();
     await daoClient.deployContract();
     await stxReserveClient.deployContract();
+    await sip10ReserveClient.deployContract();
     await freddie.deployContract();
     await auctionEngineClient.checkContract();
   });
