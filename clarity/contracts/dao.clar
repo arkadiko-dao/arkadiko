@@ -11,8 +11,17 @@
 (define-constant err-unauthorized u401)
 (define-constant status-ok u200)
 
-(define-constant dao-owner 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP) ;; mocknet
-;; (define-constant dao-owner 'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H) ;; testnet
+(define-private (get-dao-owner)
+  ;; TODO: fix manual mocknet/testnet/mainnet switch
+  ;; (if is-in-regtest
+  ;;   (if (is-eq (unwrap-panic (get-block-info? header-hash u1)) 0xd2454d24b49126f7f47c986b06960d7f5b70812359084197a200d691e67a002e)
+  ;;     'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H ;; Testnet only
+  ;;     'ST1HTBVD3JG9C05J7HBJTHGR0GGW7KXW28M5JS8QE ;; Other test environments
+  ;;   )
+  ;;   'SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7 ;; Mainnet (TODO)
+  ;; )
+  'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7
+)
 
 ;; proposal variables
 (define-map proposals
@@ -42,33 +51,27 @@
 (define-data-var maximum-debt-surplus uint u100000000)
 
 (define-read-only (get-votes-by-member-by-id (proposal-id uint) (member principal))
-  (unwrap!
-    (map-get? votes-by-member {proposal-id: proposal-id, member: member})
-    (tuple
-      (vote-count u0)
-    )
-  )
-)
+  (default-to 
+    { vote-count: u0 }
+    (map-get? votes-by-member { proposal-id: proposal-id, member: member })))
 
 (define-read-only (get-proposal-by-id (proposal-id uint))
-  (unwrap!
-    (map-get? proposals {id: proposal-id})
-    (tuple
-      (id u0)
-      (proposer 'S02J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKPVKG2CE)
-      (is-open false)
-      (start-block-height u0)
-      (end-block-height u0)
-      (yes-votes u0)
-      (no-votes u0)
-      (token "")
-      (collateral-type "")
-      (type "")
-      (changes (list (tuple (key "") (new-value u0))))
-      (details (unwrap-panic (as-max-len? "" u256)))
-    )
-  )
-)
+  (default-to
+    {
+      id: u0,
+      proposer: 'ST21HMSJATHZ888PD0S0SSTWP4J61TCRJYEVQ0STB, ;; TODO: should we hardcode a testnet address here?
+      is-open: false,
+      start-block-height: u0,
+      end-block-height: u0,
+      yes-votes: u0,
+      no-votes: u0,
+      token: "",
+      collateral-type: "",
+      type: "",
+      changes: (list { key: "", new-value: u0 } ),
+      details: (unwrap-panic (as-max-len? "" u256))
+    }
+    (map-get? proposals { id: proposal-id })))
 
 (define-read-only (get-proposals)
   (ok (map get-proposal-by-id (var-get proposal-ids)))
@@ -180,8 +183,8 @@
                                     (stability-fee-apy uint)
                                     (maximum-debt uint))
   (begin
-    (asserts! (is-eq dao-owner tx-sender) (err err-unauthorized))
-
+    ;; DAO should be calling this method
+    (asserts! (is-eq (get-dao-owner) tx-sender) (err err-unauthorized))
     (map-set collateral-types
       { token: collateral-type }
       {
@@ -204,25 +207,12 @@
 
 (define-public (add-debt-to-collateral-type (token (string-ascii 12)) (debt uint))
   (begin
+    ;; freddie should be calling this method
     (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
-
     (let ((collateral-type (get-collateral-type-by-token token)))
       (map-set collateral-types
         { token: token }
-        {
-          name: (get name collateral-type),
-          token: (get token collateral-type),
-          token-type: (get token-type collateral-type),
-          url: (get url collateral-type),
-          total-debt: (+ debt (get total-debt collateral-type)),
-          liquidation-ratio: (get liquidation-ratio collateral-type),
-          collateral-to-debt-ratio: (get collateral-to-debt-ratio collateral-type),
-          maximum-debt: (get maximum-debt collateral-type),
-          liquidation-penalty: (get liquidation-penalty collateral-type),
-          stability-fee: (get stability-fee collateral-type),
-          stability-fee-apy: (get stability-fee-apy collateral-type)
-        }
-      )
+        (merge collateral-type { total-debt: (+ debt (get total-debt collateral-type)) }))
       (ok debt)
     )
   )
@@ -230,25 +220,12 @@
 
 (define-public (subtract-debt-from-collateral-type (token (string-ascii 12)) (debt uint))
   (begin
+    ;; freddie should be calling this method
     (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
-
     (let ((collateral-type (get-collateral-type-by-token token)))
       (map-set collateral-types
         { token: token }
-        {
-          name: (get name collateral-type),
-          token: (get token collateral-type),
-          token-type: (get token-type collateral-type),
-          url: (get url collateral-type),
-          total-debt: (- debt (get total-debt collateral-type)),
-          liquidation-ratio: (get liquidation-ratio collateral-type),
-          collateral-to-debt-ratio: (get collateral-to-debt-ratio collateral-type),
-          maximum-debt: (get maximum-debt collateral-type),
-          liquidation-penalty: (get liquidation-penalty collateral-type),
-          stability-fee: (get stability-fee collateral-type),
-          stability-fee-apy: (get stability-fee-apy collateral-type)
-        }
-      )
+        (merge collateral-type { total-debt: (- debt (get total-debt collateral-type)) }))
       (ok debt)
     )
   )
@@ -256,131 +233,66 @@
 
 (define-public (set-liquidation-ratio (token (string-ascii 12)) (ratio uint))
   (begin
-    (asserts! (is-eq dao-owner tx-sender) (err err-unauthorized))
-
-    (let ((params (get-collateral-type-by-token token)))
+    ;; DAO should be calling this method
+    (asserts! (is-eq (get-dao-owner) tx-sender) (err err-unauthorized))
+    ;; Update liquidation-ratio
+    (let ((collateral-type (get-collateral-type-by-token token)))
       (map-set collateral-types
         { token: token }
-        {
-          name: (get name params),
-          token: (get token params),
-          token-type: (get token-type params),
-          url: (get url params),
-          total-debt: (get total-debt params),
-          liquidation-ratio: ratio,
-          collateral-to-debt-ratio: (get collateral-to-debt-ratio params),
-          maximum-debt: (get maximum-debt params),
-          liquidation-penalty: (get liquidation-penalty params),
-          stability-fee: (get stability-fee params),
-          stability-fee-apy: (get stability-fee-apy params)
-        }
-      )
-      (ok (get-liquidation-ratio token))
-    )
+        (merge collateral-type { liquidation-ratio: ratio }))
+      (ok (get-liquidation-ratio token)))
   )
 )
 
 (define-public (set-collateral-to-debt-ratio (token (string-ascii 12)) (ratio uint))
   (begin
-    (asserts! (is-eq dao-owner tx-sender) (err err-unauthorized))
-
-    (let ((params (get-collateral-type-by-token token)))
+    ;; DAO should be calling this method
+    (asserts! (is-eq (get-dao-owner) tx-sender) (err err-unauthorized))
+    ;; Update collateral-to-debt-ratio
+    (let ((collateral-type (get-collateral-type-by-token token)))
       (map-set collateral-types
         { token: token }
-        {
-          name: (get name params),
-          token: (get token params),
-          token-type: (get token-type params),
-          url: (get url params),
-          total-debt: (get total-debt params),
-          liquidation-ratio: (get liquidation-ratio params),
-          collateral-to-debt-ratio: ratio,
-          maximum-debt: (get maximum-debt params),
-          liquidation-penalty: (get liquidation-penalty params),
-          stability-fee: (get stability-fee params),
-          stability-fee-apy: (get stability-fee-apy params)
-        }
-      )
-      (ok (get-liquidation-ratio token))
-    )
+        (merge collateral-type { collateral-to-debt-ratio: ratio }))
+      (ok (get-liquidation-ratio token)))
   )
 )
 
 (define-public (set-maximum-debt (token (string-ascii 12)) (debt uint))
   (begin
-    (asserts! (is-eq dao-owner tx-sender) (err err-unauthorized))
-
-    (let ((params (get-collateral-type-by-token token)))
+    ;; DAO should be calling this method
+    (asserts! (is-eq (get-dao-owner) tx-sender) (err err-unauthorized))
+    ;; Update maximum-debt
+    (let ((collateral-type (get-collateral-type-by-token token)))
       (map-set collateral-types
         { token: token }
-        {
-          name: (get name params),
-          token: (get token params),
-          token-type: (get token-type params),
-          url: (get url params),
-          total-debt: (get total-debt params),
-          liquidation-ratio: (get liquidation-ratio params),
-          collateral-to-debt-ratio: (get collateral-to-debt-ratio params),
-          maximum-debt: debt,
-          liquidation-penalty: (get liquidation-penalty params),
-          stability-fee: (get stability-fee params),
-          stability-fee-apy: (get stability-fee-apy params)
-        }
-      )
-      (ok (get-liquidation-ratio token))
-    )
+        (merge collateral-type { maximum-debt: debt }))
+      (ok (get-liquidation-ratio token)))
   )
 )
 
 (define-public (set-liquidation-penalty (token (string-ascii 12)) (penalty uint))
   (begin
-    (asserts! (is-eq dao-owner tx-sender) (err err-unauthorized))
-
-    (let ((params (get-collateral-type-by-token token)))
+    ;; DAO should be calling this method
+    (asserts! (is-eq (get-dao-owner) tx-sender) (err err-unauthorized))
+    ;; Update liquidation-penalty
+    (let ((collateral-type (get-collateral-type-by-token token)))
       (map-set collateral-types
         { token: token }
-        {
-          name: (get name params),
-          token: (get token params),
-          token-type: (get token-type params),
-          url: (get url params),
-          total-debt: (get total-debt params),
-          liquidation-ratio: (get liquidation-ratio params),
-          collateral-to-debt-ratio: (get collateral-to-debt-ratio params),
-          maximum-debt: (get maximum-debt params),
-          liquidation-penalty: penalty,
-          stability-fee: (get stability-fee params),
-          stability-fee-apy: (get stability-fee-apy params)
-        }
-      )
-      (ok (get-liquidation-ratio token))
-    )
+        (merge collateral-type { liquidation-penalty: penalty }))
+      (ok (get-liquidation-ratio token)))
   )
 )
 
 (define-public (set-stability-fee (token (string-ascii 12)) (fee uint) (fee-apy uint))
   (begin
-    (asserts! (is-eq dao-owner tx-sender) (err err-unauthorized))
-
-    (let ((params (get-collateral-type-by-token token)))
+    ;; DAO should be calling this method
+    (asserts! (is-eq (get-dao-owner) tx-sender) (err err-unauthorized))
+    ;; Update stability-fee and stability-fee-apy
+    (let ((collateral-type (get-collateral-type-by-token token)))
       (map-set collateral-types
         { token: token }
-        {
-          name: (get name params),
-          token: (get token params),
-          token-type: (get token-type params),
-          url: (get url params),
-          total-debt: (get total-debt params),
-          liquidation-ratio: (get liquidation-ratio params),
-          collateral-to-debt-ratio: (get collateral-to-debt-ratio params),
-          maximum-debt: (get maximum-debt params),
-          liquidation-penalty: (get liquidation-penalty params),
-          stability-fee: fee,
-          stability-fee-apy: fee-apy
-        }
-      )
-      (ok (get-liquidation-ratio token))
-    )
+        (merge collateral-type { stability-fee: fee, stability-fee-apy: fee-apy }))
+      (ok (get-liquidation-ratio token)))
   )
 )
 
@@ -396,104 +308,75 @@
     (token (string-ascii 12))
     (collateral-type (string-ascii 12))
   )
-  (let ((proposer-balance (unwrap-panic (contract-call? .arkadiko-token get-balance-of tx-sender))))
-    (let ((supply (unwrap-panic (contract-call? .arkadiko-token get-total-supply))))
-      (let ((proposal-id (+ u1 (var-get proposal-count))))
-        (if (>= (* proposer-balance u100) supply)
-          (begin
-            (map-set proposals
-              { id: proposal-id }
-              {
-                id: proposal-id,
-                proposer: tx-sender,
-                is-open: true,
-                start-block-height: start-block-height,
-                end-block-height: (+ start-block-height u1440),
-                yes-votes: u0,
-                no-votes: u0,
-                token: token,
-                collateral-type: collateral-type,
-                type: type,
-                changes: changes,
-                details: details
-              }
-            )
-            (var-set proposal-count proposal-id)
-            (var-set proposal-ids (unwrap-panic (as-max-len? (append (var-get proposal-ids) proposal-id) u220)))
-            (ok true)
-          )
-          (err err-not-enough-balance) ;; need at least 1% 
-        )
-      )
+  (let 
+    ((proposer-balance (unwrap-panic (contract-call? .arkadiko-token get-balance-of tx-sender)))
+    (supply (unwrap-panic (contract-call? .arkadiko-token get-total-supply)))
+    (proposal-id (+ u1 (var-get proposal-count))))
+    ;; Requires 1% of the supply 
+    (asserts! (>= (* proposer-balance u100) supply) (err err-not-enough-balance))
+    ;; Mutate
+    (map-set proposals
+      { id: proposal-id }
+      {
+        id: proposal-id,
+        proposer: tx-sender,
+        is-open: true,
+        start-block-height: start-block-height,
+        end-block-height: (+ start-block-height u1440),
+        yes-votes: u0,
+        no-votes: u0,
+        token: token,
+        collateral-type: collateral-type,
+        type: type,
+        changes: changes,
+        details: details
+      }
     )
+    (var-set proposal-count proposal-id)
+    (var-set proposal-ids (unwrap-panic (as-max-len? (append (var-get proposal-ids) proposal-id) u220)))
+    (ok true)
   )
 )
 
 (define-public (vote-for (proposal-id uint) (amount uint))
-  (let ((proposal (get-proposal-by-id proposal-id)))
+  (let (
+    (proposal (get-proposal-by-id proposal-id))
+    (vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender))))
+    ;; Proposal should be open for voting
     (asserts! (is-eq (get is-open proposal) true) (err err-unauthorized))
+    ;; Vote should be casted after the start-block-height
     (asserts! (>= block-height (get start-block-height proposal)) (err err-unauthorized))
-
-    (let ((vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender))))
-      (if (unwrap-panic (contract-call? .arkadiko-token transfer amount tx-sender (as-contract tx-sender)))
-        (begin
-          (map-set proposals
-            { id: proposal-id }
-            {
-              id: proposal-id,
-              proposer: (get proposer proposal),
-              is-open: true,
-              start-block-height: (get start-block-height proposal),
-              end-block-height: (get end-block-height proposal),
-              yes-votes: (+ amount (get yes-votes proposal)),
-              no-votes: (get no-votes proposal),
-              token: (get token proposal),
-              collateral-type: (get collateral-type proposal),
-              type: (get type proposal),
-              changes: (get changes proposal),
-              details: (get details proposal)
-            }
-          )
-          (map-set votes-by-member { proposal-id: proposal-id, member: tx-sender } { vote-count: (+ vote-count amount) })
-          (ok status-ok)
-        )
-        (err err-transfer-failed)
-      )
-    )
+    ;; Voter should be able to stake
+    (try! (contract-call? .arkadiko-token transfer amount tx-sender (as-contract tx-sender)))
+    ;; Mutate
+    (map-set proposals
+      { id: proposal-id }
+      (merge proposal { yes-votes: (+ amount (get yes-votes proposal)) }))
+    (map-set votes-by-member 
+      { proposal-id: proposal-id, member: tx-sender }
+      { vote-count: (+ vote-count amount) })
+    (ok status-ok)
   )
 )
 
 (define-public (vote-against (proposal-id uint) (amount uint))
-  (let ((proposal (get-proposal-by-id proposal-id)))
+  (let (
+    (proposal (get-proposal-by-id proposal-id))
+    (vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender))))
+    ;; Proposal should be open for voting
     (asserts! (is-eq (get is-open proposal) true) (err err-unauthorized))
+    ;; Vote should be casted after the start-block-height
     (asserts! (>= block-height (get start-block-height proposal)) (err err-unauthorized))
-
-    (let ((vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender))))
-      (if (unwrap-panic (contract-call? .arkadiko-token transfer amount tx-sender (as-contract tx-sender)))
-        (begin
-          (map-set proposals
-            { id: proposal-id }
-            {
-              id: proposal-id,
-              proposer: (get proposer proposal),
-              is-open: true,
-              start-block-height: (get start-block-height proposal),
-              end-block-height: (get end-block-height proposal),
-              yes-votes: (get yes-votes proposal),
-              no-votes: (+ amount (get no-votes proposal)),
-              token: (get token proposal),
-              collateral-type: (get collateral-type proposal),
-              type: (get type proposal),
-              changes: (get changes proposal),
-              details: (get details proposal)
-            }
-          )
-          (map-set votes-by-member { proposal-id: proposal-id, member: tx-sender } { vote-count: (+ vote-count amount) })
-          (ok status-ok)
-        )
-        (err err-transfer-failed)
-      )
-    )
+    ;; Voter should be able to stake
+    (try! (contract-call? .arkadiko-token transfer amount tx-sender (as-contract tx-sender)))
+    ;; Mutate
+    (map-set proposals
+      { id: proposal-id }
+      (merge proposal { no-votes: (+ amount (get no-votes proposal)) }))
+    (map-set votes-by-member 
+      { proposal-id: proposal-id, member: tx-sender }
+      { vote-count: (+ vote-count amount) })
+    (ok status-ok)
   )
 )
 
@@ -505,22 +388,7 @@
 
     (map-set proposals
       { id: proposal-id }
-      {
-        id: proposal-id,
-        proposer: (get proposer proposal),
-        is-open: false,
-        start-block-height: (get start-block-height proposal),
-        end-block-height: (get end-block-height proposal),
-        yes-votes: (get yes-votes proposal),
-        no-votes: (get no-votes proposal),
-        token: (get token proposal),
-        collateral-type: (get collateral-type proposal),
-        type: (get type proposal),
-        changes: (get changes proposal),
-        details: (get details proposal)
-      }
-    )
-
+      (merge proposal { is-open: false }))
     (ok status-ok)
   )
 )
@@ -543,87 +411,98 @@
 )
 
 ;; Initialize the contract
+;; Test environments
 (begin
-  (map-set collateral-types
-    { token: "stx-a" }
-    {
-      name: "Stacks",
-      token: "STX",
-      token-type: "STX-A",
-      url: "https://www.stacks.co/",
-      total-debt: u0,
-      liquidation-ratio: u150,
-      collateral-to-debt-ratio: u200,
-      maximum-debt: u100000000000000,
-      liquidation-penalty: u10,
-      stability-fee: u1363, ;; 0.001363077% daily percentage == 1% APY
-      stability-fee-apy: u50 ;; 50 basis points
-    }
-  )
-  (map-set collateral-types
-    { token: "stx-b" }
-    {
-      name: "Stacks",
-      token: "STX",
-      token-type: "STX-B",
-      url: "https://www.stacks.co/",
-      total-debt: u0,
-      liquidation-ratio: u115,
-      collateral-to-debt-ratio: u200,
-      maximum-debt: u10000000000000,
-      liquidation-penalty: u10,
-      stability-fee: u2726, ;; 0.002726155% daily percentage == 1% APY
-      stability-fee-apy: u100 ;; 100 basis points
-    }
-  )
-  (map-set collateral-types
-    { token: "diko-a" }
-    {
-      name: "Arkadiko",
-      token: "DIKO",
-      token-type: "DIKO-A",
-      url: "https://www.arkadiko.finance/",
-      total-debt: u0,
-      liquidation-ratio: u200,
-      collateral-to-debt-ratio: u300,
-      maximum-debt: u10000000000000,
-      liquidation-penalty: u13,
-      stability-fee: u2726, ;; 0.002726155% daily percentage == 1% APY
-      stability-fee-apy: u100
-    }
-  )
-  (map-set proposal-types
-    { type: "change_risk_parameter" }
-    {
-      changes-keys: (list "liquidation-ratio" "collateral-to-debt-ratio" "maximum-debt" "liquidation-penalty" "stability-fee-apy" "minimum-vault-debt")
-    }
-  )
-  (map-set proposal-types
-    { type: "add_collateral_type" }
-    {
-      changes-keys: (list
-        "collateral_token"
-        "collateral_name"
-        "liquidation-ratio"
-        "collateral-to-debt-ratio"
-        "maximum-debt"
-        "liquidation-penalty"
-        "stability-fee-apy"
-        "minimum-vault-debt"
+  ;; (if is-in-regtest
+    ;; (begin
+      ;; Create:
+      ;; - 2 collateral types stx-a and stx-b,
+      ;; - 1 proposal type change_risk_parameter
+      ;; - 1 proposal type add_collateral_type
+      ;; - 1 proposal type stacking_distribution
+      ;; - 1 proposal type emergency_shutdown
+      (map-set collateral-types
+        { token: "stx-a" }
+        {
+          name: "Stacks",
+          token: "STX",
+          token-type: "STX-A",
+          url: "https://www.stacks.co/",
+          total-debt: u0,
+          liquidation-ratio: u150,
+          collateral-to-debt-ratio: u200,
+          maximum-debt: u100000000000000,
+          liquidation-penalty: u10,
+          stability-fee: u1363, ;; 0.001363077% daily percentage == 1% APY
+          stability-fee-apy: u50 ;; 50 basis points
+        }
       )
-    }
-  )
-  (map-set proposal-types
-    { type: "stacking_distribution" }
-    {
-      changes-keys: (list "stacker_yield" "governance_token_yield" "governance_reserve_yield")
-    }
-  )
-  (map-set proposal-types
-    { type: "emergency_shutdown" }
-    {
-      changes-keys: (list "")
-    }
-  )
-  (print (get-liquidation-ratio "stx"))
+      (map-set collateral-types
+        { token: "stx-b" }
+        {
+          name: "Stacks",
+          token: "STX",
+          token-type: "STX-B",
+          url: "https://www.stacks.co/",
+          total-debt: u0,
+          liquidation-ratio: u115,
+          collateral-to-debt-ratio: u200,
+          maximum-debt: u10000000000000,
+          liquidation-penalty: u10,
+          stability-fee: u2726, ;; 0.002726155% daily percentage == 1% APY
+          stability-fee-apy: u100 ;; 100 basis points
+        }
+      )
+      (map-set collateral-types
+        { token: "diko-a" }
+        {
+          name: "Arkadiko",
+          token: "DIKO",
+          token-type: "DIKO-A",
+          url: "https://www.arkadiko.finance/",
+          total-debt: u0,
+          liquidation-ratio: u200,
+          collateral-to-debt-ratio: u300,
+          maximum-debt: u10000000000000,
+          liquidation-penalty: u13,
+          stability-fee: u2726, ;; 0.002726155% daily percentage == 1% APY
+          stability-fee-apy: u100
+        }
+      )
+      (map-set proposal-types
+        { type: "change_risk_parameter" }
+        {
+          changes-keys: (list "liquidation-ratio" "collateral-to-debt-ratio" "maximum-debt" "liquidation-penalty" "stability-fee-apy" "minimum-vault-debt")
+        }
+      )
+      (map-set proposal-types
+        { type: "add_collateral_type" }
+        {
+          changes-keys: (list
+            "collateral_token"
+            "collateral_name"
+            "liquidation-ratio"
+            "collateral-to-debt-ratio"
+            "maximum-debt"
+            "liquidation-penalty"
+            "stability-fee-apy"
+            "minimum-vault-debt"
+          )
+        }
+      )
+      (map-set proposal-types
+        { type: "stacking_distribution" }
+        {
+          changes-keys: (list "stacker_yield" "governance_token_yield" "governance_reserve_yield")
+        }
+      )
+      (map-set proposal-types
+        { type: "emergency_shutdown" }
+        {
+          changes-keys: (list "")
+        }
+      )
+    ;; )
+    ;; true
+  ;; )
 )

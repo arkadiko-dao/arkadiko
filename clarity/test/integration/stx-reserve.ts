@@ -19,19 +19,24 @@ import {
 
 describe("stacks reserve test suite", () => {
   const addresses = [
-    "ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH"
+    "ST3EQ88S02BXXD0T5ZVT3KW947CRMQ1C6DMQY8H19"
   ];
   const alice = addresses[0];
 
   describe("deploying an instance of the contract", () => {
     before(async () => {
+      await deployContract('mock-ft-trait');
       await deployContract('vault-trait');
+
       await deployContract('oracle');
       await deployContract('xusd-token');
       await deployContract('arkadiko-token');
+      await deployContract('xstx-token');
+      await deployContract('mock-pox');
       await deployContract('dao');
 
       await deployContract('stx-reserve');
+      await deployContract('sip10-reserve');
       await deployContract('freddie');
 
       await deployContract('stacker-registry');

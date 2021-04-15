@@ -46,17 +46,24 @@
   (ok (ft-burn? diko amount sender))
 )
 
-;; MOCKNET ONLY: Initialize the contract
+;; Test environments
 (begin
-  ;; mint 1 million tokens
-  (try! (ft-mint? diko u890000000000 'S02J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKPVKG2CE))
-  (try! (ft-mint? diko u150000000000 'ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF))
-  (try! (ft-mint? diko u150000000000 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP))
-  (try! (ft-mint? diko u1000000000 'ST2ZRX0K27GW0SP3GJCEMHD95TQGJMKB7G9Y0X1MH))
+  ;; TODO: fix manual mocknet/testnet/mainnet switch
+  ;; (if is-in-regtest
+  ;;   (if (is-eq (unwrap-panic (get-block-info? header-hash u1)) 0xd2454d24b49126f7f47c986b06960d7f5b70812359084197a200d691e67a002e)
+  ;;     (begin ;; Testnet only
+  ;;       (try! (ft-mint? diko u1000000000000000 'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H)))
+  ;;     (begin ;; Other test environments
+  ;;       (try! (ft-mint? diko u890000000000 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7))
+  ;;       (try! (ft-mint? diko u150000000000 'ST3KCNDSWZSFZCC6BE4VA9AXWXC9KEB16FBTRK36T))
+  ;;       (try! (ft-mint? diko u150000000000 'ST3EQ88S02BXXD0T5ZVT3KW947CRMQ1C6DMQY8H19))
+  ;;       (try! (ft-mint? diko u1000000000 'STB2BWB0K5XZGS3FXVTG3TKS46CQVV66NAK3YVN8))
+  ;;     )
+  ;;   )
+  ;;   true
+  ;; )
+  (try! (ft-mint? diko u890000000000 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7))
+  (try! (ft-mint? diko u150000000000 'ST3KCNDSWZSFZCC6BE4VA9AXWXC9KEB16FBTRK36T))
+  (try! (ft-mint? diko u150000000000 'ST3EQ88S02BXXD0T5ZVT3KW947CRMQ1C6DMQY8H19))
+  (try! (ft-mint? diko u1000000000 'STB2BWB0K5XZGS3FXVTG3TKS46CQVV66NAK3YVN8))
 )
-
-;; TESTNET ONLY:
-;; (begin
-;;   ;; mint 1 billion tokens
-;;   (try! (ft-mint? diko u1000000000000000 'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H))
-;; )

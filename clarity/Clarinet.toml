@@ -3,24 +3,32 @@
 name = "arkadiko"
 
 [contracts.arkadiko-token]
-depends_on = []
+depends_on = ["mock-ft-trait"]
 path = "contracts/arkadiko-token.clar"
 
 [contracts.auction-engine]
-depends_on = ["oracle", "xusd-token", "freddie"]
+depends_on = ["oracle", "xusd-token", "freddie", "mock-ft-trait", "vault-trait"]
 path = "contracts/auction-engine.clar"
 
 [contracts.dao]
-depends_on = ["arkadiko-token"]
+depends_on = ["arkadiko-token", "vault-trait", "mock-pox"]
 path = "contracts/dao.clar"
 
 [contracts.freddie]
-depends_on = ["stx-reserve"]
+depends_on = ["stx-reserve", "vault-trait", "mock-ft-trait", "sip10-reserve"]
 path = "contracts/freddie.clar"
 
 [contracts.liquidator]
 depends_on = ["freddie", "dao", "auction-engine"]
 path = "contracts/liquidator.clar"
+
+[contracts.mock-ft-trait]
+depends_on = []
+path = "contracts/mock-ft-trait.clar"
+
+[contracts.mock-pox]
+depends_on = []
+path = "contracts/mock-pox.clar"
 
 [contracts.oracle]
 depends_on = []
@@ -31,13 +39,21 @@ depends_on = []
 path = "contracts/stacker-registry.clar"
 
 [contracts.stx-reserve]
-depends_on = ["oracle", "dao", "xusd-token"]
+depends_on = ["oracle", "dao", "xusd-token", "mock-ft-trait", "vault-trait"]
 path = "contracts/stx-reserve.clar"
 
 [contracts.vault-trait]
-depends_on = []
+depends_on = ["mock-ft-trait"]
 path = "contracts/vault-trait.clar"
 
 [contracts.xusd-token]
-depends_on = []
+depends_on = ["mock-ft-trait"]
 path = "contracts/xusd-token.clar"
+
+[contracts.xstx-token]
+depends_on = ["mock-ft-trait"]
+path = "contracts/xstx-token.clar"
+
+[contracts.sip10-reserve]
+depends_on = ["mock-ft-trait", "vault-trait", "oracle", "dao", "xusd-token", "xstx-token"]
+path = "contracts/sip10-reserve.clar"

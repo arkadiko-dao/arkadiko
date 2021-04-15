@@ -19,8 +19,17 @@
 
 ;; constants
 (define-constant blocks-per-day u144)
-(define-constant vault-owner 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP) ;; mocknet
-;; (define-constant vault-owner 'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H) ;; testnet
+(define-private (get-vault-owner)
+  ;; TODO: fix manual mocknet/testnet/mainnet switch
+  ;; (if is-in-regtest
+  ;;   (if (is-eq (unwrap-panic (get-block-info? header-hash u1)) 0xd2454d24b49126f7f47c986b06960d7f5b70812359084197a200d691e67a002e)
+  ;;     'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H ;; Testnet only
+  ;;     'ST1HTBVD3JG9C05J7HBJTHGR0GGW7KXW28M5JS8QE ;; Other test environments
+  ;;   )
+  ;;   'SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7 ;; Mainnet (TODO)
+  ;; )
+  'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7
+)
 
 ;; Map of vault entries
 ;; The entry consists of a user principal with their collateral and debt balance
@@ -57,7 +66,7 @@
     (map-get? vaults { id: id })
     (tuple
       (id u0)
-      (owner 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP)
+      (owner (get-vault-owner))
       (collateral u0)
       (collateral-type "")
       (collateral-token "")
@@ -200,7 +209,7 @@
 ;; Only mark vaults that have revoked stacking
 (define-public (enable-vault-withdrawals (vault-id uint))
   (let ((vault (get-vault-by-id vault-id)))
-    (asserts! (is-eq tx-sender vault-owner) (err err-unauthorized))
+    (asserts! (is-eq tx-sender (get-vault-owner)) (err err-unauthorized))
     (asserts! (is-eq "stx" (get collateral-token vault)) (err err-unauthorized))
 
     (if
@@ -238,7 +247,7 @@
 
 (define-public (enable-redeemable-stx (vault-id uint))
   (let ((vault (get-vault-by-id vault-id)))
-    (asserts! (is-eq tx-sender vault-owner) (err err-unauthorized))
+    (asserts! (is-eq tx-sender (get-vault-owner)) (err err-unauthorized))
     (asserts! (is-eq "xstx" (get collateral-token vault)) (err err-unauthorized))
     (asserts! (is-eq true (get is-liquidated vault)) (err err-unauthorized))
     (asserts! (> (get stacked-tokens vault) u0) (err err-unauthorized))
@@ -309,7 +318,7 @@
                                   (lock-period uint))
   ;; 1. check `get-stacking-minimum` to see if we have > minimum tokens
   ;; 2. call `stack-stx` for 1 `lock-period` fixed
-  (if (is-eq tx-sender vault-owner)
+  (if (is-eq tx-sender (get-vault-owner))
     (let ((tokens-to-stack (unwrap! (contract-call? .stx-reserve get-tokens-to-stack) (ok u0))))
       (if (unwrap! (contract-call? .mock-pox can-stack-stx pox-addr tokens-to-stack start-burn-ht lock-period) (err u0))
         (begin

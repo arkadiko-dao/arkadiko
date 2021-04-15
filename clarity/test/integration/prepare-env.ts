@@ -175,7 +175,7 @@ describe("environment prep", () => {
 
       // 2. Set the price of STX
       // const txOptions = {
-      //   contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      //   contractAddress: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7',
       //   contractName: 'oracle',
       //   functionName: 'update-price',
       //   functionArgs: [stringAsciiCV('stx'), uintCV(stxPrice * 100)],
@@ -187,7 +187,7 @@ describe("environment prep", () => {
 
       // 2b. Set the price of DIKO
       // const dikoTxOptions = {
-      //   contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+      //   contractAddress: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7',
       //   contractName: 'oracle',
       //   functionName: 'update-price',
       //   functionArgs: [stringAsciiCV('diko'), uintCV(stxPrice * 100)],
@@ -231,11 +231,11 @@ describe("environment prep", () => {
             standardPrincipalCV(element.address),
             stringAsciiCV(collateralType['type']), // randomise this to use STX-A, STX-B or DIKO-A
             stringAsciiCV(collateralType['symbol']),
-            contractPrincipalCV('ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP', collateralType['reserve']),
-            contractPrincipalCV('ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP', collateralType['token'])
+            contractPrincipalCV('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7', collateralType['reserve']),
+            contractPrincipalCV('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7', collateralType['token'])
           ];
           let txMintOptions = {
-            contractAddress: 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP',
+            contractAddress: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7',
             contractName: 'freddie',
             functionName: 'collateralize-and-mint',
             functionArgs: mintVaultArgs,

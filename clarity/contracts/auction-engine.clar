@@ -198,7 +198,7 @@
       (xusd u0)
       (collateral-amount u0)
       (collateral-token "")
-      (owner 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP)
+      (owner (get-owner))
       (is-accepted false)
     )
   )
@@ -470,5 +470,16 @@
       }
     )
     (ok true)
+  )
+)
+
+;; TODO: fix manual mocknet/testnet/mainnet switch
+(define-private (get-owner)
+  (if is-in-regtest
+    (if (is-eq (unwrap-panic (get-block-info? header-hash u1)) 0xd2454d24b49126f7f47c986b06960d7f5b70812359084197a200d691e67a002e)
+      'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7 ;; Testnet only
+      'ST1HTBVD3JG9C05J7HBJTHGR0GGW7KXW28M5JS8QE ;; Other test environments
+    )
+    'SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7 ;; Mainnet (TODO)
   )
 )

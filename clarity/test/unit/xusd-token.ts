@@ -13,9 +13,8 @@ describe("xusd token contract test suite", () => {
   let provider: Provider;
 
   const addresses = [
-    "SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7",
-    "S02J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKPVKG2CE",
-    "SZ2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKQ9H6DPR"
+    "ST3KCNDSWZSFZCC6BE4VA9AXWXC9KEB16FBTRK36T", // wallet_2
+    "STB2BWB0K5XZGS3FXVTG3TKS46CQVV66NAK3YVN8", // wallet_3
   ];
   const alice = addresses[0];
 
