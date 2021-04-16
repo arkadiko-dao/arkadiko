@@ -24,7 +24,7 @@ const network = utils.resolveNetwork();
 
 rp(requestOptions).then(async (response) => {
   let price = response['data']['4847']['quote']['USD']['price'];
-  price = 1.39;
+  // price = 0.17;
   let nonce = await utils.getNonce(CONTRACT_ADDRESS);
 
   const txOptions = {

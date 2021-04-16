@@ -58,6 +58,39 @@ export const Mint = () => {
     await broadcastTransaction(transaction, network);
   };
 
+  const requestDikoTokens = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      contractName: 'dao',
+      functionName: 'request-diko-tokens',
+      functionArgs: [
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
+        uintCV(50000000),
+      ],
+      postConditionMode: 0x01,
+      finished: data => {
+        console.log('finished redeeming diko!', data.txId);
+      },
+    });
+  };
+
+  const redeemStabilityFees = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      contractName: 'freddie',
+      functionName: 'redeem-xusd',
+      functionArgs: [
+        uintCV(1502707),
+      ],
+      postConditionMode: 0x01,
+      finished: data => {
+        console.log('finished redeeming xUSD!', data.txId);
+      },
+    });
+  };
+
   const addTestnetStx = async () => {
     const url = `https://stacks-node-api.testnet.stacks.co/extended/v1/debug/faucet?address=${address}`;
     await fetch(url, {
@@ -76,6 +109,14 @@ export const Mint = () => {
                 <Box>
                   <Link onClick={() => addMocknetStx()} color="blue" display="inline-block" my={3} ml={5}>
                     (Get 5000 STX tokens from mocknet)
+                  </Link>
+
+                  <Link onClick={() => requestDikoTokens()} color="blue" display="inline-block" my={3} ml={5}>
+                    (Test Request DIKO)
+                  </Link>
+
+                  <Link onClick={() => redeemStabilityFees()} color="blue" display="inline-block" my={3} ml={5}>
+                    (Redeem Stability Fees)
                   </Link>
                 </Box>
               ) : (

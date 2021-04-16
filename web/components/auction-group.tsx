@@ -9,7 +9,7 @@ import { connectWebSocketClient } from '@stacks/blockchain-api-client';
 export interface AuctionProps {
   id: string;
   lotId: string;
-  collateralAmount: string;
+  auctionType: string;
   collateralToken: string;
   debt: string;
   endsAt: string;
@@ -31,6 +31,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
       key={`${auction.id}-${auction['lot-id']}`}
       id={auction.id}
       lotId={auction['lot-id']}
+      auctionType={auction['auction-type']}
       collateralToken={auction['collateral-token']}
       endsAt={auction['ends-at']}
       setShowBidModal={setShowBidModal}

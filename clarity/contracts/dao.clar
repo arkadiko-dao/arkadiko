@@ -1,4 +1,5 @@
-(use-trait vault-trait .vault-trait.vault-trait)
+(use-trait mock-ft-trait .mock-ft-trait.mock-ft-trait)
+
 ;; Arkadiko DAO
 ;; 1. See all proposals
 ;; 2. Vote on a proposal
@@ -45,10 +46,10 @@
 (define-data-var proposal-ids (list 220 uint) (list u0))
 (define-map votes-by-member { proposal-id: uint, member: principal } { vote-count: uint })
 (define-data-var emergency-shutdown-activated bool false)
-(define-data-var stacker-yield uint u90)
-(define-data-var governance-token-yield uint u5)
-(define-data-var governance-reserve-yield uint u5)
-(define-data-var maximum-debt-surplus uint u100000000)
+(define-data-var stacker-yield uint u9000) ;; 90%
+(define-data-var governance-token-yield uint u500) ;; 5%
+(define-data-var governance-reserve-yield uint u500) ;; 5%
+(define-data-var maximum-debt-surplus uint u10000000000000) ;; 10 million default
 
 (define-read-only (get-votes-by-member-by-id (proposal-id uint) (member principal))
   (default-to 
@@ -408,6 +409,11 @@
 ;; this means we will need to do this manually until some way exists to do this trustless (if ever?)
 (define-public (payout)
   (ok true)
+)
+
+(define-public (request-diko-tokens (ft <mock-ft-trait>) (collateral-amount uint))
+  ;; TODO: fix this method
+  (contract-call? ft transfer collateral-amount 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP (as-contract .sip10-reserve))
 )
 
 ;; Initialize the contract

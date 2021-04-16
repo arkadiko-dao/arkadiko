@@ -7,7 +7,7 @@ import { useConnect } from '@stacks/connect-react';
 import { stacksNetwork as network } from '@common/utils';
 import { callReadOnlyFunction, cvToJSON, tupleCV, uintCV, standardPrincipalCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { AuctionGroup } from '@components/auction-group';
+import { AuctionProps, AuctionGroup } from '@components/auction-group';
 import { LotGroup } from '@components/lot-group';
 
 export const Auctions: React.FC = () => {
@@ -32,16 +32,18 @@ export const Auctions: React.FC = () => {
         network: network,
       });
       const json = cvToJSON(auctions);
-      let serializedAuctions:Array<{ id: string, 'lot-id':string, 'collateral-amount': string, 'debt': string, 'ends-at': string }> = [];
+      let serializedAuctions:Array<AuctionProps> = [];
       json.value.value.forEach((e: object) => {
         const vault = tupleCV(e);
         const data = vault.data.value;
         if (data['is-open'].value) {
           serializedAuctions.push({
             id: data['id'].value,
-            'lot-id': data['lots-sold'].value,
-            'collateral-token': data['collateral-token'].value,
-            'ends-at': data['ends-at'].value
+            lotId: data['lots-sold'].value,
+            auctionType: data['auction-type'].value,
+            collateralToken: data['collateral-token'].value,
+            debt: '0',
+            endsAt: data['ends-at'].value
           });
         }
       });
