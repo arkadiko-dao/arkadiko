@@ -60,7 +60,7 @@ Clarinet.test({
       .expectUint(55);
     block.receipts[1].result
       .expectOk()
-      .expectUint(200);
+      .expectUint(5200);
 
     let call = await chain.callReadOnlyFn(
       "auction-engine",
