@@ -47,12 +47,31 @@ The DIKO governance token is used to manage and vote on proposals put forward by
 - Trigger Emergency Shutdown
 - Regulate Stacks stacking & payouts
 
+## Roadmap
+
+A public Trello roadmap will be published soon
+
 ## Tests and Mocking
 
 Tests are present in the `test` folder (using `mocha` in TypeScript) and some very early test in the `tests` folder which uses Clarinet (a Clarity build tool). The mocha tests can be ran easily like this: `npm test clarity/test/integration/liquidator.ts`.
 
 Some of the smart contracts (such as PoX and fungible token trait) are mocked contracts/traits. These should not be deployed to mainnet when a production-ready version is ready to be deployed.
 
-## Roadmap
+## Error Handling
 
-A public Trello roadmap will be published soon
+All errors thrown by the smart contracts are unsigned integers. The format used is the following <SMART_CONTRACT_PREFIX><ERROR_CODE>, where the smart contract prefix is denoted as follows:
+
+1 - arkadiko-token
+2 - auction-engine
+3 - dao
+4 - freddie
+5 - liquidator
+6 - mock-ft-trait
+7 - mock-pox
+8 - oracle
+9 - sip10-reserve
+10 - stacker-registry
+11 - stx-reserve
+12 - vault-trait
+13 - xstx-token
+14 - xusd-token

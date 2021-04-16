@@ -1,4 +1,10 @@
 
+## Version 0.3.1
+
+### New features
+
+- Implement DAO kill switch (emergency shutdown) to disable vault actions
+
 ## Version 0.3.0
 
 ### New Features

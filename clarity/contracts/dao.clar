@@ -7,10 +7,10 @@
 ;; 4. Initiate Stacking
 
 ;; errors
-(define-constant err-not-enough-balance u1)
-(define-constant err-transfer-failed u2)
-(define-constant err-unauthorized u401)
-(define-constant status-ok u200)
+(define-constant ERR-NOT-ENOUGH-BALANCE u31)
+(define-constant ERR-TRANSFER-FAILED u32)
+(define-constant ERR-NOT-AUTHORIZED u3401)
+(define-constant STATUS-OK u3200)
 
 (define-private (get-dao-owner)
   ;; TODO: fix manual mocknet/testnet/mainnet switch
@@ -185,7 +185,7 @@
                                     (maximum-debt uint))
   (begin
     ;; DAO should be calling this method
-    (asserts! (is-eq (get-dao-owner) tx-sender) (err err-unauthorized))
+    (asserts! (is-eq (get-dao-owner) tx-sender) (err ERR-NOT-AUTHORIZED))
     (map-set collateral-types
       { token: collateral-type }
       {
@@ -209,7 +209,7 @@
 (define-public (add-debt-to-collateral-type (token (string-ascii 12)) (debt uint))
   (begin
     ;; freddie should be calling this method
-    (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
+    (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
     (let ((collateral-type (get-collateral-type-by-token token)))
       (map-set collateral-types
         { token: token }
@@ -222,7 +222,7 @@
 (define-public (subtract-debt-from-collateral-type (token (string-ascii 12)) (debt uint))
   (begin
     ;; freddie should be calling this method
-    (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
+    (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
     (let ((collateral-type (get-collateral-type-by-token token)))
       (map-set collateral-types
         { token: token }
@@ -235,7 +235,7 @@
 (define-public (set-liquidation-ratio (token (string-ascii 12)) (ratio uint))
   (begin
     ;; DAO should be calling this method
-    (asserts! (is-eq (get-dao-owner) tx-sender) (err err-unauthorized))
+    (asserts! (is-eq (get-dao-owner) tx-sender) (err ERR-NOT-AUTHORIZED))
     ;; Update liquidation-ratio
     (let ((collateral-type (get-collateral-type-by-token token)))
       (map-set collateral-types
@@ -248,7 +248,7 @@
 (define-public (set-collateral-to-debt-ratio (token (string-ascii 12)) (ratio uint))
   (begin
     ;; DAO should be calling this method
-    (asserts! (is-eq (get-dao-owner) tx-sender) (err err-unauthorized))
+    (asserts! (is-eq (get-dao-owner) tx-sender) (err ERR-NOT-AUTHORIZED))
     ;; Update collateral-to-debt-ratio
     (let ((collateral-type (get-collateral-type-by-token token)))
       (map-set collateral-types
@@ -261,7 +261,7 @@
 (define-public (set-maximum-debt (token (string-ascii 12)) (debt uint))
   (begin
     ;; DAO should be calling this method
-    (asserts! (is-eq (get-dao-owner) tx-sender) (err err-unauthorized))
+    (asserts! (is-eq (get-dao-owner) tx-sender) (err ERR-NOT-AUTHORIZED))
     ;; Update maximum-debt
     (let ((collateral-type (get-collateral-type-by-token token)))
       (map-set collateral-types
@@ -274,7 +274,7 @@
 (define-public (set-liquidation-penalty (token (string-ascii 12)) (penalty uint))
   (begin
     ;; DAO should be calling this method
-    (asserts! (is-eq (get-dao-owner) tx-sender) (err err-unauthorized))
+    (asserts! (is-eq (get-dao-owner) tx-sender) (err ERR-NOT-AUTHORIZED))
     ;; Update liquidation-penalty
     (let ((collateral-type (get-collateral-type-by-token token)))
       (map-set collateral-types
@@ -287,7 +287,7 @@
 (define-public (set-stability-fee (token (string-ascii 12)) (fee uint) (fee-apy uint))
   (begin
     ;; DAO should be calling this method
-    (asserts! (is-eq (get-dao-owner) tx-sender) (err err-unauthorized))
+    (asserts! (is-eq (get-dao-owner) tx-sender) (err ERR-NOT-AUTHORIZED))
     ;; Update stability-fee and stability-fee-apy
     (let ((collateral-type (get-collateral-type-by-token token)))
       (map-set collateral-types
@@ -314,7 +314,7 @@
     (supply (unwrap-panic (contract-call? .arkadiko-token get-total-supply)))
     (proposal-id (+ u1 (var-get proposal-count))))
     ;; Requires 1% of the supply 
-    (asserts! (>= (* proposer-balance u100) supply) (err err-not-enough-balance))
+    (asserts! (>= (* proposer-balance u100) supply) (err ERR-NOT-ENOUGH-BALANCE))
     ;; Mutate
     (map-set proposals
       { id: proposal-id }
@@ -344,9 +344,9 @@
     (proposal (get-proposal-by-id proposal-id))
     (vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender))))
     ;; Proposal should be open for voting
-    (asserts! (is-eq (get is-open proposal) true) (err err-unauthorized))
+    (asserts! (is-eq (get is-open proposal) true) (err ERR-NOT-AUTHORIZED))
     ;; Vote should be casted after the start-block-height
-    (asserts! (>= block-height (get start-block-height proposal)) (err err-unauthorized))
+    (asserts! (>= block-height (get start-block-height proposal)) (err ERR-NOT-AUTHORIZED))
     ;; Voter should be able to stake
     (try! (contract-call? .arkadiko-token transfer amount tx-sender (as-contract tx-sender)))
     ;; Mutate
@@ -356,7 +356,7 @@
     (map-set votes-by-member 
       { proposal-id: proposal-id, member: tx-sender }
       { vote-count: (+ vote-count amount) })
-    (ok status-ok)
+    (ok STATUS-OK)
   )
 )
 
@@ -365,9 +365,9 @@
     (proposal (get-proposal-by-id proposal-id))
     (vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender))))
     ;; Proposal should be open for voting
-    (asserts! (is-eq (get is-open proposal) true) (err err-unauthorized))
+    (asserts! (is-eq (get is-open proposal) true) (err ERR-NOT-AUTHORIZED))
     ;; Vote should be casted after the start-block-height
-    (asserts! (>= block-height (get start-block-height proposal)) (err err-unauthorized))
+    (asserts! (>= block-height (get start-block-height proposal)) (err ERR-NOT-AUTHORIZED))
     ;; Voter should be able to stake
     (try! (contract-call? .arkadiko-token transfer amount tx-sender (as-contract tx-sender)))
     ;; Mutate
@@ -377,20 +377,20 @@
     (map-set votes-by-member 
       { proposal-id: proposal-id, member: tx-sender }
       { vote-count: (+ vote-count amount) })
-    (ok status-ok)
+    (ok STATUS-OK)
   )
 )
 
 (define-public (end-proposal (proposal-id uint))
   (let ((proposal (get-proposal-by-id proposal-id)))
-    (asserts! (not (is-eq (get id proposal) u0)) (err err-unauthorized))
-    (asserts! (is-eq (get is-open proposal) true) (err err-unauthorized))
-    (asserts! (>= block-height (get end-block-height proposal)) (err err-unauthorized))
+    (asserts! (not (is-eq (get id proposal) u0)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (get is-open proposal) true) (err ERR-NOT-AUTHORIZED))
+    (asserts! (>= block-height (get end-block-height proposal)) (err ERR-NOT-AUTHORIZED))
 
     (map-set proposals
       { id: proposal-id }
       (merge proposal { is-open: false }))
-    (ok status-ok)
+    (ok STATUS-OK)
   )
 )
 

@@ -1,7 +1,7 @@
 ;; for now this is a fairly centralised Oracle, which is subject to failure.
 ;; Ideally, we implement a Chainlink Price Feed Oracle ASAP
-(define-constant err-not-white-listed u51)
-(define-constant oracle-owner 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7)
+(define-constant ERR-NOT-WHITELISTED u851)
+(define-constant ORACLE-OWNER 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7)
 
 (define-data-var last-price-in-cents uint u0)
 (define-data-var last-block uint u0)
@@ -25,12 +25,12 @@
 )
 
 (define-public (update-price (token (string-ascii 12)) (price uint))
-  (if (is-eq tx-sender oracle-owner) ;;(get-oracle-owner))
+  (if (is-eq tx-sender ORACLE-OWNER) ;;(get-oracle-owner))
     (begin
       (map-set prices { token: token } { last-price-in-cents: price, last-block: u0 })
       (ok price)
     )
-    (err err-not-white-listed)
+    (err ERR-NOT-WHITELISTED)
   )
 )
 

@@ -32,9 +32,7 @@
 )
 
 (define-public (transfer (amount uint) (sender principal) (recipient principal))
-  (begin
-    (ft-transfer? diko amount sender recipient)
-  )
+  (ft-transfer? diko amount sender recipient)
 )
 
 ;; TODO - finalize before mainnet deployment
@@ -43,7 +41,7 @@
 )
 
 (define-public (burn (amount uint) (sender principal))
-  (ok (ft-burn? diko amount sender))
+  (ft-burn? diko amount sender)
 )
 
 ;; Test environments

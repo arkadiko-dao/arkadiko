@@ -2,11 +2,11 @@
 (use-trait mock-ft-trait .mock-ft-trait.mock-ft-trait)
 
 ;; errors
-(define-constant err-unauthorized u1)
-(define-constant err-transfer-failed u2)
-(define-constant err-deposit-failed u5)
-(define-constant err-withdraw-failed u6)
-(define-constant err-mint-failed u7)
+(define-constant ERR-NOT-AUTHORIZED u9401)
+(define-constant ERR-TRANSFER-FAILED u92)
+(define-constant ERR-DEPOSIT-FAILED u95)
+(define-constant ERR-WITHDRAW-FAILED u96)
+(define-constant ERR-MINT-FAILED u97)
 
 (define-read-only (calculate-xusd-count (token (string-ascii 12)) (ucollateral-amount uint) (collateral-type (string-ascii 12)))
   (let ((price-in-cents (contract-call? .oracle get-price token)))
@@ -32,49 +32,49 @@
 ;; (match (print (ft-transfer? token ucollateral-amount sender (as-contract tx-sender)))
 (define-public (collateralize-and-mint (token <mock-ft-trait>) (ucollateral-amount uint) (debt uint) (sender principal))
   (begin
-    (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
+    (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
 
     ;; token should be a trait e.g. 'SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.arkadiko-token
     (match (contract-call? token transfer ucollateral-amount sender (as-contract tx-sender))
       success (ok debt)
-      error (err err-transfer-failed)
+      error (err ERR-TRANSFER-FAILED)
     )
   )
 )
 
 (define-public (deposit (token <mock-ft-trait>) (additional-ucollateral-amount uint))
   (begin
-    (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
+    (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
 
-    (match (print (contract-call? token transfer additional-ucollateral-amount tx-sender (as-contract tx-sender)))
+    (match (contract-call? token transfer additional-ucollateral-amount tx-sender (as-contract tx-sender))
       success (ok true)
-      error (err err-deposit-failed)
+      error (err ERR-DEPOSIT-FAILED)
     )
   )
 )
 
 (define-public (withdraw (token <mock-ft-trait>) (vault-owner principal) (ucollateral-amount uint))
   (begin
-    (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
+    (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
 
-    (match (print (as-contract (contract-call? token transfer ucollateral-amount (as-contract tx-sender) vault-owner)))
+    (match (as-contract (contract-call? token transfer ucollateral-amount (as-contract tx-sender) vault-owner))
       success (ok true)
-      error (err err-withdraw-failed)
+      error (err ERR-WITHDRAW-FAILED)
     )
   )
 )
 
 (define-public (mint (token (string-ascii 12)) (vault-owner principal) (ucollateral-amount uint) (current-debt uint) (extra-debt uint) (collateral-type (string-ascii 12)))
   (begin
-    (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
+    (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
 
     (let ((max-new-debt (- (unwrap-panic (calculate-xusd-count token ucollateral-amount collateral-type)) current-debt)))
       (if (>= max-new-debt extra-debt)
-        (match (print (as-contract (contract-call? .xusd-token mint extra-debt vault-owner)))
+        (match (as-contract (contract-call? .xusd-token mint extra-debt vault-owner))
           success (ok true)
-          error (err err-mint-failed)
+          error (err ERR-MINT-FAILED)
         )
-        (err err-mint-failed)
+        (err ERR-MINT-FAILED)
       )
     )
   )
@@ -82,25 +82,25 @@
 
 (define-public (burn (token <mock-ft-trait>) (vault-owner principal) (collateral-to-return uint))
   (begin
-    (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
+    (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
 
-    (match (print (as-contract (contract-call? token transfer collateral-to-return (as-contract tx-sender) vault-owner)))
+    (match (as-contract (contract-call? token transfer collateral-to-return (as-contract tx-sender) vault-owner))
       transferred (ok true)
-      error (err err-transfer-failed)
+      error (err ERR-TRANSFER-FAILED)
     )
   )
 )
 
 (define-public (redeem-collateral (token <mock-ft-trait>) (ucollateral uint) (owner principal))
   (begin
-    (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
+    (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
     (as-contract (contract-call? token transfer ucollateral (as-contract tx-sender) owner))
   )
 )
 
 (define-public (mint-xstx (collateral uint))
   (begin
-    (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
+    (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
     (contract-call? .xstx-token mint collateral (as-contract tx-sender))
   )
 )
@@ -108,7 +108,7 @@
 ;; redeem stx (and burn xSTX)
 (define-public (burn-xstx (ustx-amount uint) (sender principal))
   (begin
-    (asserts! (is-eq contract-caller .freddie) (err err-unauthorized))
+    (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
     (try! (contract-call? .xstx-token burn ustx-amount sender))
     (ok true)
   )
