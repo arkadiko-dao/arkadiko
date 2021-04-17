@@ -1,4 +1,10 @@
 
+## Version 0.4.0
+
+### New features
+
+- When the amount of collateral in a normal collateral liquidation auction does not cover the xUSD debt, a debt auction will be started afterwards. A debt auction sells governance tokens from the Arkadiko pool to cover bad debt in the system.
+
 ## Version 0.3.1
 
 ### New features

@@ -530,23 +530,10 @@
 
     (map-set vaults
       { id: vault-id }
-      {
-        id: vault-id,
-        owner: (get owner vault),
-        collateral: (get collateral vault),
-        collateral-type: (get collateral-type vault),
-        collateral-token: (get collateral-token vault),
-        stacked-tokens: (get stacked-tokens vault),
-        revoked-stacking: (get revoked-stacking vault),
+      (merge vault {
         debt: (- (get debt vault) debt),
-        created-at-block-height: (get created-at-block-height vault),
-        updated-at-block-height: block-height,
-        stability-fee: (get stability-fee vault),
-        stability-fee-last-accrued: (get stability-fee-last-accrued vault),
-        is-liquidated: false,
-        auction-ended: false,
-        leftover-collateral: u0
-      }
+        updated-at-block-height: block-height
+      })
     )
     (ok true)
   )
@@ -702,36 +689,23 @@
   )
 )
 
-(define-public (finalize-liquidation (vault-id uint) (leftover-collateral uint) (debt-raised uint))
+(define-public (finalize-liquidation (vault-id uint) (leftover-collateral uint))
   (if (is-eq contract-caller .auction-engine)
     (let ((vault (get-vault-by-id vault-id)))
       (asserts! (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
 
-      (begin
-        (map-set vaults
-          { id: vault-id }
-          {
-            id: vault-id,
-            owner: (get owner vault),
-            collateral: u0,
-            collateral-type: (get collateral-type vault),
-            collateral-token: (get collateral-token vault),
-            stacked-tokens: (get stacked-tokens vault),
-            revoked-stacking: (get revoked-stacking vault),
-            debt: (get debt vault),
-            created-at-block-height: (get created-at-block-height vault),
-            updated-at-block-height: block-height,
-            stability-fee: (get stability-fee vault),
-            stability-fee-last-accrued: (get stability-fee-last-accrued vault),
-            is-liquidated: true,
-            auction-ended: true,
-            leftover-collateral: leftover-collateral
-          }
-        )
-        (let ((result (contract-call? .dao subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault))))
-          (ok true)
-        )
+      (map-set vaults
+        { id: vault-id }
+        (merge vault {
+          collateral: u0,
+          updated-at-block-height: block-height,
+          is-liquidated: true,
+          auction-ended: true,
+          leftover-collateral: leftover-collateral
+        })
       )
+      (try! (contract-call? .dao subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault)))
+      (ok true)
     )
     (err ERR-NOT-AUTHORIZED)
   )
