@@ -3,8 +3,20 @@
 ;; Defines the Arkadiko Governance Token according to the SRC20 Standard
 (define-fungible-token diko)
 
+(define-data-var token-uri (string-utf8 256) u"")
+
 ;; errors
-(define-constant err-unauthorized u1)
+(define-constant ERR-NOT-AUTHORIZED u1401)
+
+(define-private (get-contract-owner)
+  (if (is-eq (unwrap-panic (get-block-info? header-hash u1)) 0xd2454d24b49126f7f47c986b06960d7f5b70812359084197a200d691e67a002e)
+    'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H ;; Testnet only
+    (if (is-eq (unwrap-panic (get-block-info? header-hash u1)) 0x6b2c809627f2fd19991d8eb6ae034cb4cce1e1fc714aa77351506b5af1f8248e)
+      'SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7 ;; Mainnet (TODO)
+      'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7 ;; Other test environments
+    )
+  )
+)
 
 (define-read-only (get-total-supply)
   (ok (ft-get-supply diko))
@@ -26,9 +38,15 @@
   (ok (ft-get-balance diko account))
 )
 
-;; TODO - finalize before mainnet deployment
+(define-public (set-token-uri (value (string-utf8 256)))
+  (if (is-eq tx-sender (get-contract-owner))
+    (ok (var-set token-uri value))
+    (err ERR-NOT-AUTHORIZED)
+  )
+)
+
 (define-read-only (get-token-uri)
-  (ok none)
+  (ok (some (var-get token-uri)))
 )
 
 (define-public (transfer (amount uint) (sender principal) (recipient principal))
@@ -37,7 +55,7 @@
 
 ;; TODO - finalize before mainnet deployment
 (define-public (mint (amount uint) (recipient principal))
-  (err err-unauthorized)
+  (err ERR-NOT-AUTHORIZED)
 )
 
 (define-public (burn (amount uint) (sender principal))
