@@ -226,7 +226,7 @@
     (let ((collateral-type (get-collateral-type-by-token token)))
       (map-set collateral-types
         { token: token }
-        (merge collateral-type { total-debt: (- debt (get total-debt collateral-type)) }))
+        (merge collateral-type { total-debt: (- (get total-debt collateral-type) debt) }))
       (ok debt)
     )
   )
@@ -412,8 +412,7 @@
 )
 
 (define-public (request-diko-tokens (ft <mock-ft-trait>) (collateral-amount uint))
-  ;; TODO: fix this method
-  (contract-call? ft transfer collateral-amount 'ST31HHVBKYCYQQJ5AQ25ZHA6W2A548ZADDQ6S16GP (as-contract .sip10-reserve))
+  (contract-call? ft transfer collateral-amount (get-dao-owner) (as-contract .sip10-reserve))
 )
 
 ;; Initialize the contract

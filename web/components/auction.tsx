@@ -5,7 +5,7 @@ import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { getPrice } from '@common/get-price';
 
-export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, debt, endsAt, setShowBidModal, setBidAuctionId, setBidLotId, setPreferredBid }) => {
+export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, endsAt, setShowBidModal, setBidAuctionId, setBidLotId, setPreferredBid }) => {
   const [minimumCollateralAmount, setMinimumCollateralAmount] = useState(0);
   const [currentBid, setCurrentBid] = useState(0);
   const [isClosed, setIsClosed] = useState(false);

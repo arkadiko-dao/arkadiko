@@ -17,45 +17,33 @@ async function getLastBid(lotIndex) {
     network
   });
 
-  console.log(lastBidTx);
-  return tx.cvToJSON(lastBidTx);
+  console.log(tx.cvToJSON(lastBidTx).value);
+  return tx.cvToJSON(lastBidTx).value;
 }
 
 async function unlockWinningLot(lotIndex) {
-  const lastBidTx = await tx.callReadOnlyFunction({
+  const lastBidTx = {
     contractAddress: CONTRACT_ADDRESS,
     contractName: "auction-engine",
     functionName: "unlock-winning-lot",
     functionArgs: [tx.uintCV(auctionId), tx.uintCV(lotIndex)],
-    senderAddress: CONTRACT_ADDRESS,
-    network
-  });
-
-  console.log(lastBidTx);
-  return tx.cvToJSON(lastBidTx);
-}
-
-async function transact() {
-  const txOptions = {
-    contractAddress: CONTRACT_ADDRESS,
-    contractName: 'auction-engine',
-    functionName: 'close-auction',
-    functionArgs: [tx.uintCV(auctionId)],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network
   };
-  const transaction = await tx.makeContractCall(txOptions);
-  const result = tx.broadcastTransaction(transaction, network);
-  const status = await utils.processing(result, transaction.txid(), 0);
 
-  console.log(status);
+  const transaction = await tx.makeContractCall(lastBidTx);
+  const result = tx.broadcastTransaction(transaction, network);
+  await utils.processing(result, transaction.txid(), 0);
+}
+
+async function transact() {
   let lotIndex = 0;
-  if (status) {
+  while (true) {
     // run get last bid for auction id auctionId from 0 to X, until collateral amount = 0 for bid
     let lastBid = await getLastBid(lotIndex);
     if (lastBid['collateral-amount'].value > 0) {
-      unlockWinningLot()
+      await unlockWinningLot(lotIndex)
     } else {
       return;
     }

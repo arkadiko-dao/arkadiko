@@ -28,12 +28,12 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
 
   const auctionItems = auctions.map((auction: object) =>
     <Auction
-      key={`${auction.id}-${auction['lot-id']}`}
+      key={`${auction.id}-${auction['lotId']}`}
       id={auction.id}
-      lotId={auction['lot-id']}
-      auctionType={auction['auction-type']}
-      collateralToken={auction['collateral-token']}
-      endsAt={auction['ends-at']}
+      lotId={auction['lotId']}
+      auctionType={auction['auctionType']}
+      collateralToken={auction['collateralToken']}
+      endsAt={auction['endsAt']}
       setShowBidModal={setShowBidModal}
       setBidAuctionId={setBidAuctionId}
       setBidLotId={setBidLotId}
