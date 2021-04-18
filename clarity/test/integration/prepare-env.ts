@@ -190,7 +190,7 @@ describe("environment prep", () => {
       //   contractAddress: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7',
       //   contractName: 'oracle',
       //   functionName: 'update-price',
-      //   functionArgs: [stringAsciiCV('diko'), uintCV(stxPrice * 100)],
+      //   functionArgs: [stringAsciiCV('DIKO'), uintCV(stxPrice * 100)],
       //   senderKey: secretDeployKey,
       //   postConditionMode: 1,
       //   network
@@ -200,20 +200,20 @@ describe("environment prep", () => {
       // 3. Add at least one vault per address and collateral type
       const collateralTypes = [
         {
-          type: 'stx-a',
-          symbol: 'stx',
+          type: 'STX-B',
+          symbol: 'STX',
           reserve: 'stx-reserve',
           token: 'arkadiko-token'
         },
         {
-          type: 'stx-b',
-          symbol: 'stx',
+          type: 'STX-B',
+          symbol: 'STX',
           reserve: 'stx-reserve',
           token: 'arkadiko-token'
         },
         {
-          type: 'diko-a',
-          symbol: 'diko',
+          type: 'DIKO-A',
+          symbol: 'DIKO',
           reserve: 'sip10-reserve',
           token: 'arkadiko-token'
         }

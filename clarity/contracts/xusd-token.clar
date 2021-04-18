@@ -1,13 +1,13 @@
 (impl-trait .mock-ft-trait.mock-ft-trait)
 
-;; Defines the xUSD Stablecoin according to the SRC20 Standard
+;; Defines the xUSD Stablecoin according to the SIP-010 Standard
 (define-fungible-token xusd)
 
 (define-data-var token-uri (string-utf8 256) u"")
 
 ;; errors
-(define-constant ERR-BURN-FAILED u111)
-(define-constant ERR-NOT-AUTHORIZED u11401)
+(define-constant ERR-BURN-FAILED u141)
+(define-constant ERR-NOT-AUTHORIZED u14401)
 
 (define-private (get-contract-owner)
   (if (is-eq (unwrap-panic (get-block-info? header-hash u1)) 0xd2454d24b49126f7f47c986b06960d7f5b70812359084197a200d691e67a002e)
@@ -83,4 +83,6 @@
   ;; Testnet only: seed wallet_2 and wallet_3
   ;; (asserts! is-in-regtest (ok u0))
   (try! (ft-mint? xusd u20 'ST3KCNDSWZSFZCC6BE4VA9AXWXC9KEB16FBTRK36T))
-  (try! (ft-mint? xusd u10 'STB2BWB0K5XZGS3FXVTG3TKS46CQVV66NAK3YVN8)))
+  (try! (ft-mint? xusd u10 'STB2BWB0K5XZGS3FXVTG3TKS46CQVV66NAK3YVN8))
+  (try! (ft-mint? xusd u1000000000 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7))
+)

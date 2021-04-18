@@ -24,14 +24,14 @@ const network = utils.resolveNetwork();
 
 rp(requestOptions).then(async (response) => {
   let price = response['data']['4847']['quote']['USD']['price'];
-  // price = 0.17;
+  price = 1.49;
   let nonce = await utils.getNonce(CONTRACT_ADDRESS);
 
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
     contractName: CONTRACT_NAME,
     functionName: FUNCTION_NAME,
-    functionArgs: [tx.stringAsciiCV('stx'), tx.uintCV(new BN(price.toFixed(2) * 100))],
+    functionArgs: [tx.stringAsciiCV('STX'), tx.uintCV(new BN(price.toFixed(2) * 100))],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     nonce: new BN(nonce),
     postConditionMode: 1,
@@ -45,7 +45,7 @@ rp(requestOptions).then(async (response) => {
     contractAddress: CONTRACT_ADDRESS,
     contractName: CONTRACT_NAME,
     functionName: FUNCTION_NAME,
-    functionArgs: [tx.stringAsciiCV('xstx'), tx.uintCV(new BN(price.toFixed(2) * 100))],
+    functionArgs: [tx.stringAsciiCV('xSTX'), tx.uintCV(new BN(price.toFixed(2) * 100))],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     nonce: new BN(nonce + 1),
     postConditionMode: 1,

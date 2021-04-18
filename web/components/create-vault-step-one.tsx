@@ -47,7 +47,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
 
   useEffect(() => {
     const fetchPrice = async () => {
-      let price = await getPrice(tokenName?.toLowerCase());
+      let price = await getPrice(tokenName);
       setPrice(price);
     };
 
@@ -75,10 +75,10 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
 
   useEffect(() => {
     console.log(state.collateralTypes);
-    if (state.collateralTypes[tokenType.toLowerCase()]) {
-      setStabilityFeeApy(state.collateralTypes[tokenType.toLowerCase()].stabilityFeeApy);
-      setLiquidationPenalty(state.collateralTypes[tokenType.toLowerCase()].liquidationPenalty);
-      setLiquidationRatio(state.collateralTypes[tokenType.toLowerCase()].liquidationRatio);
+    if (state.collateralTypes[tokenType.toUpperCase()]) {
+      setStabilityFeeApy(state.collateralTypes[tokenType.toUpperCase()].stabilityFeeApy);
+      setLiquidationPenalty(state.collateralTypes[tokenType.toUpperCase()].liquidationPenalty);
+      setLiquidationRatio(state.collateralTypes[tokenType.toUpperCase()].liquidationRatio);
     }
   }, [tokenType, state.collateralTypes]);
 

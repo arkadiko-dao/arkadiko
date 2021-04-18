@@ -45,7 +45,7 @@ export const defaultState = (): AppState => {
       userData: userSession.loadUserData(),
       balance: defaultBalance(),
       vaults: [],
-      definedCollateralTypes: ['stx-a', 'stx-b', 'diko-a'],
+      definedCollateralTypes: ['STX-A', 'STX-B', 'DIKO-A'],
       collateralTypes: [],
       isStacker: false
     };
@@ -55,7 +55,7 @@ export const defaultState = (): AppState => {
     userData: null,
     balance: { stx: 0, xusd: 0, diko: 0, xstx: 0 },
     vaults: [],
-    definedCollateralTypes: ['stx-a', 'stx-b', 'diko-a'],
+    definedCollateralTypes: ['STX-A', 'STX-B', 'DIKO-A'],
     collateralTypes: [],
     isStacker: false
   };

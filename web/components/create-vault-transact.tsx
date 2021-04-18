@@ -61,9 +61,9 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       uintCV(parseInt(coinAmounts['amounts']['collateral'], 10) * 1000000),
       uintCV(parseInt(coinAmounts['amounts']['xusd'], 10) * 1000000),
       standardPrincipalCV(address || ''),
-      stringAsciiCV(coinAmounts['token-type'].toLowerCase()),
-      stringAsciiCV(coinAmounts['token-name'].toLowerCase()),
-      contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', resolveReserveName(coinAmounts['token-name'].toLowerCase())),
+      stringAsciiCV(coinAmounts['token-type'].toUpperCase()),
+      stringAsciiCV(coinAmounts['token-name'].toUpperCase()),
+      contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', resolveReserveName(coinAmounts['token-name'].toUpperCase())),
       contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token)
     ];
 

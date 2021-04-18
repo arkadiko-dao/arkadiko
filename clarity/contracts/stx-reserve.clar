@@ -157,7 +157,7 @@
 
 (define-public (redeem-collateral (token <mock-ft-trait>) (stx-collateral uint) (owner principal))
   (begin
-    (asserts! (is-eq contract-caller .auction-engine) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
     (as-contract (stx-transfer? stx-collateral (as-contract tx-sender) owner))
   )
 )

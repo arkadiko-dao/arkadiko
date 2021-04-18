@@ -12,7 +12,7 @@ const updateDiko = async () => {
     contractAddress: CONTRACT_ADDRESS,
     contractName: CONTRACT_NAME,
     functionName: FUNCTION_NAME,
-    functionArgs: [tx.stringAsciiCV('diko'), tx.uintCV(new BN(0.1 * 100))],
+    functionArgs: [tx.stringAsciiCV('DIKO'), tx.uintCV(new BN(0.1 * 100))],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network

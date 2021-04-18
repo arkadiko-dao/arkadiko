@@ -3,16 +3,16 @@ name = "development"
 
 [accounts.deployer]
 mnemonic = "drop guess similar uphold alarm remove fossil riot leaf badge lobster ability mesh parent lawn today student olympic model assault syrup end scorpion lab"
-balance = 10_000_000
+balance = 10_000_000_000_000
 
 [accounts.wallet_1]
 mnemonic = "point approve language letter cargo rough similar wrap focus edge polar task olympic tobacco cinnamon drop lawn boring sort trade senior screen tiger climb"
-balance = 10_000_000
+balance = 10_000_000_000_000
 
 [accounts.wallet_2]
 mnemonic = "laugh capital express view pull vehicle cluster embark service clerk roast glance lumber glove purity project layer lyrics limb junior reduce apple method pear"
-balance = 10_000_000
+balance = 10_000_000_000_000
 
 [accounts.wallet_3]
 mnemonic = "level garlic bean design maximum inhale daring alert case worry gift frequent floor utility crowd twenty burger place time fashion slow produce column prepare"
-balance = 10_000_000
+balance = 10_000_000_000_000

@@ -425,7 +425,7 @@
       ;; - 1 proposal type stacking_distribution
       ;; - 1 proposal type emergency_shutdown
       (map-set collateral-types
-        { token: "stx-a" }
+        { token: "STX-A" }
         {
           name: "Stacks",
           token: "STX",
@@ -441,7 +441,7 @@
         }
       )
       (map-set collateral-types
-        { token: "stx-b" }
+        { token: "STX-B" }
         {
           name: "Stacks",
           token: "STX",
@@ -457,7 +457,7 @@
         }
       )
       (map-set collateral-types
-        { token: "diko-a" }
+        { token: "DIKO-A" }
         {
           name: "Arkadiko",
           token: "DIKO",

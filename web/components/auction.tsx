@@ -17,7 +17,7 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, en
 
   useEffect(() => {
     const fetchPrice = async () => {
-      let price = await getPrice(collateralToken.toLowerCase());
+      let price = await getPrice(collateralToken);
       setPrice(price - (price * 0.03)); // TODO: change for discounted-auction-price on auction-engine SC
     };
 

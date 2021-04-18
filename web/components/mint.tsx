@@ -10,7 +10,6 @@ import {
   makeSTXTokenTransfer,
   privateKeyToString,
   uintCV,
-  stringAsciiCV,
   contractPrincipalCV
 } from '@stacks/transactions';
 import { VaultGroup } from './vault-group';
@@ -19,7 +18,6 @@ import { Link } from '@components/link';
 import { AppContext } from '@common/context';
 import { useConnect } from '@stacks/connect-react';
 import { CollateralTypeGroup } from '@components/collateral-type-group';
-import { resolveReserveName } from '@common/vault-utils';
 import { useEffect } from 'react';
 
 export const Mint = () => {
@@ -34,10 +32,10 @@ export const Mint = () => {
 
   useEffect(() => {
     const fetchPrices = async () => {
-      let stxPrice = await getPrice('stx');
+      let stxPrice = await getPrice('STX');
       setStxPrice(stxPrice);
 
-      let dikoPrice = await getPrice('diko');
+      let dikoPrice = await getPrice('DIKO');
       setDikoPrice(dikoPrice);
     };
 

@@ -9,11 +9,13 @@
 (define-constant ERR-AUCTION-NOT-ALLOWED u25)
 (define-constant ERR-INSUFFICIENT-COLLATERAL u26)
 (define-constant ERR-NOT-AUTHORIZED u2403)
-(define-constant ERR-AUCTION-NOT-ENDED u28)
+(define-constant ERR-AUCTION-NOT-OPEN u28)
 (define-constant ERR-BLOCK-HEIGHT-NOT-REACHED u29)
 (define-constant ERR-COULD-NOT-REDEEM u210)
 (define-constant ERR-DIKO-REQUEST-FAILED u211)
+(define-constant ERR-TOKEN-TYPE-MISMATCH u212)
 
+(define-constant CONTRACT-OWNER tx-sender)
 (define-constant blocks-per-day u144)
 
 (define-map auctions
@@ -30,6 +32,7 @@
     is-open: bool,
     total-collateral-sold: uint,
     total-debt-raised: uint,
+    total-debt-burned: uint,
     ends-at: uint
   }
 )
@@ -71,6 +74,7 @@
       (is-open false)
       (total-collateral-sold u0)
       (total-debt-raised u0)
+      (total-debt-burned u0)
       (ends-at u0)
     )
   )
@@ -106,6 +110,7 @@
             ends-at: (+ block-height blocks-per-day),
             total-collateral-sold: u0,
             total-debt-raised: u0,
+            total-debt-burned: u0,
             is-open: true
           }
         )
@@ -135,7 +140,7 @@
           id: auction-id,
           auction-type: "debt",
           collateral-amount: (/ (* u100 debt-to-raise) price-in-cents),
-          collateral-token: "diko",
+          collateral-token: "DIKO",
           debt-to-raise: debt-to-raise,
           vault-id: vault-id,
           lot-size: (var-get lot-size),
@@ -143,6 +148,7 @@
           ends-at: (+ block-height blocks-per-day),
           total-collateral-sold: u0,
           total-debt-raised: u0,
+          total-debt-burned: u0,
           is-open: true
         }
       )
@@ -170,7 +176,7 @@
         id: auction-id,
         auction-type: "surplus",
         collateral-amount: xusd-amount,
-        collateral-token: "xusd",
+        collateral-token: "xUSD",
         debt-to-raise: u0, ;; no specific amount of debt should be raised
         vault-id: u0,
         lot-size: (var-get lot-size),
@@ -178,6 +184,7 @@
         ends-at: (+ block-height u14),
         total-collateral-sold: u0,
         total-debt-raised: u0,
+        total-debt-burned: u0,
         is-open: true
       }
     )
@@ -197,8 +204,8 @@
 )
 
 (define-read-only (collateral-token (token (string-ascii 12)))
-  (if (is-eq token "xstx")
-    "stx"
+  (if (is-eq token "xSTX")
+    "STX"
     token
   )
 )
@@ -242,7 +249,7 @@
       (xusd u0)
       (collateral-amount u0)
       (collateral-token "")
-      (owner (get-owner))
+      (owner CONTRACT-OWNER)
       (is-accepted false)
     )
   )
@@ -259,14 +266,10 @@
 
 (define-public (bid (auction-id uint) (lot-index uint) (xusd uint))
   (let ((auction (get-auction-by-id auction-id)))
-    (if
-      (and
-        (is-eq lot-index (get lots-sold auction))
-        (is-eq (get is-open auction) true)
-      )
-      (register-bid auction-id lot-index xusd)
-      (err ERR-BID-DECLINED) ;; just silently exit
-    )
+    (asserts! (is-eq lot-index (get lots-sold auction)) (err ERR-BID-DECLINED))
+    (asserts! (is-eq (get is-open auction) true) (err ERR-BID-DECLINED))
+
+    (register-bid auction-id lot-index xusd)
   )
 )
 
@@ -348,7 +351,7 @@
           ;; auction is over - close all bids
           ;; send collateral to winning bidders
           (close-auction auction-id)
-          (ok false)
+          (ok true)
         )
       )
     )
@@ -373,6 +376,8 @@
     (last-bid (get-last-bid auction-id lot-index))
     (auction (get-auction-by-id auction-id))
   )
+    (asserts! (is-eq (unwrap-panic (contract-call? ft get-symbol)) (get collateral-token auction)) (err ERR-TOKEN-TYPE-MISMATCH))
+
     (if
       (and
         (is-eq tx-sender (get owner last-bid))
@@ -423,13 +428,13 @@
       )
       (err ERR-BLOCK-HEIGHT-NOT-REACHED)
     )
-    (asserts! (is-eq (get is-open auction) true) (err ERR-AUCTION-NOT-ENDED))
+    (asserts! (is-eq (get is-open auction) true) (err ERR-AUCTION-NOT-OPEN))
 
     (map-set auctions
       { id: auction-id }
       (merge auction { is-open: false })
     )
-    (try! (contract-call? .xusd-token burn (get total-debt-raised auction) (as-contract tx-sender)))
+    (try! (contract-call? .xusd-token burn (- (get total-debt-raised auction) (get total-debt-burned auction)) (as-contract tx-sender)))
     (if (>= (get total-debt-raised auction) (get debt-to-raise auction))
       (if (is-eq (get auction-type auction) "collateral")
         (contract-call?
@@ -447,12 +452,8 @@
       )
       (begin
         (if (< (get total-collateral-sold auction) (get collateral-amount auction)) ;; we have some collateral left to auction
-          ;; start new auction with collateral that is left
-          (start-auction
-            (get vault-id auction)
-            (- (get collateral-amount auction) (get total-collateral-sold auction))
-            (- (get debt-to-raise auction) (get total-debt-raised auction))
-          )
+          ;; extend auction with collateral that is left
+          (extend-auction auction-id)
           ;; no collateral left. Need to sell governance token to raise more xUSD
           (start-debt-auction
             (get vault-id auction)
@@ -461,6 +462,20 @@
         )
       )
     )
+  )
+)
+
+(define-private (extend-auction (auction-id uint))
+  (let ((auction (get-auction-by-id auction-id)))
+    (map-set auctions
+      { id: auction-id }
+      (merge auction {
+        total-debt-burned: (get total-debt-raised auction),
+        is-open: true,
+        ends-at: (+ (get ends-at auction) blocks-per-day)
+      })
+    )
+    (ok true)
   )
 )
 
@@ -492,16 +507,5 @@
       }
     )
     (ok true)
-  )
-)
-
-;; TODO: fix manual mocknet/testnet/mainnet switch
-(define-private (get-owner)
-  (if is-in-regtest
-    (if (is-eq (unwrap-panic (get-block-info? header-hash u1)) 0xd2454d24b49126f7f47c986b06960d7f5b70812359084197a200d691e67a002e)
-      'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7 ;; Testnet only
-      'ST1HTBVD3JG9C05J7HBJTHGR0GGW7KXW28M5JS8QE ;; Other test environments
-    )
-    'SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7 ;; Mainnet (TODO)
   )
 )

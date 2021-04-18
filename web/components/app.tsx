@@ -95,7 +95,7 @@ export const App: React.FC = () => {
 
   const fetchCollateralTypes = async (address: string) => {
     let collTypes = {};
-    ['stx-a', 'stx-b', 'diko-a'].forEach(async (token) => {
+    ['STX-A', 'STX-B', 'DIKO-A'].forEach(async (token) => {
       const types = await callReadOnlyFunction({
         contractAddress,
         contractName: "dao",

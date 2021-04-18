@@ -9,7 +9,7 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 
 Clarinet.test({
   name:
-    "mint 5 dollar in stablecoin from 20000000 uDIKO at $2/DIKO through collateralize-and-mint",
+    "sip10-reserve: mint 5 dollar in stablecoin from 20000000 uDIKO at $2/DIKO through collateralize-and-mint",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -23,20 +23,20 @@ Clarinet.test({
     );
     let xusdInitialSupply = call.result
       .expectOk()
-      .expectUint(30);
+      .expectUint(1000000030);
 
     // Update price of DIKO, Create a new vault
     let block = chain.mineBlock([
       Tx.contractCall("oracle", "update-price", [
-        types.ascii("diko"),
+        types.ascii("DIKO"),
         types.uint(200),
       ], deployer.address),
       Tx.contractCall("freddie", "collateralize-and-mint", [
         types.uint(20000000),
         types.uint(5000000),
         types.principal(deployer.address),
-        types.ascii("diko-a"),
-        types.ascii("diko"),
+        types.ascii("DIKO-A"),
+        types.ascii("DIKO"),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
         ),
@@ -86,8 +86,8 @@ Clarinet.test({
     let vault = vaultEvent["data"].expectTuple();
     vault["collateral"].expectUint(20000000);
     vault["debt"].expectUint(5000000);
-    vault["collateral-token"].expectAscii("diko");
-    vault["collateral-type"].expectAscii("diko-a");
+    vault["collateral-token"].expectAscii("DIKO");
+    vault["collateral-type"].expectAscii("DIKO-A");
     vault["owner"].expectPrincipal(deployer.address);
 
     // Ensure that the xUSD total supply increased
@@ -104,7 +104,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "should deposit extra collateral",
+  name: "sip10-reserve: should deposit extra collateral",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -112,15 +112,15 @@ Clarinet.test({
     // Update price of DIKO, Create a new vault
     let block = chain.mineBlock([
       Tx.contractCall("oracle", "update-price", [
-        types.ascii("diko"),
+        types.ascii("DIKO"),
         types.uint(200),
       ], deployer.address),
       Tx.contractCall("freddie", "collateralize-and-mint", [
         types.uint(20000000),
         types.uint(5000000),
         types.principal(deployer.address),
-        types.ascii("diko-a"),
-        types.ascii("diko"),
+        types.ascii("DIKO-A"),
+        types.ascii("DIKO"),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
         ),
@@ -183,7 +183,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "should withdraw collateral",
+  name: "sip10-reserve: should withdraw collateral",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -191,15 +191,15 @@ Clarinet.test({
     // Update price of DIKO, Create a new vault
     let block = chain.mineBlock([
       Tx.contractCall("oracle", "update-price", [
-        types.ascii("diko"),
+        types.ascii("DIKO"),
         types.uint(200),
       ], deployer.address),
       Tx.contractCall("freddie", "collateralize-and-mint", [
         types.uint(20000000),
         types.uint(5000000),
         types.principal(deployer.address),
-        types.ascii("diko-a"),
-        types.ascii("diko"),
+        types.ascii("DIKO-A"),
+        types.ascii("DIKO"),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
         ),
@@ -273,7 +273,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "should mint xUSD",
+  name: "sip10-reserve: should mint xUSD",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -281,15 +281,15 @@ Clarinet.test({
     // Update price of DIKO, Create a new vault
     let block = chain.mineBlock([
       Tx.contractCall("oracle", "update-price", [
-        types.ascii("diko"),
+        types.ascii("DIKO"),
         types.uint(200),
       ], deployer.address),
       Tx.contractCall("freddie", "collateralize-and-mint", [
         types.uint(20000000),
         types.uint(5000000),
         types.principal(deployer.address),
-        types.ascii("diko-a"),
-        types.ascii("diko"),
+        types.ascii("DIKO-A"),
+        types.ascii("DIKO"),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
         ),
@@ -344,7 +344,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "should burn xUSD",
+  name: "sip10-reserve: should burn xUSD",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -352,15 +352,15 @@ Clarinet.test({
     // Update price of DIKO, Create a new vault
     let block = chain.mineBlock([
       Tx.contractCall("oracle", "update-price", [
-        types.ascii("diko"),
+        types.ascii("DIKO"),
         types.uint(200),
       ], deployer.address),
       Tx.contractCall("freddie", "collateralize-and-mint", [
         types.uint(20000000),
         types.uint(5000000),
         types.principal(deployer.address),
-        types.ascii("diko-a"),
-        types.ascii("diko"),
+        types.ascii("DIKO-A"),
+        types.ascii("DIKO"),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
         ),

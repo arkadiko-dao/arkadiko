@@ -49,7 +49,7 @@ describe("freddie test suite", () => {
         'oracle',
         'update-price',
         secretDeployKey,
-        [stringAsciiCV('diko'), uintCV(200)]
+        [stringAsciiCV('DIKO'), uintCV(200)]
       );
 
       const value = 20000000; // equivalent to 20 DIKO
@@ -61,8 +61,8 @@ describe("freddie test suite", () => {
         [
           uintCV(value), uintCV(5000000),
           standardPrincipalCV(alice),
-          stringAsciiCV('diko-a'),
-          stringAsciiCV('diko'),
+          stringAsciiCV('DIKO-A'),
+          stringAsciiCV('DIKO'),
           contractPrincipalCV(deployContractAddress, 'sip10-reserve'),
           contractPrincipalCV(deployContractAddress, 'arkadiko-token')
         ]

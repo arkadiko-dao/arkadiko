@@ -140,7 +140,7 @@
 )
 
 (define-private (resolve-stacking-amount (collateral-amount uint) (collateral-token (string-ascii 12)))
-  (if (is-eq collateral-token "stx")
+  (if (is-eq collateral-token "STX")
     collateral-amount
     u0
   )
@@ -253,7 +253,7 @@
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq tx-sender (get-vault-owner)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq "xstx" (get collateral-token vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq "xSTX" (get collateral-token vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq true (get is-liquidated vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (> (get stacked-tokens vault) u0) (err ERR-NOT-AUTHORIZED))
 
@@ -629,7 +629,7 @@
     (let ((collateral (get collateral vault)))
       (if
         (and
-          (is-eq "stx" (get collateral-token vault))
+          (is-eq "STX" (get collateral-token vault))
           (> (get stacked-tokens vault) u0)
         )
         (begin
@@ -641,7 +641,7 @@
               owner: (get owner vault),
               collateral: u0,
               collateral-type: (get collateral-type vault),
-              collateral-token: "xstx",
+              collateral-token: "xSTX",
               stacked-tokens: (get stacked-tokens vault),
               revoked-stacking: (get revoked-stacking vault),
               debt: (get debt vault),

@@ -52,7 +52,7 @@ async function iterateAndUnlock() {
   let vault;
   for (let index = 1; index <= lastId; index++) {
     vault = await getVaultById(index);
-    if (vault['collateral-token']['value'] === 'xstx' && vault['is-liquidated']['value'] === true) {
+    if (vault['collateral-token']['value'] === 'xSTX' && vault['is-liquidated']['value'] === true) {
       console.log('Unlocking vault', index);
       unlockVault(index);
     }
