@@ -52,6 +52,7 @@
 (define-data-var stacking-unlock-burn-height uint u0)
 (define-data-var stx-redeemable uint u0)
 (define-data-var block-height-last-paid uint u0)
+(define-data-var payout-address principal CONTRACT-OWNER)
 
 ;; getters
 (define-read-only (get-vault-by-id (id uint))
@@ -642,6 +643,14 @@
   )
 )
 
+(define-public (set-payout-address (address principal))
+  (begin
+    (asserts! (is-eq contract-caller CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set payout-address address))
+  )
+)
+
 (define-read-only (get-xusd-balance)
   (contract-call? .xusd-token get-balance-of (as-contract tx-sender))
 )
@@ -652,6 +661,7 @@
   (begin
     (asserts! (> (- block-height (var-get block-height-last-paid)) (* blocks-per-day u31)) (err ERR-NOT-AUTHORIZED))
 
-    (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) CONTRACT-OWNER)
+    (var-set block-height-last-paid block-height)
+    (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) (var-get payout-address))
   )
 )
