@@ -51,6 +51,7 @@
 (define-data-var last-vault-id uint u0)
 (define-data-var stacking-unlock-burn-height uint u0)
 (define-data-var stx-redeemable uint u0)
+(define-data-var block-height-last-paid uint u0)
 
 ;; getters
 (define-read-only (get-vault-by-id (id uint))
@@ -647,7 +648,10 @@
 
 ;; redeem xUSD working capital for the foundation
 ;; taken from stability fees paid by vault owners
-;; TODO: redeem maximum 10% per month
 (define-public (redeem-xusd (xusd-amount uint))
-  (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) CONTRACT-OWNER)
+  (begin
+    (asserts! (> (- block-height (var-get block-height-last-paid)) (* blocks-per-day u31)) (err ERR-NOT-AUTHORIZED))
+
+    (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) CONTRACT-OWNER)
+  )
 )
