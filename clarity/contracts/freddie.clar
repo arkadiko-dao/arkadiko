@@ -17,20 +17,11 @@
 (define-constant ERR-INSUFFICIENT-COLLATERAL u49)
 (define-constant ERR-MAXIMUM-DEBT-REACHED u410)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u411)
+(define-constant ERR-BURN-HEIGHT-NOT-REACHED u412)
 
 ;; constants
 (define-constant blocks-per-day u144)
-(define-private (get-vault-owner)
-  ;; TODO: fix manual mocknet/testnet/mainnet switch
-  ;; (if is-in-regtest
-  ;;   (if (is-eq (unwrap-panic (get-block-info? header-hash u1)) 0xd2454d24b49126f7f47c986b06960d7f5b70812359084197a200d691e67a002e)
-  ;;     'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H ;; Testnet only
-  ;;     'ST1HTBVD3JG9C05J7HBJTHGR0GGW7KXW28M5JS8QE ;; Other test environments
-  ;;   )
-  ;;   'SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7 ;; Mainnet (TODO)
-  ;; )
-  'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7
-)
+(define-constant CONTRACT-OWNER tx-sender)
 
 ;; Map of vault entries
 ;; The entry consists of a user principal with their collateral and debt balance
@@ -58,7 +49,7 @@
 )
 
 (define-data-var last-vault-id uint u0)
-(define-data-var unlock-burn-height uint u0)
+(define-data-var stacking-unlock-burn-height uint u0)
 (define-data-var stx-redeemable uint u0)
 
 ;; getters
@@ -67,7 +58,7 @@
     (map-get? vaults { id: id })
     (tuple
       (id u0)
-      (owner (get-vault-owner))
+      (owner CONTRACT-OWNER)
       (collateral u0)
       (collateral-type "")
       (collateral-token "")
@@ -83,6 +74,10 @@
       (leftover-collateral u0)
     )
   )
+)
+
+(define-read-only (get-stacking-unlock-burn-height)
+  (ok (var-get stacking-unlock-burn-height))
 )
 
 (define-read-only (get-stx-redeemable)
@@ -146,137 +141,94 @@
   )
 )
 
+;; can be called by the vault owner on a non-liquidated STX vault
+;; used to indicate willingness to stack/unstack the collateral in the PoX contract
 (define-public (toggle-stacking (vault-id uint))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq "stx" (get collateral-token vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq false (get is-liquidated vault)) (err ERR-NOT-AUTHORIZED))
     (try! (contract-call? .stx-reserve toggle-stacking (get revoked-stacking vault) (get collateral vault)))
 
     (map-set vaults
       { id: vault-id }
-      {
-        id: vault-id,
-        owner: (get owner vault),
-        collateral: (get collateral vault),
-        collateral-type: (get collateral-type vault),
-        collateral-token: (get collateral-token vault),
-        stacked-tokens: (get stacked-tokens vault),
+      (merge vault {
         revoked-stacking: (not (get revoked-stacking vault)),
-        debt: (get debt vault),
-        created-at-block-height: (get created-at-block-height vault),
-        updated-at-block-height: block-height,
-        stability-fee: (get stability-fee vault),
-        stability-fee-last-accrued: (get stability-fee-last-accrued vault),
-        is-liquidated: false,
-        auction-ended: false,
-        leftover-collateral: u0
-      }
+        updated-at-block-height: block-height
+      })
     )
     (ok true)
   )
 )
 
+;; can be called by the vault owner on a non-liquidated STX vault
+;; called when collateral was unstacked & want to stack again
 (define-public (stack-collateral (vault-id uint))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
-    (asserts! (is-eq "stx" (get collateral-token vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq false (get is-liquidated vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq u0 (get stacked-tokens vault)) (err ERR-NOT-AUTHORIZED))
 
     (try! (contract-call? .stx-reserve add-tokens-to-stack (get collateral vault)))
     (map-set vaults
       { id: vault-id }
-      {
-        id: vault-id,
-        owner: (get owner vault),
-        collateral: (get collateral vault),
-        collateral-type: (get collateral-type vault),
-        collateral-token: (get collateral-token vault),
+      (merge vault {
         stacked-tokens: (get collateral vault),
         revoked-stacking: false,
-        debt: (get debt vault),
-        created-at-block-height: (get created-at-block-height vault),
         updated-at-block-height: block-height,
-        stability-fee: (get stability-fee vault),
-        stability-fee-last-accrued: (get stability-fee-last-accrued vault),
-        is-liquidated: (get is-liquidated vault),
-        auction-ended: (get auction-ended vault),
-        leftover-collateral: (get leftover-collateral vault)
-      }
+      })
     )
     (ok true)
   )
 )
 
-;; This method should be ran after a stacking cycle ends to allow withdrawal of STX collateral
-;; Only mark vaults that have revoked stacking
+;; This method should be ran by the deployer (contract owner)
+;; after a stacking cycle ends to allow withdrawal of STX collateral
+;; Only mark vaults that have revoked stacking and not been liquidated
+;; must be called before a new initiate-stacking method call (stacking cycle)
 (define-public (enable-vault-withdrawals (vault-id uint))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
-    (asserts! (is-eq tx-sender (get-vault-owner)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq "stx" (get collateral-token vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq false (get is-liquidated vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq true (get revoked-stacking vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (>= burn-block-height (var-get stacking-unlock-burn-height)) (err ERR-BURN-HEIGHT-NOT-REACHED))
 
-    (if
-      (or
-        (is-eq true (get revoked-stacking vault))
-        (is-eq true (get is-liquidated vault))
-      )
-      (begin
-        (map-set vaults
-          { id: vault-id }
-          {
-            id: vault-id,
-            owner: (get owner vault),
-            collateral: (get collateral vault),
-            collateral-type: (get collateral-type vault),
-            collateral-token: (get collateral-token vault),
-            stacked-tokens: u0,
-            revoked-stacking: (get revoked-stacking vault),
-            debt: (get debt vault),
-            created-at-block-height: (get created-at-block-height vault),
-            updated-at-block-height: block-height,
-            stability-fee: (get stability-fee vault),
-            stability-fee-last-accrued: (get stability-fee-last-accrued vault),
-            is-liquidated: (get is-liquidated vault),
-            auction-ended: (get auction-ended vault),
-            leftover-collateral: (get leftover-collateral vault)
-          }
-        )
-        (ok true)
+    (begin
+      (map-set vaults
+        { id: vault-id }
+        (merge vault {
+          stacked-tokens: u0,
+          updated-at-block-height: block-height
+        })
       )
       (ok true)
     )
   )
 )
 
-(define-public (enable-redeemable-stx (vault-id uint))
+;; method that can only be called by deployer (contract owner)
+;; unlocks STX that had their xSTX derivative liquidated in an auction
+(define-public (release-stacked-stx (vault-id uint))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
-    (asserts! (is-eq tx-sender (get-vault-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq "xSTX" (get collateral-token vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq true (get is-liquidated vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (> (get stacked-tokens vault) u0) (err ERR-NOT-AUTHORIZED))
+    (asserts! (>= burn-block-height (var-get stacking-unlock-burn-height)) (err ERR-BURN-HEIGHT-NOT-REACHED))
 
     (try! (add-stx-redeemable (get stacked-tokens vault)))
     (map-set vaults
       { id: vault-id }
-      {
-        id: vault-id,
-        owner: (get owner vault),
-        collateral: (get collateral vault),
-        collateral-type: (get collateral-type vault),
-        collateral-token: (get collateral-token vault),
+      (merge vault {
         stacked-tokens: u0,
-        revoked-stacking: (get revoked-stacking vault),
-        debt: (get debt vault),
-        created-at-block-height: (get created-at-block-height vault),
-        updated-at-block-height: block-height,
-        stability-fee: (get stability-fee vault),
-        stability-fee-last-accrued: (get stability-fee-last-accrued vault),
-        is-liquidated: (get is-liquidated vault),
-        auction-ended: (get auction-ended vault),
-        leftover-collateral: (get leftover-collateral vault)
-      }
+        updated-at-block-height: block-height
+      })
     )
     (ok true)
   )
@@ -302,11 +254,10 @@
   )
 )
 
-;; DAO can initiate stacking for the STX reserve
-;; Iterate over all vaults that are not initiated yet
-;; to calculate the amount to stack
+;; Freddie can initiate stacking for the STX reserve
+;; The amount to stack is kept as a data var in the stx reserve
 ;; Stacks the STX tokens in POX
-;; pox contract: SP000000000000000000002Q6VF78.pox
+;; mainnet pox contract: SP000000000000000000002Q6VF78.pox
 ;; https://explorer.stacks.co/txid/0x41356e380d164c5233dd9388799a5508aae929ee1a7e6ea0c18f5359ce7b8c33?chain=mainnet
 ;; v1
 ;;  Stack for 1 cycle a time
@@ -315,7 +266,7 @@
 ;; v2
 ;;  Ideally we can stack more tokens on the same principal
 ;;  to stay eligible for future increases of reward slot thresholds.
-;; random addr to use for hashbytes
+;; random addr to use for hashbytes testing
 ;; 0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac
 ;; 0x00
 (define-public (initiate-stacking (pox-addr (tuple (version (buff 1)) (hashbytes (buff 20))))
@@ -323,19 +274,18 @@
                                   (lock-period uint))
   ;; 1. check `get-stacking-minimum` to see if we have > minimum tokens
   ;; 2. call `stack-stx` for 1 `lock-period` fixed
-  (if (is-eq tx-sender (get-vault-owner))
-    (let ((tokens-to-stack (unwrap! (contract-call? .stx-reserve get-tokens-to-stack) (ok u0))))
-      (if (unwrap! (contract-call? .mock-pox can-stack-stx pox-addr tokens-to-stack start-burn-ht lock-period) (err u0))
-        (begin
-          (let ((result (unwrap-panic (contract-call? .mock-pox stack-stx tokens-to-stack pox-addr start-burn-ht lock-period))))
-            (var-set unlock-burn-height (get unlock-burn-height result))
-            (ok (get lock-amount result))
-          )
+  (let ((tokens-to-stack (unwrap! (contract-call? .stx-reserve get-tokens-to-stack) (ok u0))))
+    (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+  
+    (if (unwrap! (contract-call? .mock-pox can-stack-stx pox-addr tokens-to-stack start-burn-ht lock-period) (err u0))
+      (begin
+        (let ((result (unwrap-panic (contract-call? .mock-pox stack-stx tokens-to-stack pox-addr start-burn-ht lock-period))))
+          (var-set stacking-unlock-burn-height (get unlock-burn-height result))
+          (ok (get lock-amount result))
         )
-        (err u0) ;; cannot stack yet - probably cause we have not reached the minimum with (var-get tokens-to-stack)
       )
+      (err u0) ;; cannot stack yet - probably cause we have not reached the minimum with (var-get tokens-to-stack)
     )
-    (err ERR-NOT-AUTHORIZED)
   )
 )
 
@@ -545,14 +495,13 @@
 ;; the goal is not to get the exact interest,
 ;; but rather to (dis)incentivize the user to mint stablecoins or not
 (define-read-only (get-stability-fee-for-vault (vault-id uint))
-  (let ((vault (get-vault-by-id vault-id)))
-    (let ((days (/ (- block-height (get stability-fee-last-accrued vault)) blocks-per-day)))
-      (let ((debt (/ (get debt vault) u100000))) ;; we can round to 1 number after comma, e.g. 1925000 uxUSD == 1.9 xUSD
-        (let ((daily-interest (/ (* debt (unwrap-panic (contract-call? .dao get-stability-fee (get collateral-type vault)))) u100)))
-          (ok (tuple (fee (* daily-interest days)) (decimals u12) (days days))) ;; 12 decimals so u5233 means 5233/10^12 xUSD daily interest
-        )
-      )
-    )
+  (let (
+    (vault (get-vault-by-id vault-id))
+    (days (/ (- block-height (get stability-fee-last-accrued vault)) blocks-per-day))
+    (debt (/ (get debt vault) u100000)) ;; we can round to 1 number after comma, e.g. 1925000 uxUSD == 1.9 xUSD
+    (daily-interest (/ (* debt (unwrap-panic (contract-call? .dao get-stability-fee (get collateral-type vault)))) u100))
+  )
+    (ok (tuple (fee (* daily-interest days)) (decimals u12) (days days))) ;; 12 decimals so u5233 means 5233/10^12 xUSD daily interest
   )
 )
 
@@ -564,23 +513,11 @@
         (let ((vault (get-vault-by-id vault-id)))
           (map-set vaults
             { id: vault-id }
-            {
-              id: vault-id,
-              owner: (get owner vault),
-              collateral: (get collateral vault),
-              collateral-type: (get collateral-type vault),
-              collateral-token: (get collateral-token vault),
-              stacked-tokens: (get stacked-tokens vault),
-              revoked-stacking: (get revoked-stacking vault),
-              debt: (get debt vault),
-              created-at-block-height: (get created-at-block-height vault),
+            (merge vault {
               updated-at-block-height: block-height,
               stability-fee: (+ (/ (get fee fee) (get decimals fee)) (get stability-fee vault)),
-              stability-fee-last-accrued: (+ (get stability-fee-last-accrued vault) (* (get days fee) blocks-per-day)),
-              is-liquidated: false,
-              auction-ended: false,
-              leftover-collateral: (get leftover-collateral vault)
-            }
+              stability-fee-last-accrued: (+ (get stability-fee-last-accrued vault) (* (get days fee) blocks-per-day))
+            })
           )
           (ok true)
         )
@@ -596,23 +533,10 @@
       (begin
         (map-set vaults
           { id: vault-id }
-          {
-            id: vault-id,
-            owner: (get owner vault),
-            collateral: (get collateral vault),
-            collateral-type: (get collateral-type vault),
-            collateral-token: (get collateral-token vault),
-            stacked-tokens: (get stacked-tokens vault),
-            revoked-stacking: (get revoked-stacking vault),
-            debt: (get debt vault),
-            created-at-block-height: (get created-at-block-height vault),
+          (merge vault {
             updated-at-block-height: block-height,
-            stability-fee: u0,
-            stability-fee-last-accrued: (get stability-fee-last-accrued vault),
-            is-liquidated: false,
-            auction-ended: false,
-            leftover-collateral: (get leftover-collateral vault)
-          }
+            stability-fee: u0
+          })
         )
         (ok true)
       )
@@ -636,23 +560,14 @@
           ;; mint xSTX and sell those until stacking cycle ends
           (map-set vaults
             { id: vault-id }
-            {
-              id: vault-id,
-              owner: (get owner vault),
+            (merge vault {
               collateral: u0,
-              collateral-type: (get collateral-type vault),
               collateral-token: "xSTX",
-              stacked-tokens: (get stacked-tokens vault),
-              revoked-stacking: (get revoked-stacking vault),
-              debt: (get debt vault),
-              created-at-block-height: (get created-at-block-height vault),
               updated-at-block-height: block-height,
-              stability-fee: (get stability-fee vault),
-              stability-fee-last-accrued: (get stability-fee-last-accrued vault),
               is-liquidated: true,
               auction-ended: false,
               leftover-collateral: u0
-            }
+            })
           )
           (try! (contract-call? .sip10-reserve mint-xstx collateral))
           (let ((debt (/ (* (unwrap-panic (contract-call? .dao get-liquidation-penalty (get collateral-type vault))) (get debt vault)) u100)))
@@ -662,23 +577,13 @@
         (begin
           (map-set vaults
             { id: vault-id }
-            {
-              id: vault-id,
-              owner: (get owner vault),
+            (merge vault {
               collateral: u0,
-              collateral-type: (get collateral-type vault),
-              collateral-token: (get collateral-token vault),
-              stacked-tokens: (get stacked-tokens vault),
-              revoked-stacking: (get revoked-stacking vault),
-              debt: (get debt vault),
-              created-at-block-height: (get created-at-block-height vault),
               updated-at-block-height: block-height,
-              stability-fee: (get stability-fee vault),
-              stability-fee-last-accrued: (get stability-fee-last-accrued vault),
               is-liquidated: true,
               auction-ended: false,
               leftover-collateral: u0
-            }
+            })
           )
           (let ((debt (/ (* (unwrap-panic (contract-call? .dao get-liquidation-penalty (get collateral-type vault))) (get debt vault)) u100)))
             (ok (tuple (ustx-amount collateral) (debt (+ debt (get debt vault)))))
@@ -690,24 +595,22 @@
 )
 
 (define-public (finalize-liquidation (vault-id uint) (leftover-collateral uint))
-  (if (is-eq contract-caller .auction-engine)
-    (let ((vault (get-vault-by-id vault-id)))
-      (asserts! (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
+  (let ((vault (get-vault-by-id vault-id)))
+    (asserts! (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
+    (asserts! (is-eq contract-caller .auction-engine) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (get is-liquidated vault) true) (err ERR-NOT-AUTHORIZED))
 
-      (map-set vaults
-        { id: vault-id }
-        (merge vault {
-          collateral: u0,
-          updated-at-block-height: block-height,
-          is-liquidated: true,
-          auction-ended: true,
-          leftover-collateral: leftover-collateral
-        })
-      )
-      (try! (contract-call? .dao subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault)))
-      (ok true)
+    (map-set vaults
+      { id: vault-id }
+      (merge vault {
+        collateral: u0,
+        updated-at-block-height: block-height,
+        auction-ended: true,
+        leftover-collateral: leftover-collateral
+      })
     )
-    (err ERR-NOT-AUTHORIZED)
+    (try! (contract-call? .dao subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault)))
+    (ok true)
   )
 )
 
@@ -719,28 +622,17 @@
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq true (get is-liquidated vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq true (get auction-ended vault)) (err ERR-NOT-AUTHORIZED))
 
     (if (unwrap-panic (contract-call? reserve withdraw ft (get owner vault) (get leftover-collateral vault)))
       (begin
         (map-set vaults
           { id: vault-id }
-          {
-            id: vault-id,
-            owner: tx-sender,
-            collateral: (get collateral vault),
-            collateral-type: (get collateral-type vault),
-            collateral-token: (get collateral-token vault),
-            stacked-tokens: (get stacked-tokens vault),
-            revoked-stacking: (get revoked-stacking vault),
-            debt: (get debt vault),
-            created-at-block-height: (get created-at-block-height vault),
+          (merge vault {
             updated-at-block-height: block-height,
-            stability-fee: (get stability-fee vault),
-            stability-fee-last-accrued: (get stability-fee-last-accrued vault),
-            is-liquidated: true,
-            auction-ended: true,
             leftover-collateral: u0
-          }
+          })
         )
         (ok true)
       )
@@ -757,5 +649,5 @@
 ;; taken from stability fees paid by vault owners
 ;; TODO: redeem maximum 10% per month
 (define-public (redeem-xusd (xusd-amount uint))
-  (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) (get-vault-owner))
+  (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) CONTRACT-OWNER)
 )

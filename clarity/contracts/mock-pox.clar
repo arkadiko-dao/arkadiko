@@ -3,7 +3,7 @@
                           (start-burn-ht uint)
                           (lock-period uint))
   (if true
-    (ok { stacker: tx-sender, lock-amount: amount-ustx, unlock-burn-height: u680000 })
+    (ok { stacker: tx-sender, lock-amount: amount-ustx, unlock-burn-height: u100 })
     (err 1)
   )
 )

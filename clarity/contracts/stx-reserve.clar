@@ -75,23 +75,31 @@
 ;; save STX in stx-reserve-address
 ;; calculate price and collateralisation ratio
 (define-public (collateralize-and-mint (token <mock-ft-trait>) (ustx-amount uint) (debt uint) (sender principal))
-  (match (print (stx-transfer? ustx-amount sender (as-contract tx-sender)))
-    success (begin
-      (try! (add-tokens-to-stack ustx-amount))
-      (ok debt)
+  (begin
+    (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
+
+    (match (print (stx-transfer? ustx-amount sender (as-contract tx-sender)))
+      success (begin
+        (try! (add-tokens-to-stack ustx-amount))
+        (ok debt)
+      )
+      error (err ERR-TRANSFER-FAILED)
     )
-    error (err ERR-TRANSFER-FAILED)
   )
 )
 
 ;; deposit extra collateral in vault
 (define-public (deposit (token <mock-ft-trait>) (additional-ustx-amount uint))
-  (match (print (stx-transfer? additional-ustx-amount tx-sender (as-contract tx-sender)))
-    success (begin
-      (try! (add-tokens-to-stack additional-ustx-amount))
-      (ok true)
+  (begin
+    (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
+
+    (match (print (stx-transfer? additional-ustx-amount tx-sender (as-contract tx-sender)))
+      success (begin
+        (try! (add-tokens-to-stack additional-ustx-amount))
+        (ok true)
+      )
+      error (err ERR-DEPOSIT-FAILED)
     )
-    error (err ERR-DEPOSIT-FAILED)
   )
 )
 
@@ -145,13 +153,12 @@
 ;; 1. Mark vault as liquidated?
 ;; 2. Send collateral into the liquidator's liquidation reserve
 (define-public (liquidate (token (string-ascii 12)) (stx-collateral uint) (current-debt uint))
-  (if (is-eq contract-caller .freddie)
-    (begin
-      (let ((new-debt (/ (* (unwrap-panic (contract-call? .dao get-liquidation-penalty token)) current-debt) u100)))
-        (ok (tuple (ustx-amount stx-collateral) (debt (+ new-debt current-debt))))
-      )
+  (begin
+    (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
+
+    (let ((new-debt (/ (* (unwrap-panic (contract-call? .dao get-liquidation-penalty token)) current-debt) u100)))
+      (ok (tuple (ustx-amount stx-collateral) (debt (+ new-debt current-debt))))
     )
-    (err ERR-NOT-AUTHORIZED)
   )
 )
 

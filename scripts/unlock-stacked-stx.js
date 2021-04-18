@@ -34,7 +34,7 @@ async function unlockVault(vaultId) {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
     contractName: "freddie",
-    functionName: "enable-redeemable-stx",
+    functionName: "release-stacked-stx",
     functionArgs: [tx.uintCV(vaultId)],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,

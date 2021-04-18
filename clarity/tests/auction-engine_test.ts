@@ -165,6 +165,10 @@ Clarinet.test({
       types.principal(deployer.address),
     ], deployer.address);
     call.result.expectOk().expectUint(68965517);
+
+    // ultimately we want STX tokens though, so turn those xSTX into STX with the Arkadiko pool (if any)
+    // TODO: test release-stacked-stx
+    // TODO: test withdraw-leftover-collateral
   }
 });
 
