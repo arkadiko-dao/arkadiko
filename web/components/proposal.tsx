@@ -12,7 +12,7 @@ export const Proposal: React.FC<ProposalProps> = ({ id, changes, proposer, type,
             <p className="text-sm font-medium text-indigo-600 truncate">
               {type === 'change_risk_parameter' ? (
                 `${typeToReadableName(type)} "${changeKeyToHumanReadable(changes[0].key)}" ${deductTitle(type)} ${collateralType?.toUpperCase()}`
-              ) : type === 'new_collateral_type' ? (
+              ) : type === 'add_collateral_type' ? (
                 `${deductTitle(type)} ${collateralType?.toUpperCase()}`
               ) : (
                 `${deductTitle(type)}`

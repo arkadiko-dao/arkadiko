@@ -41,7 +41,7 @@ async function transact() {
     contractAddress: CONTRACT_ADDRESS,
     contractName: 'dao',
     functionName: 'propose',
-    functionArgs: [tx.uintCV(200), tx.stringAsciiCV('N/A'), tx.stringAsciiCV("new_collateral_type"), list, tx.stringAsciiCV(token), tx.stringAsciiCV(collateral_type)],
+    functionArgs: [tx.uintCV(200), tx.stringAsciiCV('N/A'), tx.stringAsciiCV("add_collateral_type"), list, tx.stringAsciiCV(token), tx.stringAsciiCV(collateral_type)],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network

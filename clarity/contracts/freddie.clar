@@ -599,7 +599,7 @@
 (define-public (finalize-liquidation (vault-id uint) (leftover-collateral uint))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
-    (asserts! (is-eq contract-caller .auction-engine) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "auction-engine"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) true) (err ERR-NOT-AUTHORIZED))
 
     (map-set vaults

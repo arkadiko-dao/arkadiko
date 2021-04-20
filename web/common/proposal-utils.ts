@@ -1,7 +1,7 @@
 export const typeToReadableName = (type:string) => {
   if (type === 'change_risk_parameter') {
     return 'Change Risk Parameter';
-  } else if (type === 'new_collateral_type') {
+  } else if (type === 'add_collateral_type') {
     return 'New Collateral Type';
   } else if (type === 'emergency_shutdown') {
     return 'Emergency Shutdown';
@@ -15,7 +15,7 @@ export const typeToReadableName = (type:string) => {
 export const deductTitle = (type:string) => {
   if (type === 'change_risk_parameter') {
     return 'on collateral type';
-  } else if (type === 'new_collateral_type') {
+  } else if (type === 'add_collateral_type') {
     return 'Introduce new collateral type';
   } else if (type === 'emergency_shutdown') {
     return 'Toggle Emergency Shutdown';

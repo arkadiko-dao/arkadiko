@@ -47,7 +47,7 @@ depends_on = ["mock-ft-trait"]
 path = "contracts/vault-trait.clar"
 
 [contracts.xusd-token]
-depends_on = ["mock-ft-trait"]
+depends_on = ["mock-ft-trait", "dao"]
 path = "contracts/xusd-token.clar"
 
 [contracts.xstx-token]
