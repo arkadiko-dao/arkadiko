@@ -1,5 +1,8 @@
 (use-trait vault-trait .vault-trait.vault-trait)
 (use-trait mock-ft-trait .mock-ft-trait.mock-ft-trait)
+(use-trait vault-manager-trait .vault-manager-trait.vault-manager-trait)
+(use-trait oracle-trait .oracle-trait.oracle-trait)
+(impl-trait .auction-engine-trait.auction-engine-trait)
 
 ;; errors
 (define-constant ERR-BID-DECLINED u21)
@@ -89,10 +92,11 @@
 ;; we wanna sell as little collateral as possible to cover the vault's debt
 ;; if we cannot cover the vault's debt with the collateral sale,
 ;; we will have to sell some governance or STX tokens from the reserve
-(define-public (start-auction (vault-id uint) (uamount uint) (debt-to-raise uint))
-  (let ((vault (contract-call? .freddie get-vault-by-id vault-id)))
+(define-public (start-auction (vault-manager <vault-manager-trait>) (vault-id uint) (uamount uint) (debt-to-raise uint))
+  (let ((vault (unwrap-panic (contract-call? vault-manager fetch-vault-by-id vault-id))))
     (asserts! (is-eq contract-caller .liquidator) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) true) (err ERR-AUCTION-NOT-ALLOWED))
+    (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
 
     (let ((auction-id (+ (var-get last-auction-id) u1)))
       (begin
@@ -126,8 +130,8 @@
 ;; start an auction to sell off DIKO gov tokens
 ;; this is a private function since it should only be called
 ;; when a normal collateral liquidation auction can't raise enough debt
-(define-private (start-debt-auction (vault-id uint) (debt-to-raise uint))
-  (let ((vault (contract-call? .freddie get-vault-by-id vault-id)))
+(define-private (start-debt-auction (vault-manager <vault-manager-trait>) (vault-id uint) (debt-to-raise uint))
+  (let ((vault (unwrap-panic (contract-call? vault-manager fetch-vault-by-id vault-id))))
     (asserts! (is-eq (get is-liquidated vault) true) (err ERR-AUCTION-NOT-ALLOWED))
 
     (let (
@@ -161,13 +165,14 @@
   )
 )
 
-(define-public (start-surplus-auction (xusd-amount uint))
+(define-public (start-surplus-auction (vault-manager <vault-manager-trait>) (xusd-amount uint))
   (let (
     (auction-id (+ (var-get last-auction-id) u1))
     (maximum-surplus (unwrap-panic (contract-call? .dao get-maximum-debt-surplus)))
-    (current-balance (unwrap-panic (contract-call? .freddie get-xusd-balance)))
+    (current-balance (unwrap-panic (contract-call? vault-manager get-xusd-balance)))
   )
     (asserts! (>= current-balance maximum-surplus) (err ERR-AUCTION-NOT-ALLOWED))
+    (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     ;; TODO: add assert to run only 1 surplus auction at once
 
     (map-set auctions
@@ -214,16 +219,18 @@
 ;; e.g. if we need to cover 10 xUSD debt, and we have 20 STX at $1/STX,
 ;; we only need to auction off 10 STX
 ;; but we give a 3% discount to incentivise people
-(define-read-only (calculate-minimum-collateral-amount (auction-id uint))
+;; TODO: this should be read-only but a bug in traits blocks this from being read-only
+;; see https://github.com/blockstack/stacks-blockchain/issues/1981
+;; to fix this we use a proxy method fetch-minimum-collateral-amount and pass the price in this method, see below
+(define-read-only (calculate-minimum-collateral-amount (collateral-price-in-cents uint) (auction-id uint))
   (let (
     (auction (get-auction-by-id auction-id))
-    (price-in-cents (contract-call? .oracle get-price (collateral-token (get collateral-token auction))))
     (collateral-left (- (get collateral-amount auction) (get total-collateral-sold auction)))
     (debt-left-to-raise (- (get debt-to-raise auction) (get total-debt-raised auction)))
   )
     (if (< debt-left-to-raise (get lot-size auction))
       (begin
-        (let ((collateral-amount (/ (* u100 debt-left-to-raise) (unwrap-panic (discounted-auction-price (get last-price-in-cents price-in-cents))))))
+        (let ((collateral-amount (/ (* u100 debt-left-to-raise) (unwrap-panic (discounted-auction-price collateral-price-in-cents)))))
           (if (> collateral-amount collateral-left)
             (ok collateral-left)
             (ok collateral-amount)
@@ -231,7 +238,7 @@
         )
       )
       (begin
-        (let ((collateral-amount (/ (* u100 (get lot-size auction)) (unwrap-panic (discounted-auction-price (get last-price-in-cents price-in-cents))))))
+        (let ((collateral-amount (/ (* u100 (get lot-size auction)) (unwrap-panic (discounted-auction-price collateral-price-in-cents)))))
           (if (> collateral-amount collateral-left)
             (ok collateral-left)
             (ok collateral-amount)
@@ -239,6 +246,16 @@
         )
       )
     )
+  )
+)
+
+(define-public (fetch-minimum-collateral-amount (oracle <oracle-trait>) (auction-id uint))
+  (let (
+    (auction (get-auction-by-id auction-id))
+    (price-in-cents (contract-call? .oracle get-price (collateral-token (get collateral-token auction))))
+  )
+    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
+    (calculate-minimum-collateral-amount (get last-price-in-cents price-in-cents) auction-id)
   )
 )
 
@@ -264,16 +281,18 @@
   )
 )
 
-(define-public (bid (auction-id uint) (lot-index uint) (xusd uint))
+(define-public (bid (vault-manager <vault-manager-trait>) (oracle <oracle-trait>) (auction-id uint) (lot-index uint) (xusd uint))
   (let ((auction (get-auction-by-id auction-id)))
     (asserts! (is-eq lot-index (get lots-sold auction)) (err ERR-BID-DECLINED))
     (asserts! (is-eq (get is-open auction) true) (err ERR-BID-DECLINED))
+    (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
 
-    (register-bid auction-id lot-index xusd)
+    (register-bid vault-manager oracle auction-id lot-index xusd)
   )
 )
 
-(define-private (register-bid (auction-id uint) (lot-index uint) (xusd uint))
+(define-private (register-bid (vault-manager <vault-manager-trait>) (oracle <oracle-trait>) (auction-id uint) (lot-index uint) (xusd uint))
   (let (
     (auction (get-auction-by-id auction-id))
     (last-bid (get-last-bid auction-id lot-index))
@@ -281,7 +300,7 @@
     (asserts! (is-eq (get is-accepted last-bid) false) (err ERR-LOT-SOLD))
     (asserts! (> xusd (get xusd last-bid)) (err ERR-POOR-BID)) ;; need a better bid than previously already accepted
 
-    (accept-bid auction-id lot-index xusd)
+    (accept-bid vault-manager oracle auction-id lot-index xusd)
   )
 )
 
@@ -292,11 +311,11 @@
   )
 )
 
-(define-private (accept-bid (auction-id uint) (lot-index uint) (xusd uint))
+(define-private (accept-bid (vault-manager <vault-manager-trait>) (oracle <oracle-trait>) (auction-id uint) (lot-index uint) (xusd uint))
   (let (
     (auction (get-auction-by-id auction-id))
     (last-bid (get-last-bid auction-id lot-index))
-    (collateral-amount (unwrap-panic (calculate-minimum-collateral-amount auction-id)))
+    (collateral-amount (unwrap-panic (fetch-minimum-collateral-amount oracle auction-id)))
     (accepted-bid
       (or
         (is-eq xusd (get lot-size auction))
@@ -350,7 +369,7 @@
           )
           ;; auction is over - close all bids
           ;; send collateral to winning bidders
-          (close-auction auction-id)
+          (close-auction vault-manager auction-id)
           (ok true)
         )
       )
@@ -371,12 +390,13 @@
   )
 )
 
-(define-public (redeem-lot-collateral (ft <mock-ft-trait>) (reserve <vault-trait>) (auction-id uint) (lot-index uint))
+(define-public (redeem-lot-collateral (vault-manager <vault-manager-trait>) (ft <mock-ft-trait>) (reserve <vault-trait>) (auction-id uint) (lot-index uint))
   (let (
     (last-bid (get-last-bid auction-id lot-index))
     (auction (get-auction-by-id auction-id))
   )
     (asserts! (is-eq (unwrap-panic (contract-call? ft get-symbol)) (get collateral-token auction)) (err ERR-TOKEN-TYPE-MISMATCH))
+    (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
 
     (if
       (and
@@ -392,9 +412,9 @@
                 ;; request "collateral-amount" gov tokens from the DAO
                 (begin
                   (try! (contract-call? .dao request-diko-tokens ft (get collateral-amount auction)))
-                  (contract-call? .freddie redeem-auction-collateral ft reserve (get collateral-amount last-bid) tx-sender)
+                  (contract-call? vault-manager redeem-auction-collateral ft reserve (get collateral-amount last-bid) tx-sender)
                 )
-                (contract-call? .freddie redeem-auction-collateral ft reserve (get collateral-amount last-bid) tx-sender)
+                (contract-call? vault-manager redeem-auction-collateral ft reserve (get collateral-amount last-bid) tx-sender)
               )
             )
             (err ERR-COULD-NOT-REDEEM)
@@ -419,7 +439,7 @@
 ;; DONE     4. update vault to allow vault owner to withdraw leftover collateral (if any)
 ;; DONE     5. if not all vault debt is covered: auction off collateral again (if any left)
 ;; DONE     6. if not all vault debt is covered and no collateral is left: cover xUSD with gov token
-(define-public (close-auction (auction-id uint))
+(define-public (close-auction (vault-manager <vault-manager-trait>) (auction-id uint))
   (let ((auction (get-auction-by-id auction-id)))
     (asserts!
       (or
@@ -429,6 +449,7 @@
       (err ERR-BLOCK-HEIGHT-NOT-REACHED)
     )
     (asserts! (is-eq (get is-open auction) true) (err ERR-AUCTION-NOT-OPEN))
+    (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
 
     (map-set auctions
       { id: auction-id }
@@ -438,13 +459,13 @@
     (if (>= (get total-debt-raised auction) (get debt-to-raise auction))
       (if (is-eq (get auction-type auction) "collateral")
         (contract-call?
-          .freddie
+          vault-manager
           finalize-liquidation
           (get vault-id auction)
           (- (get collateral-amount auction) (get total-collateral-sold auction))
         )
         (contract-call?
-          .freddie
+          vault-manager
           finalize-liquidation
           (get vault-id auction)
           u0
@@ -456,6 +477,7 @@
           (extend-auction auction-id)
           ;; no collateral left. Need to sell governance token to raise more xUSD
           (start-debt-auction
+            vault-manager
             (get vault-id auction)
             (- (get debt-to-raise auction) (get total-debt-raised auction))
           )

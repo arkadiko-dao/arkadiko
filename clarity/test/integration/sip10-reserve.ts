@@ -27,13 +27,19 @@ describe("freddie test suite", () => {
     before(async () => {
       await deployContract('mock-ft-trait');
       await deployContract('vault-trait');
+      await deployContract('vault-manager-trait');
+      await deployContract('oracle-trait');
+      await deployContract('auction-engine-trait');
+      await deployContract('collateral-types-trait');
 
+      await deployContract('collateral-types');
       await deployContract('oracle');
-      await deployContract('xusd-token');
       await deployContract('arkadiko-token');
-      await deployContract('xstx-token');
       await deployContract('mock-pox');
       await deployContract('dao');
+
+      await deployContract('xusd-token');
+      await deployContract('xstx-token');
 
       await deployContract('stx-reserve');
       await deployContract('sip10-reserve');

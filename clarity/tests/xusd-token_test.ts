@@ -2,11 +2,8 @@ import {
   Account,
   Chain,
   Clarinet,
-  Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.5.2/index.ts";
-
-import { assertEquals } from "https://deno.land/std@0.90.0/testing/asserts.ts";
+} from "https://deno.land/x/clarinet@v0.6.0/index.ts";
 
 Clarinet.test({
   name: "xusd-token: returns the correct name of the Arkadiko Token",

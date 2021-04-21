@@ -11,6 +11,7 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, en
   const [isClosed, setIsClosed] = useState(false);
   const [acceptedCollateral, setAcceptedCollateral] = useState(0);
   const [debtToRaise, setDebtToRaise] = useState(0);
+  const [discountedPrice, setDiscountedPrice] = useState(0.0);
   const [price, setPrice] = useState(0.0);
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -18,7 +19,8 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, en
   useEffect(() => {
     const fetchPrice = async () => {
       let price = await getPrice(collateralToken);
-      setPrice(price - (price * 0.03)); // TODO: change for discounted-auction-price on auction-engine SC
+      setPrice(price);
+      setDiscountedPrice(price - (price * 0.03)); // TODO: change for discounted-auction-price on auction-engine SC
     };
 
     fetchPrice();
@@ -32,7 +34,7 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, en
         contractAddress,
         contractName: "auction-engine",
         functionName: "calculate-minimum-collateral-amount",
-        functionArgs: [uintCV(id)],
+        functionArgs: [uintCV(price), uintCV(id)],
         senderAddress: stxAddress || '',
         network: network,
       });
@@ -40,7 +42,7 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, en
       const collJson = cvToJSON(minimumCollateralAmount);
       setMinimumCollateralAmount(collJson.value.value);
       const debtMax = 100000000;
-      setDebtToRaise(Math.min(debtMax, collJson.value.value * price / 100));
+      setDebtToRaise(Math.min(debtMax, collJson.value.value * discountedPrice / 100));
 
       const currentBid = await callReadOnlyFunction({
         contractAddress,
@@ -55,7 +57,7 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, en
       if (json.value.xusd.value > 0) {
         setCurrentBid(json.value.xusd.value);
         setMinimumCollateralAmount(json.value['collateral-amount'].value);
-        setDebtToRaise(Math.min(debtMax, json.value['collateral-amount'].value * price / 100));
+        setDebtToRaise(Math.min(debtMax, json.value['collateral-amount'].value * discountedPrice / 100));
       }
       setAcceptedCollateral(json.value['collateral-amount'].value);
       setIsClosed(json.value['is-accepted'].value);
@@ -100,7 +102,7 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, en
         </span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">${(price / 100).toFixed(2)}</span>
+        <span className="text-gray-900 font-medium">${(discountedPrice / 100).toFixed(2)}</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         <span className="text-gray-900 font-medium">${(debtToRaise / 1000000).toFixed(4)}</span>

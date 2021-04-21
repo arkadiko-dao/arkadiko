@@ -13,7 +13,7 @@
     (let ((amount
       (/
         (* ucollateral-amount (get last-price-in-cents price-in-cents))
-        (unwrap-panic (contract-call? .dao get-collateral-to-debt-ratio collateral-type))
+        (unwrap-panic (contract-call? .collateral-types get-collateral-to-debt-ratio collateral-type))
       )))
       (ok amount)
     )

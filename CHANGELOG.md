@@ -1,3 +1,14 @@
+## Version 0.5.0
+
+### New features
+
+- Allow contract versioning through trait implementations. The current smart contracts have a trait definition:
+  - Auction Engine
+  - Collateral Types
+  - Liquidator
+  - Oracle
+  - Staking (WIP)
+  - Vault Manager (Freddie)
 
 ## Version 0.4.0
 

@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.5.2/index.ts";
+} from "https://deno.land/x/clarinet@v0.6.0/index.ts";
 
 Clarinet.test({
   name:
@@ -34,6 +34,8 @@ Clarinet.test({
     
     block = chain.mineBlock([
       Tx.contractCall("liquidator", "notify-risky-vault", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.auction-engine'),
         types.uint(1)
       ], deployer.address)
     ]);

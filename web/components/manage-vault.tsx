@@ -82,13 +82,13 @@ export const ManageVault = ({ match }) => {
 
         const type = await callReadOnlyFunction({
           contractAddress,
-          contractName: "dao",
-          functionName: "get-collateral-type-by-token",
+          contractName: "collateral-types",
+          functionName: "get-collateral-type-by-name",
           functionArgs: [stringAsciiCV(data['collateral-type'].value)],
           senderAddress: senderAddress || '',
           network: network,
         });
-        const json = cvToJSON(type);
+        const json = cvToJSON(type.value);
         setCollateralType({
           name: json.value['name'].value,
           token: json.value['token'].value,

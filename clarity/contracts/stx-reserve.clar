@@ -55,7 +55,7 @@
     (let ((amount
       (/
         (* ustx-amount (get last-price-in-cents stx-price-in-cents))
-        (unwrap-panic (contract-call? .dao get-collateral-to-debt-ratio collateral-type))
+        (unwrap-panic (contract-call? .collateral-types get-collateral-to-debt-ratio collateral-type))
       )))
       (ok amount)
     )
@@ -156,7 +156,7 @@
   (begin
     (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
 
-    (let ((new-debt (/ (* (unwrap-panic (contract-call? .dao get-liquidation-penalty token)) current-debt) u100)))
+    (let ((new-debt (/ (* (unwrap-panic (contract-call? .collateral-types get-liquidation-penalty token)) current-debt) u100)))
       (ok (tuple (ustx-amount stx-collateral) (debt (+ new-debt current-debt))))
     )
   )

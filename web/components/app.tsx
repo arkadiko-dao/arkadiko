@@ -98,14 +98,13 @@ export const App: React.FC = () => {
     ['STX-A', 'STX-B', 'DIKO-A'].forEach(async (token) => {
       const types = await callReadOnlyFunction({
         contractAddress,
-        contractName: "dao",
-        functionName: "get-collateral-type-by-token",
+        contractName: "collateral-types",
+        functionName: "get-collateral-type-by-name",
         functionArgs: [stringAsciiCV(token)],
         senderAddress: address,
         network: network,
       });
-      const json = cvToJSON(types);
-      // console.log('coll type: ', json);
+      const json = cvToJSON(types.value);
       collTypes[token] = {
         name: json.value['name'].value,
         token: json.value['token'].value,
