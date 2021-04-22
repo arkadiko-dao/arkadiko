@@ -302,6 +302,7 @@
 ;;   (ok true)
 ;; )
 
+;; called by the auction engine when DIKO tokens need to be auctioned off from the reserve
 ;; TODO: make sip10 trait dynamic?
 (define-public (request-diko-tokens (ft <mock-ft-trait>) (collateral-amount uint))
   (contract-call? ft transfer collateral-amount DAO-OWNER (as-contract .sip10-reserve))

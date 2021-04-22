@@ -1,6 +1,7 @@
 (impl-trait .vault-manager-trait.vault-manager-trait)
 (use-trait vault-trait .vault-trait.vault-trait)
 (use-trait mock-ft-trait .mock-ft-trait.mock-ft-trait)
+(use-trait vault-manager-trait .vault-manager-trait.vault-manager-trait)
 
 ;; Freddie - The Vault Manager
 ;; Freddie is an abstraction layer that interacts with collateral type reserves
@@ -669,5 +670,19 @@
 
     (var-set block-height-last-paid block-height)
     (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) (var-get payout-address))
+  )
+)
+
+;; this should be called when upgrading contracts
+;; freddie should only contain xUSD
+(define-public (migrate-funds (new-vault-manager <vault-manager-trait>) (token <mock-ft-trait>))
+  (begin
+    (asserts! (is-eq contract-caller CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+
+    (let (
+      (balance (unwrap-panic (contract-call? token get-balance-of (as-contract tx-sender))))
+    )
+      (contract-call? token transfer balance (as-contract tx-sender) (contract-of new-vault-manager))
+    )
   )
 )
