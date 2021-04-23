@@ -49,9 +49,6 @@
 (define-data-var proposal-ids (list 100 uint) (list u0))
 (define-map votes-by-member { proposal-id: uint, member: principal } { vote-count: uint })
 (define-data-var emergency-shutdown-activated bool false)
-(define-data-var stacker-yield uint u9000) ;; 90%
-(define-data-var governance-token-yield uint u500) ;; 5%
-(define-data-var governance-reserve-yield uint u500) ;; 5%
 (define-data-var maximum-debt-surplus uint u10000000000000) ;; 10 million default
 
 (define-read-only (get-votes-by-member-by-id (proposal-id uint) (member principal))
@@ -86,18 +83,6 @@
 
 (define-read-only (get-proposal-ids)
   (ok (var-get proposal-ids))
-)
-
-(define-read-only (get-stacker-yield)
-  (ok (var-get stacker-yield)) ;; stacker gets 80% of the yield
-)
-
-(define-read-only (get-governance-token-yield)
-  (ok (var-get governance-token-yield)) ;; token holders get 10% of the yield
-)
-
-(define-read-only (get-governance-reserve-yield)
-  (ok (var-get governance-reserve-yield)) ;; reserve gets 10% of the yield
 )
 
 (define-read-only (get-emergency-shutdown-activated)
@@ -255,9 +240,10 @@
         (contract-call? .collateral-types change-risk-parameters (get collateral-type proposal) changes)
         (if (is-eq type "stacking_distribution")
           (begin
-            (var-set stacker-yield (unwrap-panic (get new-value (element-at changes u0))))
-            (var-set governance-token-yield (unwrap-panic (get new-value (element-at changes u1))))
-            (var-set governance-reserve-yield (unwrap-panic (get new-value (element-at changes u2))))
+            ;; TODO: change these values in the stacker contract
+            ;; (var-set stacker-yield (unwrap-panic (get new-value (element-at changes u0))))
+            ;; (var-set governance-token-yield (unwrap-panic (get new-value (element-at changes u1))))
+            ;; (var-set governance-reserve-yield (unwrap-panic (get new-value (element-at changes u2))))
             (ok true)
           )
           (if (is-eq type "change_maximum_debt_surplus")
@@ -337,6 +323,27 @@
     {
       address: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7,
       qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.collateral-types
+    }
+  )
+  (map-set contracts
+    { name: "stacker" }
+    {
+      address: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7,
+      qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stacker
+    }
+  )
+  (map-set contracts
+    { name: "stx-reserve" }
+    {
+      address: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7,
+      qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stx-reserve
+    }
+  )
+  (map-set contracts
+    { name: "sip10-reserve" }
+    {
+      address: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7,
+      qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve
     }
   )
 )

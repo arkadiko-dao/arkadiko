@@ -1,6 +1,7 @@
 (impl-trait .vault-manager-trait.vault-manager-trait)
 (use-trait vault-trait .vault-trait.vault-trait)
 (use-trait mock-ft-trait .mock-ft-trait.mock-ft-trait)
+(use-trait stacker-trait .stacker-trait.stacker-trait)
 (use-trait vault-manager-trait .vault-manager-trait.vault-manager-trait)
 
 ;; Freddie - The Vault Manager
@@ -51,7 +52,6 @@
 )
 
 (define-data-var last-vault-id uint u0)
-(define-data-var stacking-unlock-burn-height uint u0)
 (define-data-var stx-redeemable uint u0)
 (define-data-var block-height-last-paid uint u0)
 (define-data-var payout-address principal CONTRACT-OWNER)
@@ -82,10 +82,6 @@
 
 (define-read-only (fetch-vault-by-id (id uint))
   (ok (get-vault-by-id id))
-)
-
-(define-read-only (get-stacking-unlock-burn-height)
-  (ok (var-get stacking-unlock-burn-height))
 )
 
 (define-read-only (get-stx-redeemable)
@@ -197,15 +193,17 @@
 ;; after a stacking cycle ends to allow withdrawal of STX collateral
 ;; Only mark vaults that have revoked stacking and not been liquidated
 ;; must be called before a new initiate-stacking method call (stacking cycle)
-(define-public (enable-vault-withdrawals (vault-id uint))
+(define-public (enable-vault-withdrawals (stacker <stacker-trait>) (vault-id uint))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq false (get is-liquidated vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq true (get revoked-stacking vault)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (>= burn-block-height (var-get stacking-unlock-burn-height)) (err ERR-BURN-HEIGHT-NOT-REACHED))
+    (asserts! (is-eq (contract-of stacker) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "stacker"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (>= burn-block-height (unwrap-panic (contract-call? stacker get-stacking-unlock-burn-height))) (err ERR-BURN-HEIGHT-NOT-REACHED))
 
+    (try! (contract-call? stacker request-stx-for-withdrawal (get collateral vault)))
     (begin
       (map-set vaults
         { id: vault-id }
@@ -221,14 +219,15 @@
 
 ;; method that can only be called by deployer (contract owner)
 ;; unlocks STX that had their xSTX derivative liquidated in an auction
-(define-public (release-stacked-stx (vault-id uint))
+(define-public (release-stacked-stx (stacker <stacker-trait>) (vault-id uint))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq "xSTX" (get collateral-token vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq true (get is-liquidated vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (> (get stacked-tokens vault) u0) (err ERR-NOT-AUTHORIZED))
-    (asserts! (>= burn-block-height (var-get stacking-unlock-burn-height)) (err ERR-BURN-HEIGHT-NOT-REACHED))
+    (asserts! (is-eq (contract-of stacker) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "stacker"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (>= burn-block-height (unwrap-panic (contract-call? stacker get-stacking-unlock-burn-height))) (err ERR-BURN-HEIGHT-NOT-REACHED))
 
     (try! (add-stx-redeemable (get stacked-tokens vault)))
     (map-set vaults
@@ -258,41 +257,6 @@
         (ok true)
       )
       (ok false)
-    )
-  )
-)
-
-;; Freddie can initiate stacking for the STX reserve
-;; The amount to stack is kept as a data var in the stx reserve
-;; Stacks the STX tokens in POX
-;; mainnet pox contract: SP000000000000000000002Q6VF78.pox
-;; https://explorer.stacks.co/txid/0x41356e380d164c5233dd9388799a5508aae929ee1a7e6ea0c18f5359ce7b8c33?chain=mainnet
-;; v1
-;;  Stack for 1 cycle a time
-;;  This way we miss each other cycle (i.e. we stack 1/2) but we can stack everyone's STX.
-;;  We cannot stack continuously right now
-;; v2
-;;  Ideally we can stack more tokens on the same principal
-;;  to stay eligible for future increases of reward slot thresholds.
-;; random addr to use for hashbytes testing
-;; 0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac
-;; 0x00
-(define-public (initiate-stacking (pox-addr (tuple (version (buff 1)) (hashbytes (buff 20))))
-                                  (start-burn-ht uint)
-                                  (lock-period uint))
-  ;; 1. check `get-stacking-minimum` to see if we have > minimum tokens
-  ;; 2. call `stack-stx` for 1 `lock-period` fixed
-  (let ((tokens-to-stack (unwrap! (contract-call? .stx-reserve get-tokens-to-stack) (ok u0))))
-    (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
-  
-    (if (unwrap! (contract-call? .mock-pox can-stack-stx pox-addr tokens-to-stack start-burn-ht lock-period) (err u0))
-      (begin
-        (let ((result (unwrap-panic (contract-call? .mock-pox stack-stx tokens-to-stack pox-addr start-burn-ht lock-period))))
-          (var-set stacking-unlock-burn-height (get unlock-burn-height result))
-          (ok (get lock-amount result))
-        )
-      )
-      (err u0) ;; cannot stack yet - probably cause we have not reached the minimum with (var-get tokens-to-stack)
     )
   )
 )

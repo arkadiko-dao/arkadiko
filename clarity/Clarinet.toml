@@ -27,7 +27,7 @@ depends_on = ["arkadiko-token", "collateral-types", "vault-trait", "mock-pox"]
 path = "contracts/dao.clar"
 
 [contracts.freddie]
-depends_on = ["collateral-types", "stx-reserve", "vault-trait", "mock-ft-trait", "vault-manager-trait", "sip10-reserve"]
+depends_on = ["collateral-types", "stx-reserve", "vault-trait", "mock-ft-trait", "vault-manager-trait", "sip10-reserve", "stacker"]
 path = "contracts/freddie.clar"
 
 [contracts.liquidator]
@@ -53,6 +53,14 @@ path = "contracts/oracle-trait.clar"
 [contracts.stacker-registry]
 depends_on = []
 path = "contracts/stacker-registry.clar"
+
+[contracts.stacker]
+depends_on = ["stacker-trait"]
+path = "contracts/stacker.clar"
+
+[contracts.stacker-trait]
+depends_on = []
+path = "contracts/stacker-trait.clar"
 
 [contracts.stx-reserve]
 depends_on = ["collateral-types", "oracle", "dao", "xusd-token", "mock-ft-trait", "vault-trait"]

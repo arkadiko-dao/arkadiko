@@ -76,3 +76,4 @@ All errors thrown by the smart contracts are unsigned integers. The format used 
 13 - xstx-token
 14 - xusd-token
 17 - collateral-types
+19 - stacker
