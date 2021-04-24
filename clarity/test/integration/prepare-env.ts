@@ -147,14 +147,12 @@ describe("environment prep", () => {
       await deployContract('oracle');
       await deployContract('xusd-token');
       await deployContract('arkadiko-token');
-      await deployContract('mock-pox');
       await deployContract('dao');
 
       await deployContract('stx-reserve');
       await deployContract('sip10-reserve');
       await deployContract('freddie');
 
-      await deployContract('stacker-registry');
       await deployContract('auction-engine');
       await deployContract('liquidator');
     });

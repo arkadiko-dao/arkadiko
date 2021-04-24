@@ -67,10 +67,8 @@ All errors thrown by the smart contracts are unsigned integers. The format used 
 4 - freddie
 5 - liquidator
 6 - mock-ft-trait
-7 - mock-pox
 8 - oracle
 9 - sip10-reserve
-10 - stacker-registry
 11 - stx-reserve
 12 - vault-trait
 13 - xstx-token

@@ -7,7 +7,7 @@ import {
 } from "https://deno.land/x/clarinet@v0.6.0/index.ts";
 
 Clarinet.test({
-  name: "stacker: initiate stacking in PoX contract",
+  name: "stacker: initiate stacking in PoX contract with enough STX tokens",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let block = chain.mineBlock([
@@ -34,7 +34,7 @@ Clarinet.test({
     block = chain.mineBlock([
       Tx.contractCall("stacker", "initiate-stacking", [
         types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
-        types.uint(5), // start block height
+        types.uint(1), // start block height
         types.uint(1) // 1 cycle lock period
       ], deployer.address)
     ]);
@@ -44,7 +44,7 @@ Clarinet.test({
     call.result.expectOk().expectUint(1000000000);
 
     call = await chain.callReadOnlyFn("stacker", "get-stacking-unlock-burn-height", [], deployer.address);
-    call.result.expectOk().expectUint(100);
+    call.result.expectOk().expectUint(300);
 
     // now imagine the vault owner changes his mind and revokes stacking
     block = chain.mineBlock([
@@ -57,8 +57,8 @@ Clarinet.test({
     let vault = call.result.expectTuple();
     vault['revoked-stacking'].expectBool(true);
 
-    // now we wait until the burn-block-height (hardcoded to 100) is mined
-    for (let index = 0; index < 100; index++) {
+    // now we wait until the burn-block-height (300 blocks) is mined
+    for (let index = 0; index < 300; index++) {
       chain.mineBlock([]);
     }
     block = chain.mineBlock([

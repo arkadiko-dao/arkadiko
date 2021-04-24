@@ -35,9 +35,6 @@ const contracts: Contract[] = [
     name: 'arkadiko-token'
   },
   {
-    name: 'mock-pox'
-  },
-  {
     name: 'dao'
   },
   {
@@ -48,9 +45,6 @@ const contracts: Contract[] = [
   },
   {
     name: 'freddie'
-  },
-  {
-    name: 'stacker-registry'
   },
   {
     name: 'auction-engine'

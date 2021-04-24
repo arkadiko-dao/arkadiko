@@ -137,23 +137,6 @@ export const App: React.FC = () => {
           fetchBalance(resolveSTXAddress(userData));
           fetchVaults(resolveSTXAddress(userData));
           fetchCollateralTypes(resolveSTXAddress(userData));
-
-          const isStacker = await callReadOnlyFunction({
-            contractAddress,
-            contractName: "stacker-registry",
-            functionName: "is-stacker",
-            functionArgs: [standardPrincipalCV(resolveSTXAddress(userData))],
-            senderAddress: resolveSTXAddress(userData),
-            network: network,
-          });
-
-          if (mounted) {
-            setState(prevState => ({
-              ...prevState,
-              userData,
-              isStacker: cvToJSON(isStacker).value.value
-            }));
-          }
         } catch (error) {
           console.error(error);
         }
@@ -170,7 +153,7 @@ export const App: React.FC = () => {
       fetchBalance(resolveSTXAddress(userData));
       fetchVaults(resolveSTXAddress(userData));
       fetchCollateralTypes(resolveSTXAddress(userData));
-      setState(prevState => ({ ...prevState, userData, isStacker: false }));
+      setState(prevState => ({ ...prevState, userData }));
     }
   };
 
@@ -187,7 +170,7 @@ export const App: React.FC = () => {
       fetchBalance(resolveSTXAddress(userData));
       fetchVaults(resolveSTXAddress(userData));
       fetchCollateralTypes(resolveSTXAddress(userData));
-      setState(prevState => ({ ...prevState, userData, isStacker: false }));
+      setState(prevState => ({ ...prevState, userData }));
     },
     onCancel: () => {
       console.log('popup closed!');

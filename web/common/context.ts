@@ -29,7 +29,6 @@ export interface AppState {
   vaults: VaultProps[];
   definedCollateralTypes: [string, string, string];
   collateralTypes: object;
-  isStacker: boolean;
 }
 
 export const defaultBalance = () => {
@@ -46,8 +45,7 @@ export const defaultState = (): AppState => {
       balance: defaultBalance(),
       vaults: [],
       definedCollateralTypes: ['STX-A', 'STX-B', 'DIKO-A'],
-      collateralTypes: [],
-      isStacker: false
+      collateralTypes: []
     };
   }
 
@@ -56,8 +54,7 @@ export const defaultState = (): AppState => {
     balance: { stx: 0, xusd: 0, diko: 0, xstx: 0 },
     vaults: [],
     definedCollateralTypes: ['STX-A', 'STX-B', 'DIKO-A'],
-    collateralTypes: [],
-    isStacker: false
+    collateralTypes: []
   };
 };
 
