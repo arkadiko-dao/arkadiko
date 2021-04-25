@@ -1,3 +1,5 @@
+;; TODO: replace with producion trait
+;; (impl-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-10-ft-standard.ft-trait)
 (define-trait mock-ft-trait
   (
     ;; Transfer from the caller to a new principal

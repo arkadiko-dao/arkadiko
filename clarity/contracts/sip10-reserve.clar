@@ -1,5 +1,6 @@
 (impl-trait .vault-trait.vault-trait)
 (use-trait mock-ft-trait .mock-ft-trait.mock-ft-trait)
+(use-trait vault-trait .vault-trait.vault-trait)
 
 ;; errors
 (define-constant ERR-NOT-AUTHORIZED u9401)
@@ -7,6 +8,8 @@
 (define-constant ERR-DEPOSIT-FAILED u95)
 (define-constant ERR-WITHDRAW-FAILED u96)
 (define-constant ERR-MINT-FAILED u97)
+
+(define-constant CONTRACT-OWNER tx-sender)
 
 (define-read-only (calculate-xusd-count (token (string-ascii 12)) (ucollateral-amount uint) (collateral-type (string-ascii 12)))
   (let ((price-in-cents (contract-call? .oracle get-price token)))
@@ -111,5 +114,20 @@
     (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
     (try! (contract-call? .xstx-token burn ustx-amount sender))
     (ok true)
+  )
+)
+
+;; this should be called when upgrading contracts
+;; SIP10 reserves can contain all SIP10 collateral types
+;; so this method should be ran multiple times, once for each token
+(define-public (migrate-funds (new-vault <vault-trait>) (token <mock-ft-trait>))
+  (begin
+    (asserts! (is-eq contract-caller CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+
+    (let (
+      (balance (unwrap-panic (contract-call? token get-balance-of (as-contract tx-sender))))
+    )
+      (contract-call? token transfer balance (as-contract tx-sender) (contract-of new-vault))
+    )
   )
 )

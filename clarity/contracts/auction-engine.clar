@@ -1,8 +1,9 @@
+(impl-trait .auction-engine-trait.auction-engine-trait)
 (use-trait vault-trait .vault-trait.vault-trait)
 (use-trait mock-ft-trait .mock-ft-trait.mock-ft-trait)
 (use-trait vault-manager-trait .vault-manager-trait.vault-manager-trait)
 (use-trait oracle-trait .oracle-trait.oracle-trait)
-(impl-trait .auction-engine-trait.auction-engine-trait)
+(use-trait auction-engine-trait .auction-engine-trait.auction-engine-trait)
 
 ;; errors
 (define-constant ERR-BID-DECLINED u21)
@@ -506,5 +507,19 @@
     )
     (print { type: "lot", action: "unlocked", data: { auction-id: auction-id, lot-index: lot-index } })
     (ok true)
+  )
+)
+
+;; this should be called when upgrading contracts
+;; auction engine should only contain xUSD from bids
+(define-public (migrate-funds (auction-engine <auction-engine-trait>) (token <mock-ft-trait>))
+  (begin
+    (asserts! (is-eq contract-caller CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+
+    (let (
+      (balance (unwrap-panic (contract-call? token get-balance-of (as-contract tx-sender))))
+    )
+      (contract-call? token transfer balance (as-contract tx-sender) (contract-of auction-engine))
+    )
   )
 )
