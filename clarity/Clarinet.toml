@@ -77,3 +77,15 @@ path = "contracts/xstx-token.clar"
 [contracts.sip10-reserve]
 depends_on = ["collateral-types", "mock-ft-trait", "vault-trait", "oracle", "dao", "xusd-token", "xstx-token"]
 path = "contracts/sip10-reserve.clar"
+
+[contracts.stake-registry]
+depends_on = ["arkadiko-token", "stake-pool-trait", "mock-ft-trait"]
+path = "contracts/stake-registry.clar"
+
+[contracts.stake-pool-trait]
+depends_on = ["mock-ft-trait"]
+path = "contracts/stake-pool-trait.clar"
+
+[contracts.stake-pool-diko]
+depends_on = ["stake-pool-trait", "arkadiko-token", "mock-ft-trait", "stake-registry"]
+path = "contracts/stake-pool-diko.clar"

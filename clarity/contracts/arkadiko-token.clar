@@ -55,7 +55,11 @@
 
 ;; TODO - finalize before mainnet deployment
 (define-public (mint (amount uint) (recipient principal))
-  (err ERR-NOT-AUTHORIZED)
+  (begin
+    ;; TODO: Check with DAO if caller can mint
+    (asserts! (is-eq contract-caller .stake-pool-diko) (err ERR-NOT-AUTHORIZED))
+    (ft-mint? diko amount recipient)
+  )
 )
 
 (define-public (burn (amount uint) (sender principal))

@@ -124,7 +124,7 @@ export const Mint = () => {
               )}
             </h2>
 
-            <div className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-5 lg:grid-cols-5">
+            <div className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-6 lg:grid-cols-6">
               <div className="bg-white overflow-hidden shadow rounded-lg">
                 <div className="p-5">
                   <div className="flex items-center">
@@ -165,6 +165,30 @@ export const Mint = () => {
                         <dd>
                           <div className="text-lg font-medium text-gray-900">
                             ${stxPrice / 100}
+                          </div>
+                        </dd>
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white overflow-hidden shadow rounded-lg">
+                <div className="p-5">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <svg className="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div className="ml-5 w-0 flex-1">
+                      <dl>
+                        <dt className="text-sm font-medium text-gray-500 truncate">
+                          Last DIKO price
+                        </dt>
+                        <dd>
+                          <div className="text-lg font-medium text-gray-900">
+                            ${dikoPrice / 100}
                           </div>
                         </dd>
                       </dl>
@@ -225,18 +249,18 @@ export const Mint = () => {
                 <div className="p-5">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <svg className="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <svg className="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
                       </svg>
                     </div>
                     <div className="ml-5 w-0 flex-1">
                       <dl>
                         <dt className="text-sm font-medium text-gray-500 truncate">
-                          Last DIKO price
+                          stDIKO balance
                         </dt>
                         <dd>
                           <div className="text-lg font-medium text-gray-900">
-                            ${dikoPrice / 100}
+                            {state.balance['stdiko'] / 1000000} stDIKO
                           </div>
                         </dd>
                       </dl>

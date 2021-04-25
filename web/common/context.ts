@@ -7,6 +7,7 @@ interface UserBalance {
   xusd: number;
   xstx: number;
   diko: number;
+  stdiko: number;
 }
 
 export interface CollateralTypeProps {
@@ -32,7 +33,7 @@ export interface AppState {
 }
 
 export const defaultBalance = () => {
-  return { stx: 0, xusd: 0, diko: 0, xstx: 0 };
+  return { stx: 0, xusd: 0, diko: 0, xstx: 0, stdiko: 0 };
 };
 
 export const defaultState = (): AppState => {
@@ -51,7 +52,7 @@ export const defaultState = (): AppState => {
 
   return {
     userData: null,
-    balance: { stx: 0, xusd: 0, diko: 0, xstx: 0 },
+    balance: { stx: 0, xusd: 0, diko: 0, xstx: 0, stdiko: 0 },
     vaults: [],
     definedCollateralTypes: ['STX-A', 'STX-B', 'DIKO-A'],
     collateralTypes: []

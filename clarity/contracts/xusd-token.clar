@@ -78,8 +78,6 @@
 
 ;; Initialize the contract
 (begin
-  ;; Testnet only: seed wallet_2 and wallet_3
-  ;; (asserts! is-in-regtest (ok u0))
   (try! (ft-mint? xusd u20 'ST3KCNDSWZSFZCC6BE4VA9AXWXC9KEB16FBTRK36T))
   (try! (ft-mint? xusd u10 'STB2BWB0K5XZGS3FXVTG3TKS46CQVV66NAK3YVN8))
   (try! (ft-mint? xusd u1000000000 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7))

@@ -1,3 +1,9 @@
+## Version 0.6.0
+
+### New features
+
+- Add staking pools and registry. Currently a DIKO staking pool is implemented, which gives DIKO rewards for staking, with the option to add staking for other fungible tokens in the future (e.g. a DIKO LP token or even stablecoins).
+
 ## Version 0.5.0
 
 ### New features

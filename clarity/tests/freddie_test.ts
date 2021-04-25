@@ -86,7 +86,7 @@ Clarinet.test({
   name: "freddie: calculate collateralization ratio",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let block = chain.mineBlock([
+    chain.mineBlock([
       Tx.contractCall("oracle", "update-price", [
         types.ascii("STX"),
         types.uint(77),
@@ -133,7 +133,7 @@ Clarinet.test({
 
     // mine 1 year of blocks
     for (let index = 0; index < 365*144; index++) {
-      if (index % 1008 === 0) {
+      if (index % 1008 === 0) { // 7 * 144 ~= 1 week
         block = chain.mineBlock([
           Tx.contractCall("freddie", "accrue-stability-fee", [types.uint(1)], deployer.address)
         ]);
@@ -162,9 +162,9 @@ Clarinet.test({
     call.result.expectOk().expectUint(4998916);
 
     call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7'),
+      types.principal(deployer.address),
     ], deployer.address);
-    call.result.expectOk().expectUint(1995001084);
+    call.result.expectOk().expectUint(1995001084); // TODO: improve test by subtracting
 
     // withdraw the xUSD from freddie to the deployer's (contract owner) address
     block = chain.mineBlock([
