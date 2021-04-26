@@ -74,8 +74,6 @@
     (let ( 
       (pool (contract-of pool-trait)) 
       (pool-info (unwrap! (map-get? pools-data-map { pool: pool }) ERR-INVALID-POOL))
-      (name (get name pool-info))
-      (activated-block (get activated-block pool-info))
     )
       (begin
         (map-set pools-data-map { pool: pool } (merge pool-info { active: false, deactivated-block: block-height }))

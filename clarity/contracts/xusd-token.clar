@@ -1,4 +1,5 @@
 (impl-trait .mock-ft-trait.mock-ft-trait)
+(impl-trait .dao-token-trait.dao-token-trait)
 
 ;; Defines the xUSD Stablecoin according to the SIP-010 Standard
 (define-fungible-token xusd)
@@ -6,10 +7,13 @@
 (define-data-var token-uri (string-utf8 256) u"")
 
 ;; errors
-(define-constant ERR-BURN-FAILED u141)
 (define-constant ERR-NOT-AUTHORIZED u14401)
 
 (define-constant CONTRACT-OWNER tx-sender)
+
+;; ---------------------------------------------------------
+;; SIP-10 Functions
+;; ---------------------------------------------------------
 
 (define-read-only (get-total-supply)
   (ok (ft-get-supply xusd))
@@ -46,35 +50,26 @@
   (ft-transfer? xusd amount sender recipient)
 )
 
-(define-public (mint (amount uint) (recipient principal))
+;; ---------------------------------------------------------
+;; DAO token trait
+;; ---------------------------------------------------------
+
+;; Mint method for DAO
+(define-public (mint-for-dao (amount uint) (recipient principal))
   (begin
-    (if
-      (and
-        (or
-          (is-eq contract-caller .freddie)
-          (is-eq contract-caller .stx-reserve)
-          (is-eq contract-caller .sip10-reserve)
-        )
-        (is-ok (ft-mint? xusd amount recipient))
-      )
-      (ok amount)
-      (err false)
-    )
+    (asserts! (is-eq contract-caller .dao) (err ERR-NOT-AUTHORIZED))
+    (ft-mint? xusd amount recipient)
   )
 )
 
-(define-public (burn (amount uint) (sender principal))
+;; Burn method for DAO
+(define-public (burn-for-dao (amount uint) (sender principal))
   (begin
-    (asserts! 
-      (or
-        (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie")))
-        (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "auction-engine")))
-      )
-      (err ERR-BURN-FAILED)
-    )
+    (asserts! (is-eq contract-caller .dao) (err ERR-NOT-AUTHORIZED))
     (ft-burn? xusd amount sender)
   )
 )
+
 
 ;; Initialize the contract
 (begin

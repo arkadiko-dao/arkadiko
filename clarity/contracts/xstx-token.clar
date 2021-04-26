@@ -1,4 +1,5 @@
 (impl-trait .mock-ft-trait.mock-ft-trait)
+(impl-trait .dao-token-trait.dao-token-trait)
 
 ;; Defines an STX derivative according to the SRC20 Standard
 (define-fungible-token xstx)
@@ -19,6 +20,10 @@
     )
   )
 )
+
+;; ---------------------------------------------------------
+;; SIP-10 Functions
+;; ---------------------------------------------------------
 
 (define-read-only (get-total-supply)
   (ok (ft-get-supply xstx))
@@ -55,22 +60,23 @@
   (ft-transfer? xstx amount sender recipient)
 )
 
-(define-public (mint (amount uint) (recipient principal))
+
+;; ---------------------------------------------------------
+;; DAO token trait
+;; ---------------------------------------------------------
+
+;; Mint method for DAO
+(define-public (mint-for-dao (amount uint) (recipient principal))
   (begin
-    (if
-      (and
-        (is-eq contract-caller .sip10-reserve)
-        (is-ok (ft-mint? xstx amount recipient))
-      )
-      (ok amount)
-      (err u0)
-    )
+    (asserts! (is-eq contract-caller .dao) (err ERR-NOT-AUTHORIZED))
+    (ft-mint? xstx amount recipient)
   )
 )
 
-(define-public (burn (amount uint) (sender principal))
-  (if (is-eq contract-caller .sip10-reserve)
+;; Burn method for DAO
+(define-public (burn-for-dao (amount uint) (sender principal))
+  (begin
+    (asserts! (is-eq contract-caller .dao) (err ERR-NOT-AUTHORIZED))
     (ft-burn? xstx amount sender)
-    (err ERR-NOT-AUTHORIZED)
   )
 )

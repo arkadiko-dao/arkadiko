@@ -55,6 +55,7 @@
 (define-data-var stx-redeemable uint u0)
 (define-data-var block-height-last-paid uint u0)
 (define-data-var payout-address principal CONTRACT-OWNER)
+(define-data-var maximum-debt-surplus uint u10000000000000) ;; 10 million default
 
 ;; getters
 (define-read-only (get-vault-by-id (id uint))
@@ -283,7 +284,7 @@
     )
     (try! (contract-call? reserve collateralize-and-mint ft collateral-amount debt sender))
 
-    (if (is-ok (as-contract (contract-call? .xusd-token mint debt sender)))
+    (if (is-ok (as-contract (contract-call? .dao mint-token .xusd-token debt sender)))
       (let ((vault-id (+ (var-get last-vault-id) u1))
             (entries (get ids (get-vault-entries sender)))
             (vault {
@@ -433,7 +434,7 @@
     (asserts! (is-eq u0 (get stacked-tokens vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-NOT-AUTHORIZED))
 
-    (try! (contract-call? .xusd-token burn (get debt vault) (get owner vault)))
+    (try! (contract-call? .dao burn-token .xusd-token (get debt vault) (get owner vault)))
     (try! (contract-call? reserve burn ft (get owner vault) (get collateral vault)))
     (try! (contract-call? .collateral-types subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault)))
     (map-set vaults { id: vault-id } updated-vault)
@@ -448,7 +449,7 @@
 
 (define-private (burn-partial-debt (vault-id uint) (debt uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
   (let ((vault (get-vault-by-id vault-id)))
-    (try! (contract-call? .xusd-token burn debt (get owner vault)))
+    (try! (contract-call? .dao burn-token .xusd-token debt (get owner vault)))
     (try! (contract-call? reserve burn ft (get owner vault) (get collateral vault)))
 
     (map-set vaults

@@ -1,4 +1,5 @@
 (impl-trait .mock-ft-trait.mock-ft-trait)
+(impl-trait .dao-token-trait.dao-token-trait)
 
 ;; Defines the Arkadiko Governance Token according to the SRC20 Standard
 (define-fungible-token diko)
@@ -17,6 +18,10 @@
     )
   )
 )
+
+;; ---------------------------------------------------------
+;; SIP-10 Functions
+;; ---------------------------------------------------------
 
 (define-read-only (get-total-supply)
   (ok (ft-get-supply diko))
@@ -53,18 +58,27 @@
   (ft-transfer? diko amount sender recipient)
 )
 
-;; TODO - finalize before mainnet deployment
-(define-public (mint (amount uint) (recipient principal))
+;; ---------------------------------------------------------
+;; DAO token trait
+;; ---------------------------------------------------------
+
+;; Mint method for DAO
+(define-public (mint-for-dao (amount uint) (recipient principal))
   (begin
-    ;; TODO: Check with DAO if caller can mint
-    (asserts! (is-eq contract-caller .stake-pool-diko) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller .dao) (err ERR-NOT-AUTHORIZED))
     (ft-mint? diko amount recipient)
   )
 )
 
-(define-public (burn (amount uint) (sender principal))
-  (ft-burn? diko amount sender)
+;; Burn method for DAO
+(define-public (burn-for-dao (amount uint) (sender principal))
+  (begin
+    (asserts! (is-eq contract-caller .dao) (err ERR-NOT-AUTHORIZED))
+    (ft-burn? diko amount sender)
+  )
 )
+
+
 
 ;; Test environments
 (begin

@@ -7,28 +7,28 @@ import {
 } from "https://deno.land/x/clarinet@v0.6.0/index.ts";
   
 Clarinet.test({
-name: "stake-registry: add pool and get pool info",
-async fn(chain: Chain, accounts: Map<string, Account>) {
-  let deployer = accounts.get("deployer")!;
-  let wallet_1 = accounts.get("wallet_1")!;
+  name: "stake-registry: add pool and get pool info",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
 
-  // Activate new pool
-  let block = chain.mineBlock([
-    Tx.contractCall("stake-registry", "activate-pool", [
-        types.ascii('test-pool'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stake-pool-diko'),
-    ], deployer.address)
-  ]);
-  block.receipts[0].result.expectOk().expectBool(true);
+    // Activate new pool
+    let block = chain.mineBlock([
+        Tx.contractCall("stake-registry", "activate-pool", [
+            types.ascii('test-pool'),
+            types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stake-pool-diko'),
+        ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
 
-  // Get pool info
-  let call = chain.callReadOnlyFn("stake-registry", "get-pool-contract", [types.uint(0)], wallet_1.address);
-  call.result.expectTuple()['pool'].expectPrincipal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stake-pool-diko');
+    // Get pool info
+    let call = chain.callReadOnlyFn("stake-registry", "get-pool-contract", [types.uint(0)], wallet_1.address);
+    call.result.expectTuple()['pool'].expectPrincipal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stake-pool-diko');
 
-  call = chain.callReadOnlyFn("stake-registry", "get-pool-data", [types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stake-pool-diko')], wallet_1.address);
-  call.result.expectTuple()['name'].expectAscii('test-pool');
-  call.result.expectTuple()['active'].expectBool(true);
-}
+    call = chain.callReadOnlyFn("stake-registry", "get-pool-data", [types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stake-pool-diko')], wallet_1.address);
+    call.result.expectTuple()['name'].expectAscii('test-pool');
+    call.result.expectTuple()['active'].expectBool(true);
+  }
 });
 
 Clarinet.test({

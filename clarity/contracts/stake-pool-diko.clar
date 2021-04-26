@@ -212,7 +212,7 @@
       (if (>= pending-rewards u1)
         (begin
           ;; Mint DIKO rewards for staker
-          (try! (contract-call? .arkadiko-token mint pending-rewards staker))
+          (try! (contract-call? .dao mint-token .arkadiko-token pending-rewards staker))
 
           (ok pending-rewards)
         )

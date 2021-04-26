@@ -2,8 +2,12 @@
 [project]
 name = "arkadiko"
 
+[contracts.dao-token-trait]
+depends_on = []
+path = "contracts/dao-token-trait.clar"
+
 [contracts.arkadiko-token]
-depends_on = ["mock-ft-trait"]
+depends_on = ["mock-ft-trait", "dao-token-trait"]
 path = "contracts/arkadiko-token.clar"
 
 [contracts.auction-engine]
@@ -25,6 +29,10 @@ path = "contracts/collateral-types.clar"
 [contracts.dao]
 depends_on = ["arkadiko-token", "collateral-types", "vault-trait"]
 path = "contracts/dao.clar"
+
+[contracts.governance]
+depends_on = ["arkadiko-token", "mock-ft-trait"]
+path = "contracts/governance.clar"
 
 [contracts.freddie]
 depends_on = ["collateral-types", "stx-reserve", "vault-trait", "mock-ft-trait", "vault-manager-trait", "sip10-reserve", "stacker"]

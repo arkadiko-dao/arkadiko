@@ -162,38 +162,39 @@
   )
 )
 
-(define-public (start-surplus-auction (vault-manager <vault-manager-trait>) (xusd-amount uint))
-  (let (
-    (auction-id (+ (var-get last-auction-id) u1))
-    (maximum-surplus (unwrap-panic (contract-call? .dao get-maximum-debt-surplus)))
-    (current-balance (unwrap-panic (contract-call? vault-manager get-xusd-balance)))
-    (auction {
-        id: auction-id,
-        auction-type: "surplus",
-        collateral-amount: xusd-amount,
-        collateral-token: "xUSD",
-        debt-to-raise: u0, ;; no specific amount of debt should be raised
-        vault-id: u0,
-        lot-size: (var-get lot-size),
-        lots-sold: u0,
-        ends-at: (+ block-height u14),
-        total-collateral-sold: u0,
-        total-debt-raised: u0,
-        total-debt-burned: u0,
-        is-open: true
-      })
-  )
-    (asserts! (>= current-balance maximum-surplus) (err ERR-AUCTION-NOT-ALLOWED))
-    (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
-    ;; TODO: add assert to run only 1 surplus auction at once
+;; TODO: do we need to implement surplus auctions?
+;; (define-public (start-surplus-auction (vault-manager <vault-manager-trait>) (xusd-amount uint))
+;;   (let (
+;;     (auction-id (+ (var-get last-auction-id) u1))
+;;     (maximum-surplus (var-get maximum-debt-surplus))
+;;     (current-balance (unwrap-panic (contract-call? vault-manager get-xusd-balance)))
+;;     (auction {
+;;         id: auction-id,
+;;         auction-type: "surplus",
+;;         collateral-amount: xusd-amount,
+;;         collateral-token: "xUSD",
+;;         debt-to-raise: u0, ;; no specific amount of debt should be raised
+;;         vault-id: u0,
+;;         lot-size: (var-get lot-size),
+;;         lots-sold: u0,
+;;         ends-at: (+ block-height u14),
+;;         total-collateral-sold: u0,
+;;         total-debt-raised: u0,
+;;         total-debt-burned: u0,
+;;         is-open: true
+;;       })
+;;   )
+;;     (asserts! (>= current-balance maximum-surplus) (err ERR-AUCTION-NOT-ALLOWED))
+;;     (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+;;     ;; TODO: add assert to run only 1 surplus auction at once
 
-    (map-set auctions { id: auction-id } auction)
-    (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u1500)))
-    (var-set last-auction-id auction-id)
-    (print { type: "auction", action: "created", data: auction })
-    (ok true)
-  )
-)
+;;     (map-set auctions { id: auction-id } auction)
+;;     (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u1500)))
+;;     (var-set last-auction-id auction-id)
+;;     (print { type: "auction", action: "created", data: auction })
+;;     (ok true)
+;;   )
+;; )
 
 (define-read-only (discounted-auction-price (price-in-cents uint))
   ;; price * 3% = price * 3 / 100
@@ -431,7 +432,7 @@
       { id: auction-id }
       (merge auction { is-open: false })
     )
-    (try! (contract-call? .xusd-token burn (- (get total-debt-raised auction) (get total-debt-burned auction)) (as-contract tx-sender)))
+    (try! (contract-call? .dao burn-token .xusd-token (- (get total-debt-raised auction) (get total-debt-burned auction)) (as-contract tx-sender)))
     (try! (if (>= (get total-debt-raised auction) (get debt-to-raise auction))
         (if (is-eq (get auction-type auction) "collateral")
           (contract-call?

@@ -135,7 +135,7 @@
 
     (let ((max-new-debt (- (unwrap-panic (calculate-xusd-count token ustx-amount collateral-type)) current-debt)))
       (if (>= max-new-debt extra-debt)
-        (match (print (as-contract (contract-call? .xusd-token mint extra-debt vault-owner)))
+        (match (print (as-contract (contract-call? .dao mint-token .xusd-token extra-debt vault-owner)))
           success (ok true)
           error (err ERR-MINT-FAILED)
         )

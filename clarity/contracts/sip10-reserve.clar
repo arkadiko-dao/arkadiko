@@ -73,7 +73,7 @@
 
     (let ((max-new-debt (- (unwrap-panic (calculate-xusd-count token ucollateral-amount collateral-type)) current-debt)))
       (if (>= max-new-debt extra-debt)
-        (match (as-contract (contract-call? .xusd-token mint extra-debt vault-owner))
+        (match (as-contract (contract-call? .dao mint-token .xusd-token extra-debt vault-owner))
           success (ok true)
           error (err ERR-MINT-FAILED)
         )
@@ -104,7 +104,7 @@
 (define-public (mint-xstx (collateral uint))
   (begin
     (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
-    (contract-call? .xstx-token mint collateral (as-contract tx-sender))
+    (contract-call? .dao mint-token .xstx-token collateral (as-contract tx-sender))
   )
 )
 
@@ -112,7 +112,7 @@
 (define-public (burn-xstx (ustx-amount uint) (sender principal))
   (begin
     (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
-    (try! (contract-call? .xstx-token burn ustx-amount sender))
+    (try! (contract-call? .dao burn-token .xstx-token  ustx-amount sender))
     (ok true)
   )
 )
