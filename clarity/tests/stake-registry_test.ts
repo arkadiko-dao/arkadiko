@@ -383,32 +383,41 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Stake
   block = chain.mineBlock([
     Tx.contractCall("stake-registry", "stake", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stake-pool-diko'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token'),
-        types.uint(100000000)
-    ], wallet_1.address)
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stake-pool-diko'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token'),
+      types.uint(100000000)
+    ], wallet_1.address),
+    Tx.contractCall("stake-registry", "stake", [
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stake-pool-diko'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token'),
+      types.uint(100000000)
+    ], deployer.address)
   ]);
   block.receipts[0].result.expectOk().expectUint(100000000);
 
   // Advance 3 blocks
   chain.mineEmptyBlock(3);
 
-  // Advanced 3 blocks for user plus one in calculation, so 4000 
+  // Advanced 3 blocks for user plus one in calculation, so 4000 in total, 2000 per user (equal amount of DIKO staked)
   call = chain.callReadOnlyFn("stake-pool-diko", "get-pending-rewards", [types.principal(wallet_1.address)], wallet_1.address);
-  call.result.expectOk().expectUint(4000);   
+  call.result.expectOk().expectUint(2000000000);
   
   // Claim
   block = chain.mineBlock([
     Tx.contractCall("stake-registry", "claim-pending-rewards", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stake-pool-diko')
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stake-pool-diko')
     ], wallet_1.address)
   ]);
-  block.receipts[0].result.expectOk().expectUint(4000);
+  block.receipts[0].result.expectOk().expectUint(2000000000);
 
   // Check if user got rewards
-  // 150000 initial - 100 invested + 4000 rewards = 153900
+  // 150000 initial - 100 invested + 2000 rewards = 153900
   call = chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [types.principal(wallet_1.address)], wallet_1.address);
-  call.result.expectOk().expectUint(153900000000);   
+  call.result.expectOk().expectUint(151900000000);
+  
+  // leftover pending rewards should be 500 DIKO (only next block dived by 2) after claiming
+  call = chain.callReadOnlyFn("stake-pool-diko", "get-pending-rewards", [types.principal(wallet_1.address)], wallet_1.address);
+  call.result.expectOk().expectUint(500000000);
 }
 });
     

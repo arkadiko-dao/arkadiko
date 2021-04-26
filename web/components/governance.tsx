@@ -4,7 +4,7 @@ import { AppContext } from '@common/context';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import { stacksNetwork as network } from '@common/utils';
-import { callReadOnlyFunction, uintCV, cvToJSON } from '@stacks/transactions';
+import { callReadOnlyFunction, cvToJSON } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ProposalGroup } from '@components/proposal-group';
 
@@ -20,7 +20,7 @@ export const Governance = () => {
     const getData = async () => {
       const proposals = await callReadOnlyFunction({
         contractAddress,
-        contractName: "dao",
+        contractName: "governance",
         functionName: "get-proposals",
         functionArgs: [],
         senderAddress: stxAddress || '',

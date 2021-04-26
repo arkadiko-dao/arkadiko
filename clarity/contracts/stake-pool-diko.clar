@@ -19,6 +19,7 @@
 (define-constant CONTRACT-OWNER tx-sender) ;; TODO: should be DAO
 (define-constant POOL-TOKEN .arkadiko-token)
 (define-constant REWARDS-PER-BLOCK u1000000000) ;; TODO: set production value. Test value is 1000 DIKO per block with 6 decimals
+(define-constant BLOCKS-PER-YEAR u52560)
 
 ;; Variables
 (define-data-var token-uri (string-utf8 256) u"")
@@ -189,6 +190,16 @@
   )
 )
 
+(define-read-only (get-apy-for (staker principal))
+  (let (
+    (diko-staked (get-stake-amount-of staker))
+    (reward-percentage (/ u100 (/ (var-get total-staked) diko-staked)))
+    (diko-per-year (* REWARDS-PER-BLOCK reward-percentage))
+  )
+    (* (/ diko-per-year diko-staked) u100)
+  )
+)
+
 ;; Get pending rewards for staker
 (define-read-only (get-pending-rewards (staker principal))
   (let (
@@ -205,14 +216,18 @@
 (define-public (claim-pending-rewards (staker principal))
   (begin
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "stake-registry"))) ERR-NOT-AUTHORIZED)
+    (increase-cumm-reward-per-stake)
+
     (let (
       (pending-rewards (unwrap! (get-pending-rewards staker) ERR-REWARDS-CALC))
+      (stake-of (get-stake-of staker))
     )
       ;; Only mint if enough pending rewards and amount is positive
       (if (>= pending-rewards u1)
         (begin
           ;; Mint DIKO rewards for staker
           (try! (contract-call? .dao mint-token .arkadiko-token pending-rewards staker))
+          (map-set stakes { staker: staker } (merge stake-of { cumm-reward-per-stake: (var-get cumm-reward-per-stake) }))
 
           (ok pending-rewards)
         )

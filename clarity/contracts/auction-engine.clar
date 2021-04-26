@@ -62,6 +62,7 @@
 (define-data-var last-auction-id uint u0)
 (define-data-var auction-ids (list 1500 uint) (list u0))
 (define-data-var lot-size uint u100000000) ;; 100 xUSD
+(define-data-var maximum-debt-surplus uint u10000000000000) ;; 10 million default
 
 (define-read-only (get-auction-by-id (id uint))
   (default-to

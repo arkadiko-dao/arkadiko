@@ -75,7 +75,7 @@ export const App: React.FC = () => {
     const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
     const xusdBalance = data.fungible_tokens[`${contractAddress}.xusd-token::xusd`];
     const xStxBalance = data.fungible_tokens[`${contractAddress}.xstx-token::xstx`];
-    const stDikoBalance = data.fungible_tokens[`${contractAddress}.stdiko-token::stdiko`];
+    const stDikoBalance = data.fungible_tokens[`${contractAddress}.stake-pool-diko::stdiko`];
     const account = {
       stx: data.stx.balance,
       xusd: xusdBalance ? xusdBalance.balance : 0,
