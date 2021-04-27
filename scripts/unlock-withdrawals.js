@@ -7,7 +7,7 @@ const network = utils.resolveNetwork();
 async function getLastVaultId() {
   const lastVaultTx = await tx.callReadOnlyFunction({
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "freddie",
+    contractName: "vault-data",
     functionName: "get-last-vault-id",
     functionArgs: [],
     senderAddress: CONTRACT_ADDRESS,
@@ -35,7 +35,10 @@ async function unlockVault(vaultId) {
     contractAddress: CONTRACT_ADDRESS,
     contractName: "freddie",
     functionName: "enable-vault-withdrawals",
-    functionArgs: [tx.uintCV(vaultId)],
+    functionArgs: [
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacker'),
+      tx.uintCV(vaultId)
+    ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network
@@ -52,7 +55,7 @@ async function iterateAndUnlock() {
   let vault;
   for (let index = 1; index <= lastId; index++) {
     vault = await getVaultById(index);
-    if (vault['collateral-token']['value'] === 'stx') {
+    if (vault['collateral-token']['value'] === 'STX') {
       console.log('Unlocking vault', index);
       unlockVault(index);
     }

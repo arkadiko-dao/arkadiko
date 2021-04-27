@@ -29,5 +29,7 @@
 
     ;; redeem collateral after an auction ran
     (redeem-collateral (<mock-ft-trait> uint principal) (response bool uint))
+
+    (set-tokens-to-stack (uint) (response bool uint))
   )
 )

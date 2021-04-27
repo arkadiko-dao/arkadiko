@@ -26,6 +26,10 @@ path = "contracts/collateral-types-trait.clar"
 depends_on = ["collateral-types-trait"]
 path = "contracts/collateral-types.clar"
 
+[contracts.vault-data]
+depends_on = []
+path = "contracts/vault-data.clar"
+
 [contracts.dao]
 depends_on = ["arkadiko-token", "collateral-types", "vault-trait"]
 path = "contracts/dao.clar"
@@ -35,7 +39,7 @@ depends_on = ["arkadiko-token", "mock-ft-trait"]
 path = "contracts/governance.clar"
 
 [contracts.freddie]
-depends_on = ["collateral-types", "stx-reserve", "vault-trait", "mock-ft-trait", "vault-manager-trait", "sip10-reserve", "stacker"]
+depends_on = ["collateral-types", "stx-reserve", "vault-trait", "mock-ft-trait", "vault-manager-trait", "sip10-reserve", "stacker", "vault-data"]
 path = "contracts/freddie.clar"
 
 [contracts.liquidator]

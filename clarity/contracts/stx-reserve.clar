@@ -193,6 +193,10 @@
   )
 )
 
+;; ---------------------------------------------------------
+;; Admin Functions
+;; ---------------------------------------------------------
+
 ;; this should be called when upgrading contracts
 ;; STX reserve should only contain STX
 (define-public (migrate-funds (new-vault <vault-trait>))
@@ -200,5 +204,23 @@
     (asserts! (is-eq contract-caller CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
 
     (as-contract (stx-transfer? (stx-get-balance (as-contract tx-sender)) (as-contract tx-sender) (contract-of new-vault)))
+  )
+)
+
+(define-public (set-tokens-to-stack (new-tokens-to-stack uint))
+  (begin
+    (asserts! (is-eq contract-caller CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+
+    (var-set tokens-to-stack new-tokens-to-stack)
+    (ok true)
+  )
+)
+
+(define-public (migrate-state (new-vault <vault-trait>))
+  (begin
+    (asserts! (is-eq contract-caller CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+
+    (try! (contract-call? new-vault set-tokens-to-stack (var-get tokens-to-stack)))
+    (ok true)
   )
 )

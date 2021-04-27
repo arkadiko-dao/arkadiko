@@ -117,6 +117,19 @@
   )
 )
 
+;; ---------------------------------------------------------
+;; Admin Functions
+;; ---------------------------------------------------------
+
+(define-public (set-tokens-to-stack (new-tokens-to-stack uint))
+  (begin
+    (asserts! (is-eq contract-caller CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+
+    ;; NOOP
+    (ok true)
+  )
+)
+
 ;; this should be called when upgrading contracts
 ;; SIP10 reserves can contain all SIP10 collateral types
 ;; so this method should be ran multiple times, once for each token

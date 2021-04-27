@@ -26,65 +26,12 @@
 (define-constant BLOCKS-PER-DAY u144)
 (define-constant CONTRACT-OWNER tx-sender)
 
-;; Map of vault entries
-;; The entry consists of a user principal with their collateral and debt balance
-(define-map vaults { id: uint } {
-  id: uint,
-  owner: principal,
-  collateral: uint,
-  collateral-type: (string-ascii 12), ;; e.g. STX-A, STX-B, BTC-A etc (represents the collateral class)
-  collateral-token: (string-ascii 12), ;; e.g. STX, BTC etc (represents the symbol of the collateral)
-  stacked-tokens: uint,
-  revoked-stacking: bool,
-  debt: uint,
-  created-at-block-height: uint,
-  updated-at-block-height: uint,
-  stability-fee: uint,
-  stability-fee-last-accrued: uint, ;; indicates the block height at which the stability fee was last accrued (calculated)
-  is-liquidated: bool,
-  auction-ended: bool,
-  leftover-collateral: uint
-})
-(define-map vault-entries { user: principal } { ids: (list 1200 uint) })
-(define-map closing-vault
-  { user: principal }
-  { vault-id: uint }
-)
-
-(define-data-var last-vault-id uint u0)
-(define-data-var stx-redeemable uint u0)
-(define-data-var block-height-last-paid uint u0)
-(define-data-var payout-address principal CONTRACT-OWNER)
-(define-data-var maximum-debt-surplus uint u10000000000000) ;; 10 million default
+(define-data-var stx-redeemable uint u0) ;; how much STX is available to trade for xSTX
+(define-data-var block-height-last-paid uint u0) ;; when the foundation was last paid
+(define-data-var payout-address principal CONTRACT-OWNER) ;; to which address the foundation is paid
+(define-data-var maximum-debt-surplus uint u10000000000000) ;; 10 million default - above that we sell the xUSD on the DIKO/xUSD pair to burn DIKO
 
 ;; getters
-(define-read-only (get-vault-by-id (id uint))
-  (default-to
-    {
-      id: u0,
-      owner: CONTRACT-OWNER,
-      collateral: u0,
-      collateral-type: "",
-      collateral-token: "",
-      stacked-tokens: u0,
-      revoked-stacking: false,
-      debt: u0,
-      created-at-block-height: u0,
-      updated-at-block-height: u0,
-      stability-fee: u0,
-      stability-fee-last-accrued: u0,
-      is-liquidated: false,
-      auction-ended: false,
-      leftover-collateral: u0
-    }
-    (map-get? vaults { id: id })
-  )
-)
-
-(define-read-only (fetch-vault-by-id (id uint))
-  (ok (get-vault-by-id id))
-)
-
 (define-read-only (get-stx-redeemable)
   (ok (var-get stx-redeemable))
 )
@@ -103,18 +50,12 @@
   )
 )
 
+(define-read-only (get-vault-by-id (vault-id uint))
+  (contract-call? .vault-data get-vault-by-id vault-id)
+)
+
 (define-read-only (get-vault-entries (user principal))
-  (unwrap! (map-get? vault-entries { user: user }) (tuple (ids (list u0) )))
-)
-
-(define-read-only (get-last-vault-id)
-  (ok (var-get last-vault-id))
-)
-
-(define-read-only (get-vaults (user principal))
-  (let ((entries (get ids (get-vault-entries user))))
-    (ok (map get-vault-by-id entries))
-  )
+  (contract-call? .vault-data get-vault-entries user)
 )
 
 (define-read-only (get-collateral-type-for-vault (vault-id uint))
@@ -156,12 +97,11 @@
     (asserts! (is-eq false (get is-liquidated vault)) (err ERR-NOT-AUTHORIZED))
     (try! (contract-call? .stx-reserve toggle-stacking (get revoked-stacking vault) (get collateral vault)))
 
-    (map-set vaults
-      { id: vault-id }
-      (merge vault {
+    (try!
+      (contract-call? .vault-data update-vault vault-id (merge vault {
         revoked-stacking: (not (get revoked-stacking vault)),
         updated-at-block-height: block-height
-      })
+      }))
     )
     (ok true)
   )
@@ -178,13 +118,12 @@
     (asserts! (is-eq u0 (get stacked-tokens vault)) (err ERR-NOT-AUTHORIZED))
 
     (try! (contract-call? .stx-reserve add-tokens-to-stack (get collateral vault)))
-    (map-set vaults
-      { id: vault-id }
-      (merge vault {
+    (try!
+      (contract-call? .vault-data update-vault vault-id (merge vault {
         stacked-tokens: (get collateral vault),
         revoked-stacking: false,
         updated-at-block-height: block-height,
-      })
+      }))
     )
     (ok true)
   )
@@ -205,16 +144,12 @@
     (asserts! (>= burn-block-height (unwrap-panic (contract-call? stacker get-stacking-unlock-burn-height))) (err ERR-BURN-HEIGHT-NOT-REACHED))
 
     (try! (contract-call? stacker request-stx-for-withdrawal (get collateral vault)))
-    (begin
-      (map-set vaults
-        { id: vault-id }
-        (merge vault {
-          stacked-tokens: u0,
-          updated-at-block-height: block-height
-        })
-      )
-      (ok true)
+    (try! (contract-call? .vault-data update-vault vault-id (merge vault {
+        stacked-tokens: u0,
+        updated-at-block-height: block-height
+      }))
     )
+    (ok true)
   )
 )
 
@@ -231,12 +166,10 @@
     (asserts! (>= burn-block-height (unwrap-panic (contract-call? stacker get-stacking-unlock-burn-height))) (err ERR-BURN-HEIGHT-NOT-REACHED))
 
     (try! (add-stx-redeemable (get stacked-tokens vault)))
-    (map-set vaults
-      { id: vault-id }
-      (merge vault {
+    (try! (contract-call? .vault-data update-vault vault-id (merge vault {
         stacked-tokens: u0,
         updated-at-block-height: block-height
-      })
+      }))
     )
     (ok true)
   )
@@ -284,34 +217,33 @@
     )
     (try! (contract-call? reserve collateralize-and-mint ft collateral-amount debt sender))
 
-    (if (is-ok (as-contract (contract-call? .dao mint-token .xusd-token debt sender)))
-      (let ((vault-id (+ (var-get last-vault-id) u1))
-            (entries (get ids (get-vault-entries sender)))
-            (vault {
-              id: vault-id,
-              owner: sender,
-              collateral: collateral-amount,
-              collateral-type: collateral-type,
-              collateral-token: collateral-token,
-              stacked-tokens: (resolve-stacking-amount collateral-amount collateral-token),
-              revoked-stacking: false,
-              debt: debt,
-              created-at-block-height: block-height,
-              updated-at-block-height: block-height,
-              stability-fee: u0,
-              stability-fee-last-accrued: block-height,
-              is-liquidated: false,
-              auction-ended: false,
-              leftover-collateral: u0
-            }))
-        (map-set vault-entries { user: sender } { ids: (unwrap-panic (as-max-len? (append entries vault-id) u1200)) })
-        (map-set vaults { id: vault-id } vault)
-        (var-set last-vault-id vault-id)
-        (try! (contract-call? .collateral-types add-debt-to-collateral-type collateral-type debt))
-        (print { type: "vault", action: "created", data: vault })
-        (ok debt)
-      )
-      (err ERR-MINTER-FAILED)
+    (try! (as-contract (contract-call? .dao mint-token .xusd-token debt sender)))
+    (let (
+      (vault-id (+ (contract-call? .vault-data get-last-vault-id) u1))
+      (vault {
+        id: vault-id,
+        owner: sender,
+        collateral: collateral-amount,
+        collateral-type: collateral-type,
+        collateral-token: collateral-token,
+        stacked-tokens: (resolve-stacking-amount collateral-amount collateral-token),
+        revoked-stacking: false,
+        debt: debt,
+        created-at-block-height: block-height,
+        updated-at-block-height: block-height,
+        stability-fee: u0,
+        stability-fee-last-accrued: block-height,
+        is-liquidated: false,
+        auction-ended: false,
+        leftover-collateral: u0
+      })
+    )
+      (try! (contract-call? .vault-data update-vault-entries sender vault-id))
+      (try! (contract-call? .vault-data update-vault vault-id vault))
+      (try! (contract-call? .vault-data set-last-vault-id vault-id))
+      (try! (contract-call? .collateral-types add-debt-to-collateral-type collateral-type debt))
+      (print { type: "vault", action: "created", data: vault })
+      (ok debt)
     )
   )
 )
@@ -328,7 +260,7 @@
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-NOT-AUTHORIZED))
 
     (unwrap! (contract-call? reserve deposit ft uamount) (err ERR-DEPOSIT-FAILED))
-    (map-set vaults { id: vault-id } updated-vault)
+    (try! (contract-call? .vault-data update-vault vault-id updated-vault))
     (print { type: "vault", action: "deposit", data: updated-vault })
     (ok true)
   )
@@ -358,7 +290,7 @@
       ;; TODO: FIX (make "STX" dynamic)
       (asserts! (>= ratio (unwrap-panic (contract-call? .collateral-types get-collateral-to-debt-ratio "STX"))) (err ERR-INSUFFICIENT-COLLATERAL))
       (unwrap! (contract-call? reserve withdraw ft (get owner vault) uamount) (err ERR-WITHDRAW-FAILED))
-      (map-set vaults { id: vault-id } updated-vault)
+      (try! (contract-call? .vault-data update-vault vault-id updated-vault))
       (print { type: "vault", action: "withdraw", data: updated-vault })
       (ok true)
     )
@@ -392,19 +324,10 @@
                 extra-debt 
                 (get collateral-type vault)) 
       (err u5))
-    (map-set vaults { id: vault-id } updated-vault)
+    (try! (contract-call? .vault-data update-vault vault-id updated-vault))
     (try! (contract-call? .collateral-types add-debt-to-collateral-type (get collateral-type vault) extra-debt))
     (print { type: "vault", action: "mint", data: updated-vault })
     (ok true)
-  )
-)
-
-(define-private (remove-burned-vault (vault-id uint))
-  (let ((current-vault (unwrap-panic (map-get? closing-vault { user: tx-sender }))))
-    (if (is-eq vault-id (get vault-id current-vault))
-      false
-      true
-    )
   )
 )
 
@@ -425,7 +348,6 @@
 
 (define-private (close-vault (vault-id uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
   (let ((vault (get-vault-by-id vault-id))
-       (entries (get ids (get-vault-entries (get owner vault))))
        (updated-vault (merge vault {
           collateral: u0,
           debt: u0,
@@ -437,13 +359,10 @@
     (try! (contract-call? .dao burn-token .xusd-token (get debt vault) (get owner vault)))
     (try! (contract-call? reserve burn ft (get owner vault) (get collateral vault)))
     (try! (contract-call? .collateral-types subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault)))
-    (map-set vaults { id: vault-id } updated-vault)
+    (try! (contract-call? .vault-data update-vault vault-id updated-vault))
     (print { type: "vault", action: "burn", data: updated-vault })
-    (map-set closing-vault { user: (get owner vault) } { vault-id: vault-id })
-    (if (map-set vault-entries { user: tx-sender } { ids: (filter remove-burned-vault entries) })
-      (ok (map-delete vaults { id: vault-id }))
-      (err u0)
-    )
+    (try! (contract-call? .vault-data close-vault vault-id))
+    (ok true)
   )
 )
 
@@ -451,13 +370,10 @@
   (let ((vault (get-vault-by-id vault-id)))
     (try! (contract-call? .dao burn-token .xusd-token debt (get owner vault)))
     (try! (contract-call? reserve burn ft (get owner vault) (get collateral vault)))
-
-    (map-set vaults
-      { id: vault-id }
-      (merge vault {
+    (try! (contract-call? .vault-data update-vault vault-id (merge vault {
         debt: (- (get debt vault) debt),
         updated-at-block-height: block-height
-      })
+      }))
     )
     (ok true)
   )
@@ -485,13 +401,11 @@
     (if (> (get days fee) u7)
       (begin
         (let ((vault (get-vault-by-id vault-id)))
-          (map-set vaults
-            { id: vault-id }
-            (merge vault {
+          (try! (contract-call? .vault-data update-vault vault-id (merge vault {
               updated-at-block-height: block-height,
               stability-fee: (+ (/ (get fee fee) (get decimals fee)) (get stability-fee vault)),
               stability-fee-last-accrued: (+ (get stability-fee-last-accrued vault) (* (get days fee) BLOCKS-PER-DAY))
-            })
+            }))
           )
           (ok true)
         )
@@ -505,12 +419,10 @@
   (let ((vault (get-vault-by-id vault-id)))
     (if (is-ok (contract-call? .xusd-token transfer (get stability-fee vault) tx-sender (as-contract tx-sender)))
       (begin
-        (map-set vaults
-          { id: vault-id }
-          (merge vault {
+        (try! (contract-call? .vault-data update-vault vault-id (merge vault {
             updated-at-block-height: block-height,
             stability-fee: u0
-          })
+          }))
         )
         (ok true)
       )
@@ -532,16 +444,14 @@
         )
         (begin
           ;; mint xSTX and sell those until stacking cycle ends
-          (map-set vaults
-            { id: vault-id }
-            (merge vault {
+          (try! (contract-call? .vault-data update-vault vault-id (merge vault {
               collateral: u0,
               collateral-token: "xSTX",
               updated-at-block-height: block-height,
               is-liquidated: true,
               auction-ended: false,
               leftover-collateral: u0
-            })
+            }))
           )
           (try! (contract-call? .sip10-reserve mint-xstx collateral))
           (let ((debt (/ (* (unwrap-panic (contract-call? .collateral-types get-liquidation-penalty (get collateral-type vault))) (get debt vault)) u100)))
@@ -549,15 +459,13 @@
           )
         )
         (begin
-          (map-set vaults
-            { id: vault-id }
-            (merge vault {
+          (try! (contract-call? .vault-data update-vault vault-id (merge vault {
               collateral: u0,
               updated-at-block-height: block-height,
               is-liquidated: true,
               auction-ended: false,
               leftover-collateral: u0
-            })
+            }))
           )
           (let ((debt (/ (* (unwrap-panic (contract-call? .collateral-types get-liquidation-penalty (get collateral-type vault))) (get debt vault)) u100)))
             (ok (tuple (ustx-amount collateral) (debt (+ debt (get debt vault)))))
@@ -574,14 +482,12 @@
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "auction-engine"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) true) (err ERR-NOT-AUTHORIZED))
 
-    (map-set vaults
-      { id: vault-id }
-      (merge vault {
+    (try! (contract-call? .vault-data update-vault vault-id (merge vault {
         collateral: u0,
         updated-at-block-height: block-height,
         auction-ended: true,
         leftover-collateral: leftover-collateral
-      })
+      }))
     )
     (try! (contract-call? .collateral-types subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault)))
     (ok true)
@@ -601,12 +507,10 @@
 
     (if (unwrap-panic (contract-call? reserve withdraw ft (get owner vault) (get leftover-collateral vault)))
       (begin
-        (map-set vaults
-          { id: vault-id }
-          (merge vault {
+        (try! (contract-call? .vault-data update-vault vault-id (merge vault {
             updated-at-block-height: block-height,
             leftover-collateral: u0
-          })
+          }))
         )
         (ok true)
       )
@@ -615,16 +519,21 @@
   )
 )
 
+
+;; ---------------------------------------------------------
+;; Admin Functions
+;; ---------------------------------------------------------
+
+(define-read-only (get-xusd-balance)
+  (contract-call? .xusd-token get-balance-of (as-contract tx-sender))
+)
+
 (define-public (set-payout-address (address principal))
   (begin
     (asserts! (is-eq contract-caller CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
 
     (ok (var-set payout-address address))
   )
-)
-
-(define-read-only (get-xusd-balance)
-  (contract-call? .xusd-token get-balance-of (as-contract tx-sender))
 )
 
 ;; redeem xUSD working capital for the foundation
@@ -649,5 +558,45 @@
     )
       (contract-call? token transfer balance (as-contract tx-sender) (contract-of new-vault-manager))
     )
+  )
+)
+
+(define-public (set-stx-redeemable (new-stx-redeemable uint))
+  (begin
+    (asserts! (is-eq contract-caller CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+
+    (var-set stx-redeemable new-stx-redeemable)
+    (ok true)
+  )
+)
+
+(define-public (set-block-height-last-paid (new-block-height-last-paid uint))
+  (begin
+    (asserts! (is-eq contract-caller CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+
+    (var-set block-height-last-paid new-block-height-last-paid)
+    (ok true)
+  )
+)
+
+(define-public (set-maximum-debt-surplus (new-maximum-debt-surplus uint))
+  (begin
+    (asserts! (is-eq contract-caller CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+
+    (var-set maximum-debt-surplus new-maximum-debt-surplus)
+    (ok true)
+  )
+)
+
+;; migrates stx-redeemable, block-height-last-paid and maximum-debt-surplus
+;; payout address has a separate setter that can be configured
+(define-public (migrate-state (new-vault-manager <vault-manager-trait>))
+  (begin
+    (asserts! (is-eq contract-caller CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+
+    (try! (contract-call? new-vault-manager set-stx-redeemable (var-get stx-redeemable)))
+    (try! (contract-call? new-vault-manager set-block-height-last-paid (var-get block-height-last-paid)))
+    (try! (contract-call? new-vault-manager set-maximum-debt-surplus (var-get maximum-debt-surplus)))
+    (ok true)
   )
 )

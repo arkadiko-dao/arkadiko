@@ -29,7 +29,7 @@ export const App: React.FC = () => {
   const fetchVaults = async (address: string) => {
     const vaults = await callReadOnlyFunction({
       contractAddress,
-      contractName: "freddie",
+      contractName: "vault-data",
       functionName: "get-vaults",
       functionArgs: [standardPrincipalCV(address)],
       senderAddress: address,
