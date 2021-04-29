@@ -28,6 +28,13 @@
   { user: principal }
   { vault-id: uint }
 )
+(define-map stacking-payout
+  { vault-id: uint }
+  {
+    collateral-amount: uint,
+    principals: (list 500 (tuple (collateral-amount uint) (recipient principal)))
+  }
+)
 (define-data-var last-vault-id uint u0)
 (define-constant CONTRACT-OWNER tx-sender)
 (define-constant ERR-NOT-AUTHORIZED u7401)
@@ -67,6 +74,13 @@
   (var-get last-vault-id)
 )
 
+(define-read-only (get-stacking-payout (vault-id uint))
+  (default-to
+    { collateral-amount: u0, principals: (list) }
+    (map-get? stacking-payout { vault-id: vault-id })
+  )
+)
+
 (define-public (set-last-vault-id (vault-id uint))
   (begin
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
@@ -83,7 +97,13 @@
 
 (define-public (update-vault (vault-id uint) (data (tuple (id uint) (owner principal) (collateral uint) (collateral-type (string-ascii 12)) (collateral-token (string-ascii 12)) (stacked-tokens uint) (revoked-stacking bool) (debt uint) (created-at-block-height uint) (updated-at-block-height uint) (stability-fee uint) (stability-fee-last-accrued uint) (is-liquidated bool) (auction-ended bool) (leftover-collateral uint))))
   (let ((vault (get-vault-by-id vault-id)))
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+    (asserts!
+      (or
+        (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "stacker")))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
   
     (map-set vaults (tuple (id vault-id)) data)
     (ok true)
@@ -120,5 +140,45 @@
       (ok (map-delete vaults { id: vault-id }))
       (err u0)
     )
+  )
+)
+
+;; called on liquidation
+;; when a vault gets liquidated, the vault owner is no longer eligible for the yield
+(define-public (reset-stacking-payouts (vault-id uint))
+  (begin
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+
+    (map-set stacking-payout
+      { vault-id: vault-id }
+      ;;{ principals: (list (tuple (percentage-basis-points u0) (recipient CONTRACT-OWNER))) }
+      { collateral-amount: u0, principals: (list) }
+    )
+
+    (ok true)
+  )
+)
+
+(define-public (add-stacker-payout (vault-id uint) (collateral-amount uint) (recipient principal))
+  (let (
+    (stacking-payout-entry (get-stacking-payout vault-id))
+    (principals (get principals stacking-payout-entry))
+  )
+    (asserts!
+      (or
+        (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "auction-engine")))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
+
+    (map-set stacking-payout
+      { vault-id: vault-id }
+      {
+        collateral-amount: (+ collateral-amount (get collateral-amount stacking-payout-entry)),
+        principals: (unwrap-panic (as-max-len? (append principals (tuple (collateral-amount collateral-amount) (recipient recipient))) u500))
+      }
+    )
+    (ok true)
   )
 )

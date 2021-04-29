@@ -19,9 +19,15 @@
 (define-constant ERR-NOT-AUTHORIZED u19401)
 (define-constant ERR-CANNOT-STACK u191)
 (define-constant ERR-FAILED-STACK-STX u192)
+(define-constant ERR-BURN-HEIGHT-NOT-REACHED u193)
+(define-constant ERR-ALREADY-STACKING u194)
 (define-constant CONTRACT-OWNER tx-sender)
 
-(define-data-var stacking-unlock-burn-height uint u0)
+(define-data-var stacking-unlock-burn-height uint u0) ;; when is this cycle over
+(define-data-var stacking-stx-stacked uint u0) ;; how many stx did we stack in this cycle
+(define-data-var stacking-stx-received uint u0) ;; how many btc did we convert into STX tokens to add to vault collateral
+(define-data-var stacking-stx-in-vault uint u0)
+
 (define-data-var stacker-yield uint u9000) ;; 90%
 (define-data-var governance-token-yield uint u500) ;; 5%
 (define-data-var governance-reserve-yield uint u500) ;; 5%
@@ -42,6 +48,14 @@
   (ok (var-get stacking-unlock-burn-height))
 )
 
+(define-public (set-stacking-stx-received (stx-received uint))
+  (begin
+    (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set stacking-stx-received stx-received))
+  )
+)
+
 (define-public (initiate-stacking (pox-addr (tuple (version (buff 1)) (hashbytes (buff 20))))
                                   (start-burn-ht uint)
                                   (lock-period uint))
@@ -50,13 +64,15 @@
   (let (
     (tokens-to-stack (unwrap! (contract-call? .stx-reserve get-tokens-to-stack) (ok u0)))
     (can-stack (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox can-stack-stx pox-addr tokens-to-stack start-burn-ht lock-period)))
+    (stx-balance (unwrap-panic (get-stx-balance)))
   )
     (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+    (asserts! (>= burn-block-height (var-get stacking-unlock-burn-height)) (err ERR-ALREADY-STACKING))
 
     ;; check if we can stack - if not, then probably cause we have not reached the minimum with (var-get tokens-to-stack)
     (if (unwrap! can-stack (err ERR-CANNOT-STACK))
       (begin
-        (try! (contract-call? .stx-reserve request-stx-to-stack))
+        (try! (contract-call? .stx-reserve request-stx-to-stack (- tokens-to-stack stx-balance)))
         (let (
           (result
             (unwrap!
@@ -66,6 +82,7 @@
           )
         )
           (var-set stacking-unlock-burn-height (get unlock-burn-height result))
+          (var-set stacking-stx-stacked (get lock-amount result))
           (ok (get lock-amount result))
         )
       )
@@ -77,7 +94,13 @@
 ;; can be called by the stx reserve to request STX tokens for withdrawal
 (define-public (request-stx-for-withdrawal (ustx-amount uint))
   (begin
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+    (asserts!
+      (or
+        (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "stacker")))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
     (as-contract
       (stx-transfer? ustx-amount (as-contract tx-sender) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "stx-reserve")))
     )
@@ -85,15 +108,91 @@
 )
 
 ;; Pay all parties:
-;; - Owners of vaults
+;; - Owner of vault
 ;; - DAO Reserve
 ;; - Owners of gov tokens
 ;; Unfortunately this cannot happen trustless
 ;; The bitcoin arrives at the bitcoin address passed to the initiate-stacking function
 ;; it is not possible to transact bitcoin txs from clarity right now
 ;; this means we will need to do this manually until some way exists to do this trustless (if ever?)
-(define-public (payout)
-  (ok true)
+;; we pay out the yield in STX tokens
+(define-public (payout (vault-id uint))
+  (let (
+    (vault (contract-call? .vault-data get-vault-by-id vault-id))
+  )
+    (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (>= burn-block-height (var-get stacking-unlock-burn-height)) (err ERR-BURN-HEIGHT-NOT-REACHED))
+
+    (if (and (get is-liquidated vault) (get auction-ended vault))
+      (try! (payout-liquidated-vault vault-id))
+      (try! (payout-vault vault-id))
+    )
+    ;; (var-set stacking-stx-received u0) ;; set manually back to 0 after we paid everyone, since this method is for 1 vault only
+    (ok true)
+  )
+)
+
+(define-private (payout-liquidated-vault (vault-id uint))
+  (let (
+    (vault (contract-call? .vault-data get-vault-by-id vault-id))
+    (stacking-entry (contract-call? .vault-data get-stacking-payout vault-id))
+  )
+    (asserts! (is-eq (get is-liquidated vault) true) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (get auction-ended vault) true) (err ERR-NOT-AUTHORIZED))
+    (asserts! (> (get stacked-tokens vault) u0) (err ERR-NOT-AUTHORIZED))
+
+    (var-set stacking-stx-in-vault (get collateral-amount stacking-entry))
+    (map payout-lot-bidder (get principals stacking-entry))
+    (ok true)
+  )
+)
+
+(define-private (payout-lot-bidder (data (tuple (collateral-amount uint) (recipient principal))))
+  (let (
+    (stx-in-vault (var-get stacking-stx-in-vault))
+    (percentage (/ (* u10000 (get collateral-amount data)) stx-in-vault)) ;; in basis points
+    (basis-points (/ (* u10000 stx-in-vault) (var-get stacking-stx-stacked)))
+    (earned-amount-vault (/ (* (var-get stacking-stx-received) basis-points) u10000))
+    (earned-amount-bidder (/ (* percentage earned-amount-vault) u10000))
+  )
+    (try! (as-contract (stx-transfer? earned-amount-bidder (as-contract tx-sender) (get recipient data))))
+    (ok true)
+  )
+)
+
+(define-private (calculate-vault-reward (vault-id uint))
+  (let (
+    (vault (contract-call? .vault-data get-vault-by-id vault-id))
+    (basis-points (/ (* u10000 (get stacked-tokens vault)) (var-get stacking-stx-stacked))) ;; (100 * 100 * vault-stacked-tokens / stx-stacked)
+  )
+    (/ (* (var-get stacking-stx-received) basis-points) u10000)
+  )
+)
+
+(define-private (payout-vault (vault-id uint))
+  (let (
+    (vault (contract-call? .vault-data get-vault-by-id vault-id))
+    (earned-amount (calculate-vault-reward vault-id))
+    (new-collateral-amount (+ earned-amount (get collateral vault)))
+  )
+    (asserts! (is-eq (get is-liquidated vault) false) (err ERR-NOT-AUTHORIZED))
+    (asserts! (> (get stacked-tokens vault) u0) (err ERR-NOT-AUTHORIZED))
+
+    (try! (contract-call? .vault-data update-vault vault-id (merge vault { collateral: new-collateral-amount })))
+    (if (get revoked-stacking vault)
+      (begin
+        (try! (contract-call? .vault-data update-vault vault-id (merge vault { updated-at-block-height: block-height, stacked-tokens: u0 })))
+        (try! (request-stx-for-withdrawal new-collateral-amount))
+      )
+      (try! (contract-call? .vault-data update-vault vault-id (merge vault {
+        updated-at-block-height: block-height,
+        stacked-tokens: new-collateral-amount,
+        collateral: new-collateral-amount
+      })))
+    )
+    (ok true)
+  )
 )
 
 (define-read-only (get-stx-balance)

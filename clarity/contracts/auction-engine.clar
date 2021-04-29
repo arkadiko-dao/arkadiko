@@ -61,7 +61,7 @@
 
 (define-data-var last-auction-id uint u0)
 (define-data-var auction-ids (list 1500 uint) (list u0))
-(define-data-var lot-size uint u100000000) ;; 100 xUSD
+(define-data-var lot-size uint u1000000000) ;; 1000 xUSD
 
 (define-read-only (get-auction-by-id (id uint))
   (default-to
@@ -340,6 +340,7 @@
       )
       (if accepted-bid
         (let ((lots (get-winning-lots tx-sender)))
+          (try! (contract-call? .vault-data add-stacker-payout (get vault-id auction) collateral-amount tx-sender))
           (map-set winning-lots
             { user: tx-sender }
             {
@@ -432,7 +433,8 @@
       (merge auction { is-open: false })
     )
     (try! (contract-call? .dao burn-token .xusd-token (- (get total-debt-raised auction) (get total-debt-burned auction)) (as-contract tx-sender)))
-    (try! (if (>= (get total-debt-raised auction) (get debt-to-raise auction))
+    (try!
+      (if (>= (get total-debt-raised auction) (get debt-to-raise auction))
         (if (is-eq (get auction-type auction) "collateral")
           (contract-call?
             vault-manager

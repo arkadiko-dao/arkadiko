@@ -1,3 +1,7 @@
+## Version 0.7.0
+
+- Add stacking logic to pay out vaults that have STX collateral. If a vault gets liquidated during a stacking cycle, the vault owner will not be eligible for the yield. The yield will be paid out to the winners of the auctions.
+
 ## Version 0.6.1
 
 ### New features

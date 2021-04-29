@@ -95,7 +95,7 @@
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq false (get is-liquidated vault)) (err ERR-NOT-AUTHORIZED))
-    (try! (contract-call? .stx-reserve toggle-stacking (get revoked-stacking vault) (get collateral vault)))
+    (try! (contract-call? .stx-reserve toggle-stacking (not (get revoked-stacking vault)) (get collateral vault)))
 
     (try!
       (contract-call? .vault-data update-vault vault-id (merge vault {
@@ -252,7 +252,6 @@
   (let ((vault (get-vault-by-id vault-id))
        (new-collateral (+ uamount (get collateral vault)))
        (updated-vault (merge vault {
-          stacked-tokens: (+ (get stacked-tokens vault) (resolve-stacking-amount uamount (get collateral-token vault))),
           collateral: new-collateral,
           updated-at-block-height: block-height
         })))
@@ -436,6 +435,7 @@
     (asserts! (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq contract-caller .liquidator) (err ERR-NOT-AUTHORIZED))
 
+    (try! (contract-call? .vault-data reset-stacking-payouts vault-id))
     (let ((collateral (get collateral vault)))
       (if
         (and

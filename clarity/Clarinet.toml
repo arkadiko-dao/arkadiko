@@ -59,7 +59,7 @@ depends_on = []
 path = "contracts/oracle-trait.clar"
 
 [contracts.stacker]
-depends_on = ["stacker-trait"]
+depends_on = ["stacker-trait", "vault-data"]
 path = "contracts/stacker.clar"
 
 [contracts.stacker-trait]

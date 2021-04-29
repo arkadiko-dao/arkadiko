@@ -6,6 +6,8 @@ import {
   types,
 } from "https://deno.land/x/clarinet@v0.6.0/index.ts";
 
+const bidSize = 1000000000; // 1000 xUSD
+
 Clarinet.test({
   name:
     "auction engine: bid on normal collateral auction with enough collateral to cover bad xUSD debt",
@@ -19,8 +21,8 @@ Clarinet.test({
         types.uint(200),
       ], deployer.address),
       Tx.contractCall("freddie", "collateralize-and-mint", [
-        types.uint(100000000), // 100 STX
-        types.uint(130000000), // mint 130 xUSD
+        types.uint(1000000000), // 1000 STX
+        types.uint(1300000000), // mint 1300 xUSD
         types.principal(deployer.address),
         types.ascii("STX-A"),
         types.ascii("STX"),
@@ -30,7 +32,7 @@ Clarinet.test({
     ]);
     block.receipts[1].result
       .expectOk()
-      .expectUint(130000000);
+      .expectUint(1300000000);
 
     block = chain.mineBlock([
       Tx.contractCall("oracle", "update-price", [
@@ -61,9 +63,9 @@ Clarinet.test({
       .map((e: String) => e.expectTuple());
 
     let auction = auctions[1];
-    auction['collateral-amount'].expectUint(100000000);
+    auction['collateral-amount'].expectUint(1000000000);
     call = await chain.callReadOnlyFn("xusd-token", "get-total-supply", [], deployer.address);
-    call.result.expectOk().expectUint(1130000030);
+    call.result.expectOk().expectUint(2300000030);
 
     block = chain.mineBlock([
       Tx.contractCall("auction-engine", "bid", [
@@ -71,14 +73,14 @@ Clarinet.test({
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
         types.uint(1),
         types.uint(0),
-        types.uint(100000000)
+        types.uint(bidSize)
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
     call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.auction-engine'),
     ], deployer.address);
-    call.result.expectOk().expectUint(100000000);
+    call.result.expectOk().expectUint(1000000000);
 
     let lastBidCall = await chain.callReadOnlyFn(
       "auction-engine",
@@ -88,7 +90,7 @@ Clarinet.test({
     );
     let lastBid = lastBidCall.result.expectTuple();
     lastBid['is-accepted'].expectBool(true);
-    lastBid['xusd'].expectUint(100000000);
+    lastBid['xusd'].expectUint(1000000000);
 
     block = chain.mineBlock([
       Tx.contractCall("auction-engine", "fetch-minimum-collateral-amount", [
@@ -100,10 +102,10 @@ Clarinet.test({
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
         types.uint(1),
         types.uint(1),
-        types.uint(44482758) // 1.5 (price of STX) * minimum collateral
+        types.uint(296551724 * 1.5) // 1.5 (price of STX) * minimum collateral
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(29655172);
+    block.receipts[0].result.expectOk().expectUint(296551724);
     block.receipts[1].result.expectOk().expectBool(true);
 
     call = await chain.callReadOnlyFn(
@@ -122,12 +124,12 @@ Clarinet.test({
       wallet_1.address
     );
     let vault = call.result.expectTuple();
-    vault['leftover-collateral'].expectUint(1379311);
+    vault['leftover-collateral'].expectUint(13793104);
     vault['is-liquidated'].expectBool(true);
     vault['auction-ended'].expectBool(true);
 
     call = await chain.callReadOnlyFn("xusd-token", "get-total-supply", [], deployer.address);
-    call.result.expectOk().expectUint(985517272);
+    call.result.expectOk().expectUint(855172444);
 
     // now check the wallet of contract - should have burned all xUSD
     call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
@@ -190,8 +192,8 @@ Clarinet.test({
         types.uint(200),
       ], deployer.address),
       Tx.contractCall("freddie", "collateralize-and-mint", [
-        types.uint(100000000), // 100 STX
-        types.uint(130000000), // mint 130 xUSD
+        types.uint(1000000000), // 100 STX
+        types.uint(1300000000), // mint 130 xUSD
         types.principal(deployer.address),
         types.ascii("STX-A"),
         types.ascii("STX"),
@@ -201,7 +203,7 @@ Clarinet.test({
     ]);
     block.receipts[1].result
       .expectOk()
-      .expectUint(130000000);
+      .expectUint(1300000000);
 
     block = chain.mineBlock([
       Tx.contractCall("oracle", "update-price", [
@@ -230,10 +232,10 @@ Clarinet.test({
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
         types.uint(1),
         types.uint(0),
-        types.uint(100000000)
+        types.uint(bidSize)
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(100000000);
+    block.receipts[0].result.expectOk().expectUint(bidSize);
     block.receipts[1].result.expectOk().expectBool(true);
 
     // The auction sold off all of its collateral now, but not enough debt was raised
@@ -246,10 +248,8 @@ Clarinet.test({
     );
     let auction = call.result.expectTuple();
     auction['total-collateral-sold'].expectUint(100000000);
-    // TODO: chain.mineEmptyBlock(150); does not work
-    for (let index = 0; index < 160; index++) {
-      chain.mineBlock([]);
-    }
+
+    chain.mineEmptyBlock(160);
 
     block = chain.mineBlock([
       Tx.contractCall("auction-engine", "close-auction", [
@@ -265,8 +265,8 @@ Clarinet.test({
     );
     auction = call.result.expectTuple();
     auction['is-open'].expectBool(false);
-    const debtRaised = auction['total-debt-raised'].expectUint(100000000);
-    const debtToRaise = auction['debt-to-raise'].expectUint(143000000);
+    const debtRaised = auction['total-debt-raised'].expectUint(1000000000); // 1000 xUSD raised
+    const debtToRaise = auction['debt-to-raise'].expectUint(1430000000); // 1430 xUSD
 
     call = await chain.callReadOnlyFn(
       "auction-engine",
@@ -288,7 +288,7 @@ Clarinet.test({
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
         types.uint(2),
         types.uint(0),
-        types.uint(43000000)
+        types.uint(430000000)
       ], deployer.address)
     ]);
     block.receipts[1].result.expectOk().expectBool(true);
@@ -328,8 +328,8 @@ Clarinet.test({
         types.uint(200),
       ], deployer.address),
       Tx.contractCall("freddie", "collateralize-and-mint", [
-        types.uint(100000000), // 100 STX
-        types.uint(130000000), // mint 130 xUSD
+        types.uint(1000000000), // 100 STX
+        types.uint(1300000000), // mint 130 xUSD
         types.principal(wallet_1.address),
         types.ascii("STX-A"),
         types.ascii("STX"),
@@ -339,7 +339,7 @@ Clarinet.test({
     ]);
     block.receipts[1].result
       .expectOk()
-      .expectUint(130000000);
+      .expectUint(1300000000);
 
     block = chain.mineBlock([
       Tx.contractCall("oracle", "update-price", [
@@ -364,7 +364,7 @@ Clarinet.test({
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
         types.uint(1),
         types.uint(0),
-        types.uint(100000000)
+        types.uint(bidSize)
       ], wallet_1.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
@@ -380,9 +380,7 @@ Clarinet.test({
     // 1 bid has been made and collateral is left.
     // Now image no bids come in for the 2nd lot.
     // Auction should end and a new one should be started
-    for (let index = 0; index < 160; index++) {
-      chain.mineBlock([]);
-    }
+    chain.mineEmptyBlock(160);
 
     block = chain.mineBlock([
       Tx.contractCall("auction-engine", "close-auction", [
@@ -472,7 +470,7 @@ Clarinet.test({
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
         types.uint(1),
         types.uint(0),
-        types.uint(100000000)
+        types.uint(bidSize)
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
@@ -497,8 +495,8 @@ Clarinet.test({
         types.uint(200),
       ], deployer.address),
       Tx.contractCall("freddie", "collateralize-and-mint", [
-        types.uint(100000000), // 100 STX
-        types.uint(130000000), // mint 130 xUSD
+        types.uint(1000000000), // 100 STX
+        types.uint(1300000000), // mint 130 xUSD
         types.principal(wallet_1.address),
         types.ascii("STX-A"),
         types.ascii("STX"),
@@ -508,7 +506,7 @@ Clarinet.test({
     ]);
     block.receipts[1].result
       .expectOk()
-      .expectUint(130000000);
+      .expectUint(1300000000);
 
     block = chain.mineBlock([
       Tx.contractCall("oracle", "update-price", [
@@ -533,7 +531,7 @@ Clarinet.test({
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
         types.uint(1),
         types.uint(0),
-        types.uint(100000000)
+        types.uint(bidSize)
       ], wallet_1.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
@@ -544,7 +542,7 @@ Clarinet.test({
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
         types.uint(1),
         types.uint(0),
-        types.uint(100000000)
+        types.uint(bidSize)
       ], deployer.address)
     ]);
     block.receipts[0].result.expectErr().expectUint(21); // bid declined since lot is sold
