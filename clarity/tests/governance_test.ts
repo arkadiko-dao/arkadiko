@@ -19,13 +19,6 @@ Clarinet.test({
     call = chain.callReadOnlyFn("governance", "get-proposal-by-id", [types.uint(0)], wallet_1.address);
     call.result.expectTuple()["is-open"].expectBool(false);
 
-    // Empty contract change used to fill list
-    let emptyContractChangeTuple = types.tuple({
-      name: types.ascii(""),
-      'address': types.principal(deployer.address),
-      'qualified-name': types.principal(deployer.address)
-    });
-    
     // Create proposal
     let block = chain.mineBlock([
     Tx.contractCall("governance", "propose", [
@@ -37,16 +30,7 @@ Clarinet.test({
             name: types.ascii("oracle"),
             'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
             'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle")
-          }),
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple
+          })
         ])
 
     ], wallet_1.address)
@@ -77,13 +61,6 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
     let wallet_2 = accounts.get("wallet_2")!;
 
-    // Empty contract change used to fill list
-    let emptyContractChangeTuple = types.tuple({
-      name: types.ascii(""),
-      'address': types.principal(deployer.address),
-      'qualified-name': types.principal(deployer.address)
-    });
-    
     // Create proposal to start at block 1
     let block = chain.mineBlock([
     Tx.contractCall("governance", "propose", [
@@ -95,16 +72,7 @@ Clarinet.test({
             name: types.ascii("oracle"),
             'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
             'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle")
-          }),
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple
+          })
         ])
 
     ], wallet_1.address)
@@ -122,6 +90,7 @@ Clarinet.test({
     // Vote for wallet_1
     block = chain.mineBlock([
     Tx.contractCall("governance", "vote-for", [
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
         types.uint(1),
         types.uint(10000000)
     ], wallet_1.address)
@@ -142,6 +111,7 @@ Clarinet.test({
     // Vote for wallet_2
     block = chain.mineBlock([
     Tx.contractCall("governance", "vote-for", [
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
         types.uint(1),
         types.uint(20000000)
     ], wallet_2.address)
@@ -151,6 +121,7 @@ Clarinet.test({
     // Vote against wallet_2
     block = chain.mineBlock([
     Tx.contractCall("governance", "vote-against", [
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
         types.uint(1),
         types.uint(1000000)
     ], wallet_2.address)
@@ -210,6 +181,7 @@ Clarinet.test({
     // Vote for wallet_1
     block = chain.mineBlock([
     Tx.contractCall("governance", "vote-for", [
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
         types.uint(1),
         types.uint(10000000)
     ], wallet_1.address)
@@ -253,13 +225,6 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
     let wallet_2 = accounts.get("wallet_2")!;
 
-    // Empty contract change used to fill list
-    let emptyContractChangeTuple = types.tuple({
-      name: types.ascii(""),
-      'address': types.principal(deployer.address),
-      'qualified-name': types.principal(deployer.address)
-    });
-    
     // Create proposal to start at block 1
     let block = chain.mineBlock([
     Tx.contractCall("governance", "propose", [
@@ -271,16 +236,7 @@ Clarinet.test({
             name: types.ascii("oracle"),
             'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
             'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-oracle")
-          }),
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple,
-          emptyContractChangeTuple
+          })
         ])
 
     ], wallet_1.address)
@@ -290,6 +246,7 @@ Clarinet.test({
     // Vote for wallet_1
     block = chain.mineBlock([
     Tx.contractCall("governance", "vote-against", [
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
         types.uint(1),
         types.uint(10000000)
     ], wallet_1.address)
@@ -318,5 +275,82 @@ Clarinet.test({
     call.result.expectSome().expectPrincipal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7");
     call = chain.callReadOnlyFn("dao", "get-qualified-name-by-name", [types.ascii("oracle")], wallet_2.address);
     call.result.expectSome().expectPrincipal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle");
+  }
+});
+
+Clarinet.test({
+  name: "governance: end proposal + return DIKO to voters",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    // Empty contract change used to fill list
+    let emptyContractChangeTuple = types.tuple({
+      name: types.ascii(""),
+      'address': types.principal(deployer.address),
+      'qualified-name': types.principal(deployer.address)
+    });
+    
+    // Create proposal to start at block 1
+    let block = chain.mineBlock([
+    Tx.contractCall("governance", "propose", [
+        types.uint(1),
+        types.utf8("test details"),
+        
+        types.list([
+          types.tuple({
+            name: types.ascii("oracle"),
+            'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
+            'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-oracle")
+          }),
+          types.tuple({
+            name: types.ascii("freddie"),
+            'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
+            'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-freddie")
+          })
+        ])
+
+    ], wallet_1.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    // Vote for wallet_1
+    block = chain.mineBlock([
+    Tx.contractCall("governance", "vote-for", [
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+        types.uint(1),
+        types.uint(10000000)
+    ], wallet_1.address)
+    ]);
+    block.receipts[0].result.expectOk().expectUint(3200);
+
+    // Advance
+    for (let index = 0; index < 1500; index++) {
+      chain.mineBlock([]);
+    }
+
+    // End proposal
+    block = chain.mineBlock([
+    Tx.contractCall("governance", "end-proposal", [
+        types.uint(1)
+    ], wallet_2.address)
+    ]);
+    block.receipts[0].result.expectOk().expectUint(3200);
+
+    // Return DIKO to members
+    block = chain.mineBlock([
+    Tx.contractCall("governance", "return-votes-to-member", [
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+        types.uint(1),
+        types.principal(wallet_1.address)
+    ], wallet_1.address)
+    ]);
+    block.receipts[0].result.expectOk();
+
+    // Should have initial amount back
+    let call = chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [types.principal(wallet_1.address)], wallet_1.address);
+    call.result.expectOk().expectUint(150000000000);  
+
   }
 });

@@ -8,6 +8,7 @@
 ;; Errors
 (define-constant ERR-NOT-ENOUGH-BALANCE u31)
 (define-constant ERR-NO-CONTRACT-CHANGES u32)
+(define-constant ERR-WRONG-TOKEN u33)
 (define-constant ERR-NOT-AUTHORIZED u3401)
 (define-constant STATUS-OK u3200)
 
@@ -33,7 +34,7 @@
 (define-data-var proposal-count uint u0)
 (define-data-var proposal-ids (list 100 uint) (list u0))
 (define-map votes-by-member { proposal-id: uint, member: principal } { vote-count: uint })
-
+(define-map tokens-by-member { proposal-id: uint, member: principal, token: principal } { amount: uint })
 
 ;; Get all proposals
 (define-read-only (get-proposals)
@@ -46,11 +47,17 @@
 )
 
 ;; Get votes for a member on proposal
-;; Philip: why return tuple and not just number?
 (define-read-only (get-votes-by-member-by-id (proposal-id uint) (member principal))
   (default-to 
     { vote-count: u0 }
     (map-get? votes-by-member { proposal-id: proposal-id, member: member })
+  )
+)
+
+(define-read-only (get-tokens-by-member-by-id (proposal-id uint) (member principal) (token <mock-ft-trait>))
+  (default-to 
+    { amount: u0 }
+    (map-get? tokens-by-member { proposal-id: proposal-id, member: member, token: (contract-of token) }) 
   )
 )
 
@@ -72,6 +79,15 @@
   )
 )
 
+;; To check which tokens are accepted as votes
+(define-read-only (is-token-accepted (token <mock-ft-trait>))
+  (let (
+    (is-diko (is-eq (contract-of token) .arkadiko-token))
+    (is-stdiko (is-eq (contract-of token) .stake-pool-diko))
+  )
+    (or is-diko is-stdiko)
+  )
+)
 
 ;; Start a proposal
 ;; Requires 1% of the supply in your wallet
@@ -109,16 +125,20 @@
   )
 )
 
-(define-public (vote-for (proposal-id uint) (amount uint))
+(define-public (vote-for (token <mock-ft-trait>) (proposal-id uint) (amount uint))
   (let (
     (proposal (get-proposal-by-id proposal-id))
-    (vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender))))
+    (vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender)))
+    (token-count (get amount (get-tokens-by-member-by-id proposal-id tx-sender token)))
+  )
+    ;; Can vote with DIKO and stDIKO
+    (asserts! (is-eq (is-token-accepted token) true) (err ERR-WRONG-TOKEN))
     ;; Proposal should be open for voting
     (asserts! (is-eq (get is-open proposal) true) (err ERR-NOT-AUTHORIZED))
     ;; Vote should be casted after the start-block-height
     (asserts! (>= block-height (get start-block-height proposal)) (err ERR-NOT-AUTHORIZED))
     ;; Voter should be able to stake
-    (try! (contract-call? .arkadiko-token transfer amount tx-sender (as-contract tx-sender)))
+    (try! (contract-call? token transfer amount tx-sender (as-contract tx-sender)))
     ;; Mutate
     (map-set proposals
       { id: proposal-id }
@@ -126,20 +146,28 @@
     (map-set votes-by-member 
       { proposal-id: proposal-id, member: tx-sender }
       { vote-count: (+ vote-count amount) })
+    (map-set tokens-by-member
+      { proposal-id: proposal-id, member: tx-sender, token: (contract-of token) }
+      { amount: (+ token-count amount) })
+
     (ok STATUS-OK)
   )
 )
 
-(define-public (vote-against (proposal-id uint) (amount uint))
+(define-public (vote-against (token <mock-ft-trait>) (proposal-id uint) (amount uint))
   (let (
     (proposal (get-proposal-by-id proposal-id))
-    (vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender))))
+    (vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender)))
+    (token-count (get amount (get-tokens-by-member-by-id proposal-id tx-sender token)))
+  )
+    ;; Can vote with DIKO and stDIKO
+    (asserts! (is-eq (is-token-accepted token) true) (err ERR-WRONG-TOKEN))
     ;; Proposal should be open for voting
     (asserts! (is-eq (get is-open proposal) true) (err ERR-NOT-AUTHORIZED))
     ;; Vote should be casted after the start-block-height
     (asserts! (>= block-height (get start-block-height proposal)) (err ERR-NOT-AUTHORIZED))
     ;; Voter should be able to stake
-    (try! (contract-call? .arkadiko-token transfer amount tx-sender (as-contract tx-sender)))
+    (try! (contract-call? token transfer amount tx-sender (as-contract tx-sender)))
     ;; Mutate
     (map-set proposals
       { id: proposal-id }
@@ -147,6 +175,9 @@
     (map-set votes-by-member 
       { proposal-id: proposal-id, member: tx-sender }
       { vote-count: (+ vote-count amount) })
+    (map-set tokens-by-member
+      { proposal-id: proposal-id, member: tx-sender, token: (contract-of token) }
+      { amount: (+ token-count amount) })
     (ok STATUS-OK)
   )
 )
@@ -160,12 +191,26 @@
     (map-set proposals
       { id: proposal-id }
       (merge proposal { is-open: false }))
-    ;; TODO: (try! (return-diko)
     (if (> (get yes-votes proposal) (get no-votes proposal))
       (try! (execute-proposal proposal-id))
       false
     )
     (ok STATUS-OK)
+  )
+)
+
+;; Return votes to voter
+(define-public (return-votes-to-member (token <mock-ft-trait>) (proposal-id uint) (member principal))
+  (let (
+    (token-count (get amount (get-tokens-by-member-by-id proposal-id member token)))
+    (proposal (get-proposal-by-id proposal-id))
+  )
+    (asserts! (is-eq (is-token-accepted token) true) (err ERR-WRONG-TOKEN))
+    (asserts! (is-eq (get is-open proposal) false) (err ERR-NOT-AUTHORIZED))
+    (asserts! (>= block-height (get end-block-height proposal)) (err ERR-NOT-AUTHORIZED))
+
+    ;; Return DIKO
+    (contract-call? token transfer token-count (as-contract tx-sender) member)
   )
 )
 

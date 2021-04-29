@@ -1,3 +1,10 @@
+## Version 0.6.1
+
+### New features
+
+- Allow on-chain governance proposal voting with DIKO or stDIKO
+- Claim back tokens after proposal ends
+
 ## Version 0.6.0
 
 ### New features
