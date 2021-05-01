@@ -3,7 +3,7 @@ import { AppContext } from '@common/context';
 import { UserData } from '@stacks/auth';
 
 export const useSTXAddress = (): string | undefined => {
-  const { userData } = useContext(AppContext);
+  const [{ userData }, _] = useContext(AppContext);
   const env = process.env.REACT_APP_NETWORK_ENV;
   const isMainnet = env == 'mainnet';
 

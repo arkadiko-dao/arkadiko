@@ -12,7 +12,7 @@ import { LotGroup } from '@components/lot-group';
 
 export const Auctions: React.FC = () => {
   const { doContractCall } = useConnect();
-  const state = useContext(AppContext);
+  const [state, _] = useContext(AppContext);
   const stxAddress = useSTXAddress();
   const [auctions, setAuctions] = useState([]);
   const [lots, setLots] = useState([]);

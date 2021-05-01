@@ -23,8 +23,8 @@ import { useEffect } from 'react';
 export const Mint = () => {
   const address = useSTXAddress();
   const env = process.env.REACT_APP_NETWORK_ENV;
-  const state = useContext(AppContext);
-  const { vaults, collateralTypes } = useContext(AppContext);
+  const [state, _] = useContext(AppContext);
+  const [{ vaults, collateralTypes }, _x] = useContext(AppContext);
   const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [stxPrice, setStxPrice] = useState(0.0);

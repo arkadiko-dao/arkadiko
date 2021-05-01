@@ -15,7 +15,7 @@ export const Container: React.FC<BoxProps> = ({ children, ...props }) => {
 };
 
 export const Home: React.FC = () => {
-  const state = useContext(AppContext);
+  const [state, _] = useContext(AppContext);
 
   return (
     <Box>

@@ -11,7 +11,7 @@ interface VaultProps {
 }
 
 export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmounts }) => {
-  const state = useContext(AppContext);
+  const [state, _] = useContext(AppContext);
   const search = useLocation().search;
   const tokenType = new URLSearchParams(search).get('type') || 'STX-A';
   const tokenName = new URLSearchParams(search).get('token') || 'STX';

@@ -6,7 +6,7 @@ import { callReadOnlyFunction, cvToJSON, uintCV } from '@stacks/transactions';
 
 export const getCollateralToDebtRatio = (vaultId: string) => {
   const stxAddress = useSTXAddress();
-  const state = useContext(AppContext);
+  const [state, _] = useContext(AppContext);
   const [collateralToDebt, setCollateralToDebt] = useState(0);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 

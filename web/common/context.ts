@@ -30,6 +30,9 @@ export interface AppState {
   vaults: VaultProps[];
   definedCollateralTypes: [string, string, string];
   collateralTypes: object;
+  currentTxId: string;
+  currentTxStatus: string;
+  currentTxMessage: string;
 }
 
 export const defaultBalance = () => {
@@ -46,7 +49,10 @@ export const defaultState = (): AppState => {
       balance: defaultBalance(),
       vaults: [],
       definedCollateralTypes: ['STX-A', 'STX-B', 'DIKO-A'],
-      collateralTypes: []
+      collateralTypes: [],
+      currentTxId: '',
+      currentTxStatus: '',
+      currentTxMessage: ''
     };
   }
 
@@ -55,8 +61,11 @@ export const defaultState = (): AppState => {
     balance: { stx: 0, xusd: 0, diko: 0, xstx: 0, stdiko: 0 },
     vaults: [],
     definedCollateralTypes: ['STX-A', 'STX-B', 'DIKO-A'],
-    collateralTypes: []
+    collateralTypes: [],
+    currentTxId: '',
+    currentTxStatus: '',
+    currentTxMessage: ''
   };
 };
 
-export const AppContext = createContext<AppState>(defaultState());
+export const AppContext = createContext<Array<AppState>>([defaultState(), () => {}])

@@ -186,7 +186,7 @@ export const App: React.FC = () => {
   return (
     <Connect authOptions={authOptions}>
       <ThemeProvider theme={theme}>
-        <AppContext.Provider value={state}>
+        <AppContext.Provider value={[state, setState]}>
           <CSSReset />
           <Flex direction="column" minHeight="100vh" bg="white">
 

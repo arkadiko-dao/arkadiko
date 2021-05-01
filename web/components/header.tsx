@@ -19,7 +19,7 @@ const shortAddress = (address: string | null) => {
 };
 
 export const Header: React.FC<HeaderProps> = ({ signOut }) => {
-  const state = useContext(AppContext);
+  const [state, _] = useContext(AppContext);
   const showWallet = process.env.REACT_APP_SHOW_CONNECT_WALLET === 'true';
   const { doOpenAuth } = useConnect();
   const address = useSTXAddress();

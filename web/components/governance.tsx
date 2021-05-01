@@ -9,7 +9,7 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { ProposalGroup } from '@components/proposal-group';
 
 export const Governance = () => {
-  const state = useContext(AppContext);
+  const [state, _] = useContext(AppContext);
   const stxAddress = useSTXAddress();
   const [proposals, setProposals] = useState([]);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';

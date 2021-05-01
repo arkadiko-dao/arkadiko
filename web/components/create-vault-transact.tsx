@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { space, Text, Box } from '@blockstack/ui';
 import { useConnect } from '@stacks/connect-react';
 import { stacksNetwork as network } from '@common/utils';
@@ -14,48 +14,19 @@ import {
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ExplorerLink } from './explorer-link';
-import { connectWebSocketClient } from '@stacks/blockchain-api-client';
 import { resolveReserveName, tokenTraits } from '@common/vault-utils';
 import BN from 'bn.js';
+import { websocketTxUpdater } from '@common/websocket-tx-updater';
+import { AppContext } from '@common/context';
 
 export const CreateVaultTransact = ({ coinAmounts }) => {
-  const [txId, setTxId] = useState<string>('');
-  const [txType, setTxType] = useState<string>('');
+  const [state, setState] = useContext(AppContext);
   const { doContractCall } = useConnect();
   const address = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-
-  const clearState = () => {
-    setTxId('');
-    setTxType('');
-  };
-
-  const setState = (type: string, id: string) => {
-    setTxId(id);
-    setTxType(type);
-  };
-
-  useEffect(() => {
-    let sub;
-
-    const subscribe = async (txId:string) => {
-      const client = await connectWebSocketClient('ws://localhost:3999');
-      sub = await client.subscribeTxUpdates(txId, update => {
-        console.log('Got an update:', update);
-        if (update['tx_status'] == 'success') {
-          window.location.href = '/';
-        }
-      });
-      console.log({ client, sub });
-    };
-    if (txId) {
-      console.log('Subscribing on updates with TX id:', txId);
-      subscribe(txId);
-    }
-  }, [txId]);
+  websocketTxUpdater();
 
   const callCollateralizeAndMint = async () => {
-    clearState();
     const token = tokenTraits[coinAmounts['token-name'].toLowerCase()]['name'];
     const args = [
       uintCV(parseInt(coinAmounts['amounts']['collateral'], 10) * 1000000),
@@ -103,7 +74,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       postConditions,
       finished: data => {
         console.log('finished collateralizing!', data);
-        setState('Collateralize and Mint', data.txId);
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'Collateralize and Mint' }));
       },
     });
   };
@@ -115,28 +86,28 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
   return (
     <Box>
       <h2 className="text-2xl font-bold text-gray-900 text-center">
-        {txId ? (
+        {state.currentTxId ? (
           <span>Your vault is being minted.</span>
         ) : (
           <span>Confirm the transaction to create your new vault</span>
         )}   
       </h2>
 
-      {txId ? (
+      {state.currentTxId ? (
         <div className="bg-white shadow sm:rounded-lg mt-5 w-full">
           <div className="px-4 py-5 sm:p-6">
             <div className="sm:flex sm:justify-between sm:items-baseline mt-4 mb-4">
               <div className="mt-1 text-sm text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
-                {txId && (
+                {state.currentTxId && (
                   <Text textStyle="body.large" display="block" my={space('base')}>
                     <Text color="green" fontSize={1}>
-                      Successfully broadcasted &quot;{txType}&quot;. This can take a few minutes.
+                      Successfully broadcasted &quot;{state.currentTxStatus}&quot;. This can take a few minutes.
                     </Text>
                     <br/>
                     <Text color="green" fontSize={1}>
                       Keep this window open. We will refresh your page automatically when minting finishes.
                     </Text>
-                    <ExplorerLink txId={txId} />
+                    <ExplorerLink txId={state.currentTxId} />
                   </Text>
                 )}
               </div>

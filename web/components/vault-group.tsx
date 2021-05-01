@@ -7,7 +7,7 @@ interface VaultGroupProps {
 }
 
 export const VaultGroup: React.FC<VaultGroupProps> = ({ vaults }) => {
-  const { collateralTypes } = useContext(AppContext);
+  const [{ collateralTypes }, _] = useContext(AppContext);
   const vaultItems = vaults.map((vault: VaultProps) =>
     <Vault
       key={vault.id}
