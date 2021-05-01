@@ -8,7 +8,7 @@
     (get-collateral-type-for-vault (uint) (response (string-ascii 12) bool))
     (calculate-current-collateral-to-debt-ratio (uint) (response uint uint))
 
-    (liquidate (uint) (response (tuple (ustx-amount uint) (debt uint)) uint))
+    (liquidate (uint) (response (tuple (ustx-amount uint) (extra-debt uint) (vault-debt uint) (discount uint)) uint))
     (finalize-liquidation (uint uint) (response bool uint))
 
     (redeem-auction-collateral (<mock-ft-trait> <vault-trait> uint principal) (response bool uint))

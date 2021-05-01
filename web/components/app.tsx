@@ -115,16 +115,15 @@ export const App: React.FC = () => {
         url: json.value['url'].value,
         totalDebt: json.value['total-debt'].value,
         collateralToDebtRatio: json.value['collateral-to-debt-ratio'].value,
-        liquidationPenalty: json.value['liquidation-penalty'].value,
+        liquidationPenalty: json.value['liquidation-penalty'].value / 100,
         liquidationRatio: json.value['liquidation-ratio'].value,
         maximumDebt: json.value['maximum-debt'].value,
         stabilityFee: json.value['stability-fee'].value,
         stabilityFeeApy: json.value['stability-fee-apy'].value
       };
-
       setState(prevState => ({
         ...prevState,
-        collateralTypes: collTypes
+        collateralTypes: {...collTypes}
       }));
     });
   };

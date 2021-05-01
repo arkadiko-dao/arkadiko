@@ -24,7 +24,13 @@
     (let 
       ((amounts (unwrap-panic (as-contract (contract-call? vault-manager liquidate vault-id)))))
         (unwrap! 
-          (contract-call? auction-engine start-auction vault-id (get ustx-amount amounts) (get debt amounts)) 
+          (contract-call? auction-engine start-auction
+            vault-id
+            (get ustx-amount amounts)
+            (get extra-debt amounts)
+            (get vault-debt amounts)
+            (get discount amounts)
+          ) 
           (err ERR-LIQUIDATION-FAILED))
         (ok STATUS-OK)
     )

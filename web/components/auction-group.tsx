@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Auction } from './auction';
 import { Modal } from '@blockstack/ui';
-import { uintCV } from '@stacks/transactions';
+import { contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { connectWebSocketClient } from '@stacks/blockchain-api-client';
@@ -79,7 +79,13 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
       contractAddress,
       contractName: 'auction-engine',
       functionName: 'bid',
-      functionArgs: [uintCV(bidAuctionId), uintCV(bidLotId), uintCV(bidAmount * 1000000)],
+      functionArgs: [
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'freddie'),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'oracle'),
+        uintCV(bidAuctionId),
+        uintCV(bidLotId),
+        uintCV(bidAmount * 1000000)
+      ],
       postConditionMode: 0x01,
       finished: data => {
         console.log('finished bidding!', data);

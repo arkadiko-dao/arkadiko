@@ -50,7 +50,7 @@ Clarinet.test({
       .expectUint(5200);
 
     // Now the liquidation started and an auction should have been created!
-    // Make a bid on the first 100 xUSD
+    // Make a bid on the first 1000 xUSD
     let call = await chain.callReadOnlyFn(
       "auction-engine",
       "get-auctions",
@@ -62,8 +62,12 @@ Clarinet.test({
       .expectList()
       .map((e: String) => e.expectTuple());
 
+    call = await chain.callReadOnlyFn("xusd-token", "get-total-supply", [], deployer.address);
+    call.result.expectOk().expectUint(2300000030);
+
     let auction = auctions[1];
     auction['collateral-amount'].expectUint(1000000000);
+    auction['debt-to-raise'].expectUint(1378000000); // 6% (from the 10% liquidation penalty) of 1300 xUSD extra = 1378 xUSD
     call = await chain.callReadOnlyFn("xusd-token", "get-total-supply", [], deployer.address);
     call.result.expectOk().expectUint(2300000030);
 
@@ -102,10 +106,10 @@ Clarinet.test({
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
         types.uint(1),
         types.uint(1),
-        types.uint(296551724 * 1.5) // 1.5 (price of STX) * minimum collateral
+        types.uint(262500000 * 1.44) // 1.44 (discounted price of STX) * minimum collateral
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(296551724);
+    block.receipts[0].result.expectOk().expectUint(262500000);
     block.receipts[1].result.expectOk().expectBool(true);
 
     call = await chain.callReadOnlyFn(
@@ -124,18 +128,18 @@ Clarinet.test({
       wallet_1.address
     );
     let vault = call.result.expectTuple();
-    vault['leftover-collateral'].expectUint(13793104);
+    vault['leftover-collateral'].expectUint(43055556);
     vault['is-liquidated'].expectBool(true);
     vault['auction-ended'].expectBool(true);
 
     call = await chain.callReadOnlyFn("xusd-token", "get-total-supply", [], deployer.address);
-    call.result.expectOk().expectUint(855172444);
+    call.result.expectOk().expectUint(1000000030);
 
-    // now check the wallet of contract - should have burned all xUSD
+    // now check the wallet of contract - should have burned all required xUSD, and have some left for burning gov tokens
     call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.auction-engine'),
     ], deployer.address);
-    call.result.expectOk().expectUint(0);
+    call.result.expectOk().expectUint(78000000); // 78 dollars left
 
     // now try withdrawing the xSTX tokens that are not mine
     block = chain.mineBlock([
@@ -171,7 +175,7 @@ Clarinet.test({
     call = await chain.callReadOnlyFn("xstx-token", "get-balance-of", [
       types.principal(deployer.address),
     ], deployer.address);
-    call.result.expectOk().expectUint(68965517);
+    call.result.expectOk().expectUint(694444444);
 
     // ultimately we want STX tokens though, so turn those xSTX into STX with the Arkadiko pool (if any)
     // TODO: test release-stacked-stx
@@ -221,7 +225,7 @@ Clarinet.test({
       .expectUint(5200);
 
     // Now the liquidation started and an auction should have been created!
-    // Make a bid on the first 100 xUSD
+    // Make a bid on the first 1000 xUSD
     block = chain.mineBlock([
       Tx.contractCall("auction-engine", "fetch-minimum-collateral-amount", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
@@ -266,7 +270,7 @@ Clarinet.test({
     auction = call.result.expectTuple();
     auction['is-open'].expectBool(false);
     const debtRaised = auction['total-debt-raised'].expectUint(1000000000); // 1000 xUSD raised
-    const debtToRaise = auction['debt-to-raise'].expectUint(1430000000); // 1430 xUSD
+    const debtToRaise = auction['debt-to-raise'].expectUint(1378000000); // 1378 xUSD
 
     call = await chain.callReadOnlyFn(
       "auction-engine",

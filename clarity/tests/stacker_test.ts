@@ -289,7 +289,7 @@ Clarinet.test({
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
         types.uint(1),
         types.uint(1),
-        types.uint(296551724 * 1.5) // 1.5 (price of STX) * minimum collateral
+        types.uint(432965517) // 1.46 (price of STX) * minimum collateral: 296551724 * 1.46
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
@@ -310,7 +310,7 @@ Clarinet.test({
       wallet_1.address
     );
     let vault = call.result.expectTuple();
-    vault['leftover-collateral'].expectUint(13793104);
+    vault['leftover-collateral'].expectUint(43055556);
     vault['is-liquidated'].expectBool(true);
     vault['auction-ended'].expectBool(true);
 
@@ -329,10 +329,10 @@ Clarinet.test({
     let [stxTransferEvent1, stxTransferEvent2] = block.receipts[1].events;
     stxTransferEvent1.stx_transfer_event.sender.expectPrincipal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stacker");
     stxTransferEvent1.stx_transfer_event.recipient.expectPrincipal(deployer.address);
-    stxTransferEvent1.stx_transfer_event.amount.expectInt(310342347);
+    stxTransferEvent1.stx_transfer_event.amount.expectInt(312494498);
 
     stxTransferEvent2.stx_transfer_event.sender.expectPrincipal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stacker");
     stxTransferEvent2.stx_transfer_event.recipient.expectPrincipal(deployer.address);
-    stxTransferEvent2.stx_transfer_event.amount.expectInt(133403274);
+    stxTransferEvent2.stx_transfer_event.amount.expectInt(118124195);
   }
 });

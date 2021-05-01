@@ -30,6 +30,7 @@
     collateral-amount: uint,
     collateral-token: (string-ascii 12),
     debt-to-raise: uint,
+    discount: uint,
     vault-id: uint,
     lot-size: uint,
     lots-sold: uint,
@@ -71,6 +72,7 @@
       collateral-amount: u0,
       collateral-token: "",
       debt-to-raise: u0,
+      discount: u0,
       vault-id: u0,
       lot-size: u0,
       lots-sold: u0,
@@ -93,7 +95,7 @@
 ;; we wanna sell as little collateral as possible to cover the vault's debt
 ;; if we cannot cover the vault's debt with the collateral sale,
 ;; we will have to sell some governance or STX tokens from the reserve
-(define-public (start-auction (vault-id uint) (uamount uint) (debt-to-raise uint))
+(define-public (start-auction (vault-id uint) (uamount uint) (extra-debt uint) (vault-debt uint) (discount uint))
   (let ((vault (contract-call? .vault-data get-vault-by-id vault-id)))
     (asserts! (is-eq contract-caller .liquidator) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) true) (err ERR-AUCTION-NOT-ALLOWED))
@@ -105,7 +107,8 @@
         auction-type: "collateral",
         collateral-amount: uamount,
         collateral-token: (get collateral-token vault),
-        debt-to-raise: debt-to-raise,
+        debt-to-raise: (+ extra-debt vault-debt),
+        discount: discount,
         vault-id: vault-id,
         lot-size: (var-get lot-size),
         lots-sold: u0,
@@ -129,7 +132,7 @@
 ;; start an auction to sell off DIKO gov tokens
 ;; this is a private function since it should only be called
 ;; when a normal collateral liquidation auction can't raise enough debt
-(define-private (start-debt-auction (vault-id uint) (debt-to-raise uint))
+(define-private (start-debt-auction (vault-id uint) (debt-to-raise uint) (discount uint))
   (let ((vault (contract-call? .vault-data get-vault-by-id vault-id)))
     (asserts! (is-eq (get is-liquidated vault) true) (err ERR-AUCTION-NOT-ALLOWED))
 
@@ -142,6 +145,7 @@
         collateral-amount: (/ (* u100 debt-to-raise) price-in-cents),
         collateral-token: "DIKO",
         debt-to-raise: debt-to-raise,
+        discount: discount,
         vault-id: vault-id,
         lot-size: (var-get lot-size),
         lots-sold: u0,
@@ -161,43 +165,12 @@
   )
 )
 
-;; TODO: do we need to implement surplus auctions?
-;; (define-public (start-surplus-auction (vault-manager <vault-manager-trait>) (xusd-amount uint))
-;;   (let (
-;;     (auction-id (+ (var-get last-auction-id) u1))
-;;     (maximum-surplus (var-get maximum-debt-surplus))
-;;     (current-balance (unwrap-panic (contract-call? vault-manager get-xusd-balance)))
-;;     (auction {
-;;         id: auction-id,
-;;         auction-type: "surplus",
-;;         collateral-amount: xusd-amount,
-;;         collateral-token: "xUSD",
-;;         debt-to-raise: u0, ;; no specific amount of debt should be raised
-;;         vault-id: u0,
-;;         lot-size: (var-get lot-size),
-;;         lots-sold: u0,
-;;         ends-at: (+ block-height u14),
-;;         total-collateral-sold: u0,
-;;         total-debt-raised: u0,
-;;         total-debt-burned: u0,
-;;         is-open: true
-;;       })
-;;   )
-;;     (asserts! (>= current-balance maximum-surplus) (err ERR-AUCTION-NOT-ALLOWED))
-;;     (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
-;;     ;; TODO: add assert to run only 1 surplus auction at once
-
-;;     (map-set auctions { id: auction-id } auction)
-;;     (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u1500)))
-;;     (var-set last-auction-id auction-id)
-;;     (print { type: "auction", action: "created", data: auction })
-;;     (ok true)
-;;   )
-;; )
-
-(define-read-only (discounted-auction-price (price-in-cents uint))
+(define-read-only (discounted-auction-price (price-in-cents uint) (auction-id uint))
   ;; price * 3% = price * 3 / 100
-  (let ((discount (* price-in-cents u3)))
+  (let (
+    (auction (get-auction-by-id auction-id))
+    (discount (* price-in-cents (get discount auction)))
+  )
     (ok (/ (- (* u100 price-in-cents) discount) u100))
   )
 )
@@ -221,15 +194,16 @@
     (auction (get-auction-by-id auction-id))
     (collateral-left (- (get collateral-amount auction) (get total-collateral-sold auction)))
     (debt-left-to-raise (- (get debt-to-raise auction) (get total-debt-raised auction)))
+    (discounted-price (unwrap-panic (discounted-auction-price collateral-price-in-cents auction-id)))
   )
     (if (< debt-left-to-raise (get lot-size auction))
-      (let ((collateral-amount (/ (* u100 debt-left-to-raise) (unwrap-panic (discounted-auction-price collateral-price-in-cents)))))
+      (let ((collateral-amount (/ (* u100 debt-left-to-raise) discounted-price)))
         (if (> collateral-amount collateral-left)
           (ok collateral-left)
           (ok collateral-amount)
         )
       )
-      (let ((collateral-amount (/ (* u100 (get lot-size auction)) (unwrap-panic (discounted-auction-price collateral-price-in-cents)))))
+      (let ((collateral-amount (/ (* u100 (get lot-size auction)) discounted-price)))
         (if (> collateral-amount collateral-left)
           (ok collateral-left)
           (ok collateral-amount)
@@ -405,8 +379,15 @@
 
 (define-private (return-xusd (owner principal) (xusd uint))
   (if (> xusd u0)
-    (ok (unwrap-panic (as-contract (contract-call? .xusd-token transfer xusd (as-contract tx-sender) owner))))
+    (as-contract (contract-call? .xusd-token transfer xusd (as-contract tx-sender) owner))
     (err u0) ;; don't really care if this fails.
+  )
+)
+
+(define-private (min-of (i1 uint) (i2 uint))
+  (if (< i1 i2)
+    i1
+    i2
   )
 )
 
@@ -428,11 +409,21 @@
     (asserts! (is-eq (get is-open auction) true) (err ERR-AUCTION-NOT-OPEN))
     (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
 
-    (map-set auctions
-      { id: auction-id }
-      (merge auction { is-open: false })
+    (let ((vault (contract-call? .vault-data get-vault-by-id (get vault-id auction))))
+      (if (> (get debt vault) (get total-debt-burned auction))
+        (begin
+          (try! (contract-call? .dao burn-token .xusd-token
+            (min-of (get total-debt-raised auction) (- (get debt vault) (get total-debt-burned auction)))
+            (as-contract tx-sender))
+          )
+          (map-set auctions
+            { id: auction-id }
+            (merge auction { is-open: false, total-debt-burned: (min-of (get total-debt-raised auction) (- (get debt vault) (get total-debt-burned auction))) })
+          )
+        )
+        (map-set auctions { id: auction-id } (merge auction { is-open: false }))
+      )
     )
-    (try! (contract-call? .dao burn-token .xusd-token (- (get total-debt-raised auction) (get total-debt-burned auction)) (as-contract tx-sender)))
     (try!
       (if (>= (get total-debt-raised auction) (get debt-to-raise auction))
         (if (is-eq (get auction-type auction) "collateral")
@@ -456,6 +447,7 @@
           (start-debt-auction
             (get vault-id auction)
             (- (get debt-to-raise auction) (get total-debt-raised auction))
+            u0
           )
         )
       )

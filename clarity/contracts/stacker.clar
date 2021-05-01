@@ -121,7 +121,13 @@
     (vault (contract-call? .vault-data get-vault-by-id vault-id))
   )
     (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts!
+      (or
+        (is-eq "xSTX" (get collateral-token vault))
+        (is-eq "STX" (get collateral-token vault))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
     (asserts! (>= burn-block-height (var-get stacking-unlock-burn-height)) (err ERR-BURN-HEIGHT-NOT-REACHED))
 
     (if (and (get is-liquidated vault) (get auction-ended vault))
@@ -151,10 +157,10 @@
 (define-private (payout-lot-bidder (data (tuple (collateral-amount uint) (recipient principal))))
   (let (
     (stx-in-vault (var-get stacking-stx-in-vault))
-    (percentage (/ (* u10000 (get collateral-amount data)) stx-in-vault)) ;; in basis points
-    (basis-points (/ (* u10000 stx-in-vault) (var-get stacking-stx-stacked)))
-    (earned-amount-vault (/ (* (var-get stacking-stx-received) basis-points) u10000))
-    (earned-amount-bidder (/ (* percentage earned-amount-vault) u10000))
+    (percentage (/ (* u100000 (get collateral-amount data)) stx-in-vault)) ;; in basis points
+    (basis-points (/ (* u100000 stx-in-vault) (var-get stacking-stx-stacked))) ;; this gives the percentage of collateral bought in auctions vs stx stacked
+    (earned-amount-vault (/ (* (var-get stacking-stx-received) basis-points) u100000))
+    (earned-amount-bidder (/ (* percentage earned-amount-vault) u100000))
   )
     (try! (as-contract (stx-transfer? earned-amount-bidder (as-contract tx-sender) (get recipient data))))
     (ok true)

@@ -20,7 +20,17 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, en
     const fetchPrice = async () => {
       let price = await getPrice(collateralToken);
       setPrice(price);
-      setDiscountedPrice(price - (price * 0.03)); // TODO: change for discounted-auction-price on auction-engine SC
+
+      const discountedPriceCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "auction-engine",
+        functionName: "discounted-auction-price",
+        functionArgs: [uintCV(price), uintCV(id)],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const json = cvToJSON(discountedPriceCall);
+      setDiscountedPrice(json.value.value);
     };
 
     fetchPrice();
@@ -41,7 +51,7 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, en
 
       const collJson = cvToJSON(minimumCollateralAmount);
       setMinimumCollateralAmount(collJson.value.value);
-      const debtMax = 100000000;
+      const debtMax = 1000000000;
       setDebtToRaise(Math.min(debtMax, collJson.value.value * discountedPrice / 100));
 
       const currentBid = await callReadOnlyFunction({
@@ -63,12 +73,12 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, en
       setIsClosed(json.value['is-accepted'].value);
     };
 
-    if (mounted) {
+    if (mounted && price !== 0 && discountedPrice !== 0) {
       void getData();
     }
 
     return () => { mounted = false; }
-  }, [price]);
+  }, [price, discountedPrice]);
 
   const setBidParams = () => {
     setBidAuctionId(id);

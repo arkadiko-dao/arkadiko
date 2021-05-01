@@ -8,7 +8,7 @@ const BN = require('bn.js');
 async function getLastVaultId() {
   const lastVaultTx = await tx.callReadOnlyFunction({
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "freddie",
+    contractName: "vault-data",
     functionName: "get-last-vault-id",
     functionArgs: [],
     senderAddress: CONTRACT_ADDRESS,
@@ -47,7 +47,7 @@ async function getCollateralizationRatio(vaultId) {
 async function getLiquidationRatio(collateralType) {
   const vaultTx = await tx.callReadOnlyFunction({
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "dao",
+    contractName: "collateral-types",
     functionName: "get-liquidation-ratio",
     functionArgs: [tx.stringAsciiCV(collateralType)],
     senderAddress: CONTRACT_ADDRESS,
@@ -63,7 +63,11 @@ async function liquidateVault(vaultId) {
     contractAddress: CONTRACT_ADDRESS,
     contractName: "liquidator",
     functionName: "notify-risky-vault",
-    functionArgs: [tx.uintCV(vaultId)],
+    functionArgs: [
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'freddie'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'auction-engine'),
+      tx.uintCV(vaultId)
+    ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     nonce: new BN(nonce),

@@ -38,6 +38,9 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   const [liquidationPenalty, setLiquidationPenalty] = useState(0);
   const [liquidationRatio, setLiquidationRatio] = useState(0);
   const [price, setPrice] = useState(0);
+  const [errors, setErrors] = useState<Array<string>>([]);
+  const [validCollateralValue, setValidCollateralValue] = useState(false);
+  const [validMintValue, setValidMintValue] = useState(false);
 
   const maximumCoinsToMint = (value: string) => {
     const maxRatio = parseInt(liquidationRatio, 10) + 30;
@@ -54,15 +57,33 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
     fetchPrice();
   }, [])
 
-  const onInputChange = (event) => {
+  const onInputChange = (event: { target: { name: any; value: any; }; }) => {
     const name = event.target.name;
     const value = event.target.value;
 
     if (name === 'collateral') {
       setCollateralAmount(value);
-      maximumCoinsToMint(value);
+      const error = ['You cannot collateralize more than your balance'];
+      if (value > (state.balance[tokenName.toLowerCase()] / 1000000)) {
+        setErrors(errors.concat(error));
+        setValidCollateralValue(false);
+      } else {
+        setValidCollateralValue(true);
+        let filteredAry = errors.filter(e => e !== error[0]);
+        setErrors(filteredAry);
+        maximumCoinsToMint(value);
+      }
     } else {
       setCoinAmount(value);
+      const error = [`You cannot mint more than ${maximumToMint / 1000000} xUSD`];
+      if (value > maximumToMint / 1000000) {
+        setErrors(errors.concat(error));
+        setValidMintValue(false);
+      } else {
+        let filteredAry = errors.filter(e => e !== error[0]);
+        setErrors(filteredAry);
+        setValidMintValue(true);
+      }
     }
   };
 
@@ -74,7 +95,6 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   }, [price, collateralAmount, coinAmount]);
 
   useEffect(() => {
-    console.log(state.collateralTypes);
     if (state.collateralTypes[tokenType.toUpperCase()]) {
       setStabilityFeeApy(state.collateralTypes[tokenType.toUpperCase()].stabilityFeeApy);
       setLiquidationPenalty(state.collateralTypes[tokenType.toUpperCase()].liquidationPenalty);
@@ -91,6 +111,21 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
       <ul className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4 mt-3">
         <li className="relative col-span-3 flex shadow-sm rounded-md">
           <div className="bg-white shadow sm:rounded-lg mt-5 w-full">
+            {errors.length > 0 ? (
+              <div className="bg-red-50 border-l-4 border-red-400 p-4">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    {errors.map(txt => <p className="text-sm text-red-700" key={txt}>{txt}</p>)}
+                  </div>
+                </div>
+              </div>
+            ) : `` }
+
             <div className="px-4 py-5 sm:p-6">
               <h3 className="text-lg leading-6 font-medium text-gray-900">
                 How much {tokenName} do you want to collateralize?
@@ -225,7 +260,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
       <div className="mt-5 ml-5 sm:flex sm:items-start sm:justify-between">
         <div className="max-w-xl text-sm text-gray-500">
           <div className="mt-5 sm:mt-0 sm:flex-shrink-0 sm:flex sm:items-right">
-            <button type="button" disabled={!coinAmount} onClick={() => continueVault()} className="inline-flex items-right px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+            <button type="button" disabled={!coinAmount || errors.length > 0} onClick={() => continueVault()} className="inline-flex items-right px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
               Continue
             </button>
           </div>

@@ -21,6 +21,7 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collatera
       contractName: 'auction-engine',
       functionName: 'redeem-lot-collateral',
       functionArgs: [
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'freddie'),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', resolveReserveName(collateralToken.toLowerCase())),
         uintCV(id),
