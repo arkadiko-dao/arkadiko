@@ -1,3 +1,5 @@
+declare var before: any
+
 import {
   callReadOnlyFunction,
   contractPrincipalCV,
