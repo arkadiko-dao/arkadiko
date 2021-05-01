@@ -10,7 +10,7 @@
     (calculate-current-collateral-to-debt-ratio ((string-ascii 12) uint uint) (response uint uint))
 
     ;; collateralize tokens and mint stablecoin according to collateral-to-debt ratio
-    (collateralize-and-mint (<mock-ft-trait> uint uint principal) (response uint uint))
+    (collateralize-and-mint (<mock-ft-trait> (string-ascii 12) (string-ascii 12) uint uint principal) (response uint uint))
 
     ;; deposit extra collateral
     (deposit (<mock-ft-trait> uint) (response bool uint))

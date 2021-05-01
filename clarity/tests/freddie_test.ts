@@ -183,3 +183,77 @@ Clarinet.test({
     call.result.expectOk().expectUint(1995001084 + 4998916);
   }
 });
+
+Clarinet.test({
+  name: "freddie: minting xUSD with conflicting FT <> collateral type is illegal",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let block = chain.mineBlock([
+      Tx.contractCall("oracle", "update-price", [
+        types.ascii("STX"),
+        types.uint(200),
+      ], deployer.address),
+      Tx.contractCall("freddie", "collateralize-and-mint", [
+        types.uint(5000000),
+        types.uint(1925000),
+        types.principal(deployer.address),
+        types.ascii("STX-A"),
+        types.ascii("STX"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve"),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+        ),
+      ], deployer.address),
+    ]);
+    block.receipts[1].result.expectErr().expectUint(98); // wrong token error
+
+    block = chain.mineBlock([
+      Tx.contractCall("oracle", "update-price", [
+        types.ascii("DIKO"),
+        types.uint(200),
+      ], deployer.address),
+      Tx.contractCall("freddie", "collateralize-and-mint", [
+        types.uint(500000000),
+        types.uint(925000),
+        types.principal(deployer.address),
+        types.ascii("DIKO-A"),
+        types.ascii("DIKO"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stx-reserve"),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+        ),
+      ], deployer.address),
+    ]);
+    block.receipts[1].result.expectErr().expectUint(118); // wrong token error
+
+    block = chain.mineBlock([
+      Tx.contractCall("freddie", "collateralize-and-mint", [
+        types.uint(500000000),
+        types.uint(925000),
+        types.principal(deployer.address),
+        types.ascii("STX-A"),
+        types.ascii("DIKO"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stx-reserve"),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+        ),
+      ], deployer.address),
+    ]);
+    block.receipts[0].result.expectErr().expectUint(118); // wrong token error
+
+    block = chain.mineBlock([
+      Tx.contractCall("freddie", "collateralize-and-mint", [
+        types.uint(500000000),
+        types.uint(925000),
+        types.principal(deployer.address),
+        types.ascii("STX-A"),
+        types.ascii("DIKO"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve"),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+        ),
+      ], deployer.address),
+    ]);
+    block.receipts[0].result.expectErr().expectUint(98); // wrong token error
+  }
+});

@@ -10,6 +10,7 @@
 (define-constant ERR-DEPOSIT-FAILED u115)
 (define-constant ERR-WITHDRAW-FAILED u116)
 (define-constant ERR-MINT-FAILED u117)
+(define-constant ERR-WRONG-TOKEN u118)
 
 (define-constant CONTRACT-OWNER tx-sender)
 
@@ -89,9 +90,11 @@
 ;; accept collateral in STX tokens
 ;; save STX in stx-reserve-address
 ;; calculate price and collateralisation ratio
-(define-public (collateralize-and-mint (token <mock-ft-trait>) (ustx-amount uint) (debt uint) (sender principal))
+(define-public (collateralize-and-mint (token <mock-ft-trait>) (token-string (string-ascii 12)) (type (string-ascii 12)) (ustx-amount uint) (debt uint) (sender principal))
   (begin
     (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq token-string "STX") (err ERR-WRONG-TOKEN))
+    (asserts! (is-eq (get token (unwrap-panic (contract-call? .collateral-types get-collateral-type-by-name type))) "STX") (err ERR-WRONG-TOKEN))
 
     (match (print (stx-transfer? ustx-amount sender (as-contract tx-sender)))
       success (begin

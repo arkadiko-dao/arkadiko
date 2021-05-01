@@ -8,6 +8,7 @@
 (define-constant ERR-DEPOSIT-FAILED u95)
 (define-constant ERR-WITHDRAW-FAILED u96)
 (define-constant ERR-MINT-FAILED u97)
+(define-constant ERR-WRONG-TOKEN u98)
 
 (define-constant CONTRACT-OWNER tx-sender)
 
@@ -33,9 +34,11 @@
 )
 
 ;; (match (print (ft-transfer? token ucollateral-amount sender (as-contract tx-sender)))
-(define-public (collateralize-and-mint (token <mock-ft-trait>) (ucollateral-amount uint) (debt uint) (sender principal))
-  (begin
+(define-public (collateralize-and-mint (token <mock-ft-trait>) (token-string (string-ascii 12)) (type (string-ascii 12)) (ucollateral-amount uint) (debt uint) (sender principal))
+  (let ((token-symbol (unwrap-panic (contract-call? token get-symbol))))
     (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq token-string token-symbol) (err ERR-WRONG-TOKEN))
+    (asserts! (is-eq (get token (unwrap-panic (contract-call? .collateral-types get-collateral-type-by-name type))) token-symbol) (err ERR-WRONG-TOKEN))
 
     ;; token should be a trait e.g. 'SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.arkadiko-token
     (match (contract-call? token transfer ucollateral-amount sender (as-contract tx-sender))

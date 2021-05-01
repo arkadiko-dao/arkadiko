@@ -215,8 +215,8 @@
       )
       (err ERR-MAXIMUM-DEBT-REACHED)
     )
-    (try! (contract-call? reserve collateralize-and-mint ft collateral-amount debt sender))
 
+    (try! (contract-call? reserve collateralize-and-mint ft collateral-token collateral-type collateral-amount debt sender))
     (try! (as-contract (contract-call? .dao mint-token .xusd-token debt sender)))
     (let (
       (vault-id (+ (contract-call? .vault-data get-last-vault-id) u1))
