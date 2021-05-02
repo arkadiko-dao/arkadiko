@@ -14,6 +14,7 @@
 (define-constant ERR-NOT-AUTHORIZED (err u18401))
 (define-constant ERR-REWARDS-CALC (err u18001))
 (define-constant ERR-WRONG-TOKEN (err u18002))
+(define-constant ERR-INSUFFICIENT-STAKE (err u18003))
 
 ;; Constants
 (define-constant CONTRACT-OWNER tx-sender) ;; TODO: should be DAO
@@ -153,16 +154,19 @@
 
 ;; Unstake tokens
 (define-public (unstake (token <mock-ft-trait>) (staker principal) (amount uint))
-  (begin
+  (let (
+    ;; Staked amount of staker
+    (stake-amount (get-stake-amount-of staker))
+  )
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "stake-registry"))) ERR-NOT-AUTHORIZED)
     (asserts! (is-eq POOL-TOKEN (contract-of token)) ERR-WRONG-TOKEN)
+    (asserts! (>= stake-amount amount) ERR-INSUFFICIENT-STAKE)
 
     ;; Save currrent cumm reward per stake
     (increase-cumm-reward-per-stake)
 
     (let (
       ;; Calculate new stake amount
-      (stake-amount (get-stake-amount-of staker))
       (new-stake-amount (- stake-amount amount))
     )
       ;; Claim all pending rewards for staker so we can set the new cumm-reward for this user
