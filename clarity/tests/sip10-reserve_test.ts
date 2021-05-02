@@ -313,6 +313,11 @@ Clarinet.test({
     var vault = vaultEvent["data"].expectTuple();
     var vauldId = vault["id"].expectUint(1);
 
+    let call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
+      types.principal(deployer.address),
+    ], deployer.address);
+    call.result.expectOk().expectUint(1005000000);
+
     block = chain.mineBlock([
       Tx.contractCall("freddie", "mint", [
         types.uint(vauldId),
@@ -458,9 +463,7 @@ Clarinet.test({
       ], deployer.address),
     ]);
 
-    var [xUSDBurnEvent, dikoTransferEvent, vaultNotifEvent] =
-      block.receipts[0].events;
-
+    var [_, xUSDBurnEvent, dikoTransferEvent, vaultNotifEvent] = block.receipts[0].events;
     // Ensure that 6_000_000 units from .xusd-token::xusd where successfully burnt
     xUSDBurnEvent.ft_burn_event.sender
       .expectPrincipal(deployer.address);

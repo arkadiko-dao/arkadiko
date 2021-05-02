@@ -48,7 +48,6 @@ export const App: React.FC = () => {
           collateral: data['collateral'].value,
           collateralType: data['collateral-type'].value,
           collateralToken: data['collateral-token'].value,
-          stabilityFee: data['stability-fee'].value,
           isLiquidated: data['is-liquidated'].value,
           auctionEnded: data['auction-ended'].value,
           leftoverCollateral: data['leftover-collateral'].value,

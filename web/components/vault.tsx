@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { Text } from '@blockstack/ui';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
-import { uintCV, contractPrincipalCV } from '@stacks/transactions';
+import { uintCV, contractPrincipalCV, callReadOnlyFunction, cvToJSON } from '@stacks/transactions';
 import { resolveReserveName } from '@common/vault-utils';
 import { tokenTraits } from '@common/vault-utils';
 
@@ -37,11 +37,29 @@ export const debtClass = (liquidationRatio: number, ratio: number) => {
 };
 
 export const Vault: React.FC<VaultProps> = ({
-  id, collateral, collateralType, collateralToken, stabilityFee, debt,
+  id, collateral, collateralType, collateralToken, debt,
   isLiquidated, auctionEnded, leftoverCollateral, collateralData
 }) => {
   const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const [stabilityFee, setStabilityFee] = useState(0);
+
+  useEffect(() => {
+    const fetchFees = async () => {
+      const feeCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "freddie",
+        functionName: "get-stability-fee-for-vault",
+        functionArgs: [uintCV(id)],
+        senderAddress: contractAddress || '',
+        network: network,
+      });
+      const fee = cvToJSON(feeCall);
+      setStabilityFee(fee.value.value);
+    };
+
+    fetchFees();
+  }, []);
 
   const debtBackgroundClass = (ratio: number) => {
     if (ratio && ratio < collateralData.liquidationRatio) {

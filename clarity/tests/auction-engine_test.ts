@@ -67,7 +67,7 @@ Clarinet.test({
 
     let auction = auctions[1];
     auction['collateral-amount'].expectUint(1000000000);
-    auction['debt-to-raise'].expectUint(1378000000); // 6% (from the 10% liquidation penalty) of 1300 xUSD extra = 1378 xUSD
+    auction['debt-to-raise'].expectUint(1378000007); // 6% (from the 10% liquidation penalty) of 1300 xUSD extra = 1378 xUSD + stability fee
     call = await chain.callReadOnlyFn("xusd-token", "get-total-supply", [], deployer.address);
     call.result.expectOk().expectUint(2300000030);
 
@@ -106,10 +106,10 @@ Clarinet.test({
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
         types.uint(1),
         types.uint(1),
-        types.uint(262500000 * 1.44) // 1.44 (discounted price of STX) * minimum collateral
+        types.uint(379000000) // 1.44 (discounted price of STX) * minimum collateral
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(262500000);
+    block.receipts[0].result.expectOk().expectUint(262500004);
     block.receipts[1].result.expectOk().expectBool(true);
 
     call = await chain.callReadOnlyFn(
@@ -128,7 +128,7 @@ Clarinet.test({
       wallet_1.address
     );
     let vault = call.result.expectTuple();
-    vault['leftover-collateral'].expectUint(43055556);
+    vault['leftover-collateral'].expectUint(43055552);
     vault['is-liquidated'].expectBool(true);
     vault['auction-ended'].expectBool(true);
 
@@ -139,7 +139,7 @@ Clarinet.test({
     call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.auction-engine'),
     ], deployer.address);
-    call.result.expectOk().expectUint(78000000); // 78 dollars left
+    call.result.expectOk().expectUint(79000000); // 79 dollars left
 
     // now try withdrawing the xSTX tokens that are not mine
     block = chain.mineBlock([
@@ -270,7 +270,7 @@ Clarinet.test({
     auction = call.result.expectTuple();
     auction['is-open'].expectBool(false);
     const debtRaised = auction['total-debt-raised'].expectUint(1000000000); // 1000 xUSD raised
-    const debtToRaise = auction['debt-to-raise'].expectUint(1378000000); // 1378 xUSD
+    const debtToRaise = auction['debt-to-raise'].expectUint(1378000007); // 1378 xUSD
 
     call = await chain.callReadOnlyFn(
       "auction-engine",

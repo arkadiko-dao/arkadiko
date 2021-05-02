@@ -42,6 +42,7 @@ export const ManageVault = ({ match }) => {
   const [price, setPrice] = useState(0);
   const [collateralType, setCollateralType] = useState<CollateralTypeProps>();
   const [isVaultOwner, setIsVaultOwner] = useState(false);
+  const [stabilityFee, setStabilityFee] = useState(0);
 
   useEffect(() => {
     const fetchVault = async () => {
@@ -62,7 +63,6 @@ export const ManageVault = ({ match }) => {
           collateral: data['collateral'].value,
           collateralType: data['collateral-type'].value,
           collateralToken: data['collateral-token'].value,
-          stabilityFee: data['stability-fee'].value,
           isLiquidated: data['is-liquidated'].value,
           auctionEnded: data['auction-ended'].value,
           leftoverCollateral: data['leftover-collateral'].value,
@@ -106,6 +106,25 @@ export const ManageVault = ({ match }) => {
 
     fetchVault();
   }, [match.params.id]);
+
+  useEffect(() => {
+    const fetchFees = async () => {
+      const feeCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "freddie",
+        functionName: "get-stability-fee-for-vault",
+        functionArgs: [uintCV(vault?.id)],
+        senderAddress: contractAddress || '',
+        network: network,
+      });
+      const fee = cvToJSON(feeCall);
+      setStabilityFee(fee.value.value);
+    };
+
+    if (vault?.id) {
+      fetchFees();
+    }
+  }, [vault]);
 
   useEffect(() => {
     if (vault && collateralType?.collateralToDebtRatio) {
@@ -906,7 +925,7 @@ export const ManageVault = ({ match }) => {
 
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                        ${vault?.stabilityFee / 1000000} xUSD
+                        ${stabilityFee / 1000000} xUSD
                         </p>
                       </div>
 

@@ -17,6 +17,7 @@
     maximum-debt: uint,
     liquidation-penalty: uint,
     stability-fee: uint,
+    stability-fee-decimals: uint,
     stability-fee-apy: uint
   }
 )
@@ -35,6 +36,7 @@
         maximum-debt: u0,
         liquidation-penalty: u0,
         stability-fee: u0,
+        stability-fee-decimals: u0,
         stability-fee-apy: u0
       }
       (map-get? collateral-types { name: name })
@@ -64,6 +66,10 @@
 
 (define-read-only (get-stability-fee (token (string-ascii 12)))
   (ok (get stability-fee (unwrap-panic (get-collateral-type-by-name token))))
+)
+
+(define-read-only (get-stability-fee-decimals (token (string-ascii 12)))
+  (ok (get stability-fee-decimals (unwrap-panic (get-collateral-type-by-name token))))
 )
 
 (define-read-only (get-stability-fee-apy (token (string-ascii 12)))
@@ -104,6 +110,7 @@
                                     (liquidation-ratio uint)
                                     (liquidation-penalty uint)
                                     (stability-fee uint)
+                                    (stability-fee-decimals uint)
                                     (stability-fee-apy uint)
                                     (maximum-debt uint)
                                     (collateral-to-debt-ratio uint))
@@ -122,6 +129,7 @@
         maximum-debt: maximum-debt,
         liquidation-penalty: liquidation-penalty,
         stability-fee: stability-fee,
+        stability-fee-decimals: stability-fee-decimals,
         stability-fee-apy: stability-fee-apy
       }
     )
@@ -143,7 +151,7 @@
 
 (define-private (change-risk-parameter (change (tuple (key (string-ascii 256)) (new-value uint)))
                                        (type (tuple (collateral-to-debt-ratio uint) (liquidation-penalty uint) (liquidation-ratio uint)
-                                              (maximum-debt uint) (name (string-ascii 256)) (stability-fee uint) (stability-fee-apy uint)
+                                              (maximum-debt uint) (name (string-ascii 256)) (stability-fee uint) (stability-fee-apy uint) (stability-fee-decimals uint)
                                               (token (string-ascii 12)) (token-type (string-ascii 12)) (total-debt uint) (url (string-ascii 256)))
                                        )
                 )
@@ -195,7 +203,8 @@
       collateral-to-debt-ratio: u200,
       maximum-debt: u100000000000000,
       liquidation-penalty: u1000, ;; 10% in basis points
-      stability-fee: u1648, ;; 0.001363077% daily percentage == 1% APY
+      stability-fee: u95908125, ;; 0.001363077% daily percentage == 0.5% APY, 0.0000094658125% per 10 minutes (1 block)
+      stability-fee-decimals: u15,
       stability-fee-apy: u50 ;; 50 basis points
     }
   )
@@ -211,7 +220,8 @@
       collateral-to-debt-ratio: u200,
       maximum-debt: u10000000000000,
       liquidation-penalty: u1000,
-      stability-fee: u3296, ;; 0.002726155% daily percentage == 1% APY
+      stability-fee: u191816250, ;; 0.002726155% daily percentage == 1% APY
+      stability-fee-decimals: u14,
       stability-fee-apy: u100 ;; 100 basis points
     }
   )
@@ -227,7 +237,8 @@
       collateral-to-debt-ratio: u300,
       maximum-debt: u10000000000000,
       liquidation-penalty: u1300,
-      stability-fee: u3296, ;; 0.002726155% daily percentage == 1% APY
+      stability-fee: u191816250, ;; 0.002726155% daily percentage == 1% APY
+      stability-fee-decimals: u15,
       stability-fee-apy: u100
     }
   )
