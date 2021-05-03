@@ -158,7 +158,6 @@
   (begin
     (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
 
-    ;; (try! (as-contract (stx-transfer? collateral-to-return (as-contract tx-sender) vault-owner)))
     (match (print (as-contract (stx-transfer? collateral-to-return (as-contract tx-sender) vault-owner)))
       transferred (ok true)
       error (err ERR-TRANSFER-FAILED)
