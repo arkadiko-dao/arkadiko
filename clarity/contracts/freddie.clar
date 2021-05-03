@@ -139,16 +139,28 @@
 ;; Only mark vaults that have revoked stacking and not been liquidated
 ;; must be called before a new initiate-stacking method call (stacking cycle)
 (define-public (enable-vault-withdrawals (stacker <stacker-trait>) (vault-id uint))
-  (let ((vault (get-vault-by-id vault-id)))
+  (let (
+    (vault (get-vault-by-id vault-id))
+    (stx-stacked (unwrap-panic (contract-call? stacker get-stacking-stx-stacked)))
+  )
     (asserts! (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq false (get is-liquidated vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq true (get revoked-stacking vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of stacker) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "stacker"))) (err ERR-NOT-AUTHORIZED))
-    (asserts! (>= burn-block-height (unwrap-panic (contract-call? stacker get-stacking-unlock-burn-height))) (err ERR-BURN-HEIGHT-NOT-REACHED))
+    (asserts!
+      (or
+        (is-eq u0 stx-stacked)
+        (>= burn-block-height (unwrap-panic (contract-call? stacker get-stacking-unlock-burn-height)))
+      )
+      (err ERR-BURN-HEIGHT-NOT-REACHED)
+    )
 
-    (try! (contract-call? stacker request-stx-for-withdrawal (get collateral vault)))
+    (if (> u0 stx-stacked)
+      (try! (contract-call? stacker request-stx-for-withdrawal (get collateral vault)))
+      false
+    )
     (try! (contract-call? .vault-data update-vault vault-id (merge vault {
         stacked-tokens: u0,
         updated-at-block-height: block-height
@@ -291,7 +303,7 @@
             updated-at-block-height: block-height
           })))
       ;; TODO: FIX (make "STX" dynamic)
-      (asserts! (>= ratio (unwrap-panic (contract-call? .collateral-types get-collateral-to-debt-ratio "STX"))) (err ERR-INSUFFICIENT-COLLATERAL))
+      (asserts! (>= ratio (unwrap-panic (contract-call? .collateral-types get-collateral-to-debt-ratio (get collateral-type vault)))) (err ERR-INSUFFICIENT-COLLATERAL))
       (unwrap! (contract-call? reserve withdraw ft (get owner vault) uamount) (err ERR-WITHDRAW-FAILED))
       (try! (contract-call? .vault-data update-vault vault-id updated-vault))
       (print { type: "vault", action: "withdraw", data: updated-vault })
@@ -319,16 +331,15 @@
     )
 
     (try! (pay-stability-fee vault-id))
-    (unwrap! (contract-call? 
-                reserve 
-                mint 
-                (get collateral-token vault) 
-                (get owner vault) 
-                (get collateral vault) 
-                (get debt vault) 
-                extra-debt 
-                (get collateral-type vault)) 
-      (err u5))
+    (try! (contract-call? reserve mint
+        (get collateral-token vault)
+        (get owner vault)
+        (get collateral vault)
+        (get debt vault)
+        extra-debt
+        (get collateral-type vault)
+      )
+    )
     (try! (contract-call? .vault-data update-vault vault-id updated-vault))
     (try! (contract-call? .collateral-types add-debt-to-collateral-type (get collateral-type vault) extra-debt))
     (print { type: "vault", action: "mint", data: updated-vault })
@@ -374,7 +385,6 @@
 (define-private (burn-partial-debt (vault-id uint) (debt uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
   (let ((vault (get-vault-by-id vault-id)))
     (try! (contract-call? .dao burn-token .xusd-token debt (get owner vault)))
-    (try! (contract-call? reserve burn ft (get owner vault) (get collateral vault)))
     (try! (contract-call? .vault-data update-vault vault-id (merge vault {
         debt: (- (get debt vault) debt),
         updated-at-block-height: block-height

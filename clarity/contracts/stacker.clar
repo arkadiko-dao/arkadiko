@@ -48,6 +48,10 @@
   (ok (var-get stacking-unlock-burn-height))
 )
 
+(define-read-only (get-stacking-stx-stacked)
+  (ok (var-get stacking-stx-stacked))
+)
+
 (define-public (set-stacking-stx-received (stx-received uint))
   (begin
     (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))

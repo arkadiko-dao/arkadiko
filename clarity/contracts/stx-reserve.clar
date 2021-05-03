@@ -11,6 +11,7 @@
 (define-constant ERR-WITHDRAW-FAILED u116)
 (define-constant ERR-MINT-FAILED u117)
 (define-constant ERR-WRONG-TOKEN u118)
+(define-constant ERR-TOO-MUCH-DEBT u119)
 
 (define-constant CONTRACT-OWNER tx-sender)
 
@@ -144,7 +145,7 @@
           success (ok true)
           error (err ERR-MINT-FAILED)
         )
-        (err ERR-MINT-FAILED)
+        (err ERR-TOO-MUCH-DEBT)
       )
     )
   )
@@ -157,6 +158,7 @@
   (begin
     (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
 
+    ;; (try! (as-contract (stx-transfer? collateral-to-return (as-contract tx-sender) vault-owner)))
     (match (print (as-contract (stx-transfer? collateral-to-return (as-contract tx-sender) vault-owner)))
       transferred (ok true)
       error (err ERR-TRANSFER-FAILED)
@@ -201,6 +203,10 @@
 ;; ---------------------------------------------------------
 ;; Admin Functions
 ;; ---------------------------------------------------------
+
+(define-read-only (get-stx-balance)
+  (stx-get-balance (as-contract tx-sender))
+)
 
 ;; this should be called when upgrading contracts
 ;; STX reserve should only contain STX

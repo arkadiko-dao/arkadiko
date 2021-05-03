@@ -177,9 +177,63 @@ Clarinet.test({
     ], deployer.address);
     call.result.expectOk().expectUint(694444444);
 
-    // ultimately we want STX tokens though, so turn those xSTX into STX with the Arkadiko pool (if any)
-    // TODO: test release-stacked-stx
-    // TODO: test withdraw-leftover-collateral
+    // At this point, no STX are redeemable yet
+    call = await chain.callReadOnlyFn("freddie", "get-stx-redeemable", [], deployer.address);
+    call.result.expectOk().expectUint(0);
+
+    // Release stacked STX and make them redeemable
+    block = chain.mineBlock([
+      Tx.contractCall("freddie", "release-stacked-stx", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stacker'),
+        types.uint(1)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    // Original vault had 1000 STX which is now redeemable
+    call = await chain.callReadOnlyFn("freddie", "get-stx-redeemable", [], deployer.address);
+    call.result.expectOk().expectUint(1000000000);
+    
+    // Redeem STX - too much
+    block = chain.mineBlock([
+      Tx.contractCall("freddie", "redeem-stx", [
+        types.uint(1694444444)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(1); // Can not burn
+
+    // Redeem STX - 0
+    block = chain.mineBlock([
+      Tx.contractCall("freddie", "redeem-stx", [
+        types.uint(0)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(1); // Can not mint/burn 0
+
+    // Redeem STX - all
+    block = chain.mineBlock([
+      Tx.contractCall("freddie", "redeem-stx", [
+        types.uint(694444444)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    // Balance
+    call = await chain.callReadOnlyFn("xstx-token", "get-balance-of", [
+      types.principal(deployer.address),
+    ], deployer.address);
+    call.result.expectOk().expectUint(0);
+
+    // Withdraw leftover collateral
+    block = chain.mineBlock([
+      Tx.contractCall("freddie", "withdraw-leftover-collateral", [
+        types.uint(1),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stx-reserve"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
   }
 });
 

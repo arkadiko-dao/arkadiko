@@ -9,6 +9,7 @@
 (define-constant ERR-WITHDRAW-FAILED u96)
 (define-constant ERR-MINT-FAILED u97)
 (define-constant ERR-WRONG-TOKEN u98)
+(define-constant ERR-TOO-MUCH-DEBT u99)
 
 (define-constant CONTRACT-OWNER tx-sender)
 
@@ -80,7 +81,7 @@
           success (ok true)
           error (err ERR-MINT-FAILED)
         )
-        (err ERR-MINT-FAILED)
+        (err ERR-TOO-MUCH-DEBT)
       )
     )
   )
