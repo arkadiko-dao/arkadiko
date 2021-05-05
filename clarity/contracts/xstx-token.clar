@@ -11,16 +11,6 @@
 (define-constant ERR-BURN-FAILED u131)
 (define-constant ERR-NOT-AUTHORIZED u13401)
 
-(define-private (get-contract-owner)
-  (if (is-eq (unwrap-panic (get-block-info? header-hash u1)) 0xd2454d24b49126f7f47c986b06960d7f5b70812359084197a200d691e67a002e)
-    'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H ;; Testnet only
-    (if (is-eq (unwrap-panic (get-block-info? header-hash u1)) 0x6b2c809627f2fd19991d8eb6ae034cb4cce1e1fc714aa77351506b5af1f8248e)
-      'SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7 ;; Mainnet (TODO)
-      'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7 ;; Other test environments
-    )
-  )
-)
-
 ;; ---------------------------------------------------------
 ;; SIP-10 Functions
 ;; ---------------------------------------------------------
@@ -46,7 +36,7 @@
 )
 
 (define-public (set-token-uri (value (string-utf8 256)))
-  (if (is-eq tx-sender (get-contract-owner))
+  (if (is-eq tx-sender (contract-call? .dao get-dao-owner))
     (ok (var-set token-uri value))
     (err ERR-NOT-AUTHORIZED)
   )

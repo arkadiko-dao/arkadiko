@@ -35,7 +35,6 @@
   }
 )
 (define-data-var last-vault-id uint u0)
-(define-constant CONTRACT-OWNER tx-sender)
 (define-constant ERR-NOT-AUTHORIZED u7401)
 
 ;; ---------------------------------------------------------
@@ -46,7 +45,7 @@
   (default-to
     {
       id: u0,
-      owner: CONTRACT-OWNER,
+      owner: (contract-call? .dao get-dao-owner),
       collateral: u0,
       collateral-type: "",
       collateral-token: "",
@@ -149,7 +148,6 @@
 
     (map-set stacking-payout
       { vault-id: vault-id }
-      ;;{ principals: (list (tuple (percentage-basis-points u0) (recipient CONTRACT-OWNER))) }
       { collateral-amount: u0, principals: (list) }
     )
 

@@ -9,8 +9,6 @@
 ;; errors
 (define-constant ERR-NOT-AUTHORIZED u14401)
 
-(define-constant CONTRACT-OWNER tx-sender)
-
 ;; ---------------------------------------------------------
 ;; SIP-10 Functions
 ;; ---------------------------------------------------------
@@ -36,7 +34,7 @@
 )
 
 (define-public (set-token-uri (value (string-utf8 256)))
-  (if (is-eq tx-sender CONTRACT-OWNER)
+  (if (is-eq tx-sender (contract-call? .dao get-dao-owner))
     (ok (var-set token-uri value))
     (err ERR-NOT-AUTHORIZED)
   )
@@ -73,6 +71,7 @@
 
 ;; Initialize the contract
 (begin
+  ;; TODO: do not do this on testnet or mainnet
   (try! (ft-mint? xusd u20 'ST3KCNDSWZSFZCC6BE4VA9AXWXC9KEB16FBTRK36T))
   (try! (ft-mint? xusd u10 'STB2BWB0K5XZGS3FXVTG3TKS46CQVV66NAK3YVN8))
   (try! (ft-mint? xusd u1000000000 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7))

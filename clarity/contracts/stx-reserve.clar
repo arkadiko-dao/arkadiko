@@ -13,8 +13,6 @@
 (define-constant ERR-WRONG-TOKEN u118)
 (define-constant ERR-TOO-MUCH-DEBT u119)
 
-(define-constant CONTRACT-OWNER tx-sender)
-
 (define-data-var tokens-to-stack uint u0)
 
 ;; MAIN LOGIC
@@ -211,7 +209,7 @@
 ;; STX reserve should only contain STX
 (define-public (migrate-funds (new-vault <vault-trait>))
   (begin
-    (asserts! (is-eq contract-caller CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (contract-call? .dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
     (as-contract (stx-transfer? (stx-get-balance (as-contract tx-sender)) (as-contract tx-sender) (contract-of new-vault)))
   )
@@ -219,7 +217,7 @@
 
 (define-public (set-tokens-to-stack (new-tokens-to-stack uint))
   (begin
-    (asserts! (is-eq contract-caller CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (contract-call? .dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
     (var-set tokens-to-stack new-tokens-to-stack)
     (ok true)
@@ -228,7 +226,7 @@
 
 (define-public (migrate-state (new-vault <vault-trait>))
   (begin
-    (asserts! (is-eq contract-caller CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (contract-call? .dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
     (try! (contract-call? new-vault set-tokens-to-stack (var-get tokens-to-stack)))
     (ok true)

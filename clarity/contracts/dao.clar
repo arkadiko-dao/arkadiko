@@ -10,9 +10,6 @@
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED (err u100401))
 
-;; Constants
-(define-constant DAO-OWNER tx-sender)
-
 ;; Contract addresses
 (define-map contracts
   { name: (string-ascii 256) }
@@ -30,6 +27,53 @@
 
 ;; Variables
 (define-data-var emergency-shutdown-activated bool false)
+(define-data-var dao-owner principal tx-sender)
+(define-data-var payout-address principal (var-get dao-owner)) ;; to which address the foundation is paid
+(define-data-var guardian principal (var-get dao-owner)) ;; guardian that can be set
+
+(define-read-only (get-dao-owner)
+  (var-get dao-owner)
+)
+
+(define-read-only (get-payout-address)
+  (var-get payout-address)
+)
+
+(define-public (set-dao-owner (address principal))
+  (begin
+    (asserts! (is-eq tx-sender (var-get dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set dao-owner address))
+  )
+)
+
+(define-public (set-payout-address (address principal))
+  (begin
+    (asserts! (is-eq tx-sender (var-get dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set payout-address address))
+  )
+)
+
+(define-read-only (get-guardian-address)
+  (var-get guardian)
+)
+
+(define-public (set-guardian-address (address principal))
+  (begin
+    (asserts! (is-eq tx-sender (var-get guardian)) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set guardian address))
+  )
+)
+
+(define-public (trigger-emergency-shutdown)
+  (begin
+    (asserts! (is-eq tx-sender (var-get guardian)) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set emergency-shutdown-activated (not (var-get emergency-shutdown-activated))))
+  )
+)
 
 ;; TODO: 
 ;; Emergency shutdown should be on freddie?
@@ -93,10 +137,11 @@
   )
 )
 
-;; TODO: make sip10 trait dynamic
-;; Philip, why is this needed??
+;; This method is called by the auction engine when more bad debt needs to be burned
+;; but the vault collateral is not sufficient
+;; As a result, this method requests DIKO from the DAO ("foundation reserves")
 (define-public (request-diko-tokens (ft <mock-ft-trait>) (collateral-amount uint))
-  (contract-call? ft transfer collateral-amount DAO-OWNER (as-contract .sip10-reserve))
+  (contract-call? ft transfer collateral-amount (var-get dao-owner) (as-contract (unwrap-panic (get-qualified-name-by-name "sip10-reserve"))))
 )
 
 

@@ -5,17 +5,16 @@
 (define-fungible-token diko)
 
 (define-data-var token-uri (string-utf8 256) u"")
+(define-data-var contract-owner principal tx-sender)
 
 ;; errors
 (define-constant ERR-NOT-AUTHORIZED u1401)
 
-(define-private (get-contract-owner)
-  (if (is-eq (unwrap-panic (get-block-info? header-hash u1)) 0xd2454d24b49126f7f47c986b06960d7f5b70812359084197a200d691e67a002e)
-    'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H ;; Testnet only
-    (if (is-eq (unwrap-panic (get-block-info? header-hash u1)) 0x6b2c809627f2fd19991d8eb6ae034cb4cce1e1fc714aa77351506b5af1f8248e)
-      'SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7 ;; Mainnet (TODO)
-      'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7 ;; Other test environments
-    )
+(define-public (set-contract-owner (owner principal))
+  (begin
+    (asserts! (is-eq tx-sender (var-get contract-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set contract-owner owner))
   )
 )
 
@@ -44,7 +43,7 @@
 )
 
 (define-public (set-token-uri (value (string-utf8 256)))
-  (if (is-eq tx-sender (get-contract-owner))
+  (if (is-eq tx-sender (var-get contract-owner))
     (ok (var-set token-uri value))
     (err ERR-NOT-AUTHORIZED)
   )
@@ -79,23 +78,9 @@
 )
 
 
-
 ;; Test environments
 (begin
-  ;; TODO: fix manual mocknet/testnet/mainnet switch
-  ;; (if is-in-regtest
-  ;;   (if (is-eq (unwrap-panic (get-block-info? header-hash u1)) 0xd2454d24b49126f7f47c986b06960d7f5b70812359084197a200d691e67a002e)
-  ;;     (begin ;; Testnet only
-  ;;       (try! (ft-mint? diko u1000000000000000 'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H)))
-  ;;     (begin ;; Other test environments
-  ;;       (try! (ft-mint? diko u890000000000 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7))
-  ;;       (try! (ft-mint? diko u150000000000 'ST3KCNDSWZSFZCC6BE4VA9AXWXC9KEB16FBTRK36T))
-  ;;       (try! (ft-mint? diko u150000000000 'ST3EQ88S02BXXD0T5ZVT3KW947CRMQ1C6DMQY8H19))
-  ;;       (try! (ft-mint? diko u1000000000 'STB2BWB0K5XZGS3FXVTG3TKS46CQVV66NAK3YVN8))
-  ;;     )
-  ;;   )
-  ;;   true
-  ;; )
+  ;; TODO: do not do this on testnet or mainnet
   (try! (ft-mint? diko u890000000000 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7))
   (try! (ft-mint? diko u150000000000 'ST3KCNDSWZSFZCC6BE4VA9AXWXC9KEB16FBTRK36T))
   (try! (ft-mint? diko u150000000000 'ST3EQ88S02BXXD0T5ZVT3KW947CRMQ1C6DMQY8H19))

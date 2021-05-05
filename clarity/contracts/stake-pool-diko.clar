@@ -17,7 +17,6 @@
 (define-constant ERR-INSUFFICIENT-STAKE (err u18003))
 
 ;; Constants
-(define-constant CONTRACT-OWNER tx-sender) ;; TODO: should be DAO
 (define-constant POOL-TOKEN .arkadiko-token)
 (define-constant BLOCKS-PER-YEAR u52560)
 
@@ -55,7 +54,7 @@
 )
 
 (define-public (set-token-uri (value (string-utf8 256)))
-  (if (is-eq tx-sender CONTRACT-OWNER) ;; TODO: should become DAO??
+  (if (is-eq tx-sender (contract-call? .dao get-dao-owner))
     (ok (var-set token-uri value))
     (err ERR-NOT-AUTHORIZED)
   )

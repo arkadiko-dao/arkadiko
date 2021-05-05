@@ -21,7 +21,6 @@
 (define-constant ERR-FAILED-STACK-STX u192)
 (define-constant ERR-BURN-HEIGHT-NOT-REACHED u193)
 (define-constant ERR-ALREADY-STACKING u194)
-(define-constant CONTRACT-OWNER tx-sender)
 
 (define-data-var stacking-unlock-burn-height uint u0) ;; when is this cycle over
 (define-data-var stacking-stx-stacked uint u0) ;; how many stx did we stack in this cycle
@@ -54,7 +53,7 @@
 
 (define-public (set-stacking-stx-received (stx-received uint))
   (begin
-    (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
     (ok (var-set stacking-stx-received stx-received))
   )
@@ -70,7 +69,7 @@
     (can-stack (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox can-stack-stx pox-addr tokens-to-stack start-burn-ht lock-period)))
     (stx-balance (unwrap-panic (get-stx-balance)))
   )
-    (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
     (asserts! (>= burn-block-height (var-get stacking-unlock-burn-height)) (err ERR-ALREADY-STACKING))
 
     ;; check if we can stack - if not, then probably cause we have not reached the minimum with (var-get tokens-to-stack)
@@ -124,7 +123,7 @@
   (let (
     (vault (contract-call? .vault-data get-vault-by-id vault-id))
   )
-    (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
     (asserts!
       (or
         (is-eq "xSTX" (get collateral-token vault))

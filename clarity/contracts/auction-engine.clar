@@ -19,10 +19,7 @@
 (define-constant ERR-DIKO-REQUEST-FAILED u211)
 (define-constant ERR-TOKEN-TYPE-MISMATCH u212)
 
-(define-constant CONTRACT-OWNER tx-sender)
 (define-constant blocks-per-day u144)
-
-(define-data-var payout-address principal CONTRACT-OWNER) ;; to which address the foundation is paid
 
 (define-map auctions
   { id: uint }
@@ -231,7 +228,7 @@
       xusd: u0,
       collateral-amount: u0,
       collateral-token: "",
-      owner: CONTRACT-OWNER,
+      owner: (contract-call? .dao get-dao-owner),
       is-accepted: false
     }
     (map-get? bids { auction-id: auction-id, lot-index: lot-index })
@@ -509,7 +506,7 @@
 ;; auction engine should only contain xUSD from bids
 (define-public (migrate-funds (auction-engine <auction-engine-trait>) (token <mock-ft-trait>))
   (begin
-    (asserts! (is-eq contract-caller CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (contract-call? .dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
     (let (
       (balance (unwrap-panic (contract-call? token get-balance-of (as-contract tx-sender))))
@@ -519,12 +516,8 @@
   )
 )
 
-;; TODO: make payout-address flexible with setters
-;; TODO: put payout-address in DAO and make it the same one as in freddie
 ;; redeem xUSD to burn DIKO gov token from open market
 ;; taken from auctions, paid by liquidation penalty on vaults
 (define-public (redeem-xusd (xusd-amount uint))
-  (begin
-    (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) (var-get payout-address))
-  )
+  (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) (contract-call? .dao get-payout-address))
 )
