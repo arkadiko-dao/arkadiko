@@ -292,6 +292,7 @@
         debt: debt,
         created-at-block-height: block-height,
         updated-at-block-height: block-height,
+        stability-fee-accrued: u0,
         stability-fee-last-accrued: block-height,
         is-liquidated: false,
         auction-ended: false,
@@ -480,16 +481,31 @@
   )
 )
 
+(define-public (accrue-stability-fee (vault-id uint))
+  (let (
+    (vault (get-vault-by-id vault-id))
+  )
+    (try! (contract-call? .vault-data update-vault vault-id (merge vault {
+        updated-at-block-height: block-height,
+        stability-fee-accrued: (unwrap-panic (get-stability-fee-for-vault vault-id)),
+        stability-fee-last-accrued: block-height
+      }))
+    )
+    (ok true)
+  )
+)
+
 (define-public (pay-stability-fee (vault-id uint))
   (let (
     (vault (get-vault-by-id vault-id))
-    (fee (unwrap-panic (get-stability-fee-for-vault vault-id)))
+    (fee (+ (get stability-fee-accrued vault) (unwrap-panic (get-stability-fee-for-vault vault-id))))
   )
     (if (> fee u0)
       (begin
         (try! (contract-call? .xusd-token transfer fee tx-sender (as-contract tx-sender)))
         (try! (contract-call? .vault-data update-vault vault-id (merge vault {
             updated-at-block-height: block-height,
+            stability-fee-accrued: u0,
             stability-fee-last-accrued: block-height
           }))
         )

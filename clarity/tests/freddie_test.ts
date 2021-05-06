@@ -241,6 +241,74 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "freddie: calculate stability fee with changing fees on underlying collateral type",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let block = chain.mineBlock([
+      Tx.contractCall("oracle", "update-price", [
+        types.ascii("STX"),
+        types.uint(200),
+      ], deployer.address),
+      Tx.contractCall("freddie", "collateralize-and-mint", [
+        types.uint(1000000000),
+        types.uint(1000000000), // mint 1000 xUSD
+        types.principal(deployer.address),
+        types.ascii("STX-A"),
+        types.ascii("STX"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stx-reserve"),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+        ),
+      ], deployer.address),
+    ]);
+
+    // mine 1 year of blocks
+    chain.mineEmptyBlock(365*144);
+    let call = await chain.callReadOnlyFn("freddie", "get-stability-fee-for-vault", [types.uint(1)], deployer.address);
+    call.result.expectOk().expectUint(4993295);
+
+    chain.mineBlock([
+      Tx.contractCall("freddie", "accrue-stability-fee", [types.uint(1)], deployer.address),
+      Tx.contractCall("collateral-types", "change-risk-parameters", [
+        types.ascii("STX-A"),
+        types.list([
+          types.tuple({
+            'key': types.ascii("stability-fee"),
+            'new-value': types.uint(191816250)
+          }),
+          types.tuple({
+            'key': types.ascii("stability-fee-apy"),
+            'new-value': types.uint(100)
+          }),
+          types.tuple({
+            'key': types.ascii("stability-fee-decimals"),
+            'new-value': types.uint(14)
+          }),
+        ])
+      ], deployer.address)
+    ]);
+
+    call = await chain.callReadOnlyFn("freddie", "get-vault-by-id", [types.uint(1)], deployer.address);
+    let vault = call.result.expectTuple();
+    vault['stability-fee-accrued'].expectUint(4993295);
+
+    chain.mineEmptyBlock(365*144);
+    call = await chain.callReadOnlyFn("freddie", "get-stability-fee-for-vault", [types.uint(1)], deployer.address);
+    call.result.expectOk().expectUint(10039151);
+
+    chain.mineBlock([
+      Tx.contractCall("freddie", "pay-stability-fee", [types.uint(1)], deployer.address),
+    ]);
+ 
+    call = await chain.callReadOnlyFn("freddie", "get-stability-fee-for-vault", [types.uint(1)], deployer.address);
+    call.result.expectOk().expectUint(191); // ~$0
+    call = await chain.callReadOnlyFn("freddie", "get-vault-by-id", [types.uint(1)], deployer.address);
+    vault = call.result.expectTuple();
+    vault['stability-fee-accrued'].expectUint(0);
+  }
+});
+
+Clarinet.test({
   name: "freddie: minting xUSD with conflicting FT <> collateral type is illegal",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;

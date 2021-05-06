@@ -8,6 +8,9 @@
     (get-collateral-type-for-vault (uint) (response (string-ascii 12) bool))
     (calculate-current-collateral-to-debt-ratio (uint) (response uint uint))
 
+    (pay-stability-fee (uint) (response bool uint))
+    (accrue-stability-fee (uint) (response bool uint))
+
     (liquidate (uint) (response (tuple (ustx-amount uint) (extra-debt uint) (vault-debt uint) (discount uint)) uint))
     (finalize-liquidation (uint uint) (response bool uint))
 
