@@ -103,7 +103,7 @@
     "nodemon": "^2.0.6",
     "prettier": "^2.0.5",
     "puppeteer": "^3.0.0",
-    "react-dev-utils": "^10.2.1",
+    "react-dev-utils": ">=11.0.4",
     "react-test-renderer": "^16.13.1",
     "terser-webpack-plugin": "^2.3.5",
     "ts-jest": "^25.3.1",
