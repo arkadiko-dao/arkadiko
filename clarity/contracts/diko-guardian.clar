@@ -13,6 +13,7 @@
 (define-constant BLOCKS-PER-MONTH u4320) ;; 144 * 30
 (define-constant FOUNDERS-TOKENS-PER-MONTH u437500000000) ;; 437.500
 (define-constant STAKING-REWARDS-FIRST-YEAR u25000000000000) ;; 25m with 6 decimals
+(define-constant REWARDS-PER-BLOCK-START u105000000) ;; 
 
 ;; Variables
 (define-data-var contract-start-block uint block-height)
@@ -33,8 +34,9 @@
     ;; 144 blocks per day, 14 days
     (blocks-per-step u2016) 
 
-    ;; dach step is equal to 2 weeks. This calculates the current step we are in, since the start
+    ;; each step is equal to 2 weeks. This calculates the current step we are in, since the start
     (step-number (/ (- block-height (var-get contract-start-block)) blocks-per-step))
+
     ;; year we are currently in since start
     (year-number (+ (/ step-number steps-per-year) u1))
     ;; step number in the curent year (instead of since start)
@@ -64,6 +66,36 @@
     (if (>= block-rewards MIN-STAKING-BLOCK-REWARDS)
       block-rewards
       MIN-STAKING-BLOCK-REWARDS
+    )
+  )
+)
+
+
+;; ---------------------------------------------------------
+;; Vaults
+;; ---------------------------------------------------------
+
+;; Get currrent vault rewards per block for all vaults
+;; Rewards only apply in the first year, during which they are reduced every 2 weeks
+(define-read-only (get-vault-rewards-per-block)
+  (let (
+    ;; 26 steps per year (2 week interval)
+    (steps-per-year u26)
+    ;; 144 blocks per day, 14 days
+    (blocks-per-step u2016) 
+    
+    ;; each step is equal to 2 weeks. This calculates the current step we are in, since the start
+    (step-number (/ (- block-height (var-get contract-start-block)) blocks-per-step))
+
+    ;; Every step, the divider is increased by 10%
+    (staking-rewards-divider (/ (* (pow u11 step-number) u100) (pow u10 step-number)))
+
+    (block-rewards (* (/ REWARDS-PER-BLOCK-START staking-rewards-divider) u100))
+  )
+    ;; Rewards only for first year
+    (if (<= step-number u25)
+      block-rewards
+      u0
     )
   )
 )
