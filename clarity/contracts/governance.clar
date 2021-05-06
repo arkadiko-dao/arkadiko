@@ -9,6 +9,7 @@
 (define-constant ERR-NOT-ENOUGH-BALANCE u31)
 (define-constant ERR-NO-CONTRACT-CHANGES u32)
 (define-constant ERR-WRONG-TOKEN u33)
+(define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u34)
 (define-constant ERR-NOT-AUTHORIZED u3401)
 (define-constant STATUS-OK u3200)
 
@@ -31,6 +32,7 @@
   }
 )
 
+(define-data-var governance-shutdown-activated bool false)
 (define-data-var proposal-count uint u0)
 (define-data-var proposal-ids (list 100 uint) (list u0))
 (define-map votes-by-member { proposal-id: uint, member: principal } { vote-count: uint })
@@ -89,6 +91,14 @@
   )
 )
 
+(define-public (toggle-governance-shutdown)
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set governance-shutdown-activated (not (var-get governance-shutdown-activated))))
+  )
+)
+
 ;; Start a proposal
 ;; Requires 1% of the supply in your wallet
 ;; Default voting period is 10 days (144 * 10 blocks)
@@ -102,6 +112,14 @@
     (supply (unwrap-panic (contract-call? .arkadiko-token get-total-supply)))
     (proposal-id (+ u1 (var-get proposal-count)))
   )
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get governance-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
+
     ;; Requires 1% of the supply 
     (asserts! (>= (* proposer-balance u100) supply) (err ERR-NOT-ENOUGH-BALANCE))
     ;; Mutate
@@ -131,6 +149,14 @@
     (vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender)))
     (token-count (get amount (get-tokens-by-member-by-id proposal-id tx-sender token)))
   )
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get governance-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
+
     ;; Can vote with DIKO and stDIKO
     (asserts! (is-eq (is-token-accepted token) true) (err ERR-WRONG-TOKEN))
     ;; Proposal should be open for voting
@@ -160,6 +186,14 @@
     (vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender)))
     (token-count (get amount (get-tokens-by-member-by-id proposal-id tx-sender token)))
   )
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get governance-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
+
     ;; Can vote with DIKO and stDIKO
     (asserts! (is-eq (is-token-accepted token) true) (err ERR-WRONG-TOKEN))
     ;; Proposal should be open for voting
@@ -184,6 +218,13 @@
 
 (define-public (end-proposal (proposal-id uint))
   (let ((proposal (get-proposal-by-id proposal-id)))
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get governance-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
     (asserts! (not (is-eq (get id proposal) u0)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-open proposal) true) (err ERR-NOT-AUTHORIZED))
     (asserts! (>= block-height (get end-block-height proposal)) (err ERR-NOT-AUTHORIZED))
@@ -205,6 +246,13 @@
     (token-count (get amount (get-tokens-by-member-by-id proposal-id member token)))
     (proposal (get-proposal-by-id proposal-id))
   )
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get governance-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
     (asserts! (is-eq (is-token-accepted token) true) (err ERR-WRONG-TOKEN))
     (asserts! (is-eq (get is-open proposal) false) (err ERR-NOT-AUTHORIZED))
     (asserts! (>= block-height (get end-block-height proposal)) (err ERR-NOT-AUTHORIZED))

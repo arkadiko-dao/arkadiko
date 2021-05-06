@@ -603,3 +603,27 @@ Clarinet.test({
     block.receipts[0].result.expectErr().expectUint(4401);
   }
 });
+
+Clarinet.test({
+  name: "freddie: cannot create vault when emergency shutdown is on",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let block = chain.mineBlock([
+      Tx.contractCall("oracle", "update-price", [
+        types.ascii("STX"),
+        types.uint(200),
+      ], deployer.address),
+      Tx.contractCall("freddie", "toggle-freddie-shutdown", [], deployer.address),
+      Tx.contractCall("freddie", "collateralize-and-mint", [
+        types.uint(1000000000), // 1000 STX
+        types.uint(300000000), // mint 300 xUSD
+        types.principal(deployer.address),
+        types.ascii("STX-A"),
+        types.ascii("STX"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stx-reserve"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+      ], deployer.address)
+    ]);
+    block.receipts[2].result.expectErr().expectUint(411);
+  }
+});

@@ -18,6 +18,7 @@
 (define-constant ERR-COULD-NOT-REDEEM u210)
 (define-constant ERR-DIKO-REQUEST-FAILED u211)
 (define-constant ERR-TOKEN-TYPE-MISMATCH u212)
+(define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u213)
 
 (define-constant blocks-per-day u144)
 
@@ -62,6 +63,7 @@
 (define-data-var last-auction-id uint u0)
 (define-data-var auction-ids (list 1500 uint) (list u0))
 (define-data-var lot-size uint u1000000000) ;; 1000 xUSD
+(define-data-var auction-engine-shutdown-activated bool false)
 
 (define-read-only (get-auction-by-id (id uint))
   (default-to
@@ -89,6 +91,14 @@
   (ok (map get-auction-by-id (var-get auction-ids)))
 )
 
+(define-public (toggle-auction-engine-shutdown)
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set auction-engine-shutdown-activated (not (var-get auction-engine-shutdown-activated))))
+  )
+)
+
 ;; 1. Create auction object in map per 100 xUSD
 ;; 2. Add auction ID to list (to show in UI)
 ;; we wanna sell as little collateral as possible to cover the vault's debt
@@ -98,6 +108,13 @@
   (let ((vault (contract-call? .vault-data get-vault-by-id vault-id)))
     (asserts! (is-eq contract-caller .liquidator) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) true) (err ERR-AUCTION-NOT-ALLOWED))
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get auction-engine-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
 
     (let (
       (auction-id (+ (var-get last-auction-id) u1))
@@ -218,6 +235,14 @@
     (price-in-cents (contract-call? .oracle get-price (collateral-token (get collateral-token auction))))
   )
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get auction-engine-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
+
     (calculate-minimum-collateral-amount (get last-price-in-cents price-in-cents) auction-id)
   )
 )
@@ -248,6 +273,13 @@
     (asserts! (is-eq (get is-open auction) true) (err ERR-BID-DECLINED))
     (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get auction-engine-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
 
     (register-bid vault-manager oracle auction-id lot-index xusd)
   )
@@ -358,6 +390,13 @@
     (asserts! (is-eq (unwrap-panic (contract-call? ft get-symbol)) (get collateral-token auction)) (err ERR-TOKEN-TYPE-MISMATCH))
     (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (and (is-eq tx-sender (get owner last-bid)) (get is-accepted last-bid)) (err ERR-COULD-NOT-REDEEM))
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get auction-engine-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
     
     (let ((lots (get-winning-lots tx-sender)))
       (map-set redeeming-lot { user: tx-sender } { auction-id: auction-id, lot-index: lot-index})
@@ -407,6 +446,13 @@
     )
     (asserts! (is-eq (get is-open auction) true) (err ERR-AUCTION-NOT-OPEN))
     (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get auction-engine-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
 
     (let ((vault (contract-call? .vault-data get-vault-by-id (get vault-id auction))))
       (if (> (get debt vault) (get total-debt-burned auction))
@@ -479,6 +525,13 @@
     (asserts! (is-eq (get is-open auction) false) (err ERR-NOT-AUTHORIZED))
     (asserts! (> (get xusd last-bid) u0) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-accepted last-bid) false) (err ERR-NOT-AUTHORIZED))
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get auction-engine-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
 
     (map-set auctions
       { id: auction-id }
@@ -519,5 +572,15 @@
 ;; redeem xUSD to burn DIKO gov token from open market
 ;; taken from auctions, paid by liquidation penalty on vaults
 (define-public (redeem-xusd (xusd-amount uint))
-  (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) (contract-call? .dao get-payout-address))
+  (begin
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get auction-engine-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
+
+    (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) (contract-call? .dao get-payout-address))
+  )
 )

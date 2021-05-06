@@ -354,3 +354,79 @@ Clarinet.test({
 
   }
 });
+
+Clarinet.test({
+  name: "governance: cannot add proposal when emergency switch is on",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let block = chain.mineBlock([
+      Tx.contractCall("governance", "toggle-governance-shutdown", [], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    block = chain.mineBlock([
+      Tx.contractCall("governance", "propose",
+        [
+          types.uint(1),
+          types.utf8("test details"),
+          types.list([
+            types.tuple({
+              name: types.ascii("oracle"),
+              'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
+              'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-oracle")
+            }),
+            types.tuple({
+              name: types.ascii("freddie"),
+              'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
+              'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-freddie")
+            })
+          ])
+        ],
+        deployer.address
+      )
+    ]);
+    block.receipts[0].result.expectErr().expectUint(34);
+  }
+});
+
+Clarinet.test({
+  name: "governance: cannot vote for a proposal when emergency switch is on",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let block = chain.mineBlock([
+      Tx.contractCall("governance", "propose",
+        [
+          types.uint(1),
+          types.utf8("test details"),
+          types.list([
+            types.tuple({
+              name: types.ascii("oracle"),
+              'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
+              'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-oracle")
+            }),
+            types.tuple({
+              name: types.ascii("freddie"),
+              'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
+              'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-freddie")
+            })
+          ])
+        ],
+        deployer.address
+      )
+    ]);
+    block.receipts[0].result.expectOk();
+
+    block = chain.mineBlock([
+      Tx.contractCall("governance", "toggle-governance-shutdown", [], deployer.address),
+      Tx.contractCall("governance", "vote-for", [
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+        types.uint(1),
+        types.uint(10000000)
+      ], wallet_1.address)
+    ]);
+    block.receipts[1].result.expectErr().expectUint(34);
+  }
+});

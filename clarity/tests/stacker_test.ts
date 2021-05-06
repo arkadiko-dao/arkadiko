@@ -326,6 +326,7 @@ Clarinet.test({
     ]);
 
     // Check if transfer of yields is approx 450 STX
+    // part of it stays with the foundation since not all collateral is usually sold of
     let [stxTransferEvent1, stxTransferEvent2] = block.receipts[1].events;
     stxTransferEvent1.stx_transfer_event.sender.expectPrincipal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stacker");
     stxTransferEvent1.stx_transfer_event.recipient.expectPrincipal(deployer.address);
@@ -334,5 +335,36 @@ Clarinet.test({
     stxTransferEvent2.stx_transfer_event.sender.expectPrincipal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stacker");
     stxTransferEvent2.stx_transfer_event.recipient.expectPrincipal(deployer.address);
     stxTransferEvent2.stx_transfer_event.amount.expectInt(118124195);
+  }
+});
+
+Clarinet.test({
+  name:
+    "stacker: cannot initiate stacking when emergency switch is on",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let block = chain.mineBlock([
+      Tx.contractCall("oracle", "update-price", [
+        types.ascii("STX"),
+        types.uint(200),
+      ], deployer.address),
+      Tx.contractCall("freddie", "collateralize-and-mint", [
+        types.uint(1000000000), // 1000 STX
+        types.uint(1300000000), // mint 1300 xUSD
+        types.principal(deployer.address),
+        types.ascii("STX-A"),
+        types.ascii("STX"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stx-reserve"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+      ], deployer.address),
+      Tx.contractCall("stacker", "toggle-stacker-shutdown", [], deployer.address),
+      Tx.contractCall("stacker", "initiate-stacking", [
+        types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
+        types.uint(1), // start block height
+        types.uint(1) // 1 cycle lock period
+      ], deployer.address)
+    ]);
+
+    block.receipts[3].result.expectErr().expectUint(195);
   }
 });

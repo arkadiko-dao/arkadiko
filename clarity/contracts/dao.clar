@@ -67,7 +67,7 @@
   )
 )
 
-(define-public (trigger-emergency-shutdown)
+(define-public (toggle-emergency-shutdown)
   (begin
     (asserts! (is-eq tx-sender (var-get guardian)) (err ERR-NOT-AUTHORIZED))
 
@@ -75,10 +75,6 @@
   )
 )
 
-;; TODO: 
-;; Emergency shutdown should be on freddie?
-;; Like our stake-registry which can deactivate pools
-;; Each part can shut down independently
 (define-read-only (get-emergency-shutdown-activated)
   (ok (var-get emergency-shutdown-activated))
 )
