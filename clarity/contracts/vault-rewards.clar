@@ -46,6 +46,8 @@
 
     ;; Save latest cumm reward
     (increase-cumm-reward-per-collateral)
+    ;; Claim all pending rewards so we can set the new cumm-reward for this user
+    (try! (claim-pending-rewards-for user))
     ;; Update total
     (var-set total-collateral (+ current-total-collateral collateral))
     ;; Save cumm reward again, as total changed
@@ -69,6 +71,8 @@
 
     ;; Save latest cumm reward
     (increase-cumm-reward-per-collateral)
+    ;; Claim all pending rewards so we can set the new cumm-reward for this user
+    (try! (claim-pending-rewards-for user))
     ;; Update total
     (var-set total-collateral (- current-total-collateral collateral))
     ;; Save cumm reward again, as total changed
@@ -102,24 +106,31 @@
   )
 )
 
-;; Claim rewards for user
+;; Claim rewards as user
 (define-public (claim-pending-rewards)
+  (begin
+    (claim-pending-rewards-for tx-sender)
+  )
+)
+
+;; Claim rewards for user
+(define-private (claim-pending-rewards-for (user principal))
   (begin
 
     ;; Increase so we know new value for this user
     (increase-cumm-reward-per-collateral)
 
     (let (
-      (pending-rewards (unwrap! (get-pending-rewards tx-sender) (err ERR-REWARDS-CALC)))
-      (collateral-of (get-collateral-of tx-sender))
+      (pending-rewards (unwrap! (get-pending-rewards user) (err ERR-REWARDS-CALC)))
+      (collateral-of (get-collateral-of user))
     )
       ;; Only mint if enough pending rewards and amount is positive
       (if (>= pending-rewards u1)
         (begin
           ;; Mint DIKO rewards for user
-          (try! (contract-call? .dao mint-token .arkadiko-token pending-rewards tx-sender))
+          (try! (contract-call? .dao mint-token .arkadiko-token pending-rewards user))
 
-          (map-set user-collateral { user: tx-sender } (merge collateral-of { cumm-reward-per-collateral: (var-get cumm-reward-per-collateral) }))
+          (map-set user-collateral { user: user } (merge collateral-of { cumm-reward-per-collateral: (var-get cumm-reward-per-collateral) }))
 
           (ok pending-rewards)
         )

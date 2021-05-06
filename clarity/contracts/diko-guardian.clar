@@ -13,7 +13,7 @@
 (define-constant BLOCKS-PER-MONTH u4320) ;; 144 * 30
 (define-constant FOUNDERS-TOKENS-PER-MONTH u437500000000) ;; 437.500
 (define-constant STAKING-REWARDS-FIRST-YEAR u25000000000000) ;; 25m with 6 decimals
-(define-constant REWARDS-PER-BLOCK-START u105000000) ;; 
+(define-constant REWARDS-PER-BLOCK-START u320000000) ;; 
 
 ;; Variables
 (define-data-var contract-start-block uint block-height)
@@ -79,12 +79,11 @@
 ;; Rewards only apply in the first year, during which they are reduced every 2 weeks
 (define-read-only (get-vault-rewards-per-block)
   (let (
-    ;; 26 steps per year (2 week interval)
-    (steps-per-year u26)
-    ;; 144 blocks per day, 14 days
-    (blocks-per-step u2016) 
+
+    ;; 144 blocks per day, 7 days
+    (blocks-per-step u1008) 
     
-    ;; each step is equal to 2 weeks. This calculates the current step we are in, since the start
+    ;; each step is equal to 1 week. This calculates the current step we are in, since the start
     (step-number (/ (- block-height (var-get contract-start-block)) blocks-per-step))
 
     ;; Every step, the divider is increased by 10%
@@ -92,8 +91,8 @@
 
     (block-rewards (* (/ REWARDS-PER-BLOCK-START staking-rewards-divider) u100))
   )
-    ;; Rewards only for first year
-    (if (<= step-number u25)
+    ;; Rewards only for first 6 weeks (step-number starts at 0)
+    (if (<= step-number u5)
       block-rewards
       u0
     )
@@ -121,7 +120,7 @@
 )
 
 ;; Get amount of tokens founders can claim
-;; The founders are vested on 4 years, with a 1 year cliff.
+;; The founders are vested on 4 years, with a 6 months cliff.
 ;; Vesting happens monthly. 21m / 48 months = 437.500 per month
 (define-read-only (get-pending-founders-tokens)
   (let (
@@ -129,7 +128,7 @@
     (month-number (/ (- block-height (var-get contract-start-block)) BLOCKS-PER-MONTH))
   )
     ;; Vesting period
-    (if (and (>= month-number u12) (<= month-number u47))
+    (if (and (>= month-number u6) (<= month-number u47))
       (let (
         (max-tokens (* month-number FOUNDERS-TOKENS-PER-MONTH))
         (claimed-tokens (var-get founders-tokens-claimed))

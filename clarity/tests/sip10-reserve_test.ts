@@ -157,7 +157,7 @@ Clarinet.test({
       ], deployer.address),
     ]);
 
-    var [dikoTransferEvent, vaultNotifEvent] = block.receipts[0].events;
+    var [dikoTransferEvent, dikoMintEvent, vaultNotifEvent] = block.receipts[0].events;
     // Ensure that 20000000 units from .arkadiko-token::diko where successfully transfered from wallet_1 to .sip10-reserve
     dikoTransferEvent.ft_transfer_event.sender
       .expectPrincipal(deployer.address);
@@ -253,7 +253,7 @@ Clarinet.test({
       ], deployer.address),
     ]);
 
-    var [dikoTransferEvent, vaultNotifEvent] = block.receipts[0].events;
+    var [dikoTransferEvent, dikoMintEvent, vaultNotifEvent] = block.receipts[0].events;
     // Ensure that 20_000_000 units from .arkadiko-token::diko where successfully transfered from wallet_1 to .sip10-reserve
     dikoTransferEvent.ft_transfer_event.sender
       .expectPrincipal(
@@ -463,7 +463,7 @@ Clarinet.test({
       ], deployer.address),
     ]);
 
-    var [_, xUSDBurnEvent, dikoTransferEvent, vaultNotifEvent] = block.receipts[0].events;
+    var [_, xUSDBurnEvent, dikoTransferEvent, dikoMintEvent, vaultNotifEvent] = block.receipts[0].events;
     // Ensure that 6_000_000 units from .xusd-token::xusd where successfully burnt
     xUSDBurnEvent.ft_burn_event.sender
       .expectPrincipal(deployer.address);
