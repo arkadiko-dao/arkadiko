@@ -48,6 +48,7 @@ describe("freddie test suite", () => {
       await deployContract('xstx-token');
 
       await deployContract('vault-data');
+      await deployContract('vault-rewards');
       await deployContract('stx-reserve');
       await deployContract('sip10-reserve');
 
