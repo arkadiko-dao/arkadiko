@@ -42,6 +42,7 @@ describe("freddie test suite", () => {
       await deployContract('arkadiko-token');
       await deployContract('dao');
       await deployContract('governance');
+      await deployContract('diko-guardian');
 
       await deployContract('xusd-token');
       await deployContract('xstx-token');

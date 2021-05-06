@@ -225,10 +225,10 @@
 
 (define-read-only (get-apy-for (staker principal))
   (let (
-    (pool-data (contract-call? .stake-registry get-pool-data .stake-pool-diko))
+    (rewards-per-block (contract-call? .stake-registry get-rewards-per-block-for-pool .stake-pool-diko))
     (diko-staked (get-stake-amount-of staker))
     (reward-percentage (/ u100 (/ (var-get total-staked) diko-staked)))
-    (diko-per-year (* (get rewards-per-block pool-data) reward-percentage))
+    (diko-per-year (* rewards-per-block reward-percentage))
   )
     (* (/ diko-per-year diko-staked) u100)
   )
@@ -260,7 +260,8 @@
       (if (>= pending-rewards u1)
         (begin
           ;; Mint DIKO rewards for staker
-          (try! (contract-call? .dao mint-token .arkadiko-token pending-rewards staker))
+          (try! (contract-call? .stake-registry mint-rewards-for-staker pending-rewards staker))
+
           (map-set stakes { staker: staker } (merge stake-of { cumm-reward-per-stake: (var-get cumm-reward-per-stake) }))
 
           (ok pending-rewards)
@@ -288,7 +289,7 @@
 ;; Calculate current cumm reward per stake
 (define-read-only (calculate-cumm-reward-per-stake)
   (let (
-    (pool-data (contract-call? .stake-registry get-pool-data .stake-pool-diko))
+    (rewards-per-block (contract-call? .stake-registry get-rewards-per-block-for-pool .stake-pool-diko))
     (current-total-staked (var-get total-staked))
     (last-block-height (get-last-block-height))
     (block-diff (- last-block-height (var-get last-reward-increase-block)))
@@ -296,7 +297,7 @@
   )
     (if (> current-total-staked u0)
       (let (
-        (total-rewards-to-distribute (* (get rewards-per-block pool-data) block-diff))
+        (total-rewards-to-distribute (* rewards-per-block block-diff))
         (reward-added-per-token (/ (* total-rewards-to-distribute u1000000) current-total-staked))
         (new-cumm-reward-per-stake (+ current-cumm-reward-per-stake reward-added-per-token))
       )

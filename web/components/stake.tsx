@@ -59,7 +59,18 @@ export const Stake = () => {
       });
       const stakerInfo = cvToJSON(stakerInfoCall).value;
       const dikoStaked = stakerInfo['uamount'].value / 1000000;
-      const rewardsPerBlock = 1000000000; // TODO: fetch from stake-pool-diko smart contract
+
+      const rewardsPerBlockCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "stake-registry",
+        functionName: "get-rewards-per-block-for-pool",
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'stake-pool-diko')
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const rewardsPerBlock = cvToJSON(rewardsPerBlockCall).value;
       const rewardPercentage = (totalStaked / dikoStaked);
       const dikoPerYear = 144 * 365 * (rewardsPerBlock * rewardPercentage) / 1000000;
       if (dikoStaked > 0) {

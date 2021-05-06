@@ -204,6 +204,12 @@
       qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stake-registry
     }
   )
+  (map-set contracts-data
+    { qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stake-registry }
+    {
+      active: true
+    }
+  )
 
   (map-set contracts
     { name: "stake-pool-diko" }
@@ -249,6 +255,20 @@
   )
   (map-set contracts-data
     { qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve }
+    {
+      active: true
+    }
+  )
+
+  (map-set contracts
+    { name: "diko-guardian" }
+    {
+      address: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7,
+      qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.diko-guardian
+    }
+  )
+  (map-set contracts-data
+    { qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.diko-guardian }
     {
       active: true
     }

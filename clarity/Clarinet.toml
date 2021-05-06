@@ -101,3 +101,7 @@ path = "contracts/stake-pool-trait.clar"
 [contracts.stake-pool-diko]
 depends_on = ["stake-pool-trait", "arkadiko-token", "mock-ft-trait", "stake-registry"]
 path = "contracts/stake-pool-diko.clar"
+
+[contracts.diko-guardian]
+depends_on = ["arkadiko-token"]
+path = "contracts/diko-guardian.clar"

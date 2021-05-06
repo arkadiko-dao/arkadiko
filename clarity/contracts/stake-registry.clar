@@ -25,13 +25,23 @@
     active: bool,
     activated-block: uint,
     deactivated-block: uint,
-    rewards-per-block: uint
+    rewards-percentage: uint
   }
 )
 
 ;; Get pool info
 (define-read-only (get-pool-data (pool principal))
   (unwrap-panic (map-get? pools-data-map { pool: pool }))
+)
+
+;; Get pool rewards per block
+(define-read-only (get-rewards-per-block-for-pool (pool principal))
+  (let (
+    (total-staking-rewards (contract-call? .diko-guardian get-staking-rewards-per-block))
+    (pool-percentage (get rewards-percentage (get-pool-data pool)))
+  )
+    (/ (* total-staking-rewards pool-percentage) u1000000)
+  )
 )
 
 ;; Stake tokens
@@ -84,6 +94,23 @@
   )
 )
 
+;; Mint rewards for staker - for active pools only
+(define-public (mint-rewards-for-staker (amount uint) (staker principal))
+  (begin
+    (let (
+      (pool-data (get-pool-data contract-caller))
+    )
+      ;; Only active pools can mint rewards
+      (asserts! (is-eq (get active pool-data) true) ERR-POOL-INACTIVE)
+
+      ;; Mint DIKO rewards for staker
+      (try! (contract-call? .dao mint-token .arkadiko-token amount staker))
+      
+      (ok amount)
+    )
+  )
+)
+
 ;; ---------------------------------------------------------
 ;; Contract initialisation
 ;; ---------------------------------------------------------
@@ -98,7 +125,7 @@
       active: true,
       activated-block: block-height,
       deactivated-block: u0,
-      rewards-per-block: u1000000000 ;; TODO: set production value. Test value is 1000 DIKO per block with 6 decimals
+      rewards-percentage: u1000000 ;; 100% 
     }
   )
 
