@@ -109,7 +109,8 @@
   )
   (let (
     (proposer-balance (unwrap-panic (contract-call? .arkadiko-token get-balance-of tx-sender)))
-    (supply (unwrap-panic (contract-call? .arkadiko-token get-total-supply)))
+    (diko-init-balance (unwrap-panic (contract-call? .arkadiko-token get-balance-of .diko-init)))
+    (supply (- (unwrap-panic (contract-call? .arkadiko-token get-total-supply)) diko-init-balance))
     (proposal-id (+ u1 (var-get proposal-count)))
   )
     (asserts!

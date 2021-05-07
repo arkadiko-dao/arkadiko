@@ -106,6 +106,10 @@ path = "contracts/stake-pool-diko.clar"
 depends_on = ["arkadiko-token"]
 path = "contracts/diko-guardian.clar"
 
+[contracts.diko-init]
+depends_on = ["arkadiko-token"]
+path = "contracts/diko-init.clar"
+
 [contracts.vault-rewards]
 depends_on = ["arkadiko-token"]
 path = "contracts/vault-rewards.clar"

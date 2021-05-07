@@ -275,6 +275,20 @@
   )
 
   (map-set contracts
+    { name: "diko-init" }
+    {
+      address: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7,
+      qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.diko-init
+    }
+  )
+  (map-set contracts-data
+    { qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.diko-init }
+    {
+      active: true
+    }
+  )
+
+  (map-set contracts
     { name: "vault-rewards" }
     {
       address: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7,
