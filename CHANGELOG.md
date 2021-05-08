@@ -1,3 +1,11 @@
+## Version 0.8.0
+
+- Rename all smart contracts to use an `arkadiko-` prefix and a major-minor version postfix (e.g. `v1-1`). Smart contracts that never change don't have a version postfix. Traits only have a major version, since the whole (part of the) protocol changes when traits change.
+- Mint DIKO tokens for the foundation and founders, vested over 4 years time.
+- Add DIKO rewards for people who provide STX liquidity through vaults in the first 6 weeks of mainnet launch
+- Add 50 million DIKO staking rewards, distributed over 5 years time, with 25 million DIKO staking rewards in the first year
+- Implement better UI validations for staking and creating vaults
+
 ## Version 0.7.0
 
 - Add stacking logic to pay out vaults that have STX collateral. If a vault gets liquidated during a stacking cycle, the vault owner will not be eligible for the yield. The yield will be paid out to the winners of the auctions.
