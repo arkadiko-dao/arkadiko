@@ -1,7 +1,7 @@
 ;; DIKO Init - Foundation and founders
 ;; 
 
-(use-trait mock-ft-trait .mock-ft-trait.mock-ft-trait)
+(use-trait mock-ft-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
 
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED (err u22401))
@@ -62,7 +62,7 @@
     (asserts! (is-eq wallet tx-sender) ERR-NOT-AUTHORIZED)
     (asserts! (>= pending-tokens amount) ERR-NOT-AUTHORIZED)
     (var-set foundation-tokens-claimed (+ claimed-tokens amount))
-    (contract-call? .arkadiko-token transfer amount .diko-init wallet)
+    (contract-call? .arkadiko-token transfer amount .arkadiko-diko-init wallet)
   )
 )
 
@@ -119,7 +119,7 @@
     (asserts! (is-eq wallet tx-sender) ERR-NOT-AUTHORIZED)
     (asserts! (>= pending-tokens amount) ERR-NOT-AUTHORIZED)
     (var-set founders-tokens-claimed (+ claimed-tokens amount))
-    (contract-call? .arkadiko-token transfer amount .diko-init wallet)
+    (contract-call? .arkadiko-token transfer amount .arkadiko-diko-init wallet)
   )
 )
 
@@ -129,6 +129,6 @@
 
 ;; Initialize the contract
 (begin
-    (contract-call? .dao mint-token .arkadiko-token (+ TOTAL-FOUNDATION TOTAL-FOUNDERS) .diko-init)
+  (contract-call? .arkadiko-dao mint-token .arkadiko-token (+ TOTAL-FOUNDATION TOTAL-FOUNDERS) .arkadiko-diko-init)
 )
 

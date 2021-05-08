@@ -2,114 +2,146 @@
 [project]
 name = "arkadiko"
 
-[contracts.dao-token-trait]
+[contracts.arkadiko-dao-token-trait-v1]
 depends_on = []
-path = "contracts/dao-token-trait.clar"
+path = "contracts/arkadiko-dao-token-trait-v1.clar"
+
+[contracts.arkadiko-mock-ft-trait-v1]
+depends_on = []
+path = "contracts/arkadiko-mock-ft-trait-v1.clar"
+
+[contracts.arkadiko-collateral-types-v1-1]
+depends_on = ["arkadiko-collateral-types-trait-v1"]
+path = "contracts/arkadiko-collateral-types-v1-1.clar"
+
+[contracts.arkadiko-dao]
+depends_on = ["arkadiko-token", "arkadiko-collateral-types-v1-1", "arkadiko-vault-trait-v1"]
+path = "contracts/arkadiko-dao.clar"
+
+[contracts.arkadiko-governance-v1-1]
+depends_on = ["arkadiko-token", "arkadiko-mock-ft-trait-v1"]
+path = "contracts/arkadiko-governance-v1-1.clar"
 
 [contracts.arkadiko-token]
-depends_on = ["mock-ft-trait", "dao-token-trait"]
+depends_on = ["arkadiko-mock-ft-trait-v1", "arkadiko-dao-token-trait-v1"]
 path = "contracts/arkadiko-token.clar"
 
-[contracts.auction-engine]
-depends_on = ["oracle", "xusd-token", "freddie", "mock-ft-trait", "vault-trait", "auction-engine-trait"]
-path = "contracts/auction-engine.clar"
-
-[contracts.auction-engine-trait]
+[contracts.arkadiko-oracle-trait-v1]
 depends_on = []
-path = "contracts/auction-engine-trait.clar"
+path = "contracts/arkadiko-oracle-trait-v1.clar"
 
-[contracts.collateral-types-trait]
+[contracts.arkadiko-oracle-v1-1]
+depends_on = ["arkadiko-oracle-trait-v1"]
+path = "contracts/arkadiko-oracle-v1-1.clar"
+
+[contracts.arkadiko-stacker-trait-v1]
 depends_on = []
-path = "contracts/collateral-types-trait.clar"
+path = "contracts/arkadiko-stacker-trait-v1.clar"
 
-[contracts.collateral-types]
-depends_on = ["collateral-types-trait"]
-path = "contracts/collateral-types.clar"
+[contracts.arkadiko-vault-data-v1-1]
+depends_on = ["arkadiko-diko-guardian-v1-1"]
+path = "contracts/arkadiko-vault-data-v1-1.clar"
 
-[contracts.vault-data]
-depends_on = ["diko-guardian"]
-path = "contracts/vault-data.clar"
+[contracts.arkadiko-diko-guardian-v1-1]
+depends_on = ["arkadiko-token"]
+path = "contracts/arkadiko-diko-guardian-v1-1.clar"
 
-[contracts.dao]
-depends_on = ["arkadiko-token", "collateral-types", "vault-trait"]
-path = "contracts/dao.clar"
+[contracts.arkadiko-auction-engine-v1-1]
+depends_on = [
+  "arkadiko-oracle-v1-1",
+  "xusd-token",
+  "arkadiko-freddie-v1-1",
+  "arkadiko-mock-ft-trait-v1",
+  "arkadiko-vault-trait-v1",
+  "arkadiko-auction-engine-trait-v1"
+]
+path = "contracts/arkadiko-auction-engine-v1-1.clar"
 
-[contracts.governance]
-depends_on = ["arkadiko-token", "mock-ft-trait"]
-path = "contracts/governance.clar"
+[contracts.arkadiko-freddie-v1-1]
+depends_on = [
+  "arkadiko-collateral-types-v1-1",
+  "arkadiko-stx-reserve-v1-1",
+  "arkadiko-vault-trait-v1",
+  "arkadiko-mock-ft-trait-v1",
+  "arkadiko-vault-manager-trait-v1",
+  "arkadiko-sip10-reserve-v1-1",
+  "arkadiko-stacker-v1-1",
+  "arkadiko-vault-data-v1-1",
+  "arkadiko-vault-rewards-v1-1"
+]
+path = "contracts/arkadiko-freddie-v1-1.clar"
 
-[contracts.freddie]
-depends_on = ["collateral-types", "stx-reserve", "vault-trait", "mock-ft-trait", "vault-manager-trait", "sip10-reserve", "stacker", "vault-data", "vault-rewards"]
-path = "contracts/freddie.clar"
+[contracts.arkadiko-liquidator-v1-1]
+depends_on = ["arkadiko-collateral-types-v1-1", "arkadiko-dao", "arkadiko-vault-manager-trait-v1", "arkadiko-auction-engine-trait-v1"]
+path = "contracts/arkadiko-liquidator-v1-1.clar"
 
-[contracts.liquidator]
-depends_on = ["collateral-types", "dao", "vault-manager-trait", "auction-engine-trait"]
-path = "contracts/liquidator.clar"
+[contracts.arkadiko-sip10-reserve-v1-1]
+depends_on = [
+  "arkadiko-collateral-types-v1-1",
+  "arkadiko-mock-ft-trait-v1",
+  "arkadiko-vault-trait-v1",
+  "arkadiko-oracle-v1-1",
+  "arkadiko-dao",
+  "xusd-token",
+  "xstx-token"
+]
+path = "contracts/arkadiko-sip10-reserve-v1-1.clar"
 
-[contracts.mock-ft-trait]
+[contracts.arkadiko-stacker-v1-1]
+depends_on = ["arkadiko-stacker-trait-v1", "arkadiko-vault-data-v1-1", "arkadiko-stx-reserve-v1-1"]
+path = "contracts/arkadiko-stacker-v1-1.clar"
+
+[contracts.arkadiko-stx-reserve-v1-1]
+depends_on = [
+  "arkadiko-collateral-types-v1-1",
+  "arkadiko-oracle-v1-1",
+  "arkadiko-dao",
+  "xusd-token",
+  "arkadiko-mock-ft-trait-v1",
+  "arkadiko-vault-trait-v1"
+]
+path = "contracts/arkadiko-stx-reserve-v1-1.clar"
+
+[contracts.arkadiko-vault-trait-v1]
+depends_on = ["arkadiko-mock-ft-trait-v1"]
+path = "contracts/arkadiko-vault-trait-v1.clar"
+
+[contracts.arkadiko-vault-manager-trait-v1]
+depends_on = ["arkadiko-vault-trait-v1"]
+path = "contracts/arkadiko-vault-manager-trait-v1.clar"
+
+[contracts.arkadiko-auction-engine-trait-v1]
+depends_on = ["arkadiko-oracle-trait-v1", "arkadiko-vault-manager-trait-v1"]
+path = "contracts/arkadiko-auction-engine-trait-v1.clar"
+
+[contracts.arkadiko-collateral-types-trait-v1]
 depends_on = []
-path = "contracts/mock-ft-trait.clar"
+path = "contracts/arkadiko-collateral-types-trait-v1.clar"
 
-[contracts.oracle]
-depends_on = ["oracle-trait"]
-path = "contracts/oracle.clar"
+[contracts.arkadiko-stake-pool-diko-v1-1]
+depends_on = ["arkadiko-stake-pool-trait-v1", "arkadiko-token", "arkadiko-mock-ft-trait-v1", "arkadiko-stake-registry-v1-1"]
+path = "contracts/arkadiko-stake-pool-diko-v1-1.clar"
 
-[contracts.oracle-trait]
-depends_on = []
-path = "contracts/oracle-trait.clar"
+[contracts.arkadiko-stake-pool-trait-v1]
+depends_on = ["arkadiko-mock-ft-trait-v1"]
+path = "contracts/arkadiko-stake-pool-trait-v1.clar"
 
-[contracts.stacker]
-depends_on = ["stacker-trait", "vault-data"]
-path = "contracts/stacker.clar"
+[contracts.arkadiko-stake-registry-v1-1]
+depends_on = ["arkadiko-token", "arkadiko-stake-pool-trait-v1", "arkadiko-mock-ft-trait-v1"]
+path = "contracts/arkadiko-stake-registry-v1-1.clar"
 
-[contracts.stacker-trait]
-depends_on = []
-path = "contracts/stacker-trait.clar"
-
-[contracts.stx-reserve]
-depends_on = ["collateral-types", "oracle", "dao", "xusd-token", "mock-ft-trait", "vault-trait"]
-path = "contracts/stx-reserve.clar"
-
-[contracts.vault-trait]
-depends_on = ["mock-ft-trait"]
-path = "contracts/vault-trait.clar"
-
-[contracts.vault-manager-trait]
-depends_on = []
-path = "contracts/vault-manager-trait.clar"
+[contracts.arkadiko-vault-rewards-v1-1]
+depends_on = ["arkadiko-token"]
+path = "contracts/arkadiko-vault-rewards-v1-1.clar"
 
 [contracts.xusd-token]
-depends_on = ["mock-ft-trait", "dao"]
+depends_on = ["arkadiko-mock-ft-trait-v1", "arkadiko-dao"]
 path = "contracts/xusd-token.clar"
 
 [contracts.xstx-token]
-depends_on = ["mock-ft-trait"]
+depends_on = ["arkadiko-mock-ft-trait-v1"]
 path = "contracts/xstx-token.clar"
 
-[contracts.sip10-reserve]
-depends_on = ["collateral-types", "mock-ft-trait", "vault-trait", "oracle", "dao", "xusd-token", "xstx-token"]
-path = "contracts/sip10-reserve.clar"
-
-[contracts.stake-registry]
-depends_on = ["arkadiko-token", "stake-pool-trait", "mock-ft-trait"]
-path = "contracts/stake-registry.clar"
-
-[contracts.stake-pool-trait]
-depends_on = ["mock-ft-trait"]
-path = "contracts/stake-pool-trait.clar"
-
-[contracts.stake-pool-diko]
-depends_on = ["stake-pool-trait", "arkadiko-token", "mock-ft-trait", "stake-registry"]
-path = "contracts/stake-pool-diko.clar"
-
-[contracts.diko-guardian]
+[contracts.arkadiko-diko-init]
 depends_on = ["arkadiko-token"]
-path = "contracts/diko-guardian.clar"
-
-[contracts.diko-init]
-depends_on = ["arkadiko-token"]
-path = "contracts/diko-init.clar"
-
-[contracts.vault-rewards]
-depends_on = ["arkadiko-token"]
-path = "contracts/vault-rewards.clar"
+path = "contracts/arkadiko-diko-init.clar"

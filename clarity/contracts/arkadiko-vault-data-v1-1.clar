@@ -46,7 +46,7 @@
   (default-to
     {
       id: u0,
-      owner: (contract-call? .dao get-dao-owner),
+      owner: (contract-call? .arkadiko-dao get-dao-owner),
       collateral: u0,
       collateral-type: "",
       collateral-token: "",
@@ -82,7 +82,7 @@
 
 (define-public (set-last-vault-id (vault-id uint))
   (begin
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
 
     (ok (var-set last-vault-id vault-id))
   )
@@ -98,8 +98,8 @@
   (let ((vault (get-vault-by-id vault-id)))
     (asserts!
       (or
-        (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie")))
-        (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "stacker")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker")))
       )
       (err ERR-NOT-AUTHORIZED)
     )
@@ -111,7 +111,7 @@
 
 (define-public (update-vault-entries (user principal) (vault-id uint))
   (let ((entries (get ids (get-vault-entries user))))
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
 
     (map-set vault-entries { user: user } { ids: (unwrap-panic (as-max-len? (append entries vault-id) u1200)) })
     (ok true)
@@ -132,7 +132,7 @@
     (vault (get-vault-by-id vault-id))
     (entries (get ids (get-vault-entries (get owner vault))))
   )
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
 
     (map-set closing-vault { user: (get owner vault) } { vault-id: vault-id })
     (if (map-set vault-entries { user: tx-sender } { ids: (filter remove-burned-vault entries) })
@@ -146,7 +146,7 @@
 ;; when a vault gets liquidated, the vault owner is no longer eligible for the yield
 (define-public (reset-stacking-payouts (vault-id uint))
   (begin
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
 
     (map-set stacking-payout
       { vault-id: vault-id }
@@ -164,8 +164,8 @@
   )
     (asserts!
       (or
-        (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie")))
-        (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "auction-engine")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "auction-engine")))
       )
       (err ERR-NOT-AUTHORIZED)
     )

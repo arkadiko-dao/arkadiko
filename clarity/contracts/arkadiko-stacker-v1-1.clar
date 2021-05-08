@@ -1,4 +1,4 @@
-(impl-trait .stacker-trait.stacker-trait)
+(impl-trait .arkadiko-stacker-trait-v1.stacker-trait)
 
 ;; Stacker can initiate stacking for the STX reserve
 ;; The amount to stack is kept as a data var in the stx reserve
@@ -57,12 +57,12 @@
   (begin
     (asserts!
       (and
-        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
         (is-eq (var-get stacker-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-    (asserts! (is-eq tx-sender (contract-call? .dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
     (ok (var-set stacking-stx-received stx-received))
   )
@@ -70,7 +70,7 @@
 
 (define-public (toggle-stacker-shutdown)
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
     (ok (var-set stacker-shutdown-activated (not (var-get stacker-shutdown-activated))))
   )
@@ -82,15 +82,15 @@
   ;; 1. check `get-stacking-minimum` or `can-stack-stx` to see if we have > minimum tokens
   ;; 2. call `stack-stx` for 1 `lock-period` fixed
   (let (
-    (tokens-to-stack (unwrap! (contract-call? .stx-reserve get-tokens-to-stack) (ok u0)))
+    (tokens-to-stack (unwrap! (contract-call? .arkadiko-stx-reserve-v1-1 get-tokens-to-stack) (ok u0)))
     (can-stack (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox can-stack-stx pox-addr tokens-to-stack start-burn-ht lock-period)))
     (stx-balance (unwrap-panic (get-stx-balance)))
   )
-    (asserts! (is-eq tx-sender (contract-call? .dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
     (asserts! (>= burn-block-height (var-get stacking-unlock-burn-height)) (err ERR-ALREADY-STACKING))
     (asserts!
       (and
-        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
         (is-eq (var-get stacker-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
@@ -99,7 +99,7 @@
     ;; check if we can stack - if not, then probably cause we have not reached the minimum with (var-get tokens-to-stack)
     (if (unwrap! can-stack (err ERR-CANNOT-STACK))
       (begin
-        (try! (contract-call? .stx-reserve request-stx-to-stack (- tokens-to-stack stx-balance)))
+        (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-stack (- tokens-to-stack stx-balance)))
         (let (
           (result
             (unwrap!
@@ -123,21 +123,21 @@
   (begin
     (asserts!
       (or
-        (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie")))
-        (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "stacker")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker")))
       )
       (err ERR-NOT-AUTHORIZED)
     )
     (asserts!
       (and
-        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
         (is-eq (var-get stacker-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
 
     (as-contract
-      (stx-transfer? ustx-amount (as-contract tx-sender) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "stx-reserve")))
+      (stx-transfer? ustx-amount (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
     )
   )
 )
@@ -153,9 +153,9 @@
 ;; we pay out the yield in STX tokens
 (define-public (payout (vault-id uint))
   (let (
-    (vault (contract-call? .vault-data get-vault-by-id vault-id))
+    (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
   )
-    (asserts! (is-eq tx-sender (contract-call? .dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
     (asserts!
       (or
         (is-eq "xSTX" (get collateral-token vault))
@@ -166,7 +166,7 @@
     (asserts! (>= burn-block-height (var-get stacking-unlock-burn-height)) (err ERR-BURN-HEIGHT-NOT-REACHED))
     (asserts!
       (and
-        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
         (is-eq (var-get stacker-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
@@ -183,8 +183,8 @@
 
 (define-private (payout-liquidated-vault (vault-id uint))
   (let (
-    (vault (contract-call? .vault-data get-vault-by-id vault-id))
-    (stacking-entry (contract-call? .vault-data get-stacking-payout vault-id))
+    (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
+    (stacking-entry (contract-call? .arkadiko-vault-data-v1-1 get-stacking-payout vault-id))
   )
     (asserts! (is-eq (get is-liquidated vault) true) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get auction-ended vault) true) (err ERR-NOT-AUTHORIZED))
@@ -211,7 +211,7 @@
 
 (define-private (calculate-vault-reward (vault-id uint))
   (let (
-    (vault (contract-call? .vault-data get-vault-by-id vault-id))
+    (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
     (basis-points (/ (* u10000 (get stacked-tokens vault)) (var-get stacking-stx-stacked))) ;; (100 * 100 * vault-stacked-tokens / stx-stacked)
   )
     (/ (* (var-get stacking-stx-received) basis-points) u10000)
@@ -220,20 +220,20 @@
 
 (define-private (payout-vault (vault-id uint))
   (let (
-    (vault (contract-call? .vault-data get-vault-by-id vault-id))
+    (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
     (earned-amount (calculate-vault-reward vault-id))
     (new-collateral-amount (+ earned-amount (get collateral vault)))
   )
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-NOT-AUTHORIZED))
     (asserts! (> (get stacked-tokens vault) u0) (err ERR-NOT-AUTHORIZED))
 
-    (try! (contract-call? .vault-data update-vault vault-id (merge vault { collateral: new-collateral-amount })))
+    (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault { collateral: new-collateral-amount })))
     (if (get revoked-stacking vault)
       (begin
-        (try! (contract-call? .vault-data update-vault vault-id (merge vault { updated-at-block-height: block-height, stacked-tokens: u0 })))
+        (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault { updated-at-block-height: block-height, stacked-tokens: u0 })))
         (try! (request-stx-for-withdrawal new-collateral-amount))
       )
-      (try! (contract-call? .vault-data update-vault vault-id (merge vault {
+      (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
         updated-at-block-height: block-height,
         stacked-tokens: new-collateral-amount,
         collateral: new-collateral-amount

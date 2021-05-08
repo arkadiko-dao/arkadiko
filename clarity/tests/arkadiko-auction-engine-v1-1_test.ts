@@ -16,17 +16,17 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
     let block = chain.mineBlock([
       // Initialize price of STX to $2 in the oracle
-      Tx.contractCall("oracle", "update-price", [
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
         types.uint(200),
       ], deployer.address),
-      Tx.contractCall("freddie", "collateralize-and-mint", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000), // 1000 STX
         types.uint(1300000000), // mint 1300 xUSD
         types.principal(deployer.address),
         types.ascii("STX-A"),
         types.ascii("STX"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stx-reserve"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       ], deployer.address)
     ]);
@@ -35,13 +35,13 @@ Clarinet.test({
       .expectUint(1300000000);
 
     block = chain.mineBlock([
-      Tx.contractCall("oracle", "update-price", [
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
         types.uint(150),
       ], deployer.address),
-      Tx.contractCall("liquidator", "notify-risky-vault", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.auction-engine'),
+      Tx.contractCall("arkadiko-liquidator-v1-1", "notify-risky-vault", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1'),
         types.uint(1),
       ], deployer.address),
     ]);
@@ -52,7 +52,7 @@ Clarinet.test({
     // Now the liquidation started and an auction should have been created!
     // Make a bid on the first 1000 xUSD
     let call = await chain.callReadOnlyFn(
-      "auction-engine",
+      "arkadiko-auction-engine-v1-1",
       "get-auctions",
       [],
       wallet_1.address,
@@ -72,9 +72,9 @@ Clarinet.test({
     call.result.expectOk().expectUint(2300000030);
 
     block = chain.mineBlock([
-      Tx.contractCall("auction-engine", "bid", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1'),
         types.uint(1),
         types.uint(0),
         types.uint(bidSize)
@@ -82,12 +82,12 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
     call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.auction-engine'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1'),
     ], deployer.address);
     call.result.expectOk().expectUint(1000000000);
 
     let lastBidCall = await chain.callReadOnlyFn(
-      "auction-engine",
+      "arkadiko-auction-engine-v1-1",
       "get-last-bid",
       [types.uint(1), types.uint(0)],
       wallet_1.address
@@ -97,13 +97,13 @@ Clarinet.test({
     lastBid['xusd'].expectUint(1000000000);
 
     block = chain.mineBlock([
-      Tx.contractCall("auction-engine", "fetch-minimum-collateral-amount", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "fetch-minimum-collateral-amount", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1'),
         types.uint(1)
       ], wallet_1.address),
-      Tx.contractCall("auction-engine", "bid", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1'),
         types.uint(1),
         types.uint(1),
         types.uint(379000000) // 1.44 (discounted price of STX) * minimum collateral
@@ -113,7 +113,7 @@ Clarinet.test({
     block.receipts[1].result.expectOk().expectBool(true);
 
     call = await chain.callReadOnlyFn(
-      "auction-engine",
+      "arkadiko-auction-engine-v1-1",
       "get-auction-by-id",
       [types.uint(1)],
       wallet_1.address,
@@ -122,7 +122,7 @@ Clarinet.test({
     auction['is-open'].expectBool(false);
 
     call = await chain.callReadOnlyFn(
-      "freddie",
+      "arkadiko-freddie-v1-1",
       "get-vault-by-id",
       [types.uint(1)],
       wallet_1.address
@@ -137,19 +137,19 @@ Clarinet.test({
 
     // now check the wallet of contract - should have burned all required xUSD, and have some left for burning gov tokens
     call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.auction-engine'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1'),
     ], deployer.address);
     call.result.expectOk().expectUint(79000000); // 79 dollars left
 
     // now try withdrawing the xSTX tokens that are not mine
     block = chain.mineBlock([
-      Tx.contractCall("auction-engine", "redeem-lot-collateral", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "redeem-lot-collateral", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xstx-token",
         ),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
         ),
         types.uint(1),
         types.uint(0)
@@ -159,13 +159,13 @@ Clarinet.test({
 
     // now try withdrawing the xSTX tokens that are mine
     block = chain.mineBlock([
-      Tx.contractCall("auction-engine", "redeem-lot-collateral", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "redeem-lot-collateral", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xstx-token",
         ),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
         ),
         types.uint(1),
         types.uint(0)
@@ -178,25 +178,25 @@ Clarinet.test({
     call.result.expectOk().expectUint(694444444);
 
     // At this point, no STX are redeemable yet
-    call = await chain.callReadOnlyFn("freddie", "get-stx-redeemable", [], deployer.address);
+    call = await chain.callReadOnlyFn("arkadiko-freddie-v1-1", "get-stx-redeemable", [], deployer.address);
     call.result.expectOk().expectUint(0);
 
     // Release stacked STX and make them redeemable
     block = chain.mineBlock([
-      Tx.contractCall("freddie", "release-stacked-stx", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stacker'),
+      Tx.contractCall("arkadiko-freddie-v1-1", "release-stacked-stx", [
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stacker-v1-1"),
         types.uint(1)
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
     // Original vault had 1000 STX which is now redeemable
-    call = await chain.callReadOnlyFn("freddie", "get-stx-redeemable", [], deployer.address);
+    call = await chain.callReadOnlyFn("arkadiko-freddie-v1-1", "get-stx-redeemable", [], deployer.address);
     call.result.expectOk().expectUint(1000000000);
     
     // Redeem STX - too much
     block = chain.mineBlock([
-      Tx.contractCall("freddie", "redeem-stx", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "redeem-stx", [
         types.uint(1694444444)
       ], deployer.address)
     ]);
@@ -204,7 +204,7 @@ Clarinet.test({
 
     // Redeem STX - 0
     block = chain.mineBlock([
-      Tx.contractCall("freddie", "redeem-stx", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "redeem-stx", [
         types.uint(0)
       ], deployer.address)
     ]);
@@ -212,7 +212,7 @@ Clarinet.test({
 
     // Redeem STX - all
     block = chain.mineBlock([
-      Tx.contractCall("freddie", "redeem-stx", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "redeem-stx", [
         types.uint(694444444)
       ], deployer.address)
     ]);
@@ -226,9 +226,9 @@ Clarinet.test({
 
     // Withdraw leftover collateral
     block = chain.mineBlock([
-      Tx.contractCall("freddie", "withdraw-leftover-collateral", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "withdraw-leftover-collateral", [
         types.uint(1),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stx-reserve"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       ], deployer.address)
     ]);
@@ -245,17 +245,17 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
     let block = chain.mineBlock([
       // Initialize price of STX to $2 in the oracle
-      Tx.contractCall("oracle", "update-price", [
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
         types.uint(200),
       ], deployer.address),
-      Tx.contractCall("freddie", "collateralize-and-mint", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000), // 100 STX
         types.uint(1300000000), // mint 130 xUSD
         types.principal(deployer.address),
         types.ascii("STX-A"),
         types.ascii("STX"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stx-reserve"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       ], deployer.address)
     ]);
@@ -264,13 +264,13 @@ Clarinet.test({
       .expectUint(1300000000);
 
     block = chain.mineBlock([
-      Tx.contractCall("oracle", "update-price", [
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
         types.uint(12), // 12 cents
       ], deployer.address),
-      Tx.contractCall("liquidator", "notify-risky-vault", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.auction-engine'),
+      Tx.contractCall("arkadiko-liquidator-v1-1", "notify-risky-vault", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1'),
         types.uint(1),
       ], deployer.address),
     ]);
@@ -281,13 +281,13 @@ Clarinet.test({
     // Now the liquidation started and an auction should have been created!
     // Make a bid on the first 1000 xUSD
     block = chain.mineBlock([
-      Tx.contractCall("auction-engine", "fetch-minimum-collateral-amount", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "fetch-minimum-collateral-amount", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1'),
         types.uint(1)
       ], wallet_1.address),
-      Tx.contractCall("auction-engine", "bid", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1'),
         types.uint(1),
         types.uint(0),
         types.uint(bidSize)
@@ -299,7 +299,7 @@ Clarinet.test({
     // The auction sold off all of its collateral now, but not enough debt was raised
     // As a result, we will raise debt through a governance token auction
     let call = await chain.callReadOnlyFn(
-      "auction-engine",
+      "arkadiko-auction-engine-v1-1",
       "get-auction-by-id",
       [types.uint(1)],
       wallet_1.address
@@ -310,13 +310,13 @@ Clarinet.test({
     chain.mineEmptyBlock(160);
 
     block = chain.mineBlock([
-      Tx.contractCall("auction-engine", "close-auction", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "close-auction", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
         types.uint(1)
       ], deployer.address)
     ]);
     call = await chain.callReadOnlyFn(
-      "auction-engine",
+      "arkadiko-auction-engine-v1-1",
       "get-auction-by-id",
       [types.uint(1)],
       wallet_1.address
@@ -327,7 +327,7 @@ Clarinet.test({
     const debtToRaise = auction['debt-to-raise'].expectUint(1378000007); // 1378 xUSD
 
     call = await chain.callReadOnlyFn(
-      "auction-engine",
+      "arkadiko-auction-engine-v1-1",
       "get-auction-by-id",
       [types.uint(2)],
       wallet_1.address
@@ -337,13 +337,13 @@ Clarinet.test({
     dikoAuction['debt-to-raise'].expectUint(debtToRaise - debtRaised); // raise the remainder of previous auction
 
     block = chain.mineBlock([
-      Tx.contractCall("oracle", "update-price", [
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("DIKO"),
         types.uint(200),
       ], deployer.address),
-      Tx.contractCall("auction-engine", "bid", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1'),
         types.uint(2),
         types.uint(0),
         types.uint(430000000)
@@ -352,7 +352,7 @@ Clarinet.test({
     block.receipts[1].result.expectOk().expectBool(true);
 
     call = await chain.callReadOnlyFn(
-      "auction-engine",
+      "arkadiko-auction-engine-v1-1",
       "get-auction-by-id",
       [types.uint(2)],
       wallet_1.address
@@ -361,7 +361,7 @@ Clarinet.test({
     dikoAuction['is-open'].expectBool(false);
 
     call = await chain.callReadOnlyFn(
-      "freddie",
+      "arkadiko-freddie-v1-1",
       "get-vault-by-id",
       [types.uint(1)],
       wallet_1.address
@@ -381,17 +381,17 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
     let block = chain.mineBlock([
       // Initialize price of STX to $2 in the oracle
-      Tx.contractCall("oracle", "update-price", [
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
         types.uint(200),
       ], deployer.address),
-      Tx.contractCall("freddie", "collateralize-and-mint", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000), // 100 STX
         types.uint(1300000000), // mint 130 xUSD
         types.principal(wallet_1.address),
         types.ascii("STX-A"),
         types.ascii("STX"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stx-reserve"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       ], wallet_1.address)
     ]);
@@ -400,13 +400,13 @@ Clarinet.test({
       .expectUint(1300000000);
 
     block = chain.mineBlock([
-      Tx.contractCall("oracle", "update-price", [
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
         types.uint(150),
       ], deployer.address),
-      Tx.contractCall("liquidator", "notify-risky-vault", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.auction-engine'),
+      Tx.contractCall("arkadiko-liquidator-v1-1", "notify-risky-vault", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1'),
         types.uint(1),
       ], deployer.address),
     ]);
@@ -417,9 +417,9 @@ Clarinet.test({
     // Now the liquidation started and an auction should have been created!
     // Make a bid on the first 100 xUSD
     block = chain.mineBlock([
-      Tx.contractCall("auction-engine", "bid", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1'),
         types.uint(1),
         types.uint(0),
         types.uint(bidSize)
@@ -428,7 +428,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
 
     let call = await chain.callReadOnlyFn(
-      "auction-engine",
+      "arkadiko-auction-engine-v1-1",
       "get-auction-by-id",
       [types.uint(1)],
       wallet_1.address
@@ -441,13 +441,13 @@ Clarinet.test({
     chain.mineEmptyBlock(160);
 
     block = chain.mineBlock([
-      Tx.contractCall("auction-engine", "close-auction", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "close-auction", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
         types.uint(1)
       ], deployer.address)
     ]);
     call = await chain.callReadOnlyFn(
-      "auction-engine",
+      "arkadiko-auction-engine-v1-1",
       "get-auction-by-id",
       [types.uint(1)],
       wallet_1.address
@@ -466,17 +466,17 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
     let block = chain.mineBlock([
       // Initialize price of STX to $2 in the oracle
-      Tx.contractCall("oracle", "update-price", [
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
         types.uint(200),
       ], deployer.address),
-      Tx.contractCall("freddie", "collateralize-and-mint", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(100000000), // 100 STX
         types.uint(130000000), // mint 130 xUSD
         types.principal(wallet_1.address),
         types.ascii("STX-A"),
         types.ascii("STX"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stx-reserve"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       ], wallet_1.address)
     ]);
@@ -485,13 +485,13 @@ Clarinet.test({
       .expectUint(130000000);
 
     block = chain.mineBlock([
-      Tx.contractCall("oracle", "update-price", [
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
         types.uint(150),
       ], deployer.address),
-      Tx.contractCall("liquidator", "notify-risky-vault", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.auction-engine'),
+      Tx.contractCall("arkadiko-liquidator-v1-1", "notify-risky-vault", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1'),
         types.uint(1),
       ], deployer.address),
     ]);
@@ -502,9 +502,9 @@ Clarinet.test({
     // Now the liquidation started and an auction should have been created!
     // Make a bid on the first 100 xUSD
     block = chain.mineBlock([
-      Tx.contractCall("auction-engine", "bid", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1'),
         types.uint(1),
         types.uint(0),
         types.uint(60000000)
@@ -512,7 +512,7 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
     let call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.auction-engine'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1'),
     ], deployer.address);
     call.result.expectOk().expectUint(60000000);
 
@@ -523,9 +523,9 @@ Clarinet.test({
 
     // place new bid higher than 60 (e.g. 100)
     block = chain.mineBlock([
-      Tx.contractCall("auction-engine", "bid", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1'),
         types.uint(1),
         types.uint(0),
         types.uint(bidSize)
@@ -548,17 +548,17 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
     let block = chain.mineBlock([
       // Initialize price of STX to $2 in the oracle
-      Tx.contractCall("oracle", "update-price", [
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
         types.uint(200),
       ], deployer.address),
-      Tx.contractCall("freddie", "collateralize-and-mint", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000), // 100 STX
         types.uint(1300000000), // mint 130 xUSD
         types.principal(wallet_1.address),
         types.ascii("STX-A"),
         types.ascii("STX"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stx-reserve"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       ], wallet_1.address)
     ]);
@@ -567,13 +567,13 @@ Clarinet.test({
       .expectUint(1300000000);
 
     block = chain.mineBlock([
-      Tx.contractCall("oracle", "update-price", [
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
         types.uint(150),
       ], deployer.address),
-      Tx.contractCall("liquidator", "notify-risky-vault", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.auction-engine'),
+      Tx.contractCall("arkadiko-liquidator-v1-1", "notify-risky-vault", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1'),
         types.uint(1),
       ], deployer.address),
     ]);
@@ -584,9 +584,9 @@ Clarinet.test({
     // Now the liquidation started and an auction should have been created!
     // Make a bid on the first 100 xUSD
     block = chain.mineBlock([
-      Tx.contractCall("auction-engine", "bid", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1'),
         types.uint(1),
         types.uint(0),
         types.uint(bidSize)
@@ -595,9 +595,9 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
 
     block = chain.mineBlock([
-      Tx.contractCall("auction-engine", "bid", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1'),
         types.uint(1),
         types.uint(0),
         types.uint(bidSize)
@@ -615,17 +615,17 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
     let block = chain.mineBlock([
       // Initialize price of STX to $2 in the oracle
-      Tx.contractCall("oracle", "update-price", [
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
         types.uint(200),
       ], deployer.address),
-      Tx.contractCall("freddie", "collateralize-and-mint", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(100000000), // 100 STX
         types.uint(130000000), // mint 130 xUSD
         types.principal(wallet_1.address),
         types.ascii("STX-A"),
         types.ascii("STX"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stx-reserve"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       ], wallet_1.address)
     ]);
@@ -634,13 +634,13 @@ Clarinet.test({
       .expectUint(130000000);
 
     block = chain.mineBlock([
-      Tx.contractCall("oracle", "update-price", [
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
         types.uint(150),
       ], deployer.address),
-      Tx.contractCall("liquidator", "notify-risky-vault", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.auction-engine'),
+      Tx.contractCall("arkadiko-liquidator-v1-1", "notify-risky-vault", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1'),
         types.uint(1),
       ], deployer.address),
     ]);
@@ -651,9 +651,9 @@ Clarinet.test({
     // Now the liquidation started and an auction should have been created!
     // Make a bid on the first 100 xUSD
     block = chain.mineBlock([
-      Tx.contractCall("auction-engine", "bid", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1'),
         types.uint(1),
         types.uint(0),
         types.uint(90000000)
@@ -662,9 +662,9 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
 
     block = chain.mineBlock([
-      Tx.contractCall("auction-engine", "bid", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1'),
         types.uint(1),
         types.uint(0),
         types.uint(80000000)
@@ -685,10 +685,10 @@ Clarinet.test({name: "auction engine: cannot start auction when emergency shutdo
     // Now the liquidation started and an auction should have been created!
     // Make a bid on the first 1000 xUSD
     let block = chain.mineBlock([
-      Tx.contractCall("auction-engine", "toggle-auction-engine-shutdown", [], deployer.address),
-      Tx.contractCall("auction-engine", "bid", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle'),
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "toggle-auction-engine-shutdown", [], deployer.address),
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1'),
         types.uint(1),
         types.uint(0),
         types.uint(bidSize)
@@ -703,30 +703,30 @@ function createVaultAndLiquidate(chain: Chain, accounts: Map<string, Account>) {
   let deployer = accounts.get("deployer")!;
   let block = chain.mineBlock([
     // Initialize price of STX to $2 in the oracle
-    Tx.contractCall("oracle", "update-price", [
+    Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
       types.ascii("STX"),
       types.uint(200),
     ], deployer.address),
-    Tx.contractCall("freddie", "collateralize-and-mint", [
+    Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
       types.uint(1000000000), // 100 STX
       types.uint(1300000000), // mint 130 xUSD
       types.principal(deployer.address),
       types.ascii("STX-A"),
       types.ascii("STX"),
-      types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.stx-reserve"),
+      types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
       types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
     ], deployer.address)
   ]);
   block.receipts[1].result.expectOk().expectUint(1300000000);
 
   block = chain.mineBlock([
-    Tx.contractCall("oracle", "update-price", [
+    Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
       types.ascii("STX"),
       types.uint(12), // 12 cents
     ], deployer.address),
-    Tx.contractCall("liquidator", "notify-risky-vault", [
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.freddie'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.auction-engine'),
+    Tx.contractCall("arkadiko-liquidator-v1-1", "notify-risky-vault", [
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1'),
       types.uint(1),
     ], deployer.address),
   ]);

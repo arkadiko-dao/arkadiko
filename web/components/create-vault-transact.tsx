@@ -67,7 +67,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
     await doContractCall({
       network,
       contractAddress,
-      contractName: 'freddie',
+      contractName: 'arkadiko-freddie-v1-1',
       functionName: 'collateralize-and-mint',
       functionArgs: args,
       postConditionMode: 0x01,

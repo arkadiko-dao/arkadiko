@@ -60,7 +60,7 @@ export const Mint = () => {
     await doContractCall({
       network,
       contractAddress,
-      contractName: 'dao',
+      contractName: 'arkadiko-dao',
       functionName: 'request-diko-tokens',
       functionArgs: [
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
@@ -77,7 +77,7 @@ export const Mint = () => {
     await doContractCall({
       network,
       contractAddress,
-      contractName: 'freddie',
+      contractName: 'arkadiko-freddie-v1-1',
       functionName: 'redeem-xusd',
       functionArgs: [
         uintCV(1502707),

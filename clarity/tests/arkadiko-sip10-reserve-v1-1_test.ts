@@ -27,18 +27,18 @@ Clarinet.test({
 
     // Update price of DIKO, Create a new vault
     let block = chain.mineBlock([
-      Tx.contractCall("oracle", "update-price", [
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("DIKO"),
         types.uint(200),
       ], deployer.address),
-      Tx.contractCall("freddie", "collateralize-and-mint", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(20000000),
         types.uint(5000000),
         types.principal(deployer.address),
         types.ascii("DIKO-A"),
         types.ascii("DIKO"),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
         ),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -55,12 +55,12 @@ Clarinet.test({
 
     let [dikoTransferEvent, xusdMintEvent, vaultNotifEvent] =
       block.receipts[1].events;
-    // Ensure that 20000000 units from .arkadiko-token::diko where successfully transfered from wallet_1 to .sip10-reserve
+    // Ensure that 20000000 units from .arkadiko-token::diko where successfully transfered from wallet_1 to .arkadiko-sip10-reserve-v1-1
     dikoTransferEvent.ft_transfer_event.sender
       .expectPrincipal(deployer.address);
     dikoTransferEvent.ft_transfer_event.recipient
       .expectPrincipal(
-        "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
+        "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
       );
     dikoTransferEvent.ft_transfer_event.amount
       .expectInt(20000000);
@@ -111,18 +111,18 @@ Clarinet.test({
 
     // Update price of DIKO, Create a new vault
     let block = chain.mineBlock([
-      Tx.contractCall("oracle", "update-price", [
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("DIKO"),
         types.uint(200),
       ], deployer.address),
-      Tx.contractCall("freddie", "collateralize-and-mint", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(20000000),
         types.uint(5000000),
         types.principal(deployer.address),
         types.ascii("DIKO-A"),
         types.ascii("DIKO"),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
         ),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -145,11 +145,11 @@ Clarinet.test({
     var vauldId = vault["id"].expectUint(1);
 
     block = chain.mineBlock([
-      Tx.contractCall("freddie", "deposit", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "deposit", [
         types.uint(vauldId),
         types.uint(20000000),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
         ),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -158,12 +158,12 @@ Clarinet.test({
     ]);
 
     var [dikoTransferEvent, dikoMintEvent, vaultNotifEvent] = block.receipts[0].events;
-    // Ensure that 20000000 units from .arkadiko-token::diko where successfully transfered from wallet_1 to .sip10-reserve
+    // Ensure that 20000000 units from .arkadiko-token::diko where successfully transfered from wallet_1 to .arkadiko-sip10-reserve-v1-1
     dikoTransferEvent.ft_transfer_event.sender
       .expectPrincipal(deployer.address);
     dikoTransferEvent.ft_transfer_event.recipient
       .expectPrincipal(
-        "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
+        "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
       );
     dikoTransferEvent.ft_transfer_event.amount
       .expectInt(20000000);
@@ -190,18 +190,18 @@ Clarinet.test({
 
     // Update price of DIKO, Create a new vault
     let block = chain.mineBlock([
-      Tx.contractCall("oracle", "update-price", [
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("DIKO"),
         types.uint(200),
       ], deployer.address),
-      Tx.contractCall("freddie", "collateralize-and-mint", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(20000000),
         types.uint(5000000),
         types.principal(deployer.address),
         types.ascii("DIKO-A"),
         types.ascii("DIKO"),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
         ),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -224,11 +224,11 @@ Clarinet.test({
     var vauldId = vault["id"].expectUint(1);
 
     block = chain.mineBlock([
-      Tx.contractCall("freddie", "deposit", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "deposit", [
         types.uint(vauldId),
         types.uint(20000000),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
         ),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -241,11 +241,11 @@ Clarinet.test({
       .expectBool(true);
 
     block = chain.mineBlock([
-      Tx.contractCall("freddie", "withdraw", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "withdraw", [
         types.uint(vauldId),
         types.uint(5000000),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
         ),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -254,10 +254,10 @@ Clarinet.test({
     ]);
 
     var [dikoTransferEvent, dikoMintEvent, vaultNotifEvent] = block.receipts[0].events;
-    // Ensure that 20_000_000 units from .arkadiko-token::diko where successfully transfered from wallet_1 to .sip10-reserve
+    // Ensure that 20_000_000 units from .arkadiko-token::diko where successfully transfered from wallet_1 to .arkadiko-sip10-reserve-v1-1
     dikoTransferEvent.ft_transfer_event.sender
       .expectPrincipal(
-        "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
+        "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
       );
     dikoTransferEvent.ft_transfer_event.recipient
       .expectPrincipal(
@@ -280,18 +280,18 @@ Clarinet.test({
 
     // Update price of DIKO, Create a new vault
     let block = chain.mineBlock([
-      Tx.contractCall("oracle", "update-price", [
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("DIKO"),
         types.uint(200),
       ], deployer.address),
-      Tx.contractCall("freddie", "collateralize-and-mint", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(20000000),
         types.uint(5000000),
         types.principal(deployer.address),
         types.ascii("DIKO-A"),
         types.ascii("DIKO"),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
         ),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -319,11 +319,11 @@ Clarinet.test({
     call.result.expectOk().expectUint(1005000000);
 
     block = chain.mineBlock([
-      Tx.contractCall("freddie", "mint", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "mint", [
         types.uint(vauldId),
         types.uint(1000000),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
         ),
       ], deployer.address),
     ]);
@@ -356,18 +356,18 @@ Clarinet.test({
 
     // Update price of DIKO, Create a new vault
     let block = chain.mineBlock([
-      Tx.contractCall("oracle", "update-price", [
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("DIKO"),
         types.uint(200),
       ], deployer.address),
-      Tx.contractCall("freddie", "collateralize-and-mint", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(20000000),
         types.uint(5000000),
         types.principal(deployer.address),
         types.ascii("DIKO-A"),
         types.ascii("DIKO"),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
         ),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -390,21 +390,21 @@ Clarinet.test({
     var vauldId = vault["id"].expectUint(1);
 
     block = chain.mineBlock([
-      Tx.contractCall("freddie", "deposit", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "deposit", [
         types.uint(vauldId),
         types.uint(20000000),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
         ),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
         ),
       ], deployer.address),
-      Tx.contractCall("freddie", "withdraw", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "withdraw", [
         types.uint(vauldId),
         types.uint(5000000),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
         ),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -420,11 +420,11 @@ Clarinet.test({
       .expectBool(true);
 
     block = chain.mineBlock([
-      Tx.contractCall("freddie", "mint", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "mint", [
         types.uint(vauldId),
         types.uint(1000000),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
         ),
       ], deployer.address),
     ]);
@@ -451,11 +451,11 @@ Clarinet.test({
     vault["debt"].expectUint(6000000);
 
     block = chain.mineBlock([
-      Tx.contractCall("freddie", "burn", [
+      Tx.contractCall("arkadiko-freddie-v1-1", "burn", [
         types.uint(vauldId),
         types.uint(6000000),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
         ),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -475,10 +475,10 @@ Clarinet.test({
       ),
     );
 
-    // Ensure that 35_000_000 units from .arkadiko-token::diko where successfully transfered from .sip10-reserve to wallet_1
+    // Ensure that 35_000_000 units from .arkadiko-token::diko where successfully transfered from .arkadiko-sip10-reserve-v1-1 to wallet_1
     dikoTransferEvent.ft_transfer_event.sender
       .expectPrincipal(
-        "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.sip10-reserve",
+        "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
       );
     dikoTransferEvent.ft_transfer_event.recipient
       .expectPrincipal(deployer.address);

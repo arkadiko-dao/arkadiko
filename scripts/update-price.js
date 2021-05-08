@@ -1,6 +1,6 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-const CONTRACT_NAME = 'oracle';
+const CONTRACT_NAME = 'arkadiko-oracle-v1-1';
 const FUNCTION_NAME = 'update-price';
 const rp = require('request-promise');
 const tx = require('@stacks/transactions');

@@ -1,4 +1,4 @@
-(impl-trait .oracle-trait.oracle-trait)
+(impl-trait .arkadiko-oracle-trait-v1.oracle-trait)
 
 ;; for now this is a fairly centralised Oracle, which is subject to failure.
 ;; Ideally, we implement a Chainlink Price Feed Oracle ASAP

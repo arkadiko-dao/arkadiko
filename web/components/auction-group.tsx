@@ -57,11 +57,11 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
     await doContractCall({
       network,
       contractAddress,
-      contractName: 'auction-engine',
+      contractName: 'arkadiko-auction-engine-v1-1',
       functionName: 'bid',
       functionArgs: [
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'freddie'),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'oracle'),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-freddie-v1-1'),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1'),
         uintCV(bidAuctionId),
         uintCV(bidLotId),
         uintCV(bidAmount * 1000000)

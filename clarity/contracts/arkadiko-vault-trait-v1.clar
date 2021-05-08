@@ -1,5 +1,5 @@
 ;; implements a trait that allows collateral of any token (e.g. stx, bitcoin)
-(use-trait mock-ft-trait .mock-ft-trait.mock-ft-trait)
+(use-trait mock-ft-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
 
 (define-trait vault-trait
   (

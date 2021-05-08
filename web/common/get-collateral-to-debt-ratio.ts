@@ -14,7 +14,7 @@ export const getCollateralToDebtRatio = (vaultId: string) => {
     const getCollateralToDebtRatio = async () => {
       const collToDebt = await callReadOnlyFunction({
         contractAddress,
-        contractName: "freddie",
+        contractName: "arkadiko-freddie-v1-1",
         functionName: "calculate-current-collateral-to-debt-ratio",
         functionArgs: [uintCV(vaultId)],
         senderAddress: stxAddress || '',

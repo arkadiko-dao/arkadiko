@@ -1,7 +1,7 @@
 ;; DIKO Guardian - Protecting DIKO staking and pool rewards
 ;; 
 
-(use-trait mock-ft-trait .mock-ft-trait.mock-ft-trait)
+(use-trait mock-ft-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
 
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED (err u22401))

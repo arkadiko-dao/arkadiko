@@ -85,7 +85,7 @@ describe("liquidator test suite", () => {
 
       const auctions = await callReadOnlyFunction({
         contractAddress: deployContractAddress,
-        contractName: "auction-engine",
+        contractName: "arkadiko-auction-engine-v1-1",
         functionName: "get-auctions",
         functionArgs: [],
         senderAddress: contractAddress,

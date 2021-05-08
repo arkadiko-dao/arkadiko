@@ -25,7 +25,7 @@ export const Auctions: React.FC = () => {
     const getData = async () => {
       const auctions = await callReadOnlyFunction({
         contractAddress,
-        contractName: "auction-engine",
+        contractName: "arkadiko-auction-engine-v1-1",
         functionName: "get-auctions",
         functionArgs: [],
         senderAddress: stxAddress || '',
@@ -51,7 +51,7 @@ export const Auctions: React.FC = () => {
       const getLot = async (auctionId:number, lotId:number) => {
         const lot = await callReadOnlyFunction({
           contractAddress,
-          contractName: "auction-engine",
+          contractName: "arkadiko-auction-engine-v1-1",
           functionName: "get-last-bid",
           functionArgs: [uintCV(auctionId), uintCV(lotId)],
           senderAddress: stxAddress || '',
@@ -63,7 +63,7 @@ export const Auctions: React.FC = () => {
 
       const lots = await callReadOnlyFunction({
         contractAddress,
-        contractName: "auction-engine",
+        contractName: "arkadiko-auction-engine-v1-1",
         functionName: "get-winning-lots",
         functionArgs: [standardPrincipalCV(stxAddress || '')],
         senderAddress: stxAddress || '',
@@ -96,7 +96,7 @@ export const Auctions: React.FC = () => {
 
       const stxRedeemable = await callReadOnlyFunction({
         contractAddress,
-        contractName: "freddie",
+        contractName: "arkadiko-freddie-v1-1",
         functionName: "get-stx-redeemable",
         functionArgs: [],
         senderAddress: stxAddress || '',
@@ -116,7 +116,7 @@ export const Auctions: React.FC = () => {
     await doContractCall({
       network,
       contractAddress,
-      contractName: 'freddie',
+      contractName: 'arkadiko-freddie-v1-1',
       functionName: 'redeem-stx',
       functionArgs: [
         uintCV(state.balance['xstx'])

@@ -1,4 +1,4 @@
-(use-trait mock-ft-trait .mock-ft-trait.mock-ft-trait)
+(use-trait mock-ft-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
 
 ;; Arkadiko governance
 ;; 
@@ -93,7 +93,7 @@
 
 (define-public (toggle-governance-shutdown)
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
     (ok (var-set governance-shutdown-activated (not (var-get governance-shutdown-activated))))
   )
@@ -109,13 +109,13 @@
   )
   (let (
     (proposer-balance (unwrap-panic (contract-call? .arkadiko-token get-balance-of tx-sender)))
-    (diko-init-balance (unwrap-panic (contract-call? .arkadiko-token get-balance-of .diko-init)))
+    (diko-init-balance (unwrap-panic (contract-call? .arkadiko-token get-balance-of .arkadiko-diko-init)))
     (supply (- (unwrap-panic (contract-call? .arkadiko-token get-total-supply)) diko-init-balance))
     (proposal-id (+ u1 (var-get proposal-count)))
   )
     (asserts!
       (and
-        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
         (is-eq (var-get governance-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
@@ -152,7 +152,7 @@
   )
     (asserts!
       (and
-        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
         (is-eq (var-get governance-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
@@ -189,7 +189,7 @@
   )
     (asserts!
       (and
-        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
         (is-eq (var-get governance-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
@@ -221,7 +221,7 @@
   (let ((proposal (get-proposal-by-id proposal-id)))
     (asserts!
       (and
-        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
         (is-eq (var-get governance-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
@@ -249,7 +249,7 @@
   )
     (asserts!
       (and
-        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
         (is-eq (var-get governance-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
@@ -288,7 +288,7 @@
   )
     (if (not (is-eq name ""))
       (begin
-        (try! (contract-call? .dao set-contract-address name address qualified-name))
+        (try! (contract-call? .arkadiko-dao set-contract-address name address qualified-name))
         (ok true)
       )
       (ok false)

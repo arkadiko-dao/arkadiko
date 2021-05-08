@@ -6,9 +6,9 @@
 ;; The cumm reward per stake represents the rewards over time, taking into account total staking volume over time
 ;; When total stake changes, the cumm reward per stake is increased accordingly.
 
-(impl-trait .stake-pool-trait.stake-pool-trait)
-(impl-trait .mock-ft-trait.mock-ft-trait)
-(use-trait mock-ft-trait .mock-ft-trait.mock-ft-trait)
+(impl-trait .arkadiko-stake-pool-trait-v1.stake-pool-trait)
+(impl-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
+(use-trait mock-ft-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
 
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED (err u18401))
@@ -54,7 +54,7 @@
 )
 
 (define-public (set-token-uri (value (string-utf8 256)))
-  (if (is-eq tx-sender (contract-call? .dao get-dao-owner))
+  (if (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner))
     (ok (var-set token-uri value))
     (err ERR-NOT-AUTHORIZED)
   )
@@ -117,7 +117,7 @@
 ;; Stake tokens
 (define-public (stake (token <mock-ft-trait>) (staker principal) (amount uint))
   (begin
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "stake-registry"))) ERR-NOT-AUTHORIZED)
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-NOT-AUTHORIZED)
     (asserts! (is-eq POOL-TOKEN (contract-of token)) ERR-WRONG-TOKEN)
 
     ;; Save currrent cumm reward per stake
@@ -157,7 +157,7 @@
     ;; Staked amount of staker
     (stake-amount (get-stake-amount-of staker))
   )
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "stake-registry"))) ERR-NOT-AUTHORIZED)
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-NOT-AUTHORIZED)
     (asserts! (is-eq POOL-TOKEN (contract-of token)) ERR-WRONG-TOKEN)
     (asserts! (>= stake-amount amount) ERR-INSUFFICIENT-STAKE)
 
@@ -225,7 +225,7 @@
 
 (define-read-only (get-apy-for (staker principal))
   (let (
-    (rewards-per-block (contract-call? .stake-registry get-rewards-per-block-for-pool .stake-pool-diko))
+    (rewards-per-block (contract-call? .arkadiko-stake-registry-v1-1 get-rewards-per-block-for-pool .stake-pool-diko))
     (diko-staked (get-stake-amount-of staker))
     (reward-percentage (/ u100 (/ (var-get total-staked) diko-staked)))
     (diko-per-year (* rewards-per-block reward-percentage))
@@ -249,7 +249,7 @@
 ;; Claim rewards for staker
 (define-public (claim-pending-rewards (staker principal))
   (begin
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "stake-registry"))) ERR-NOT-AUTHORIZED)
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-NOT-AUTHORIZED)
     (increase-cumm-reward-per-stake)
 
     (let (
@@ -260,7 +260,7 @@
       (if (>= pending-rewards u1)
         (begin
           ;; Mint DIKO rewards for staker
-          (try! (contract-call? .stake-registry mint-rewards-for-staker pending-rewards staker))
+          (try! (contract-call? .arkadiko-stake-registry-v1-1 mint-rewards-for-staker pending-rewards staker))
 
           (map-set stakes { staker: staker } (merge stake-of { cumm-reward-per-stake: (var-get cumm-reward-per-stake) }))
 
@@ -289,7 +289,7 @@
 ;; Calculate current cumm reward per stake
 (define-read-only (calculate-cumm-reward-per-stake)
   (let (
-    (rewards-per-block (contract-call? .stake-registry get-rewards-per-block-for-pool .stake-pool-diko))
+    (rewards-per-block (contract-call? .arkadiko-stake-registry-v1-1 get-rewards-per-block-for-pool .arkadiko-stake-pool-diko-v1-1))
     (current-total-staked (var-get total-staked))
     (last-block-height (get-last-block-height))
     (block-diff (- last-block-height (var-get last-reward-increase-block)))
@@ -313,7 +313,7 @@
 (define-private (get-last-block-height)
   (let (
     ;; TODO: stake-registry should be dynamic
-    (pool-data (contract-call? .stake-registry get-pool-data .stake-pool-diko))
+    (pool-data (contract-call? .arkadiko-stake-registry-v1-1 get-pool-data .arkadiko-stake-pool-diko-v1-1))
     (pool-active (get active pool-data))
     (deactivated-block (get deactivated-block pool-data))
   )

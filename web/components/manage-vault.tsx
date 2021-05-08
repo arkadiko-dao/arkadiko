@@ -43,12 +43,13 @@ export const ManageVault = ({ match }) => {
   const [collateralType, setCollateralType] = useState<CollateralTypeProps>();
   const [isVaultOwner, setIsVaultOwner] = useState(false);
   const [stabilityFee, setStabilityFee] = useState(0);
+  const [pendingVaultRewards, setPendingVaultRewards] = useState(0);
 
   useEffect(() => {
     const fetchVault = async () => {
       const serializedVault = await callReadOnlyFunction({
         contractAddress,
-        contractName: "freddie",
+        contractName: "arkadiko-freddie-v1-1",
         functionName: "get-vault-by-id",
         functionArgs: [uintCV(match.params.id)],
         senderAddress: senderAddress || '',
@@ -81,7 +82,7 @@ export const ManageVault = ({ match }) => {
 
         const type = await callReadOnlyFunction({
           contractAddress,
-          contractName: "collateral-types",
+          contractName: "arkadiko-collateral-types-v1-1",
           functionName: "get-collateral-type-by-name",
           functionArgs: [stringAsciiCV(data['collateral-type'].value)],
           senderAddress: senderAddress || '',
@@ -111,7 +112,7 @@ export const ManageVault = ({ match }) => {
     const fetchFees = async () => {
       const feeCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: "freddie",
+        contractName: "arkadiko-freddie-v1-1",
         functionName: "get-stability-fee-for-vault",
         functionArgs: [uintCV(vault?.id)],
         senderAddress: contractAddress || '',
@@ -119,6 +120,17 @@ export const ManageVault = ({ match }) => {
       });
       const fee = cvToJSON(feeCall);
       setStabilityFee(fee.value.value);
+
+      const rewardCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-vault-rewards-v1-1",
+        functionName: "get-pending-rewards",
+        functionArgs: [standardPrincipalCV(senderAddress || '')],
+        senderAddress: contractAddress || '',
+        network: network
+      });
+      const reward = cvToJSON(rewardCall);
+      setPendingVaultRewards(reward.value.value / 1000000);
     };
 
     if (vault?.id) {
@@ -153,7 +165,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
-      contractName: 'freddie',
+      contractName: 'arkadiko-freddie-v1-1',
       functionName: 'pay-stability-fee',
       functionArgs: [
         uintCV(match.params.id)
@@ -173,7 +185,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
-      contractName: 'freddie',
+      contractName: "arkadiko-freddie-v1-1",
       functionName: 'burn',
       functionArgs: [
         uintCV(match.params.id),
@@ -194,6 +206,20 @@ export const ManageVault = ({ match }) => {
     debtRatio = getCollateralToDebtRatio(match.params.id)?.collateralToDebt;
     websocketTxUpdater();
   }
+
+  const claimPendingRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      contractName: "arkadiko-vault-rewards-v1-1",
+      functionName: "claim-pending-rewards",
+      functionArgs: [],
+      postConditionMode: 0x01,
+      finished: data => {
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+      },
+    });
+  };
 
   const addDeposit = async () => {
     if (!extraCollateralDeposit) {
@@ -228,7 +254,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
-      contractName: 'freddie',
+      contractName: "arkadiko-freddie-v1-1",
       functionName: 'deposit',
       functionArgs: [
         uintCV(match.params.id),
@@ -288,7 +314,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
-      contractName: 'freddie',
+      contractName: "arkadiko-freddie-v1-1",
       functionName: 'mint',
       functionArgs: [
         uintCV(match.params.id),
@@ -308,7 +334,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
-      contractName: 'freddie',
+      contractName: "arkadiko-freddie-v1-1",
       functionName: 'toggle-stacking',
       functionArgs: [uintCV(match.params.id)],
       postConditionMode: 0x01,
@@ -323,7 +349,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
-      contractName: 'freddie',
+      contractName: "arkadiko-freddie-v1-1",
       functionName: 'stack-collateral',
       functionArgs: [uintCV(match.params.id)],
       postConditionMode: 0x01,
@@ -343,7 +369,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
-      contractName: 'freddie',
+      contractName: "arkadiko-freddie-v1-1",
       functionName: 'withdraw',
       functionArgs: [
         uintCV(match.params.id),
@@ -364,7 +390,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
-      contractName: 'liquidator',
+      contractName: 'arkadiko-liquidator-v1-1',
       functionName: 'notify-risky-vault',
       functionArgs: [uintCV(match.params.id)],
       postConditionMode: 0x01,
@@ -936,6 +962,50 @@ export const ManageVault = ({ match }) => {
                                   _hover={{ cursor: 'pointer'}}
                                   className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                               Pay back
+                            </Text>
+                          </p>
+                        </div>
+                      ) : null }
+                    </div>
+
+                  </div>
+                </div>
+              </li>
+            </ul>
+
+            <ul className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4 mt-8">
+              <li className="relative col-span-2 flex shadow-sm rounded-md">
+                <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8 mb-4">
+                  DIKO Vault Rewards
+                </h2>
+              </li>
+            </ul>
+
+            <ul className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4">
+              <li className="relative col-span-2 flex shadow-sm rounded-md">
+                <div className="bg-white shadow sm:rounded-lg w-full">
+                  <div className="px-4 py-5 sm:p-6">
+                      
+                    <div className="mt-5 sm:flex sm:items-start sm:justify-between mb-5">
+                      <div className="max-w-xl text-sm text-gray-500">
+                        <p>
+                          Unclaimed DIKO rewards
+                        </p>
+                      </div>
+
+                      <div className="max-w-xl text-sm text-gray-500">
+                        <p>
+                          {pendingVaultRewards} DIKO
+                        </p>
+                      </div>
+
+                      {isVaultOwner ? (
+                        <div className="max-w-xl text-sm text-gray-500">
+                          <p>
+                            <Text onClick={() => claimPendingRewards()}
+                                  _hover={{ cursor: 'pointer'}}
+                                  className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                              Claim
                             </Text>
                           </p>
                         </div>

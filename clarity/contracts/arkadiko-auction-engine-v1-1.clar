@@ -1,9 +1,9 @@
-(impl-trait .auction-engine-trait.auction-engine-trait)
-(use-trait vault-trait .vault-trait.vault-trait)
-(use-trait mock-ft-trait .mock-ft-trait.mock-ft-trait)
-(use-trait vault-manager-trait .vault-manager-trait.vault-manager-trait)
-(use-trait oracle-trait .oracle-trait.oracle-trait)
-(use-trait auction-engine-trait .auction-engine-trait.auction-engine-trait)
+(impl-trait .arkadiko-auction-engine-trait-v1.auction-engine-trait)
+(use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
+(use-trait mock-ft-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
+(use-trait vault-manager-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
+(use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
+(use-trait auction-engine-trait .arkadiko-auction-engine-trait-v1.auction-engine-trait)
 
 ;; errors
 (define-constant ERR-BID-DECLINED u21)
@@ -93,7 +93,7 @@
 
 (define-public (toggle-auction-engine-shutdown)
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
     (ok (var-set auction-engine-shutdown-activated (not (var-get auction-engine-shutdown-activated))))
   )
@@ -105,12 +105,12 @@
 ;; if we cannot cover the vault's debt with the collateral sale,
 ;; we will have to sell some governance or STX tokens from the reserve
 (define-public (start-auction (vault-id uint) (uamount uint) (extra-debt uint) (vault-debt uint) (discount uint))
-  (let ((vault (contract-call? .vault-data get-vault-by-id vault-id)))
-    (asserts! (is-eq contract-caller .liquidator) (err ERR-NOT-AUTHORIZED))
+  (let ((vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id)))
+    (asserts! (is-eq contract-caller .arkadiko-liquidator-v1-1) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) true) (err ERR-AUCTION-NOT-ALLOWED))
     (asserts!
       (and
-        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
         (is-eq (var-get auction-engine-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
@@ -149,7 +149,7 @@
 ;; this is a private function since it should only be called
 ;; when a normal collateral liquidation auction can't raise enough debt
 (define-private (start-debt-auction (vault-id uint) (debt-to-raise uint) (discount uint))
-  (let ((vault (contract-call? .vault-data get-vault-by-id vault-id)))
+  (let ((vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id)))
     (asserts! (is-eq (get is-liquidated vault) true) (err ERR-AUCTION-NOT-ALLOWED))
 
     (let (
@@ -232,12 +232,12 @@
 (define-public (fetch-minimum-collateral-amount (oracle <oracle-trait>) (auction-id uint))
   (let (
     (auction (get-auction-by-id auction-id))
-    (price-in-cents (contract-call? .oracle get-price (collateral-token (get collateral-token auction))))
+    (price-in-cents (contract-call? .arkadiko-oracle-v1-1 get-price (collateral-token (get collateral-token auction))))
   )
-    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
     (asserts!
       (and
-        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
         (is-eq (var-get auction-engine-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
@@ -253,7 +253,7 @@
       xusd: u0,
       collateral-amount: u0,
       collateral-token: "",
-      owner: (contract-call? .dao get-dao-owner),
+      owner: (contract-call? .arkadiko-dao get-dao-owner),
       is-accepted: false
     }
     (map-get? bids { auction-id: auction-id, lot-index: lot-index })
@@ -271,11 +271,11 @@
   (let ((auction (get-auction-by-id auction-id)))
     (asserts! (is-eq lot-index (get lots-sold auction)) (err ERR-BID-DECLINED))
     (asserts! (is-eq (get is-open auction) true) (err ERR-BID-DECLINED))
-    (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
     (asserts!
       (and
-        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
         (is-eq (var-get auction-engine-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
@@ -345,7 +345,7 @@
       )
       (if accepted-bid
         (let ((lots (get-winning-lots tx-sender)))
-          (try! (contract-call? .vault-data add-stacker-payout (get vault-id auction) collateral-amount tx-sender))
+          (try! (contract-call? .arkadiko-vault-data-v1-1 add-stacker-payout (get vault-id auction) collateral-amount tx-sender))
           (map-set winning-lots
             { user: tx-sender }
             {
@@ -388,11 +388,11 @@
     (auction (get-auction-by-id auction-id))
   )
     (asserts! (is-eq (unwrap-panic (contract-call? ft get-symbol)) (get collateral-token auction)) (err ERR-TOKEN-TYPE-MISMATCH))
-    (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (and (is-eq tx-sender (get owner last-bid)) (get is-accepted last-bid)) (err ERR-COULD-NOT-REDEEM))
     (asserts!
       (and
-        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
         (is-eq (var-get auction-engine-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
@@ -404,7 +404,7 @@
       (if (is-eq (get auction-type auction) "debt")
         ;; request "collateral-amount" gov tokens from the DAO
         (begin
-          (try! (contract-call? .dao request-diko-tokens ft (get collateral-amount auction)))
+          (try! (contract-call? .arkadiko-dao request-diko-tokens ft (get collateral-amount auction)))
           (try! (contract-call? vault-manager redeem-auction-collateral ft reserve (get collateral-amount last-bid) tx-sender))
         )
         (try! (contract-call? vault-manager redeem-auction-collateral ft reserve (get collateral-amount last-bid) tx-sender))
@@ -445,19 +445,19 @@
       (err ERR-BLOCK-HEIGHT-NOT-REACHED)
     )
     (asserts! (is-eq (get is-open auction) true) (err ERR-AUCTION-NOT-OPEN))
-    (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts!
       (and
-        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
         (is-eq (var-get auction-engine-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
 
-    (let ((vault (contract-call? .vault-data get-vault-by-id (get vault-id auction))))
+    (let ((vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id (get vault-id auction))))
       (if (> (get debt vault) (get total-debt-burned auction))
         (begin
-          (try! (contract-call? .dao burn-token .xusd-token
+          (try! (contract-call? .arkadiko-dao burn-token .xusd-token
             (min-of (get total-debt-raised auction) (- (get debt vault) (get total-debt-burned auction)))
             (as-contract tx-sender))
           )
@@ -527,7 +527,7 @@
     (asserts! (is-eq (get is-accepted last-bid) false) (err ERR-NOT-AUTHORIZED))
     (asserts!
       (and
-        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
         (is-eq (var-get auction-engine-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
@@ -559,7 +559,7 @@
 ;; auction engine should only contain xUSD from bids
 (define-public (migrate-funds (auction-engine <auction-engine-trait>) (token <mock-ft-trait>))
   (begin
-    (asserts! (is-eq contract-caller (contract-call? .dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
     (let (
       (balance (unwrap-panic (contract-call? token get-balance-of (as-contract tx-sender))))
@@ -575,12 +575,12 @@
   (begin
     (asserts!
       (and
-        (is-eq (unwrap-panic (contract-call? .dao get-emergency-shutdown-activated)) false)
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
         (is-eq (var-get auction-engine-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
 
-    (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) (contract-call? .dao get-payout-address))
+    (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address))
   )
 )

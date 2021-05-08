@@ -29,7 +29,7 @@ export const App: React.FC = () => {
   const fetchVaults = async (address: string) => {
     const vaults = await callReadOnlyFunction({
       contractAddress,
-      contractName: "vault-data",
+      contractName: "arkadiko-vault-data-v1-1",
       functionName: "get-vaults",
       functionArgs: [standardPrincipalCV(address)],
       senderAddress: address,
@@ -100,7 +100,7 @@ export const App: React.FC = () => {
     ['STX-A', 'STX-B', 'DIKO-A'].forEach(async (token) => {
       const types = await callReadOnlyFunction({
         contractAddress,
-        contractName: "collateral-types",
+        contractName: "arkadiko-collateral-types-v1-1",
         functionName: "get-collateral-type-by-name",
         functionArgs: [stringAsciiCV(token)],
         senderAddress: address,

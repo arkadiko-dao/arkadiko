@@ -26,7 +26,7 @@ export const ViewProposal = ({ match }) => {
     const getData = async () => {
       const proposal = await callReadOnlyFunction({
         contractAddress,
-        contractName: "dao",
+        contractName: "arkadiko-dao",
         functionName: "get-proposal-by-id",
         functionArgs: [uintCV(match.params.id)],
         senderAddress: stxAddress || '',
@@ -64,7 +64,7 @@ export const ViewProposal = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
-      contractName: 'dao',
+      contractName: 'arkadiko-dao',
       functionName: 'vote-for',
       functionArgs: [uintCV(match.params.id), uintCV(amountOfVotes * 1000000)],
       postConditionMode: 0x01,
@@ -80,7 +80,7 @@ export const ViewProposal = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
-      contractName: 'dao',
+      contractName: 'arkadiko-dao',
       functionName: 'vote-against',
       functionArgs: [uintCV(match.params.id), uintCV(amountOfVotes * 1000000)],
       postConditionMode: 0x01,

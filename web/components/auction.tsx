@@ -23,7 +23,7 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, en
 
       const discountedPriceCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: "auction-engine",
+        contractName: "arkadiko-auction-engine-v1-1",
         functionName: "discounted-auction-price",
         functionArgs: [uintCV(price), uintCV(id)],
         senderAddress: stxAddress || '',
@@ -42,7 +42,7 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, en
     const getData = async () => {
       const minimumCollateralAmount = await callReadOnlyFunction({
         contractAddress,
-        contractName: "auction-engine",
+        contractName: "arkadiko-auction-engine-v1-1",
         functionName: "calculate-minimum-collateral-amount",
         functionArgs: [uintCV(price), uintCV(id)],
         senderAddress: stxAddress || '',
@@ -56,7 +56,7 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, en
 
       const currentBid = await callReadOnlyFunction({
         contractAddress,
-        contractName: "auction-engine",
+        contractName: "arkadiko-auction-engine-v1-1",
         functionName: "get-last-bid",
         functionArgs: [uintCV(id), uintCV(lotId)],
         senderAddress: stxAddress || '',

@@ -1,5 +1,5 @@
-(use-trait mock-ft-trait .mock-ft-trait.mock-ft-trait)
-(use-trait vault-trait .vault-trait.vault-trait)
+(use-trait mock-ft-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
+(use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
 
 (define-trait vault-manager-trait
   (

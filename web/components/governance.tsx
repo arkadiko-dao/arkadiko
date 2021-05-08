@@ -20,7 +20,7 @@ export const Governance = () => {
     const getData = async () => {
       const proposals = await callReadOnlyFunction({
         contractAddress,
-        contractName: "governance",
+        contractName: "arkadiko-governance-v1-1",
         functionName: "get-proposals",
         functionArgs: [],
         senderAddress: stxAddress || '',

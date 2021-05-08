@@ -48,7 +48,7 @@ export const Vault: React.FC<VaultProps> = ({
     const fetchFees = async () => {
       const feeCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: "freddie",
+        contractName: "arkadiko-freddie-v1-1",
         functionName: "get-stability-fee-for-vault",
         functionArgs: [uintCV(id)],
         senderAddress: contractAddress || '',
@@ -79,7 +79,7 @@ export const Vault: React.FC<VaultProps> = ({
     await doContractCall({
       network,
       contractAddress,
-      contractName: 'freddie',
+      contractName: 'arkadiko-freddie-v1-1',
       functionName: 'withdraw-leftover-collateral',
       functionArgs: [
         uintCV(id),

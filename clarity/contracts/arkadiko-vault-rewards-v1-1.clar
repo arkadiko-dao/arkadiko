@@ -42,7 +42,7 @@
     (current-total-collateral (var-get total-collateral))
   )
     ;; Only freddie is allowed to call this method
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
 
     ;; Save latest cumm reward
     (increase-cumm-reward-per-collateral)
@@ -67,7 +67,7 @@
     (current-total-collateral (var-get total-collateral))
   )
     ;; Only freddie is allowed to call this method
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
 
     ;; Save latest cumm reward
     (increase-cumm-reward-per-collateral)
@@ -128,7 +128,7 @@
       (if (>= pending-rewards u1)
         (begin
           ;; Mint DIKO rewards for user
-          (try! (contract-call? .dao mint-token .arkadiko-token pending-rewards user))
+          (try! (contract-call? .arkadiko-dao mint-token .arkadiko-token pending-rewards user))
 
           (map-set user-collateral { user: user } (merge collateral-of { cumm-reward-per-collateral: (var-get cumm-reward-per-collateral) }))
 
@@ -155,7 +155,7 @@
 ;; Calculate current cumm reward per collateral
 (define-read-only (calculate-cumm-reward-per-collateral)
   (let (
-    (rewards-per-block (contract-call? .diko-guardian get-vault-rewards-per-block))
+    (rewards-per-block (contract-call? .arkadiko-diko-guardian-v1-1 get-vault-rewards-per-block))
     (current-total-collateral (var-get total-collateral))
     (block-diff (- block-height (var-get last-reward-increase-block)))
     (current-cumm-reward-per-collateral (var-get cumm-reward-per-collateral)) 

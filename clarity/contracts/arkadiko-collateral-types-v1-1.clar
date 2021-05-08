@@ -1,4 +1,4 @@
-(impl-trait .collateral-types-trait.collateral-types-trait)
+(impl-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
 
 ;; Smart Contract that keeps all collateral types accepted by the DAO
 
@@ -81,7 +81,7 @@
 (define-public (add-debt-to-collateral-type (token (string-ascii 12)) (debt uint))
   (begin
     ;; freddie should be calling this method
-    (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
     (let ((collateral-type (unwrap-panic (get-collateral-type-by-name token))))
       (map-set collateral-types
         { name: token }
@@ -94,7 +94,7 @@
 (define-public (subtract-debt-from-collateral-type (token (string-ascii 12)) (debt uint))
   (begin
     ;; freddie should be calling this method
-    (asserts! (is-eq contract-caller .freddie) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
     (let ((collateral-type (unwrap-panic (get-collateral-type-by-name token))))
       (map-set collateral-types
         { name: token }
@@ -116,7 +116,7 @@
                                     (maximum-debt uint)
                                     (collateral-to-debt-ratio uint))
   (begin
-    (asserts! (is-eq contract-caller .dao) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
     (map-set collateral-types
       { name: collateral-type }
       {
