@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ThemeProvider, theme, Flex, CSSReset } from '@blockstack/ui';
+import { ThemeProvider, theme, Flex, CSSReset, Tooltip } from '@blockstack/ui';
 import { Connect } from '@stacks/connect-react';
 import { AuthOptions } from '@stacks/connect';
 import { UserSession, AppConfig } from '@stacks/auth';
@@ -190,6 +190,23 @@ export const App: React.FC = () => {
           <Flex direction="column" minHeight="100vh" bg="white">
 
             <Header signOut={signOut} />
+
+            <div className="fixed bottom-0 right-0 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end" style={{zIndex: 99999}}>
+              <Tooltip label={`Got feedback?`}>
+                <div className="max-w-sm w-full pointer-events-auto overflow-hidden">
+                  <div className="p-4">
+                    <div className="flex items-start">
+                      <a href="mailto:philip@arkadiko.finance?subject=Feedback on Arkadiko Testnet" className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                        </svg>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </Tooltip>
+            </div>
+
             <Routes />
           </Flex>
         </AppContext.Provider>
