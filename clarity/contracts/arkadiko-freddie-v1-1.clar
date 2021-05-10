@@ -21,6 +21,12 @@
 (define-constant ERR-MAXIMUM-DEBT-REACHED u410)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u411)
 (define-constant ERR-BURN-HEIGHT-NOT-REACHED u412)
+(define-constant ERR-VAULT-LIQUIDATED u413)
+(define-constant ERR-STACKING-IN-PROGRESS u414)
+(define-constant ERR-WRONG-COLLATERAL-TOKEN u415)
+(define-constant ERR-VAULT-NOT-LIQUIDATED u416)
+(define-constant ERR-WRONG-DEBT u417)
+(define-constant ERR-AUCTION-NOT-ENDED u418)
 
 ;; constants
 (define-constant BLOCKS-PER-DAY u144)
@@ -112,8 +118,8 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq false (get is-liquidated vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-WRONG-COLLATERAL-TOKEN))
+    (asserts! (is-eq false (get is-liquidated vault)) (err ERR-VAULT-LIQUIDATED))
     (try! (contract-call? .arkadiko-stx-reserve-v1-1 toggle-stacking (not (get revoked-stacking vault)) (get collateral vault)))
 
     (try!
@@ -138,9 +144,9 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq false (get is-liquidated vault)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq u0 (get stacked-tokens vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-WRONG-COLLATERAL-TOKEN))
+    (asserts! (is-eq false (get is-liquidated vault)) (err ERR-VAULT-LIQUIDATED))
+    (asserts! (is-eq u0 (get stacked-tokens vault)) (err ERR-STACKING-IN-PROGRESS))
 
     (try! (contract-call? .arkadiko-stx-reserve-v1-1 add-tokens-to-stack (get collateral vault)))
     (try!
@@ -171,9 +177,9 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq false (get is-liquidated vault)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq true (get revoked-stacking vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-WRONG-COLLATERAL-TOKEN))
+    (asserts! (is-eq false (get is-liquidated vault)) (err ERR-VAULT-LIQUIDATED))
+    (asserts! (is-eq true (get revoked-stacking vault)) (err ERR-STACKING-IN-PROGRESS))
     (asserts! (is-eq (contract-of stacker) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker"))) (err ERR-NOT-AUTHORIZED))
     (asserts!
       (or
@@ -208,9 +214,9 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq "xSTX" (get collateral-token vault)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq true (get is-liquidated vault)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (> (get stacked-tokens vault) u0) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq "xSTX" (get collateral-token vault)) (err ERR-WRONG-COLLATERAL-TOKEN))
+    (asserts! (is-eq true (get is-liquidated vault)) (err ERR-VAULT-LIQUIDATED))
+    (asserts! (> (get stacked-tokens vault) u0) (err ERR-STACKING-IN-PROGRESS))
     (asserts! (is-eq (contract-of stacker) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (>= burn-block-height (unwrap-panic (contract-call? stacker get-stacking-unlock-burn-height))) (err ERR-BURN-HEIGHT-NOT-REACHED))
 
@@ -261,7 +267,9 @@
     (reserve <vault-trait>)
     (ft <mock-ft-trait>)
   )
-  (let ((ratio (unwrap-panic (contract-call? reserve calculate-current-collateral-to-debt-ratio collateral-token debt collateral-amount))))
+  (let (
+    (ratio (unwrap! (contract-call? reserve calculate-current-collateral-to-debt-ratio collateral-token debt collateral-amount) (err ERR-WRONG-DEBT)))
+  )
     (asserts!
       (and
         (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
@@ -270,6 +278,7 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
     (asserts! (is-eq tx-sender sender) (err ERR-NOT-AUTHORIZED))
+    (asserts! (> collateral-amount u0) (err ERR-INSUFFICIENT-COLLATERAL))
     (asserts! (>= ratio (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-liquidation-ratio collateral-type))) (err ERR-INSUFFICIENT-COLLATERAL))
     (asserts!
       (<
@@ -328,7 +337,7 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-    (asserts! (is-eq (get is-liquidated vault) false) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
 
     (unwrap! (contract-call? reserve deposit ft uamount) (err ERR-DEPOSIT-FAILED))
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id updated-vault))
@@ -347,11 +356,11 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-    (asserts! (is-eq (get is-liquidated vault) false) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (> uamount u0) (err ERR-INSUFFICIENT-COLLATERAL))
     (asserts! (<= uamount (get collateral vault)) (err ERR-INSUFFICIENT-COLLATERAL))
-    (asserts! (is-eq u0 (get stacked-tokens vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq u0 (get stacked-tokens vault)) (err ERR-STACKING-IN-PROGRESS))
 
     (let ((ratio (unwrap-panic 
             (contract-call? 
@@ -390,7 +399,7 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-    (asserts! (is-eq (get is-liquidated vault) false) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts!
       (<
@@ -426,9 +435,9 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-    (asserts! (is-eq (get is-liquidated vault) false) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (<= debt (get debt vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (<= debt (get debt vault)) (err ERR-WRONG-DEBT))
 
     (try! (pay-stability-fee vault-id))
     (if (is-eq debt (get debt vault))
@@ -445,8 +454,8 @@
           debt: u0,
           updated-at-block-height: block-height
         })))
-    (asserts! (is-eq u0 (get stacked-tokens vault)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq (get is-liquidated vault) false) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq u0 (get stacked-tokens vault)) (err ERR-STACKING-IN-PROGRESS))
+    (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
 
     (try! (contract-call? .arkadiko-dao burn-token .xusd-token (get debt vault) (get owner vault)))
     (try! (contract-call? reserve burn ft (get owner vault) (get collateral vault)))
@@ -583,7 +592,7 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "auction-engine"))) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq (get is-liquidated vault) true) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (get is-liquidated vault) true) (err ERR-VAULT-NOT-LIQUIDATED))
 
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
         collateral: u0,
@@ -612,8 +621,8 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq true (get is-liquidated vault)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq true (get auction-ended vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq true (get is-liquidated vault)) (err ERR-VAULT-NOT-LIQUIDATED))
+    (asserts! (is-eq true (get auction-ended vault)) (err ERR-AUCTION-NOT-ENDED))
 
     (if (unwrap-panic (contract-call? reserve withdraw ft (get owner vault) (get leftover-collateral vault)))
       (begin
