@@ -51,6 +51,38 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "diko-init: founders tokens claim too early, and too high",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    // Try to claim - should fail
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-diko-init", "founders-claim-tokens", [
+        types.uint(437500000000)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(221);
+
+    // we already have 890K DIKO to start with
+    let call = chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [types.principal(deployer.address)], deployer.address);
+    call.result.expectOk().expectUint(890000000000);
+
+    // 6 months, 30 days, 144 block per day
+    chain.mineEmptyBlock(6*30*144);
+
+    call = chain.callReadOnlyFn("arkadiko-diko-init", "get-pending-founders-tokens", [], deployer.address);
+    call.result.expectOk().expectUint(2625000000000);
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-diko-init", "founders-claim-tokens", [
+        types.uint(21000000000000)
+      ], deployer.address),
+    ]);
+    block.receipts[0].result.expectErr().expectUint(221);
+  }
+});
+
+Clarinet.test({
   name: "diko-init: founders tokens calculation",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -239,7 +271,13 @@ Clarinet.test({
   
     // Get tokens at start
     call = chain.callReadOnlyFn("arkadiko-diko-init", "get-pending-foundation-tokens", [], deployer.address);
-    call.result.expectOk().expectUint(16000000000000)
-  
+    call.result.expectOk().expectUint(16000000000000);
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-diko-init", "foundation-claim-tokens", [
+          types.uint(50000000000000)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(221);
   }
 });

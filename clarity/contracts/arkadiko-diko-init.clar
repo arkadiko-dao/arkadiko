@@ -5,6 +5,7 @@
 
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED (err u22401))
+(define-constant ERR-TOO-MANY-TOKENS-CLAIMED (err u221))
 
 ;; Constants
 (define-constant BLOCKS-PER-MONTH u4320) ;; 144 * 30
@@ -60,7 +61,7 @@
     (wallet (var-get foundation-wallet))
   )
     (asserts! (is-eq wallet tx-sender) ERR-NOT-AUTHORIZED)
-    (asserts! (>= pending-tokens amount) ERR-NOT-AUTHORIZED)
+    (asserts! (>= pending-tokens amount) ERR-TOO-MANY-TOKENS-CLAIMED)
     (var-set foundation-tokens-claimed (+ claimed-tokens amount))
     (contract-call? .arkadiko-token transfer amount .arkadiko-diko-init wallet)
   )
@@ -117,7 +118,7 @@
     (wallet (var-get founders-wallet))
   )
     (asserts! (is-eq wallet tx-sender) ERR-NOT-AUTHORIZED)
-    (asserts! (>= pending-tokens amount) ERR-NOT-AUTHORIZED)
+    (asserts! (>= pending-tokens amount) ERR-TOO-MANY-TOKENS-CLAIMED)
     (var-set founders-tokens-claimed (+ claimed-tokens amount))
     (contract-call? .arkadiko-token transfer amount .arkadiko-diko-init wallet)
   )
