@@ -76,9 +76,23 @@ Clarinet.test({
       .map((e: String) => e.expectTuple());
 
     auctions[0]["vault-id"].expectUint(0);
-    auctions[0]["is-open"].expectBool(false);
     auctions[1]["vault-id"].expectUint(1);
-    auctions[1]["is-open"].expectBool(true);
+
+    call = await chain.callReadOnlyFn(
+      "arkadiko-auction-engine-v1-1",
+      "get-auction-open",
+      [types.uint(0)],
+      wallet_1.address,
+    );
+    call.result.expectOk().expectBool(false);
+
+    call = await chain.callReadOnlyFn(
+      "arkadiko-auction-engine-v1-1",
+      "get-auction-open",
+      [types.uint(1)],
+      wallet_1.address,
+    );
+    call.result.expectOk().expectBool(true);
   },
 });
 
@@ -407,6 +421,20 @@ Clarinet.test({
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(98); // wrong token error
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
+        types.uint(1000 * 1000000), 
+        types.uint(300 * 1000000), 
+        types.principal(deployer.address),
+        types.ascii("DIKO-A"),
+        types.ascii("STX"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+      ], deployer.address)
+    ]);
+    // TODO
+    block.receipts[0].result.expectErr().expectUint(118);
   }
 });
 
@@ -559,7 +587,6 @@ Clarinet.test({
   name: "freddie: test zero values",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),

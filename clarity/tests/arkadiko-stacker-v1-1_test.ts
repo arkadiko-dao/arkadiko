@@ -296,12 +296,11 @@ Clarinet.test({
 
     let call = await chain.callReadOnlyFn(
       "arkadiko-auction-engine-v1-1",
-      "get-auction-by-id",
+      "get-auction-open",
       [types.uint(1)],
       wallet_1.address,
     );
-    let auction = call.result.expectTuple();
-    auction['is-open'].expectBool(false);
+    call.result.expectOk().expectBool(false);
 
     call = await chain.callReadOnlyFn(
       "arkadiko-freddie-v1-1",
