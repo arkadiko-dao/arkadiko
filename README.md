@@ -3,7 +3,7 @@ https://www.arkadiko.finance/
 
 Arkadiko implements a stablecoin soft-pegged to 1 USD called xUSD and a Governance Token DIKO that create the foundational primitives for a lending/borrowing platform.
 
-The Arkadiko protocol trustlessly provides stable loans backed by Stacks Tokens (STX), known as xUSD. In order to mint xUSD, you need to over-collateralise Stacks (STX) tokens into an Arkadiko Stacks Vault. In other words, xUSD is a stablecoin, existing to maintain relative price stability in volatile markets. People repay their loans by returning xUSD plus a little more to cover the fixed interest on the loan (called the stability fee). The loan can be paid back anytime, as there is no repayment schedule. The protocol enforces the price by selling off a person's STX if its total value falls below 150 percent (liquidation ratio) of how ever much STX the user borrowed. All STX will be sold through auctions to stackers who are registered with the protocol.
+The Arkadiko protocol trustlessly provides stable loans backed by Stacks Tokens (STX), known as xUSD. In order to mint xUSD, you need to over-collateralise Stacks (STX) tokens into an Arkadiko Stacks Vault. In other words, xUSD is a stablecoin, existing to maintain relative price stability in volatile markets. People repay their loans by returning xUSD plus a little more to cover the fixed interest on the loan (called the stability fee). The loan can be paid back anytime, as there is no repayment schedule. The protocol enforces the price by selling off a person's STX if its total value falls below 150 percent (liquidation ratio) of however much STX the user borrowed. All STX will be sold through auctions to stackers who are registered with the protocol.
 
 No more and no less xUSD exist in the world than loans made in it at that time. Every single xUSD is some piece of someone’s STX, locked up on the Arkadiko protocol until the person who put in their STX pays the xUSD back. When xUSD goes into the system to repay a loan, it just gets burnt and disappears forever. Only the interest (i.e. stability fee) remains for Arkadiko to use to reward DIKO holders or cover expenses for the protocol.
 
@@ -24,7 +24,7 @@ A high-level architecture would look as follows:
 
 ## xUSD: Arkadiko Stablecoin
 
-Whenever new xUSD is minted, debt (as collateral) is created in the network. With every type of collateral (in principal only $STX will be accepted as collateral), a set of Risk parameters will be decided on by the community. These parameters can be voted on through the DIKO governance token. Each token has 1 vote.
+Whenever new xUSD is minted, debt (as collateral) is created in the network. With every type of collateral (in principle only $STX will be accepted as collateral), a set of Risk parameters will be decided on by the community. These parameters can be voted on through the DIKO governance token. Each token has 1 vote.
 
 ### Stablecoin Risk Parameters
 
@@ -53,7 +53,7 @@ A public Trello roadmap will be published soon
 
 ## Tests and Mocking
 
-Tests are present in the `test` folder (using `mocha` in TypeScript) and some very early test in the `tests` folder which uses Clarinet (a Clarity build tool). The mocha tests can be ran easily like this: `npm test clarity/test/integration/liquidator.ts`.
+Tests are present in the `test` folder (using `mocha` in TypeScript) and some very early test in the `tests` folder which uses Clarinet (a Clarity build tool). The mocha tests can be run easily like this: `npm test clarity/test/integration/liquidator.ts`.
 
 Some of the smart contracts (such as PoX and fungible token trait) are mocked contracts/traits. These should not be deployed to mainnet when a production-ready version is ready to be deployed.
 
