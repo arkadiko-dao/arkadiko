@@ -388,7 +388,7 @@ Clarinet.test({
         ),
       ], deployer.address),
     ]);
-    block.receipts[1].result.expectErr().expectUint(98); // wrong token error
+    block.receipts[1].result.expectErr().expectUint(415); // wrong token error
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [

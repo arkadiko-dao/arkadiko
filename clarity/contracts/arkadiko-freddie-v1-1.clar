@@ -293,6 +293,13 @@
       )
       (err ERR-MAXIMUM-DEBT-REACHED)
     )
+    (asserts!
+      (or
+        (is-eq collateral-token "STX")
+        (is-eq (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-token-address collateral-type)) (contract-of ft))
+      )
+      (err ERR-WRONG-COLLATERAL-TOKEN)
+    )
 
     (try! (contract-call? reserve collateralize-and-mint ft collateral-token collateral-amount debt sender))
     (try! (as-contract (contract-call? .arkadiko-dao mint-token .xusd-token debt sender)))
@@ -345,6 +352,13 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
+    (asserts!
+      (or
+        (is-eq collateral-token "STX")
+        (is-eq (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-token-address (get collateral-type vault))) (contract-of ft))
+      )
+      (err ERR-WRONG-COLLATERAL-TOKEN)
+    )
 
     (unwrap! (contract-call? reserve deposit ft collateral-token uamount) (err ERR-DEPOSIT-FAILED))
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id updated-vault))
@@ -371,6 +385,13 @@
     (asserts! (> uamount u0) (err ERR-INSUFFICIENT-COLLATERAL))
     (asserts! (<= uamount (get collateral vault)) (err ERR-INSUFFICIENT-COLLATERAL))
     (asserts! (is-eq u0 (get stacked-tokens vault)) (err ERR-STACKING-IN-PROGRESS))
+    (asserts!
+      (or
+        (is-eq collateral-token "STX")
+        (is-eq (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-token-address (get collateral-type vault))) (contract-of ft))
+      )
+      (err ERR-WRONG-COLLATERAL-TOKEN)
+    )
 
     (let ((ratio (unwrap-panic 
             (contract-call? 
@@ -448,6 +469,13 @@
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (<= debt (get debt vault)) (err ERR-WRONG-DEBT))
+    (asserts!
+      (or
+        (is-eq (get collateral-token vault) "STX")
+        (is-eq (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-token-address (get collateral-type vault))) (contract-of ft))
+      )
+      (err ERR-WRONG-COLLATERAL-TOKEN)
+    )
 
     (try! (pay-stability-fee vault-id))
     (if (is-eq debt (get debt vault))

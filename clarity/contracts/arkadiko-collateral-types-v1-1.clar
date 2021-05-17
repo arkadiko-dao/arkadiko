@@ -11,6 +11,7 @@
     name: (string-ascii 256),
     token: (string-ascii 12),
     token-type: (string-ascii 12),
+    token-address: principal,
     url: (string-ascii 256),
     total-debt: uint,
     liquidation-ratio: uint,
@@ -30,6 +31,7 @@
         name: "",
         token: "",
         token-type: "",
+        token-address: OWNER,
         url: "",
         total-debt: u0,
         liquidation-ratio: u0,
@@ -43,6 +45,10 @@
       (map-get? collateral-types { name: name })
     )
   )
+)
+
+(define-read-only (get-token-address (token (string-ascii 12)))
+  (ok (get token-address (unwrap-panic (get-collateral-type-by-name token))))
 )
 
 (define-read-only (get-liquidation-ratio (token (string-ascii 12)))
@@ -108,6 +114,7 @@
                                     (name (string-ascii 12))
                                     (url (string-ascii 256))
                                     (collateral-type (string-ascii 12))
+                                    (token-address principal)
                                     (liquidation-ratio uint)
                                     (liquidation-penalty uint)
                                     (stability-fee uint)
@@ -123,6 +130,7 @@
         name: name,
         token: token,
         token-type: collateral-type,
+        token-address: token-address,
         url: url,
         total-debt: u0,
         liquidation-ratio: liquidation-ratio,
@@ -153,7 +161,7 @@
 (define-private (change-risk-parameter (change (tuple (key (string-ascii 256)) (new-value uint)))
                                        (type (tuple (collateral-to-debt-ratio uint) (liquidation-penalty uint) (liquidation-ratio uint)
                                               (maximum-debt uint) (name (string-ascii 256)) (stability-fee uint) (stability-fee-apy uint) (stability-fee-decimals uint)
-                                              (token (string-ascii 12)) (token-type (string-ascii 12)) (total-debt uint) (url (string-ascii 256)))
+                                              (token (string-ascii 12)) (token-address principal) (token-type (string-ascii 12)) (total-debt uint) (url (string-ascii 256)))
                                        )
                 )
   (let ((key (get key change)))
@@ -196,6 +204,9 @@
   )
 )
 
+;; STX collateral types do not have a token address but this is not a problem
+;; since we have `stx-transfer` methods hardcoded in the STX reserve
+;; the address is important for custom FT traits
 (begin
   (map-set collateral-types
     { name: "STX-A" }
@@ -203,6 +214,7 @@
       name: "Stacks",
       token: "STX",
       token-type: "STX-A",
+      token-address: OWNER,
       url: "https://www.stacks.co/",
       total-debt: u0,
       liquidation-ratio: u150,
@@ -220,6 +232,7 @@
       name: "Stacks",
       token: "STX",
       token-type: "STX-B",
+      token-address: OWNER,
       url: "https://www.stacks.co/",
       total-debt: u0,
       liquidation-ratio: u115,
@@ -237,6 +250,7 @@
       name: "Arkadiko",
       token: "DIKO",
       token-type: "DIKO-A",
+      token-address: .arkadiko-token,
       url: "https://www.arkadiko.finance/",
       total-debt: u0,
       liquidation-ratio: u200,
