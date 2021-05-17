@@ -5,7 +5,7 @@ This is high-level. Will be more granular as Arkadiko matures.
 1. Set up a local mocknet through docker compose (see https://github.com/blockstack/stacks-local-dev)
 2. Change the default Stacks amount of the local mocknet addresses in the toml files (stacks-node-miner/Config.toml.template and stacks-node-follower/Config.toml.template)
   This is optional but helpful if you wanna create vaults with higher STX collateral
-3. Run the liquidator test to automatically deploy all smart contracts (`npm test clarity/test/unit/liquidator.ts`)
+3. Run the sip10 reserve test to automatically deploy all smart contracts (`npm test test/integration/sip10-reserve.ts`)
 4. Run the web app using `yarn dev` (in the `web/packages/web` folder)
 5. Go to localhost:3000. You need the Stacks Web Wallet to authenticate.
 
@@ -34,9 +34,11 @@ There is no separate CONTRIBUTING.md instructions for now, but you can use the f
 
 ### Smart Contracts
 1. Add correct CONTRACT_PRIVATE_KEY in .env to deploy
-2. Change oracle-owner in oracle.clar to correct address
-3. Comment/Uncomment minting in arkadiko-token.clar
-4. Run deploy script (deploy-contracts.ts)
+2. Comment/Uncomment minting in arkadiko-token.clar and xusd-token.clar
+3. Replace SIP10 trait
+4. Replace all correct addresses in arkadiko DAO map
+5. Run deploy script (deploy-contracts.ts)
+6. Deploy external scripts
 
 For testnet:
 Faucet: curl -X POST "https://stacks-node-api.testnet.stacks.co/extended/v1/faucets/stx?address=<ADDR>"
