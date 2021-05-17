@@ -10,13 +10,13 @@
     (calculate-current-collateral-to-debt-ratio ((string-ascii 12) uint uint) (response uint uint))
 
     ;; collateralize tokens and mint stablecoin according to collateral-to-debt ratio
-    (collateralize-and-mint (<mock-ft-trait> (string-ascii 12) (string-ascii 12) uint uint principal) (response uint uint))
+    (collateralize-and-mint (<mock-ft-trait> (string-ascii 12) uint uint principal) (response uint uint))
 
     ;; deposit extra collateral
-    (deposit (<mock-ft-trait> uint) (response bool uint))
+    (deposit (<mock-ft-trait> (string-ascii 12) uint) (response bool uint))
 
     ;; withdraw excess collateral
-    (withdraw (<mock-ft-trait> principal uint) (response bool uint))
+    (withdraw (<mock-ft-trait> (string-ascii 12) principal uint) (response bool uint))
 
     ;; mint additional stablecoin
     (mint ((string-ascii 12) principal uint uint uint (string-ascii 12)) (response bool uint))
@@ -28,7 +28,7 @@
     ;; (liquidate (uint uint) (response (tuple (ustx-amount uint) (debt uint)) uint))
 
     ;; redeem collateral after an auction ran
-    (redeem-collateral (<mock-ft-trait> uint principal) (response bool uint))
+    (redeem-collateral (<mock-ft-trait> (string-ascii 12) uint principal) (response bool uint))
 
     (set-tokens-to-stack (uint) (response bool uint))
   )

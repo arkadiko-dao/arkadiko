@@ -22,9 +22,7 @@ const requestOptions = {
 };
 const network = utils.resolveNetwork();
 
-rp(requestOptions).then(async (response) => {
-  let price = response['data']['4847']['quote']['USD']['price'];
-  // price = 1.72;
+const setPrice = async (price) => {
   let nonce = await utils.getNonce(CONTRACT_ADDRESS);
 
   const txOptions = {
@@ -54,6 +52,11 @@ rp(requestOptions).then(async (response) => {
   const transaction2 = await tx.makeContractCall(xTxOptions);
   const result2 = tx.broadcastTransaction(transaction2, network);
   await utils.processing(result2, transaction2.txid(), 0);
-}).catch((err) => {
-  console.log('API call error:', err.message);
+};
+
+rp(requestOptions).then(async (response) => {
+  let price = response['data']['4847']['quote']['USD']['price'];
+  await setPrice(price);
 });
+// setPrice(1.08);
+

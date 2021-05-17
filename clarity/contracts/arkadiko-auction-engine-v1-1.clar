@@ -49,6 +49,15 @@
   }
 )
 
+(define-map winning-lots
+  { user: principal }
+  { ids: (list 100 (tuple (auction-id uint) (lot-index uint))) }
+)
+(define-map redeeming-lot
+  { user: principal }
+  { auction-id: uint, lot-index: uint }
+)
+
 (define-data-var last-auction-id uint u0)
 (define-data-var auction-ids (list 1500 uint) (list u0))
 (define-data-var lot-size uint u1000000000) ;; 1000 xUSD
@@ -89,6 +98,13 @@
       redeemed: false
     }
     (map-get? bids { auction-id: auction-id, lot-index: lot-index })
+  )
+)
+
+(define-read-only (get-winning-lots (owner principal))
+  (default-to
+    { ids: (list (tuple (auction-id u0) (lot-index u0))) }
+    (map-get? winning-lots { user: owner })
   )
 )
 
@@ -290,6 +306,7 @@
         (ok u0)
       )
     )
+    (lots (get-winning-lots tx-sender))
   )
     ;; Lot is sold once bid is > lot-size
     (asserts! (< (get xusd last-bid) (var-get lot-size)) (err ERR-LOT-SOLD))
@@ -298,7 +315,7 @@
 
     ;; Return xUSD of last bid to (now lost) bidder
     (if (> (get xusd last-bid) u0)
-      (try! (return-xusd (get owner last-bid) (get xusd last-bid)))
+      (try! (return-xusd (get owner last-bid) (get xusd last-bid) auction-id lot-index))
       true
     )
     ;; Transfer xUSD from liquidator to this contract
@@ -324,9 +341,15 @@
         redeemed: false
       }
     )
+    (map-set winning-lots
+      { user: tx-sender }
+      {
+        ids: (unwrap-panic (as-max-len? (append (get ids lots) (tuple (auction-id auction-id) (lot-index lot-index))) u100))
+      }
+    )
 
     ;; Set stacker payout
-    (try! (contract-call? .arkadiko-vault-data-v1-1 add-stacker-payout (get vault-id auction) collateral-amount tx-sender))
+    (try! (contract-call? .arkadiko-vault-data-v1-1 set-stacker-payout (get vault-id auction) lot-index collateral-amount tx-sender))
     (print { type: "bid", action: "registered", data: { auction-id: auction-id, lot-index: lot-index, xusd: xusd } })
 
     ;; End auction if needed
@@ -348,8 +371,16 @@
   (let (
     (last-bid (get-last-bid auction-id lot-index))
     (auction (get-auction-by-id auction-id))
+    (token-string (get collateral-token auction))
   )
-    (asserts! (is-eq (unwrap-panic (contract-call? ft get-symbol)) (get collateral-token auction)) (err ERR-TOKEN-TYPE-MISMATCH))
+    (asserts!
+      (or
+        (is-eq (unwrap-panic (contract-call? ft get-symbol)) token-string)
+        (is-eq "STX" token-string)
+        (is-eq "xSTX" token-string)
+      )
+      (err ERR-TOKEN-TYPE-MISMATCH)
+    )
     (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq tx-sender (get owner last-bid)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (unwrap-panic (get-auction-open auction-id)) false) (err ERR-AUCTION-NOT-CLOSED))
@@ -375,9 +406,9 @@
       ;; request "collateral-amount" gov tokens from the DAO
       (begin
         (try! (contract-call? .arkadiko-dao request-diko-tokens ft (get collateral-amount auction)))
-        (try! (contract-call? vault-manager redeem-auction-collateral ft reserve (get collateral-amount last-bid) tx-sender))
+        (try! (contract-call? vault-manager redeem-auction-collateral ft token-string reserve (get collateral-amount last-bid) tx-sender))
       )
-      (try! (contract-call? vault-manager redeem-auction-collateral ft reserve (get collateral-amount last-bid) tx-sender))
+      (try! (contract-call? vault-manager redeem-auction-collateral ft token-string reserve (get collateral-amount last-bid) tx-sender))
     )
     (print { type: "lot", action: "redeemed", data: { auction-id: auction-id, lot-index: lot-index } })
     (ok true)
@@ -385,9 +416,26 @@
   )
 )
 
-(define-private (return-xusd (owner principal) (xusd uint))
+(define-private (remove-winning-lot (lot (tuple (auction-id uint) (lot-index uint))))
+  (let ((current-lot (unwrap-panic (map-get? redeeming-lot { user: tx-sender }))))
+    (if 
+      (and
+        (is-eq (get auction-id lot) (get auction-id current-lot))
+        (is-eq (get lot-index lot) (get lot-index current-lot))
+      )
+      false
+      true
+    )
+  )
+)
+
+(define-private (return-xusd (owner principal) (xusd uint) (auction-id uint) (lot-index uint))
   (if (> xusd u0)
-    (as-contract (contract-call? .xusd-token transfer xusd (as-contract tx-sender) owner))
+    (let ((lots (get-winning-lots tx-sender)))
+      (map-set redeeming-lot { user: tx-sender } { auction-id: auction-id, lot-index: lot-index})
+      (map-set winning-lots { user: tx-sender } { ids: (filter remove-winning-lot (get ids lots)) })
+      (as-contract (contract-call? .xusd-token transfer xusd (as-contract tx-sender) owner))
+    )
     (err u0) ;; don't really care if this fails.
   )
 )

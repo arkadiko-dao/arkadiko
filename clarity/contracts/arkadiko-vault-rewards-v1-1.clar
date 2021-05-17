@@ -140,6 +140,36 @@
   )
 )
 
+;; Freddie can claim rewards when vault gets liquidated
+(define-public (claim-pending-rewards-liquidated-vault (user principal))
+  (begin
+
+    ;; Only freddie is allowed to call this method
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+
+    ;; Increase so we know new value for this user
+    (increase-cumm-reward-per-collateral)
+
+    (let (
+      (pending-rewards (unwrap! (get-pending-rewards user) (err ERR-REWARDS-CALC)))
+      (collateral-of (get-collateral-of user))
+    )
+      ;; Only mint if enough pending rewards and amount is positive
+      (if (>= pending-rewards u1)
+        (begin
+          ;; Mint DIKO rewards for user
+          (try! (contract-call? .arkadiko-dao mint-token .arkadiko-token pending-rewards contract-caller))
+
+          (map-set user-collateral { user: user } (merge collateral-of { cumm-reward-per-collateral: (var-get cumm-reward-per-collateral) }))
+
+          (ok pending-rewards)
+        )
+        (ok u0)
+      )
+    )
+  )
+)
+
 ;; Increase cumm reward per collateral and save
 (define-private (increase-cumm-reward-per-collateral)
   (let (

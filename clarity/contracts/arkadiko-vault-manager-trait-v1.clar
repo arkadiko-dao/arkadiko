@@ -14,7 +14,7 @@
     (liquidate (uint) (response (tuple (ustx-amount uint) (extra-debt uint) (vault-debt uint) (discount uint)) uint))
     (finalize-liquidation (uint uint) (response bool uint))
 
-    (redeem-auction-collateral (<mock-ft-trait> <vault-trait> uint principal) (response bool uint))
+    (redeem-auction-collateral (<mock-ft-trait> (string-ascii 12) <vault-trait> uint principal) (response bool uint))
 
     (get-xusd-balance () (response uint bool))
     (set-stx-redeemable (uint) (response bool uint))

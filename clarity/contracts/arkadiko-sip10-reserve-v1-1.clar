@@ -33,11 +33,13 @@
 )
 
 ;; (match (print (ft-transfer? token ucollateral-amount sender (as-contract tx-sender)))
-(define-public (collateralize-and-mint (token <mock-ft-trait>) (token-string (string-ascii 12)) (type (string-ascii 12)) (ucollateral-amount uint) (debt uint) (sender principal))
-  (let ((token-symbol (unwrap-panic (contract-call? token get-symbol))))
+(define-public (collateralize-and-mint (token <mock-ft-trait>) (token-string (string-ascii 12)) (ucollateral-amount uint) (debt uint) (sender principal))
+  (let (
+    (token-symbol (unwrap-panic (contract-call? token get-symbol)))
+  )
     (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq token-string token-symbol) (err ERR-WRONG-TOKEN))
-    (asserts! (is-eq (get token (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-collateral-type-by-name type))) token-symbol) (err ERR-WRONG-TOKEN))
+    (asserts! (not (is-eq token-string "STX")) (err ERR-WRONG-TOKEN))
 
     ;; token should be a trait e.g. 'SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.arkadiko-token
     (match (contract-call? token transfer ucollateral-amount sender (as-contract tx-sender))
@@ -47,9 +49,13 @@
   )
 )
 
-(define-public (deposit (token <mock-ft-trait>) (additional-ucollateral-amount uint))
-  (begin
+(define-public (deposit (token <mock-ft-trait>) (token-string (string-ascii 12)) (additional-ucollateral-amount uint))
+  (let (
+    (token-symbol (unwrap-panic (contract-call? token get-symbol)))
+  )
     (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq token-string token-symbol) (err ERR-WRONG-TOKEN))
+    (asserts! (not (is-eq token-string "STX")) (err ERR-WRONG-TOKEN))
 
     (match (contract-call? token transfer additional-ucollateral-amount tx-sender (as-contract tx-sender))
       success (ok true)
@@ -58,9 +64,13 @@
   )
 )
 
-(define-public (withdraw (token <mock-ft-trait>) (vault-owner principal) (ucollateral-amount uint))
-  (begin
+(define-public (withdraw (token <mock-ft-trait>) (token-string (string-ascii 12)) (vault-owner principal) (ucollateral-amount uint))
+  (let (
+    (token-symbol (unwrap-panic (contract-call? token get-symbol)))
+  )
     (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq token-string token-symbol) (err ERR-WRONG-TOKEN))
+    (asserts! (not (is-eq token-symbol "STX")) (err ERR-WRONG-TOKEN))
 
     (match (as-contract (contract-call? token transfer ucollateral-amount (as-contract tx-sender) vault-owner))
       success (ok true)
@@ -69,11 +79,12 @@
   )
 )
 
-(define-public (mint (token (string-ascii 12)) (vault-owner principal) (ucollateral-amount uint) (current-debt uint) (extra-debt uint) (collateral-type (string-ascii 12)))
+(define-public (mint (token-string (string-ascii 12)) (vault-owner principal) (ucollateral-amount uint) (current-debt uint) (extra-debt uint) (collateral-type (string-ascii 12)))
   (begin
     (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
+    (asserts! (not (is-eq token-string "STX")) (err ERR-WRONG-TOKEN))
 
-    (let ((max-new-debt (- (unwrap-panic (calculate-xusd-count token ucollateral-amount collateral-type)) current-debt)))
+    (let ((max-new-debt (- (unwrap-panic (calculate-xusd-count token-string ucollateral-amount collateral-type)) current-debt)))
       (if (>= max-new-debt extra-debt)
         (match (as-contract (contract-call? .arkadiko-dao mint-token .xusd-token extra-debt vault-owner))
           success (ok true)
@@ -86,8 +97,11 @@
 )
 
 (define-public (burn (token <mock-ft-trait>) (vault-owner principal) (collateral-to-return uint))
-  (begin
+  (let (
+    (token-symbol (unwrap-panic (contract-call? token get-symbol)))
+  )
     (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
+    (asserts! (not (is-eq token-symbol "STX")) (err ERR-WRONG-TOKEN))
 
     (match (as-contract (contract-call? token transfer collateral-to-return (as-contract tx-sender) vault-owner))
       transferred (ok true)
@@ -96,9 +110,14 @@
   )
 )
 
-(define-public (redeem-collateral (token <mock-ft-trait>) (ucollateral uint) (owner principal))
-  (begin
+(define-public (redeem-collateral (token <mock-ft-trait>) (token-string (string-ascii 12)) (ucollateral uint) (owner principal))
+  (let (
+    (token-symbol (unwrap-panic (contract-call? token get-symbol)))
+  )
     (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq token-string token-symbol) (err ERR-WRONG-TOKEN))
+    (asserts! (not (is-eq token-string "STX")) (err ERR-WRONG-TOKEN))
+    
     (as-contract (contract-call? token transfer ucollateral (as-contract tx-sender) owner))
   )
 )

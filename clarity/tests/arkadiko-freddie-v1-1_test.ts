@@ -25,9 +25,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000),
         types.uint(1925000),
-        types.principal(deployer.address),
         types.ascii("STX-A"),
-        types.ascii("STX"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -108,9 +106,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000),
         types.uint(1925000),
-        types.principal(deployer.address),
         types.ascii("STX-A"),
-        types.ascii("STX"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -135,9 +131,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(900000000), // 900 STX (1800 USD worth of collateral)
         types.uint(1000000000), // 1000 xUSD
-        types.principal(deployer.address),
         types.ascii("STX-B"),
-        types.ascii("STX"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -165,7 +159,6 @@ Clarinet.test({
     // Price doubled
     call = await chain.callReadOnlyFn("arkadiko-freddie-v1-1", "calculate-current-collateral-to-debt-ratio", [types.uint(1)], deployer.address);
     call.result.expectOk().expectUint(327);
-
   }
 });
 
@@ -181,9 +174,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000),
         types.uint(1000000000), // mint 1000 xUSD
-        types.principal(deployer.address),
         types.ascii("STX-A"),
-        types.ascii("STX"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -210,9 +201,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000),
         types.uint(1000000000), // mint 1000 xUSD
-        types.principal(deployer.address),
         types.ascii("STX-A"),
-        types.ascii("STX"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -251,7 +240,7 @@ Clarinet.test({
 
     // withdraw the xUSD from freddie to the deployer's (contract owner) address
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "redeem-xusd", [types.uint(fee)], deployer.address)
+      Tx.contractCall("arkadiko-freddie-v1-1", "redeem-tokens", [types.uint(fee), types.uint(0)], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
@@ -279,9 +268,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000),
         types.uint(1000000000), // mint 1000 xUSD
-        types.principal(deployer.address),
         types.ascii("STX-A"),
-        types.ascii("STX"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -336,7 +323,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "freddie: minting xUSD with conflicting FT <> collateral type is illegal",
+  name: "freddie: collateralize-and-mint with wrong parameters",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let block = chain.mineBlock([
@@ -347,9 +334,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000),
         types.uint(1925000),
-        types.principal(deployer.address),
         types.ascii("STX-A"),
-        types.ascii("STX"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1"),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -366,9 +351,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(500000000),
         types.uint(925000),
-        types.principal(deployer.address),
         types.ascii("DIKO-A"),
-        types.ascii("DIKO"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -381,9 +364,37 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(500000000),
         types.uint(925000),
-        types.principal(deployer.address),
         types.ascii("STX-A"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1"),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+        ),
+      ], deployer.address),
+    ]);
+    block.receipts[0].result.expectErr().expectUint(98); // wrong token error
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("DIKO"),
+        types.uint(200),
+      ], deployer.address),
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
+        types.uint(500000000),
+        types.uint(925000),
+        types.ascii("DIKO-A"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1"),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token",
+        ),
+      ], deployer.address),
+    ]);
+    block.receipts[1].result.expectErr().expectUint(98); // wrong token error
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
+        types.uint(500000000),
+        types.uint(925000),
+        types.ascii("DIKO-A"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -392,54 +403,11 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectErr().expectUint(118); // wrong token error
 
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(500000000),
-        types.uint(925000),
-        types.principal(deployer.address),
-        types.ascii("STX-A"),
-        types.ascii("DIKO"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1"),
-        types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
-        ),
-      ], deployer.address),
-    ]);
-    block.receipts[0].result.expectErr().expectUint(98); // wrong token error
-
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(500000000),
-        types.uint(925000),
-        types.principal(deployer.address),
-        types.ascii("STX-A"),
-        types.ascii("STX"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1"),
-        types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token",
-        ),
-      ], deployer.address),
-    ]);
-    block.receipts[0].result.expectErr().expectUint(98); // wrong token error
-
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1000 * 1000000), 
-        types.uint(300 * 1000000), 
-        types.principal(deployer.address),
-        types.ascii("DIKO-A"),
-        types.ascii("STX"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
-      ], deployer.address)
-    ]);
-    // TODO
-    block.receipts[0].result.expectErr().expectUint(118);
   }
 });
 
 Clarinet.test({
-  name: "freddie: collateralize-and-mint errors",
+  name: "freddie: wrong parameters for deposit, withdraw, mint, burn",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -447,251 +415,80 @@ Clarinet.test({
       Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
         types.uint(77),
-      ], deployer.address)
-    ]);
-
-    // Mint too much
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(0),
-        types.uint(1),
-        types.principal(deployer.address),
-        types.ascii("STX-A"),
-        types.ascii("STX"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
-        ),
-      ], deployer.address)
-    ]);
-    // ERR-INSUFFICIENT-COLLATERAL
-    block.receipts[0].result.expectErr().expectUint(49);
-
-  },
-});
-
-Clarinet.test({
-  name: "freddie: unauthorized errors",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
-    let block = chain.mineBlock([
+      ], deployer.address),
       Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
-        types.ascii("STX"),
-        types.uint(77),
-      ], deployer.address)
-    ]);
-
-    // Collateralize wallet_1
-    block = chain.mineBlock([
+        types.ascii("DIKO"),
+        types.uint(50),
+      ], deployer.address),
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(10),
+        types.uint(5000000),
         types.uint(1),
-        types.principal(wallet_1.address),
-        types.ascii("STX-A"),
-        types.ascii("STX"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
+        types.ascii("DIKO-A"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1"),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
         ),
-      ], wallet_1.address)
-    ]);
-
-    // Call for other wallet
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(0),
-        types.uint(1),
-        types.principal(wallet_1.address),
-        types.ascii("STX-A"),
-        types.ascii("STX"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
-        ),
-      ], deployer.address)
-    ]);
-    // ERR-NOT-AUTHORIZED
-    block.receipts[0].result.expectErr().expectUint(4401);
-
-    // Toggle stacking 
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "toggle-stacking", [
-        types.uint(1)
       ], deployer.address),
     ]);
-    // ERR-NOT-AUTHORIZED
-    block.receipts[0].result.expectErr().expectUint(4401);
 
-    // Toggle stacking, allowing withdraw
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "stack-collateral", [
-        types.uint(1)
-      ], deployer.address),
-    ]);
-    // ERR-NOT-AUTHORIZED
-    block.receipts[0].result.expectErr().expectUint(4401);
-
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "enable-vault-withdrawals", [
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stacker-v1-1"),
-        types.uint(1)
-      ], wallet_1.address)
-    ]);
-    // ERR-NOT-AUTHORIZED
-    block.receipts[0].result.expectErr().expectUint(4401);
-
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "release-stacked-stx", [
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stacker-v1-1"),
-        types.uint(1)
-      ], wallet_1.address)
-    ]);
-    // ERR-NOT-AUTHORIZED
-    block.receipts[0].result.expectErr().expectUint(4401);
-
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "toggle-freddie-shutdown", [], wallet_1.address)
-    ]);
-    // ERR-NOT-AUTHORIZED
-    block.receipts[0].result.expectErr().expectUint(4401);
-
-    // Toggle stacking, allowing withdraw
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "toggle-stacking", [
-        types.uint(1)
-      ], deployer.address),
-      // now vault 1 has revoked stacking, enable vault withdrawals
-      Tx.contractCall("arkadiko-freddie-v1-1", "enable-vault-withdrawals", [
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stacker-v1-1"),
-        types.uint(1)
-      ], deployer.address)
-    ]);
-
-    // Withdraw 0
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "withdraw", [
-        types.uint(1),
-        types.uint(0), // 100 STX
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
-      ], deployer.address)
-    ]);
-    // ERR-NOT-AUTHORIZED
-    block.receipts[0].result.expectErr().expectUint(4401);
-
-  },
-});
-
-Clarinet.test({
-  name: "freddie: test zero values",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
-        types.ascii("STX"),
-        types.uint(77),
-      ], deployer.address)
-    ]);
-
-    // collateralize 0 & mint 0
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(0),
-        types.uint(0),
-        types.principal(deployer.address),
-        types.ascii("STX-A"),
-        types.ascii("STX"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
-        ),
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(417); // wrong debt (0)
-
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(500000000),
-        types.uint(925000),
-        types.principal(deployer.address),
-        types.ascii("STX-A"),
-        types.ascii("STX"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
-        ),
-      ], deployer.address)
-    ]);
-
-    // Mint 0
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "mint", [
-        types.uint(1),
-        types.uint(0),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1")
-      ], deployer.address)
-    ]);
-    // ERR-MINT-FAILED in stx-reserve
-    block.receipts[0].result
-      .expectErr()
-      .expectUint(117);
-
-    // Burn 0
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "burn", [
-        types.uint(1),
-        types.uint(0),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token")
-      ], deployer.address)
-    ]);
-    // 
-    block.receipts[0].result
-      .expectErr()
+    block.receipts[2].result
+      .expectOk()
       .expectUint(1);
 
-    // Deposit extra
+      // Should not be able to deposit in STX reserve
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "deposit", [
         types.uint(1),
-        types.uint(0), 
+        types.uint(500000000), // 500 STX
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       ], deployer.address)
     ]);
-    // ERR-DEPOSIT-FAILED
     block.receipts[0].result
       .expectErr()
       .expectUint(45);
- 
-    // Toggle stacking, allowing withdraw
+    
+    // Mint extra
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "toggle-stacking", [
-        types.uint(1)
+      Tx.contractCall("arkadiko-freddie-v1-1", "mint", [
+        types.uint(1),
+        types.uint(1), // mint 1 xUSD
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1")
       ], deployer.address),
-      // now vault 1 has revoked stacking, enable vault withdrawals
-      Tx.contractCall("arkadiko-freddie-v1-1", "enable-vault-withdrawals", [
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stacker-v1-1"),
-        types.uint(1)
-      ], deployer.address)
     ]);
+    block.receipts[0].result
+      .expectErr()
+      .expectUint(118);
 
-    // Withdraw 0
+    // Withdraw
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "withdraw", [
         types.uint(1),
-        types.uint(0), // 100 STX
+        types.uint(1), // 1 STX
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       ], deployer.address)
     ]);
-    // ERR-INSUFFICIENT-COLLATERAL
     block.receipts[0].result
       .expectErr()
-      .expectUint(49);
+      .expectUint(46);
+
+    //  Burn
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "burn", [
+        types.uint(1),
+        types.uint(1), // burn 1 xUSD
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token")
+      ], deployer.address),
+    ]);
+    block.receipts[0].result
+      .expectErr()
+      .expectUint(112);
+
   },
 });
+
 
 Clarinet.test({
   name: "freddie: mint and burn",
@@ -707,9 +504,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000), // 1000 STX
         types.uint(300000000), // mint 300 xUSD
-        types.principal(deployer.address),
         types.ascii("STX-A"),
-        types.ascii("STX"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       ], deployer.address)
@@ -798,60 +593,6 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "freddie: while stacking, not all actions are allowed",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-    
-    let block = chain.mineBlock([
-      // Initialize price of STX to $2 in the oracle
-      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
-        types.ascii("STX"),
-        types.uint(200),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1000000000), // 1000 STX
-        types.uint(300000000), // mint 300 xUSD
-        types.principal(deployer.address),
-        types.ascii("STX-A"),
-        types.ascii("STX"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
-      ], deployer.address)
-    ]);
-    block.receipts[1].result
-      .expectOk()
-      .expectUint(300000000);
-
-    // Try burn
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "burn", [
-        types.uint(1),
-        types.uint(300000000),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token")
-      ], deployer.address)
-    ]);
-    block.receipts[0].result
-      .expectErr()
-      .expectUint(414); 
-
-    // Try withdraw
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "withdraw", [
-        types.uint(1),
-        types.uint(200000000), 
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token")
-      ], deployer.address)
-    ]);
-    block.receipts[0].result
-      .expectErr()
-      .expectUint(414);
-
-  }
-});
-
-Clarinet.test({
   name: "freddie: deposit and withdraw",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -865,9 +606,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000), // 1000 STX
         types.uint(300000000), // mint 300 xUSD
-        types.principal(deployer.address),
         types.ascii("STX-A"),
-        types.ascii("STX"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       ], deployer.address)
@@ -950,9 +689,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000), // 1000 STX
         types.uint(300000000), // mint 300 xUSD
-        types.principal(deployer.address),
         types.ascii("STX-A"),
-        types.ascii("STX"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       ], deployer.address)
@@ -1017,9 +754,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000), // 1000 STX
         types.uint(300000000), // mint 300 xUSD
-        types.principal(deployer.address),
         types.ascii("DIKO-A"),
-        types.ascii("DIKO"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       ], deployer.address)
@@ -1038,7 +773,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "freddie: emergency shutdown is on",
+  name: "freddie: cannot create vault when emergency shutdown is on",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let block = chain.mineBlock([
@@ -1046,129 +781,122 @@ Clarinet.test({
         types.ascii("STX"),
         types.uint(200),
       ], deployer.address),
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1000000000), // 1000 STX
-        types.uint(300000000), // mint 300 xUSD
-        types.principal(deployer.address),
-        types.ascii("STX-A"),
-        types.ascii("STX"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
-      ], deployer.address)
-    ]);
-
-    // Turn on emergency shutdown
-    block = chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "toggle-freddie-shutdown", [], deployer.address),
-    ]);
-
-    // Try to collateralize and mint
-    block = chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000), // 1000 STX
         types.uint(300000000), // mint 300 xUSD
-        types.principal(deployer.address),
         types.ascii("STX-A"),
-        types.ascii("STX"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectErr().expectUint(411);
-
-    // Mint
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "mint", [
-        types.uint(1),
-        types.uint(1),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1")
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(411);
-
-    // Burn
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "burn", [
-        types.uint(1),
-        types.uint(1),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token")
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(411);
-
-    // Deposit
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "deposit", [
-        types.uint(1),
-        types.uint(1), 
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(411);
- 
-    // Toggle stacking, allowing withdraw
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "toggle-stacking", [
-        types.uint(1)
-      ], deployer.address),
-    ]);
-    block.receipts[0].result.expectErr().expectUint(411);
-
-    // Withdraw
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "withdraw", [
-        types.uint(1),
-        types.uint(1), // 100 STX
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(411);
-
-    // Stack collateral
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "stack-collateral", [
-        types.uint(1)
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(411);
-
-    // Liquidate
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "liquidate", [
-        types.uint(1)
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(411);
-
-    // Finalize liquidation
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "finalize-liquidation", [
-        types.uint(1),
-        types.uint(1)
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(411);
-
-    // Withdraw leftover collateral
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "withdraw-leftover-collateral", [
-        types.uint(1),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(411);
+    block.receipts[2].result.expectErr().expectUint(411);
   }
 });
 
 Clarinet.test({
-  name: "freddie: DAO emergency shutdown is on",
+  name: "freddie: get pending DIKO rewards for liquidated vault",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
     let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
+        types.ascii("STX"),
+        types.uint(77),
+      ], deployer.address),
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
+        types.uint(5000000),
+        types.uint(1925000),
+        types.ascii("STX-A"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+        ),
+      ], deployer.address),
+    ]);
+    block.receipts[0].result
+      .expectOk()
+      .expectUint(77);
+    block.receipts[1].result
+      .expectOk()
+      .expectUint(1925000);
+
+    // Advance 30 blocks
+    chain.mineEmptyBlock(144*30);
+
+    // Get pending rewards for user
+    let call = await chain.callReadOnlyFn(
+      "arkadiko-vault-rewards-v1-1",
+      "get-pending-rewards",
+      [types.principal(deployer.address)],
+      wallet_1.address,
+    );
+    call.result.expectOk().expectUint(947068138000);
+
+    // Freddie should not have DIKO yet
+    call = await chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+    ], deployer.address);
+    call.result.expectOk().expectUint(0);
+
+    block = chain.mineBlock([
+      // Simulates a crash price of STX - from 77 cents to 55 cents
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
+        types.ascii("STX"),
+        types.uint(55),
+      ], deployer.address),
+      // Notify liquidator
+      Tx.contractCall("arkadiko-liquidator-v1-1", "notify-risky-vault", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1'),
+        types.uint(1),
+      ], deployer.address),
+    ]);
+    block.receipts[0].result
+      .expectOk()
+      .expectUint(55);
+    block.receipts[1].result
+      .expectOk()
+      .expectUint(5200);
+
+    // Freddie should have received pending DIKO rewards
+    call = await chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+    ], deployer.address);
+    call.result.expectOk().expectUint(947068138000);
+
+    // Payout address balance
+    call = await chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [
+      types.principal(deployer.address),
+    ], deployer.address);
+    call.result.expectOk().expectUint(890000000000);
+
+    // Advance 30 blocks
+    chain.mineEmptyBlock(144*30);
+
+    // Redeem DIKO
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "redeem-tokens", [types.uint(0), types.uint(947068138000)], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    // Payout address balance
+    call = await chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [
+      types.principal(deployer.address),
+    ], deployer.address);
+    call.result.expectOk().expectUint(890000000000 + 947068138000);
+
+  },
+});
+
+Clarinet.test({
+  name: "freddie: while stacking, not all actions are allowed",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let block = chain.mineBlock([
+      // Initialize price of STX to $2 in the oracle
       Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
         types.uint(200),
@@ -1176,117 +904,145 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000), // 1000 STX
         types.uint(300000000), // mint 300 xUSD
-        types.principal(deployer.address),
         types.ascii("STX-A"),
-        types.ascii("STX"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       ], deployer.address)
     ]);
+    block.receipts[1].result
+      .expectOk()
+      .expectUint(300000000);
 
-    // Turn on emergency shutdown
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-dao", "toggle-emergency-shutdown", [], deployer.address),
-    ]);
-
-    // Try to collateralize and mint
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1000000000), // 1000 STX
-        types.uint(300000000), // mint 300 xUSD
-        types.principal(deployer.address),
-        types.ascii("STX-A"),
-        types.ascii("STX"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(411);
-
-    // Mint
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "mint", [
-        types.uint(1),
-        types.uint(1),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1")
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(411);
-
-    // Burn
+    // Try burn
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "burn", [
         types.uint(1),
-        types.uint(1),
+        types.uint(300000000),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token")
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectErr().expectUint(411);
+    block.receipts[0].result
+      .expectErr()
+      .expectUint(414); 
 
-    // Deposit
+    // Try withdraw
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "withdraw", [
+        types.uint(1),
+        types.uint(200000000), 
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token")
+      ], deployer.address)
+    ]);
+    block.receipts[0].result
+      .expectErr()
+      .expectUint(414);
+  }
+});
+
+Clarinet.test({
+  name: "freddie: test zero values",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
+        types.ascii("STX"),
+        types.uint(77),
+      ], deployer.address)
+    ]);
+
+    // collateralize 0 & mint 0
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
+        types.uint(0),
+        types.uint(0),
+        types.ascii("STX-A"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+        ),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(417); // wrong debt (0)
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
+        types.uint(500000000),
+        types.uint(925000),
+        types.ascii("STX-A"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+        ),
+      ], deployer.address)
+    ]);
+
+    // Mint 0
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "mint", [
+        types.uint(1),
+        types.uint(0),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1")
+      ], deployer.address)
+    ]);
+    // ERR-MINT-FAILED in stx-reserve
+    block.receipts[0].result
+      .expectErr()
+      .expectUint(117);
+
+    // Burn 0
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "burn", [
+        types.uint(1),
+        types.uint(0),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token")
+      ], deployer.address)
+    ]);
+    // 
+    block.receipts[0].result
+      .expectErr()
+      .expectUint(1);
+
+    // Deposit extra
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "deposit", [
         types.uint(1),
-        types.uint(1), 
+        types.uint(0), 
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectErr().expectUint(411);
- 
+    // ERR-DEPOSIT-FAILED
+    block.receipts[0].result
+      .expectErr()
+      .expectUint(45);
+
     // Toggle stacking, allowing withdraw
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "toggle-stacking", [
         types.uint(1)
       ], deployer.address),
+      // now vault 1 has revoked stacking, enable vault withdrawals
+      Tx.contractCall("arkadiko-freddie-v1-1", "enable-vault-withdrawals", [
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stacker-v1-1"),
+        types.uint(1)
+      ], deployer.address)
     ]);
-    block.receipts[0].result.expectErr().expectUint(411);
 
-    // Withdraw
+    // Withdraw 0
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "withdraw", [
         types.uint(1),
-        types.uint(1), // 100 STX
+        types.uint(0), // 100 STX
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectErr().expectUint(411);
-
-    // Stack collateral
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "stack-collateral", [
-        types.uint(1)
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(411);
-
-    // Liquidate
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "liquidate", [
-        types.uint(1)
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(411);
-
-    // Finalize liquidation
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "finalize-liquidation", [
-        types.uint(1),
-        types.uint(1)
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(411);
-
-    // Withdraw leftover collateral
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "withdraw-leftover-collateral", [
-        types.uint(1),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(411);
-  }
+    // ERR-INSUFFICIENT-COLLATERAL
+    block.receipts[0].result
+      .expectErr()
+      .expectUint(49);
+  },
 });

@@ -19,9 +19,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000),
         types.uint(1000000000), // mint 1000 xUSD
-        types.principal(deployer.address),
         types.ascii("STX-A"),
-        types.ascii("STX"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -30,9 +28,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(500000000),
         types.uint(400000000), // mint 400 xUSD
-        types.principal(wallet_1.address),
         types.ascii("STX-A"),
-        types.ascii("STX"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -98,9 +94,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000),
         types.uint(1000000000), // mint 1000 xUSD
-        types.principal(deployer.address),
         types.ascii("STX-A"),
-        types.ascii("STX"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -155,9 +149,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000),
         types.uint(1000000000), // mint 1000 xUSD
-        types.principal(deployer.address),
         types.ascii("STX-A"),
-        types.ascii("STX"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -166,9 +158,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(500000000),
         types.uint(400000000), // mint 400 xUSD
-        types.principal(wallet_1.address),
         types.ascii("STX-A"),
-        types.ascii("STX"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
@@ -244,9 +234,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000), // 1000 STX
         types.uint(1300000000), // mint 1300 xUSD
-        types.principal(deployer.address),
         types.ascii("STX-A"),
-        types.ascii("STX"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       ], deployer.address),
@@ -324,16 +312,16 @@ Clarinet.test({
       ], deployer.address)
     ]);
 
-    // Check if transfer of yields is approx 450 STX
+    // Check if transfer of yields is approx 450 STX - 10% that we keep
     // part of it stays with the foundation since not all collateral is usually sold of
     let [stxTransferEvent1, stxTransferEvent2] = block.receipts[1].events;
     stxTransferEvent1.stx_transfer_event.sender.expectPrincipal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stacker-v1-1");
     stxTransferEvent1.stx_transfer_event.recipient.expectPrincipal(deployer.address);
-    stxTransferEvent1.stx_transfer_event.amount.expectInt(312494498);
+    stxTransferEvent1.stx_transfer_event.amount.expectInt(312498000);
 
     stxTransferEvent2.stx_transfer_event.sender.expectPrincipal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stacker-v1-1");
     stxTransferEvent2.stx_transfer_event.recipient.expectPrincipal(deployer.address);
-    stxTransferEvent2.stx_transfer_event.amount.expectInt(118124195);
+    stxTransferEvent2.stx_transfer_event.amount.expectInt(118122300);
   }
 });
 
@@ -350,9 +338,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000), // 1000 STX
         types.uint(1300000000), // mint 1300 xUSD
-        types.principal(deployer.address),
         types.ascii("STX-A"),
-        types.ascii("STX"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       ], deployer.address),

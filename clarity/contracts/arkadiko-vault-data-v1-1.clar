@@ -29,10 +29,16 @@
   { vault-id: uint }
 )
 (define-map stacking-payout
-  { vault-id: uint }
+  { vault-id: uint, lot-index: uint }
   {
     collateral-amount: uint,
-    principals: (list 500 (tuple (collateral-amount uint) (recipient principal)))
+    principal: principal
+  }
+)
+(define-map stacking-payout-lots
+  { vault-id: uint }
+  {
+    ids: (list 500 uint)
   }
 )
 (define-data-var last-vault-id uint u0)
@@ -73,11 +79,14 @@
   (var-get last-vault-id)
 )
 
-(define-read-only (get-stacking-payout (vault-id uint))
+(define-read-only (get-stacking-payout (vault-id uint) (lot-index uint))
   (default-to
-    { collateral-amount: u0, principals: (list) }
-    (map-get? stacking-payout { vault-id: vault-id })
+    { collateral-amount: u0, principal: (contract-call? .arkadiko-dao get-dao-owner) }
+    (map-get? stacking-payout { vault-id: vault-id, lot-index: lot-index })
   )
+)
+(define-read-only (get-stacking-payout-lots (vault-id uint))
+  (unwrap! (map-get? stacking-payout-lots { vault-id: vault-id }) (tuple (ids (list u0) )))
 )
 
 (define-public (set-last-vault-id (vault-id uint))
@@ -142,26 +151,8 @@
   )
 )
 
-;; called on liquidation
-;; when a vault gets liquidated, the vault owner is no longer eligible for the yield
-(define-public (reset-stacking-payouts (vault-id uint))
-  (begin
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
-
-    (map-set stacking-payout
-      { vault-id: vault-id }
-      { collateral-amount: u0, principals: (list) }
-    )
-
-    (ok true)
-  )
-)
-
-(define-public (add-stacker-payout (vault-id uint) (collateral-amount uint) (recipient principal))
-  (let (
-    (stacking-payout-entry (get-stacking-payout vault-id))
-    (principals (get principals stacking-payout-entry))
-  )
+(define-public (set-stacker-payout (vault-id uint) (lot-index uint) (collateral-amount uint) (recipient principal))
+  (let ((entries (get ids (get-stacking-payout-lots vault-id))))
     (asserts!
       (or
         (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie")))
@@ -171,11 +162,15 @@
     )
 
     (map-set stacking-payout
-      { vault-id: vault-id }
+      { vault-id: vault-id, lot-index: lot-index }
       {
-        collateral-amount: (+ collateral-amount (get collateral-amount stacking-payout-entry)),
-        principals: (unwrap-panic (as-max-len? (append principals (tuple (collateral-amount collateral-amount) (recipient recipient))) u500))
+        collateral-amount: collateral-amount,
+        principal: recipient
       }
+    )
+    (if (is-none (index-of entries lot-index))
+      (map-set stacking-payout-lots { vault-id: vault-id } { ids: (unwrap-panic (as-max-len? (append entries lot-index) u500)) })
+      true
     )
     (ok true)
   )

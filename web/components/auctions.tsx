@@ -22,6 +22,25 @@ export const Auctions: React.FC = () => {
   useEffect(() => {
     let mounted = true;
 
+    const auctionOpen = async (auctionId) => {
+      const auctionOpenCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-auction-engine-v1-1",
+        functionName: "get-auction-open",
+        functionArgs: [uintCV(auctionId)],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const isOpen = cvToJSON(auctionOpenCall);
+      return isOpen.value.value;
+    };
+
+    async function asyncForEach(array, callback) {
+      for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array);
+      }
+    }
+
     const getData = async () => {
       const auctions = await callReadOnlyFunction({
         contractAddress,
@@ -33,10 +52,11 @@ export const Auctions: React.FC = () => {
       });
       const json = cvToJSON(auctions);
       let serializedAuctions:Array<AuctionProps> = [];
-      json.value.value.forEach((e: object) => {
+      await asyncForEach(json.value.value, async (e: object) => {
         const vault = tupleCV(e);
         const data = vault.data.value;
-        if (data['is-open'].value) {
+        const isOpen = await auctionOpen(data['id'].value);
+        if (isOpen) {
           serializedAuctions.push({
             id: data['id'].value,
             lotId: data['lots-sold'].value,
@@ -48,8 +68,8 @@ export const Auctions: React.FC = () => {
         }
       });
 
-      const getLot = async (auctionId:number, lotId:number) => {
-        const lot = await callReadOnlyFunction({
+      const getLastBid = async (auctionId:number, lotId:number) => {
+        const lastBid = await callReadOnlyFunction({
           contractAddress,
           contractName: "arkadiko-auction-engine-v1-1",
           functionName: "get-last-bid",
@@ -57,9 +77,9 @@ export const Auctions: React.FC = () => {
           senderAddress: stxAddress || '',
           network: network,
         });
-
-        return cvToJSON(lot);
-      };
+        const bid = cvToJSON(lastBid).value;
+        return bid;
+      }
 
       const lots = await callReadOnlyFunction({
         contractAddress,
@@ -70,22 +90,23 @@ export const Auctions: React.FC = () => {
         network: network,
       });
       const jsonLots = cvToJSON(lots);
-      let winLot;
+      let isAuctionOpen;
 
       let serializedLots:Array<{ 'lot-id':string, 'auction-id': string, 'collateral-amount': number, 'collateral-token': string, 'xusd': number }> = [];
-      jsonLots.value.ids.value.forEach(async (e: object) => {
+      await asyncForEach(jsonLots.value.ids.value, async (e: object) => {
         const lot = tupleCV(e);
         const data = lot.data.value;
         if (data['auction-id'].value !== 0) {
-          winLot = await getLot(data['auction-id'].value, data['lot-index'].value);
+          isAuctionOpen = await auctionOpen(data['auction-id'].value);
+          const lastBid = await getLastBid(data['auction-id'].value, data['lot-index'].value);
 
-          if (winLot && winLot.value['is-accepted'].value) {
+          if (!isAuctionOpen && !lastBid['redeemed'].value) {
             serializedLots.push({
               'lot-id': data['lot-index'].value,
               'auction-id': data['auction-id'].value,
-              'collateral-amount': winLot.value['collateral-amount'].value,
-              'collateral-token': winLot.value['collateral-token'].value,
-              'xusd': winLot.value['xusd'].value
+              'collateral-amount': lastBid['collateral-amount'].value,
+              'collateral-token': lastBid['collateral-token'].value,
+              'xusd': lastBid['xusd'].value
             });
             setLots(serializedLots);
           }
@@ -160,7 +181,7 @@ export const Auctions: React.FC = () => {
                   {lots.length > 0 ? (
                     <LotGroup lots={lots} />
                   ) : (
-                    <p className="mt-2">You have no winning lots you can redeem.</p>
+                    <p className="mt-2">You have no winning lots you can redeem. Winning lots can be redeemed when the parent auction closes.</p>
                   )}
                 </div>
 

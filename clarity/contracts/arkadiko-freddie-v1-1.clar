@@ -76,6 +76,12 @@
   )
 )
 
+(define-read-only (get-collateral-token-for-vault (vault-id uint))
+  (let ((vault (get-vault-by-id vault-id)))
+    (ok (get collateral-token vault))
+  )
+)
+
 (define-read-only (calculate-current-collateral-to-debt-ratio (vault-id uint))
   (let ((vault (get-vault-by-id vault-id)))
     (if (is-eq (get is-liquidated vault) true)
@@ -258,16 +264,18 @@
   )
 )
 
+
+
 (define-public (collateralize-and-mint
     (collateral-amount uint)
     (debt uint)
-    (sender principal)
     (collateral-type (string-ascii 12))
-    (collateral-token (string-ascii 12))
     (reserve <vault-trait>)
     (ft <mock-ft-trait>)
   )
   (let (
+    (sender tx-sender)
+    (collateral-token (get token (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-collateral-type-by-name collateral-type))))
     (ratio (unwrap! (contract-call? reserve calculate-current-collateral-to-debt-ratio collateral-token debt collateral-amount) (err ERR-WRONG-DEBT)))
   )
     (asserts!
@@ -277,8 +285,6 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-    (asserts! (is-eq tx-sender sender) (err ERR-NOT-AUTHORIZED))
-    (asserts! (> collateral-amount u0) (err ERR-INSUFFICIENT-COLLATERAL))
     (asserts! (>= ratio (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-liquidation-ratio collateral-type))) (err ERR-INSUFFICIENT-COLLATERAL))
     (asserts!
       (<
@@ -288,7 +294,7 @@
       (err ERR-MAXIMUM-DEBT-REACHED)
     )
 
-    (try! (contract-call? reserve collateralize-and-mint ft collateral-token collateral-type collateral-amount debt sender))
+    (try! (contract-call? reserve collateralize-and-mint ft collateral-token collateral-amount debt sender))
     (try! (as-contract (contract-call? .arkadiko-dao mint-token .xusd-token debt sender)))
     (let (
       (vault-id (+ (contract-call? .arkadiko-vault-data-v1-1 get-last-vault-id) u1))
@@ -324,6 +330,7 @@
 (define-public (deposit (vault-id uint) (uamount uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
   (let (
     (vault (get-vault-by-id vault-id))
+    (collateral-token (unwrap-panic (get-collateral-token-for-vault vault-id)))
     (new-collateral (+ uamount (get collateral vault)))
     (updated-vault (merge vault {
       collateral: new-collateral,
@@ -339,7 +346,7 @@
     )
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
 
-    (unwrap! (contract-call? reserve deposit ft uamount) (err ERR-DEPOSIT-FAILED))
+    (unwrap! (contract-call? reserve deposit ft collateral-token uamount) (err ERR-DEPOSIT-FAILED))
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id updated-vault))
     (try! (contract-call? .arkadiko-vault-rewards-v1-1 add-collateral uamount (get owner vault)))
     (print { type: "vault", action: "deposit", data: updated-vault })
@@ -348,7 +355,10 @@
 )
 
 (define-public (withdraw (vault-id uint) (uamount uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
-  (let ((vault (get-vault-by-id vault-id)))
+  (let (
+    (vault (get-vault-by-id vault-id))
+    (collateral-token (unwrap-panic (get-collateral-token-for-vault vault-id)))
+  )
     (asserts!
       (and
         (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
@@ -376,7 +386,7 @@
           })))
       ;; TODO: FIX (make "STX" dynamic)
       (asserts! (>= ratio (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-collateral-to-debt-ratio (get collateral-type vault)))) (err ERR-INSUFFICIENT-COLLATERAL))
-      (unwrap! (contract-call? reserve withdraw ft (get owner vault) uamount) (err ERR-WITHDRAW-FAILED))
+      (unwrap! (contract-call? reserve withdraw ft collateral-token (get owner vault) uamount) (err ERR-WITHDRAW-FAILED))
       (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id updated-vault))
       (try! (contract-call? .arkadiko-vault-rewards-v1-1 remove-collateral uamount (get owner vault)))
       (print { type: "vault", action: "withdraw", data: updated-vault })
@@ -538,7 +548,7 @@
     )
     (asserts! (is-eq contract-caller .arkadiko-liquidator-v1-1) (err ERR-NOT-AUTHORIZED))
 
-    (try! (contract-call? .arkadiko-vault-data-v1-1 reset-stacking-payouts vault-id))
+    (try! (contract-call? .arkadiko-vault-rewards-v1-1 claim-pending-rewards-liquidated-vault (get owner vault)))
     (let (
       (collateral (get collateral vault))
       (liquidation-penalty (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-liquidation-penalty (get collateral-type vault))))
@@ -607,12 +617,18 @@
   )
 )
 
-(define-public (redeem-auction-collateral (ft <mock-ft-trait>) (reserve <vault-trait>) (collateral-amount uint) (sender principal))
-  (contract-call? reserve redeem-collateral ft collateral-amount sender)
+(define-public (redeem-auction-collateral (ft <mock-ft-trait>) (token-string (string-ascii 12)) (reserve <vault-trait>) (collateral-amount uint) (sender principal))
+  (begin
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "auction-engine"))) (err ERR-NOT-AUTHORIZED))
+    (contract-call? reserve redeem-collateral ft token-string collateral-amount sender)
+  )
 )
 
 (define-public (withdraw-leftover-collateral (vault-id uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
-  (let ((vault (get-vault-by-id vault-id)))
+  (let (
+    (vault (get-vault-by-id vault-id))
+    (collateral-token (unwrap-panic (get-collateral-token-for-vault vault-id)))
+  )
     (asserts!
       (and
         (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
@@ -624,7 +640,7 @@
     (asserts! (is-eq true (get is-liquidated vault)) (err ERR-VAULT-NOT-LIQUIDATED))
     (asserts! (is-eq true (get auction-ended vault)) (err ERR-AUCTION-NOT-ENDED))
 
-    (if (unwrap-panic (contract-call? reserve withdraw ft (get owner vault) (get leftover-collateral vault)))
+    (if (unwrap-panic (contract-call? reserve withdraw ft collateral-token (get owner vault) (get leftover-collateral vault)))
       (begin
         (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
             updated-at-block-height: block-height,
@@ -647,14 +663,28 @@
   (contract-call? .xusd-token get-balance-of (as-contract tx-sender))
 )
 
-;; redeem xUSD working capital for the foundation
+(define-read-only (get-diko-balance)
+  (contract-call? .arkadiko-token get-balance-of (as-contract tx-sender))
+)
+
+;; redeem xUSD and DIKO working capital for the foundation
 ;; taken from stability fees paid by vault owners
-(define-public (redeem-xusd (xusd-amount uint))
+(define-public (redeem-tokens (xusd-amount uint) (diko-amount uint))
   (begin
     (asserts! (> (- block-height (var-get block-height-last-paid)) (* BLOCKS-PER-DAY u31)) (err ERR-NOT-AUTHORIZED))
 
     (var-set block-height-last-paid block-height)
-    (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address))
+
+    (if (and (> xusd-amount u0) (> diko-amount u0))
+      (begin
+        (try! (contract-call? .arkadiko-token transfer diko-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address)))
+        (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address))
+      )
+      (if (> xusd-amount u0)
+        (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address))
+        (contract-call? .arkadiko-token transfer diko-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address))
+      )
+    )
   )
 )
 

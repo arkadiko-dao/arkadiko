@@ -392,7 +392,11 @@ export const ManageVault = ({ match }) => {
       contractAddress,
       contractName: 'arkadiko-liquidator-v1-1',
       functionName: 'notify-risky-vault',
-      functionArgs: [uintCV(match.params.id)],
+      functionArgs: [
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-freddie-v1-1'),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-auction-engine-v1-1'),
+        uintCV(match.params.id)
+      ],
       postConditionMode: 0x01,
       finished: data => {
         console.log('finished notify risky reserve!', data);

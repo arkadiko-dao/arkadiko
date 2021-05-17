@@ -26,7 +26,7 @@
 (define-data-var stacking-unlock-burn-height uint u0) ;; when is this cycle over
 (define-data-var stacking-stx-stacked uint u0) ;; how many stx did we stack in this cycle
 (define-data-var stacking-stx-received uint u0) ;; how many btc did we convert into STX tokens to add to vault collateral
-(define-data-var stacking-stx-in-vault uint u0)
+(define-data-var payout-vault-id uint u0)
 (define-data-var stacker-shutdown-activated bool false)
 
 (define-data-var stacker-yield uint u9000) ;; 90%
@@ -184,27 +184,29 @@
 (define-private (payout-liquidated-vault (vault-id uint))
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
-    (stacking-entry (contract-call? .arkadiko-vault-data-v1-1 get-stacking-payout vault-id))
+    (stacking-lots (contract-call? .arkadiko-vault-data-v1-1 get-stacking-payout-lots vault-id))
   )
     (asserts! (is-eq (get is-liquidated vault) true) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get auction-ended vault) true) (err ERR-NOT-AUTHORIZED))
     (asserts! (> (get stacked-tokens vault) u0) (err ERR-NOT-AUTHORIZED))
 
-    (var-set stacking-stx-in-vault (get collateral-amount stacking-entry))
-    (map payout-lot-bidder (get principals stacking-entry))
+    (var-set payout-vault-id (get id vault))
+    (map payout-lot-bidder (get ids stacking-lots))
     (ok true)
   )
 )
 
-(define-private (payout-lot-bidder (data (tuple (collateral-amount uint) (recipient principal))))
+(define-private (payout-lot-bidder (lot-index uint))
   (let (
-    (stx-in-vault (var-get stacking-stx-in-vault))
-    (percentage (/ (* u100000 (get collateral-amount data)) stx-in-vault)) ;; in basis points
+    (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id (var-get payout-vault-id)))
+    (stx-in-vault (- (get stacked-tokens vault) (/ (get stacked-tokens vault) u10))) ;; we keep 10%
+    (stacker-payout (contract-call? .arkadiko-vault-data-v1-1 get-stacking-payout (get id vault) lot-index))
+    (percentage (/ (* u100000 (get collateral-amount stacker-payout)) stx-in-vault)) ;; in basis points
     (basis-points (/ (* u100000 stx-in-vault) (var-get stacking-stx-stacked))) ;; this gives the percentage of collateral bought in auctions vs stx stacked
     (earned-amount-vault (/ (* (var-get stacking-stx-received) basis-points) u100000))
     (earned-amount-bidder (/ (* percentage earned-amount-vault) u100000))
   )
-    (try! (as-contract (stx-transfer? earned-amount-bidder (as-contract tx-sender) (get recipient data))))
+    (try! (as-contract (stx-transfer? earned-amount-bidder (as-contract tx-sender) (get principal stacker-payout))))
     (ok true)
   )
 )
