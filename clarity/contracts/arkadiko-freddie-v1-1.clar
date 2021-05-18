@@ -667,6 +667,14 @@
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq true (get is-liquidated vault)) (err ERR-VAULT-NOT-LIQUIDATED))
     (asserts! (is-eq true (get auction-ended vault)) (err ERR-AUCTION-NOT-ENDED))
+    (asserts! (is-eq u0 (get stacked-tokens vault)) (err ERR-STACKING-IN-PROGRESS))
+    (asserts!
+      (or
+        (is-eq collateral-token "xSTX")
+        (is-eq (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-token-address (get collateral-type vault))) (contract-of ft))
+      )
+      (err ERR-WRONG-COLLATERAL-TOKEN)
+    )
 
     (try! (pay-stability-fee vault-id))
     (if (unwrap-panic (contract-call? reserve withdraw ft collateral-token (get owner vault) (get leftover-collateral vault)))

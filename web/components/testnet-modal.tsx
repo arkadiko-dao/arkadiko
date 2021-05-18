@@ -39,13 +39,13 @@ export const TestnetModal = () => {
                     </p>
                     <p className="text-left text-sm text-gray-500 mt-2">
                       What we have in store:
-                      <ul className="list-disc">
-                        <li>Create vaults and mint xUSD with two collateral types: STX-A and STX-B</li>
-                        <li>Buy collateral in auctions</li>
-                        <li>Earn vault rewards in the form of DIKO governance tokens</li>
-                        <li>Stake your DIKO governance tokens to earn yield</li>
-                      </ul>
                     </p>
+                    <ul className="list-disc">
+                      <li>Create vaults and mint xUSD with two collateral types: STX-A and STX-B</li>
+                      <li>Buy collateral in auctions</li>
+                      <li>Earn vault rewards in the form of DIKO governance tokens</li>
+                      <li>Stake your DIKO governance tokens to earn yield</li>
+                    </ul>
                     <p className="text-left text-sm text-gray-500 mt-2">
                       Happy testing!
                     </p>

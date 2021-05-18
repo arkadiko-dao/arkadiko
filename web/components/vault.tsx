@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { Text } from '@blockstack/ui';
+import { AppContext } from '@common/context';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { uintCV, contractPrincipalCV, callReadOnlyFunction, cvToJSON } from '@stacks/transactions';
 import { resolveReserveName } from '@common/vault-utils';
 import { tokenTraits } from '@common/vault-utils';
+import { websocketTxUpdater } from '@common/websocket-tx-updater';
 
 export interface VaultProps {
   id: string;
@@ -43,6 +45,8 @@ export const Vault: React.FC<VaultProps> = ({
   const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [stabilityFee, setStabilityFee] = useState(0);
+  const [_, setState] = useContext(AppContext);
+  websocketTxUpdater();
 
   useEffect(() => {
     const fetchFees = async () => {
@@ -93,6 +97,7 @@ export const Vault: React.FC<VaultProps> = ({
       postConditionMode: 0x01,
       finished: data => {
         console.log('finished withdraw!', data);
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
     });
   };

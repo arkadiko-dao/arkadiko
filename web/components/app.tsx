@@ -11,6 +11,7 @@ import { stacksNetwork as network } from '@common/utils';
 import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, tupleCV, ClarityValue, stringAsciiCV } from '@stacks/transactions';
 import { VaultProps } from './vault';
 import { resolveSTXAddress } from '@common/use-stx-address';
+import { TxStatus } from '@components/tx-status';
 
 type TupleData = { [key: string]: ClarityValue };
 
@@ -190,6 +191,7 @@ export const App: React.FC = () => {
           <Flex direction="column" minHeight="100vh" bg="white">
 
             <Header signOut={signOut} />
+            <TxStatus />
 
             <div className="fixed bottom-0 right-0 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end" style={{zIndex: 99999}}>
               <Tooltip label={`Got feedback?`}>
