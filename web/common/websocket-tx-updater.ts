@@ -6,22 +6,22 @@ export const websocketTxUpdater = () => {
   const [state, setState] = useContext(AppContext);
   const env = process.env.REACT_APP_NETWORK_ENV || 'testnet';
 
-  let coreApiUrl = 'ws://stacks-node-api.mainnet.stacks.co';
+  let coreApiUrl = 'stacks-node-api.mainnet.stacks.co';
   if (env.includes('mocknet')) {
-    coreApiUrl = 'ws://localhost:3999';
+    coreApiUrl = 'localhost:3999';
   } else if (env.includes('testnet')) {
-    coreApiUrl = 'ws://stacks-node-api.testnet.stacks.co';
+    coreApiUrl = 'stacks-node-api.testnet.stacks.co';
   }
 
   useEffect(() => {
     const subscribe = async (txId:string) => {
-      const client = await connectWebSocketClient(coreApiUrl);
+      const client = await connectWebSocketClient(`ws://${coreApiUrl}`);
       await client.subscribeTxUpdates(txId, update => {
         console.log('Got an update:', update);
         if (update['tx_status'] == 'success') {
           window.location.reload(true);
         } else if (update['tx_status'] == 'abort_by_response') {
-          let url = `http://localhost:3999/extended/v1/tx/${txId}`;
+          let url = `http://${coreApiUrl}/extended/v1/tx/${txId}`;
           fetch(url).then(response => response.json()).then(data => {
             const error = errToHumanReadable(data['tx_result']['repr']);
             setState(prevState => ({
@@ -49,5 +49,5 @@ const errToHumanReadable = (err: string) => {
     return 'An unknown error occurred. Please try again';
   }
 
-  return '<ERR_ID_TO_TEXT>';
+  return 'An unknown error occurred. Please try again';
 };
