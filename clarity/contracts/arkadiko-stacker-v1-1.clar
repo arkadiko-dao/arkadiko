@@ -235,11 +235,14 @@
         (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault { updated-at-block-height: block-height, stacked-tokens: u0 })))
         (try! (request-stx-for-withdrawal new-collateral-amount))
       )
-      (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
-        updated-at-block-height: block-height,
-        stacked-tokens: new-collateral-amount,
-        collateral: new-collateral-amount
-      })))
+      (begin
+        ;; TODO: add the earned-amount to the number of STX to be stacked
+        (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
+          updated-at-block-height: block-height,
+          stacked-tokens: new-collateral-amount,
+          collateral: new-collateral-amount
+        })))
+      )
     )
     (ok true)
   )
