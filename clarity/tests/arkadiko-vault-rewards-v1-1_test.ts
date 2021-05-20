@@ -105,7 +105,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "vault-rewards: vault DIKO rewards",
+  name: "vault-rewards: vault DIKO rewards multiple users",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -155,6 +155,63 @@ Clarinet.test({
     // Already had 1920. 1920 + 160 = 2080
     call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
     call.result.expectOk().expectUint(2080000000)
+
+  },
+});
+
+Clarinet.test({
+  name: "vault-rewards: auto-harvest vault rewards",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
+        types.ascii("STX"),
+        types.uint(77),
+      ], deployer.address),
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
+        types.uint(5000000),
+        types.uint(10000),
+        types.ascii("STX-A"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+        ),
+      ], deployer.address),
+    ]);
+
+    // Check rewards
+    let call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
+    call.result.expectOk().expectUint(320000000)
+
+    chain.mineEmptyBlock(5);
+
+    // 6 * 320 = 1920
+    call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
+    call.result.expectOk().expectUint(1920000000)
+
+    call = chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [types.principal(deployer.address)], deployer.address);
+    call.result.expectOk().expectUint(890000000000);   
+
+    // Deposit extra
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "deposit", [
+        types.uint(1),
+        types.uint(500000000), // 500 STX
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+      ], deployer.address)
+    ]);
+
+    // Deposit will auto harvest
+    // So one block later we are at 320 again
+    call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
+    call.result.expectOk().expectUint(319999815)
+
+    // Rewards have been added to wallet
+    call = chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [types.principal(deployer.address)], deployer.address);
+    call.result.expectOk().expectUint(891920000000);  
 
   },
 });
