@@ -577,6 +577,7 @@
     (asserts! (is-eq contract-caller .arkadiko-liquidator-v1-1) (err ERR-NOT-AUTHORIZED))
 
     (try! (contract-call? .arkadiko-vault-rewards-v1-1 claim-pending-rewards-liquidated-vault (get owner vault)))
+    (try! (contract-call? .arkadiko-vault-rewards-v1-1 remove-collateral (get collateral vault) (get owner vault)))
     (let (
       (collateral (get collateral vault))
       (liquidation-penalty (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-liquidation-penalty (get collateral-type vault))))
@@ -639,7 +640,6 @@
         leftover-collateral: leftover-collateral
       }))
     )
-    (try! (contract-call? .arkadiko-vault-rewards-v1-1 remove-collateral (get collateral vault) (get owner vault)))
     (try! (contract-call? .arkadiko-collateral-types-v1-1 subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault)))
     (ok true)
   )

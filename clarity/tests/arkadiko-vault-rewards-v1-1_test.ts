@@ -65,7 +65,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "vault-data: claim DIKO rewards",
+  name: "vault-rewards: claim DIKO rewards",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -213,5 +213,99 @@ Clarinet.test({
     call = chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [types.principal(deployer.address)], deployer.address);
     call.result.expectOk().expectUint(891920000000);  
 
+  },
+});
+
+Clarinet.test({
+  name: "vault-rewards: user loses rewards when vault gets liquidated",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
+        types.ascii("STX"),
+        types.uint(77),
+      ], deployer.address),
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
+        types.uint(5000000),
+        types.uint(1925000),
+        types.ascii("STX-A"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+        ),
+      ], deployer.address),
+    ]);
+
+    // Collateral in vault rewards contract
+    let call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-collateral-of", [types.principal(deployer.address)], deployer.address);
+    call.result.expectTuple()["collateral"].expectUint(5000000);
+    call.result.expectTuple()["cumm-reward-per-collateral"].expectUint(0);
+
+    // Deposit extra
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "deposit", [
+        types.uint(1),
+        types.uint(2000000), 
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    // Collateral in vault rewards contract
+    call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-collateral-of", [types.principal(deployer.address)], deployer.address);
+    call.result.expectTuple()["collateral"].expectUint(7000000);
+    call.result.expectTuple()["cumm-reward-per-collateral"].expectUint(64000000);
+
+    // Toggle stacking
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "toggle-stacking", [
+        types.uint(1)
+      ], deployer.address),
+      // now vault 1 has revoked stacking, enable vault withdrawals
+      Tx.contractCall("arkadiko-freddie-v1-1", "enable-vault-withdrawals", [
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stacker-v1-1"),
+        types.uint(1)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    // Withdraw
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "withdraw", [
+        types.uint(1),
+        types.uint(1000000), 
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    // Collateral in vault rewards contract
+    call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-collateral-of", [types.principal(deployer.address)], deployer.address);
+    call.result.expectTuple()["collateral"].expectUint(6000000);
+    call.result.expectTuple()["cumm-reward-per-collateral"].expectUint(155428571);
+
+    // Liquidate
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
+        types.ascii("STX"),
+        types.uint(20),
+      ], deployer.address),
+      // Notify liquidator
+      Tx.contractCall("arkadiko-liquidator-v1-1", "notify-risky-vault", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1'),
+        types.uint(1),
+      ], deployer.address),
+    ]);
+    block.receipts[0].result.expectOk().expectUint(20);
+    block.receipts[1].result.expectOk().expectUint(5200);
+
+    // No collateral left
+    call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-collateral-of", [types.principal(deployer.address)], deployer.address);
+    call.result.expectTuple()["collateral"].expectUint(0);
   },
 });
