@@ -24,7 +24,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
   const { doContractCall } = useConnect();
   const address = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  websocketTxUpdater();
+  websocketTxUpdater('/');
 
   const callCollateralizeAndMint = async () => {
     const token = tokenTraits[coinAmounts['token-name'].toLowerCase()]['name'];

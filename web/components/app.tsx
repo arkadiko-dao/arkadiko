@@ -12,6 +12,7 @@ import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, tupleCV, ClarityVa
 import { VaultProps } from './vault';
 import { resolveSTXAddress } from '@common/use-stx-address';
 import { TxStatus } from '@components/tx-status';
+import { useLocation } from 'react-router-dom';
 
 type TupleData = { [key: string]: ClarityValue };
 
@@ -19,9 +20,14 @@ const icon = '/assets/logo.png';
 export const App: React.FC = () => {
   const [state, setState] = React.useState<AppState>(defaultState());
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const location = useLocation();
 
   const appConfig = new AppConfig(['store_write', 'publish_data'], document.location.href);
   const userSession = new UserSession({ appConfig });
+
+  useEffect(() => {
+    setState(prevState => ({ ...prevState, currentTxId: '', currentTxStatus: '' }));
+  },[location.pathname]);
 
   const signOut = () => {
     userSession.signUserOut();

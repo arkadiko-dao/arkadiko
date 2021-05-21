@@ -409,8 +409,6 @@ export const ManageVault = ({ match }) => {
     <Container>
       {auctionEnded && <Redirect to="/vaults" />}
 
-      <TxStatus />
-
       <Modal isOpen={showDepositModal}>
         <div className="flex pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <div className="inline-block align-bottom bg-white rounded-lg px-2 pt-5 pb-4 text-left overflow-hidden sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
@@ -427,6 +425,9 @@ export const ManageVault = ({ match }) => {
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
                     Choose how much extra collateral you want to post. You have a balance of {state.balance['stx'] / 1000000} {vault?.collateralToken.toUpperCase()}.
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    We will automatically harvest any DIKO you are eligible for when depositing.
                   </p>
 
                   <div className="mt-4 relative rounded-md shadow-sm">
@@ -476,6 +477,9 @@ export const ManageVault = ({ match }) => {
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
                     Choose how much collateral you want to withdraw. You can withdraw a maximum of {maximumCollateralToWithdraw} {vault?.collateralToken.toUpperCase()}.
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    We will automatically harvest any DIKO you are eligible for when withdrawing.
                   </p>
 
                   <div className="mt-4 relative rounded-md shadow-sm">
@@ -922,33 +926,6 @@ export const ManageVault = ({ match }) => {
                     <div className="mt-5 sm:flex sm:items-start sm:justify-between mb-5">
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                          Available to mint
-                        </p>
-                      </div>
-
-                      <div className="max-w-xl text-sm text-gray-500">
-                        <p>
-                          {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio)} xUSD
-                        </p>
-                      </div>
-
-                      {isVaultOwner ? (
-                        <div className="max-w-xl text-sm text-gray-500">
-                          <p>
-                            <Text onClick={() => setShowMintModal(true)}
-                                  _hover={{ cursor: 'pointer'}}
-                                  className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                              Mint
-                            </Text>
-                          </p>
-                        </div>
-                      ) : null }
-                    </div>
-                    <hr/>
-
-                    <div className="mt-5 sm:flex sm:items-start sm:justify-between">
-                      <div className="max-w-xl text-sm text-gray-500">
-                        <p>
                           Outstanding Stability Fees
                         </p>
                       </div>
@@ -966,6 +943,60 @@ export const ManageVault = ({ match }) => {
                                   _hover={{ cursor: 'pointer'}}
                                   className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                               Pay back
+                            </Text>
+                          </p>
+                        </div>
+                      ) : null }
+                    </div>
+                    <hr/>
+
+                    <div className="mt-5 sm:flex sm:items-start sm:justify-between mb-5">
+                      <div className="max-w-xl text-sm text-gray-500">
+                        <p>
+                          Total Outstanding Debt
+                        </p>
+                      </div>
+
+                      <div className="max-w-xl text-sm text-gray-500">
+                        <p>
+                          ${(outstandingDebt() + stabilityFee / 1000000)} xUSD
+                        </p>
+                      </div>
+
+                      {isVaultOwner ? (
+                        <div className="max-w-xl text-sm text-gray-500">
+                          <p>
+                            <Text onClick={() => setShowBurnModal(true)}
+                                  _hover={{ cursor: 'pointer'}}
+                                  className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                              Pay back
+                            </Text>
+                          </p>
+                        </div>
+                      ) : null }
+                    </div>
+                    <hr/>
+
+                    <div className="mt-5 sm:flex sm:items-start sm:justify-between mb-5">
+                      <div className="max-w-xl text-sm text-gray-500">
+                        <p>
+                          Available to mint
+                        </p>
+                      </div>
+
+                      <div className="max-w-xl text-sm text-gray-500">
+                        <p>
+                          {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio)} xUSD
+                        </p>
+                      </div>
+
+                      {isVaultOwner ? (
+                        <div className="max-w-xl text-sm text-gray-500">
+                          <p>
+                            <Text onClick={() => setShowMintModal(true)}
+                                  _hover={{ cursor: 'pointer'}}
+                                  className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                              Mint
                             </Text>
                           </p>
                         </div>

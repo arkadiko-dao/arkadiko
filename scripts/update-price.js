@@ -59,4 +59,3 @@ rp(requestOptions).then(async (response) => {
   await setPrice(price);
 });
 // setPrice(1.11);
-

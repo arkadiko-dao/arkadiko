@@ -169,8 +169,6 @@ export const Stake = () => {
 
   return (
     <Box>
-      <TxStatus />
-
       <Modal isOpen={showStakeModal}>
         <div className="flex pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           {errors.length > 0 ? (

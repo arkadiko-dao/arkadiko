@@ -44,3 +44,14 @@ export const resolveReserveName = (collateralToken: string) => {
     return 'arkadiko-sip10-reserve-v1-1'; // we have only two reserves: 1 for STX and 1 for all other SIP10 FTs
   }
 };
+
+export const contractsMap = {
+  "vault-manager": "arkadiko-freddie-v1-1",
+  "auction-engine": "arkadiko-auction-engine-v1-1",
+  "oracle": "arkadiko-oracle-v1-1",
+  "governance": "arkadiko-governance-v1-1"
+};
+
+export const microToReadable = (amount:number, decimals:number=2) => {
+  return (parseFloat(amount) / 1000000).toFixed(decimals);
+};

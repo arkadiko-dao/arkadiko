@@ -27,7 +27,7 @@ export interface VaultProps {
 }
 
 export const debtClass = (liquidationRatio: number, ratio: number) => {
-  if (ratio > liquidationRatio + 50) {
+  if (ratio >= liquidationRatio + 50) {
     return 'text-green-400';
   } else if (ratio >= liquidationRatio + 30) {
     return 'text-orange-400';

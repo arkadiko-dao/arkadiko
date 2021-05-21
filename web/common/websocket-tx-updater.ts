@@ -2,7 +2,7 @@ import { useContext, useEffect } from 'react';
 import { AppContext } from '@common/context';
 import { connectWebSocketClient } from '@stacks/blockchain-api-client';
 
-export const websocketTxUpdater = () => {
+export const websocketTxUpdater = (redirectUri:string) => {
   const [state, setState] = useContext(AppContext);
   const env = process.env.REACT_APP_NETWORK_ENV || 'testnet';
 
@@ -19,7 +19,11 @@ export const websocketTxUpdater = () => {
       await client.subscribeTxUpdates(txId, update => {
         console.log('Got an update:', update);
         if (update['tx_status'] == 'success') {
-          window.location.reload(true);
+          if (redirectUri) {
+            window.location.pathname = redirectUri;
+          } else {
+            window.location.reload(true);
+          }
         } else if (update['tx_status'] == 'abort_by_response') {
           let url = `http://${coreApiUrl}/extended/v1/tx/${txId}`;
           fetch(url).then(response => response.json()).then(data => {
@@ -49,5 +53,12 @@ const errToHumanReadable = (err: string) => {
     return 'An unknown error occurred. Please try again';
   }
 
-  return 'An unknown error occurred. Please try again';
+  return errorMessages[errId] || errId;
+};
+
+const errorMessages = {
+  'u1': 'You do not have enough balance to make this transaction',
+  'u4401': 'Not Authorized',
+  'u414': 'Stacking still in progress - please withdraw later',
+  'u52': 'No liquidation required'
 };

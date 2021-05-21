@@ -39,11 +39,9 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   const [liquidationRatio, setLiquidationRatio] = useState(0);
   const [price, setPrice] = useState(0);
   const [errors, setErrors] = useState<Array<string>>([]);
-  const [validCollateralValue, setValidCollateralValue] = useState(false);
-  const [validMintValue, setValidMintValue] = useState(false);
 
   const maximumCoinsToMint = (value: string) => {
-    const maxRatio = parseInt(liquidationRatio, 10) + 30;
+    const maxRatio = Math.max(200, parseInt(liquidationRatio, 10) + 30);
     const uCollateralAmount = parseInt(value, 10) * 1000000;
     setMaximumToMint(Math.floor(uCollateralAmount * price / maxRatio));
   };
@@ -66,9 +64,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
       const error = ['You cannot collateralize more than your balance'];
       if (value > (state.balance[tokenName.toLowerCase()] / 1000000)) {
         setErrors(errors.concat(error));
-        setValidCollateralValue(false);
       } else {
-        setValidCollateralValue(true);
         let filteredAry = errors.filter(e => e !== error[0]);
         setErrors(filteredAry);
         maximumCoinsToMint(value);
@@ -78,11 +74,9 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
       const error = [`You cannot mint more than ${maximumToMint / 1000000} xUSD`];
       if (value > maximumToMint / 1000000) {
         setErrors(errors.concat(error));
-        setValidMintValue(false);
       } else {
         let filteredAry = errors.filter(e => e !== error[0]);
         setErrors(filteredAry);
-        setValidMintValue(true);
       }
     }
   };

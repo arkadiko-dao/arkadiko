@@ -20,6 +20,7 @@ import { useConnect } from '@stacks/connect-react';
 import { CollateralTypeGroup } from '@components/collateral-type-group';
 import { useEffect } from 'react';
 import { TestnetModal } from './testnet-modal';
+import { microToReadable } from '@common/vault-utils';
 
 export const Mint = () => {
   const address = useSTXAddress();
@@ -143,7 +144,7 @@ export const Mint = () => {
                         </dt>
                         <dd>
                           <div className="text-lg font-medium text-gray-900">
-                            {state.balance['stx'] / 1000000} STX
+                            {microToReadable(state.balance['stx'])} STX
                           </div>
                         </dd>
                       </dl>
@@ -215,7 +216,7 @@ export const Mint = () => {
                         </dt>
                         <dd>
                           <div className="text-lg font-medium text-gray-900">
-                            {state.balance['xusd'] / 1000000} xUSD
+                            {microToReadable(state.balance['xusd'])} xUSD
                           </div>
                         </dd>
                       </dl>
@@ -239,7 +240,7 @@ export const Mint = () => {
                         </dt>
                         <dd>
                           <div className="text-lg font-medium text-gray-900">
-                            {state.balance['diko'] / 1000000} DIKO
+                            {microToReadable(state.balance['diko'])} DIKO
                           </div>
                         </dd>
                       </dl>
