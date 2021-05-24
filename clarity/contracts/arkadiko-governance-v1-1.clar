@@ -165,7 +165,7 @@
     ;; Vote should be casted after the start-block-height
     (asserts! (>= block-height (get start-block-height proposal)) (err ERR-NOT-AUTHORIZED))
     ;; Voter should be able to stake
-    (try! (contract-call? token transfer amount tx-sender (as-contract tx-sender)))
+    (try! (contract-call? token transfer amount tx-sender (as-contract tx-sender) none))
     ;; Mutate
     (map-set proposals
       { id: proposal-id }
@@ -202,7 +202,7 @@
     ;; Vote should be casted after the start-block-height
     (asserts! (>= block-height (get start-block-height proposal)) (err ERR-NOT-AUTHORIZED))
     ;; Voter should be able to stake
-    (try! (contract-call? token transfer amount tx-sender (as-contract tx-sender)))
+    (try! (contract-call? token transfer amount tx-sender (as-contract tx-sender) none))
     ;; Mutate
     (map-set proposals
       { id: proposal-id }
@@ -259,7 +259,7 @@
     (asserts! (>= block-height (get end-block-height proposal)) (err ERR-NOT-AUTHORIZED))
 
     ;; Return DIKO
-    (contract-call? token transfer token-count (as-contract tx-sender) member)
+    (contract-call? token transfer token-count (as-contract tx-sender) member none)
   )
 )
 

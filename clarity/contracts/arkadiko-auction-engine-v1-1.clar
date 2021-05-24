@@ -319,7 +319,7 @@
       true
     )
     ;; Transfer xUSD from liquidator to this contract
-    (try! (contract-call? .xusd-token transfer xusd tx-sender (as-contract tx-sender)))
+    (try! (contract-call? .xusd-token transfer xusd tx-sender (as-contract tx-sender) none))
 
     ;; Update auctions
     (map-set auctions
@@ -434,7 +434,7 @@
     (let ((lots (get-winning-lots tx-sender)))
       (map-set redeeming-lot { user: tx-sender } { auction-id: auction-id, lot-index: lot-index})
       (map-set winning-lots { user: tx-sender } { ids: (filter remove-winning-lot (get ids lots)) })
-      (as-contract (contract-call? .xusd-token transfer xusd (as-contract tx-sender) owner))
+      (as-contract (contract-call? .xusd-token transfer xusd (as-contract tx-sender) owner none))
     )
     (err u0) ;; don't really care if this fails.
   )
@@ -545,7 +545,7 @@
     (let (
       (balance (unwrap-panic (contract-call? token get-balance-of (as-contract tx-sender))))
     )
-      (contract-call? token transfer balance (as-contract tx-sender) (contract-of auction-engine))
+      (contract-call? token transfer balance (as-contract tx-sender) (contract-of auction-engine) none)
     )
   )
 )
@@ -562,6 +562,6 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
 
-    (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address))
+    (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none)
   )
 )

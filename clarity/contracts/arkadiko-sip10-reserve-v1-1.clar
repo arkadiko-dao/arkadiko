@@ -42,7 +42,7 @@
     (asserts! (not (is-eq token-string "STX")) (err ERR-WRONG-TOKEN))
 
     ;; token should be a trait e.g. 'SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.arkadiko-token
-    (match (contract-call? token transfer ucollateral-amount sender (as-contract tx-sender))
+    (match (contract-call? token transfer ucollateral-amount sender (as-contract tx-sender) none)
       success (ok debt)
       error (err ERR-TRANSFER-FAILED)
     )
@@ -57,7 +57,7 @@
     (asserts! (is-eq token-string token-symbol) (err ERR-WRONG-TOKEN))
     (asserts! (not (is-eq token-string "STX")) (err ERR-WRONG-TOKEN))
 
-    (match (contract-call? token transfer additional-ucollateral-amount tx-sender (as-contract tx-sender))
+    (match (contract-call? token transfer additional-ucollateral-amount tx-sender (as-contract tx-sender) none)
       success (ok true)
       error (err ERR-DEPOSIT-FAILED)
     )
@@ -72,7 +72,7 @@
     (asserts! (is-eq token-string token-symbol) (err ERR-WRONG-TOKEN))
     (asserts! (not (is-eq token-symbol "STX")) (err ERR-WRONG-TOKEN))
 
-    (match (as-contract (contract-call? token transfer ucollateral-amount (as-contract tx-sender) vault-owner))
+    (match (as-contract (contract-call? token transfer ucollateral-amount (as-contract tx-sender) vault-owner none))
       success (ok true)
       error (err ERR-WITHDRAW-FAILED)
     )
@@ -103,7 +103,7 @@
     (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
     (asserts! (not (is-eq token-symbol "STX")) (err ERR-WRONG-TOKEN))
 
-    (match (as-contract (contract-call? token transfer collateral-to-return (as-contract tx-sender) vault-owner))
+    (match (as-contract (contract-call? token transfer collateral-to-return (as-contract tx-sender) vault-owner none))
       transferred (ok true)
       error (err ERR-TRANSFER-FAILED)
     )
@@ -118,7 +118,7 @@
     (asserts! (is-eq token-string token-symbol) (err ERR-WRONG-TOKEN))
     (asserts! (not (is-eq token-string "STX")) (err ERR-WRONG-TOKEN))
     
-    (as-contract (contract-call? token transfer ucollateral (as-contract tx-sender) owner))
+    (as-contract (contract-call? token transfer ucollateral (as-contract tx-sender) owner none))
   )
 )
 
@@ -161,7 +161,7 @@
     (let (
       (balance (unwrap-panic (contract-call? token get-balance-of (as-contract tx-sender))))
     )
-      (contract-call? token transfer balance (as-contract tx-sender) (contract-of new-vault))
+      (contract-call? token transfer balance (as-contract tx-sender) (contract-of new-vault) none)
     )
   )
 )

@@ -137,7 +137,7 @@
 ;; but the vault collateral is not sufficient
 ;; As a result, this method requests DIKO from the DAO ("foundation reserves")
 (define-public (request-diko-tokens (ft <mock-ft-trait>) (collateral-amount uint))
-  (contract-call? ft transfer collateral-amount (var-get dao-owner) (as-contract (unwrap-panic (get-qualified-name-by-name "sip10-reserve"))))
+  (contract-call? ft transfer collateral-amount (var-get dao-owner) (as-contract (unwrap-panic (get-qualified-name-by-name "sip10-reserve"))) none)
 )
 
 

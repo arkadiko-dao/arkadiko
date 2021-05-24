@@ -92,9 +92,9 @@
             (ok
               (/
                 (* (get collateral vault) (get last-price-in-cents stx-price-in-cents))
-                (get debt vault)
+                ;; (get debt vault)
                 ;; TODO: cost is too high to use this in the front-end - fix this
-                ;; (+ (get debt vault) (unwrap-panic (get-stability-fee-for-vault vault-id)))
+                (+ (get debt vault) (unwrap-panic (get-stability-fee-for-vault vault-id)))
               )
             )
             (err u0)
@@ -551,7 +551,7 @@
   )
     (if (> fee u0)
       (begin
-        (try! (contract-call? .xusd-token transfer fee tx-sender (as-contract tx-sender)))
+        (try! (contract-call? .xusd-token transfer fee tx-sender (as-contract tx-sender) none))
         (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
             updated-at-block-height: block-height,
             stability-fee-accrued: u0,
@@ -714,12 +714,12 @@
 
     (if (and (> xusd-amount u0) (> diko-amount u0))
       (begin
-        (try! (contract-call? .arkadiko-token transfer diko-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address)))
-        (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address))
+        (try! (contract-call? .arkadiko-token transfer diko-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none))
+        (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none)
       )
       (if (> xusd-amount u0)
-        (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address))
-        (contract-call? .arkadiko-token transfer diko-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address))
+        (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none)
+        (contract-call? .arkadiko-token transfer diko-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none)
       )
     )
   )
@@ -734,7 +734,7 @@
     (let (
       (balance (unwrap-panic (contract-call? token get-balance-of (as-contract tx-sender))))
     )
-      (contract-call? token transfer balance (as-contract tx-sender) (contract-of new-vault-manager))
+      (contract-call? token transfer balance (as-contract tx-sender) (contract-of new-vault-manager) none)
     )
   )
 )

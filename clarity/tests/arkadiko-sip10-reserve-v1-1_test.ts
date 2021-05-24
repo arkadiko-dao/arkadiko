@@ -51,7 +51,7 @@ Clarinet.test({
       .expectOk()
       .expectUint(5000000);
 
-    let [dikoTransferEvent, xusdMintEvent, vaultNotifEvent] =
+    let [dikoTransferEvent, _memoEvent, xusdMintEvent, vaultNotifEvent] =
       block.receipts[1].events;
     // Ensure that 20000000 units from .arkadiko-token::diko where successfully transfered from wallet_1 to .arkadiko-sip10-reserve-v1-1
     dikoTransferEvent.ft_transfer_event.sender
@@ -133,7 +133,7 @@ Clarinet.test({
       .expectOk()
       .expectUint(5000000);
 
-    var [_e1, _e2, vaultNotifEvent] = block.receipts[1].events;
+    var [_e1, _e2, _e3, vaultNotifEvent] = block.receipts[1].events;
 
     // Ensure that 1 vault was created
     var vaultEvent = vaultNotifEvent.contract_event.value.expectTuple();
@@ -153,7 +153,7 @@ Clarinet.test({
       ], deployer.address),
     ]);
 
-    var [dikoTransferEvent, dikoMintEvent, vaultNotifEvent] = block.receipts[0].events;
+    var [dikoTransferEvent, _dikoMintEvent, _memoEvent, vaultNotifEvent] = block.receipts[0].events;
     // Ensure that 20000000 units from .arkadiko-token::diko where successfully transfered from wallet_1 to .arkadiko-sip10-reserve-v1-1
     dikoTransferEvent.ft_transfer_event.sender
       .expectPrincipal(deployer.address);
@@ -210,7 +210,7 @@ Clarinet.test({
       .expectOk()
       .expectUint(5000000);
 
-    var [_e1, _e2, vaultNotifEvent] = block.receipts[1].events;
+    var [_e1, _e2, _e3, vaultNotifEvent] = block.receipts[1].events;
 
     // Ensure that 1 vault was created
     var vaultEvent = vaultNotifEvent.contract_event.value.expectTuple();
@@ -247,7 +247,7 @@ Clarinet.test({
       ], deployer.address),
     ]);
 
-    var [dikoTransferEvent, dikoMintEvent, vaultNotifEvent] = block.receipts[0].events;
+    var [dikoTransferEvent, _dikoMintEvent, _memoEvent, vaultNotifEvent] = block.receipts[0].events;
     // Ensure that 20_000_000 units from .arkadiko-token::diko where successfully transfered from wallet_1 to .arkadiko-sip10-reserve-v1-1
     dikoTransferEvent.ft_transfer_event.sender
       .expectPrincipal(
@@ -298,7 +298,7 @@ Clarinet.test({
       .expectOk()
       .expectUint(5000000);
 
-    var [_e1, _e2, vaultNotifEvent] = block.receipts[1].events;
+    var [_e1, _e2, _e3, vaultNotifEvent] = block.receipts[1].events;
 
     // Ensure that 1 vault was created
     var vaultEvent = vaultNotifEvent.contract_event.value.expectTuple();
@@ -372,7 +372,7 @@ Clarinet.test({
       .expectOk()
       .expectUint(5000000);
 
-    var [_e1, _e2, vaultNotifEvent] = block.receipts[1].events;
+    var [_e1, _e2, _e3, vaultNotifEvent] = block.receipts[1].events;
 
     // Ensure that 1 vault was created
     var vaultEvent = vaultNotifEvent.contract_event.value.expectTuple();
@@ -453,7 +453,7 @@ Clarinet.test({
       ], deployer.address),
     ]);
 
-    var [_, xUSDBurnEvent, dikoTransferEvent, dikoMintEvent, vaultNotifEvent] = block.receipts[0].events;
+    var [_, _e1, xUSDBurnEvent, dikoTransferEvent, _dikoMintEvent, _e2, vaultNotifEvent] = block.receipts[0].events;
     // Ensure that 6_000_000 units from .xusd-token::xusd where successfully burnt
     xUSDBurnEvent.ft_burn_event.sender
       .expectPrincipal(deployer.address);

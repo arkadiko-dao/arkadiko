@@ -64,10 +64,15 @@
   (ok (some (var-get token-uri)))
 )
 
-(define-public (transfer (amount uint) (sender principal) (recipient principal))
-  (ft-transfer? stdiko amount sender recipient)
+(define-public (transfer (amount uint) (sender principal) (recipient principal) (memo (optional (buff 34))))
+  (match (ft-transfer? stdiko amount sender recipient)
+    response (begin
+      (print memo)
+      (ok response)
+    )
+    error (err error)
+  )
 )
-
 
 ;; ---------------------------------------------------------
 ;; Stake Functions
@@ -141,7 +146,7 @@
       (try! (ft-mint? stdiko amount staker))
 
       ;; Transfer DIKO to this contract
-      (try! (contract-call? .arkadiko-token transfer amount staker (as-contract tx-sender)))
+      (try! (contract-call? .arkadiko-token transfer amount staker (as-contract tx-sender) none))
 
       ;; Update sender stake info
       (map-set stakes { staker: staker } { uamount: new-stake-amount, cumm-reward-per-stake: (var-get cumm-reward-per-stake) })
@@ -181,7 +186,7 @@
       (try! (ft-burn? stdiko amount staker))
 
       ;; Transfer DIKO back from this contract to the user
-      (try! (contract-call? .arkadiko-token transfer amount (as-contract tx-sender) staker))
+      (try! (contract-call? .arkadiko-token transfer amount (as-contract tx-sender) staker none))
 
       ;; Update sender stake info
       (map-set stakes { staker: staker } { uamount: new-stake-amount, cumm-reward-per-stake: (var-get cumm-reward-per-stake) })
@@ -213,7 +218,7 @@
       (try! (ft-burn? stdiko amount tx-sender))
 
       ;; Transfer DIKO back from this contract to the user
-      (try! (contract-call? .arkadiko-token transfer amount (as-contract tx-sender) tx-sender))
+      (try! (contract-call? .arkadiko-token transfer amount (as-contract tx-sender) tx-sender none))
 
       ;; Update sender stake info
       (map-set stakes { staker: tx-sender } { uamount: new-stake-amount, cumm-reward-per-stake: (var-get cumm-reward-per-stake) })

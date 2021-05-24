@@ -46,10 +46,15 @@
   (ok (some (var-get token-uri)))
 )
 
-(define-public (transfer (amount uint) (sender principal) (recipient principal))
-  (ft-transfer? xstx amount sender recipient)
+(define-public (transfer (amount uint) (sender principal) (recipient principal) (memo (optional (buff 34))))
+  (match (ft-transfer? xstx amount sender recipient)
+    response (begin
+      (print memo)
+      (ok response)
+    )
+    error (err error)
+  )
 )
-
 
 ;; ---------------------------------------------------------
 ;; DAO token trait
