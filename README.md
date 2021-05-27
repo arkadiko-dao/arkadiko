@@ -7,13 +7,9 @@ The Arkadiko protocol trustlessly provides stable loans backed by Stacks Tokens 
 
 No more and no less xUSD exist in the world than loans made in it at that time. Every single xUSD is some piece of someone’s STX, locked up on the Arkadiko protocol until the person who put in their STX pays the xUSD back. When xUSD goes into the system to repay a loan, it just gets burnt and disappears forever. Only the interest (i.e. stability fee) remains for Arkadiko to use to reward DIKO holders or cover expenses for the protocol.
 
-When STX are posted as collateral to mint stablecoins, the STX tokens will automatically be used to stack natively on the Stacks protocol (either autonomously or through a delegation pool). The yield earned in bitcoin will be used for three purposes:
+When STX are posted as collateral to mint stablecoins, the STX tokens will automatically be used to stack natively on the Stacks protocol (either autonomously or through a delegation pool).
 
-1. Reward xUSD stablecoin minters to HODL and use their stablecoins (e.g. they take 80% of the yield)
-2. Go into the reserve of the DAO to cover expenses (e.g. the reserve takes 5% of the yield)
-3. Distribute earnings among the DIKO governance token holders (e.g. the token holders get 15% of the yield)
-
-All yields, numbers and parameters will eventually be voted and decided upon through the DAO (Decentralised Autonomous Organisation), where each DIKO token counts towards one vote.
+For more information, please read our [documentation](https://docs.arkadiko.finance).
 
 ## Architecture
 
@@ -49,11 +45,11 @@ The DIKO governance token is used to manage and vote on proposals put forward by
 
 ## Roadmap
 
-A public Trello roadmap will be published soon
+See https://trello.com/b/Qem9bJZK/public-roadmap
 
 ## Tests and Mocking
 
-Tests are present in the `test` folder (using `mocha` in TypeScript) and some very early test in the `tests` folder which uses Clarinet (a Clarity build tool). The mocha tests can be run easily like this: `npm test clarity/test/integration/liquidator.ts`.
+All tests are written using Clarinet, in the `tests` folder.
 
 Some of the smart contracts (such as PoX and fungible token trait) are mocked contracts/traits. These should not be deployed to mainnet when a production-ready version is ready to be deployed.
 
