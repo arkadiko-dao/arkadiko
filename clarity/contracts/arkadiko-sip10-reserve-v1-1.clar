@@ -159,7 +159,7 @@
     (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
     (let (
-      (balance (unwrap-panic (contract-call? token get-balance-of (as-contract tx-sender))))
+      (balance (unwrap-panic (contract-call? token get-balance (as-contract tx-sender))))
     )
       (contract-call? token transfer balance (as-contract tx-sender) (contract-of new-vault) none)
     )

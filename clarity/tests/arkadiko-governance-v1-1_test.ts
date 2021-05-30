@@ -349,7 +349,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk();
 
     // Should have initial amount back
-    let call = chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [types.principal(wallet_1.address)], wallet_1.address);
+    let call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
     call.result.expectOk().expectUint(150000000000);  
 
   }

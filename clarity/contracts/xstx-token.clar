@@ -31,7 +31,7 @@
   (ok u6)
 )
 
-(define-read-only (get-balance-of (account principal))
+(define-read-only (get-balance (account principal))
   (ok (ft-get-balance xstx account))
 )
 

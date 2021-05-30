@@ -15,7 +15,7 @@
     (get-decimals () (response uint uint))
 
     ;; the balance of the passed principal
-    (get-balance-of (principal) (response uint uint))
+    (get-balance (principal) (response uint uint))
 
     ;; the current total supply (which does not need to be a constant)
     (get-total-supply () (response uint uint))

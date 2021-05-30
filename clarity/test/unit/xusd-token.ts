@@ -44,7 +44,7 @@ describe("xusd token contract test suite", () => {
     });
 
     it("should initialize Alice's balance (20 DIKO)", async () => {
-      const query = xusdTokenClient.createQuery({ atChaintip: true, method: { name: "get-balance-of", args: [`'${alice}`] } });
+      const query = xusdTokenClient.createQuery({ atChaintip: true, method: { name: "get-balance", args: [`'${alice}`] } });
       const receipt = await xusdTokenClient.submitQuery(query);
       const result = Result.unwrapUInt(receipt);
       assert.equal(result, 20);

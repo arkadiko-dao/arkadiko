@@ -111,7 +111,7 @@ describe("stacks reserve test suite", () => {
       const balanceBefore = await callReadOnlyFunction({
         contractAddress: deployContractAddress,
         contractName: "xusd-token",
-        functionName: "get-balance-of",
+        functionName: "get-balance",
         functionArgs: [standardPrincipalCV(alice)],
         senderAddress: contractAddress,
         network: network,
@@ -130,7 +130,7 @@ describe("stacks reserve test suite", () => {
       const balanceAfter = await callReadOnlyFunction({
         contractAddress: deployContractAddress,
         contractName: "xusd-token",
-        functionName: "get-balance-of",
+        functionName: "get-balance",
         functionArgs: [standardPrincipalCV(alice)],
         senderAddress: contractAddress,
         network: network,

@@ -53,7 +53,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // 1000 xUSD transferred to the auction engine
-    call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
+    call = await chain.callReadOnlyFn("xusd-token", "get-balance", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1'),
     ], deployer.address);
     call.result.expectOk().expectUint(1000000000);
@@ -112,12 +112,12 @@ Clarinet.test({
     call.result.expectOk().expectUint(1000000030);
 
     // now check the wallet of contract - should have burned all required xUSD, and have some left for burning gov tokens
-    call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
+    call = await chain.callReadOnlyFn("xusd-token", "get-balance", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1'),
     ], deployer.address);
     call.result.expectOk().expectUint(79000000); // 79 dollars left
 
-    call = await chain.callReadOnlyFn("xstx-token", "get-balance-of", [
+    call = await chain.callReadOnlyFn("xstx-token", "get-balance", [
       types.principal(deployer.address),
     ], deployer.address);
     call.result.expectOk().expectUint(0);
@@ -134,7 +134,7 @@ Clarinet.test({
     result = redeemLotCollateral(chain, deployer);
     result.expectErr().expectUint(211);
 
-    call = await chain.callReadOnlyFn("xstx-token", "get-balance-of", [
+    call = await chain.callReadOnlyFn("xstx-token", "get-balance", [
       types.principal(deployer.address),
     ], deployer.address);
     call.result.expectOk().expectUint(694444444);
@@ -181,7 +181,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
 
     // Balance
-    call = await chain.callReadOnlyFn("xstx-token", "get-balance-of", [
+    call = await chain.callReadOnlyFn("xstx-token", "get-balance", [
       types.principal(deployer.address),
     ], deployer.address);
     call.result.expectOk().expectUint(0);
@@ -407,12 +407,12 @@ Clarinet.test({
     result = bid(chain, wallet_1, 60);
     result.expectOk().expectBool(true);
 
-    let call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
+    let call = await chain.callReadOnlyFn("xusd-token", "get-balance", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1'),
     ], deployer.address);
     call.result.expectOk().expectUint(60000000);
 
-    call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
+    call = await chain.callReadOnlyFn("xusd-token", "get-balance", [
       types.principal(wallet_1.address),
     ], deployer.address);
     call.result.expectOk().expectUint(70000000); // 130 - 60 = 70
@@ -421,7 +421,7 @@ Clarinet.test({
     result = bid(chain, deployer, bidSize);
     result.expectOk().expectBool(true);
 
-    call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
+    call = await chain.callReadOnlyFn("xusd-token", "get-balance", [
       types.principal(wallet_1.address),
     ], deployer.address);
     call.result.expectOk().expectUint(130000000); // you get the 60 back since your bid got overruled
@@ -530,7 +530,7 @@ Clarinet.test({
     result = notifyRiskyVault(chain, deployer);
 
     // xUSD balance of deployer
-    let call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
+    let call = await chain.callReadOnlyFn("xusd-token", "get-balance", [
       types.principal(deployer.address),
     ], deployer.address);
     call.result.expectOk().expectUint(2300000000);
@@ -540,7 +540,7 @@ Clarinet.test({
     result.expectErr().expectUint(23); // poor bid
 
     // xUSD balance of auction engine
-    call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
+    call = await chain.callReadOnlyFn("xusd-token", "get-balance", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1'),
     ], deployer.address);
     call.result.expectOk().expectUint(0);
@@ -804,7 +804,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Vault is stacking, so we get xSTXN
-    let call = await chain.callReadOnlyFn("xstx-token", "get-balance-of", [
+    let call = await chain.callReadOnlyFn("xstx-token", "get-balance", [
       types.principal(deployer.address),
     ], deployer.address);
     call.result.expectOk().expectUint(0);
@@ -865,7 +865,7 @@ Clarinet.test({
     result = bid(chain, deployer, 1000, 1, 1);
     result.expectOk().expectBool(true);
 
-    let call = await chain.callReadOnlyFn("xstx-token", "get-balance-of", [
+    let call = await chain.callReadOnlyFn("xstx-token", "get-balance", [
       types.principal(deployer.address),
     ], deployer.address);
     call.result.expectOk().expectUint(0);
@@ -884,7 +884,7 @@ Clarinet.test({
     result = redeemLotCollateral(chain, deployer);
     result.expectOk().expectBool(true);
 
-    call = await chain.callReadOnlyFn("xstx-token", "get-balance-of", [
+    call = await chain.callReadOnlyFn("xstx-token", "get-balance", [
       types.principal(deployer.address),
     ], deployer.address);
     call.result.expectOk().expectUint(694444444);
@@ -970,7 +970,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Vault is not stacking, so we got STX
-    let call = await chain.callReadOnlyFn("xstx-token", "get-balance-of", [
+    let call = await chain.callReadOnlyFn("xstx-token", "get-balance", [
       types.principal(deployer.address),
     ], deployer.address);
     call.result.expectOk().expectUint(0);

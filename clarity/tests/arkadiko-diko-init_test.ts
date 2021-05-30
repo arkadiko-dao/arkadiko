@@ -64,7 +64,7 @@ Clarinet.test({
     block.receipts[0].result.expectErr().expectUint(221);
 
     // we already have 890K DIKO to start with
-    let call = chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [types.principal(deployer.address)], deployer.address);
+    let call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
     call.result.expectOk().expectUint(890000000000);
 
     // 6 months, 30 days, 144 block per day
@@ -136,7 +136,7 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
   
     // Start balance
-    let call = chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [types.principal(deployer.address)], deployer.address);
+    let call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
     call.result.expectOk().expectUint(890000000000);
   
     // 12 months, 30 days, 144 block per day 
@@ -155,7 +155,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
   
     // New balance (0.89+5.25)
-    call = chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [types.principal(deployer.address)], deployer.address);
+    call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
     call.result.expectOk().expectUint(6140000000000);
   
     // Number of tokens claimed already
@@ -243,7 +243,7 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
   
     // Start balance
-    let call = chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [types.principal(deployer.address)], deployer.address);
+    let call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
     call.result.expectOk().expectUint(890000000000);
   
     // 12 months, 30 days, 144 block per day 
@@ -262,7 +262,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
   
     // New balance 
-    call = chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [types.principal(deployer.address)], deployer.address);
+    call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
     call.result.expectOk().expectUint(13890000000000);
   
     // Number of tokens claimed already

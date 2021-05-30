@@ -215,7 +215,7 @@ Clarinet.test({
     let call = await chain.callReadOnlyFn("arkadiko-freddie-v1-1", "get-stability-fee-for-vault", [types.uint(1)], deployer.address);
     const fee = call.result.expectOk().expectUint(4993295);
 
-    call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
+    call = await chain.callReadOnlyFn("xusd-token", "get-balance", [
       types.principal(deployer.address),
     ], deployer.address);
     const balance = call.result.expectOk().expectUint(2000000000);
@@ -228,12 +228,12 @@ Clarinet.test({
     call.result.expectOk().expectUint(95); // approx 0 (95/10^6)
 
     // now check balance of freddie contract
-    call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
+    call = await chain.callReadOnlyFn("xusd-token", "get-balance", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
     ], deployer.address);
     call.result.expectOk().expectUint(fee);
 
-    call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
+    call = await chain.callReadOnlyFn("xusd-token", "get-balance", [
       types.principal(deployer.address),
     ], deployer.address);
     call.result.expectOk().expectUint(balance - fee);
@@ -244,12 +244,12 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
+    call = await chain.callReadOnlyFn("xusd-token", "get-balance", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
     ], deployer.address);
     call.result.expectOk().expectUint(0);
 
-    call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
+    call = await chain.callReadOnlyFn("xusd-token", "get-balance", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7'),
     ], deployer.address);
     call.result.expectOk().expectUint(1995001084 + 4998916);
@@ -835,7 +835,7 @@ Clarinet.test({
     call.result.expectOk().expectUint(947068138000);
 
     // Freddie should not have DIKO yet
-    call = await chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [
+    call = await chain.callReadOnlyFn("arkadiko-token", "get-balance", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
     ], deployer.address);
     call.result.expectOk().expectUint(0);
@@ -861,13 +861,13 @@ Clarinet.test({
       .expectUint(5200);
 
     // Freddie should have received pending DIKO rewards
-    call = await chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [
+    call = await chain.callReadOnlyFn("arkadiko-token", "get-balance", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
     ], deployer.address);
     call.result.expectOk().expectUint(947068138000);
 
     // Payout address balance
-    call = await chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [
+    call = await chain.callReadOnlyFn("arkadiko-token", "get-balance", [
       types.principal(deployer.address),
     ], deployer.address);
     call.result.expectOk().expectUint(890000000000);
@@ -882,7 +882,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
 
     // Payout address balance
-    call = await chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [
+    call = await chain.callReadOnlyFn("arkadiko-token", "get-balance", [
       types.principal(deployer.address),
     ], deployer.address);
     call.result.expectOk().expectUint(890000000000 + 947068138000);

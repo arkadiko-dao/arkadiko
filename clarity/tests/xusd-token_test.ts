@@ -21,14 +21,14 @@ Clarinet.test({
       .expectOk()
       .expectUint(1000000030);
 
-    call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
+    call = await chain.callReadOnlyFn("xusd-token", "get-balance", [
       types.principal(wallet_2.address),
     ], wallet_2.address);
     call.result
       .expectOk()
       .expectUint(20);
 
-    call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
+    call = await chain.callReadOnlyFn("xusd-token", "get-balance", [
       types.principal(wallet_3.address),
     ], wallet_2.address);
     call.result

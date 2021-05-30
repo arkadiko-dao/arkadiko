@@ -49,7 +49,7 @@
   (ok u6)
 )
 
-(define-read-only (get-balance-of (account principal))
+(define-read-only (get-balance (account principal))
   (ok (ft-get-balance stdiko account))
 )
 
@@ -204,7 +204,7 @@
 
     (let (
       ;; Calculate new stake amount
-      (amount (unwrap! (get-balance-of tx-sender) ERR-NOT-AUTHORIZED))
+      (amount (unwrap! (get-balance tx-sender) ERR-NOT-AUTHORIZED))
       (stake-amount (get-stake-amount-of tx-sender))
       (new-stake-amount (- stake-amount amount))
     )

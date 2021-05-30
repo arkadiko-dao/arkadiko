@@ -305,7 +305,7 @@ Clarinet.test({
     var vault = vaultEvent["data"].expectTuple();
     var vauldId = vault["id"].expectUint(1);
 
-    let call = await chain.callReadOnlyFn("xusd-token", "get-balance-of", [
+    let call = await chain.callReadOnlyFn("xusd-token", "get-balance", [
       types.principal(deployer.address),
     ], deployer.address);
     call.result.expectOk().expectUint(1005000000);
