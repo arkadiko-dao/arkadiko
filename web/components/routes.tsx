@@ -2,6 +2,7 @@ import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 
 import { Home } from './home';
+import { Swap } from './swap';
 import { Auctions } from './auctions';
 import { Governance } from './governance';
 import { NewVault } from './new-vault';
@@ -21,6 +22,7 @@ export function Routes() {
     <Switch>
       <Route exact path="/" component={Home} />
       <Route exact path="/vaults" component={Home} />
+      <Route exact path="/swap" component={Swap} />
       <Route exact path="/auctions" component={Auctions} />
       <Route exact path="/governance" component={Governance} />
       <Route exact path="/stake" component={Stake} />

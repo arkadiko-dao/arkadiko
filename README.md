@@ -74,4 +74,5 @@ All errors thrown by the smart contracts are unsigned integers. The format used 
 17 - collateral-types
 18 - 
 19 - stacker
-20 - 
+20 - swap
+21 - swap-token-diko-xusd
