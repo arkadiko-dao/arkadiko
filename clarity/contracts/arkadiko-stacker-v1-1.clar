@@ -229,10 +229,13 @@
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-NOT-AUTHORIZED))
     (asserts! (> (get stacked-tokens vault) u0) (err ERR-NOT-AUTHORIZED))
 
-    (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault { collateral: new-collateral-amount })))
     (if (get revoked-stacking vault)
       (begin
-        (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault { updated-at-block-height: block-height, stacked-tokens: u0 })))
+        (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault { 
+          updated-at-block-height: block-height, 
+          stacked-tokens: u0,
+          collateral: new-collateral-amount 
+        })))
         (try! (request-stx-for-withdrawal new-collateral-amount))
       )
       (begin
@@ -244,6 +247,10 @@
         })))
       )
     )
+
+    ;; Update vault-rewards
+    (try! (contract-call? .arkadiko-vault-rewards-v1-1 add-collateral earned-amount (get owner vault)))
+
     (ok true)
   )
 )

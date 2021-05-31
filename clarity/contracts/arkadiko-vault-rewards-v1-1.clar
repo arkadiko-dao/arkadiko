@@ -41,8 +41,14 @@
     (new-collateral (+ current-collateral collateral))
     (current-total-collateral (var-get total-collateral))
   )
-    ;; Only freddie is allowed to call this method
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+
+    (asserts!
+      (or
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker")))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
 
     ;; Save latest cumm reward
     (increase-cumm-reward-per-collateral)

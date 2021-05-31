@@ -88,7 +88,7 @@ depends_on = [
 path = "contracts/arkadiko-sip10-reserve-v1-1.clar"
 
 [contracts.arkadiko-stacker-v1-1]
-depends_on = ["arkadiko-stacker-trait-v1", "arkadiko-vault-data-v1-1", "arkadiko-stx-reserve-v1-1"]
+depends_on = ["arkadiko-stacker-trait-v1", "arkadiko-vault-data-v1-1", "arkadiko-stx-reserve-v1-1", "arkadiko-vault-rewards-v1-1"]
 path = "contracts/arkadiko-stacker-v1-1.clar"
 
 [contracts.arkadiko-stx-reserve-v1-1]
