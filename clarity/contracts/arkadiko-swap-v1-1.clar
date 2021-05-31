@@ -109,9 +109,6 @@
   )
 )
 
-;; since we can't use a constant to refer to contract address, here what x and y are
-;; (define-constant x-token 'SP2NC4YKZWM2YMCJV851VF278H9J50ZSNM33P3JM1.my-token)
-;; (define-constant y-token 'SP1QR3RAGH3GEME9WV7XB0TZCX6D5MNDQP97D35EH.my-token)
 (define-public (add-to-position (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (swap-token-trait <swap-token>) (x uint) (y uint))
   (let
     (
@@ -124,7 +121,7 @@
       (balance-y (get balance-y pair))
       (new-shares
         (if (is-eq (get shares-total pair) u0)
-          (sqrti (* x y))  ;; burn a fraction of initial lp token to avoid attack as described in WP https://uniswap.org/whitepaper.pdf
+          (sqrti (* x y))
           (/ (* x (get shares-total pair)) balance-x)
         )
       )
@@ -170,8 +167,6 @@
 )
 
 (define-public (create-pair (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (swap-token-trait <swap-token>) (pair-name (string-ascii 32)) (x uint) (y uint))
-  ;; TOOD: add creation checks, then create map before proceeding to add-to-position
-  ;; check neither x,y or y,x exists`
   (let
     (
       (name-x (unwrap-panic (contract-call? token-x-trait get-name)))
@@ -199,7 +194,6 @@
     )
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-data)
-
     (map-set pairs-map { pair-id: pair-id } { token-x: token-x, token-y: token-y })
     (var-set pairs-list (unwrap! (as-max-len? (append (var-get pairs-list) pair-id) u2000) too-many-pairs-err))
     (var-set pair-count pair-id)
@@ -281,8 +275,8 @@
     (asserts! (< min-dy dy) too-much-slippage-err)
 
     ;; TODO check that the amount transfered in matches the amount requested
-    (asserts! (is-ok (contract-call? token-x-trait transfer dx tx-sender contract-address none)) transfer-x-failed-err)
-    (asserts! (is-ok (as-contract (contract-call? token-y-trait transfer dy contract-address tx-sender none))) transfer-y-failed-err)
+    (asserts! (is-ok (contract-call? token-x-trait transfer dx tx-sender (as-contract tx-sender) none)) transfer-x-failed-err)
+    (try! (contract-call? token-y-trait transfer dy (as-contract tx-sender) tx-sender none))
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-updated)
     (print { object: "pair", action: "swap-x-for-y", data: pair-updated })

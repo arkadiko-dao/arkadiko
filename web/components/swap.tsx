@@ -49,7 +49,18 @@ export const Swap: React.FC = () => {
       const json = cvToJSON(DIKOxUSD);
       console.log('Total Supply DIKO/xUSD:', json.value.value / 1000000);
 
-      const balances = await callReadOnlyFunction({
+      const pairs = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-swap-v1-1",
+        functionName: "get-pairs",
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const json2 = cvToJSON(pairs);
+      console.log('Pairs:', json2);
+
+      const details = await callReadOnlyFunction({
         contractAddress,
         contractName: "arkadiko-swap-v1-1",
         functionName: "get-pair-details",
@@ -60,8 +71,8 @@ export const Swap: React.FC = () => {
         senderAddress: stxAddress || '',
         network: network,
       });
-      const json2 = cvToJSON(balances);
-      console.log('Pair Details DIKO/xUSD:', json2);
+      const json3 = cvToJSON(details);
+      console.log('Pair Details:', json3);
     };
 
     fetchPrices();
@@ -100,8 +111,8 @@ export const Swap: React.FC = () => {
       functionArgs: [
         contractPrincipalCV(contractAddress, tokenTraits[tokenX.toLowerCase()]['name']),
         contractPrincipalCV(contractAddress, tokenTraits[tokenY.toLowerCase()]['name']),
-        uintCV(tokenXAmount * 10000),
-        uintCV(tokenYAmount * 10000)
+        uintCV(tokenXAmount * 1000000),
+        uintCV(tokenYAmount * 1000000)
       ],
       postConditionMode: 0x01,
       finished: data => {
