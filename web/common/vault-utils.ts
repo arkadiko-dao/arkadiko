@@ -34,6 +34,9 @@ export const tokenTraits = {
   },
   'xstx': {
     'name': 'xstx-token'
+  },
+  'xusd': {
+    'name': 'xusd-token'
   }
 };
 

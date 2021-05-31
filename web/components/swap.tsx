@@ -5,18 +5,25 @@ import { Landing } from './landing';
 import { Container } from './home'
 import { microToReadable } from '@common/vault-utils';
 import { getPrice } from '@common/get-price';
-import { callReadOnlyFunction, cvToJSON, contractPrincipalCV } from '@stacks/transactions';
+import { callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
+import { useConnect } from '@stacks/connect-react';
+import { websocketTxUpdater } from '@common/websocket-tx-updater';
+import { tokenTraits } from '@common/vault-utils';
 
 export const Swap: React.FC = () => {
-  const [state, _] = useContext(AppContext);
+  const [state, setState] = useContext(AppContext);
   const [stxPrice, setStxPrice] = useState(0.0);
   const [dikoPrice, setDikoPrice] = useState(0.0);
+  const [tokenX, setTokenX] = useState('xUSD');
+  const [tokenY, setTokenY] = useState('DIKO');
   const [tokenXAmount, setTokenXAmount] = useState(0.0);
   const [tokenYAmount, setTokenYAmount] = useState(0.0);
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const { doContractCall } = useConnect();
+  websocketTxUpdater();
 
   useEffect(() => {
     const fetchPrices = async () => {
@@ -65,11 +72,43 @@ export const Swap: React.FC = () => {
     const name = event.target.name;
     const value = event.target.value;
 
-    console.log(name, value);
+    if (name === 'tokenXAmount') {
+      setTokenXAmount(value);
+    } else {
+      setTokenYAmount(value);
+    }
   };
 
-  const swapTokens = () => {
+  const handleChange = (event: { target: { name: any; value: any; }; }) => {
+    const name = event.target.name;
+    const value = event.target.value;
+
+    if (name === 'tokenX') {
+      setTokenX(value);
+    } else {
+      setTokenY(value);
+    }
+  };
+
+  const swapTokens = async () => {
     console.log('swapping');
+    await doContractCall({
+      network,
+      contractAddress,
+      contractName: 'arkadiko-swap-v1-1',
+      functionName: 'swap-x-for-y',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, tokenTraits[tokenX.toLowerCase()]['name']),
+        contractPrincipalCV(contractAddress, tokenTraits[tokenY.toLowerCase()]['name']),
+        uintCV(tokenXAmount * 10000),
+        uintCV(tokenYAmount * 10000)
+      ],
+      postConditionMode: 0x01,
+      finished: data => {
+        console.log('finished collateralizing!', data);
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+      },
+    });
   };
 
   return (
@@ -205,8 +244,10 @@ export const Swap: React.FC = () => {
                       Swap Tokens
                     </h2>
 
-                    <label htmlFor="location" className="block text-sm font-medium text-gray-700">Token X</label>
-                    <select id="location" name="location" className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                    <select id="tokenX" name="tokenX"
+                        onChange={handleChange}
+                        value={tokenX}
+                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                       <option>xUSD</option>
                       <option>DIKO</option>
                       <option>STX</option>
@@ -217,8 +258,10 @@ export const Swap: React.FC = () => {
                            className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
                            placeholder="0.00" aria-describedby="token-x-amount" />
 
-                    <label htmlFor="location" className="block text-sm font-medium text-gray-700 mt-2">Token Y</label>
-                    <select id="location" name="location" className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                    <select id="tokenY" name="tokenY"
+                        onChange={handleChange}
+                        value={tokenY}
+                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                       <option>xUSD</option>
                       <option>DIKO</option>
                       <option>STX</option>

@@ -47,7 +47,7 @@
 )
 
 (define-data-var pair-count uint u0)
-(define-data-var paris-list (list 2000 uint) (list ))
+(define-data-var pairs-list (list 2000 uint) (list ))
 
 (define-read-only (get-name (token-x-trait <ft-trait>) (token-y-trait <ft-trait>))
   (let
@@ -264,7 +264,6 @@
     (balance-x (get balance-x pair))
     (balance-y (get balance-y pair))
     (contract-address (as-contract tx-sender))
-    (sender tx-sender)
     (dy (/ (* u997 balance-y dx) (+ (* u1000 balance-x) (* u997 dx)))) ;; overall fee is 30 bp, either all for the pool, or 25 bp for pool and 5 bp for operator
     (fee (/ (* u5 dx) u10000)) ;; 5 bp
     (pair-updated
@@ -282,8 +281,8 @@
     (asserts! (< min-dy dy) too-much-slippage-err)
 
     ;; TODO check that the amount transfered in matches the amount requested
-    (asserts! (is-ok (contract-call? token-x-trait transfer dx sender contract-address none)) transfer-x-failed-err)
-    (asserts! (is-ok (as-contract (contract-call? token-y-trait transfer dy contract-address sender none))) transfer-y-failed-err)
+    (asserts! (is-ok (contract-call? token-x-trait transfer dx tx-sender contract-address none)) transfer-x-failed-err)
+    (asserts! (is-ok (as-contract (contract-call? token-y-trait transfer dy contract-address tx-sender none))) transfer-y-failed-err)
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-updated)
     (print { object: "pair", action: "swap-x-for-y", data: pair-updated })
