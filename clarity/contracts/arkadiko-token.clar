@@ -27,7 +27,7 @@
 )
 
 (define-read-only (get-name)
-  (ok "Arkadiko")
+  (ok "Arkadiko Token")
 )
 
 (define-read-only (get-symbol)

@@ -20,7 +20,7 @@
 )
 
 (define-read-only (get-name)
-  (ok "xSTX")
+  (ok "xSTX Token")
 )
 
 (define-read-only (get-symbol)

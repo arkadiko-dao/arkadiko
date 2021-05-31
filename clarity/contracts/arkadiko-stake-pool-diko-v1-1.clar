@@ -38,7 +38,7 @@
 )
 
 (define-read-only (get-name)
-  (ok "Staked DIKO")
+  (ok "Staked Arkadiko Token")
 )
 
 (define-read-only (get-symbol)
