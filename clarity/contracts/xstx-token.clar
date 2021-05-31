@@ -1,4 +1,4 @@
-(impl-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
+(impl-trait .sip-010-trait-ft-standard.sip-010-trait)
 (impl-trait .arkadiko-dao-token-trait-v1.dao-token-trait)
 
 ;; Defines an STX derivative according to the SRC20 Standard

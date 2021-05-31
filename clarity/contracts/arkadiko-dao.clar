@@ -1,4 +1,4 @@
-(use-trait mock-ft-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
+(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait dao-token-trait .arkadiko-dao-token-trait-v1.dao-token-trait)
 
 ;; Arkadiko DAO 
@@ -136,7 +136,7 @@
 ;; This method is called by the auction engine when more bad debt needs to be burned
 ;; but the vault collateral is not sufficient
 ;; As a result, this method requests DIKO from the DAO ("foundation reserves")
-(define-public (request-diko-tokens (ft <mock-ft-trait>) (collateral-amount uint))
+(define-public (request-diko-tokens (ft <ft-trait>) (collateral-amount uint))
   (contract-call? ft transfer collateral-amount (var-get dao-owner) (as-contract (unwrap-panic (get-qualified-name-by-name "sip10-reserve"))) none)
 )
 

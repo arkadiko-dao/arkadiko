@@ -141,7 +141,7 @@ const addMocknetStx = async (address: string) => {
 describe("environment prep", () => {
   describe("deploying an instance of the contract", () => {
     before(async () => {
-      await deployContract('mock-ft-trait');
+      await deployContract('sip-010-trait-ft-standard');
       await deployContract('vault-trait');
 
       await deployContract('oracle');

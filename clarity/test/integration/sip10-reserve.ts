@@ -27,7 +27,7 @@ describe("freddie test suite", () => {
 
   describe("deploying an instance of the contract", () => {
     before(async () => {
-      await deployContract('arkadiko-mock-ft-trait-v1');
+      await deployContract('sip-010-trait-ft-standard');
       await deployContract('arkadiko-vault-trait-v1');
       await deployContract('arkadiko-vault-manager-trait-v1');
       await deployContract('arkadiko-dao-token-trait-v1');

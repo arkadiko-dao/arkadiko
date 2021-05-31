@@ -1,4 +1,4 @@
-(use-trait mock-ft-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
+(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 
 ;; Arkadiko governance
 ;; 
@@ -56,7 +56,7 @@
   )
 )
 
-(define-read-only (get-tokens-by-member-by-id (proposal-id uint) (member principal) (token <mock-ft-trait>))
+(define-read-only (get-tokens-by-member-by-id (proposal-id uint) (member principal) (token <ft-trait>))
   (default-to 
     { amount: u0 }
     (map-get? tokens-by-member { proposal-id: proposal-id, member: member, token: (contract-of token) }) 
@@ -82,7 +82,7 @@
 )
 
 ;; To check which tokens are accepted as votes
-(define-read-only (is-token-accepted (token <mock-ft-trait>))
+(define-read-only (is-token-accepted (token <ft-trait>))
   (let (
     (is-diko (is-eq (contract-of token) .arkadiko-token))
     (is-stdiko (is-eq (contract-of token) .stake-pool-diko))
@@ -144,7 +144,7 @@
   )
 )
 
-(define-public (vote-for (token <mock-ft-trait>) (proposal-id uint) (amount uint))
+(define-public (vote-for (token <ft-trait>) (proposal-id uint) (amount uint))
   (let (
     (proposal (get-proposal-by-id proposal-id))
     (vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender)))
@@ -181,7 +181,7 @@
   )
 )
 
-(define-public (vote-against (token <mock-ft-trait>) (proposal-id uint) (amount uint))
+(define-public (vote-against (token <ft-trait>) (proposal-id uint) (amount uint))
   (let (
     (proposal (get-proposal-by-id proposal-id))
     (vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender)))
@@ -242,7 +242,7 @@
 )
 
 ;; Return votes to voter
-(define-public (return-votes-to-member (token <mock-ft-trait>) (proposal-id uint) (member principal))
+(define-public (return-votes-to-member (token <ft-trait>) (proposal-id uint) (member principal))
   (let (
     (token-count (get amount (get-tokens-by-member-by-id proposal-id member token)))
     (proposal (get-proposal-by-id proposal-id))

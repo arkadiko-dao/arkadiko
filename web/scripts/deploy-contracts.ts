@@ -19,39 +19,38 @@ interface Contract {
 }
 
 const contracts: Contract[] = [
-  {
-    name: 'mock-ft-trait'
-  },
-  {
-    name: 'vault-trait',
-  },
-  {
-    name: 'oracle',
-  },
-  {
-    name: 'xusd-token'
-  },
-  {
-    name: 'arkadiko-token'
-  },
-  {
-    name: 'dao'
-  },
-  {
-    name: 'stx-reserve'
-  },
-  {
-    name: 'sip10-reserve'
-  },
-  {
-    name: 'freddie'
-  },
-  {
-    name: 'auction-engine'
-  },
-  {
-    name: 'liquidator'
-  }
+  { name: 'sip-010-trait-ft-standard' },
+  { name: 'arkadiko-vault-trait-v1' },
+  { name: 'arkadiko-vault-manager-trait-v1' },
+  { name: 'arkadiko-dao-token-trait-v1' },
+  { name: 'arkadiko-oracle-trait-v1' },
+  { name: 'arkadiko-auction-engine-trait-v1' },
+  { name: 'arkadiko-collateral-types-trait-v1' },
+  { name: 'arkadiko-stacker-trait-v1' },
+  { name: 'arkadiko-stake-pool-trait-v1' },
+
+  { name: 'arkadiko-collateral-types-v1-1' },
+  { name: 'arkadiko-oracle-v1-1' },
+  { name: 'arkadiko-token' },
+  { name: 'arkadiko-dao' },
+  { name: 'arkadiko-governance-v1-1' },
+  { name: 'arkadiko-diko-guardian-v1-1' },
+
+  { name: 'xusd-token' },
+  { name: 'xstx-token' },
+
+  { name: 'arkadiko-vault-data-v1-1' },
+  { name: 'arkadiko-vault-rewards-v1-1' },
+  { name: 'arkadiko-stx-reserve-v1-1' },
+  { name: 'arkadiko-sip10-reserve-v1-1' },
+
+  { name: 'arkadiko-stacker-v1-1' },
+  { name: 'arkadiko-freddie-v1-1' },
+  { name: 'arkadiko-stake-registry-v1-1' },
+  { name: 'arkadiko-stake-pool-diko-v1-1' },
+
+  { name: 'arkadiko-auction-engine-v1-1' },
+  { name: 'arkadiko-liquidator-v1-1' }
 ];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');
@@ -92,7 +91,7 @@ const run = async () => {
 
     console.log(`Deploying ${contractId}`);
 
-    const source = await readFile(`../../clarity/contracts/${contract.file || contract.name}.clar`);
+    const source = await readFile(`../clarity/contracts/${contract.file || contract.name}.clar`);
     const tx = await makeContractDeploy({
       contractName: contract.name,
       codeBody: source.toString('utf8'),

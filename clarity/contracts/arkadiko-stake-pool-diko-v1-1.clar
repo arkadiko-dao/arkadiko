@@ -7,8 +7,8 @@
 ;; When total stake changes, the cumm reward per stake is increased accordingly.
 
 (impl-trait .arkadiko-stake-pool-trait-v1.stake-pool-trait)
-(impl-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
-(use-trait mock-ft-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
+(impl-trait .sip-010-trait-ft-standard.sip-010-trait)
+(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED (err u18401))
@@ -120,7 +120,7 @@
 )
 
 ;; Stake tokens
-(define-public (stake (token <mock-ft-trait>) (staker principal) (amount uint))
+(define-public (stake (token <ft-trait>) (staker principal) (amount uint))
   (begin
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-NOT-AUTHORIZED)
     (asserts! (is-eq POOL-TOKEN (contract-of token)) ERR-WRONG-TOKEN)
@@ -157,7 +157,7 @@
 )
 
 ;; Unstake tokens
-(define-public (unstake (token <mock-ft-trait>) (staker principal) (amount uint))
+(define-public (unstake (token <ft-trait>) (staker principal) (amount uint))
   (let (
     ;; Staked amount of staker
     (stake-amount (get-stake-amount-of staker))

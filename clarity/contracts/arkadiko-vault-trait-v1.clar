@@ -1,5 +1,5 @@
 ;; implements a trait that allows collateral of any token (e.g. stx, bitcoin)
-(use-trait mock-ft-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
+(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 
 (define-trait vault-trait
   (
@@ -10,25 +10,25 @@
     (calculate-current-collateral-to-debt-ratio ((string-ascii 12) uint uint) (response uint uint))
 
     ;; collateralize tokens and mint stablecoin according to collateral-to-debt ratio
-    (collateralize-and-mint (<mock-ft-trait> (string-ascii 12) uint uint principal) (response uint uint))
+    (collateralize-and-mint (<ft-trait> (string-ascii 12) uint uint principal) (response uint uint))
 
     ;; deposit extra collateral
-    (deposit (<mock-ft-trait> (string-ascii 12) uint) (response bool uint))
+    (deposit (<ft-trait> (string-ascii 12) uint) (response bool uint))
 
     ;; withdraw excess collateral
-    (withdraw (<mock-ft-trait> (string-ascii 12) principal uint) (response bool uint))
+    (withdraw (<ft-trait> (string-ascii 12) principal uint) (response bool uint))
 
     ;; mint additional stablecoin
     (mint ((string-ascii 12) principal uint uint uint (string-ascii 12)) (response bool uint))
 
     ;; burn all the stablecoin in the vault of tx-sender and return collateral
-    (burn (<mock-ft-trait> principal uint) (response bool uint))
+    (burn (<ft-trait> principal uint) (response bool uint))
 
     ;; liquidate the vault of principal. only callable by liquidator smart contract
     ;; (liquidate (uint uint) (response (tuple (ustx-amount uint) (debt uint)) uint))
 
     ;; redeem collateral after an auction ran
-    (redeem-collateral (<mock-ft-trait> (string-ascii 12) uint principal) (response bool uint))
+    (redeem-collateral (<ft-trait> (string-ascii 12) uint principal) (response bool uint))
 
     (set-tokens-to-stack (uint) (response bool uint))
   )

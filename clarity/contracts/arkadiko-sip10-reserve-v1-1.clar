@@ -1,5 +1,5 @@
 (impl-trait .arkadiko-vault-trait-v1.vault-trait)
-(use-trait mock-ft-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
+(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
 
 ;; errors
@@ -33,7 +33,7 @@
 )
 
 ;; (match (print (ft-transfer? token ucollateral-amount sender (as-contract tx-sender)))
-(define-public (collateralize-and-mint (token <mock-ft-trait>) (token-string (string-ascii 12)) (ucollateral-amount uint) (debt uint) (sender principal))
+(define-public (collateralize-and-mint (token <ft-trait>) (token-string (string-ascii 12)) (ucollateral-amount uint) (debt uint) (sender principal))
   (let (
     (token-symbol (unwrap-panic (contract-call? token get-symbol)))
   )
@@ -49,7 +49,7 @@
   )
 )
 
-(define-public (deposit (token <mock-ft-trait>) (token-string (string-ascii 12)) (additional-ucollateral-amount uint))
+(define-public (deposit (token <ft-trait>) (token-string (string-ascii 12)) (additional-ucollateral-amount uint))
   (let (
     (token-symbol (unwrap-panic (contract-call? token get-symbol)))
   )
@@ -64,7 +64,7 @@
   )
 )
 
-(define-public (withdraw (token <mock-ft-trait>) (token-string (string-ascii 12)) (vault-owner principal) (ucollateral-amount uint))
+(define-public (withdraw (token <ft-trait>) (token-string (string-ascii 12)) (vault-owner principal) (ucollateral-amount uint))
   (let (
     (token-symbol (unwrap-panic (contract-call? token get-symbol)))
   )
@@ -96,7 +96,7 @@
   )
 )
 
-(define-public (burn (token <mock-ft-trait>) (vault-owner principal) (collateral-to-return uint))
+(define-public (burn (token <ft-trait>) (vault-owner principal) (collateral-to-return uint))
   (let (
     (token-symbol (unwrap-panic (contract-call? token get-symbol)))
   )
@@ -110,7 +110,7 @@
   )
 )
 
-(define-public (redeem-collateral (token <mock-ft-trait>) (token-string (string-ascii 12)) (ucollateral uint) (owner principal))
+(define-public (redeem-collateral (token <ft-trait>) (token-string (string-ascii 12)) (ucollateral uint) (owner principal))
   (let (
     (token-symbol (unwrap-panic (contract-call? token get-symbol)))
   )
@@ -154,7 +154,7 @@
 ;; this should be called when upgrading contracts
 ;; SIP10 reserves can contain all SIP10 collateral types
 ;; so this method should be ran multiple times, once for each token
-(define-public (migrate-funds (new-vault <vault-trait>) (token <mock-ft-trait>))
+(define-public (migrate-funds (new-vault <vault-trait>) (token <ft-trait>))
   (begin
     (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 

@@ -1,14 +1,14 @@
 ;; implements a trait that allows collateral of any token (e.g. stx, bitcoin)
-(use-trait mock-ft-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
+(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 
 (define-trait stake-pool-trait
   (
 
     ;; Stake asset
-    (stake (<mock-ft-trait> principal uint) (response uint uint))
+    (stake (<ft-trait> principal uint) (response uint uint))
 
     ;; Unstake asset
-    (unstake (<mock-ft-trait> principal uint) (response uint uint))
+    (unstake (<ft-trait> principal uint) (response uint uint))
 
     ;; Get pending rewards for staker
     (get-pending-rewards (principal) (response uint uint))

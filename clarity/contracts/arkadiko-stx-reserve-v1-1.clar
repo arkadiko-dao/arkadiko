@@ -1,5 +1,5 @@
 (impl-trait .arkadiko-vault-trait-v1.vault-trait)
-(use-trait mock-ft-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
+(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
 
 ;; errors
@@ -89,7 +89,7 @@
 ;; accept collateral in STX tokens
 ;; save STX in stx-reserve-address
 ;; calculate price and collateralisation ratio
-(define-public (collateralize-and-mint (token <mock-ft-trait>) (token-string (string-ascii 12)) (ustx-amount uint) (debt uint) (sender principal))
+(define-public (collateralize-and-mint (token <ft-trait>) (token-string (string-ascii 12)) (ustx-amount uint) (debt uint) (sender principal))
   (begin
     (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq token-string "STX") (err ERR-WRONG-TOKEN))
@@ -105,7 +105,7 @@
 )
 
 ;; deposit extra collateral in vault
-(define-public (deposit (token <mock-ft-trait>) (token-string (string-ascii 12)) (additional-ustx-amount uint))
+(define-public (deposit (token <ft-trait>) (token-string (string-ascii 12)) (additional-ustx-amount uint))
   (begin
     (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq token-string "STX") (err ERR-WRONG-TOKEN))
@@ -121,7 +121,7 @@
 )
 
 ;; withdraw collateral (e.g. if collateral goes up in value)
-(define-public (withdraw (token <mock-ft-trait>) (token-string (string-ascii 12)) (vault-owner principal) (ustx-amount uint))
+(define-public (withdraw (token <ft-trait>) (token-string (string-ascii 12)) (vault-owner principal) (ustx-amount uint))
   (begin
     (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq token-string "STX") (err ERR-WRONG-TOKEN))
@@ -154,7 +154,7 @@
 ;; burn stablecoin to free up STX tokens
 ;; method assumes position has not been liquidated
 ;; and thus collateral to debt ratio > liquidation ratio
-(define-public (burn (token <mock-ft-trait>) (vault-owner principal) (collateral-to-return uint))
+(define-public (burn (token <ft-trait>) (vault-owner principal) (collateral-to-return uint))
   (begin
     (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
 
@@ -181,7 +181,7 @@
   )
 )
 
-(define-public (redeem-collateral (token <mock-ft-trait>) (token-string (string-ascii 12)) (stx-collateral uint) (owner principal))
+(define-public (redeem-collateral (token <ft-trait>) (token-string (string-ascii 12)) (stx-collateral uint) (owner principal))
   (begin
     (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq token-string "STX") (err ERR-WRONG-TOKEN))

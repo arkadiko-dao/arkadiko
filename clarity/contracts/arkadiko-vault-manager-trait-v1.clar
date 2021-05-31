@@ -1,4 +1,4 @@
-(use-trait mock-ft-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
+(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
 
 (define-trait vault-manager-trait
@@ -14,7 +14,7 @@
     (liquidate (uint) (response (tuple (ustx-amount uint) (extra-debt uint) (vault-debt uint) (discount uint)) uint))
     (finalize-liquidation (uint uint) (response bool uint))
 
-    (redeem-auction-collateral (<mock-ft-trait> (string-ascii 12) <vault-trait> uint principal) (response bool uint))
+    (redeem-auction-collateral (<ft-trait> (string-ascii 12) <vault-trait> uint principal) (response bool uint))
 
     (get-xusd-balance () (response uint bool))
     (set-stx-redeemable (uint) (response bool uint))

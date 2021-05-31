@@ -1,7 +1,7 @@
 import { deployContract } from "./utils";
 
 export async function deploy() {
-  await deployContract('mock-ft-trait');
+  await deployContract('sip-010-trait-ft-standard');
   await deployContract('vault-trait');
 
   await deployContract('oracle');

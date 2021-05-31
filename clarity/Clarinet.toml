@@ -6,9 +6,9 @@ name = "arkadiko"
 depends_on = []
 path = "contracts/arkadiko-dao-token-trait-v1.clar"
 
-[contracts.arkadiko-mock-ft-trait-v1]
+[contracts.sip-010-trait-ft-standard]
 depends_on = []
-path = "contracts/arkadiko-mock-ft-trait-v1.clar"
+path = "contracts/sip-010-trait-ft-standard.clar"
 
 [contracts.arkadiko-collateral-types-v1-1]
 depends_on = ["arkadiko-collateral-types-trait-v1"]
@@ -19,11 +19,11 @@ depends_on = ["arkadiko-token", "arkadiko-collateral-types-v1-1", "arkadiko-vaul
 path = "contracts/arkadiko-dao.clar"
 
 [contracts.arkadiko-governance-v1-1]
-depends_on = ["arkadiko-token", "arkadiko-mock-ft-trait-v1"]
+depends_on = ["arkadiko-token", "sip-010-trait-ft-standard"]
 path = "contracts/arkadiko-governance-v1-1.clar"
 
 [contracts.arkadiko-token]
-depends_on = ["arkadiko-mock-ft-trait-v1", "arkadiko-dao-token-trait-v1"]
+depends_on = ["sip-010-trait-ft-standard", "arkadiko-dao-token-trait-v1"]
 path = "contracts/arkadiko-token.clar"
 
 [contracts.arkadiko-oracle-trait-v1]
@@ -51,7 +51,7 @@ depends_on = [
   "arkadiko-oracle-v1-1",
   "xusd-token",
   "arkadiko-freddie-v1-1",
-  "arkadiko-mock-ft-trait-v1",
+  "sip-010-trait-ft-standard",
   "arkadiko-vault-trait-v1",
   "arkadiko-auction-engine-trait-v1"
 ]
@@ -62,7 +62,7 @@ depends_on = [
   "arkadiko-collateral-types-v1-1",
   "arkadiko-stx-reserve-v1-1",
   "arkadiko-vault-trait-v1",
-  "arkadiko-mock-ft-trait-v1",
+  "sip-010-trait-ft-standard",
   "arkadiko-vault-manager-trait-v1",
   "arkadiko-sip10-reserve-v1-1",
   "arkadiko-stacker-v1-1",
@@ -78,7 +78,7 @@ path = "contracts/arkadiko-liquidator-v1-1.clar"
 [contracts.arkadiko-sip10-reserve-v1-1]
 depends_on = [
   "arkadiko-collateral-types-v1-1",
-  "arkadiko-mock-ft-trait-v1",
+  "sip-010-trait-ft-standard",
   "arkadiko-vault-trait-v1",
   "arkadiko-oracle-v1-1",
   "arkadiko-dao",
@@ -97,13 +97,13 @@ depends_on = [
   "arkadiko-oracle-v1-1",
   "arkadiko-dao",
   "xusd-token",
-  "arkadiko-mock-ft-trait-v1",
+  "sip-010-trait-ft-standard",
   "arkadiko-vault-trait-v1"
 ]
 path = "contracts/arkadiko-stx-reserve-v1-1.clar"
 
 [contracts.arkadiko-vault-trait-v1]
-depends_on = ["arkadiko-mock-ft-trait-v1"]
+depends_on = ["sip-010-trait-ft-standard"]
 path = "contracts/arkadiko-vault-trait-v1.clar"
 
 [contracts.arkadiko-vault-manager-trait-v1]
@@ -119,15 +119,15 @@ depends_on = []
 path = "contracts/arkadiko-collateral-types-trait-v1.clar"
 
 [contracts.arkadiko-stake-pool-diko-v1-1]
-depends_on = ["arkadiko-stake-pool-trait-v1", "arkadiko-token", "arkadiko-mock-ft-trait-v1", "arkadiko-stake-registry-v1-1"]
+depends_on = ["arkadiko-stake-pool-trait-v1", "arkadiko-token", "sip-010-trait-ft-standard", "arkadiko-stake-registry-v1-1"]
 path = "contracts/arkadiko-stake-pool-diko-v1-1.clar"
 
 [contracts.arkadiko-stake-pool-trait-v1]
-depends_on = ["arkadiko-mock-ft-trait-v1"]
+depends_on = ["sip-010-trait-ft-standard"]
 path = "contracts/arkadiko-stake-pool-trait-v1.clar"
 
 [contracts.arkadiko-stake-registry-v1-1]
-depends_on = ["arkadiko-token", "arkadiko-stake-pool-trait-v1", "arkadiko-mock-ft-trait-v1"]
+depends_on = ["arkadiko-token", "arkadiko-stake-pool-trait-v1", "sip-010-trait-ft-standard"]
 path = "contracts/arkadiko-stake-registry-v1-1.clar"
 
 [contracts.arkadiko-vault-rewards-v1-1]
@@ -135,11 +135,11 @@ depends_on = ["arkadiko-token"]
 path = "contracts/arkadiko-vault-rewards-v1-1.clar"
 
 [contracts.xusd-token]
-depends_on = ["arkadiko-mock-ft-trait-v1", "arkadiko-dao"]
+depends_on = ["sip-010-trait-ft-standard", "arkadiko-dao"]
 path = "contracts/xusd-token.clar"
 
 [contracts.xstx-token]
-depends_on = ["arkadiko-mock-ft-trait-v1"]
+depends_on = ["sip-010-trait-ft-standard"]
 path = "contracts/xstx-token.clar"
 
 [contracts.arkadiko-diko-init]

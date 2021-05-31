@@ -1,6 +1,6 @@
 (impl-trait .arkadiko-auction-engine-trait-v1.auction-engine-trait)
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
-(use-trait mock-ft-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
+(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait vault-manager-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
 (use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
 (use-trait auction-engine-trait .arkadiko-auction-engine-trait-v1.auction-engine-trait)
@@ -367,7 +367,7 @@
   )
 )
 
-(define-public (redeem-lot-collateral (vault-manager <vault-manager-trait>) (ft <mock-ft-trait>) (reserve <vault-trait>) (auction-id uint) (lot-index uint))
+(define-public (redeem-lot-collateral (vault-manager <vault-manager-trait>) (ft <ft-trait>) (reserve <vault-trait>) (auction-id uint) (lot-index uint))
   (let (
     (last-bid (get-last-bid auction-id lot-index))
     (auction (get-auction-by-id auction-id))
@@ -538,7 +538,7 @@
 
 ;; this should be called when upgrading contracts
 ;; auction engine should only contain xUSD from bids
-(define-public (migrate-funds (auction-engine <auction-engine-trait>) (token <mock-ft-trait>))
+(define-public (migrate-funds (auction-engine <auction-engine-trait>) (token <ft-trait>))
   (begin
     (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 

@@ -5,7 +5,7 @@
 ;; DAO can activate a new pool or deactivate an existing one.
 ;; When a pool is deactivated, users can not stake but they can unstake.
 
-(use-trait mock-ft-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
+(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait stake-pool-trait .arkadiko-stake-pool-trait-v1.stake-pool-trait)
 
 ;; Errors
@@ -45,7 +45,7 @@
 )
 
 ;; Stake tokens
-(define-public (stake (pool-trait <stake-pool-trait>) (token-trait <mock-ft-trait>) (amount uint))
+(define-public (stake (pool-trait <stake-pool-trait>) (token-trait <ft-trait>) (amount uint))
   (begin
     (let (
       (pool (contract-of pool-trait)) 
@@ -59,7 +59,7 @@
 )
 
 ;; Unstake tokens
-(define-public (unstake (pool-trait <stake-pool-trait>) (token-trait <mock-ft-trait>) (amount uint))
+(define-public (unstake (pool-trait <stake-pool-trait>) (token-trait <ft-trait>) (amount uint))
   (begin
     (let (
       (pool (contract-of pool-trait)) 

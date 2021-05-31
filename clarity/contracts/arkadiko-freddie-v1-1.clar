@@ -1,6 +1,6 @@
 (impl-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
-(use-trait mock-ft-trait .arkadiko-mock-ft-trait-v1.mock-ft-trait)
+(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait stacker-trait .arkadiko-stacker-trait-v1.stacker-trait)
 (use-trait vault-manager-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
 
@@ -271,7 +271,7 @@
     (debt uint)
     (collateral-type (string-ascii 12))
     (reserve <vault-trait>)
-    (ft <mock-ft-trait>)
+    (ft <ft-trait>)
   )
   (let (
     (sender tx-sender)
@@ -334,7 +334,7 @@
   )
 )
 
-(define-public (deposit (vault-id uint) (uamount uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
+(define-public (deposit (vault-id uint) (uamount uint) (reserve <vault-trait>) (ft <ft-trait>))
   (let (
     (vault (get-vault-by-id vault-id))
     (collateral-token (unwrap-panic (get-collateral-token-for-vault vault-id)))
@@ -368,7 +368,7 @@
   )
 )
 
-(define-public (withdraw (vault-id uint) (uamount uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
+(define-public (withdraw (vault-id uint) (uamount uint) (reserve <vault-trait>) (ft <ft-trait>))
   (let (
     (vault (get-vault-by-id vault-id))
     (collateral-token (unwrap-panic (get-collateral-token-for-vault vault-id)))
@@ -457,7 +457,7 @@
   )
 )
 
-(define-public (burn (vault-id uint) (debt uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
+(define-public (burn (vault-id uint) (debt uint) (reserve <vault-trait>) (ft <ft-trait>))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts!
       (and
@@ -485,7 +485,7 @@
   )
 )
 
-(define-private (close-vault (vault-id uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
+(define-private (close-vault (vault-id uint) (reserve <vault-trait>) (ft <ft-trait>))
   (let ((vault (get-vault-by-id vault-id))
        (updated-vault (merge vault {
           collateral: u0,
@@ -506,7 +506,7 @@
   )
 )
 
-(define-private (burn-partial-debt (vault-id uint) (debt uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
+(define-private (burn-partial-debt (vault-id uint) (debt uint) (reserve <vault-trait>) (ft <ft-trait>))
   (let ((vault (get-vault-by-id vault-id)))
     (try! (contract-call? .arkadiko-dao burn-token .xusd-token debt (get owner vault)))
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
@@ -645,14 +645,14 @@
   )
 )
 
-(define-public (redeem-auction-collateral (ft <mock-ft-trait>) (token-string (string-ascii 12)) (reserve <vault-trait>) (collateral-amount uint) (sender principal))
+(define-public (redeem-auction-collateral (ft <ft-trait>) (token-string (string-ascii 12)) (reserve <vault-trait>) (collateral-amount uint) (sender principal))
   (begin
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "auction-engine"))) (err ERR-NOT-AUTHORIZED))
     (contract-call? reserve redeem-collateral ft token-string collateral-amount sender)
   )
 )
 
-(define-public (withdraw-leftover-collateral (vault-id uint) (reserve <vault-trait>) (ft <mock-ft-trait>))
+(define-public (withdraw-leftover-collateral (vault-id uint) (reserve <vault-trait>) (ft <ft-trait>))
   (let (
     (vault (get-vault-by-id vault-id))
     (collateral-token (unwrap-panic (get-collateral-token-for-vault vault-id)))
@@ -727,7 +727,7 @@
 
 ;; this should be called when upgrading contracts
 ;; freddie should only contain xUSD
-(define-public (migrate-funds (new-vault-manager <vault-manager-trait>) (token <mock-ft-trait>))
+(define-public (migrate-funds (new-vault-manager <vault-manager-trait>) (token <ft-trait>))
   (begin
     (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
