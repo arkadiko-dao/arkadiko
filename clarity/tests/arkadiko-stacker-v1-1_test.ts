@@ -631,7 +631,7 @@ Clarinet.test({
     call.result.expectOk().expectUint(96640000000)
 
     // Initial DIKO balance
-    call = chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [types.principal(deployer.address)], deployer.address);
+    call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
     call.result.expectOk().expectUint(890000000000);   
 
     // Collateral info
@@ -653,7 +653,7 @@ Clarinet.test({
     block.receipts[1].result.expectOk().expectBool(true);
 
     // Auto harvested DIKO
-    call = chain.callReadOnlyFn("arkadiko-token", "get-balance-of", [types.principal(deployer.address)], deployer.address);
+    call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
     call.result.expectOk().expectUint(986640000000);   
 
     // Pending rewards only for 1 block
