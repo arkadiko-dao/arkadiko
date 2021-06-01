@@ -112,6 +112,22 @@
   )
 )
 
+;; adds a new contract, only new ones allowed
+(define-public (add-contract-address (name (string-ascii 256)) (address principal) (qualified-name principal))
+  (begin
+    (asserts! (is-eq tx-sender (var-get dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (if
+      (and
+        (is-eq true (map-insert contracts { name: name } { address: address, qualified-name: qualified-name }))
+        (is-eq true (map-insert contracts-data { qualified-name: qualified-name } { active: true }))
+      )
+      (ok true)
+      (ok false)
+    )
+  )
+)
+
 ;; ---------------------------------------------------------
 ;; Protocol tokens
 ;; ---------------------------------------------------------
