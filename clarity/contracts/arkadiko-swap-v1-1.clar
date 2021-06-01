@@ -1,7 +1,6 @@
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait swap-token .arkadiko-swap-trait-v1.swap-trait)
 
-(define-constant CONTRACT-OWNER tx-sender)
 (define-constant ERR-NOT-AUTHORIZED u20401)
 (define-constant INVALID-PAIR-ERR (err u201))
 
@@ -151,7 +150,14 @@
 )
 
 (define-read-only (get-pair-details (token-x principal) (token-y principal))
-  (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y }))
+  (let (
+    (pair (map-get? pairs-data-map { token-x: token-x, token-y: token-y }))
+  )
+    (if (is-some pair)
+      (ok pair)
+      (err INVALID-PAIR-ERR)
+    )
+  )
 )
 
 (define-read-only (get-pair-contracts (pair-id uint))
@@ -327,7 +333,7 @@
   (let (
     (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
   )
-    (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y }
       {
@@ -351,7 +357,7 @@
   (let (
     (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
   )
-    (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y }
       {
