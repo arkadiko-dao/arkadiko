@@ -3,6 +3,7 @@
 
 (define-constant ERR-NOT-AUTHORIZED u20401)
 (define-constant INVALID-PAIR-ERR (err u201))
+(define-constant ERR-INVALID-LIQUIDITY u202)
 
 (define-constant no-liquidity-err (err u61))
 ;; (define-constant transfer-failed-err (err u62))
@@ -124,8 +125,6 @@
           (/ (* x (get shares-total pair)) balance-x)
         )
       )
-      ;; TODO: need to calculate y based on x, and only transfer the correct amount
-      ;; without this, people could game the pool by only providing x!!!  not nice...
       (new-y
         (if (is-eq (get shares-total pair) u0)
           y
@@ -138,7 +137,7 @@
         balance-y: (+ balance-y new-y)
       }))
     )
-      ;; TODO check if x or y is 0, to calculate proper exchange rate unless shares-total is 0, which would be an error
+    (asserts! (and (> x u0) (> new-y u0)) (err ERR-INVALID-LIQUIDITY))
     (asserts! (is-ok (contract-call? token-x-trait transfer x tx-sender contract-address none)) transfer-x-failed-err)
     (asserts! (is-ok (contract-call? token-y-trait transfer new-y tx-sender contract-address none)) transfer-y-failed-err)
 
@@ -222,7 +221,6 @@
       (shares (unwrap-panic (contract-call? swap-token-trait get-balance tx-sender)))
       (shares-total (get shares-total pair))
       (contract-address (as-contract tx-sender))
-      (sender tx-sender)
       (withdrawal (/ (* shares percent) u100))
       (withdrawal-x (/ (* withdrawal balance-x) shares-total))
       (withdrawal-y (/ (* withdrawal balance-y) shares-total))
@@ -238,8 +236,8 @@
     )
 
     (asserts! (<= percent u100) (err u5))
-    (asserts! (is-ok (as-contract (contract-call? token-x-trait transfer withdrawal-x contract-address sender none))) transfer-x-failed-err)
-    (asserts! (is-ok (as-contract (contract-call? token-y-trait transfer withdrawal-y contract-address sender none))) transfer-y-failed-err)
+    (asserts! (is-ok (as-contract (contract-call? token-x-trait transfer withdrawal-x contract-address tx-sender none))) transfer-x-failed-err)
+    (asserts! (is-ok (as-contract (contract-call? token-y-trait transfer withdrawal-y contract-address tx-sender none))) transfer-y-failed-err)
 
     ;; (unwrap-panic (decrease-shares token-x token-y tx-sender withdrawal)) ;; should never fail, you know...
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-updated)
