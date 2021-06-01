@@ -5,8 +5,6 @@ import { callReadOnlyFunction, uintCV, cvToJSON } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
-import { typeToReadableName, deductTitle, changeKeyToHumanReadable } from '@common/proposal-utils';
-import { TxStatus } from '@components/tx-status';
 import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { AppContext } from '@common/context';
 
