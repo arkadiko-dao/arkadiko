@@ -305,8 +305,8 @@
     (balance-y (get balance-y pair))
     (contract-address (as-contract tx-sender))
     (sender tx-sender)
-    (dx (/ (* u997 balance-x dy) (+ (* u1000 balance-y) (* u997 dy)))) ;; overall fee is 30 bp, either all for the pool, or 25 bp for pool and 5 bp for operator
-    (fee (/ (* u5 dy) u10000)) ;; 5 bp
+    (dx (* u10000 (/ (* u997 balance-x dy) (+ (* u1000 balance-y) (* u997 dy)))))
+    (fee (/ (* u5 dy) u10000))
     (pair-updated (merge pair {
       balance-x: (- (get balance-x pair) dx),
       balance-y: (+ (get balance-y pair) dy),
@@ -315,11 +315,11 @@
         (get fee-balance-y pair))
     }))
   )
-    (asserts! (< min-dx dx) too-much-slippage-err)
+    (asserts! (< (* u10000 min-dx) dx) too-much-slippage-err)
 
     ;; TODO: check that the amount transfered in matches the amount requested
     (asserts! (is-ok (as-contract (contract-call? token-x-trait transfer dx contract-address sender none))) transfer-x-failed-err)
-    (asserts! (is-ok (contract-call? token-y-trait transfer dy sender contract-address none)) transfer-y-failed-err)
+    (asserts! (is-ok (contract-call? token-y-trait transfer (* u10000 dy) sender contract-address none)) transfer-y-failed-err)
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-updated)
     (print { object: "pair", action: "swap-y-for-x", data: pair-updated })
