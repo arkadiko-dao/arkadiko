@@ -7,6 +7,7 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
 import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { AppContext } from '@common/context';
+import { deductTitle } from '@common/proposal-utils';
 
 export const ViewProposal = ({ match }) => {
   const [_, setState] = useContext(AppContext);
@@ -24,7 +25,7 @@ export const ViewProposal = ({ match }) => {
     const getData = async () => {
       const proposal = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-dao",
+        contractName: "arkadiko-governance-v1-1",
         functionName: "get-proposal-by-id",
         functionArgs: [uintCV(match.params.id)],
         senderAddress: stxAddress || '',
@@ -38,13 +39,10 @@ export const ViewProposal = ({ match }) => {
         proposer: data['proposer'].value,
         forVotes: data['yes-votes'].value,
         against: data['no-votes'].value,
-        token: data['token'].value,
-        collateralType: data['collateral-type'].value,
-        type: data['type'].value,
         changes: [{
-          key: data['changes'].value[0].value['key'].value,
-          'old-value': 0,
-          'new-value': data['changes'].value[0].value['new-value'].value
+          'name': data['contract-changes'].value[0].value['name'].value,
+          'address': data['contract-changes'].value[0].value['address'].value,
+          'qualified-name': data['contract-changes'].value[0].value['qualified-name'].value
         }],
         isOpen: data['is-open'].value,
         startBlockHeight: data['start-block-height'].value,
@@ -113,7 +111,7 @@ export const ViewProposal = ({ match }) => {
                   </h3>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500">
-                      Change Risk Parameter "Liquidation Penalty" for STX collateral
+                      Change contract
                     </p>
 
                     <div className="mt-4 relative rounded-md shadow-sm">
@@ -162,9 +160,7 @@ export const ViewProposal = ({ match }) => {
                 <div className="bg-white shadow sm:rounded-lg mt-5 w-full">
                   <div className="px-4 py-5 sm:p-6">
                     <h3 className="text-lg leading-6 font-medium text-gray-900">
-                      {proposal.changes ? (
-                        `${changeKeyToHumanReadable(proposal.changes[0].key)} ${deductTitle(proposal?.type)} ${proposal?.collateralType.toUpperCase()}`
-                      ) : `` }
+                      Change contract
                     </h3>
                     <div className="mt-2 sm:flex sm:items-start sm:justify-between">
                       <div className="max-w-xl text-sm text-gray-500">
@@ -200,18 +196,9 @@ export const ViewProposal = ({ match }) => {
                     <div className="mt-2 sm:flex sm:items-start sm:justify-between">
                       Proposer: {proposal.proposer}
                     </div>
-                    <div className="mt-2 sm:flex sm:items-start sm:justify-between">
-                      Token: {proposal?.token?.toUpperCase()}
-                    </div>
-                    <div className="mt-2 sm:flex sm:items-start sm:justify-between">
-                      Collateral Type: {proposal?.collateralType?.toUpperCase()}
-                    </div>
-                    <div className="mt-2 sm:flex sm:items-start sm:justify-between">
-                      Type: {typeToReadableName(proposal.type)}
-                    </div>
                     {proposal.changes ? (
                       <div className="mt-2 sm:flex sm:items-start sm:justify-between">
-                        Changes: Change {changeKeyToHumanReadable(proposal.changes[0].key)} to {proposal.changes[0]['new-value']}
+                        Changes: Change
                       </div>
                     ): `` }
                   </div>
