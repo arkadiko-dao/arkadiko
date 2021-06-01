@@ -34,36 +34,6 @@ export const Swap: React.FC = () => {
   };
 
   useEffect(() => {
-    const fetchPairs = async () => {
-      const DIKOxUSD = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-swap-v1-1",
-        functionName: "get-total-supply",
-        functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-token'),
-          contractPrincipalCV(contractAddress, 'xusd-token')
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const json = cvToJSON(DIKOxUSD);
-      console.log('Total Supply DIKO/xUSD:', json.value.value / 1000000);
-
-      // const pairs = await callReadOnlyFunction({
-      //   contractAddress,
-      //   contractName: "arkadiko-swap-v1-1",
-      //   functionName: "get-pairs",
-      //   functionArgs: [],
-      //   senderAddress: stxAddress || '',
-      //   network: network,
-      // });
-      // const pairsJson = cvToJSON(pairs.value);
-    };
-
-    fetchPairs();
-  }, []);
-
-  useEffect(() => {
     setTokenBalances();
   }, [state.balance]);
 
@@ -247,11 +217,13 @@ export const Swap: React.FC = () => {
                         <button type="button" onClick={() => swapTokens()} className="inline-flex items-right px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
                           Swap
                         </button>
-                        
+                      </div>
+
+                      <Box display="inline-block" className="text-base font-light mt-2 text-gray-900 hover:text-gray-700">
                         <RouterLink to={`swap/add/${tokenX}/${tokenY}`} activeClassName="border-b-2 border-indigo-500 pt-6">
                           Add Liquidity to {tokenX}-{tokenY}
                         </RouterLink>
-                      </div>
+                      </Box>
                     </div>
                   </div>
                 </div>

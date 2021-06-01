@@ -18,7 +18,6 @@ import { Link } from '@components/link';
 import { Redirect } from 'react-router-dom';
 import { resolveReserveName, tokenTraits } from '@common/vault-utils';
 import BN from 'bn.js';
-import { TxStatus } from '@components/tx-status';
 
 export const ManageVault = ({ match }) => {
   const { doContractCall } = useConnect();
