@@ -1,13 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Box, Modal } from '@blockstack/ui';
 import { Container } from './home';
-import { callReadOnlyFunction, uintCV, cvToJSON } from '@stacks/transactions';
+import { callReadOnlyFunction, contractPrincipalCV, uintCV, cvToJSON } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
 import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { AppContext } from '@common/context';
-import { deductTitle } from '@common/proposal-utils';
 
 export const ViewProposal = ({ match }) => {
   const [_, setState] = useContext(AppContext);
@@ -60,12 +59,14 @@ export const ViewProposal = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
-      contractName: 'arkadiko-dao',
+      contractName: 'arkadiko-governance-v1-1',
       functionName: 'vote-for',
-      functionArgs: [uintCV(match.params.id), uintCV(amountOfVotes * 1000000)],
+      functionArgs: [
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
+        uintCV(match.params.id), uintCV(amountOfVotes * 1000000)
+      ],
       postConditionMode: 0x01,
       finished: data => {
-        console.log('finished adding vote for!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowVoteModal(false);
       },
@@ -76,12 +77,14 @@ export const ViewProposal = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
-      contractName: 'arkadiko-dao',
+      contractName: 'arkadiko-governance-v1-1',
       functionName: 'vote-against',
-      functionArgs: [uintCV(match.params.id), uintCV(amountOfVotes * 1000000)],
+      functionArgs: [
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
+        uintCV(match.params.id), uintCV(amountOfVotes * 1000000)
+      ],
       postConditionMode: 0x01,
       finished: data => {
-        console.log('finished adding vote for!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowVoteModal(false);
       },

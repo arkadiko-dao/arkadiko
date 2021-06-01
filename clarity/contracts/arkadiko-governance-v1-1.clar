@@ -10,6 +10,7 @@
 (define-constant ERR-NO-CONTRACT-CHANGES u32)
 (define-constant ERR-WRONG-TOKEN u33)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u34)
+(define-constant ERR-BLOCK-HEIGHT-NOT-REACHED u35)
 (define-constant ERR-NOT-AUTHORIZED u3401)
 (define-constant STATUS-OK u3200)
 
@@ -228,7 +229,7 @@
     )
     (asserts! (not (is-eq (get id proposal) u0)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-open proposal) true) (err ERR-NOT-AUTHORIZED))
-    (asserts! (>= block-height (get end-block-height proposal)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (>= block-height (get end-block-height proposal)) (err ERR-BLOCK-HEIGHT-NOT-REACHED))
 
     (map-set proposals
       { id: proposal-id }
