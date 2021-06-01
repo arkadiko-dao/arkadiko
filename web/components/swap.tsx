@@ -21,6 +21,7 @@ export const Swap: React.FC = () => {
   const [balanceSelectedTokenX, setBalanceSelectedTokenX] = useState(0.0);
   const [balanceSelectedTokenY, setBalanceSelectedTokenY] = useState(0.0);
   const [currentPrice, setCurrentPrice] = useState(0.0);
+  const [currentPair, setCurrentPair] = useState();
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -47,16 +48,15 @@ export const Swap: React.FC = () => {
       const json = cvToJSON(DIKOxUSD);
       console.log('Total Supply DIKO/xUSD:', json.value.value / 1000000);
 
-      const pairs = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-swap-v1-1",
-        functionName: "get-pairs",
-        functionArgs: [],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const pairsJson = cvToJSON(pairs.value);
-      console.log('Pairs:', pairsJson.value);
+      // const pairs = await callReadOnlyFunction({
+      //   contractAddress,
+      //   contractName: "arkadiko-swap-v1-1",
+      //   functionName: "get-pairs",
+      //   functionArgs: [],
+      //   senderAddress: stxAddress || '',
+      //   network: network,
+      // });
+      // const pairsJson = cvToJSON(pairs.value);
     };
 
     fetchPairs();
@@ -88,10 +88,12 @@ export const Swap: React.FC = () => {
       const json3 = cvToJSON(details);
       console.log('Pair Details:', json3['value']['value']);
       if (json3['success']) {
+        setCurrentPair(json3['value']['value']['value']);
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
-        const price = (balanceX / balanceY).toFixed(2);
-        setCurrentPrice(price);
+        const basePrice = (balanceX / balanceY).toFixed(2);
+        // const price = parseFloat(basePrice) + (parseFloat(basePrice) * 0.01);
+        setCurrentPrice(basePrice);
       }
     };
 
@@ -100,8 +102,10 @@ export const Swap: React.FC = () => {
 
   useEffect(() => {
     if (currentPrice > 0) {
-      const price = parseFloat(currentPrice) + (parseFloat(currentPrice) * 0.05);
-      const amount = (tokenXAmount / price).toFixed(6);
+      const balanceX = currentPair['balance-x'].value;
+      const balanceY = currentPair['balance-y'].value;
+      console.log(balanceX, balanceY, tokenXAmount);
+      const amount = ((996 * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
       setTokenYAmount(amount);
     }
   }, [tokenXAmount]);
@@ -142,8 +146,8 @@ export const Swap: React.FC = () => {
       functionArgs: [
         contractPrincipalCV(contractAddress, tokenTraits[tokenX.toLowerCase()]['name']),
         contractPrincipalCV(contractAddress, tokenTraits[tokenY.toLowerCase()]['name']),
-        uintCV(tokenXAmount * 1000000),
-        uintCV(tokenYAmount * 1000000)
+        uintCV(tokenXAmount * 100),
+        uintCV(tokenYAmount * 100)
       ],
       postConditionMode: 0x01,
       finished: data => {
