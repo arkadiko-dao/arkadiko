@@ -10,6 +10,7 @@ import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { tokenTraits } from '@common/vault-utils';
+import { NavLink as RouterLink } from 'react-router-dom'
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
@@ -125,10 +126,6 @@ export const Swap: React.FC = () => {
     }
   }, [tokenXAmount]);
 
-  useEffect(() => {
-    console.log('token Y amount changed');
-  }, [tokenYAmount]);
-
   const onInputChange = (event: { target: { name: any; value: any; }; }) => {
     const name = event.target.name;
     const value = event.target.value;
@@ -227,7 +224,7 @@ export const Swap: React.FC = () => {
                     </div>
                     <input type="text" name="tokenYAmount" id="tokenYAmount"
                       value={tokenYAmount}
-                      onChange={onInputChange}
+                      disabled={true}
                       className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md" placeholder="0.00" />
                     <div className="absolute inset-y-0 right-0 flex items-center">
                       <label htmlFor="tokenYAmount" className="sr-only">Token Y</label>
@@ -250,6 +247,10 @@ export const Swap: React.FC = () => {
                         <button type="button" onClick={() => swapTokens()} className="inline-flex items-right px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
                           Swap
                         </button>
+                        
+                        <RouterLink to={`swap/add/${tokenX}/${tokenY}`} activeClassName="border-b-2 border-indigo-500 pt-6">
+                          Add Liquidity to {tokenX}-{tokenY}
+                        </RouterLink>
                       </div>
                     </div>
                   </div>
