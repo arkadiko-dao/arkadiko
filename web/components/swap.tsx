@@ -4,7 +4,6 @@ import { Box } from '@blockstack/ui';
 import { Landing } from './landing';
 import { Container } from './home'
 import { microToReadable } from '@common/vault-utils';
-import { getPrice } from '@common/get-price';
 import { callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
@@ -22,6 +21,7 @@ export const Swap: React.FC = () => {
   const [balanceSelectedTokenY, setBalanceSelectedTokenY] = useState(0.0);
   const [currentPrice, setCurrentPrice] = useState(0.0);
   const [currentPair, setCurrentPair] = useState();
+  const [inverseDirection, setInverseDirection] = useState(false);
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -67,14 +67,8 @@ export const Swap: React.FC = () => {
   }, [state.balance]);
 
   useEffect(() => {
-    console.log(tokenX, tokenY);
-
-    const fetchPairs = async () => {
-      setTokenBalances();
-
-      const tokenXContract = tokenTraits[tokenX.toLowerCase()]['name'];
-      const tokenYContract = tokenTraits[tokenY.toLowerCase()]['name'];
-      const details = await callReadOnlyFunction({
+    const fetchPair = async (tokenXContract:string, tokenYContract:string) => {
+      let details = await callReadOnlyFunction({
         contractAddress,
         contractName: "arkadiko-swap-v1-1",
         functionName: "get-pair-details",
@@ -85,8 +79,17 @@ export const Swap: React.FC = () => {
         senderAddress: stxAddress || '',
         network: network,
       });
-      const json3 = cvToJSON(details);
-      console.log('Pair Details:', json3['value']['value']);
+
+      return cvToJSON(details);
+    };
+
+    const resolvePair = async () => {
+      setTokenBalances();
+
+      let tokenXContract = tokenTraits[tokenX.toLowerCase()]['name'];
+      let tokenYContract = tokenTraits[tokenY.toLowerCase()]['name'];
+      const json3 = await fetchPair(tokenXContract, tokenYContract);
+      console.log('Pair Details:', json3);
       if (json3['success']) {
         setCurrentPair(json3['value']['value']['value']);
         const balanceX = json3['value']['value']['value']['balance-x'].value;
@@ -94,10 +97,22 @@ export const Swap: React.FC = () => {
         const basePrice = (balanceX / balanceY).toFixed(2);
         // const price = parseFloat(basePrice) + (parseFloat(basePrice) * 0.01);
         setCurrentPrice(basePrice);
+        setInverseDirection(false);
+      } else if (json3['value']['value']['value'] === 201) {
+        const json4 = await fetchPair(tokenYContract, tokenXContract);
+        if (json4['success']) {
+          console.log('found pair...');
+          setCurrentPair(json4['value']['value']['value']);
+          setInverseDirection(true);
+          const balanceX = json4['value']['value']['value']['balance-x'].value;
+          const balanceY = json4['value']['value']['value']['balance-y'].value;
+          const basePrice = (balanceX / balanceY).toFixed(2);
+          setCurrentPrice(basePrice);
+        }
       }
     };
 
-    fetchPairs();
+    resolvePair();
   }, [tokenX, tokenY]);
 
   useEffect(() => {
@@ -138,14 +153,23 @@ export const Swap: React.FC = () => {
 
   const swapTokens = async () => {
     console.log('swapping');
+    let contractName = 'swap-x-for-y';
+    let tokenXTrait = tokenTraits[tokenX.toLowerCase()]['name'];
+    let tokenYTrait = tokenTraits[tokenY.toLowerCase()]['name'];
+    if (inverseDirection) {
+      contractName = 'swap-y-for-x';
+      let tmpTrait = tokenXTrait;
+      tokenXTrait = tokenYTrait;
+      tokenYTrait = tmpTrait;
+    }
     await doContractCall({
       network,
       contractAddress,
       contractName: 'arkadiko-swap-v1-1',
-      functionName: 'swap-x-for-y',
+      functionName: contractName,
       functionArgs: [
-        contractPrincipalCV(contractAddress, tokenTraits[tokenX.toLowerCase()]['name']),
-        contractPrincipalCV(contractAddress, tokenTraits[tokenY.toLowerCase()]['name']),
+        contractPrincipalCV(contractAddress, tokenXTrait),
+        contractPrincipalCV(contractAddress, tokenYTrait),
         uintCV(tokenXAmount * 100),
         uintCV(tokenYAmount * 100)
       ],
