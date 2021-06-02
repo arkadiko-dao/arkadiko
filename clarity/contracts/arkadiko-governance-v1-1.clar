@@ -296,3 +296,18 @@
     )
   )
 )
+
+;; adds a new contract, only new ones allowed
+(define-public (add-contract-address (name (string-ascii 256)) (address principal) (qualified-name principal))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (if (is-some (contract-call? .arkadiko-dao get-contract-address-by-name name))
+      (ok false)
+      (begin
+        (try! (contract-call? .arkadiko-dao set-contract-address name address qualified-name))
+        (ok true)
+      )
+    )
+  )
+)

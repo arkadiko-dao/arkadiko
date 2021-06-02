@@ -100,30 +100,18 @@
 ;; Governance contract can setup DAO contracts
 (define-public (set-contract-address (name (string-ascii 256)) (address principal) (qualified-name principal))
   (let (
-    (prev-qualified-name (get qualified-name (unwrap-panic (map-get? contracts { name: name }))))
+    (current-contract (map-get? contracts { name: name }))
   )
     (begin
       (asserts! (is-eq (unwrap-panic (get-qualified-name-by-name "governance")) contract-caller) ERR-NOT-AUTHORIZED)
+
       (map-set contracts { name: name } { address: address, qualified-name: qualified-name })
-      (map-set contracts-data { qualified-name: prev-qualified-name } { active: false })
+      (if (is-some current-contract)
+        (map-set contracts-data { qualified-name: (unwrap-panic (get qualified-name current-contract)) } { active: false })
+        false
+      )
       (map-set contracts-data { qualified-name: qualified-name } { active: true })
       (ok true)
-    )
-  )
-)
-
-;; adds a new contract, only new ones allowed
-(define-public (add-contract-address (name (string-ascii 256)) (address principal) (qualified-name principal))
-  (begin
-    (asserts! (is-eq tx-sender (var-get dao-owner)) (err ERR-NOT-AUTHORIZED))
-
-    (if
-      (and
-        (is-eq true (map-insert contracts { name: name } { address: address, qualified-name: qualified-name }))
-        (is-eq true (map-insert contracts-data { qualified-name: qualified-name } { active: true }))
-      )
-      (ok true)
-      (ok false)
     )
   )
 )
