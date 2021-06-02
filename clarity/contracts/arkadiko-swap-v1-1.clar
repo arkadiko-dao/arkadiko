@@ -330,41 +330,24 @@
   )
     (asserts! (is-eq tx-sender .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
 
-    (map-set pairs-data-map { token-x: token-x, token-y: token-y }
-      {
-        shares-total: (get shares-total pair),
-        balance-x: (get balance-y pair),
-        balance-y: (get balance-y pair),
-        fee-balance-x: (get fee-balance-y pair),
-        fee-balance-y: (get fee-balance-y pair),
-        fee-to-address: (some address),
-        name: (get name pair),
-        swap-token: (get swap-token pair),
-      }
+    (map-set pairs-data-map
+      { token-x: token-x, token-y: token-y }
+      (merge pair { fee-to-address: (some address) })
     )
     (ok true)
   )
 )
 
-;; ;; clear the contract fee addres
-;; ;; TODO: if there are any collected fees, prevent this from happening, as the fees can no longer be collect with `collect-fees`
+;; ;; clear the contract fee address
 (define-public (reset-fee-to-address (token-x principal) (token-y principal))
   (let (
     (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
   )
     (asserts! (is-eq tx-sender .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
 
-    (map-set pairs-data-map { token-x: token-x, token-y: token-y }
-      {
-        shares-total: (get shares-total pair),
-        balance-x: (get balance-x pair),
-        balance-y: (get balance-y pair),
-        fee-balance-x: (get fee-balance-y pair),
-        fee-balance-y: (get fee-balance-y pair),
-        fee-to-address: none,
-        name: (get name pair),
-        swap-token: (get swap-token pair),
-      }
+    (map-set pairs-data-map
+      { token-x: token-x, token-y: token-y }
+      (merge pair { fee-to-address: none })
     )
     (ok true)
   )
