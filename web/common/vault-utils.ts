@@ -37,6 +37,12 @@ export const tokenTraits = {
   },
   'xusd': {
     'name': 'xusd-token'
+  },
+  'dikoxusd': {
+    'name': 'arkadiko-swap-token-diko-xusd'
+  },
+  'xusddiko': {
+    'name': 'arkadiko-swap-token-diko-xusd'
   }
 };
 

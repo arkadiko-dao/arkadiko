@@ -20,11 +20,13 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [currentPrice, setCurrentPrice] = useState(0.0);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const stxAddress = useSTXAddress();
+  const { doContractCall } = useConnect();
 
   const tokenX = match.params.currencyIdA;
   const tokenY = match.params.currencyIdB;
-  const tokenXContract = tokenTraits[tokenX.toLowerCase()]['name'];
-  const tokenYContract = tokenTraits[tokenY.toLowerCase()]['name'];
+  const tokenXTrait = tokenTraits[tokenX.toLowerCase()]['name'];
+  const tokenYTrait = tokenTraits[tokenY.toLowerCase()]['name'];
+  const swapTrait = tokenTraits[`${tokenX.toLowerCase()}${tokenY.toLowerCase()}`]['name'];
   websocketTxUpdater();
 
   const setTokenBalances = () => {
@@ -56,7 +58,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
     const resolvePair = async () => {
       setTokenBalances();
 
-      const json3 = await fetchPair(tokenXContract, tokenYContract);
+      const json3 = await fetchPair(tokenXTrait, tokenYTrait);
       console.log('Pair Details:', json3);
       if (json3['success']) {
         const balanceX = json3['value']['value']['value']['balance-x'].value;
@@ -65,7 +67,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         // const price = parseFloat(basePrice) + (parseFloat(basePrice) * 0.01);
         setCurrentPrice(basePrice);
       } else if (json3['value']['value']['value'] === 201) {
-        const json4 = await fetchPair(tokenYContract, tokenXContract);
+        const json4 = await fetchPair(tokenYTrait, tokenXTrait);
         if (json4['success']) {
           const balanceX = json4['value']['value']['value']['balance-x'].value;
           const balanceY = json4['value']['value']['value']['balance-y'].value;
@@ -79,14 +81,31 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
   }, [tokenX, tokenY]);
 
   const onInputChange = (event: { target: { name: any; value: any; }; }) => {
-    const name = event.target.name;
     const value = event.target.value;
 
     setTokenXAmount(value);
+    setTokenYAmount(currentPrice * value);
   };
 
-  const addLiquidity = () => {
-    console.log('add liquidity');
+  const addLiquidity = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      contractName: 'arkadiko-swap-v1-1',
+      functionName: 'add-to-position',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, tokenXTrait),
+        contractPrincipalCV(contractAddress, tokenYTrait),
+        contractPrincipalCV(contractAddress, swapTrait),
+        uintCV(tokenXAmount * 1000000),
+        uintCV(tokenYAmount * 1000000)
+      ],
+      postConditionMode: 0x01,
+      finished: data => {
+        console.log('finished collateralizing!', data);
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+      },
+    });
   };
 
   return (
@@ -199,7 +218,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                 <div className="max-w-xl text-sm text-gray-500">
                   <div className="mt-5 sm:mt-0 sm:flex-shrink-0 sm:flex sm:items-right">
                     <button type="button" onClick={() => addLiquidity()} className="inline-flex items-right px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
-                      Add Liquidity
+                      Supply
                     </button>
                   </div>
                 </div>
