@@ -261,7 +261,6 @@
     (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
     (balance-x (get balance-x pair))
     (balance-y (get balance-y pair))
-    (contract-address (as-contract tx-sender))
     (dy (* u10000 (/ (* u997 balance-y dx) (+ (* u1000 balance-x) (* u997 dx)))))
     (fee (/ (* u5 dx) u10000))
     (pair-updated
@@ -373,7 +372,6 @@
     (
       (token-x (contract-of token-x-trait))
       (token-y (contract-of token-y-trait))
-      (contract-address (as-contract tx-sender))
       (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
       (address (unwrap-panic (get fee-to-address pair)))
       (fee-x (get fee-balance-x pair))
@@ -381,21 +379,13 @@
     )
 
     (asserts! (is-eq fee-x u0) no-fee-x-err)
-    (asserts! (is-ok (as-contract (contract-call? token-x-trait transfer fee-x contract-address address none))) transfer-x-failed-err)
+    (asserts! (is-ok (contract-call? token-x-trait transfer fee-x (as-contract tx-sender) address none)) transfer-x-failed-err)
     (asserts! (is-eq fee-y u0) no-fee-y-err)
-    (asserts! (is-ok (as-contract (contract-call? token-y-trait transfer fee-y contract-address address none))) transfer-y-failed-err)
+    (asserts! (is-ok (contract-call? token-y-trait transfer fee-y (as-contract tx-sender) address none)) transfer-y-failed-err)
 
-    (map-set pairs-data-map { token-x: token-x, token-y: token-y }
-      {
-        shares-total: (get shares-total pair),
-        balance-x: (get balance-x pair),
-        balance-y: (get balance-y pair),
-        fee-balance-x: u0,
-        fee-balance-y: u0,
-        fee-to-address: (get fee-to-address pair),
-        name: (get name pair),
-        swap-token: (get swap-token pair),
-      }
+    (map-set pairs-data-map
+      { token-x: token-x, token-y: token-y }
+      (merge pair { fee-balance-x: u0, fee-balance-y: u0 })
     )
     (ok (list fee-x fee-y))
   )

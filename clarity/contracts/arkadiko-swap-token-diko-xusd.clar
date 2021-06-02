@@ -15,7 +15,7 @@
 )
 
 (define-read-only (get-name)
-  (ok "DIKO xUSD Swap Token")
+  (ok "DIKO xUSD LP Token")
 )
 
 (define-read-only (get-symbol)
@@ -39,12 +39,12 @@
 )
 ;; {
 ;;   "name":"DIKO-xUSD",
-;;   "description":"DIKO-xUSD Arkadiko Swap token",
+;;   "description":"DIKO-xUSD Arkadiko LP token",
 ;;   "image":"url",
 ;;   "vector":"url"
 ;; }
 
-;; one stop function to gather all the data relevant to the swapr token in one call
+;; one stop function to gather all the data relevant to the LP token in one call
 (define-read-only (get-data (owner principal))
   (ok {
     name: (unwrap-panic (get-name)),
@@ -56,8 +56,8 @@
   })
 )
 
-;; the extra mint method used by swapr when adding liquidity
-;; can only be used by swapr main contract
+;; the extra mint method used when adding liquidity
+;; can only be used by arkadiko swap main contract
 (define-public (mint (recipient principal) (amount uint))
   (begin
     (print "arkadiko-token-swap.mint")
