@@ -1,3 +1,8 @@
+## Version 0.8.1
+
+- Fix governance votes from UI
+- Add governance method to add a new registered smart contract to DAO
+
 ## Version 0.8.0
 
 - Rename all smart contracts to use an `arkadiko-` prefix and a major-minor version postfix (e.g. `v1-1`). Smart contracts that never change don't have a version postfix. Traits only have a major version, since the whole (part of the) protocol changes when traits change.
