@@ -251,10 +251,6 @@
 ;; exchange known dx of x-token for whatever dy of y-token based on current liquidity, returns (dx dy)
 ;; the swap will not happen if can't get at least min-dy back
 (define-public (swap-x-for-y (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (dx uint) (min-dy uint))
-  ;; calculate dy
-  ;; calculate fee on dx
-  ;; transfer
-  ;; update balances
   (let (
     (token-x (contract-of token-x-trait))
     (token-y (contract-of token-y-trait))
@@ -277,7 +273,6 @@
   )
     (asserts! (< (* u10000 min-dy) dy) too-much-slippage-err)
 
-    ;; TODO check that the amount transfered in matches the amount requested
     (asserts! (is-ok (contract-call? token-x-trait transfer (* u10000 dx) tx-sender (as-contract tx-sender) none)) transfer-x-failed-err)
     (try! (contract-call? token-y-trait transfer dy (as-contract tx-sender) tx-sender none))
 
@@ -290,10 +285,6 @@
 ;; exchange known dy for whatever dx based on liquidity, returns (dx dy)
 ;; the swap will not happen if can't get at least min-dx back
 (define-public (swap-y-for-x (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (dy uint) (min-dx uint))
-  ;; calculate dx
-  ;; calculate fee on dy
-  ;; transfer
-  ;; update balances
   (let (
     (token-x (contract-of token-x-trait))
     (token-y (contract-of token-y-trait))
@@ -366,7 +357,7 @@
   )
 )
 
-;; ;; send the collected fees the fee-to-address
+;; send the collected fees the fee-to-address
 (define-public (collect-fees (token-x-trait <ft-trait>) (token-y-trait <ft-trait>))
   (let
     (

@@ -224,6 +224,13 @@ export const Swap: React.FC = () => {
                           Add Liquidity to {tokenX}-{tokenY}
                         </RouterLink>
                       </Box>
+                      <br/>
+
+                      <Box display="inline-block" className="text-base font-light mt-2 text-gray-900 hover:text-gray-700">
+                        <RouterLink to={`swap/remove/${tokenX}/${tokenY}`} activeClassName="border-b-2 border-indigo-500 pt-6">
+                          Remove Liquidity from {tokenX}-{tokenY}
+                        </RouterLink>
+                      </Box>
                     </div>
                   </div>
                 </div>

@@ -4,6 +4,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import { Home } from './home';
 import { Swap } from './swap';
 import { AddSwapLiquidity } from './add-swap-liquidity';
+import { RemoveSwapLiquidity } from './remove-swap-liquidity';
 import { Auctions } from './auctions';
 import { Governance } from './governance';
 import { NewVault } from './new-vault';
@@ -25,6 +26,7 @@ export function Routes() {
       <Route exact path="/vaults" component={Home} />
       <Route exact path="/swap" component={Swap} />
       <Route exact path="/swap/add/:currencyIdA/:currencyIdB" component={AddSwapLiquidity} />
+      <Route exact path="/swap/remove/:currencyIdA/:currencyIdB" component={RemoveSwapLiquidity} />
 
       <Route exact path="/auctions" component={Auctions} />
       <Route exact path="/governance" component={Governance} />
