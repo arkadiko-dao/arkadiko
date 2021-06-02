@@ -50,7 +50,9 @@ const contracts: Contract[] = [
   { name: 'arkadiko-stake-pool-diko-v1-1' },
 
   { name: 'arkadiko-auction-engine-v1-1' },
-  { name: 'arkadiko-liquidator-v1-1' }
+  { name: 'arkadiko-liquidator-v1-1' },
+
+  { name: 'arkadiko-mock-stacker-v1-1' }
 ];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');

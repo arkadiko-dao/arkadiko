@@ -10,6 +10,7 @@
 (define-constant ERR-NO-CONTRACT-CHANGES u32)
 (define-constant ERR-WRONG-TOKEN u33)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u34)
+(define-constant ERR-BLOCK-HEIGHT-NOT-REACHED u35)
 (define-constant ERR-NOT-AUTHORIZED u3401)
 (define-constant STATUS-OK u3200)
 
@@ -228,7 +229,7 @@
     )
     (asserts! (not (is-eq (get id proposal) u0)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-open proposal) true) (err ERR-NOT-AUTHORIZED))
-    (asserts! (>= block-height (get end-block-height proposal)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (>= block-height (get end-block-height proposal)) (err ERR-BLOCK-HEIGHT-NOT-REACHED))
 
     (map-set proposals
       { id: proposal-id }
@@ -292,6 +293,21 @@
         (ok true)
       )
       (ok false)
+    )
+  )
+)
+
+;; adds a new contract, only new ones allowed
+(define-public (add-contract-address (name (string-ascii 256)) (address principal) (qualified-name principal))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (if (is-some (contract-call? .arkadiko-dao get-contract-address-by-name name))
+      (ok false)
+      (begin
+        (try! (contract-call? .arkadiko-dao set-contract-address name address qualified-name))
+        (ok true)
+      )
     )
   )
 )

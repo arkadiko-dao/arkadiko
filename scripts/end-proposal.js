@@ -1,6 +1,6 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-const CONTRACT_NAME = 'dao';
+const CONTRACT_NAME = 'arkadiko-governance-v1-1';
 const FUNCTION_NAME = 'end-proposal';
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
