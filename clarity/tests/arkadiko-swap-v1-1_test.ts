@@ -91,8 +91,8 @@ Clarinet.test({
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd"),
         types.ascii("DIKO-xUSD"),
-        types.uint(5000000000), // 5000
-        types.uint(1000000000), // 1000
+        types.uint(5000 * 1000000), // 5000
+        types.uint(1000 * 1000000), // 1000
       ], deployer.address),
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
@@ -101,19 +101,19 @@ Clarinet.test({
       types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token")
     ], deployer.address);
-    call.result.expectOk().expectList()[0].expectUint(5000000000);
-    call.result.expectOk().expectList()[1].expectUint(1000000000);
+    call.result.expectOk().expectList()[0].expectUint(5000 * 1000000);
+    call.result.expectOk().expectList()[1].expectUint(1000 * 1000000);
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-swap-v1-1", "swap-x-for-y", [
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"),
-        types.uint(200000), // 0.2
-        types.uint(10000), // 0.01
+        types.uint(20 * 100), // 2
+        types.uint(1 * 100), // 1
       ], deployer.address),
     ]);
     block.receipts[0].result.expectOk().expectList()[0].expectUint(20);
-    block.receipts[0].result.expectOk().expectList()[1].expectUint(398780000);
+    block.receipts[0].result.expectOk().expectList()[1].expectUint(3980000);
 
     call = chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-balances", [
       types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
@@ -121,11 +121,8 @@ Clarinet.test({
     ], deployer.address);
 
      // 5000 + 0.2
-    call.result.expectOk().expectList()[0].expectUint(5000200000);
-
-    // TODO: now it's 601.22 which must be wrong
-    // DIKO price went from $0.2 to $0.12...
-    call.result.expectOk().expectList()[1].expectUint(601220000); 
+    call.result.expectOk().expectList()[0].expectUint(5000002000);
+    call.result.expectOk().expectList()[1].expectUint(996020000); 
 
   },
 });
