@@ -108,21 +108,28 @@ Clarinet.test({
       Tx.contractCall("arkadiko-swap-v1-1", "swap-x-for-y", [
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"),
-        types.uint(20 * 100), // 2
-        types.uint(1 * 100), // 1
+        types.uint(200 * 100), // 200
+        types.uint(38 * 100), // 38 (should get ~40)
       ], deployer.address),
     ]);
-    block.receipts[0].result.expectOk().expectList()[0].expectUint(20);
-    block.receipts[0].result.expectOk().expectList()[1].expectUint(3980000);
+    block.receipts[0].result.expectOk().expectList()[0].expectUint(20000);
+
+    // Price was $0.2 per DIKO, we sold 200 
+    // K = 5000 * 1000 = 5m
+    // 5m / 5200 = 961.5384 - so we would get 38.4616
+    // But we got more (38.87)..
+    block.receipts[0].result.expectOk().expectList()[1].expectUint(39870000);
+
 
     call = chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-balances", [
       types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token")
     ], deployer.address);
+    call.result.expectOk().expectList()[0].expectUint(5000020000);
 
-     // 5000 + 0.2
-    call.result.expectOk().expectList()[0].expectUint(5000002000);
-    call.result.expectOk().expectList()[1].expectUint(996020000); 
+    // 5m / 5200 = 961.5384
+    // Now we only have 960.13 left
+    call.result.expectOk().expectList()[1].expectUint(960130000); 
 
   },
 });
