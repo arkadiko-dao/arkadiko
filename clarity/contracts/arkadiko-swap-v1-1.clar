@@ -236,8 +236,8 @@
     )
 
     (asserts! (<= percent u100) (err u5))
-    (asserts! (is-ok (as-contract (contract-call? token-x-trait transfer withdrawal-x contract-address tx-sender none))) transfer-x-failed-err)
-    (asserts! (is-ok (as-contract (contract-call? token-y-trait transfer withdrawal-y contract-address tx-sender none))) transfer-y-failed-err)
+    (asserts! (is-ok (contract-call? token-x-trait transfer withdrawal-x contract-address tx-sender none)) transfer-x-failed-err)
+    (asserts! (is-ok (contract-call? token-y-trait transfer withdrawal-y contract-address tx-sender none)) transfer-y-failed-err)
 
     ;; (unwrap-panic (decrease-shares token-x token-y tx-sender withdrawal)) ;; should never fail, you know...
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-updated)
