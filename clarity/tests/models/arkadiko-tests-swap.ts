@@ -27,6 +27,21 @@ class Swap {
     ], this.deployer.address);
   }
 
+  getFees(tokenX: string, tokenY: string) {
+    return this.chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-fees", [
+      types.principal(tokenX),
+      types.principal(tokenY)
+    ], this.deployer.address);
+  }
+
+  getPosition(user: Account, tokenX: string, tokenY: string, pool: string) {
+    return this.chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-position", [
+      types.principal(tokenX),
+      types.principal(tokenY),
+      types.principal(pool),
+    ], this.deployer.address);
+  }
+
   createPair(user: Account, tokenX: string, tokenY: string, pool: string, name: string, balanceX: number, balanceY: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-swap-v1-1", "create-pair", [
@@ -73,6 +88,18 @@ class Swap {
         types.principal(tokenY),
         types.uint(dx * 1000000), // 200
         types.uint(dyMin * 1000000), // 38 (should get ~40)
+      ], user.address),
+    ]);
+    return block.receipts[0].result;
+  }
+
+  swapYForX(user: Account, tokenX: string, tokenY: string, dy: number, dxMin: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-swap-v1-1", "swap-y-for-x", [
+        types.principal(tokenX),
+        types.principal(tokenY),
+        types.uint(dy * 1000000), // 200
+        types.uint(dxMin * 1000000), // 38 (should get ~40)
       ], user.address),
     ]);
     return block.receipts[0].result;

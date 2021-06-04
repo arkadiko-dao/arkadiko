@@ -83,3 +83,28 @@ class XstxManager {
   }
 }
 export { XstxManager };
+
+// ---------------------------------------------------------
+// DIKO-xUSD LP
+// ---------------------------------------------------------
+
+class DikoXusdPoolToken {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  balanceOf(wallet: string) {
+    return this.chain.callReadOnlyFn("arkadiko-swap-token-diko-xusd", "get-balance", [
+      types.principal(wallet),
+    ], this.deployer.address);
+  }
+  
+  totalSupply() {
+    return this.chain.callReadOnlyFn("", "get-total-supply", [], this.deployer.address);
+  }
+}
+export { DikoXusdPoolToken };

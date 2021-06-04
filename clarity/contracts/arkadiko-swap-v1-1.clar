@@ -218,6 +218,24 @@
   )
 )
 
+;; TODO: can be read-only once bug with traits is fixed
+(define-public (get-position (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (swap-token-trait <swap-token>))
+    (let
+    (
+      (token-x (contract-of token-x-trait))
+      (token-y (contract-of token-y-trait))
+      (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
+      (balance-x (get balance-x pair))
+      (balance-y (get balance-y pair))
+      (shares (unwrap-panic (contract-call? swap-token-trait get-balance tx-sender)))
+      (shares-total (get shares-total pair))
+      (withdrawal-x (/ (* shares balance-x) shares-total))
+      (withdrawal-y (/ (* shares balance-y) shares-total))
+    )
+    (ok (list withdrawal-x withdrawal-y))
+  )
+)
+
 ;; ;; reduce the amount of liquidity the sender provides to the pool
 ;; ;; to close, use u100
 (define-public (reduce-position (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (swap-token-trait <swap-token>) (percent uint))
@@ -267,9 +285,9 @@
     (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
     (balance-x (get balance-x pair))
     (balance-y (get balance-y pair))
-    (dx-with-fees (/ (* u997 dx) u1000))
+    (dx-with-fees (/ (* u997 dx) u1000)) ;; 0.3% fee for LPs
     (dy (/ (* balance-y dx-with-fees) (+ balance-x dx-with-fees)))
-    (fee (/ (* u5 dx) u10000))
+    (fee (/ (* u5 dx) u10000)) ;; 0.05% fee for protocol
     (pair-updated
       (merge pair
         {
@@ -311,9 +329,9 @@
     (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
     (balance-x (get balance-x pair))
     (balance-y (get balance-y pair))
-    (dy-with-fees (/ (* u997 dy) u1000))
+    (dy-with-fees (/ (* u997 dy) u1000)) ;; 0.3% fee for LPs
     (dx (/ (* balance-x dy-with-fees) (+ balance-y dy-with-fees)))
-    (fee (/ (* u5 dy) u10000))
+    (fee (/ (* u5 dy) u10000)) ;; 0.05% fee for protocol
     (pair-updated (merge pair {
       balance-x: (- (get balance-x pair) dx),
       balance-y: (+ (get balance-y pair) dy),
