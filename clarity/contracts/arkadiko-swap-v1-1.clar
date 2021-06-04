@@ -138,6 +138,16 @@
       }))
     )
     (asserts! (and (> x u0) (> new-y u0)) (err ERR-INVALID-LIQUIDITY))
+
+    (if (is-eq (unwrap-panic (contract-call? token-x-trait get-symbol)) "wSTX")
+      (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token x tx-sender))
+      false
+    )
+    (if (is-eq (unwrap-panic (contract-call? token-y-trait get-symbol)) "wSTX")
+      (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token y tx-sender))
+      false
+    )
+
     (asserts! (is-ok (contract-call? token-x-trait transfer x tx-sender contract-address none)) transfer-x-failed-err)
     (asserts! (is-ok (contract-call? token-y-trait transfer new-y tx-sender contract-address none)) transfer-y-failed-err)
 
@@ -272,9 +282,20 @@
     )
   )
     (asserts! (< (* u10000 min-dy) dy) too-much-slippage-err)
+    ;; if token X is wrapped STX (i.e. the sender needs to exchange STX for wSTX)
+    (if (is-eq (unwrap-panic (contract-call? token-x-trait get-symbol)) "wSTX")
+      (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token dx tx-sender))
+      false
+    )
 
     (asserts! (is-ok (contract-call? token-x-trait transfer (* u10000 dx) tx-sender (as-contract tx-sender) none)) transfer-x-failed-err)
     (try! (contract-call? token-y-trait transfer dy (as-contract tx-sender) tx-sender none))
+
+    ;; if token Y is wrapped STX, need to burn it
+    (if (is-eq (unwrap-panic (contract-call? token-y-trait get-symbol)) "wSTX")
+      (try! (contract-call? .arkadiko-dao burn-token .wrapped-stx-token dy tx-sender))
+      false
+    )
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-updated)
     (print { object: "pair", action: "swap-x-for-y", data: pair-updated })
@@ -302,10 +323,20 @@
     }))
   )
     (asserts! (< (* u10000 min-dx) dx) too-much-slippage-err)
+    ;; if token Y is wrapped STX (i.e. the sender needs to exchange STX for wSTX)
+    (if (is-eq (unwrap-panic (contract-call? token-y-trait get-symbol)) "wSTX")
+      (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token dy tx-sender))
+      false
+    )
 
-    ;; TODO: check that the amount transfered in matches the amount requested
     (asserts! (is-ok (contract-call? token-x-trait transfer dx (as-contract tx-sender) tx-sender none)) transfer-x-failed-err)
     (asserts! (is-ok (contract-call? token-y-trait transfer (* u10000 dy) tx-sender (as-contract tx-sender) none)) transfer-y-failed-err)
+
+    ;; if token X is wrapped STX, need to burn it
+    (if (is-eq (unwrap-panic (contract-call? token-x-trait get-symbol)) "wSTX")
+      (try! (contract-call? .arkadiko-dao burn-token .wrapped-stx-token dx tx-sender))
+      false
+    )
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-updated)
     (print { object: "pair", action: "swap-y-for-x", data: pair-updated })

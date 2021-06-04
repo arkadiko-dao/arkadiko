@@ -1,11 +1,11 @@
 (impl-trait .arkadiko-swap-trait-v1.swap-trait)
 
-(define-fungible-token diko-xusd)
+(define-fungible-token wstx-xusd)
 
 (define-constant ERR-NOT-AUTHORIZED u21401)
 
 (define-public (transfer (amount uint) (sender principal) (recipient principal) (memo (optional (buff 34))))
-  (match (ft-transfer? diko-xusd amount sender recipient)
+  (match (ft-transfer? wstx-xusd amount sender recipient)
     response (begin
       (print memo)
       (ok response)
@@ -15,11 +15,11 @@
 )
 
 (define-read-only (get-name)
-  (ok "DIKO xUSD LP Token")
+  (ok "wSTX xUSD LP Token")
 )
 
 (define-read-only (get-symbol)
-  (ok "DIKO-xUSD")
+  (ok "wSTX-xUSD")
 )
 
 (define-read-only (get-decimals)
@@ -27,19 +27,19 @@
 )
 
 (define-read-only (get-balance (owner principal))
-  (ok (ft-get-balance diko-xusd owner))
+  (ok (ft-get-balance wstx-xusd owner))
 )
 
 (define-read-only (get-total-supply)
-  (ok (ft-get-supply diko-xusd))
+  (ok (ft-get-supply wstx-xusd))
 )
 
 (define-read-only (get-token-uri)
-  (ok (some u"https://arkadiko.finance/tokens/diko-xusd-token.json"))
+  (ok (some u"https://arkadiko.finance/tokens/wstx-xusd-token.json"))
 )
 ;; {
-;;   "name":"DIKO-xUSD",
-;;   "description":"DIKO-xUSD Arkadiko LP token",
+;;   "name":"wSTX-xUSD",
+;;   "description":"wSTX-xUSD Arkadiko LP token",
 ;;   "image":"url",
 ;;   "vector":"url"
 ;; }
@@ -65,7 +65,7 @@
     (print amount)
     ;; TODO - make dynamic
     ;; (asserts! (is-eq contract-caller .arkadiko-swap-v1-1) (err no-acccess-err))
-    (ft-mint? diko-xusd amount recipient)
+    (ft-mint? wstx-xusd amount recipient)
   )
 )
 
@@ -79,6 +79,6 @@
     (print amount)
     ;; TODO - make dynamic
     ;; (asserts! (is-eq contract-caller .arkadiko-swap-v1-1) (err no-acccess-err))
-    (ft-burn? diko-xusd amount recipient)
+    (ft-burn? wstx-xusd amount recipient)
   )
 )
