@@ -32,9 +32,6 @@ export const Governance = () => {
         proposer: string,
         forVotes: number,
         against: number,
-        token: string,
-        type: string,
-        collateralType: string,
         changes: object[],
         isOpen: boolean,
         startBlockHeight: number,
@@ -49,10 +46,7 @@ export const Governance = () => {
             proposer: element.value['proposer'].value,
             forVotes: element.value['yes-votes'].value,
             against: element.value['no-votes'].value,
-            token: element.value['token'].value,
-            collateralType: element.value['collateral-type'].value,
-            type: element.value['type'].value,
-            changes: extractChanges(element.value['changes']),
+            changes: extractChanges(element.value['contract-changes']),
             isOpen: element.value['is-open'].value,
             startBlockHeight: element.value['start-block-height'].value,
             endBlockHeight: element.value['end-block-height'].value
@@ -62,8 +56,11 @@ export const Governance = () => {
       setProposals(serializedProposals);
     };
     const extractChanges = (changes) => {
-      console.log(changes);
-      return [];
+      let newChanges = [];
+      changes['value'].forEach((change) => {
+        newChanges.push(change['value']);
+      });
+      return newChanges;
     };
     if (mounted) {
       void getData();

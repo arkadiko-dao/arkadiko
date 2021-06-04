@@ -1,6 +1,6 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-const CONTRACT_NAME = 'oracle';
+const CONTRACT_NAME = 'arkadiko-oracle-v1-1';
 const FUNCTION_NAME = 'update-price';
 const tx = require('@stacks/transactions');
 const BN = require('bn.js');
@@ -12,7 +12,7 @@ const updateDiko = async () => {
     contractAddress: CONTRACT_ADDRESS,
     contractName: CONTRACT_NAME,
     functionName: FUNCTION_NAME,
-    functionArgs: [tx.stringAsciiCV('DIKO'), tx.uintCV(new BN(0.1 * 100))],
+    functionArgs: [tx.stringAsciiCV('DIKO'), tx.uintCV(new BN(0.25 * 100))],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network

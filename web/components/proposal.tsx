@@ -1,22 +1,16 @@
 import React from 'react';
 import { ProposalProps } from './proposal-group';
 import { NavLink as RouterLink } from 'react-router-dom';
-import { typeToReadableName, deductTitle, changeKeyToHumanReadable } from '@common/proposal-utils';
+import { deductTitle } from '@common/proposal-utils';
 
-export const Proposal: React.FC<ProposalProps> = ({ id, changes, proposer, type, isOpen, collateralType, endBlockHeight }) => {
+export const Proposal: React.FC<ProposalProps> = ({ id, changes, proposer, isOpen, endBlockHeight }) => {
   return (
     <li>
       <RouterLink to={`governance/${id}`} exact className="block hover:bg-gray-50">
         <div className="px-4 py-4 sm:px-6">
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium text-indigo-600 truncate">
-              {type === 'change_risk_parameter' ? (
-                `${typeToReadableName(type)} "${changeKeyToHumanReadable(changes[0].key)}" ${deductTitle(type)} ${collateralType?.toUpperCase()}`
-              ) : type === 'add_collateral_type' ? (
-                `${deductTitle(type)} ${collateralType?.toUpperCase()}`
-              ) : (
-                `${deductTitle(type)}`
-              )}
+              Change contract {deductTitle(changes)}
             </p>
             <div className="ml-2 flex-shrink-0 flex">
               {isOpen ? (
