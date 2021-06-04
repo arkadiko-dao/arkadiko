@@ -40,7 +40,7 @@
     balance-y: uint,
     fee-balance-x: uint,
     fee-balance-y: uint,
-    fee-to-address: (optional principal),
+    fee-to-address: principal,
     swap-token: principal,
     name: (string-ascii 32),
   }
@@ -195,7 +195,7 @@
         balance-y: u0,
         fee-balance-x: u0,
         fee-balance-y: u0,
-        fee-to-address: none,
+        fee-to-address: (contract-call? .arkadiko-dao get-payout-address),
         swap-token: (contract-of swap-token-trait),
         name: pair-name,
       })
@@ -275,9 +275,7 @@
         {
           balance-x: (+ balance-x dx),
           balance-y: (- balance-y dy),
-          fee-balance-x: (if (is-some (get fee-to-address pair))  ;; only collect fee when fee-to-address is set
-            (+ fee (get fee-balance-x pair))
-            (get fee-balance-x pair))
+          fee-balance-x: (+ fee (get fee-balance-x pair))
         }
       )
     )
@@ -319,9 +317,7 @@
     (pair-updated (merge pair {
       balance-x: (- (get balance-x pair) dx),
       balance-y: (+ (get balance-y pair) dy),
-      fee-balance-y: (if (is-some (get fee-to-address pair))  ;; only collect fee when fee-to-address is set
-        (+ fee (get fee-balance-y pair))
-        (get fee-balance-y pair))
+      fee-balance-y: (+ fee (get fee-balance-y pair))
     }))
   )
     (asserts! (< min-dx dx) too-much-slippage-err)
@@ -355,22 +351,7 @@
 
     (map-set pairs-data-map
       { token-x: token-x, token-y: token-y }
-      (merge pair { fee-to-address: (some address) })
-    )
-    (ok true)
-  )
-)
-
-;; ;; clear the contract fee address
-(define-public (reset-fee-to-address (token-x principal) (token-y principal))
-  (let (
-    (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
-  )
-    (asserts! (is-eq tx-sender .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
-
-    (map-set pairs-data-map
-      { token-x: token-x, token-y: token-y }
-      (merge pair { fee-to-address: none })
+      (merge pair { fee-to-address: address })
     )
     (ok true)
   )
@@ -397,7 +378,7 @@
       (token-x (contract-of token-x-trait))
       (token-y (contract-of token-y-trait))
       (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
-      (address (unwrap-panic (get fee-to-address pair)))
+      (address (get fee-to-address pair))
       (fee-x (get fee-balance-x pair))
       (fee-y (get fee-balance-y pair))
     )
