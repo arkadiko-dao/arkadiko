@@ -257,7 +257,8 @@
     (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
     (balance-x (get balance-x pair))
     (balance-y (get balance-y pair))
-    (dy (* u10000 (/ (* u997 balance-y dx) (+ (* u1000 balance-x) (* u997 dx)))))
+    (dx-with-fees (/ (* u997 dx) u1000))
+    (dy (/ (* balance-y dx-with-fees) (+ balance-x dx-with-fees)))
     (fee (/ (* u5 dx) u10000))
     (pair-updated
       (merge pair
@@ -271,9 +272,9 @@
       )
     )
   )
-    (asserts! (< (* u10000 min-dy) dy) too-much-slippage-err)
+    (asserts! (< min-dy dy) too-much-slippage-err)
 
-    (asserts! (is-ok (contract-call? token-x-trait transfer (* u10000 dx) tx-sender (as-contract tx-sender) none)) transfer-x-failed-err)
+    (asserts! (is-ok (contract-call? token-x-trait transfer dx tx-sender (as-contract tx-sender) none)) transfer-x-failed-err)
     (try! (contract-call? token-y-trait transfer dy (as-contract tx-sender) tx-sender none))
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-updated)
@@ -291,7 +292,8 @@
     (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
     (balance-x (get balance-x pair))
     (balance-y (get balance-y pair))
-    (dx (* u10000 (/ (* u997 balance-x dy) (+ (* u1000 balance-y) (* u997 dy)))))
+    (dy-with-fees (/ (* u997 dy) u1000))
+    (dx (/ (* balance-x dy-with-fees) (+ balance-y dy-with-fees)))
     (fee (/ (* u5 dy) u10000))
     (pair-updated (merge pair {
       balance-x: (- (get balance-x pair) dx),
@@ -301,11 +303,11 @@
         (get fee-balance-y pair))
     }))
   )
-    (asserts! (< (* u10000 min-dx) dx) too-much-slippage-err)
+    (asserts! (< min-dx dx) too-much-slippage-err)
 
     ;; TODO: check that the amount transfered in matches the amount requested
     (asserts! (is-ok (contract-call? token-x-trait transfer dx (as-contract tx-sender) tx-sender none)) transfer-x-failed-err)
-    (asserts! (is-ok (contract-call? token-y-trait transfer (* u10000 dy) tx-sender (as-contract tx-sender) none)) transfer-y-failed-err)
+    (asserts! (is-ok (contract-call? token-y-trait transfer dy tx-sender (as-contract tx-sender) none)) transfer-y-failed-err)
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-updated)
     (print { object: "pair", action: "swap-y-for-x", data: pair-updated })

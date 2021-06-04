@@ -108,8 +108,77 @@ Clarinet.test({
       Tx.contractCall("arkadiko-swap-v1-1", "swap-x-for-y", [
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"),
-        types.uint(200 * 100), // 200
-        types.uint(38 * 100), // 38 (should get ~40)
+        types.uint(200 * 1000000), // 200
+        types.uint(38 * 1000000), // 38 (should get ~40)
+      ], deployer.address),
+    ]);
+    
+    // 200 DIKO in at $0.2, 
+    block.receipts[0].result.expectOk().expectList()[0].expectUint(200000000); 
+    // Almost $40 without fees
+    block.receipts[0].result.expectOk().expectList()[1].expectUint(38350578); 
+
+
+
+    call = chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-balances", [
+      types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+      types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token")
+    ], deployer.address);
+    call.result.expectOk().expectList()[0].expectUint(5200000000);
+    call.result.expectOk().expectList()[1].expectUint(961649422);
+
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-swap-v1-1", "swap-x-for-y", [
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"),
+        types.uint(200 * 1000000), // 200
+        types.uint(35 * 1000000), // 35
+      ], deployer.address),
+    ]);
+    
+    // 200 DIKO in at $0.2, 
+    block.receipts[0].result.expectOk().expectList()[0].expectUint(200000000); 
+    // Almost $40 without fees
+    block.receipts[0].result.expectOk().expectList()[1].expectUint(35513741); 
+  
+
+
+  },
+});
+
+
+Clarinet.test({
+  name: "swap: LP holder fees",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-swap-v1-1", "create-pair", [
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd"),
+        types.ascii("DIKO-xUSD"),
+        types.uint(5000 * 1000000), // 5000
+        types.uint(1000 * 1000000), // 1000
+      ], deployer.address),
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    let call = chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-balances", [
+      types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+      types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token")
+    ], deployer.address);
+    call.result.expectOk().expectList()[0].expectUint(5000 * 1000000);
+    call.result.expectOk().expectList()[1].expectUint(1000 * 1000000);
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-swap-v1-1", "swap-x-for-y", [
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"),
+        types.uint(200 * 1000000), // 200
+        types.uint(38 * 1000000), // 38 (should get ~40)
       ], deployer.address),
     ]);
     block.receipts[0].result.expectOk().expectList()[0].expectUint(20000);
@@ -118,18 +187,18 @@ Clarinet.test({
     // K = 5000 * 1000 = 5m
     // 5m / 5200 = 961.5384 - so we would get 38.4616
     // But we got more (38.87)..
-    block.receipts[0].result.expectOk().expectList()[1].expectUint(39870000);
+    block.receipts[0].result.expectOk().expectList()[1].expectUint(38350578);
 
 
     call = chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-balances", [
       types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token")
     ], deployer.address);
-    call.result.expectOk().expectList()[0].expectUint(5000020000);
+    call.result.expectOk().expectList()[0].expectUint(5200000000);
 
-    // 5m / 5200 = 961.5384
-    // Now we only have 960.13 left
-    call.result.expectOk().expectList()[1].expectUint(960130000); 
+    // 5m / 5200 = 961.5384 left as xUSD
+    // But we only have 960.13 left...
+    call.result.expectOk().expectList()[1].expectUint(961649422); 
 
   },
 });
