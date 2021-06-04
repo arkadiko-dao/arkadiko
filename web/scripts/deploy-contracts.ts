@@ -33,6 +33,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-collateral-types-v1-1' },
   { name: 'arkadiko-oracle-v1-1' },
   { name: 'arkadiko-token' },
+  { name: 'wrapped-stx-token' },
   { name: 'arkadiko-dao' },
   { name: 'arkadiko-governance-v1-1' },
   { name: 'arkadiko-diko-guardian-v1-1' },
@@ -41,6 +42,7 @@ const contracts: Contract[] = [
   { name: 'xusd-token' },
   { name: 'xstx-token' },
   { name: 'arkadiko-swap-token-diko-xusd' },
+  { name: 'arkadiko-swap-token-wstx-xusd' },
 
   { name: 'arkadiko-vault-data-v1-1' },
   { name: 'arkadiko-vault-rewards-v1-1' },
@@ -53,7 +55,9 @@ const contracts: Contract[] = [
   { name: 'arkadiko-stake-pool-diko-v1-1' },
 
   { name: 'arkadiko-auction-engine-v1-1' },
-  { name: 'arkadiko-liquidator-v1-1' }
+  { name: 'arkadiko-liquidator-v1-1' },
+
+  { name: 'arkadiko-mock-stacker-v1-1' }
 ];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');

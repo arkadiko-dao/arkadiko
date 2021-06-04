@@ -6,9 +6,6 @@ export interface ProposalProps {
   proposer: string;
   forVotes: number;
   against: number;
-  collateralType: string;
-  token: string;
-  type: string;
   startBlockHeight: number;
   endBlockHeight: number;
   changes: object[];
@@ -23,9 +20,6 @@ export const ProposalGroup: React.FC<ProposalProps[]> = ({ proposals }) => {
       proposer={proposal.proposer}
       forVotes={proposal.forVotes}
       against={proposal.against}
-      collateralType={proposal.collateralType}
-      token={proposal.token}
-      type={proposal.type}
       startBlockHeight={proposal.startBlockHeight}
       endBlockHeight={proposal.endBlockHeight}
       changes={proposal.changes}

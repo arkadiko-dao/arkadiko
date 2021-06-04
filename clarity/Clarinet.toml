@@ -87,6 +87,10 @@ path = "contracts/arkadiko-sip10-reserve-v1-1.clar"
 depends_on = ["arkadiko-stacker-trait-v1", "arkadiko-vault-data-v1-1", "arkadiko-stx-reserve-v1-1", "arkadiko-vault-rewards-v1-1"]
 path = "contracts/arkadiko-stacker-v1-1.clar"
 
+[contracts.arkadiko-mock-stacker-v1-1]
+depends_on = ["arkadiko-stacker-trait-v1", "arkadiko-vault-data-v1-1", "arkadiko-stx-reserve-v1-1", "arkadiko-vault-rewards-v1-1"]
+path = "contracts/arkadiko-mock-stacker-v1-1.clar"
+
 [contracts.arkadiko-stx-reserve-v1-1]
 depends_on = [
   "arkadiko-collateral-types-v1-1",
@@ -119,7 +123,7 @@ depends_on = ["arkadiko-stake-pool-trait-v1", "arkadiko-token", "sip-010-trait-f
 path = "contracts/arkadiko-stake-pool-diko-v1-1.clar"
 
 [contracts.arkadiko-swap-v1-1]
-depends_on = ["sip-010-trait-ft-standard", "arkadiko-swap-trait-v1"]
+depends_on = ["sip-010-trait-ft-standard", "arkadiko-swap-trait-v1", "wrapped-stx-token"]
 path = "contracts/arkadiko-swap-v1-1.clar"
 
 [contracts.arkadiko-swap-trait-v1]
@@ -129,6 +133,10 @@ path = "contracts/arkadiko-swap-trait-v1.clar"
 [contracts.arkadiko-swap-token-diko-xusd]
 depends_on = ["arkadiko-swap-trait-v1"]
 path = "contracts/arkadiko-swap-token-diko-xusd.clar"
+
+[contracts.wrapped-stx-token]
+depends_on = ["sip-010-trait-ft-standard", "arkadiko-dao"]
+path = "contracts/wrapped-stx-token.clar"
 
 [contracts.arkadiko-stake-pool-trait-v1]
 depends_on = ["sip-010-trait-ft-standard"]
