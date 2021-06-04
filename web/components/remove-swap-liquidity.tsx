@@ -24,8 +24,8 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
 
   const tokenX = match.params.currencyIdA;
   const tokenY = match.params.currencyIdB;
-  const tokenXTrait = tokenTraits[tokenX.toLowerCase()]['name'];
-  const tokenYTrait = tokenTraits[tokenY.toLowerCase()]['name'];
+  const tokenXTrait = tokenTraits[tokenX.toLowerCase()]['swap'];
+  const tokenYTrait = tokenTraits[tokenY.toLowerCase()]['swap'];
   const swapTrait = tokenTraits[`${tokenX.toLowerCase()}${tokenY.toLowerCase()}`]['name'];
   websocketTxUpdater();
 

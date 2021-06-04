@@ -65,7 +65,6 @@
 (define-public (mint-for-dao (amount uint) (recipient principal))
   (begin
     (asserts! (is-eq contract-caller .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
-    (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
     (ft-mint? wstx amount recipient)
   )
 )
@@ -74,7 +73,6 @@
 (define-public (burn-for-dao (amount uint) (sender principal))
   (begin
     (asserts! (is-eq contract-caller .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
-    (try! (ft-burn? wstx amount sender))
-    (stx-transfer? amount (as-contract tx-sender) sender)
+    (ft-burn? wstx amount sender)
   )
 )

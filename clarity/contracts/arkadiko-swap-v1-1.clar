@@ -140,11 +140,17 @@
     (asserts! (and (> x u0) (> new-y u0)) (err ERR-INVALID-LIQUIDITY))
 
     (if (is-eq (unwrap-panic (contract-call? token-x-trait get-symbol)) "wSTX")
-      (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token x tx-sender))
+      (begin
+        (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token x tx-sender))
+        (try! (stx-transfer? x tx-sender (as-contract tx-sender)))
+      )
       false
     )
     (if (is-eq (unwrap-panic (contract-call? token-y-trait get-symbol)) "wSTX")
-      (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token y tx-sender))
+      (begin
+        (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token y tx-sender))
+        (try! (stx-transfer? y tx-sender (as-contract tx-sender)))
+      )
       false
     )
 
@@ -285,6 +291,7 @@
     (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
     (balance-x (get balance-x pair))
     (balance-y (get balance-y pair))
+    (sender tx-sender)
     (dx-with-fees (/ (* u997 dx) u1000)) ;; 0.3% fee for LPs
     (dy (/ (* balance-y dx-with-fees) (+ balance-x dx-with-fees)))
     (fee (/ (* u5 dx) u10000)) ;; 0.05% fee for protocol
@@ -301,7 +308,10 @@
     (asserts! (< min-dy dy) too-much-slippage-err)
     ;; if token X is wrapped STX (i.e. the sender needs to exchange STX for wSTX)
     (if (is-eq (unwrap-panic (contract-call? token-x-trait get-symbol)) "wSTX")
-      (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token dx tx-sender))
+      (begin
+        (try! (stx-transfer? dx tx-sender (as-contract tx-sender)))
+        (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token dx tx-sender))
+      )
       false
     )
 
@@ -310,7 +320,10 @@
 
     ;; if token Y is wrapped STX, need to burn it
     (if (is-eq (unwrap-panic (contract-call? token-y-trait get-symbol)) "wSTX")
-      (try! (contract-call? .arkadiko-dao burn-token .wrapped-stx-token dy tx-sender))
+      (begin
+        (try! (contract-call? .arkadiko-dao burn-token .wrapped-stx-token dy tx-sender))
+        (try! (as-contract (stx-transfer? dy (as-contract tx-sender) sender)))
+      )
       false
     )
 
@@ -329,6 +342,7 @@
     (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
     (balance-x (get balance-x pair))
     (balance-y (get balance-y pair))
+    (sender tx-sender)
     (dy-with-fees (/ (* u997 dy) u1000)) ;; 0.3% fee for LPs
     (dx (/ (* balance-x dy-with-fees) (+ balance-y dy-with-fees)))
     (fee (/ (* u5 dy) u10000)) ;; 0.05% fee for protocol
@@ -341,7 +355,10 @@
     (asserts! (< min-dx dx) too-much-slippage-err)
     ;; if token Y is wrapped STX (i.e. the sender needs to exchange STX for wSTX)
     (if (is-eq (unwrap-panic (contract-call? token-y-trait get-symbol)) "wSTX")
-      (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token dy tx-sender))
+      (begin
+        (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token dy tx-sender))
+        (try! (stx-transfer? dy tx-sender (as-contract tx-sender)))
+      )
       false
     )
 
@@ -350,7 +367,10 @@
 
     ;; if token X is wrapped STX, need to burn it
     (if (is-eq (unwrap-panic (contract-call? token-x-trait get-symbol)) "wSTX")
-      (try! (contract-call? .arkadiko-dao burn-token .wrapped-stx-token dx tx-sender))
+      (begin
+        (try! (contract-call? .arkadiko-dao burn-token .wrapped-stx-token dx tx-sender))
+        (try! (as-contract (stx-transfer? dx (as-contract tx-sender) sender)))
+      )
       false
     )
 

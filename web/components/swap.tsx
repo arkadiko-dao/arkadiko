@@ -14,8 +14,8 @@ import { NavLink as RouterLink } from 'react-router-dom'
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
-  const [tokenX, setTokenX] = useState('DIKO');
-  const [tokenY, setTokenY] = useState('xUSD');
+  const [tokenX, setTokenX] = useState('xUSD');
+  const [tokenY, setTokenY] = useState('STX');
   const [tokenXAmount, setTokenXAmount] = useState(0.0);
   const [tokenYAmount, setTokenYAmount] = useState(0.0);
   const [balanceSelectedTokenX, setBalanceSelectedTokenX] = useState(0.0);
@@ -57,8 +57,9 @@ export const Swap: React.FC = () => {
     const resolvePair = async () => {
       setTokenBalances();
 
-      let tokenXContract = tokenTraits[tokenX.toLowerCase()]['name'];
-      let tokenYContract = tokenTraits[tokenY.toLowerCase()]['name'];
+      let tokenXContract = tokenTraits[tokenX.toLowerCase()]['swap'];
+      let tokenYContract = tokenTraits[tokenY.toLowerCase()]['swap'];
+      console.log(tokenXContract, tokenYContract);
       const json3 = await fetchPair(tokenXContract, tokenYContract);
       console.log('Pair Details:', json3);
       if (json3['success']) {
@@ -72,7 +73,7 @@ export const Swap: React.FC = () => {
       } else if (json3['value']['value']['value'] === 201) {
         const json4 = await fetchPair(tokenYContract, tokenXContract);
         if (json4['success']) {
-          console.log('found pair...');
+          console.log('found pair...', json4);
           setCurrentPair(json4['value']['value']['value']);
           setInverseDirection(true);
           const balanceX = json4['value']['value']['value']['balance-x'].value;
@@ -91,7 +92,7 @@ export const Swap: React.FC = () => {
       const balanceX = currentPair['balance-x'].value;
       const balanceY = currentPair['balance-y'].value;
       console.log(balanceX, balanceY, tokenXAmount);
-      const amount = ((996 * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
+      const amount = ((960 * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
       setTokenYAmount(amount);
     }
   }, [tokenXAmount]);
@@ -121,8 +122,8 @@ export const Swap: React.FC = () => {
   const swapTokens = async () => {
     console.log('swapping');
     let contractName = 'swap-x-for-y';
-    let tokenXTrait = tokenTraits[tokenX.toLowerCase()]['name'];
-    let tokenYTrait = tokenTraits[tokenY.toLowerCase()]['name'];
+    let tokenXTrait = tokenTraits[tokenX.toLowerCase()]['swap'];
+    let tokenYTrait = tokenTraits[tokenY.toLowerCase()]['swap'];
     if (inverseDirection) {
       contractName = 'swap-y-for-x';
       let tmpTrait = tokenXTrait;
@@ -137,8 +138,8 @@ export const Swap: React.FC = () => {
       functionArgs: [
         contractPrincipalCV(contractAddress, tokenXTrait),
         contractPrincipalCV(contractAddress, tokenYTrait),
-        uintCV(tokenXAmount * 100),
-        uintCV(tokenYAmount * 100)
+        uintCV(tokenXAmount * 1000000),
+        uintCV(tokenYAmount * 1000000)
       ],
       postConditionMode: 0x01,
       finished: data => {

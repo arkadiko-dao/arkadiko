@@ -27,16 +27,20 @@ export const availableCoinsToMint = (price:number, stxCollateral:number, current
 
 export const tokenTraits = {
   'diko': {
-    'name': 'arkadiko-token'
+    'name': 'arkadiko-token',
+    'swap': 'arkadiko-token'
   },
   'stx': {
-    'name': 'arkadiko-token'
+    'name': 'arkadiko-token',
+    'swap': 'wrapped-stx-token'
   },
   'xstx': {
-    'name': 'xstx-token'
+    'name': 'xstx-token',
+    'swap': 'xstx-token'
   },
   'xusd': {
-    'name': 'xusd-token'
+    'name': 'xusd-token',
+    'swap': 'xusd-token'
   },
   'dikoxusd': {
     'name': 'arkadiko-swap-token-diko-xusd'
