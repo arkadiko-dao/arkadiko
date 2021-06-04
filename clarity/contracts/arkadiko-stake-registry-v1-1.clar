@@ -121,7 +121,7 @@
   (map-set pools-data-map
     { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1 }
     {
-      name: "Diko",
+      name: "DIKO",
       active: true,
       activated-block: block-height,
       deactivated-block: u0,
