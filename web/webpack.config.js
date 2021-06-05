@@ -173,6 +173,7 @@ module.exports = {
   },
   devServer: {
     historyApiFallback: true,
+    disableHostCheck: true,
     contentBase: './dist',
     port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
   },
