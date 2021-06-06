@@ -1,45 +1,31 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { Box } from '@blockstack/ui';
 import { AppContext } from '@common/context';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
-import { getRPCClient } from '@common/utils';
-import { useSTXAddress } from '@common/use-stx-address';
+import { SmartContractBalance } from './smart-contract-balance';
 
 export const Balances = () => {
-  const [state, setState] = useContext(AppContext);
-  const stxAddress = useSTXAddress();
+  const [state, _] = useContext(AppContext);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const address = 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1';
-  const [stxBalance, setStxBalance] = useState(0.0);
-  const [dikoBalance, setDikoBalance] = useState(0.0);
-  const [xusdBalance, setXusdBalance] = useState(0.0);
-  const [wStxBalance, setWStxBalance] = useState(0.0);
-
-  useEffect(() => {
-    let mounted = true;
-
-    const getData = async () => {
-      console.log('wow');
-      const client = getRPCClient();
-      const url = `${client.url}/extended/v1/address/${address}/balances`;
-      const response = await fetch(url, { credentials: 'omit' });
-      const data = await response.json();
-      console.log(data);
-      setStxBalance(data.stx.balance / 1000000);
-      const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
-      if (dikoBalance) {
-        setDikoBalance(dikoBalance);
-      } else {
-        setDikoBalance(0.0);
-      }
-    };
-    if (mounted) {
-      void getData();
-    }
-
-    return () => { mounted = false; }
-  }, []);
+  const addresses = [
+    `${contractAddress}.arkadiko-stx-reserve-v1-1`,
+    `${contractAddress}.arkadiko-sip10-reserve-v1-1`,
+    `${contractAddress}.arkadiko-freddie-v1-1`,
+    `${contractAddress}.arkadiko-auction-engine-v1-1`,
+    `${contractAddress}.arkadiko-dao`,
+    `${contractAddress}.arkadiko-governance-v1-1`,
+    `${contractAddress}.arkadiko-diko-guardian-v1-1`,
+    `${contractAddress}.arkadiko-swap-v1-1`,
+  ]
+  let index = -1;
+  const contractBalances = addresses.map((address:string) => {
+    index += 1;
+    return (<SmartContractBalance
+      key={index}
+      address={address}
+    />);
+  });
 
   return (
     <Box>
@@ -83,23 +69,7 @@ export const Balances = () => {
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        <tr className="bg-white">
-                          <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-                            {address}
-                          </td>
-                          <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-                            {stxBalance}
-                          </td>
-                          <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-                            {dikoBalance}
-                          </td>
-                          <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-                            {xusdBalance}
-                          </td>
-                          <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-                            {wStxBalance}
-                          </td>
-                        </tr>
+                        {contractBalances}
                       </tbody>
                     </table>
                   </div>
