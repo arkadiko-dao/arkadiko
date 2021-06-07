@@ -2,7 +2,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Box } from '@blockstack/ui';
 import { Landing } from './landing';
-import { Container } from './home'
+import { Container } from './home';
+import { SwitchVerticalIcon } from '@heroicons/react/solid';
 import { microToReadable } from '@common/vault-utils';
 import { callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
@@ -10,7 +11,9 @@ import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { tokenTraits } from '@common/vault-utils';
-import { NavLink as RouterLink } from 'react-router-dom'
+import TokenSwapList from '@components/token-swap-list';
+import SwapSettings from '@components/swap-settings';
+import { NavLink as RouterLink } from 'react-router-dom';
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
@@ -153,88 +156,104 @@ export const Swap: React.FC = () => {
     <Box>
       {state.userData ? (
         <Container>
-          <main className="flex-1 relative pb-8 z-0 overflow-y-auto">
-            <div className="mt-8">
-              <div className="hidden sm:block">
-                <div className="flex flex-col mt-2">
-                  <h2 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+          <main className="flex-1 relative pb-8 flex flex-col items-center justify-center">
+            <div className="mt-12 w-full max-w-lg bg-white shadow rounded-lg relative z-10">
+              <div className="flex flex-col p-4">
+                <div className="flex justify-between mb-4">
+                  <h2 className="text-lg leading-6 font-medium text-gray-900">
                     Swap Tokens
                   </h2>
-
-                  <div className="mt-1 relative rounded-md shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm">
-                      </span>
-                    </div>
-                    <div className="absolute inset-y-0 right-0 flex items-center">
-                      <label htmlFor="tokenXAmount" className="sr-only">Token X</label>
-                      <select id="tokenX" name="tokenX"
-                          onChange={handleChange}
-                          value={tokenX}
-                          className="focus:ring-indigo-500 focus:border-indigo-500 h-full py-0 pl-2 pr-7 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md">
-                        <option>xUSD</option>
-                        <option>DIKO</option>
-                        <option>STX</option>
-                      </select>
-                    </div>
-                    <input type="text" name="tokenXAmount" id="tokenXAmount"
-                      value={tokenXAmount}
-                      onChange={onInputChange}
-                      className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md" placeholder="0.00" />
-                  </div>
-                  <p className="font-light ml-2">Balance: {balanceSelectedTokenX} {tokenX}</p>
-
-                  <svg className="h-5 w-5 ml-8 mt-5 mb-5" x-description="Heroicon name: solid/chevron-down" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path>
-                  </svg>
-
-                  <div className="mt-1 relative rounded-md shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm">
-                      </span>
-                    </div>
-                    <input type="text" name="tokenYAmount" id="tokenYAmount"
-                      value={tokenYAmount}
-                      disabled={true}
-                      className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md" placeholder="0.00" />
-                    <div className="absolute inset-y-0 right-0 flex items-center">
-                      <label htmlFor="tokenYAmount" className="sr-only">Token Y</label>
-                      <select id="tokenY" name="tokenY"
-                          onChange={handleChange}
-                          value={tokenY}
-                          className="focus:ring-indigo-500 focus:border-indigo-500 h-full py-0 pl-2 pr-7 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md">
-                        <option>xUSD</option>
-                        <option>DIKO</option>
-                        <option>STX</option>
-                      </select>
-                    </div>
-                  </div>
-                  <p className="font-light ml-2">Balance: {balanceSelectedTokenY} {tokenY}</p>
-                  <p className="font-light ml-2">1 {tokenY} = ~{currentPrice} {tokenX}</p>
-
-                  <div className="mt-5 ml-5 sm:flex sm:items-start sm:justify-between">
-                    <div className="max-w-xl text-sm text-gray-500">
-                      <div className="mt-5 sm:mt-0 sm:flex-shrink-0 sm:flex sm:items-right">
-                        <button type="button" onClick={() => swapTokens()} className="inline-flex items-right px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
-                          Swap
-                        </button>
-                      </div>
-
-                      <Box display="inline-block" className="text-base font-light mt-2 text-gray-900 hover:text-gray-700">
-                        <RouterLink to={`swap/add/${tokenX}/${tokenY}`} activeClassName="border-b-2 border-indigo-500 pt-6">
-                          Add Liquidity to {tokenX}-{tokenY}
-                        </RouterLink>
-                      </Box>
-                      <br/>
-
-                      <Box display="inline-block" className="text-base font-light mt-2 text-gray-900 hover:text-gray-700">
-                        <RouterLink to={`swap/remove/${tokenX}/${tokenY}`} activeClassName="border-b-2 border-indigo-500 pt-6">
-                          Remove Liquidity from {tokenX}-{tokenY}
-                        </RouterLink>
-                      </Box>
-                    </div>
-                  </div>
+                  <SwapSettings />
                 </div>
+
+                <form>
+                  <div className="rounded-md shadow-sm bg-gray-50 border border-gray-200 hover:border-gray-300 focus-within:border-indigo-200">
+                    <div className="flex items-center p-4 pb-2">
+
+                      <TokenSwapList />
+
+                      <label htmlFor="tokenXAmount" className="sr-only">Token X</label>
+                      <input 
+                        inputMode="decimal" 
+                        autoComplete="off" 
+                        autoCorrect="off" 
+                        type="text" 
+                        name="tokenXAmount" 
+                        id="tokenXAmount"
+                        pattern="^[0-9]*[.,]?[0-9]*$" 
+                        placeholder="0.0"
+                        value={tokenXAmount}
+                        onChange={onInputChange}
+                        className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1" />
+                    </div>
+
+                    <div className="flex items-center text-sm p-4 pt-0 justify-end">
+                      <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center justify-start">
+                          <p className="text-gray-500">Balance: {balanceSelectedTokenX} {tokenX}</p>
+                          {/* TODO: If balance > 0*/}
+                          <button className="ml-2 p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500">Max.</button> 
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button type="button" className="-mb-4 -ml-4 -mt-4 bg-white border border-gray-300 flex h-8 bg-white  items-center justify-center left-1/2 relative rounded-md text-gray-400 transform w-8 z-10 hover:text-indigo-700 focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-indigo-500">
+                    <SwitchVerticalIcon className="h-5 w-5" aria-hidden="true" />
+                  </button>
+
+                  <div className="rounded-md shadow-sm bg-gray-50 border border-gray-200 hover:border-gray-300 focus-within:border-indigo-200 mt-1">
+                    <div className="flex items-center p-4 pb-2">
+
+                      <TokenSwapList />
+
+                      <label htmlFor="tokenXAmount" className="sr-only">Token X</label>
+                      <input 
+                        inputMode="decimal" 
+                        autoComplete="off" 
+                        autoCorrect="off" 
+                        type="text" 
+                        name="tokenXAmount" 
+                        id="tokenXAmount"
+                        pattern="^[0-9]*[.,]?[0-9]*$" 
+                        placeholder="0.0"
+                        value={tokenXAmount}
+                        onChange={onInputChange}
+                        disabled={true}
+                        className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1 text-gray-600" />
+                    </div>
+
+                    <div className="flex items-center text-sm p-4 pt-0 justify-end">
+                      <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center justify-start">
+                          <p className="text-gray-500">Balance: {balanceSelectedTokenX} {tokenX}</p>
+                          {/* TODO: If balance > 0*/}
+                          <button className="ml-2 p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500">Max.</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="text-sm mt-2 font-semibold text-right text-gray-400">1 {tokenY} = ~{currentPrice} {tokenX}</p>
+
+                  <button type="button" onClick={() => swapTokens()} className="w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Swap
+                  </button>
+                </form>
+              </div>
+            </div>
+            <div className="-mt-4 p-4 pt-8 w-full max-w-md bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
+              <div className="space-y-2 flex flex-col">
+                <Box display="inline-block" className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
+                  <RouterLink to={`swap/add/${tokenX}/${tokenY}`}>
+                    Add Liquidity to {tokenX}-{tokenY}
+                  </RouterLink>
+                </Box>
+                <Box display="inline-block" className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
+                  <RouterLink to={`swap/remove/${tokenX}/${tokenY}`}>
+                    Remove Liquidity from {tokenX}-{tokenY}
+                  </RouterLink>
+                </Box>
               </div>
             </div>
           </main>
