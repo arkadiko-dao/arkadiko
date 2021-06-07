@@ -17,6 +17,7 @@ export const SmartContractBalance = ({ address }) => {
       const url = `${client.url}/extended/v1/address/${address}/balances`;
       const response = await fetch(url, { credentials: 'omit' });
       const data = await response.json();
+      console.log(data);
       setStxBalance(data.stx.balance / 1000000);
       const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
       if (dikoBalance) {
@@ -32,7 +33,7 @@ export const SmartContractBalance = ({ address }) => {
         setXusdBalance(0.0);
       }
 
-      const wStxBalance = data.fungible_tokens[`${contractAddress}.wrapped-arkadiko-token::wstx`];
+      const wStxBalance = data.fungible_tokens[`${contractAddress}.wrapped-stx-token::wstx`];
       if (wStxBalance) {
         setWStxBalance(wStxBalance.balance);
       } else {
