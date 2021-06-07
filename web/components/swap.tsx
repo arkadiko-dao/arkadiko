@@ -11,14 +11,14 @@ import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { tokenTraits } from '@common/vault-utils';
-import TokenSwapList from '@components/token-swap-list';
+import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import SwapSettings from '@components/swap-settings';
 import { NavLink as RouterLink } from 'react-router-dom';
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
-  const [tokenX, setTokenX] = useState('xUSD');
-  const [tokenY, setTokenY] = useState('STX');
+  const [tokenX, setTokenX] = useState(tokenList[0]);
+  const [tokenY, setTokenY] = useState(tokenList[2]);
   const [tokenXAmount, setTokenXAmount] = useState(0.0);
   const [tokenYAmount, setTokenYAmount] = useState(0.0);
   const [balanceSelectedTokenX, setBalanceSelectedTokenX] = useState(0.0);
@@ -32,8 +32,8 @@ export const Swap: React.FC = () => {
   websocketTxUpdater();
 
   const setTokenBalances = () => {
-    setBalanceSelectedTokenX(microToReadable(state.balance[tokenX.toLowerCase()]));
-    setBalanceSelectedTokenY(microToReadable(state.balance[tokenY.toLowerCase()]));
+    setBalanceSelectedTokenX(microToReadable(state.balance[tokenX['name'].toLowerCase()]));
+    setBalanceSelectedTokenY(microToReadable(state.balance[tokenY['name'].toLowerCase()]));
   };
 
   useEffect(() => {
@@ -60,8 +60,8 @@ export const Swap: React.FC = () => {
     const resolvePair = async () => {
       setTokenBalances();
 
-      let tokenXContract = tokenTraits[tokenX.toLowerCase()]['swap'];
-      let tokenYContract = tokenTraits[tokenY.toLowerCase()]['swap'];
+      let tokenXContract = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
+      let tokenYContract = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
       console.log(tokenXContract, tokenYContract);
       const json3 = await fetchPair(tokenXContract, tokenYContract);
       console.log('Pair Details:', json3);
@@ -111,22 +111,11 @@ export const Swap: React.FC = () => {
     }
   };
 
-  const handleChange = (event: { target: { name: any; value: any; }; }) => {
-    const name = event.target.name;
-    const value = event.target.value;
-
-    if (name === 'tokenX') {
-      setTokenX(value);
-    } else {
-      setTokenY(value);
-    }
-  };
-
   const swapTokens = async () => {
     console.log('swapping');
     let contractName = 'swap-x-for-y';
-    let tokenXTrait = tokenTraits[tokenX.toLowerCase()]['swap'];
-    let tokenYTrait = tokenTraits[tokenY.toLowerCase()]['swap'];
+    let tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
+    let tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
     if (inverseDirection) {
       contractName = 'swap-y-for-x';
       let tmpTrait = tokenXTrait;
@@ -170,7 +159,10 @@ export const Swap: React.FC = () => {
                   <div className="rounded-md shadow-sm bg-gray-50 border border-gray-200 hover:border-gray-300 focus-within:border-indigo-200">
                     <div className="flex items-center p-4 pb-2">
 
-                      <TokenSwapList />
+                      <TokenSwapList
+                        selected={tokenX}
+                        setSelected={setTokenX}
+                      />
 
                       <label htmlFor="tokenXAmount" className="sr-only">Token X</label>
                       <input 
@@ -190,7 +182,7 @@ export const Swap: React.FC = () => {
                     <div className="flex items-center text-sm p-4 pt-0 justify-end">
                       <div className="flex items-center justify-between w-full">
                         <div className="flex items-center justify-start">
-                          <p className="text-gray-500">Balance: {balanceSelectedTokenX} {tokenX}</p>
+                          <p className="text-gray-500">Balance: {balanceSelectedTokenX} {tokenX.name}</p>
                           {/* TODO: If balance > 0*/}
                           <button className="ml-2 p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500">Max.</button> 
                         </div>
@@ -205,7 +197,10 @@ export const Swap: React.FC = () => {
                   <div className="rounded-md shadow-sm bg-gray-50 border border-gray-200 hover:border-gray-300 focus-within:border-indigo-200 mt-1">
                     <div className="flex items-center p-4 pb-2">
 
-                      <TokenSwapList />
+                      <TokenSwapList
+                        selected={tokenY}
+                        setSelected={setTokenY}
+                      />
 
                       <label htmlFor="tokenXAmount" className="sr-only">Token X</label>
                       <input 
@@ -226,7 +221,7 @@ export const Swap: React.FC = () => {
                     <div className="flex items-center text-sm p-4 pt-0 justify-end">
                       <div className="flex items-center justify-between w-full">
                         <div className="flex items-center justify-start">
-                          <p className="text-gray-500">Balance: {balanceSelectedTokenX} {tokenX}</p>
+                          <p className="text-gray-500">Balance: {balanceSelectedTokenY} {tokenY.name}</p>
                           {/* TODO: If balance > 0*/}
                           <button className="ml-2 p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500">Max.</button>
                         </div>
@@ -234,7 +229,7 @@ export const Swap: React.FC = () => {
                     </div>
                   </div>
 
-                  <p className="text-sm mt-2 font-semibold text-right text-gray-400">1 {tokenY} = ~{currentPrice} {tokenX}</p>
+                  <p className="text-sm mt-2 font-semibold text-right text-gray-400">1 {tokenY.name} = ~{currentPrice} {tokenX.name}</p>
 
                   <button type="button" onClick={() => swapTokens()} className="w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Swap
@@ -245,13 +240,13 @@ export const Swap: React.FC = () => {
             <div className="-mt-4 p-4 pt-8 w-full max-w-md bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
               <div className="space-y-2 flex flex-col">
                 <Box display="inline-block" className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
-                  <RouterLink to={`swap/add/${tokenX}/${tokenY}`}>
-                    Add Liquidity to {tokenX}-{tokenY}
+                  <RouterLink to={`swap/add/${tokenX.name}/${tokenY.name}`}>
+                    Add Liquidity to {tokenX.name}-{tokenY.name}
                   </RouterLink>
                 </Box>
                 <Box display="inline-block" className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
-                  <RouterLink to={`swap/remove/${tokenX}/${tokenY}`}>
-                    Remove Liquidity from {tokenX}-{tokenY}
+                  <RouterLink to={`swap/remove/${tokenX.name}/${tokenY.name}`}>
+                    Remove Liquidity from {tokenX.name}-{tokenY.name}
                   </RouterLink>
                 </Box>
               </div>

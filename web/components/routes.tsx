@@ -22,7 +22,7 @@ export const routerConfig = [
 export function Routes() {
   return (
     <Switch>
-      <Route exact path="/" component={Home} />
+      <Route exact path="/" component={Swap} />
       <Route exact path="/vaults" component={Home} />
       <Route exact path="/swap" component={Swap} />
       <Route exact path="/swap/add/:currencyIdA/:currencyIdB" component={AddSwapLiquidity} />

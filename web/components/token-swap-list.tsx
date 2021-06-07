@@ -1,8 +1,8 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
 
-const tokenList = [
+export const tokenList = [
   {
     id: 1,
     name: 'xUSD',
@@ -24,9 +24,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function TokenSwapList() {
-  const [selected, setSelected] = useState(tokenList[0])
-
+export const TokenSwapList: React.FC = ({ selected, setSelected }) => {
   return (
     <Listbox value={selected} onChange={setSelected}>
       {({ open }) => (
