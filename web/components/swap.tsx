@@ -100,7 +100,7 @@ export const Swap: React.FC = () => {
   }, [tokenXAmount, slippageTolerance]);
 
   const calculateTokenYAmount = () => {
-    if (!currentPair) {
+    if (!currentPair || tokenXAmount === 0 || tokenXAmount === undefined) {
       return;
     }
 
