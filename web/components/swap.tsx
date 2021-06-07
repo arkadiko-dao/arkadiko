@@ -265,6 +265,7 @@ export const Swap: React.FC = () => {
                 {state.userData ? (
                   <button
                     type="button"
+                    disabled={tokenYAmount === 0}
                     onClick={() => swapTokens()}
                     className="w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   >
