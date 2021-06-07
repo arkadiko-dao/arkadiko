@@ -1,3 +1,7 @@
+## Version 0.9.0
+
+- Add basic swapping functionality to trade tokens (xUSD, DIKO, STX)
+
 ## Version 0.8.1
 
 - Fix governance votes from UI

@@ -7,7 +7,6 @@ import { stacksNetwork as network } from '@common/utils';
 import { callReadOnlyFunction, contractPrincipalCV, uintCV, standardPrincipalCV, cvToJSON } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
-import { TxStatus } from '@components/tx-status';
 import { websocketTxUpdater } from '@common/websocket-tx-updater';
 
 export const Stake = () => {

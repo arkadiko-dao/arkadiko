@@ -28,16 +28,21 @@ const contracts: Contract[] = [
   { name: 'arkadiko-collateral-types-trait-v1' },
   { name: 'arkadiko-stacker-trait-v1' },
   { name: 'arkadiko-stake-pool-trait-v1' },
+  { name: 'arkadiko-swap-trait-v1' },
 
   { name: 'arkadiko-collateral-types-v1-1' },
   { name: 'arkadiko-oracle-v1-1' },
   { name: 'arkadiko-token' },
+  { name: 'wrapped-stx-token' },
   { name: 'arkadiko-dao' },
   { name: 'arkadiko-governance-v1-1' },
   { name: 'arkadiko-diko-guardian-v1-1' },
+  { name: 'arkadiko-swap-v1-1' },
 
   { name: 'xusd-token' },
   { name: 'xstx-token' },
+  { name: 'arkadiko-swap-token-diko-xusd' },
+  { name: 'arkadiko-swap-token-wstx-xusd' },
 
   { name: 'arkadiko-vault-data-v1-1' },
   { name: 'arkadiko-vault-rewards-v1-1' },

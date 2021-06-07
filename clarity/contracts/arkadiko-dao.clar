@@ -230,6 +230,34 @@
   )
 
   (map-set contracts
+    { name: "stake-pool-diko-xusd" }
+    {
+      address: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7,
+      qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1
+    }
+  )
+  (map-set contracts-data
+    { qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1 }
+    {
+      active: true
+    }
+  )
+
+  (map-set contracts
+    { name: "stake-pool-wstx-xusd" }
+    {
+      address: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7,
+      qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-xusd-v1-1
+    }
+  )
+  (map-set contracts-data
+    { qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-xusd-v1-1 }
+    {
+      active: true
+    }
+  )
+
+  (map-set contracts
     { name: "stacker" }
     {
       address: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7,
@@ -301,6 +329,20 @@
   )
   (map-set contracts-data
     { qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-vault-rewards-v1-1 }
+    {
+      active: true
+    }
+  )
+
+  (map-set contracts
+    { name: "swap" }
+    {
+      address: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7,
+      qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-v1-1
+    }
+  )
+  (map-set contracts-data
+    { qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-v1-1 }
     {
       active: true
     }
