@@ -210,7 +210,7 @@ export const Swap: React.FC = () => {
                   <div className="flex items-center text-sm p-4 pt-0 justify-end">
                     <div className="flex items-center justify-between w-full">
                       <div className="flex items-center justify-start">
-                        <p className="text-gray-500">Balance: {balanceSelectedTokenX} {tokenX.name}</p>
+                        <p className="text-gray-500">Balance: {balanceSelectedTokenX.toLocaleString()} {tokenX.name}</p>
                         {balanceSelectedTokenX > 0 ? (
                           <button
                             type="button"
@@ -260,10 +260,7 @@ export const Swap: React.FC = () => {
                   <div className="flex items-center text-sm p-4 pt-0 justify-end">
                     <div className="flex items-center justify-between w-full">
                       <div className="flex items-center justify-start">
-                        <p className="text-gray-500">Balance: {balanceSelectedTokenY} {tokenY.name}</p>
-                        {balanceSelectedTokenY > 0 ? (
-                          ``
-                        ) : `` }
+                        <p className="text-gray-500">Balance: {balanceSelectedTokenY.toLocaleString()} {tokenY.name}</p>
                       </div>
                     </div>
                   </div>
