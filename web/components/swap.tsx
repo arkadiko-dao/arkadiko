@@ -268,7 +268,7 @@ export const Swap: React.FC = () => {
                 </form>
               </div>
             </div>
-            <div className="-mt-4 p-4 pt-8 w-full max-w-md bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
+            {/* <div className="-mt-4 p-4 pt-8 w-full max-w-md bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
               <div className="space-y-2 flex flex-col">
                 <Box display="inline-block" className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
                   <RouterLink to={`swap/add/${tokenX.name}/${tokenY.name}`}>
@@ -281,7 +281,7 @@ export const Swap: React.FC = () => {
                   </RouterLink>
                 </Box>
               </div>
-            </div>
+            </div> */}
           </main>
         </Container>
       ) : (
