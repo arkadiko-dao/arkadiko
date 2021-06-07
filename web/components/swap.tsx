@@ -18,7 +18,7 @@ export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
   const [tokenX, setTokenX] = useState(tokenList[0]);
   const [tokenY, setTokenY] = useState(tokenList[1]);
-  const [tokenXAmount, setTokenXAmount] = useState(0.0);
+  const [tokenXAmount, setTokenXAmount] = useState();
   const [tokenYAmount, setTokenYAmount] = useState(0.0);
   const [balanceSelectedTokenX, setBalanceSelectedTokenX] = useState(0.0);
   const [balanceSelectedTokenY, setBalanceSelectedTokenY] = useState(0.0);
