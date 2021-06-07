@@ -513,3 +513,129 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
  
 }
 });
+
+Clarinet.test({
+  name: "staking - reward distribution over time",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+  
+    // Stake funds
+    let block = chain.mineBlock([
+
+      // Stake DIKO as wallet_1
+      Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token'),
+          types.uint(100000000)
+      ], wallet_1.address)
+    ]);
+
+    for (let index = 0; index < 390; index++) {
+
+      // Advance 1 week
+      chain.mineEmptyBlock(144 * 7);
+
+      // Stake DIKO as deployer, to trigger an update of cumm-reward-per-stake
+      // Immediately unstake as we don't want deployer to get rewards
+      let block = chain.mineBlock([
+        Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
+            types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1'),
+            types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token'),
+            types.uint(1)
+        ], deployer.address),
+        Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token'),
+          types.uint(1)
+      ], deployer.address)
+      ]);
+
+      // Check pending rewards
+      let call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "get-pending-rewards", [types.principal(wallet_1.address)], wallet_1.address);
+      
+      // Print rewards, for docs
+      // console.log(call.result.expectOk())
+
+      // Check pending rewards after each year
+      switch (index)
+      {
+        case 53: call.result.expectOk().expectUint(25275696073800); break; // 25 mio
+        case 106: call.result.expectOk().expectUint(37442248053100); break; // 25 + 12.5 = 37.5 mio
+        case 159: call.result.expectOk().expectUint(43446517927900); break; // 37.5 + 6.25 = 43.75 mio
+        case 212: call.result.expectOk().expectUint(46410671373000); break; // 43.75 + 3.125 = 46.875 mio
+        case 265: call.result.expectOk().expectUint(48023054163100); break; // 46.875 + 1.5625 = 48.4375 mio
+        case 318: call.result.expectOk().expectUint(49520410163100); break; // 48.4375 + 1.5 = 49.9375 mio
+        case 371: call.result.expectOk().expectUint(51017766163100); break; // 49.9375 + 1.5 = 51.4375 mio
+        default: break;
+      }
+    }
+    
+  }
+});
+
+Clarinet.test({
+  name: "staking - reward distribution over time with multiple stakers",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+    let wallet_3 = accounts.get("wallet_3")!;
+
+    // Stake funds
+    let block = chain.mineBlock([
+
+      // Stake DIKO as wallet_1
+      Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token'),
+          types.uint(90000000) // 90
+      ], wallet_1.address),
+
+      Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token'),
+        types.uint(50000000) // 50
+      ], wallet_2.address),
+
+      Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token'),
+        types.uint(10000000) // 10
+      ], deployer.address)
+
+    ]);
+
+    for (let index = 0; index < 390; index++) {
+
+      // Advance 1 week
+      chain.mineEmptyBlock(144 * 7);
+
+      // Stake DIKO as deployer, to trigger an update of cumm-reward-per-stake
+      // Immediately unstake as we don't want deployer to get rewards
+      let block = chain.mineBlock([
+        Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
+            types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1'),
+            types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token'),
+            types.uint(1)
+        ], deployer.address),
+        Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token'),
+          types.uint(1)
+      ], deployer.address)
+      ]);
+
+      // Check pending rewards
+      let call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "get-pending-rewards", [types.principal(wallet_2.address)], wallet_2.address);
+      switch (index)
+      {
+        case 53: call.result.expectOk().expectUint(8425232024150); break; // 25 mio / 3
+        case 106: call.result.expectOk().expectUint(12480749349950); break; // 37.5 mio / 3
+        case 371: call.result.expectOk().expectUint(17005922048000); break; // 51.4375 / 3 mio
+        default: break;
+      }
+    }
+    
+  }
+});
