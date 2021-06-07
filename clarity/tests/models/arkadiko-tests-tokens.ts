@@ -34,6 +34,32 @@ export { OracleManager };
 
 
 // ---------------------------------------------------------
+// DIKO
+// ---------------------------------------------------------
+
+class DikoManager {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  balanceOf(wallet: string) {
+    return this.chain.callReadOnlyFn("arkadiko-token", "get-balance", [
+      types.principal(wallet),
+    ], this.deployer.address);
+  }
+  
+  totalSupply() {
+    return this.chain.callReadOnlyFn("arkadiko-token", "get-total-supply", [], this.deployer.address);
+  }
+}
+export { DikoManager };
+
+
+// ---------------------------------------------------------
 // xUSD
 // ---------------------------------------------------------
 

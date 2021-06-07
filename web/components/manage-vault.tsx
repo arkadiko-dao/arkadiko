@@ -148,18 +148,19 @@ export const ManageVault = ({ match }) => {
   }, [collateralType?.collateralToDebtRatio, price]);
 
   const payStabilityFee = async () => {
-    // const postConditions = [
-    //   makeStandardFungiblePostCondition(
-    //     senderAddress || '',
-    //     FungibleConditionCode.Equal,
-    //     new BN(vault.stabilityFee),
-    //     createAssetInfo(
-    //       "CONTRACT_ADDRESS",
-    //       "xusd-token",
-    //       "xUSD"
-    //     )
-    //   )
-    // ];
+    const fee = stabilityFee / 1000000;
+    const postConditions = [
+      makeStandardFungiblePostCondition(
+        senderAddress || '',
+        FungibleConditionCode.Equal,
+        new BN(fee),
+        createAssetInfo(
+          contractAddress,
+          "xusd-token",
+          "xUSD"
+        )
+      )
+    ];
 
     await doContractCall({
       network,
@@ -170,7 +171,7 @@ export const ManageVault = ({ match }) => {
         uintCV(match.params.id)
       ],
       postConditionMode: 0x01,
-      // postConditions,
+      postConditions,
       finished: data => {
         console.log('finished paying stability fee!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));

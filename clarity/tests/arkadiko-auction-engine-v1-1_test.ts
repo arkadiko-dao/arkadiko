@@ -36,7 +36,7 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 200);
 
     // Create vault - 1000 STX, 1300 xUSD
-    result = vaultManager.createVault(deployer, 1000, 1300);
+    result = vaultManager.createVault(deployer, "STX-A", 1000, 1300);
     result.expectOk().expectUint(1300000000);
 
     // Upate price to $1.5 and notify risky vault
@@ -169,7 +169,7 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 200);
 
     // Create vault
-    result = vaultManager.createVault(deployer, 1000, 1300);
+    result = vaultManager.createVault(deployer, "STX-A", 1000, 1300);
     result.expectOk().expectUint(1300000000);
 
     // Upate price and notify risky vault
@@ -247,7 +247,7 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 200);
 
     // Create vault
-    result = vaultManager.createVault(wallet_1, 1000, 1300);
+    result = vaultManager.createVault(wallet_1, "STX-A", 1000, 1300);
     result.expectOk().expectUint(1300000000);
 
     // Upate price and notify risky vault
@@ -297,7 +297,7 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 200);
 
     // Create vault
-    result = vaultManager.createVault(wallet_1, 100, 130);
+    result = vaultManager.createVault(wallet_1, "STX-A", 100, 130);
     result.expectOk().expectUint(130000000);
 
     // Update price, notify risky vault
@@ -341,7 +341,7 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 200); 
 
     // Create vault
-    result = vaultManager.createVault(wallet_1, 1000, 1300);
+    result = vaultManager.createVault(wallet_1, "STX-A", 1000, 1300);
     result.expectOk().expectUint(1300000000);
 
     // Price decrease to $1.5
@@ -376,7 +376,7 @@ Clarinet.test({
 
     // Update price and create vault
     let result = oracleManager.updatePrice("STX", 200);
-    result = vaultManager.createVault(wallet_1, 100, 130);
+    result = vaultManager.createVault(wallet_1, "STX-A", 100, 130);
     result.expectOk().expectUint(130 * 1000000);
 
     // Update price, notifiy risky vault
@@ -406,7 +406,7 @@ Clarinet.test({name: "auction engine: cannot start auction when emergency shutdo
 
     // Create vault and liquidate
     let result = oracleManager.updatePrice("STX", 200);
-    result = vaultManager.createVault(deployer, 1000, 1300);
+    result = vaultManager.createVault(deployer, "STX-A", 1000, 1300);
     result = oracleManager.updatePrice("STX", 150);
     result = vaultLiquidator.notifyRiskyVault(deployer);
 
@@ -445,7 +445,7 @@ Clarinet.test({
 
     // Create vault and liquidate
     let result = oracleManager.updatePrice("STX", 200);
-    result = vaultManager.createVault(deployer, 1000, 1300);
+    result = vaultManager.createVault(deployer, "STX-A", 1000, 1300);
     result = oracleManager.updatePrice("STX", 150);
     result = vaultLiquidator.notifyRiskyVault(deployer);
 
@@ -488,11 +488,11 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 200);
 
     // Create vault for wallet_1 - 1000 STX, 1100 xUSD
-    result = vaultManager.createVault(wallet_1, 1000, 1100);
+    result = vaultManager.createVault(wallet_1, "STX-A", 1000, 1100);
     result.expectOk().expectUint(1100000000);
 
     // Create vault for wallet_2 - 1000 STX, 1300 xUSD
-    result = vaultManager.createVault(wallet_2, 1000, 1300);
+    result = vaultManager.createVault(wallet_2, "STX-A", 1000, 1300);
     result.expectOk().expectUint(1300000000);
 
     // Upate price to $1.5 and notify risky vault 1
@@ -549,7 +549,7 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 200);
 
     // Create vault for wallet_1 - 1000 STX, 1100 xUSD
-    result = vaultManager.createVault(wallet_1, 1000, 1100);
+    result = vaultManager.createVault(wallet_1, "STX-A", 1000, 1100);
     result.expectOk().expectUint(1100000000);
 
     // Upate price to $1.5 and notify risky vault 1
@@ -588,7 +588,7 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 200);
 
     // Create vault - 1000 STX, 1300 xUSD
-    result = vaultManager.createVault(deployer, 1000, 1300);
+    result = vaultManager.createVault(deployer, "STX-A", 1000, 1300);
     result.expectOk().expectUint(1300000000);
 
     // Upate price to $1.5 and notify risky vault
@@ -638,7 +638,7 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 200);
 
     // Create vault - 1000 STX, 1300 xUSD
-    result = vaultManager.createVault(deployer, 1000, 1300);
+    result = vaultManager.createVault(deployer, "STX-A", 1000, 1300);
     result.expectOk().expectUint(1300000000);
 
     // Upate price to $1.5 and notify risky vault
@@ -690,7 +690,7 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 200);
 
     // Create vault for wallet_1 - 1000 STX, 1100 xUSD
-    result = vaultManager.createVault(deployer, 1000, 1100);
+    result = vaultManager.createVault(deployer, "STX-A", 1000, 1100);
     result.expectOk().expectUint(1100000000);
 
     // Upate price to $1.5 and notify risky vault 1
@@ -751,7 +751,7 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 200);
 
     // Create vault for wallet_1 - 1000 STX, 1100 xUSD
-    result = vaultManager.createVault(deployer, 1000, 1100);
+    result = vaultManager.createVault(deployer, "STX-A", 1000, 1100);
     result.expectOk().expectUint(1100000000);
 
     // Upate price to $1.5 and notify risky vault 1
@@ -818,11 +818,11 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 200);
 
     // Create vault - 1000 STX, 1100 xUSD
-    result = vaultManager.createVault(deployer, 1000, 1100);
+    result = vaultManager.createVault(deployer, "STX-A", 1000, 1100);
     result.expectOk().expectUint(1100000000);
 
     // Create vault - 1000 STX, 1100 xUSD
-    result = vaultManager.createVault(deployer, 1000, 1100);
+    result = vaultManager.createVault(deployer, "STX-A", 1000, 1100);
     result.expectOk().expectUint(1100000000);
 
     // Turn off stacking
