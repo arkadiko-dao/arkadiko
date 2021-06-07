@@ -26,7 +26,21 @@ export const SmartContractBalance = ({ address }) => {
       setStxBalance(data.stx.balance / 1000000);
       const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
       if (dikoBalance) {
-        setDikoBalance(dikoBalance);
+        setDikoBalance(dikoBalance.balance);
+      } else {
+        setDikoBalance(0.0);
+      }
+
+      const xusdBalance = data.fungible_tokens[`${contractAddress}.xusd-token::xusd`];
+      if (xusdBalance) {
+        setDikoBalance(xusdBalance.balance);
+      } else {
+        setDikoBalance(0.0);
+      }
+
+      const xStxBalance = data.fungible_tokens[`${contractAddress}.xstx-token::xstx`];
+      if (xStxBalance) {
+        setDikoBalance(xStxBalance.balance);
       } else {
         setDikoBalance(0.0);
       }
@@ -44,16 +58,16 @@ export const SmartContractBalance = ({ address }) => {
         {address}
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        {stxBalance}
+        {stxBalance} STX
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        {dikoBalance}
+        {dikoBalance} DIKO
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        {xusdBalance}
+        {xusdBalance} xUSD
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        {wStxBalance}
+        {wStxBalance} wSTX
       </td>
     </tr>
   )
