@@ -184,14 +184,15 @@ export const Swap: React.FC = () => {
                     />
 
                     <label htmlFor="tokenXAmount" className="sr-only">{tokenX.name}</label>
-                    <input 
+                    <input
+                      type="number"
                       inputMode="decimal" 
-                      autoComplete="off" 
-                      autoCorrect="off" 
-                      type="text" 
-                      name="tokenXAmount" 
+                      autoFocus={true}
+                      autoComplete="off"
+                      autoCorrect="off"
+                      name="tokenXAmount"
                       id="tokenXAmount"
-                      pattern="^[0-9]*[.,]?[0-9]*$" 
+                      pattern="^[0-9]*[.,]?[0-9]*$"
                       placeholder="0.0"
                       value={tokenXAmount}
                       onChange={onInputChange}
