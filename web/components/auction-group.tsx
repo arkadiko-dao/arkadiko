@@ -6,7 +6,6 @@ import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { AppContext } from '@common/context';
 import { websocketTxUpdater } from '@common/websocket-tx-updater';
-import { TxStatus } from '@components/tx-status';
 
 export interface AuctionProps {
   id: string;
