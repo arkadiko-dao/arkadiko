@@ -111,6 +111,12 @@ export const Swap: React.FC = () => {
     }
   };
 
+  const switchTokens = () => {
+    const tmpTokenX = tokenX;
+    setTokenX(tokenY);
+    setTokenY(tmpTokenX);
+  };
+
   const swapTokens = async () => {
     console.log('swapping');
     let contractName = 'swap-x-for-y';
@@ -190,7 +196,11 @@ export const Swap: React.FC = () => {
                     </div>
                   </div>
 
-                  <button type="button" className="-mb-4 -ml-4 -mt-4 bg-white border border-gray-300 flex h-8 bg-white  items-center justify-center left-1/2 relative rounded-md text-gray-400 transform w-8 z-10 hover:text-indigo-700 focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-indigo-500">
+                  <button
+                    type="button"
+                    onClick={switchTokens}
+                    className="-mb-4 -ml-4 -mt-4 bg-white border border-gray-300 flex h-8 bg-white  items-center justify-center left-1/2 relative rounded-md text-gray-400 transform w-8 z-10 hover:text-indigo-700 focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-indigo-500"
+                  >
                     <SwitchVerticalIcon className="h-5 w-5" aria-hidden="true" />
                   </button>
 
