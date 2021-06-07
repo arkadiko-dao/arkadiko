@@ -21,21 +21,21 @@ export const SmartContractBalance = ({ address }) => {
       setStxBalance(data.stx.balance / 1000000);
       const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
       if (dikoBalance) {
-        setDikoBalance(dikoBalance.balance);
+        setDikoBalance(dikoBalance.balance / 1000000);
       } else {
         setDikoBalance(0.0);
       }
 
       const xusdBalance = data.fungible_tokens[`${contractAddress}.xusd-token::xusd`];
       if (xusdBalance) {
-        setXusdBalance(xusdBalance.balance);
+        setXusdBalance(xusdBalance.balance / 1000000);
       } else {
         setXusdBalance(0.0);
       }
 
       const wStxBalance = data.fungible_tokens[`${contractAddress}.wrapped-stx-token::wstx`];
       if (wStxBalance) {
-        setWStxBalance(wStxBalance.balance);
+        setWStxBalance(wStxBalance.balance / 1000000);
       } else {
         setWStxBalance(0.0);
       }
@@ -53,16 +53,16 @@ export const SmartContractBalance = ({ address }) => {
         {address}
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        {stxBalance} STX
+        {stxBalance.toLocaleString()} STX
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        {dikoBalance} DIKO
+        {dikoBalance.toLocaleString()} DIKO
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        {xusdBalance} xUSD
+        {xusdBalance.toLocaleString()} xUSD
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        {wStxBalance} wSTX
+        {wStxBalance.toLocaleString()} wSTX
       </td>
     </tr>
   )
