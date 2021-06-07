@@ -64,7 +64,6 @@ export const Swap: React.FC = () => {
 
       let tokenXContract = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
       let tokenYContract = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
-      console.log(tokenXContract, tokenYContract);
       const json3 = await fetchPair(tokenXContract, tokenYContract);
       console.log('Pair Details:', json3);
       if (json3['success']) {
@@ -75,6 +74,7 @@ export const Swap: React.FC = () => {
         // const price = parseFloat(basePrice) + (parseFloat(basePrice) * 0.01);
         setCurrentPrice(basePrice);
         setInverseDirection(false);
+        calculateTokenYAmount();
       } else if (json3['value']['value']['value'] === 201) {
         const json4 = await fetchPair(tokenYContract, tokenXContract);
         if (json4['success']) {
@@ -85,6 +85,7 @@ export const Swap: React.FC = () => {
           const balanceY = json4['value']['value']['value']['balance-y'].value;
           const basePrice = (balanceX / balanceY).toFixed(2);
           setCurrentPrice(basePrice);
+          calculateTokenYAmount();
         }
       }
     };
@@ -94,20 +95,28 @@ export const Swap: React.FC = () => {
 
   useEffect(() => {
     if (currentPrice > 0) {
-      const balanceX = currentPair['balance-x'].value;
-      const balanceY = currentPair['balance-y'].value;
-      let amount = 0;
-
-      if (slippageTolerance === 0) {
-        amount = ((960 * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
-      } else {
-        // custom slippage set
-        let slippage = 1000 - (slippageTolerance * 100);
-        amount = ((slippage * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
-      }
-      setTokenYAmount(amount);
+      calculateTokenYAmount();
     }
   }, [tokenXAmount, slippageTolerance]);
+
+  const calculateTokenYAmount = () => {
+    if (!currentPair) {
+      return;
+    }
+
+    const balanceX = currentPair['balance-x'].value;
+    const balanceY = currentPair['balance-y'].value;
+    let amount = 0;
+
+    if (slippageTolerance === 0) {
+      amount = ((960 * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
+    } else {
+      // custom slippage set
+      let slippage = 1000 - (slippageTolerance * 100);
+      amount = ((slippage * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
+    }
+    setTokenYAmount(amount);
+  };
 
   const onInputChange = (event: { target: { name: any; value: any; }; }) => {
     const name = event.target.name;
@@ -129,7 +138,6 @@ export const Swap: React.FC = () => {
   };
 
   const swapTokens = async () => {
-    console.log('swapping');
     let contractName = 'swap-x-for-y';
     let tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
     let tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
