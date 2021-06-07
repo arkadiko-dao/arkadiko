@@ -12,7 +12,7 @@ import { useConnect } from '@stacks/connect-react';
 import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { tokenTraits } from '@common/vault-utils';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
-import SwapSettings from '@components/swap-settings';
+import { SwapSettings } from '@components/swap-settings';
 import { NavLink as RouterLink } from 'react-router-dom';
 
 export const Swap: React.FC = () => {
@@ -26,6 +26,7 @@ export const Swap: React.FC = () => {
   const [currentPrice, setCurrentPrice] = useState(0.0);
   const [currentPair, setCurrentPair] = useState();
   const [inverseDirection, setInverseDirection] = useState(false);
+  const [slippageTolerance, setSlippageTolerance] = useState(0.0);
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -94,11 +95,18 @@ export const Swap: React.FC = () => {
     if (currentPrice > 0) {
       const balanceX = currentPair['balance-x'].value;
       const balanceY = currentPair['balance-y'].value;
-      console.log(balanceX, balanceY, tokenXAmount);
-      const amount = ((960 * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
+      let amount = 0;
+
+      if (slippageTolerance === 0) {
+        amount = ((960 * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
+      } else {
+        // custom slippage set
+        let slippage = 1000 - (slippageTolerance * 100);
+        amount = ((slippage * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
+      }
       setTokenYAmount(amount);
     }
-  }, [tokenXAmount]);
+  }, [tokenXAmount, slippageTolerance]);
 
   const onInputChange = (event: { target: { name: any; value: any; }; }) => {
     const name = event.target.name;
@@ -158,7 +166,10 @@ export const Swap: React.FC = () => {
                   <h2 className="text-lg leading-6 font-medium text-gray-900">
                     Swap Tokens
                   </h2>
-                  <SwapSettings />
+                  <SwapSettings
+                    slippageTolerance={slippageTolerance}
+                    setSlippageTolerance={setSlippageTolerance}
+                  />
                 </div>
 
                 <form>
@@ -189,8 +200,13 @@ export const Swap: React.FC = () => {
                       <div className="flex items-center justify-between w-full">
                         <div className="flex items-center justify-start">
                           <p className="text-gray-500">Balance: {balanceSelectedTokenX} {tokenX.name}</p>
-                          {/* TODO: If balance > 0*/}
-                          <button className="ml-2 p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500">Max.</button> 
+                          {balanceSelectedTokenX > 0 ? (
+                            <button
+                              className="ml-2 p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                            >
+                              Max.
+                            </button>
+                          ) : `` }
                         </div>
                       </div>
                     </div>
@@ -232,8 +248,13 @@ export const Swap: React.FC = () => {
                       <div className="flex items-center justify-between w-full">
                         <div className="flex items-center justify-start">
                           <p className="text-gray-500">Balance: {balanceSelectedTokenY} {tokenY.name}</p>
-                          {/* TODO: If balance > 0*/}
-                          <button className="ml-2 p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500">Max.</button>
+                          {balanceSelectedTokenY > 0 ? (
+                            <button
+                              className="ml-2 p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                            >
+                              Max.
+                            </button>
+                          ) : `` }
                         </div>
                       </div>
                     </div>

@@ -1,16 +1,11 @@
-import React, { Fragment, useContext, useState } from 'react';
-
-import { AppContext } from '@common/context';
+import React, { Fragment } from 'react';
 import { Popover, Transition } from '@headlessui/react';
 import { CogIcon } from '@heroicons/react/solid';
 
-
-export default function SwapSettings() {
-  const [state, setState] = useContext(AppContext);
-  const [slippageTolerance] = useState(0.0);
-
-  const onInputChange = () => {
-    
+export const SwapSettings: React.FC = ({ slippageTolerance, setSlippageTolerance }) => {
+  const onInputChange = (event: { target: { name: any; value: any; }; }) => {
+    const value = event.target.value;
+    setSlippageTolerance(value);
   };
 
   return (
@@ -40,10 +35,24 @@ export default function SwapSettings() {
               <Popover.Panel className="absolute max-w-sm mt-3 px-4 right-0 sm:px-0 w-screen z-20">
                 <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                   <div className="relative bg-white p-4">
-                    <h4 className="text-base leading-6 font-medium text-gray-900">Transaction settings</h4>
+                    <h4 className="text-base leading-6 font-medium text-gray-900">Slippage Tolerance</h4>
 
                     <div className="flex items-center justify-between mt-2">
-                      <button type="button" className="inline-flex items-right px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm focus:ring-indigo-500">Auto</button>
+                      {slippageTolerance > 0 ? (
+                        <button
+                          type="button"
+                          className="text-grey inline-flex items-right px-4 py-2 border border-transparent shadow-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm focus:ring-indigo-500"
+                        >
+                          Auto
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className="text-white bg-indigo-600 inline-flex items-right px-4 py-2 border border-transparent shadow-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm focus:ring-indigo-500"
+                        >
+                          Auto
+                        </button>
+                      )}
                     
                       <div className="relative rounded-md shadow-sm flex-1 ml-2">
                         <input 
