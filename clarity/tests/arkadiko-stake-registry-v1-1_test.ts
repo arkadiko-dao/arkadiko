@@ -613,13 +613,19 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 200);
     result = vaultManager.createVault(wallet_2, "STX-A", 1000, 1300);
 
-    // Create swap pair to get LP tokens
+    // Get LP tokens
     const dikoTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"
     const xusdTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"
+    const wstxTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.wrapped-stx-token"
     const dikoXusdPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd"
+    const wstxXusdPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-wstx-xusd"
     result = swap.createPair(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, "DIKO-xUSD", 500, 100);
     result.expectOk().expectBool(true);
+    result = swap.createPair(deployer, wstxTokenAddress, xusdTokenAddress, wstxXusdPoolAddress, "wSTX-xUSD", 500, 100);
+    result.expectOk().expectBool(true);
     result = swap.addToPosition(wallet_2, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, 500, 100);
+    result.expectOk().expectBool(true);
+    result = swap.addToPosition(wallet_2, wstxTokenAddress, xusdTokenAddress, wstxXusdPoolAddress, 500, 100);
     result.expectOk().expectBool(true);
 
     // Stake funds
@@ -654,13 +660,17 @@ Clarinet.test({
       ], wallet_2.address),
 
       // Stake wSTX/xUSD LP from wallet_2
-      // TODO
-
+      Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-xusd-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-wstx-xusd'),
+        types.uint(50000000)
+      ], wallet_2.address),
     ]);
     block.receipts[0].result.expectOk().expectUint(90000000);
     block.receipts[1].result.expectOk().expectUint(50000000);
     block.receipts[2].result.expectOk().expectUint(10000000);
     block.receipts[3].result.expectOk().expectUint(50000000);
+    block.receipts[4].result.expectOk().expectUint(50000000);
 
     for (let index = 0; index < 390; index++) {
 
@@ -696,16 +706,26 @@ Clarinet.test({
         ], deployer.address),
 
         // wSTX/xUSD
-        // TODO
+        Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-xusd-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-wstx-xusd'),
+          types.uint(1)
+        ], deployer.address),
+        Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-xusd-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-wstx-xusd'),
+          types.uint(1)
+        ], deployer.address),
       ]);
 
       // Check pending rewards
       let call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "get-pending-rewards", [types.principal(wallet_2.address)], wallet_2.address);
       let callLp1 = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-pending-rewards", [types.principal(wallet_2.address)], wallet_2.address);
+      let callLp2 = chain.callReadOnlyFn("arkadiko-stake-pool-wstx-xusd-v1-1", "get-pending-rewards", [types.principal(wallet_2.address)], wallet_2.address);
 
       switch (index)
       {
-        // pool only gets 10% of total rewards, user only 33%
+        // pool gets 10% of total rewards, user only 33%
         case 53: call.result.expectOk().expectUint(842523192800); break; // 25 mio (= total rewards)
         case 106: call.result.expectOk().expectUint(1248074916450); break; // 37.5 mio 
         case 371: call.result.expectOk().expectUint(1700592160750); break; // 51.4375 mio
@@ -714,10 +734,19 @@ Clarinet.test({
 
       switch (index)
       {
-        // pool only gets 30% of total rewards
+        // pool gets 30% of total rewards
         case 53: callLp1.result.expectOk().expectUint(7582708795850); break; // 25 mio (= total rewards)
         case 106: callLp1.result.expectOk().expectUint(11232674366900); break; // 37.5 mio
         case 371: callLp1.result.expectOk().expectUint(15305329741050); break; // 51.4375 
+        default: break;
+      }
+
+      switch (index)
+      {
+        // pool gets 60% of total rewards
+        case 53: callLp2.result.expectOk().expectUint(15165417619500); break; // 25 mio (= total rewards)
+        case 106: callLp2.result.expectOk().expectUint(22465348790200); break; // 37.5 mio
+        case 371: callLp2.result.expectOk().expectUint(30610659606300); break; // 51.4375 
         default: break;
       }
 
