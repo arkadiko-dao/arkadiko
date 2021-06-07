@@ -575,13 +575,14 @@ Clarinet.test({
       // Check pending rewards after each year
       switch (index)
       {
-        case 53: call.result.expectOk().expectUint(25275696073800); break; // 25 mio
-        case 106: call.result.expectOk().expectUint(37442248053100); break; // 25 + 12.5 = 37.5 mio
-        case 159: call.result.expectOk().expectUint(43446517927900); break; // 37.5 + 6.25 = 43.75 mio
-        case 212: call.result.expectOk().expectUint(46410671373000); break; // 43.75 + 3.125 = 46.875 mio
-        case 265: call.result.expectOk().expectUint(48023054163100); break; // 46.875 + 1.5625 = 48.4375 mio
-        case 318: call.result.expectOk().expectUint(49520410163100); break; // 48.4375 + 1.5 = 49.9375 mio
-        case 371: call.result.expectOk().expectUint(51017766163100); break; // 49.9375 + 1.5 = 51.4375 mio
+        // Pool only gets 20% from total rewards
+        case 53: call.result.expectOk().expectUint(5055139189300); break; // 25 mio total rewards
+        case 106: call.result.expectOk().expectUint(7488449562300); break; // 25 + 12.5 = 37.5 mio total rewards
+        case 159: call.result.expectOk().expectUint(8689303514500); break; // 37.5 + 6.25 = 43.75 mio
+        case 212: call.result.expectOk().expectUint(9282134180300); break; // 43.75 + 3.125 = 46.875 mio
+        case 265: call.result.expectOk().expectUint(9604610730900); break; // 46.875 + 1.5625 = 48.4375 mio
+        case 318: call.result.expectOk().expectUint(9904081930900); break; // 48.4375 + 1.5 = 49.9375 mio
+        case 371: call.result.expectOk().expectUint(10203553130900); break; // 49.9375 + 1.5 = 51.4375 mio
         default: break;
       }
     }
@@ -645,9 +646,10 @@ Clarinet.test({
       let call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "get-pending-rewards", [types.principal(wallet_2.address)], wallet_2.address);
       switch (index)
       {
-        case 53: call.result.expectOk().expectUint(8425232024150); break; // 25 mio / 3
-        case 106: call.result.expectOk().expectUint(12480749349950); break; // 37.5 mio / 3
-        case 371: call.result.expectOk().expectUint(17005922048000); break; // 51.4375 / 3 mio
+        // pool only gets 20% of total rewards
+        case 53: call.result.expectOk().expectUint(1685046396050); break; // 25 mio / 3 (= total rewards)
+        case 106: call.result.expectOk().expectUint(2496149853150); break; // 37.5 mio / 3
+        case 371: call.result.expectOk().expectUint(3401184372650); break; // 51.4375 / 3 mio
         default: break;
       }
     }
