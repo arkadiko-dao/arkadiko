@@ -202,7 +202,7 @@ export const Swap: React.FC = () => {
                       id="tokenXAmount"
                       pattern="^[0-9]*[.,]?[0-9]*$"
                       placeholder="0.0"
-                      value={tokenXAmount}
+                      value={tokenXAmount || ''}
                       onChange={onInputChange}
                       className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1" />
                   </div>
