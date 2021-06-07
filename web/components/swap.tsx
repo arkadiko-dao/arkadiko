@@ -123,6 +123,8 @@ export const Swap: React.FC = () => {
     const tmpTokenX = tokenX;
     setTokenX(tokenY);
     setTokenY(tmpTokenX);
+    setTokenXAmount(0.0);
+    setTokenYAmount(0.0);
   };
 
   const swapTokens = async () => {
@@ -202,6 +204,8 @@ export const Swap: React.FC = () => {
                           <p className="text-gray-500">Balance: {balanceSelectedTokenX} {tokenX.name}</p>
                           {balanceSelectedTokenX > 0 ? (
                             <button
+                              type="button"
+                              onClick={() => setTokenXAmount(balanceSelectedTokenX)}
                               className="ml-2 p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
                             >
                               Max.
@@ -249,11 +253,7 @@ export const Swap: React.FC = () => {
                         <div className="flex items-center justify-start">
                           <p className="text-gray-500">Balance: {balanceSelectedTokenY} {tokenY.name}</p>
                           {balanceSelectedTokenY > 0 ? (
-                            <button
-                              className="ml-2 p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
-                            >
-                              Max.
-                            </button>
+                            ``
                           ) : `` }
                         </div>
                       </div>
