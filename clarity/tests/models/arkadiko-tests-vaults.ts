@@ -177,7 +177,7 @@ class VaultManager {
 
   fetchMinimumCollateralAmount(auctionId: number, caller: Account = this.deployer) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-auction-engine-v1-1", "fetch-minimum-collateral-amount", [
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "get-minimum-collateral-amount", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1'),
         types.uint(auctionId)
       ], caller.address),

@@ -231,18 +231,24 @@
 
 ;; calculates the minimum collateral amount to sell
 ;; e.g. if we need to cover 10 xUSD debt, and we have 20 STX at $1/STX,
-;; we only need to auction off 10 STX
-;; but we give a 3% discount to incentivise people
-;; TODO: this should be read-only but a bug in traits blocks this from being read-only
-;; see https://github.com/blockstack/stacks-blockchain/issues/1981
-;; to fix this we use a proxy method fetch-minimum-collateral-amount and pass the price in this method, see below
-(define-read-only (calculate-minimum-collateral-amount (collateral-price-in-cents uint) (auction-id uint))
+;; we only need to auction off 10 STX with a discount
+(define-read-only (get-minimum-collateral-amount (oracle <oracle-trait>) (auction-id uint))
   (let (
     (auction (get-auction-by-id auction-id))
     (collateral-left (- (get collateral-amount auction) (get total-collateral-sold auction)))
     (debt-left-to-raise (- (get debt-to-raise auction) (get total-debt-raised auction)))
-    (discounted-price (unwrap-panic (discounted-auction-price collateral-price-in-cents auction-id)))
+    (collateral-price-in-cents (contract-call? .arkadiko-oracle-v1-1 get-price (collateral-token (get collateral-token auction))))
+    (discounted-price (unwrap-panic (discounted-auction-price (get last-price-in-cents collateral-price-in-cents) auction-id)))
   )
+    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get auction-engine-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
+
     (if (< debt-left-to-raise (get lot-size auction))
       (let ((collateral-amount (/ (* u100 debt-left-to-raise) discounted-price)))
         (if (> collateral-amount collateral-left)
@@ -257,24 +263,6 @@
         )
       )
     )
-  )
-)
-
-(define-public (fetch-minimum-collateral-amount (oracle <oracle-trait>) (auction-id uint))
-  (let (
-    (auction (get-auction-by-id auction-id))
-    (price-in-cents (contract-call? .arkadiko-oracle-v1-1 get-price (collateral-token (get collateral-token auction))))
-  )
-    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
-    (asserts!
-      (and
-        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
-        (is-eq (var-get auction-engine-shutdown-activated) false)
-      )
-      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
-    )
-
-    (calculate-minimum-collateral-amount (get last-price-in-cents price-in-cents) auction-id)
   )
 )
 
@@ -300,7 +288,7 @@
   (let (
     (auction (get-auction-by-id auction-id))
     (last-bid (get-last-bid auction-id lot-index))
-    (collateral-amount (unwrap-panic (fetch-minimum-collateral-amount oracle auction-id)))
+    (collateral-amount (unwrap-panic (get-minimum-collateral-amount oracle auction-id)))
     (lot-got-sold (if (>= xusd (var-get lot-size))
         (ok u1)
         (ok u0)

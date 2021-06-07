@@ -43,7 +43,7 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, en
       const minimumCollateralAmount = await callReadOnlyFunction({
         contractAddress,
         contractName: "arkadiko-auction-engine-v1-1",
-        functionName: "calculate-minimum-collateral-amount",
+        functionName: "get-minimum-collateral-amount",
         functionArgs: [uintCV(price), uintCV(id)],
         senderAddress: stxAddress || '',
         network: network,
