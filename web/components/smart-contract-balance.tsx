@@ -1,10 +1,5 @@
-import React, { useEffect, useContext, useState } from 'react';
-import { Box } from '@blockstack/ui';
-import { AppContext } from '@common/context';
-import { Redirect } from 'react-router-dom';
-import { Container } from './home';
+import React, { useEffect, useState } from 'react';
 import { getRPCClient } from '@common/utils';
-import { useSTXAddress } from '@common/use-stx-address';
 
 export const SmartContractBalance = ({ address }) => {
   const [stxBalance, setStxBalance] = useState(0.0);
@@ -22,7 +17,6 @@ export const SmartContractBalance = ({ address }) => {
       const url = `${client.url}/extended/v1/address/${address}/balances`;
       const response = await fetch(url, { credentials: 'omit' });
       const data = await response.json();
-      console.log(data);
       setStxBalance(data.stx.balance / 1000000);
       const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
       if (dikoBalance) {
@@ -33,16 +27,16 @@ export const SmartContractBalance = ({ address }) => {
 
       const xusdBalance = data.fungible_tokens[`${contractAddress}.xusd-token::xusd`];
       if (xusdBalance) {
-        setDikoBalance(xusdBalance.balance);
+        setXusdBalance(xusdBalance.balance);
       } else {
-        setDikoBalance(0.0);
+        setXusdBalance(0.0);
       }
 
-      const xStxBalance = data.fungible_tokens[`${contractAddress}.xstx-token::xstx`];
-      if (xStxBalance) {
-        setDikoBalance(xStxBalance.balance);
+      const wStxBalance = data.fungible_tokens[`${contractAddress}.wrapped-arkadiko-token::wstx`];
+      if (wStxBalance) {
+        setWStxBalance(wStxBalance.balance);
       } else {
-        setDikoBalance(0.0);
+        setWStxBalance(0.0);
       }
     };
     if (mounted) {
