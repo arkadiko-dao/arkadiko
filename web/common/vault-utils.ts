@@ -72,5 +72,5 @@ export const contractsMap = {
 };
 
 export const microToReadable = (amount:number, decimals:number=2) => {
-  return (parseFloat(amount) / 1000000).toFixed(decimals);
+  return (parseFloat(amount) / 1000000).toLocaleString();
 };
