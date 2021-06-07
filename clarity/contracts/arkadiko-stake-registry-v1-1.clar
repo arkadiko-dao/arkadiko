@@ -117,15 +117,37 @@
 
 ;; Initialize the contract
 (begin
-  ;; Add initial contracts
+  ;; DIKO pool
   (map-set pools-data-map
     { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1 }
     {
-      name: "Diko",
+      name: "DIKO",
       active: true,
       activated-block: block-height,
       deactivated-block: u0,
-      rewards-percentage: u1000000 ;; 100% 
+      rewards-percentage: u200000 ;; 20% 
+    }
+  )
+  ;; DIKO-xUSD LP
+  (map-set pools-data-map
+    { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1 }
+    {
+      name: "DIKO-xUSD LP",
+      active: true,
+      activated-block: block-height,
+      deactivated-block: u0,
+      rewards-percentage: u400000 ;; 40% 
+    }
+  )
+  ;; wSTX-xUSD LP
+  (map-set pools-data-map
+    { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-xusd-v1-1 }
+    {
+      name: "wSTX-xUSD LP",
+      active: true,
+      activated-block: block-height,
+      deactivated-block: u0,
+      rewards-percentage: u400000 ;; 40% 
     }
   )
 )

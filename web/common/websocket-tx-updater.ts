@@ -60,5 +60,6 @@ const errorMessages = {
   'u1': 'You do not have enough balance to make this transaction',
   'u4401': 'Not Authorized',
   'u414': 'Stacking still in progress - please withdraw later',
-  'u52': 'No liquidation required'
+  'u52': 'No liquidation required',
+  'u71': 'Pair does not have enough liquidity to execute your order'
 };
