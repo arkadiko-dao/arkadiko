@@ -234,7 +234,7 @@
 ;; Calculate current cumm reward per stake
 (define-read-only (calculate-cumm-reward-per-stake)
   (let (
-    (rewards-per-block (contract-call? .arkadiko-stake-registry-v1-1 get-rewards-per-block-for-pool .arkadiko-stake-pool-diko-v1-1))
+    (rewards-per-block (contract-call? .arkadiko-stake-registry-v1-1 get-rewards-per-block-for-pool .arkadiko-stake-pool-wstx-xusd-v1-1))
     (current-total-staked (var-get total-staked))
     (last-block-height (get-last-block-height))
     (block-diff (- last-block-height (var-get last-reward-increase-block)))
@@ -258,7 +258,7 @@
 (define-private (get-last-block-height)
   (let (
     ;; TODO: stake-registry should be dynamic
-    (pool-data (contract-call? .arkadiko-stake-registry-v1-1 get-pool-data .arkadiko-stake-pool-diko-v1-1))
+    (pool-data (contract-call? .arkadiko-stake-registry-v1-1 get-pool-data .arkadiko-stake-pool-wstx-xusd-v1-1))
     (pool-active (get active pool-data))
     (deactivated-block (get deactivated-block pool-data))
   )
