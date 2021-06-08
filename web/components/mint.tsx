@@ -144,7 +144,7 @@ export const Mint = () => {
                         </dt>
                         <dd>
                           <div className="text-lg font-medium text-gray-900">
-                            {microToReadable(state.balance['stx'])} STX
+                            {microToReadable(state.balance['stx']).toLocaleString()} STX
                           </div>
                         </dd>
                       </dl>
@@ -216,7 +216,7 @@ export const Mint = () => {
                         </dt>
                         <dd>
                           <div className="text-lg font-medium text-gray-900">
-                            {microToReadable(state.balance['xusd'])} xUSD
+                            {microToReadable(state.balance['xusd']).toLocaleString()} xUSD
                           </div>
                         </dd>
                       </dl>
@@ -240,7 +240,7 @@ export const Mint = () => {
                         </dt>
                         <dd>
                           <div className="text-lg font-medium text-gray-900">
-                            {microToReadable(state.balance['diko'])} DIKO
+                            {microToReadable(state.balance['diko']).toLocaleString()} DIKO
                           </div>
                         </dd>
                       </dl>
