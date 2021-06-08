@@ -4,7 +4,12 @@ import { Box } from '@blockstack/ui';
 import { Container } from './home';
 import { SwitchVerticalIcon, PlusCircleIcon, MinusCircleIcon } from '@heroicons/react/solid';
 import { microToReadable } from '@common/vault-utils';
-import { callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV } from '@stacks/transactions';
+import {
+  callReadOnlyFunction, cvToJSON,
+  contractPrincipalCV, uintCV,
+  createAssetInfo, FungibleConditionCode,
+  makeStandardFungiblePostCondition
+} from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
@@ -13,6 +18,7 @@ import { tokenTraits } from '@common/vault-utils';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { SwapSettings } from '@components/swap-settings';
 import { NavLink as RouterLink } from 'react-router-dom';
+import BN from 'bn.js';
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
@@ -156,6 +162,19 @@ export const Swap: React.FC = () => {
       tokenXTrait = tokenYTrait;
       tokenYTrait = tmpTrait;
     }
+
+    // const postConditions = [
+    //   makeStandardFungiblePostCondition(
+    //     stxAddress || '',
+    //     FungibleConditionCode.Equal,
+    //     new BN(tokenXAmount),
+    //     createAssetInfo(
+    //       contractAddress,
+    //       "xusd-token",
+    //       "xUSD"
+    //     )
+    //   )
+    // ];
     await doContractCall({
       network,
       contractAddress,
