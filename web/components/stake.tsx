@@ -8,6 +8,7 @@ import { callReadOnlyFunction, contractPrincipalCV, uintCV, standardPrincipalCV,
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
 import { websocketTxUpdater } from '@common/websocket-tx-updater';
+import { microToReadable } from '@common/vault-utils';
 
 export const Stake = () => {
   const [state, setState] = useContext(AppContext);
@@ -198,7 +199,7 @@ export const Stake = () => {
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    You have a balance of {state.balance['diko'] / 1000000} DIKO
+                    You have a balance of {microToReadable(state.balance['diko']).toLocaleString()} DIKO
                   </p>
 
                   <div className="mt-4 relative rounded-md shadow-sm">
@@ -262,7 +263,7 @@ export const Stake = () => {
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    You are current staking {stakedAmount / 1000000} DIKO
+                    You are current staking {microToReadable(stakedAmount).toLocaleString()} DIKO
                   </p>
 
                   <div className="mt-4 relative rounded-md shadow-sm">
@@ -330,7 +331,7 @@ export const Stake = () => {
                               </dt>
                               <dd>
                                 <div className="text-lg font-medium text-gray-900">
-                                  {stakedAmount / 1000000} DIKO
+                                  {microToReadable(stakedAmount).toLocaleString()} DIKO
                                 </div>
                               </dd>
                             </dl>
@@ -354,7 +355,7 @@ export const Stake = () => {
                               </dt>
                               <dd>
                                 <div className="text-lg font-medium text-gray-900">
-                                  {pendingRewards} DIKO
+                                  {microToReadable(pendingRewards).toLocaleString()} DIKO
                                 </div>
                               </dd>
                             </dl>
