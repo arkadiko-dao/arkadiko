@@ -15,7 +15,6 @@ import {
 import { useSTXAddress } from '@common/use-stx-address';
 import { ExplorerLink } from './explorer-link';
 import { resolveReserveName, tokenTraits } from '@common/vault-utils';
-import BN from 'bn.js';
 import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { AppContext } from '@common/context';
 
