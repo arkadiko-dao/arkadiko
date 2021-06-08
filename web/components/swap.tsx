@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Box } from '@blockstack/ui';
 import { Container } from './home';
-import { SwitchVerticalIcon } from '@heroicons/react/solid';
+import { SwitchVerticalIcon, PlusCircleIcon, MinusCircleIcon } from '@heroicons/react/solid';
 import { microToReadable } from '@common/vault-utils';
 import { callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
@@ -297,27 +297,30 @@ export const Swap: React.FC = () => {
             </div>
           </div>
           <div className="-mt-4 p-4 pt-8 w-full max-w-md bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
-            <div className="flex flex-col">
-              <div className="flex justify-between">
-                <p className="text-sm mt-2 font-semibold text-right text-gray-500">Minimum Received</p>
-                <p className="text-sm mt-2 font-semibold text-left text-gray-500">{minimumReceived} {tokenY.name}</p>
+            <dl className="space-y-1 pb-3 border-b border-indigo-100">
+              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                <dt className="text-sm font-medium text-indigo-500">Minimum Received</dt>
+                <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{minimumReceived} {tokenY.name}</dd>
               </div>
-              <div className="flex justify-between">
-                <p className="text-sm mt-2 font-semibold text-right text-gray-500">Price Impact</p>
-                <p className="text-sm mt-2 font-semibold text-left text-gray-500">{priceImpact}%</p>
+              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                <dt className="text-sm font-medium text-indigo-500">Price Impact</dt>
+                <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{priceImpact}%</dd>
               </div>
-              <div className="flex justify-between mb-4">
-                <p className="text-sm mt-2 font-semibold text-right text-gray-500">Liquidity Provider fee</p>
-                <p className="text-sm mt-2 font-semibold text-left text-gray-500">veel</p>
+              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                <dt className="text-sm font-medium text-indigo-500">Liquidity Provider fee</dt>
+                <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">veel</dd>
               </div>
-
-              <Box display="inline-block" className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
-                <RouterLink to={`swap/add/${tokenX.name}/${tokenY.name}`}>
+            </dl>
+            <div className="space-y flex flex-col mt-3">
+              <Box className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
+                <RouterLink className="inline-flex items-center" to={`swap/add/${tokenX.name}/${tokenY.name}`}>
+                  <PlusCircleIcon className="h-5 w-5 mr-1" aria-hidden="true" />
                   Add Liquidity to {tokenX.name}-{tokenY.name}
                 </RouterLink>
               </Box>
-              <Box display="inline-block" className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
-                <RouterLink to={`swap/remove/${tokenX.name}/${tokenY.name}`}>
+              <Box className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
+                <RouterLink className="inline-flex items-center" to={`swap/remove/${tokenX.name}/${tokenY.name}`}>
+                  <MinusCircleIcon className="h-5 w-5 mr-1" aria-hidden="true" />
                   Remove Liquidity from {tokenX.name}-{tokenY.name}
                 </RouterLink>
               </Box>
