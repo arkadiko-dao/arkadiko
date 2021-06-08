@@ -117,15 +117,16 @@ export const Stake = () => {
   };
 
   const stakeDiko = async () => {
+    const amount = uintCV(parseInt(stakeAmount, 10) * 1000000);
     const postConditions = [
       makeStandardFungiblePostCondition(
         stxAddress || '',
         FungibleConditionCode.Equal,
-        new BN(stakeAmount),
+        amount.value,
         createAssetInfo(
           contractAddress,
           "arkadiko-token",
-          "DIKO"
+          "diko"
         )
       )
     ];
@@ -137,9 +138,10 @@ export const Stake = () => {
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
-        uintCV(parseInt(stakeAmount, 10) * 1000000)
+        amount
       ],
       postConditionMode: 0x01,
+      postConditions,
       finished: data => {
         console.log('finished broadcasting staking tx!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
