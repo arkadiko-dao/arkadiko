@@ -71,21 +71,22 @@
 ;; Rewards only apply in the first year, during which they are reduced every 2 weeks
 (define-read-only (get-vault-rewards-per-block)
   (let (
-
     ;; 144 blocks per day, 7 days
     (blocks-per-step u1008) 
     
     ;; each step is equal to 1 week. This calculates the current step we are in, since the start
     (step-number (/ (- block-height (var-get contract-start-block)) blocks-per-step))
-
-    ;; Every step, the divider is increased by 10%
-    (staking-rewards-divider (/ (* (pow u11 step-number) u100) (pow u10 step-number)))
-
-    (block-rewards (* (/ REWARDS-PER-BLOCK-START staking-rewards-divider) u100))
   )
     ;; Rewards only for first 6 weeks (step-number starts at 0)
     (if (<= step-number u5)
-      block-rewards
+      (let (
+        ;; Every step, the divider is increased by 10%
+        (staking-rewards-divider (/ (* (pow u11 step-number) u100) (pow u10 step-number)))
+
+        (block-rewards (* (/ REWARDS-PER-BLOCK-START staking-rewards-divider) u100))
+      )
+        block-rewards
+      )
       u0
     )
   )

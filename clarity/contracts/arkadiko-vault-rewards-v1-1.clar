@@ -51,13 +51,13 @@
     )
 
     ;; Save latest cumm reward
-    (increase-cumm-reward-per-collateral)
+    (unwrap-panic (increase-cumm-reward-per-collateral))
     ;; Claim all pending rewards so we can set the new cumm-reward for this user
     (try! (claim-pending-rewards-for user))
     ;; Update total
     (var-set total-collateral (+ current-total-collateral collateral))
     ;; Save cumm reward again, as total changed
-    (increase-cumm-reward-per-collateral)
+    (unwrap-panic (increase-cumm-reward-per-collateral))
     ;; Save for user
     (map-set user-collateral { user: user } { collateral: new-collateral, cumm-reward-per-collateral: (var-get cumm-reward-per-collateral) })
 
@@ -76,13 +76,13 @@
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
 
     ;; Save latest cumm reward
-    (increase-cumm-reward-per-collateral)
+    (unwrap-panic (increase-cumm-reward-per-collateral))
     ;; Claim all pending rewards so we can set the new cumm-reward for this user
     (try! (claim-pending-rewards-for user))
     ;; Update total
     (var-set total-collateral (- current-total-collateral collateral))
     ;; Save cumm reward again, as total changed
-    (increase-cumm-reward-per-collateral)
+    (unwrap-panic (increase-cumm-reward-per-collateral))
     ;; Save for user
     (map-set user-collateral { user: user } { collateral: new-collateral, cumm-reward-per-collateral: (var-get cumm-reward-per-collateral) })
 
@@ -124,7 +124,7 @@
   (begin
 
     ;; Increase so we know new value for this user
-    (increase-cumm-reward-per-collateral)
+    (unwrap-panic (increase-cumm-reward-per-collateral))
 
     (let (
       (pending-rewards (unwrap! (get-pending-rewards user) (err ERR-REWARDS-CALC)))
@@ -154,7 +154,7 @@
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
 
     ;; Increase so we know new value for this user
-    (increase-cumm-reward-per-collateral)
+    (unwrap-panic (increase-cumm-reward-per-collateral))
 
     (let (
       (pending-rewards (unwrap! (get-pending-rewards user) (err ERR-REWARDS-CALC)))
@@ -177,14 +177,14 @@
 )
 
 ;; Increase cumm reward per collateral and save
-(define-private (increase-cumm-reward-per-collateral)
+(define-public (increase-cumm-reward-per-collateral)
   (let (
     ;; Calculate new cumm reward per collateral
     (new-cumm-reward-per-collateral (calculate-cumm-reward-per-collateral))
   )
     (var-set cumm-reward-per-collateral new-cumm-reward-per-collateral)
     (var-set last-reward-increase-block block-height)
-    new-cumm-reward-per-collateral
+    (ok new-cumm-reward-per-collateral)
   )
 )
 
