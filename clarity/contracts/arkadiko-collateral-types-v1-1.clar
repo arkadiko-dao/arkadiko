@@ -191,7 +191,7 @@
                 })
                 (if (is-eq key "stability-fee-decimals")
                   (merge type {
-                    stability-fee-apy: (get new-value change)
+                    stability-fee-decimals: (get new-value change)
                   })
                   type
                 )

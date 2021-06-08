@@ -235,9 +235,7 @@ Clarinet.test({
     chain.mineEmptyBlock(365*144);
     call = vaultManager.getStabilityFee(1, deployer);
 
-    // TODO - why did this change from ~10 to ~1 ?? would have expected no change
-    // call.result.expectOk().expectUint(10039151);
-    call.result.expectOk().expectUint(998659);
+    call.result.expectOk().expectUint(100811998);
 
     result = vaultManager.payStabilityFee(deployer, 1);
  
