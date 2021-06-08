@@ -157,7 +157,6 @@ export const Swap: React.FC = () => {
     let tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
     let postConditionTrait = tokenXTrait;
     let postConditionName = tokenX['name'].toLowerCase();
-    console.log(postConditionTrait, postConditionName);
     if (inverseDirection) {
       contractName = 'swap-y-for-x';
       let tmpTrait = tokenXTrait;
