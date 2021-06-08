@@ -4,11 +4,17 @@ import { AppContext } from '@common/context';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import { stacksNetwork as network } from '@common/utils';
-import { callReadOnlyFunction, contractPrincipalCV, uintCV, standardPrincipalCV, cvToJSON } from '@stacks/transactions';
+import {
+  callReadOnlyFunction, contractPrincipalCV, uintCV,
+  standardPrincipalCV, cvToJSON,
+  createAssetInfo, FungibleConditionCode,
+  makeStandardFungiblePostCondition
+ } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
 import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { microToReadable } from '@common/vault-utils';
+import BN from 'bn.js';
 
 export const Stake = () => {
   const [state, setState] = useContext(AppContext);
@@ -111,6 +117,18 @@ export const Stake = () => {
   };
 
   const stakeDiko = async () => {
+    const postConditions = [
+      makeStandardFungiblePostCondition(
+        stxAddress || '',
+        FungibleConditionCode.Equal,
+        new BN(stakeAmount),
+        createAssetInfo(
+          contractAddress,
+          "arkadiko-token",
+          "DIKO"
+        )
+      )
+    ];
     await doContractCall({
       network,
       contractAddress,
