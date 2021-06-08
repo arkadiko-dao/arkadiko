@@ -61,6 +61,8 @@ export const Swap: React.FC = () => {
       if (state?.balance) {
         setTokenBalances();
       }
+      setTokenXAmount(0.0);
+      setTokenYAmount(0.0);
 
       let tokenXContract = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
       let tokenYContract = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
@@ -74,7 +76,6 @@ export const Swap: React.FC = () => {
         // const price = parseFloat(basePrice) + (parseFloat(basePrice) * 0.01);
         setCurrentPrice(basePrice);
         setInverseDirection(false);
-        calculateTokenYAmount();
       } else if (json3['value']['value']['value'] === 201) {
         const json4 = await fetchPair(tokenYContract, tokenXContract);
         if (json4['success']) {
@@ -85,7 +86,6 @@ export const Swap: React.FC = () => {
           const balanceY = json4['value']['value']['value']['balance-y'].value;
           const basePrice = (balanceX / balanceY).toFixed(2);
           setCurrentPrice(basePrice);
-          calculateTokenYAmount();
         }
       }
     };
@@ -109,7 +109,8 @@ export const Swap: React.FC = () => {
     let amount = 0;
 
     if (slippageTolerance === 0) {
-      amount = ((960 * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
+      // amount = ((960 * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
+      amount = 0.95 * (balanceX / balanceY) * tokenXAmount;
     } else {
       // custom slippage set
       let slippage = 1000 - (slippageTolerance * 100);
@@ -210,11 +211,11 @@ export const Swap: React.FC = () => {
                   <div className="flex items-center text-sm p-4 pt-0 justify-end">
                     <div className="flex items-center justify-between w-full">
                       <div className="flex items-center justify-start">
-                        <p className="text-gray-500">Balance: {balanceSelectedTokenX} {tokenX.name}</p>
-                        {balanceSelectedTokenX > 0 ? (
+                        <p className="text-gray-500">Balance: {balanceSelectedTokenX.toLocaleString()} {tokenX.name}</p>
+                        {parseInt(balanceSelectedTokenX, 10) > 0 ? (
                           <button
                             type="button"
-                            onClick={() => setTokenXAmount(balanceSelectedTokenX)}
+                            onClick={() => setTokenXAmount(parseInt(balanceSelectedTokenX, 10))}
                             className="ml-2 p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
                           >
                             Max.
@@ -260,13 +261,16 @@ export const Swap: React.FC = () => {
                   <div className="flex items-center text-sm p-4 pt-0 justify-end">
                     <div className="flex items-center justify-between w-full">
                       <div className="flex items-center justify-start">
-                        <p className="text-gray-500">Balance: {balanceSelectedTokenY} {tokenY.name}</p>
+                        <p className="text-gray-500">Balance: {balanceSelectedTokenY.toLocaleString()} {tokenY.name}</p>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <p className="text-sm mt-2 font-semibold text-right text-gray-400">1 {tokenY.name} = ~{currentPrice} {tokenX.name}</p>
+                <div className="flex justify-between mb-4">
+                  <p className="text-sm mt-2 font-semibold text-right text-gray-400">1 {tokenY.name} = ~{currentPrice} {tokenX.name}</p>
+                  <p className="text-sm mt-2 font-semibold text-left text-gray-400">1 {tokenY.name} = ~{currentPrice} {tokenX.name}</p>
+                </div>
 
                 {state.userData ? (
                   <button
@@ -289,7 +293,7 @@ export const Swap: React.FC = () => {
               </form>
             </div>
           </div>
-          {/* <div className="-mt-4 p-4 pt-8 w-full max-w-md bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
+          <div className="-mt-4 p-4 pt-8 w-full max-w-md bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
             <div className="space-y-2 flex flex-col">
               <Box display="inline-block" className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
                 <RouterLink to={`swap/add/${tokenX.name}/${tokenY.name}`}>
@@ -302,7 +306,7 @@ export const Swap: React.FC = () => {
                 </RouterLink>
               </Box>
             </div>
-          </div> */}
+          </div>
         </main>
       </Container>
     </Box>  
