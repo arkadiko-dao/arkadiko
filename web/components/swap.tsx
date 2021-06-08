@@ -26,6 +26,9 @@ export const Swap: React.FC = () => {
   const [currentPair, setCurrentPair] = useState();
   const [inverseDirection, setInverseDirection] = useState(false);
   const [slippageTolerance, setSlippageTolerance] = useState(0.0);
+  const [minimumReceived, setMinimumReceived] = useState('0');
+  const [priceImpact, setPriceImpact] = useState('0');
+
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall, doOpenAuth } = useConnect();
@@ -116,7 +119,10 @@ export const Swap: React.FC = () => {
       let slippage = 1000 - (slippageTolerance * 100);
       amount = ((slippage * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
     }
+    setMinimumReceived((amount * 0.97).toLocaleString());
     setTokenYAmount(amount);
+    const impact = ((balanceX / 1000000) / tokenXAmount);
+    setPriceImpact((100 / impact).toLocaleString());
   };
 
   const onInputChange = (event: { target: { name: any; value: any; }; }) => {
@@ -161,7 +167,7 @@ export const Swap: React.FC = () => {
       ],
       postConditionMode: 0x01,
       finished: data => {
-        console.log('finished collateralizing!', data);
+        console.log('finished swap!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
     });
@@ -267,10 +273,7 @@ export const Swap: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-between mb-4">
-                  <p className="text-sm mt-2 font-semibold text-right text-gray-400">1 {tokenY.name} = ~{currentPrice} {tokenX.name}</p>
-                  <p className="text-sm mt-2 font-semibold text-left text-gray-400">1 {tokenY.name} = ~{currentPrice} {tokenX.name}</p>
-                </div>
+                <p className="text-sm mt-2 font-semibold text-right text-gray-400">1 {tokenY.name} = ~{currentPrice} {tokenX.name}</p>
 
                 {state.userData ? (
                   <button
@@ -294,7 +297,20 @@ export const Swap: React.FC = () => {
             </div>
           </div>
           <div className="-mt-4 p-4 pt-8 w-full max-w-md bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
-            <div className="space-y-2 flex flex-col">
+            <div className="flex flex-col">
+              <div className="flex justify-between">
+                <p className="text-sm mt-2 font-semibold text-right text-gray-500">Minimum Received</p>
+                <p className="text-sm mt-2 font-semibold text-left text-gray-500">{minimumReceived} {tokenY.name}</p>
+              </div>
+              <div className="flex justify-between">
+                <p className="text-sm mt-2 font-semibold text-right text-gray-500">Price Impact</p>
+                <p className="text-sm mt-2 font-semibold text-left text-gray-500">{priceImpact}%</p>
+              </div>
+              <div className="flex justify-between mb-4">
+                <p className="text-sm mt-2 font-semibold text-right text-gray-500">Liquidity Provider fee</p>
+                <p className="text-sm mt-2 font-semibold text-left text-gray-500">veel</p>
+              </div>
+
               <Box display="inline-block" className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
                 <RouterLink to={`swap/add/${tokenX.name}/${tokenY.name}`}>
                   Add Liquidity to {tokenX.name}-{tokenY.name}
