@@ -20,7 +20,7 @@ Clarinet.test({
     let call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pool-data", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1')
     ], wallet_1.address);
-    call.result.expectTuple()['name'].expectAscii('Diko');
+    call.result.expectTuple()['name'].expectAscii('DIKO');
     call.result.expectTuple()['active'].expectBool(true);
   }
 });

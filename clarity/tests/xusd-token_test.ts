@@ -6,7 +6,7 @@ import {
 } from "https://deno.land/x/clarinet@v0.6.0/index.ts";
 
 Clarinet.test({
-  name: "xusd-token: returns the correct name of the Arkadiko Token",
+  name: "xusd-token: returns the correct name of the xUSD Token",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let wallet_2 = accounts.get("wallet_2")!;
     let wallet_3 = accounts.get("wallet_3")!;
@@ -19,7 +19,7 @@ Clarinet.test({
     );
     call.result
       .expectOk()
-      .expectUint(1000000030);
+      .expectUint(1001000000030);
 
     call = await chain.callReadOnlyFn("xusd-token", "get-balance", [
       types.principal(wallet_2.address),
