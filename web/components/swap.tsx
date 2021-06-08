@@ -124,7 +124,7 @@ export const Swap: React.FC = () => {
     setTokenYAmount(amount);
     const impact = ((balanceX / 1000000) / tokenXAmount);
     setPriceImpact((100 / impact).toLocaleString());
-    setLpFee(0.003 * tokenXAmount);
+    setLpFee((0.003 * tokenXAmount).toLocaleString());
   };
 
   const onInputChange = (event: { target: { name: any; value: any; }; }) => {
