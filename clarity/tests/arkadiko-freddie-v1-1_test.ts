@@ -285,7 +285,7 @@ Clarinet.test({
         ),
       ], deployer.address),
     ]);
-    block.receipts[0].result.expectErr().expectUint(118); // wrong token error
+    block.receipts[0].result.expectErr().expectUint(410); // wrong collateral type
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
@@ -311,7 +311,7 @@ Clarinet.test({
         ),
       ], deployer.address),
     ]);
-    block.receipts[0].result.expectErr().expectUint(415); // wrong token error
+    block.receipts[0].result.expectErr().expectUint(410); // wrong collateral type
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
@@ -324,7 +324,7 @@ Clarinet.test({
         ),
       ], deployer.address),
     ]);
-    block.receipts[0].result.expectErr().expectUint(118); // wrong token error
+    block.receipts[0].result.expectErr().expectUint(410); // wrong collateral type
 
   }
 });
@@ -341,10 +341,7 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 77);
     result.expectOk().expectUint(77);
 
-    result = oracleManager.updatePrice("DIKO", 50);
-    result.expectOk().expectUint(50);
-
-    result = vaultManager.createVault(deployer, "DIKO-A", 5, 0.000001)
+    result = vaultManager.createVault(deployer, "STX-A", 5, 0.000001)
     result.expectOk().expectUint(1);
 
     // Should not be able to deposit in STX reserve
@@ -352,25 +349,13 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "deposit", [
         types.uint(1),
         types.uint(500000000), // 500 STX
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
       ], deployer.address)
     ]);
     block.receipts[0].result
       .expectErr()
       .expectUint(45);
-    
-    // Mint extra
-    result = vaultManager.mint(deployer, 1, 0.000001);
-    result.expectErr().expectUint(118);
-
-    // Withdraw
-    result = vaultManager.withdraw(deployer, 1, 0.000001);
-    result.expectErr().expectUint(46);
-
-    //  Burn
-    result = vaultManager.burn(deployer, 1, 0.000001);
-    result.expectErr().expectUint(112);
 
   },
 });
@@ -501,10 +486,6 @@ Clarinet.test({
       deployer.address
     );
     call.result.expectOk().expectUint(1000000000);
-
-    result = oracleManager.updatePrice("DIKO", 200);
-    result = vaultManager.createVault(deployer, "DIKO-A", 1000, 300)
-    result.expectOk().expectUint(300000000);
 
     result = vaultManager.stackCollateral(deployer, 1);
     result.expectErr().expectUint(414);

@@ -244,22 +244,4 @@
       stability-fee-apy: u100 ;; 100 basis points
     }
   )
-  (map-set collateral-types
-    { name: "DIKO-A" }
-    {
-      name: "Arkadiko",
-      token: "DIKO",
-      token-type: "DIKO-A",
-      token-address: .arkadiko-token,
-      url: "https://www.arkadiko.finance/",
-      total-debt: u0,
-      liquidation-ratio: u200,
-      collateral-to-debt-ratio: u300,
-      maximum-debt: u10000000000000,
-      liquidation-penalty: u1300,
-      stability-fee: u191816250, ;; 0.002726155% daily percentage == 1% APY
-      stability-fee-decimals: u15,
-      stability-fee-apy: u100
-    }
-  )
 )
