@@ -18,7 +18,6 @@ import { tokenTraits } from '@common/vault-utils';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { SwapSettings } from '@components/swap-settings';
 import { NavLink as RouterLink } from 'react-router-dom';
-import BN from 'bn.js';
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
@@ -163,18 +162,19 @@ export const Swap: React.FC = () => {
       tokenYTrait = tmpTrait;
     }
 
-    // const postConditions = [
-    //   makeStandardFungiblePostCondition(
-    //     stxAddress || '',
-    //     FungibleConditionCode.Equal,
-    //     new BN(tokenXAmount),
-    //     createAssetInfo(
-    //       contractAddress,
-    //       "xusd-token",
-    //       "xUSD"
-    //     )
-    //   )
-    // ];
+    const amount = uintCV(tokenXAmount * 1000000);
+    const postConditions = [
+      makeStandardFungiblePostCondition(
+        stxAddress || '',
+        FungibleConditionCode.Equal,
+        amount.value,
+        createAssetInfo(
+          contractAddress,
+          "xusd-token",
+          "xusd"
+        )
+      )
+    ];
     await doContractCall({
       network,
       contractAddress,
@@ -183,10 +183,11 @@ export const Swap: React.FC = () => {
       functionArgs: [
         contractPrincipalCV(contractAddress, tokenXTrait),
         contractPrincipalCV(contractAddress, tokenYTrait),
-        uintCV(tokenXAmount * 1000000),
+        amount,
         uintCV(tokenYAmount * 1000000)
       ],
       postConditionMode: 0x01,
+      postConditions,
       finished: data => {
         console.log('finished swap!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
