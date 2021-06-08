@@ -28,6 +28,7 @@ export const Swap: React.FC = () => {
   const [slippageTolerance, setSlippageTolerance] = useState(0.0);
   const [minimumReceived, setMinimumReceived] = useState('0');
   const [priceImpact, setPriceImpact] = useState('0');
+  const [lpFee, setLpFee] = useState('0');
 
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -123,6 +124,7 @@ export const Swap: React.FC = () => {
     setTokenYAmount(amount);
     const impact = ((balanceX / 1000000) / tokenXAmount);
     setPriceImpact((100 / impact).toLocaleString());
+    setLpFee(0.003 * tokenXAmount);
   };
 
   const onInputChange = (event: { target: { name: any; value: any; }; }) => {
@@ -308,7 +310,7 @@ export const Swap: React.FC = () => {
               </div>
               <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                 <dt className="text-sm font-medium text-indigo-500">Liquidity Provider fee</dt>
-                <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">veel</dd>
+                <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{lpFee} {tokenX.name}</dd>
               </div>
             </dl>
             <div className="space-y flex flex-col mt-3">
