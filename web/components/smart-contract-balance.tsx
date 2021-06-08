@@ -6,6 +6,7 @@ export const SmartContractBalance = ({ address }) => {
   const [dikoBalance, setDikoBalance] = useState(0.0);
   const [xusdBalance, setXusdBalance] = useState(0.0);
   const [wStxBalance, setWStxBalance] = useState(0.0);
+  const [xStxBalance, setXStxBalance] = useState(0.0);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   useEffect(() => {
@@ -39,6 +40,13 @@ export const SmartContractBalance = ({ address }) => {
       } else {
         setWStxBalance(0.0);
       }
+
+      const xStxBalance = data.fungible_tokens[`${contractAddress}.xstx-token::xstx`];
+      if (xStxBalance) {
+        setXStxBalance(xStxBalance.balance / 1000000);
+      } else {
+        setXStxBalance(0.0);
+      }
     };
     if (mounted) {
       void getData();
@@ -63,6 +71,9 @@ export const SmartContractBalance = ({ address }) => {
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         {wStxBalance.toLocaleString()} wSTX
+      </td>
+      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+        {xStxBalance.toLocaleString()} xSTX
       </td>
     </tr>
   )
