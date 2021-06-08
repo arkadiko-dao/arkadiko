@@ -11,7 +11,10 @@ export const Balances = () => {
     `${contractAddress}.arkadiko-auction-engine-v1-1`,
     `${contractAddress}.arkadiko-dao`,
     `${contractAddress}.arkadiko-governance-v1-1`,
-    `${contractAddress}.arkadiko-diko-guardian-v1-1`,
+    `${contractAddress}.arkadiko-stacker-v1-1`,
+    `${contractAddress}.arkadiko-stake-pool-diko-v1-1`,
+    `${contractAddress}.arkadiko-stake-pool-diko-xusd-v1-1`,
+    `${contractAddress}.arkadiko-stake-pool-wstx-xusd-v1-1`,
     `${contractAddress}.arkadiko-swap-v1-1`,
   ]
   let index = -1;
