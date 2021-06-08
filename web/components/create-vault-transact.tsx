@@ -28,8 +28,9 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
 
   const callCollateralizeAndMint = async () => {
     const token = tokenTraits[coinAmounts['token-name'].toLowerCase()]['name'];
+    const amount = uintCV(parseInt(coinAmounts['amounts']['collateral'], 10) * 1000000)
     const args = [
-      uintCV(parseInt(coinAmounts['amounts']['collateral'], 10) * 1000000),
+      amount,
       uintCV(parseInt(coinAmounts['amounts']['xusd'], 10) * 1000000),
       stringAsciiCV(coinAmounts['token-type'].toUpperCase()),
       contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', resolveReserveName(coinAmounts['token-name'].toUpperCase())),
@@ -42,7 +43,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
         makeStandardSTXPostCondition(
           address || '',
           FungibleConditionCode.Equal,
-          new BN(coinAmounts['amounts']['collateral'] * 1000000)
+          amount.value
         )
       ];
     }
