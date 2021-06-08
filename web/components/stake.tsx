@@ -355,7 +355,7 @@ export const Stake = () => {
                               </dt>
                               <dd>
                                 <div className="text-lg font-medium text-gray-900">
-                                  {microToReadable(pendingRewards).toLocaleString()} DIKO
+                                  {pendingRewards.toLocaleString()} DIKO
                                 </div>
                               </dd>
                             </dl>
