@@ -23,7 +23,7 @@ Clarinet.test({
     );
     let xusdInitialSupply = call.result
       .expectOk()
-      .expectUint(1001000000030);
+      .expectUint(2000000000030);
 
     // Update price of DIKO, Create a new vault
     let block = chain.mineBlock([
@@ -308,7 +308,7 @@ Clarinet.test({
     let call = await chain.callReadOnlyFn("xusd-token", "get-balance", [
       types.principal(deployer.address),
     ], deployer.address);
-    call.result.expectOk().expectUint(1005000000);
+    call.result.expectOk().expectUint(1000005000000);
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "mint", [
