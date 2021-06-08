@@ -23,7 +23,7 @@ Clarinet.test({
     );
     let xusdInitialSupply = call.result
       .expectOk()
-      .expectUint(1000000030);
+      .expectUint(1001000000030);
 
     // Update price of DIKO, Create a new vault
     let block = chain.mineBlock([
