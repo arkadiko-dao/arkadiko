@@ -155,6 +155,9 @@ export const Swap: React.FC = () => {
     let contractName = 'swap-x-for-y';
     let tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
     let tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
+    let postConditionTrait = tokenXTrait;
+    let postConditionName = tokenX['name'].toLowerCase();
+    console.log(postConditionTrait, postConditionName);
     if (inverseDirection) {
       contractName = 'swap-y-for-x';
       let tmpTrait = tokenXTrait;
@@ -170,8 +173,8 @@ export const Swap: React.FC = () => {
         amount.value,
         createAssetInfo(
           contractAddress,
-          "xusd-token",
-          "xusd"
+          postConditionTrait,
+          postConditionName
         )
       )
     ];
