@@ -16,7 +16,7 @@ import { useLocation } from 'react-router-dom';
 
 type TupleData = { [key: string]: ClarityValue };
 
-const icon = '/assets/logo.png';
+const icon = 'https://www.arkadiko.finance/assets/logo.png';
 export const App: React.FC = () => {
   const [state, setState] = React.useState<AppState>(defaultState());
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
