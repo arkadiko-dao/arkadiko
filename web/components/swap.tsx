@@ -186,7 +186,7 @@ export const Swap: React.FC = () => {
         contractPrincipalCV(contractAddress, tokenXTrait),
         contractPrincipalCV(contractAddress, tokenYTrait),
         amount,
-        uintCV(tokenYAmount * 1000000)
+        uintCV(minimumReceived * 1000000)
       ],
       postConditionMode: 0x01,
       postConditions,
