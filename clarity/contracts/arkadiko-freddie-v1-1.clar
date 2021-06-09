@@ -405,7 +405,6 @@
             collateral: new-collateral,
             updated-at-block-height: block-height
           })))
-      ;; TODO: FIX (make "STX" dynamic)
       (asserts! (>= ratio (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-collateral-to-debt-ratio (get collateral-type vault)))) (err ERR-INSUFFICIENT-COLLATERAL))
       (unwrap! (contract-call? reserve withdraw ft collateral-token (get owner vault) uamount) (err ERR-WITHDRAW-FAILED))
       (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id updated-vault))

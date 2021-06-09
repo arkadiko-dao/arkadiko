@@ -328,7 +328,7 @@ export const Swap: React.FC = () => {
               </div>
               <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                 <dt className="text-sm font-medium text-indigo-500">Price Impact</dt>
-                <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{priceImpact}%</dd>
+                <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">~{priceImpact}%</dd>
               </div>
               <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                 <dt className="text-sm font-medium text-indigo-500">Liquidity Provider fee</dt>
