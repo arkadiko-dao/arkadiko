@@ -64,7 +64,7 @@
     (print contract-caller)
     (print amount)
     ;; TODO - make dynamic
-    ;; (asserts! (is-eq contract-caller .arkadiko-swap-v1-1) (err no-acccess-err))
+    (asserts! (is-eq contract-caller .arkadiko-swap-v1-1) (err ERR-NOT-AUTHORIZED))
     (ft-mint? diko-xusd amount recipient)
   )
 )
@@ -78,7 +78,7 @@
     (print contract-caller)
     (print amount)
     ;; TODO - make dynamic
-    ;; (asserts! (is-eq contract-caller .arkadiko-swap-v1-1) (err no-acccess-err))
+    (asserts! (is-eq contract-caller .arkadiko-swap-v1-1) (err ERR-NOT-AUTHORIZED))
     (ft-burn? diko-xusd amount recipient)
   )
 )

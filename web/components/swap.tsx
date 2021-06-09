@@ -2,9 +2,14 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Box } from '@blockstack/ui';
 import { Container } from './home';
-import { SwitchVerticalIcon } from '@heroicons/react/solid';
+import { SwitchVerticalIcon, PlusCircleIcon, MinusCircleIcon } from '@heroicons/react/solid';
 import { microToReadable } from '@common/vault-utils';
-import { callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV } from '@stacks/transactions';
+import {
+  callReadOnlyFunction, cvToJSON,
+  contractPrincipalCV, uintCV,
+  createAssetInfo, FungibleConditionCode,
+  makeStandardFungiblePostCondition
+} from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
@@ -18,7 +23,7 @@ export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
   const [tokenX, setTokenX] = useState(tokenList[0]);
   const [tokenY, setTokenY] = useState(tokenList[1]);
-  const [tokenXAmount, setTokenXAmount] = useState(0.0);
+  const [tokenXAmount, setTokenXAmount] = useState();
   const [tokenYAmount, setTokenYAmount] = useState(0.0);
   const [balanceSelectedTokenX, setBalanceSelectedTokenX] = useState(0.0);
   const [balanceSelectedTokenY, setBalanceSelectedTokenY] = useState(0.0);
@@ -26,6 +31,10 @@ export const Swap: React.FC = () => {
   const [currentPair, setCurrentPair] = useState();
   const [inverseDirection, setInverseDirection] = useState(false);
   const [slippageTolerance, setSlippageTolerance] = useState(0.0);
+  const [minimumReceived, setMinimumReceived] = useState('0');
+  const [priceImpact, setPriceImpact] = useState('0');
+  const [lpFee, setLpFee] = useState('0');
+
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall, doOpenAuth } = useConnect();
@@ -61,10 +70,11 @@ export const Swap: React.FC = () => {
       if (state?.balance) {
         setTokenBalances();
       }
+      setTokenXAmount(0.0);
+      setTokenYAmount(0.0);
 
       let tokenXContract = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
       let tokenYContract = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
-      console.log(tokenXContract, tokenYContract);
       const json3 = await fetchPair(tokenXContract, tokenYContract);
       console.log('Pair Details:', json3);
       if (json3['success']) {
@@ -94,20 +104,33 @@ export const Swap: React.FC = () => {
 
   useEffect(() => {
     if (currentPrice > 0) {
-      const balanceX = currentPair['balance-x'].value;
-      const balanceY = currentPair['balance-y'].value;
-      let amount = 0;
-
-      if (slippageTolerance === 0) {
-        amount = ((960 * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
-      } else {
-        // custom slippage set
-        let slippage = 1000 - (slippageTolerance * 100);
-        amount = ((slippage * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
-      }
-      setTokenYAmount(amount);
+      calculateTokenYAmount();
     }
   }, [tokenXAmount, slippageTolerance]);
+
+  const calculateTokenYAmount = () => {
+    if (!currentPair || tokenXAmount === 0 || tokenXAmount === undefined) {
+      return;
+    }
+
+    const balanceX = currentPair['balance-x'].value;
+    const balanceY = currentPair['balance-y'].value;
+    let amount = 0;
+
+    if (slippageTolerance === 0) {
+      // amount = ((960 * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
+      amount = 0.95 * (balanceX / balanceY) * tokenXAmount;
+    } else {
+      // custom slippage set
+      let slippage = 1000 - (slippageTolerance * 100);
+      amount = ((slippage * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
+    }
+    setMinimumReceived((amount * 0.97).toLocaleString());
+    setTokenYAmount(amount);
+    const impact = ((balanceX / 1000000) / tokenXAmount);
+    setPriceImpact((100 / impact).toLocaleString());
+    setLpFee((0.003 * tokenXAmount).toLocaleString());
+  };
 
   const onInputChange = (event: { target: { name: any; value: any; }; }) => {
     const name = event.target.name;
@@ -129,16 +152,31 @@ export const Swap: React.FC = () => {
   };
 
   const swapTokens = async () => {
-    console.log('swapping');
     let contractName = 'swap-x-for-y';
     let tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
     let tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
+    let postConditionTrait = tokenXTrait;
+    let postConditionName = tokenX['name'].toLowerCase();
     if (inverseDirection) {
       contractName = 'swap-y-for-x';
       let tmpTrait = tokenXTrait;
       tokenXTrait = tokenYTrait;
       tokenYTrait = tmpTrait;
     }
+
+    const amount = uintCV(tokenXAmount * 1000000);
+    const postConditions = [
+      makeStandardFungiblePostCondition(
+        stxAddress || '',
+        FungibleConditionCode.Equal,
+        amount.value,
+        createAssetInfo(
+          contractAddress,
+          postConditionTrait,
+          postConditionName
+        )
+      )
+    ];
     await doContractCall({
       network,
       contractAddress,
@@ -147,12 +185,13 @@ export const Swap: React.FC = () => {
       functionArgs: [
         contractPrincipalCV(contractAddress, tokenXTrait),
         contractPrincipalCV(contractAddress, tokenYTrait),
-        uintCV(tokenXAmount * 1000000),
-        uintCV(tokenYAmount * 1000000)
+        amount,
+        uintCV(minimumReceived * 1000000)
       ],
       postConditionMode: 0x01,
+      postConditions,
       finished: data => {
-        console.log('finished collateralizing!', data);
+        console.log('finished swap!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
     });
@@ -184,16 +223,17 @@ export const Swap: React.FC = () => {
                     />
 
                     <label htmlFor="tokenXAmount" className="sr-only">{tokenX.name}</label>
-                    <input 
+                    <input
+                      type="number"
                       inputMode="decimal" 
-                      autoComplete="off" 
-                      autoCorrect="off" 
-                      type="text" 
-                      name="tokenXAmount" 
+                      autoFocus={true}
+                      autoComplete="off"
+                      autoCorrect="off"
+                      name="tokenXAmount"
                       id="tokenXAmount"
-                      pattern="^[0-9]*[.,]?[0-9]*$" 
+                      pattern="^[0-9]*[.,]?[0-9]*$"
                       placeholder="0.0"
-                      value={tokenXAmount}
+                      value={tokenXAmount || ''}
                       onChange={onInputChange}
                       className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1" />
                   </div>
@@ -201,11 +241,11 @@ export const Swap: React.FC = () => {
                   <div className="flex items-center text-sm p-4 pt-0 justify-end">
                     <div className="flex items-center justify-between w-full">
                       <div className="flex items-center justify-start">
-                        <p className="text-gray-500">Balance: {balanceSelectedTokenX} {tokenX.name}</p>
-                        {balanceSelectedTokenX > 0 ? (
+                        <p className="text-gray-500">Balance: {balanceSelectedTokenX.toLocaleString()} {tokenX.name}</p>
+                        {parseInt(balanceSelectedTokenX, 10) > 0 ? (
                           <button
                             type="button"
-                            onClick={() => setTokenXAmount(balanceSelectedTokenX)}
+                            onClick={() => setTokenXAmount(parseInt(balanceSelectedTokenX, 10))}
                             className="ml-2 p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
                           >
                             Max.
@@ -242,7 +282,7 @@ export const Swap: React.FC = () => {
                       id="tokenYAmount"
                       pattern="^[0-9]*[.,]?[0-9]*$" 
                       placeholder="0.0"
-                      value={tokenYAmount}
+                      value={tokenYAmount.toLocaleString()}
                       onChange={onInputChange}
                       disabled={true}
                       className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1 text-gray-600" />
@@ -251,10 +291,7 @@ export const Swap: React.FC = () => {
                   <div className="flex items-center text-sm p-4 pt-0 justify-end">
                     <div className="flex items-center justify-between w-full">
                       <div className="flex items-center justify-start">
-                        <p className="text-gray-500">Balance: {balanceSelectedTokenY} {tokenY.name}</p>
-                        {balanceSelectedTokenY > 0 ? (
-                          ``
-                        ) : `` }
+                        <p className="text-gray-500">Balance: {balanceSelectedTokenY.toLocaleString()} {tokenY.name}</p>
                       </div>
                     </div>
                   </div>
@@ -265,6 +302,7 @@ export const Swap: React.FC = () => {
                 {state.userData ? (
                   <button
                     type="button"
+                    disabled={tokenYAmount === 0}
                     onClick={() => swapTokens()}
                     className="w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   >
@@ -282,20 +320,36 @@ export const Swap: React.FC = () => {
               </form>
             </div>
           </div>
-          {/* <div className="-mt-4 p-4 pt-8 w-full max-w-md bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
-            <div className="space-y-2 flex flex-col">
-              <Box display="inline-block" className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
-                <RouterLink to={`swap/add/${tokenX.name}/${tokenY.name}`}>
+          <div className="-mt-4 p-4 pt-8 w-full max-w-md bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
+            <dl className="space-y-1 pb-3 border-b border-indigo-100">
+              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                <dt className="text-sm font-medium text-indigo-500">Minimum Received</dt>
+                <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{minimumReceived} {tokenY.name}</dd>
+              </div>
+              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                <dt className="text-sm font-medium text-indigo-500">Price Impact</dt>
+                <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">~{priceImpact}%</dd>
+              </div>
+              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                <dt className="text-sm font-medium text-indigo-500">Liquidity Provider fee</dt>
+                <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{lpFee} {tokenX.name}</dd>
+              </div>
+            </dl>
+            {/* <div className="space-y flex flex-col mt-3">
+              <Box className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
+                <RouterLink className="inline-flex items-center" to={`swap/add/${tokenX.name}/${tokenY.name}`}>
+                  <PlusCircleIcon className="h-5 w-5 mr-1" aria-hidden="true" />
                   Add Liquidity to {tokenX.name}-{tokenY.name}
                 </RouterLink>
               </Box>
-              <Box display="inline-block" className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
-                <RouterLink to={`swap/remove/${tokenX.name}/${tokenY.name}`}>
+              <Box className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
+                <RouterLink className="inline-flex items-center" to={`swap/remove/${tokenX.name}/${tokenY.name}`}>
+                  <MinusCircleIcon className="h-5 w-5 mr-1" aria-hidden="true" />
                   Remove Liquidity from {tokenX.name}-{tokenY.name}
                 </RouterLink>
               </Box>
-            </div>
-          </div> */}
+            </div> */}
+          </div>
         </main>
       </Container>
     </Box>  

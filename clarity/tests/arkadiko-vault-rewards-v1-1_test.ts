@@ -309,3 +309,72 @@ Clarinet.test({
     call.result.expectTuple()["collateral"].expectUint(0);
   },
 });
+
+Clarinet.test({
+  name: "vault-rewards: vault DIKO rewards over time",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let block = chain.mineBlock([
+      
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
+        types.ascii("STX"),
+        types.uint(77),
+      ], deployer.address),
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
+        types.uint(5000000000),
+        types.uint(1925000000),
+        types.ascii("STX-A"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+        ),
+      ], deployer.address),
+    ]);
+    block.receipts[1].result.expectOk().expectUint(1925000000);
+
+    // Check rewards at start
+    let call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
+    call.result.expectOk().expectUint(320000000)
+    
+    // Rewards for 6 weeks = 42 days
+    for (let index = 0; index < 50; index++) {
+
+      // Advance 1 day
+      chain.mineEmptyBlock(144);
+
+      // Need an action to update cumm reward, otherwise "get-pending-rewards" lacks behind
+      block = chain.mineBlock([
+        Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
+          types.uint(10000),
+          types.uint(1),
+          types.ascii("STX-A"),
+          types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
+          types.principal(
+            "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+          ),
+        ], wallet_1.address),
+      ]);
+      block.receipts[0].result.expectOk().expectUint(1);
+
+      // Get pending rewards
+      let call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
+      
+      // Print total rewards - for docs
+      // console.log(call.result.expectOk())
+
+      switch (index)
+      {
+        case 7: call.result.expectOk().expectUint(363052000000); break; // 363k
+        case 14: call.result.expectOk().expectUint(650622485000); break; // 650k
+        case 21: call.result.expectOk().expectUint(912099195000); break; // 912k
+        case 28: call.result.expectOk().expectUint(1150063590000); break; // 1.15 mio
+        case 35: call.result.expectOk().expectUint(1366573100000); break; // 1.36 mio
+        case 42: call.result.expectOk().expectUint(1510462730000); break; // 1.51 mio
+        case 49: call.result.expectOk().expectUint(1510462730000); break; // 1.51 mio
+        case 56: call.result.expectOk().expectUint(1510462730000); break; // 1.51 mio
+        default: break;
+      }
+    }
+  },
+});

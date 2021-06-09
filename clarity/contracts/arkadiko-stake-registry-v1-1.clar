@@ -125,7 +125,7 @@
       active: true,
       activated-block: block-height,
       deactivated-block: u0,
-      rewards-percentage: u200000 ;; 20% 
+      rewards-percentage: u100000 ;; 10% 
     }
   )
   ;; DIKO-xUSD LP
@@ -136,7 +136,7 @@
       active: true,
       activated-block: block-height,
       deactivated-block: u0,
-      rewards-percentage: u400000 ;; 40% 
+      rewards-percentage: u300000 ;; 30% 
     }
   )
   ;; wSTX-xUSD LP
@@ -147,7 +147,7 @@
       active: true,
       activated-block: block-height,
       deactivated-block: u0,
-      rewards-percentage: u400000 ;; 40% 
+      rewards-percentage: u600000 ;; 60% 
     }
   )
 )

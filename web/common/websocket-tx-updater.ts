@@ -61,5 +61,5 @@ const errorMessages = {
   'u4401': 'Not Authorized',
   'u414': 'Stacking still in progress - please withdraw later',
   'u52': 'No liquidation required',
-  'u71': 'Pair does not have enough liquidity to execute your order'
+  'u71': 'Slippage over tolerance. Try adjusting slippage manually to execute this swap'
 };

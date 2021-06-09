@@ -4,10 +4,17 @@ import { AppContext } from '@common/context';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import { stacksNetwork as network } from '@common/utils';
-import { callReadOnlyFunction, contractPrincipalCV, uintCV, standardPrincipalCV, cvToJSON } from '@stacks/transactions';
+import {
+  callReadOnlyFunction, contractPrincipalCV, uintCV,
+  standardPrincipalCV, cvToJSON,
+  createAssetInfo, FungibleConditionCode,
+  makeStandardFungiblePostCondition
+ } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
 import { websocketTxUpdater } from '@common/websocket-tx-updater';
+import { microToReadable } from '@common/vault-utils';
+import BN from 'bn.js';
 
 export const Stake = () => {
   const [state, setState] = useContext(AppContext);
@@ -110,6 +117,19 @@ export const Stake = () => {
   };
 
   const stakeDiko = async () => {
+    const amount = uintCV(parseInt(stakeAmount, 10) * 1000000);
+    const postConditions = [
+      makeStandardFungiblePostCondition(
+        stxAddress || '',
+        FungibleConditionCode.Equal,
+        amount.value,
+        createAssetInfo(
+          contractAddress,
+          "arkadiko-token",
+          "diko"
+        )
+      )
+    ];
     await doContractCall({
       network,
       contractAddress,
@@ -118,9 +138,10 @@ export const Stake = () => {
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
-        uintCV(parseInt(stakeAmount, 10) * 1000000)
+        amount
       ],
       postConditionMode: 0x01,
+      postConditions,
       finished: data => {
         console.log('finished broadcasting staking tx!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
@@ -198,7 +219,7 @@ export const Stake = () => {
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    You have a balance of {state.balance['diko'] / 1000000} DIKO
+                    You have a balance of {microToReadable(state.balance['diko']).toLocaleString()} DIKO
                   </p>
 
                   <div className="mt-4 relative rounded-md shadow-sm">
@@ -262,7 +283,7 @@ export const Stake = () => {
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    You are current staking {stakedAmount / 1000000} DIKO
+                    You are current staking {microToReadable(stakedAmount).toLocaleString()} DIKO
                   </p>
 
                   <div className="mt-4 relative rounded-md shadow-sm">
@@ -330,7 +351,7 @@ export const Stake = () => {
                               </dt>
                               <dd>
                                 <div className="text-lg font-medium text-gray-900">
-                                  {stakedAmount / 1000000} DIKO
+                                  {microToReadable(stakedAmount).toLocaleString()} DIKO
                                 </div>
                               </dd>
                             </dl>
@@ -354,7 +375,7 @@ export const Stake = () => {
                               </dt>
                               <dd>
                                 <div className="text-lg font-medium text-gray-900">
-                                  {pendingRewards} DIKO
+                                  {pendingRewards.toLocaleString()} DIKO
                                 </div>
                               </dd>
                             </dl>

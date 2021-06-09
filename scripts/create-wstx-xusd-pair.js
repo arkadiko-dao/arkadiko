@@ -20,8 +20,8 @@ const createPair = async () => {
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'xusd-token'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-swap-token-wstx-xusd'),
       tx.stringAsciiCV('wSTX-xUSD'),
-      tx.uintCV(new BN(5000000000)), // 5000 wSTX
-      tx.uintCV(new BN(5000000000)) // 5000 xUSD
+      tx.uintCV(new BN(500000000000)), // 500000 wSTX
+      tx.uintCV(new BN(500000000000)) // 500000 xUSD
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     nonce: new BN(nonce),

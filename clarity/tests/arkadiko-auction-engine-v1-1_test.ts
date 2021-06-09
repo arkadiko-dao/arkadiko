@@ -50,7 +50,7 @@ Clarinet.test({
 
     // Check total xUSD supply
     call = await xusdManager.totalSupply();
-    call.result.expectOk().expectUint(1002300000030);
+    call.result.expectOk().expectUint(2001300000030);
 
     // Check auction parameters
     let auction = auctions[1];
@@ -94,7 +94,7 @@ Clarinet.test({
     vault['auction-ended'].expectBool(true);
 
     call = await xusdManager.totalSupply();
-    call.result.expectOk().expectUint(1001000000030);
+    call.result.expectOk().expectUint(2000000000030);
 
     // now check the wallet of contract - should have burned all required xUSD, and have some left for burning gov tokens
     call = await xusdManager.balanceOf('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1');
@@ -451,7 +451,7 @@ Clarinet.test({
 
     // xUSD balance of deployer
     let call = await xusdManager.balanceOf(deployer.address)
-    call.result.expectOk().expectUint(2300000000);
+    call.result.expectOk().expectUint(1001300000000);
 
     // Test zero bid
     result = vaultAuction.bid(wallet_1, 0)

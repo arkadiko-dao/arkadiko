@@ -19,7 +19,7 @@ Clarinet.test({
     );
     call.result
       .expectOk()
-      .expectUint(1001000000030);
+      .expectUint(2000000000030);
 
     call = await chain.callReadOnlyFn("xusd-token", "get-balance", [
       types.principal(wallet_2.address),

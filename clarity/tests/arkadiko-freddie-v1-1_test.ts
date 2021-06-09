@@ -160,7 +160,7 @@ Clarinet.test({
     const fee = call.result.expectOk().expectUint(39998921);
 
     call = await xusdManager.balanceOf(deployer.address)
-    const balance = call.result.expectOk().expectUint(2000000000);
+    const balance = call.result.expectOk().expectUint(1001000000000);
 
     result = vaultManager.payStabilityFee(deployer, 1);
     result.expectOk().expectBool(true);
@@ -184,7 +184,7 @@ Clarinet.test({
     call.result.expectOk().expectUint(0);
 
     call = await xusdManager.balanceOf('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7')
-    call.result.expectOk().expectUint(1995001084 + 4998916);
+    call.result.expectOk().expectUint(1995001084 + 4998916 + 999000000000);
   }
 });
 
