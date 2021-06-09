@@ -611,7 +611,7 @@ Clarinet.test({
 
     // Mint xUSD for wallet_2
     let result = oracleManager.updatePrice("STX", 200);
-    result = vaultManager.createVault(wallet_2, "STX-A", 1000, 1300);
+    result = vaultManager.createVault(wallet_2, "STX-A", 1500, 1300);
 
     // Get LP tokens
     const dikoTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"
