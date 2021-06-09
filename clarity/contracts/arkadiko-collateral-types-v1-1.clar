@@ -223,7 +223,7 @@
       liquidation-penalty: u1000, ;; 10% in basis points
       stability-fee: u7610350076, ;; 4% / 365 days / (24*6) blocks = 0.00007610350076 fee per block
       stability-fee-decimals: u16,
-      stability-fee-apy: u50 ;; 50 basis points
+      stability-fee-apy: u400 ;; 400 basis points
     }
   )
   (map-set collateral-types
@@ -241,7 +241,7 @@
       liquidation-penalty: u1000,
       stability-fee: u1331811263, ;; 7% / 365 days / (24*6) blocks = 0.0001331811263 fee per block
       stability-fee-decimals: u15,
-      stability-fee-apy: u100 ;; 100 basis points
+      stability-fee-apy: u700 ;; 700 basis points
     }
   )
 )

@@ -548,7 +548,7 @@ Clarinet.test({
     // Initialize price of STX to $2 in the oracle
     let result = oracleManager.updatePrice("STX", 200);
 
-    // Create vault for wallet_1 - 1000 STX, 100 xUSD
+    // Create vault for wallet_1 - 1000 STX, 1100 xUSD
     result = vaultManager.createVault(wallet_1, "STX-A", 1000, 1100);
     result.expectOk().expectUint(1100000000);
 

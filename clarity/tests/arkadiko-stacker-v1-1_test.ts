@@ -326,15 +326,11 @@ Clarinet.test({
     stxTransferEvent1.stx_transfer_event.sender.expectPrincipal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stacker-v1-1");
     stxTransferEvent1.stx_transfer_event.recipient.expectPrincipal(deployer.address);
 
-    // TODO - Why did this change? Would have expected it to remain the same
-    // stxTransferEvent1.stx_transfer_event.amount.expectInt(312498000);
+    // 312498000-(312498000/3) = 208332000
     stxTransferEvent1.stx_transfer_event.amount.expectInt(208332000);
 
     stxTransferEvent2.stx_transfer_event.sender.expectPrincipal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stacker-v1-1");
     stxTransferEvent2.stx_transfer_event.recipient.expectPrincipal(deployer.address);
-
-    // TODO - Why did this change? Would have expected it to remain the same
-    // stxTransferEvent2.stx_transfer_event.amount.expectInt(118122300);
     stxTransferEvent2.stx_transfer_event.amount.expectInt(78748200);
   }
 });
