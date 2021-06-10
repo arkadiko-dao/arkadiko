@@ -19,7 +19,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    working-directory: clarity
+    defaults:
+      run:
+        working-directory: clarity
     steps:
       - uses: actions/checkout@v2
       - name: "Check contract"
