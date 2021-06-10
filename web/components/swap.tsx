@@ -30,7 +30,7 @@ export const Swap: React.FC = () => {
   const [currentPrice, setCurrentPrice] = useState(0.0);
   const [currentPair, setCurrentPair] = useState();
   const [inverseDirection, setInverseDirection] = useState(false);
-  const [slippageTolerance, setSlippageTolerance] = useState(0.0);
+  const [slippageTolerance, setSlippageTolerance] = useState(0.4);
   const [minimumReceived, setMinimumReceived] = useState(0);
   const [priceImpact, setPriceImpact] = useState('0');
   const [lpFee, setLpFee] = useState('0');
@@ -117,14 +117,9 @@ export const Swap: React.FC = () => {
     const balanceY = currentPair['balance-y'].value;
     let amount = 0;
 
-    if (slippageTolerance === 0) {
-      // amount = ((960 * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
-      amount = 0.99 * (balanceX / balanceY) * tokenXAmount;
-    } else {
-      // custom slippage set
-      let slippage = 1000 - (slippageTolerance * 100);
-      amount = ((slippage * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
-    }
+    const slippage = (100 - slippageTolerance) / 100;
+    // amount = ((slippage * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
+    amount = slippage * (balanceX / balanceY) * tokenXAmount;
     setMinimumReceived((amount * 0.97));
     setTokenYAmount(amount);
     const impact = ((balanceX / 1000000) / tokenXAmount);
@@ -149,6 +144,10 @@ export const Swap: React.FC = () => {
     setTokenY(tmpTokenX);
     setTokenXAmount(0.0);
     setTokenYAmount(0.0);
+  };
+
+  const setDefaultSlippage = () => {
+    setSlippageTolerance(0.4);
   };
 
   const swapTokens = async () => {
@@ -210,6 +209,7 @@ export const Swap: React.FC = () => {
                 </h2>
                 <SwapSettings
                   slippageTolerance={slippageTolerance}
+                  setDefaultSlippage={setDefaultSlippage}
                   setSlippageTolerance={setSlippageTolerance}
                 />
               </div>
