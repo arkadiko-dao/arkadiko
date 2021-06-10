@@ -24,6 +24,9 @@ jobs:
         working-directory: clarity
     steps:
       - uses: actions/checkout@v2
+      - name: "go into correct directory"
+        run: |
+          cd clarity
       - name: "Check contract"
         uses: docker://ludovic/clarinet:latest
         with:
