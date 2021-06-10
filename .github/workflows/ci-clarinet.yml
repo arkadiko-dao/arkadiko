@@ -21,11 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: "go into correct directory"
-        run: |
-          cd clarity
       - name: "Check contract"
         uses: docker://ludovic/clarinet:latest
+        working-directory: clarity
         with:
           args: check
       - name: "Execute test suite"
