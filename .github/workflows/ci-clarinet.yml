@@ -19,11 +19,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./clarity
     steps:
       - uses: actions/checkout@v2
       - name: "Check contract"
         uses: docker://ludovic/clarinet:latest
-        working-directory: clarity
         with:
           args: check
       - name: "Execute test suite"
