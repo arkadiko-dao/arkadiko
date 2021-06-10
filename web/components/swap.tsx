@@ -236,7 +236,8 @@ export const Swap: React.FC = () => {
                       placeholder="0.0"
                       value={tokenXAmount || ''}
                       onChange={onInputChange}
-                      className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1" />
+                      className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1"
+                      style={{appearance: 'textfield'}} />
                   </div>
 
                   <div className="flex items-center text-sm p-4 pt-0 justify-end">
