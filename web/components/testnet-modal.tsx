@@ -16,11 +16,11 @@ export const TestnetModal = () => {
   };
 
   return (
-    <div className="hidden sm:block">
+    <div>
       {env === 'mocknet' ? (        
         <Modal isOpen={showTestnetModal}>
-          <div className="flex pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="inline-block align-bottom bg-white rounded-lg px-2 pt-5 pb-4 text-left w-24 overflow-hidden my-8 align-middle max-w-sm w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+          <div className="flex p-4 text-center sm:block sm:p-0">
+            <div className="inline-block align-bottom bg-white rounded-lg px-2 pt-5 pb-4 text-left w-24 overflow-hidden align-middle max-w-sm w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
               <div>
                 <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -40,7 +40,7 @@ export const TestnetModal = () => {
                     <p className="text-left text-sm text-gray-500 mt-2">
                       What we have in store:
                     </p>
-                    <ul className="list-disc">
+                    <ul className="text-left text-sm text-gray-500 my-2 pl-4 list-disc">
                       <li>Create vaults and mint xUSD with two collateral types: STX-A and STX-B</li>
                       <li>Buy up collateral in liquidated vault auctions</li>
                       <li>Earn DIKO vault rewards</li>
@@ -53,7 +53,7 @@ export const TestnetModal = () => {
                 </div>
               </div>
               <div className="mt-5 sm:mt-6">
-                <button type="button" onClick={() => hideTestnetModal()} className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-600 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:text-sm">
+                <button type="button" onClick={() => hideTestnetModal()} className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
                   Got it!
                 </button>
               </div>
