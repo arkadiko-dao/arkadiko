@@ -9,14 +9,14 @@ export const websocketTxUpdater = (redirectUri:string) => {
   let coreApiUrl = 'stacks-node-api.mainnet.stacks.co';
   if (env.includes('mocknet')) {
     coreApiUrl = 'localhost:3999';
-    // coreApiUrl = 'https://dull-liger-41.loca.lt';
+    coreApiUrl = 'dull-liger-41.loca.lt';
   } else if (env.includes('testnet')) {
     coreApiUrl = 'stacks-node-api.testnet.stacks.co';
   }
 
   useEffect(() => {
     const subscribe = async (txId:string) => {
-      const client = await connectWebSocketClient(`ws://${coreApiUrl}`);
+      const client = await connectWebSocketClient(`wss://${coreApiUrl}`);
       await client.subscribeTxUpdates(txId, update => {
         console.log('Got an update:', update);
         if (update['tx_status'] == 'success') {
