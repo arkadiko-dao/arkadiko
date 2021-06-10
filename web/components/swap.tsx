@@ -31,7 +31,7 @@ export const Swap: React.FC = () => {
   const [currentPair, setCurrentPair] = useState();
   const [inverseDirection, setInverseDirection] = useState(false);
   const [slippageTolerance, setSlippageTolerance] = useState(0.0);
-  const [minimumReceived, setMinimumReceived] = useState('0');
+  const [minimumReceived, setMinimumReceived] = useState(0);
   const [priceImpact, setPriceImpact] = useState('0');
   const [lpFee, setLpFee] = useState('0');
 
@@ -119,13 +119,13 @@ export const Swap: React.FC = () => {
 
     if (slippageTolerance === 0) {
       // amount = ((960 * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
-      amount = 0.95 * (balanceX / balanceY) * tokenXAmount;
+      amount = 0.99 * (balanceX / balanceY) * tokenXAmount;
     } else {
       // custom slippage set
       let slippage = 1000 - (slippageTolerance * 100);
       amount = ((slippage * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
     }
-    setMinimumReceived((amount * 0.97).toLocaleString());
+    setMinimumReceived((amount * 0.97));
     setTokenYAmount(amount);
     const impact = ((balanceX / 1000000) / tokenXAmount);
     setPriceImpact((100 / impact).toLocaleString());
@@ -177,6 +177,7 @@ export const Swap: React.FC = () => {
         )
       )
     ];
+    console.log(minimumReceived, parseFloat(minimumReceived));
     await doContractCall({
       network,
       contractAddress,
@@ -186,7 +187,7 @@ export const Swap: React.FC = () => {
         contractPrincipalCV(contractAddress, tokenXTrait),
         contractPrincipalCV(contractAddress, tokenYTrait),
         amount,
-        uintCV(minimumReceived * 1000000)
+        uintCV(parseFloat(minimumReceived) * 1000000)
       ],
       postConditionMode: 0x01,
       postConditions,
@@ -324,7 +325,7 @@ export const Swap: React.FC = () => {
             <dl className="space-y-1 pb-3 border-b border-indigo-100">
               <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                 <dt className="text-sm font-medium text-indigo-500">Minimum Received</dt>
-                <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{minimumReceived} {tokenY.name}</dd>
+                <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{minimumReceived.toLocaleString()} {tokenY.name}</dd>
               </div>
               <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                 <dt className="text-sm font-medium text-indigo-500">Price Impact</dt>
