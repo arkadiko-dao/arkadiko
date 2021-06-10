@@ -23,7 +23,13 @@
 
 (define-public (add-tokens-to-stack (token-amount uint))
   (begin
-    (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
+    (asserts!
+      (or
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker")))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
 
     (var-set tokens-to-stack (+ (var-get tokens-to-stack) token-amount))
     (ok u200)
