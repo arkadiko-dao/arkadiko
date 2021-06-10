@@ -44,7 +44,6 @@ export const App: React.FC = () => {
     });
     const json = cvToJSON(vaults);
     let arr:Array<VaultProps> = [];
-    console.log(address, vaults);
 
     json.value.value.forEach((e: TupleData) => {
       const vault = tupleCV(e);
