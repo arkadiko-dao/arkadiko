@@ -240,6 +240,7 @@
       )
       (begin
         ;; TODO: add the earned-amount to the number of STX to be stacked
+        (try! (contract-call? .arkadiko-stx-reserve-v1-1 add-tokens-to-stack earned-amount))
         (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
           updated-at-block-height: block-height,
           stacked-tokens: new-collateral-amount,
