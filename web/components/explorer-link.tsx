@@ -14,7 +14,7 @@ export const ExplorerLink: React.FC<LinkProps> = ({ txId, text }) => {
     id = `0x${id}`;
   }
   const url = location.origin.includes('localhost')
-    ? `https://dull-liger-41.loca.lt/extended/v1/tx/${id}`
+    ? `http://localhost:3999/extended/v1/tx/${id}`
     : `https://explorer.stacks.co/txid/${id}?chain=testnet`;
   return (
     <Box>

@@ -6,17 +6,21 @@ export const websocketTxUpdater = (redirectUri:string) => {
   const [state, setState] = useContext(AppContext);
   const env = process.env.REACT_APP_NETWORK_ENV || 'testnet';
 
-  let coreApiUrl = 'stacks-node-api.mainnet.stacks.co';
+  let websocketUrl = 'wss://stacks-node-api.mainnet.stacks.co';
+  let coreApiUrl = 'https://stacks-node-api.mainnet.stacks.co';
   if (env.includes('mocknet')) {
-    coreApiUrl = 'localhost:3999';
-    coreApiUrl = 'dull-liger-41.loca.lt';
+    websocketUrl = 'ws://localhost:3999';
+    coreApiUrl = 'http://localhost:3999';
+    // coreApiUrl = 'https://dull-liger-41.loca.lt';
+    // websocketUrl = 'wss://dull-liger-41.loca.lt';
   } else if (env.includes('testnet')) {
-    coreApiUrl = 'stacks-node-api.testnet.stacks.co';
+    coreApiUrl = 'https://stacks-node-api.testnet.stacks.co';
+    websocketUrl = 'wss://stacks-node-api.testnet.stacks.co';
   }
 
   useEffect(() => {
     const subscribe = async (txId:string) => {
-      const client = await connectWebSocketClient(`wss://${coreApiUrl}`);
+      const client = await connectWebSocketClient(`${coreApiUrl}`);
       await client.subscribeTxUpdates(txId, update => {
         console.log('Got an update:', update);
         if (update['tx_status'] == 'success') {
@@ -26,7 +30,7 @@ export const websocketTxUpdater = (redirectUri:string) => {
             window.location.reload(true);
           }
         } else if (update['tx_status'] == 'abort_by_response') {
-          let url = `http://${coreApiUrl}/extended/v1/tx/${txId}`;
+          let url = `${coreApiUrl}/extended/v1/tx/${txId}`;
           fetch(url).then(response => response.json()).then(data => {
             const error = errToHumanReadable(data['tx_result']['repr']);
             setState(prevState => ({
@@ -59,6 +63,7 @@ const errToHumanReadable = (err: string) => {
 
 const errorMessages = {
   'u1': 'You do not have enough balance to make this transaction',
+  'u119': 'You tried minting too much debt. Try minting less.',
   'u4401': 'Not Authorized',
   'u414': 'Stacking still in progress - please withdraw later',
   'u52': 'No liquidation required',
