@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.6.0/index.ts";
+} from "https://deno.land/x/clarinet@v0.10.0/index.ts";
 
 Clarinet.test({
   name: "vault-rewards: vault DIKO rewards",
@@ -29,7 +29,7 @@ Clarinet.test({
     ]);
 
     // Check rewards
-    let call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
+    let call:any = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
     call.result.expectOk().expectUint(320000000)
     
     chain.mineEmptyBlock(1);
@@ -89,7 +89,7 @@ Clarinet.test({
 
     chain.mineEmptyBlock(30);
 
-    let call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
+    let call:any = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
     call.result.expectOk().expectUint(890000000000);   
 
     call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
@@ -127,7 +127,7 @@ Clarinet.test({
     ]);
 
     // Check rewards
-    let call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
+    let call:any = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
     call.result.expectOk().expectUint(320000000)
 
     chain.mineEmptyBlock(5);
@@ -182,7 +182,7 @@ Clarinet.test({
     ]);
 
     // Check rewards
-    let call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
+    let call:any = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
     call.result.expectOk().expectUint(320000000)
 
     chain.mineEmptyBlock(5);
@@ -239,7 +239,7 @@ Clarinet.test({
     ]);
 
     // Collateral in vault rewards contract
-    let call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-collateral-of", [types.principal(deployer.address)], deployer.address);
+    let call:any = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-collateral-of", [types.principal(deployer.address)], deployer.address);
     call.result.expectTuple()["collateral"].expectUint(5000000);
     call.result.expectTuple()["cumm-reward-per-collateral"].expectUint(0);
 
@@ -334,7 +334,7 @@ Clarinet.test({
     block.receipts[1].result.expectOk().expectUint(1925000000);
 
     // Check rewards at start
-    let call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
+    let call:any = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
     call.result.expectOk().expectUint(320000000)
     
     // Rewards for 6 weeks = 42 days

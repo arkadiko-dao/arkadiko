@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.6.0/index.ts";
+} from "https://deno.land/x/clarinet@v0.10.0/index.ts";
 
 import { 
   OracleManager,
@@ -52,7 +52,7 @@ Clarinet.test({
     result.expectOk().expectUint(5200);
 
     let call = await vaultAuction.getAuctions();
-    let auctions = call.result.expectOk().expectList().map((e: String) => e.expectTuple());
+    let auctions:any = call.result.expectOk().expectList().map((e: String) => e.expectTuple());
     auctions[0]["vault-id"].expectUint(0);
     auctions[1]["vault-id"].expectUint(1);
 
@@ -229,7 +229,7 @@ Clarinet.test({
     ]);
 
     call = await vaultManager.getVaultById(1, deployer);
-    let vault = call.result.expectTuple();
+    let vault:any = call.result.expectTuple();
     vault['stability-fee-accrued'].expectUint(39998921);
 
     chain.mineEmptyBlock(365*144);
@@ -392,7 +392,7 @@ Clarinet.test({
     result = vaultManager.enableVaultWithdrawals(1);
 
     let call = await vaultManager.getVaultById(1, deployer);
-    let vault = call.result.expectTuple();
+    let vault:any = call.result.expectTuple();
     vault['revoked-stacking'].expectBool(true);
     vault['stacked-tokens'].expectUint(0);
 
@@ -466,7 +466,7 @@ Clarinet.test({
     result = vaultManager.enableVaultWithdrawals(1);
 
     let call = await vaultManager.getVaultById(1, deployer);
-    let vault = call.result.expectTuple();
+    let vault:any = call.result.expectTuple();
     vault['revoked-stacking'].expectBool(true);
     vault['stacked-tokens'].expectUint(0);
 
