@@ -1,7 +1,7 @@
 # GitHub action to verify `clarinet check` runs against contract
 # Uses a prepare script outlined in testing section of README
 
-name: Test Contracts
+name: CI Clarinet
 
 # Controls when the action will run.
 on:
