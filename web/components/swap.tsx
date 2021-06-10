@@ -8,7 +8,8 @@ import {
   callReadOnlyFunction, cvToJSON,
   contractPrincipalCV, uintCV,
   createAssetInfo, FungibleConditionCode,
-  makeStandardFungiblePostCondition
+  makeStandardFungiblePostCondition,
+  makeStandardSTXPostCondition
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
@@ -164,19 +165,29 @@ export const Swap: React.FC = () => {
     }
 
     const amount = uintCV(tokenXAmount * 1000000);
-    const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.Equal,
-        amount.value,
-        createAssetInfo(
-          contractAddress,
-          postConditionTrait,
-          postConditionName
+    let postConditions = [];
+    if (tokenX.name === 'STX') {
+      postConditions = [
+        makeStandardSTXPostCondition(
+          stxAddress || '',
+          FungibleConditionCode.Equal,
+          amount.value
         )
-      )
-    ];
-    console.log(minimumReceived, parseFloat(minimumReceived));
+      ];
+    } else {
+      postConditions = [
+        makeStandardFungiblePostCondition(
+          stxAddress || '',
+          FungibleConditionCode.Equal,
+          amount.value,
+          createAssetInfo(
+            contractAddress,
+            postConditionTrait,
+            postConditionName
+          )
+        )
+      ];
+    }
     await doContractCall({
       network,
       contractAddress,
