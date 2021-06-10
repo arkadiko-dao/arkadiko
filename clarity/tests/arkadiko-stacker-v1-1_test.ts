@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.6.0/index.ts";
+} from "https://deno.land/x/clarinet@v0.10.0/index.ts";
 
 Clarinet.test({
   name: "stacker: initiate stacking in PoX contract with enough STX tokens",
@@ -36,7 +36,7 @@ Clarinet.test({
       ], wallet_1.address)
     ]);
 
-    let call = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [], deployer.address);
+    let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [], deployer.address);
     call.result.expectOk().expectUint(1500000000); // 1500 STX
 
     block = chain.mineBlock([
@@ -102,7 +102,7 @@ Clarinet.test({
       ], deployer.address)
     ]);
 
-    let call = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [], deployer.address);
+    let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [], deployer.address);
     call.result.expectOk().expectUint(1000000000); // 1000 STX
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
@@ -168,7 +168,7 @@ Clarinet.test({
       ], wallet_1.address)
     ]);
 
-    let call = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [], deployer.address);
+    let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [], deployer.address);
     call.result.expectOk().expectUint(1500000000); // 1500 STX
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
@@ -288,7 +288,7 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    let call = await chain.callReadOnlyFn(
+    let call:any = await chain.callReadOnlyFn(
       "arkadiko-auction-engine-v1-1",
       "get-auction-open",
       [types.uint(1)],
@@ -407,7 +407,7 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
 
-    let call = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [], deployer.address);
+    let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [], deployer.address);
     call.result.expectOk().expectUint(0); 
 
     let block = chain.mineBlock([
@@ -453,7 +453,7 @@ Clarinet.test({
       ], wallet_1.address)
     ]);
 
-    let call = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [], deployer.address);
+    let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [], deployer.address);
     call.result.expectOk().expectUint(1500000000); // 1500 STX
 
     block = chain.mineBlock([
@@ -497,7 +497,7 @@ Clarinet.test({
       ], deployer.address)
     ]);
 
-    let call = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [], deployer.address);
+    let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [], deployer.address);
     call.result.expectOk().expectUint(1000000000); // 1000 STX
 
     block = chain.mineBlock([
@@ -554,7 +554,7 @@ Clarinet.test({
       ], deployer.address)
     ]);
 
-    let call = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [], deployer.address);
+    let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [], deployer.address);
     call.result.expectOk().expectUint(1000000000); 
 
     block = chain.mineBlock([
@@ -608,7 +608,7 @@ Clarinet.test({
       ], deployer.address)
     ]);
 
-    let call = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [], deployer.address);
+    let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [], deployer.address);
     call.result.expectOk().expectUint(1000000000); // 1000 STX
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [

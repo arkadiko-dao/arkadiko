@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.6.0/index.ts";
+} from "https://deno.land/x/clarinet@v0.10.0/index.ts";
 
 import { 
   OracleManager,
@@ -53,7 +53,7 @@ Clarinet.test({
     call.result.expectOk().expectUint(2001300000030);
 
     // Check auction parameters
-    let auction = auctions[1];
+    let auction:any = auctions[1];
     auction['collateral-amount'].expectUint(1500000000);
     auction['debt-to-raise'].expectUint(1378000118); // 6% (from the 10% liquidation penalty) of 1300 xUSD extra = 1378 xUSD + stability fee
 
@@ -67,7 +67,7 @@ Clarinet.test({
 
     // Last bid of 1000 xUSD
     let lastBidCall = await vaultAuction.getLastBid(1, 0, wallet_1);
-    let lastBid = lastBidCall.result.expectTuple();
+    let lastBid:any = lastBidCall.result.expectTuple();
     lastBid['xusd'].expectUint(1000000000);
 
     result = vaultManager.fetchMinimumCollateralAmount(1, wallet_1);
@@ -88,7 +88,7 @@ Clarinet.test({
 
     // Auction info
     call = await vaultManager.getVaultById(1, wallet_1);
-    let vault = call.result.expectTuple();
+    let vault:any = call.result.expectTuple();
     vault['leftover-collateral'].expectUint(543055475);
     vault['is-liquidated'].expectBool(true);
     vault['auction-ended'].expectBool(true);
@@ -187,8 +187,8 @@ Clarinet.test({
 
     // The auction sold off all of its collateral now, but not enough debt was raised
     // As a result, we will raise debt through a governance token auction
-    let call = await vaultAuction.getAuctionById(1, wallet_1);
-    let auction = call.result.expectTuple();
+    let call:any = await vaultAuction.getAuctionById(1, wallet_1);
+    let auction:any = call.result.expectTuple();
     auction['total-collateral-sold'].expectUint(1500000000);
 
     chain.mineEmptyBlock(160);
@@ -207,7 +207,7 @@ Clarinet.test({
     const debtToRaise = auction['debt-to-raise'].expectUint(1378000118); // 1378 xUSD
 
     call = await vaultAuction.getAuctionById(2, wallet_1);
-    let dikoAuction = call.result.expectTuple();
+    let dikoAuction:any = call.result.expectTuple();
     dikoAuction['collateral-token'].expectAscii('DIKO'); // auction off some gov token
     dikoAuction['debt-to-raise'].expectUint(debtToRaise - debtRaised); // raise the remainder of previous auction
 
@@ -224,7 +224,7 @@ Clarinet.test({
     call.result.expectOk().expectBool(false);
 
     call = await vaultManager.getVaultById(1, wallet_1);
-    let vault = call.result.expectTuple();
+    let vault:any = call.result.expectTuple();
     vault['leftover-collateral'].expectUint(0);
     vault['is-liquidated'].expectBool(true);
     vault['auction-ended'].expectBool(true);
@@ -261,7 +261,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     let call = await vaultAuction.getAuctionById(1, wallet_1);
-    let auction = call.result.expectTuple();
+    let auction:any = call.result.expectTuple();
     let endBlockHeight = auction['ends-at'].expectUint(148);
     // 1 bid has been made and collateral is left.
     // Now image no bids come in for the 2nd lot.
@@ -270,7 +270,7 @@ Clarinet.test({
 
     result = vaultAuction.closeAuction(deployer, 1);
     call = await vaultAuction.getAuctionById(1, wallet_1);
-    let extendedAuction = call.result.expectTuple();
+    let extendedAuction:any = call.result.expectTuple();
     extendedAuction['lots-sold'].expectUint(1);
     extendedAuction['ends-at'].expectUint(endBlockHeight + 144);
 
@@ -711,7 +711,7 @@ Clarinet.test({
     call.result.expectOk().expectUint(0);
 
     call = await vaultManager.getVaultById(1, deployer);
-    let vault = call.result.expectTuple();
+    let vault:any = call.result.expectTuple();
     vault['revoked-stacking'].expectBool(false);
     vault['stacked-tokens'].expectUint(1000000000);
 
@@ -771,7 +771,7 @@ Clarinet.test({
     call.result.expectOk().expectUint(0);
 
     call = await vaultManager.getVaultById(1, deployer);
-    let vault = call.result.expectTuple();
+    let vault:any = call.result.expectTuple();
     vault['revoked-stacking'].expectBool(false);
     vault['stacked-tokens'].expectUint(1000000000);
 
@@ -852,7 +852,7 @@ Clarinet.test({
     call.result.expectOk().expectUint(0);
 
     call = await vaultManager.getVaultById(1, deployer);
-    let vault = call.result.expectTuple();
+    let vault:any = call.result.expectTuple();
     vault['revoked-stacking'].expectBool(true);
     vault['stacked-tokens'].expectUint(0);
 

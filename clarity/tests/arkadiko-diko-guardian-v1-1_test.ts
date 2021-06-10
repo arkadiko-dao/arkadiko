@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.6.0/index.ts";
+} from "https://deno.land/x/clarinet@v0.10.0/index.ts";
 
 Clarinet.test({
 name: "diko-guardian: print staking distribution",

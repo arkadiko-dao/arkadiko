@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.6.0/index.ts";
+} from "https://deno.land/x/clarinet@v0.10.0/index.ts";
 
 Clarinet.test({
   name: "governance: add proposal and test proposal data",
@@ -14,7 +14,7 @@ Clarinet.test({
 
     // Get current proposals at start
     // TODO: start with empty list?
-    let call = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-proposal-ids", [], wallet_1.address);
+    let call:any = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-proposal-ids", [], wallet_1.address);
     call.result.expectOk().expectList()[0].expectUint(0);
     call = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-proposal-by-id", [types.uint(0)], wallet_1.address);
     call.result.expectTuple()["is-open"].expectBool(false);
@@ -80,7 +80,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
 
     // Should have no votes
-    let call = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-proposal-by-id", [types.uint(1)], wallet_1.address);
+    let call:any = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-proposal-by-id", [types.uint(1)], wallet_1.address);
     call.result.expectTuple()["yes-votes"].expectUint(0);
     call.result.expectTuple()["no-votes"].expectUint(0);
 
@@ -202,7 +202,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectUint(3200);
 
     // Check if proposal updated
-    let call = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-proposal-by-id", [types.uint(1)], wallet_1.address);
+    let call:any = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-proposal-by-id", [types.uint(1)], wallet_1.address);
     call.result.expectTuple()["is-open"].expectBool(false);
 
     // Check if DAO updated
@@ -267,7 +267,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectUint(3200);
 
     // Check if proposal updated
-    let call = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-proposal-by-id", [types.uint(1)], wallet_1.address);
+    let call:any = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-proposal-by-id", [types.uint(1)], wallet_1.address);
     call.result.expectTuple()["is-open"].expectBool(false);
 
     // DAO should not be updated

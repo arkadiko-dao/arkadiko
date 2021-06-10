@@ -4,7 +4,7 @@ import {
     Clarinet,
     Tx,
     types,
-} from "https://deno.land/x/clarinet@v0.6.0/index.ts";
+} from "https://deno.land/x/clarinet@v0.10.0/index.ts";
 
 import { 
   OracleManager
@@ -25,7 +25,7 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     // Get pool info
-    let call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pool-data", [
+    let call:any = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pool-data", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1')
     ], wallet_1.address);
     call.result.expectTuple()['name'].expectAscii('DIKO');
