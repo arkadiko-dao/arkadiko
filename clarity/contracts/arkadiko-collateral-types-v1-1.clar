@@ -191,7 +191,7 @@
                 })
                 (if (is-eq key "stability-fee-decimals")
                   (merge type {
-                    stability-fee-apy: (get new-value change)
+                    stability-fee-decimals: (get new-value change)
                   })
                   type
                 )
@@ -217,13 +217,13 @@
       token-address: OWNER,
       url: "https://www.stacks.co/",
       total-debt: u0,
-      liquidation-ratio: u150,
+      liquidation-ratio: u175, ;;175
       collateral-to-debt-ratio: u200,
-      maximum-debt: u100000000000000,
+      maximum-debt: u500000000000000, ;; 500 mio
       liquidation-penalty: u1000, ;; 10% in basis points
-      stability-fee: u95908125, ;; 0.001363077% daily percentage == 0.5% APY, 0.0000094658125% per 10 minutes (1 block)
-      stability-fee-decimals: u15,
-      stability-fee-apy: u50 ;; 50 basis points
+      stability-fee: u7610350076, ;; 4% / 365 days / (24*6) blocks = 0.00007610350076 fee per block
+      stability-fee-decimals: u16,
+      stability-fee-apy: u400 ;; 400 basis points
     }
   )
   (map-set collateral-types
@@ -235,31 +235,13 @@
       token-address: OWNER,
       url: "https://www.stacks.co/",
       total-debt: u0,
-      liquidation-ratio: u115,
+      liquidation-ratio: u150,
       collateral-to-debt-ratio: u200,
-      maximum-debt: u10000000000000,
+      maximum-debt: u20000000000000, ;; 200 mio
       liquidation-penalty: u1000,
-      stability-fee: u191816250, ;; 0.002726155% daily percentage == 1% APY
-      stability-fee-decimals: u14,
-      stability-fee-apy: u100 ;; 100 basis points
-    }
-  )
-  (map-set collateral-types
-    { name: "DIKO-A" }
-    {
-      name: "Arkadiko",
-      token: "DIKO",
-      token-type: "DIKO-A",
-      token-address: .arkadiko-token,
-      url: "https://www.arkadiko.finance/",
-      total-debt: u0,
-      liquidation-ratio: u200,
-      collateral-to-debt-ratio: u300,
-      maximum-debt: u10000000000000,
-      liquidation-penalty: u1300,
-      stability-fee: u191816250, ;; 0.002726155% daily percentage == 1% APY
+      stability-fee: u1331811263, ;; 7% / 365 days / (24*6) blocks = 0.0001331811263 fee per block
       stability-fee-decimals: u15,
-      stability-fee-apy: u100
+      stability-fee-apy: u700 ;; 700 basis points
     }
   )
 )

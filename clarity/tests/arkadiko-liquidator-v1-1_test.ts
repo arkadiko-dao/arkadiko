@@ -19,7 +19,7 @@ Clarinet.test({
         types.uint(200),
       ], deployer.address),
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(100000000), // 100 STX
+        types.uint(150000000), // 150 STX
         types.uint(130000000), // mint 130 xUSD
         types.ascii("STX-A"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
