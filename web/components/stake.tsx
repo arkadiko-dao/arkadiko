@@ -52,7 +52,6 @@ export const Stake = () => {
         senderAddress: stxAddress || '',
         network: network,
       });
-      setStakedAmount(cvToJSON(totalStakedCall).value);
       const totalStaked = cvToJSON(totalStakedCall).value / 1000000;
 
       const stakerInfoCall = await callReadOnlyFunction({
@@ -65,6 +64,7 @@ export const Stake = () => {
       });
       const stakerInfo = cvToJSON(stakerInfoCall).value;
       const dikoStaked = stakerInfo['uamount'].value / 1000000;
+      setStakedAmount(dikoStaked * 1000000);
 
       const rewardsPerBlockCall = await callReadOnlyFunction({
         contractAddress,
