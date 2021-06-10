@@ -9,6 +9,7 @@ export const websocketTxUpdater = (redirectUri:string) => {
   let coreApiUrl = 'stacks-node-api.mainnet.stacks.co';
   if (env.includes('mocknet')) {
     coreApiUrl = 'localhost:3999';
+    // coreApiUrl = 'https://dull-liger-41.loca.lt';
   } else if (env.includes('testnet')) {
     coreApiUrl = 'stacks-node-api.testnet.stacks.co';
   }
