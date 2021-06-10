@@ -81,7 +81,7 @@ export const Swap: React.FC = () => {
         setCurrentPair(json3['value']['value']['value']);
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
-        const basePrice = (balanceX / balanceY).toFixed(2);
+        const basePrice = (balanceY / balanceX).toFixed(2);
         // const price = parseFloat(basePrice) + (parseFloat(basePrice) * 0.01);
         setCurrentPrice(basePrice);
         setInverseDirection(false);
@@ -93,7 +93,7 @@ export const Swap: React.FC = () => {
           setInverseDirection(true);
           const balanceX = json4['value']['value']['value']['balance-x'].value;
           const balanceY = json4['value']['value']['value']['balance-y'].value;
-          const basePrice = (balanceX / balanceY).toFixed(2);
+          const basePrice = (balanceY / balanceX).toFixed(2);
           setCurrentPrice(basePrice);
         }
       }
