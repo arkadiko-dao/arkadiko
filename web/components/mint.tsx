@@ -92,7 +92,12 @@ export const Mint = () => {
   };
 
   const addTestnetStx = async () => {
-    const url = `https://stacks-node-api.testnet.stacks.co/extended/v1/debug/faucet?address=${address}`;
+    let url;
+    if (env === 'testnet') {
+      url = `https://stacks-node-api.testnet.stacks.co/extended/v1/debug/faucet?address=${address}`;
+    } else {
+      url = `https://stacks-node-api.regtest.stacks.co/extended/v1/debug/faucet?address=${address}`;
+    }
     await fetch(url, {
       method: 'POST',
     });
