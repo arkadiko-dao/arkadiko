@@ -83,7 +83,7 @@ export const Swap: React.FC = () => {
         setCurrentPair(json3['value']['value']['value']);
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
-        const basePrice = (balanceY / balanceX).toFixed(2);
+        const basePrice = (balanceX / balanceY).toFixed(2);
         // const price = parseFloat(basePrice) + (parseFloat(basePrice) * 0.01);
         setCurrentPrice(basePrice);
         setInverseDirection(false);
@@ -127,7 +127,11 @@ export const Swap: React.FC = () => {
 
     const slippage = (100 - slippageTolerance) / 100;
     // amount = ((slippage * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
-    amount = slippage * (balanceX / balanceY) * tokenXAmount;
+    if (inverseDirection) {
+      amount = slippage * (balanceX / balanceY) * tokenXAmount;
+    } else {
+      amount = slippage * (balanceY / balanceX) * tokenXAmount;
+    }
     setMinimumReceived((amount * 0.97));
     setTokenYAmount(amount);
     const impact = ((balanceX / 1000000) / tokenXAmount);

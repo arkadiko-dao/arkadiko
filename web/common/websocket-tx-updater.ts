@@ -29,7 +29,7 @@ export const websocketTxUpdater = (redirectUri:string) => {
           } else {
             window.location.reload(true);
           }
-        } else if (update['tx_status'] == 'abort_by_response') {
+        } else if (update['tx_status'] == 'abort_by_response' || update['tx_status'] == 'abort_by_post_condition') {
           let url = `${coreApiUrl}/extended/v1/tx/${txId}`;
           fetch(url).then(response => response.json()).then(data => {
             const error = errToHumanReadable(data['tx_result']['repr']);
