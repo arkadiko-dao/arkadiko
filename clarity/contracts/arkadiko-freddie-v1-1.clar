@@ -521,8 +521,9 @@
   (let (
     (vault (get-vault-by-id vault-id))
     (number-of-blocks (- block-height (get stability-fee-last-accrued vault)))
-    (fee (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-stability-fee (get collateral-type vault))))
-    (decimals (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-stability-fee-decimals (get collateral-type vault))))
+    (collateral-type (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-collateral-type-by-name (get collateral-type vault))))
+    (fee (get stability-fee collateral-type))
+    (decimals (get stability-fee-decimals collateral-type))
     (interest (/ (* (get debt vault) fee) (pow u10 decimals)))
   )
     (ok (* number-of-blocks interest))
