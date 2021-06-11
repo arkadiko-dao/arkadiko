@@ -41,6 +41,8 @@ function resolveUrl() {
     return 'http://localhost:3999';
   } else if (env === 'testnet') {
     return 'https://stacks-node-api.testnet.stacks.co';
+  } else if (env === 'regtest') {
+    return 'https://stacks-node-api.regtest.stacks.co';
   } else {
     return 'https://stacks-node-api.mainnet.stacks.co';
   }
