@@ -41,7 +41,7 @@ There is no separate CONTRIBUTING.md instructions for now, but you can use the f
 6. Deploy external scripts
 
 For testnet:
-Faucet: curl -X POST "https://stacks-node-api.testnet.stacks.co/extended/v1/faucets/stx?address=<ADDR>"
+Faucet: curl -X POST "https://stacks-node-api.testnet.stacks.co/extended/v1/faucets/stx?address=ST26902A6NT1QSWQXXYM55EM579RY9CCPQDN02QW2"
 
 ### Creating a regtest account
 

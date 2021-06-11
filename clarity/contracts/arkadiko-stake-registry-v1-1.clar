@@ -119,7 +119,7 @@
 (begin
   ;; DIKO pool
   (map-set pools-data-map
-    { pool: 'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H.arkadiko-stake-pool-diko-v1-1 }
+    { pool: 'ST26902A6NT1QSWQXXYM55EM579RY9CCPQDN02QW2.arkadiko-stake-pool-diko-v1-1 }
     {
       name: "DIKO",
       active: true,
@@ -130,7 +130,7 @@
   )
   ;; DIKO-xUSD LP
   (map-set pools-data-map
-    { pool: 'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H.arkadiko-stake-pool-diko-xusd-v1-1 }
+    { pool: 'ST26902A6NT1QSWQXXYM55EM579RY9CCPQDN02QW2.arkadiko-stake-pool-diko-xusd-v1-1 }
     {
       name: "DIKO-xUSD LP",
       active: true,
@@ -141,7 +141,7 @@
   )
   ;; wSTX-xUSD LP
   (map-set pools-data-map
-    { pool: 'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H.arkadiko-stake-pool-wstx-xusd-v1-1 }
+    { pool: 'ST26902A6NT1QSWQXXYM55EM579RY9CCPQDN02QW2.arkadiko-stake-pool-wstx-xusd-v1-1 }
     {
       name: "wSTX-xUSD LP",
       active: true,
