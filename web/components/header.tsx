@@ -60,7 +60,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut }) => {
               </a>
             </Box>
             <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <a href="https://github.com/philipdesmedt/arkadiko-dao/blob/master/SECURITY.md" target="_blank">
+              <a href="https://github.com/arkadiko-dao/arkadiko/blob/master/SECURITY.md" target="_blank">
                 Security
               </a>
             </Box>
