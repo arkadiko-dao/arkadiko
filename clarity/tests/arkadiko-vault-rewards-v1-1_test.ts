@@ -378,3 +378,39 @@ Clarinet.test({
     }
   },
 });
+
+
+Clarinet.test({
+  name: "vault-rewards: vault DIKO rewards - no action",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
+        types.ascii("STX"),
+        types.uint(77),
+      ], deployer.address),
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
+        types.uint(5000000000),
+        types.uint(1925000000),
+        types.ascii("STX-A"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+        ),
+      ], deployer.address),
+    ]);
+    block.receipts[1].result.expectOk().expectUint(1925000000);
+
+    // Check rewards at start
+    let call:any = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
+    call.result.expectOk().expectUint(320000000);
+
+    chain.mineEmptyBlock(30*144);
+    call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
+    console.log(call.result); // THIS IS 947K
+
+    chain.mineEmptyBlock(30*144);
+    call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
+    console.log(call.result); // THIS IS 0 - nothing withdrawn.
+  }
+});
