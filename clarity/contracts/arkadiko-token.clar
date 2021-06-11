@@ -85,11 +85,11 @@
 
 
 ;; Test environments
-(begin
-  ;; TODO: do not do this on testnet or mainnet
+;; TODO: do not do this on testnet or mainnet
+;; (begin
   ;; (try! (ft-mint? diko u890000000000 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7))
   ;; (try! (ft-mint? diko u150000000000 'ST3KCNDSWZSFZCC6BE4VA9AXWXC9KEB16FBTRK36T))
   ;; (try! (ft-mint? diko u150000000000 'ST3EQ88S02BXXD0T5ZVT3KW947CRMQ1C6DMQY8H19))
   ;; (try! (ft-mint? diko u1000000000000 'STB2BWB0K5XZGS3FXVTG3TKS46CQVV66NAK3YVN8))
   ;; (try! (ft-mint? diko u1000000000000 'ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF))
-)
+;; )
