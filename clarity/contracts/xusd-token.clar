@@ -1,4 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;; SIP 010 ;;;;;;;;;;;;;;;;;;;;;;
+;; TODO: add sip010 trait for mainnet
 ;; testnet: (impl-trait 'STR8P3RD1EHA8AA37ERSSSZSWKS9T2GYQFGXNA4C.sip-010-trait-ft-standard.sip-010-trait)
 ;; (impl-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 (impl-trait .sip-010-trait-ft-standard.sip-010-trait)
@@ -81,8 +82,8 @@
 ;; Initialize the contract
 (begin
   ;; TODO: do not do this on testnet or mainnet
-  (try! (ft-mint? xusd u20 'ST3KCNDSWZSFZCC6BE4VA9AXWXC9KEB16FBTRK36T))
-  (try! (ft-mint? xusd u10 'STB2BWB0K5XZGS3FXVTG3TKS46CQVV66NAK3YVN8))
-  (try! (ft-mint? xusd u1000000000000 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7)) ;; 1 million xUSD
-  (try! (ft-mint? xusd u1000000000000 'ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF)) ;; 1 million xUSD
+  ;; (try! (ft-mint? xusd u20 'ST3KCNDSWZSFZCC6BE4VA9AXWXC9KEB16FBTRK36T))
+  ;; (try! (ft-mint? xusd u10 'STB2BWB0K5XZGS3FXVTG3TKS46CQVV66NAK3YVN8))
+  ;; (try! (ft-mint? xusd u1000000000000 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7)) ;; 1 million xUSD
+  ;; (try! (ft-mint? xusd u1000000000000 'ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF)) ;; 1 million xUSD
 )

@@ -33,7 +33,7 @@ There is no separate CONTRIBUTING.md instructions for now, but you can use the f
 2. Set REACT_APP_NETWORK_ENV in .env to the correct environment (mocknet/testnet/mainnet)
 
 ### Smart Contracts
-1. Add correct CONTRACT_PRIVATE_KEY in .env to deploy
+1. Add correct CONTRACT_PRIVATE_KEY and API_SERVER in ./web/.env to deploy
 2. Comment/Uncomment minting in arkadiko-token.clar and xusd-token.clar
 3. Replace SIP10 trait
 4. Replace all correct addresses in arkadiko DAO map
