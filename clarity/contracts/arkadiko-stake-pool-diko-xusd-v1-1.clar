@@ -7,7 +7,7 @@
 ;; When total stake changes, the cumm reward per stake is increased accordingly.
 
 (impl-trait .arkadiko-stake-pool-trait-v1.stake-pool-trait)
-(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
+(use-trait ft-trait 'STR8P3RD1EHA8AA37ERSSSZSWKS9T2GYQFGXNA4C.sip-010-trait-ft-standard.sip-010-trait)
 
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED (err u18401))

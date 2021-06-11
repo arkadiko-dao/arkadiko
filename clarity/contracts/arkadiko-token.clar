@@ -1,4 +1,4 @@
-(impl-trait .sip-010-trait-ft-standard.sip-010-trait)
+(impl-trait 'STR8P3RD1EHA8AA37ERSSSZSWKS9T2GYQFGXNA4C.sip-010-trait-ft-standard.sip-010-trait)
 (impl-trait .arkadiko-dao-token-trait-v1.dao-token-trait)
 
 ;; Defines the Arkadiko Governance Token according to the SRC20 Standard

@@ -1,6 +1,6 @@
 (impl-trait .arkadiko-auction-engine-trait-v1.auction-engine-trait)
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
-(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
+(use-trait ft-trait 'STR8P3RD1EHA8AA37ERSSSZSWKS9T2GYQFGXNA4C.sip-010-trait-ft-standard.sip-010-trait)
 (use-trait vault-manager-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
 (use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
 (use-trait auction-engine-trait .arkadiko-auction-engine-trait-v1.auction-engine-trait)

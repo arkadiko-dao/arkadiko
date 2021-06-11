@@ -1,5 +1,5 @@
 (impl-trait .arkadiko-vault-trait-v1.vault-trait)
-(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
+(use-trait ft-trait 'STR8P3RD1EHA8AA37ERSSSZSWKS9T2GYQFGXNA4C.sip-010-trait-ft-standard.sip-010-trait)
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
 
 ;; errors

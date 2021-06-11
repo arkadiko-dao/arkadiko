@@ -5,7 +5,7 @@
 ;; DAO can activate a new pool or deactivate an existing one.
 ;; When a pool is deactivated, users can not stake but they can unstake.
 
-(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
+(use-trait ft-trait 'STR8P3RD1EHA8AA37ERSSSZSWKS9T2GYQFGXNA4C.sip-010-trait-ft-standard.sip-010-trait)
 (use-trait stake-pool-trait .arkadiko-stake-pool-trait-v1.stake-pool-trait)
 
 ;; Errors
@@ -119,7 +119,7 @@
 (begin
   ;; DIKO pool
   (map-set pools-data-map
-    { pool: 'ST1BXEQ9TYGEP2493Z6BCYV8X725ZCAN4EC7JV0R5.arkadiko-stake-pool-diko-v1-1 }
+    { pool: 'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H.arkadiko-stake-pool-diko-v1-1 }
     {
       name: "DIKO",
       active: true,
@@ -130,7 +130,7 @@
   )
   ;; DIKO-xUSD LP
   (map-set pools-data-map
-    { pool: 'ST1BXEQ9TYGEP2493Z6BCYV8X725ZCAN4EC7JV0R5.arkadiko-stake-pool-diko-xusd-v1-1 }
+    { pool: 'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H.arkadiko-stake-pool-diko-xusd-v1-1 }
     {
       name: "DIKO-xUSD LP",
       active: true,
@@ -141,7 +141,7 @@
   )
   ;; wSTX-xUSD LP
   (map-set pools-data-map
-    { pool: 'ST1BXEQ9TYGEP2493Z6BCYV8X725ZCAN4EC7JV0R5.arkadiko-stake-pool-wstx-xusd-v1-1 }
+    { pool: 'ST2YP83431YWD9FNWTTDCQX8B3K0NDKPCV3B1R30H.arkadiko-stake-pool-wstx-xusd-v1-1 }
     {
       name: "wSTX-xUSD LP",
       active: true,
