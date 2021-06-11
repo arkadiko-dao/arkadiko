@@ -42,3 +42,7 @@ There is no separate CONTRIBUTING.md instructions for now, but you can use the f
 
 For testnet:
 Faucet: curl -X POST "https://stacks-node-api.testnet.stacks.co/extended/v1/faucets/stx?address=<ADDR>"
+
+### Creating a regtest account
+
+stx make_keychain -t -H "https://stacks-node-api.regtest.stacks.co:20443" -I "https://stacks-node-api.regtest.stacks.co:3999"

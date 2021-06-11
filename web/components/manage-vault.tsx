@@ -1030,7 +1030,7 @@ export const ManageVault = ({ match }) => {
 
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                          {pendingVaultRewards} DIKO
+                          {pendingVaultRewards.toLocaleString()} DIKO
                         </p>
                       </div>
 

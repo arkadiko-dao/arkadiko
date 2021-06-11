@@ -104,7 +104,7 @@ export const App: React.FC = () => {
 
   const fetchCollateralTypes = async (address: string) => {
     let collTypes = {};
-    ['STX-A', 'STX-B', 'DIKO-A'].forEach(async (token) => {
+    ['STX-A', 'STX-B'].forEach(async (token) => {
       const types = await callReadOnlyFunction({
         contractAddress,
         contractName: "arkadiko-collateral-types-v1-1",

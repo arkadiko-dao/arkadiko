@@ -41,7 +41,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       postConditions = [
         makeStandardSTXPostCondition(
           address || '',
-          FungibleConditionCode.Equal,
+          FungibleConditionCode.GreaterEqual,
           amount.value
         )
       ];

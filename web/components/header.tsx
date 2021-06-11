@@ -90,7 +90,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut }) => {
               Docs
             </a>
 
-            <a href="https://github.com/philipdesmedt/arkadiko-dao/blob/master/SECURITY.md" target="_blank" className="ml-5 text-base font-medium text-gray-900 hover:text-gray-700">
+            <a href="https://github.com/arkadiko-dao/arkadiko/blob/master/SECURITY.md" target="_blank" className="ml-5 text-base font-medium text-gray-900 hover:text-gray-700">
               Security
             </a>
 

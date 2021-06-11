@@ -8,7 +8,8 @@ import {
   callReadOnlyFunction, cvToJSON,
   contractPrincipalCV, uintCV,
   createAssetInfo, FungibleConditionCode,
-  makeStandardFungiblePostCondition
+  makeStandardFungiblePostCondition,
+  makeStandardSTXPostCondition
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
@@ -30,10 +31,11 @@ export const Swap: React.FC = () => {
   const [currentPrice, setCurrentPrice] = useState(0.0);
   const [currentPair, setCurrentPair] = useState();
   const [inverseDirection, setInverseDirection] = useState(false);
-  const [slippageTolerance, setSlippageTolerance] = useState(0.0);
+  const [slippageTolerance, setSlippageTolerance] = useState(0.4);
   const [minimumReceived, setMinimumReceived] = useState(0);
   const [priceImpact, setPriceImpact] = useState('0');
   const [lpFee, setLpFee] = useState('0');
+  const [foundPair, setFoundPair] = useState(true);
 
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -81,10 +83,11 @@ export const Swap: React.FC = () => {
         setCurrentPair(json3['value']['value']['value']);
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
-        const basePrice = (balanceY / balanceX).toFixed(2);
+        const basePrice = (balanceX / balanceY).toFixed(2);
         // const price = parseFloat(basePrice) + (parseFloat(basePrice) * 0.01);
         setCurrentPrice(basePrice);
         setInverseDirection(false);
+        setFoundPair(true);
       } else if (json3['value']['value']['value'] === 201) {
         const json4 = await fetchPair(tokenYContract, tokenXContract);
         if (json4['success']) {
@@ -95,7 +98,12 @@ export const Swap: React.FC = () => {
           const balanceY = json4['value']['value']['value']['balance-y'].value;
           const basePrice = (balanceY / balanceX).toFixed(2);
           setCurrentPrice(basePrice);
+          setFoundPair(true);
+        } else {
+          setFoundPair(false);
         }
+      } else {
+        setFoundPair(false);
       }
     };
 
@@ -117,13 +125,12 @@ export const Swap: React.FC = () => {
     const balanceY = currentPair['balance-y'].value;
     let amount = 0;
 
-    if (slippageTolerance === 0) {
-      // amount = ((960 * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
-      amount = 0.99 * (balanceX / balanceY) * tokenXAmount;
+    const slippage = (100 - slippageTolerance) / 100;
+    // amount = ((slippage * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
+    if (inverseDirection) {
+      amount = slippage * (balanceX / balanceY) * tokenXAmount;
     } else {
-      // custom slippage set
-      let slippage = 1000 - (slippageTolerance * 100);
-      amount = ((slippage * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
+      amount = slippage * (balanceY / balanceX) * tokenXAmount;
     }
     setMinimumReceived((amount * 0.97));
     setTokenYAmount(amount);
@@ -151,6 +158,10 @@ export const Swap: React.FC = () => {
     setTokenYAmount(0.0);
   };
 
+  const setDefaultSlippage = () => {
+    setSlippageTolerance(0.4);
+  };
+
   const swapTokens = async () => {
     let contractName = 'swap-x-for-y';
     let tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
@@ -165,19 +176,29 @@ export const Swap: React.FC = () => {
     }
 
     const amount = uintCV(tokenXAmount * 1000000);
-    const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.Equal,
-        amount.value,
-        createAssetInfo(
-          contractAddress,
-          postConditionTrait,
-          postConditionName
+    let postConditions = [];
+    if (tokenX.name === 'STX') {
+      postConditions = [
+        makeStandardSTXPostCondition(
+          stxAddress || '',
+          FungibleConditionCode.Equal,
+          amount.value
         )
-      )
-    ];
-    console.log(minimumReceived, parseFloat(minimumReceived));
+      ];
+    } else {
+      postConditions = [
+        makeStandardFungiblePostCondition(
+          stxAddress || '',
+          FungibleConditionCode.Equal,
+          amount.value,
+          createAssetInfo(
+            contractAddress,
+            postConditionTrait,
+            postConditionName
+          )
+        )
+      ];
+    }
     await doContractCall({
       network,
       contractAddress,
@@ -210,6 +231,7 @@ export const Swap: React.FC = () => {
                 </h2>
                 <SwapSettings
                   slippageTolerance={slippageTolerance}
+                  setDefaultSlippage={setDefaultSlippage}
                   setSlippageTolerance={setSlippageTolerance}
                 />
               </div>
@@ -301,7 +323,15 @@ export const Swap: React.FC = () => {
 
                 <p className="text-sm mt-2 font-semibold text-right text-gray-400">1 {tokenY.name} = ~{currentPrice} {tokenX.name}</p>
 
-                {state.userData ? (
+                {state.userData && !foundPair ? (
+                  <button
+                    type="button"
+                    disabled={true}
+                    className="w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-lg rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    No liquidity for this pair. Try another one
+                  </button>
+                ) : state.userData ? (
                   <button
                     type="button"
                     disabled={tokenYAmount === 0}
