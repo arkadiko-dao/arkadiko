@@ -36,7 +36,7 @@ There is no separate CONTRIBUTING.md instructions for now, but you can use the f
 1. Add correct CONTRACT_PRIVATE_KEY in .env to deploy
 2. Comment/Uncomment minting in arkadiko-token.clar and xusd-token.clar
 3. Replace SIP10 trait
-4. Replace all correct addresses in arkadiko DAO map
+4. Replace all correct addresses in arkadiko DAO map and pools data in stake registry
 5. Run deploy script (deploy-contracts.ts)
 6. Deploy external scripts
 

@@ -88,7 +88,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
                     </Text>
                     <br/>
                     <Text color="green" fontSize={1}>
-                      Keep this window open. We will refresh your page automatically when minting finishes.
+                      You may close this window. Your vault will appear automatically on the Mint page after creation.
                     </Text>
                     <ExplorerLink txId={state.currentTxId} />
                   </Text>
