@@ -21,7 +21,6 @@ import { CollateralTypeGroup } from '@components/collateral-type-group';
 import { useEffect } from 'react';
 import { TestnetModal } from './testnet-modal';
 import { microToReadable } from '@common/vault-utils';
-import { transactionHandler } from '@common/transactions';
 
 export const Mint = () => {
   const address = useSTXAddress();
@@ -32,7 +31,6 @@ export const Mint = () => {
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [stxPrice, setStxPrice] = useState(0.0);
   const [dikoPrice, setDikoPrice] = useState(0.0);
-  transactionHandler();
 
   useEffect(() => {
     const fetchPrices = async () => {

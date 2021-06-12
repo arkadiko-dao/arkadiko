@@ -198,7 +198,7 @@ export const App: React.FC = () => {
           <CSSReset />
           <Flex direction="column" minHeight="100vh" bg="white">
 
-            <Header signOut={signOut} />
+            <Header signOut={signOut} setShowSidebar={setShowSidebar} />
             <TxStatus />
             {showSidebar ? (
               <TxSidebar setShowSidebar={setShowSidebar} />

@@ -15,7 +15,10 @@ export const TxSidebar = ({ setShowSidebar }) => {
                     Transaction History
                   </h2>
                   <div className="ml-3 h-7 flex items-center">
-                    <button onClick={setShowSidebar(false)} className="bg-indigo-700 rounded-md text-indigo-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white">
+                    <button
+                      onClick={() => { setShowSidebar(false); }}
+                      className="bg-indigo-700 rounded-md text-indigo-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
+                    >
                       <span className="sr-only">Close</span>
                       <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />

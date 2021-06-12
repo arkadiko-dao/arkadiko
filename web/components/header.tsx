@@ -8,6 +8,7 @@ import { useSTXAddress } from '@common/use-stx-address';
 
 interface HeaderProps {
   signOut: () => void;
+  setShowSidebar: (status:boolean) => void;
 }
 
 const shortAddress = (address: string | null) => {
@@ -18,7 +19,7 @@ const shortAddress = (address: string | null) => {
   return '';
 };
 
-export const Header: React.FC<HeaderProps> = ({ signOut }) => {
+export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
   const [state, _] = useContext(AppContext);
   const showWallet = process.env.REACT_APP_SHOW_CONNECT_WALLET === 'true';
   const { doOpenAuth } = useConnect();
@@ -65,11 +66,15 @@ export const Header: React.FC<HeaderProps> = ({ signOut }) => {
               </a>
             </Box>
             <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <Tooltip label={`Logged in as ${address}`}>
-                <RouterLink to="/">
+              <Tooltip label={`Show pending & confirmed transactions`}>
+                <Link
+                  onClick={() => { setShowSidebar(true); }}
+                  display="inline-block"
+                  textStyle="caption.medium"
+                >
                   <span className="inline-block w-3 h-3 bg-green-400 border-2 border-white rounded-full mr-2 pt-2"></span>
                   {shortAddress(address)}
-                </RouterLink>
+                </Link>
               </Tooltip>
             </Box>
             <Link
