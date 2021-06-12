@@ -1,20 +1,32 @@
-import { Configuration, AccountsApi } from '@stacks/blockchain-api-client';
+import { Configuration, AccountsApi, TransactionsApi } from '@stacks/blockchain-api-client';
 import { stacksNetwork as network } from '@common/utils';
-// import {
-//   ContractCallTransaction,
-//   MempoolTransactionListResponse,
-//   TransactionResults,
-// } from '@blockstack/stacks-blockchain-api-types';
-import { useSTXAddress } from '@common/use-stx-address';
+import {
+  MempoolTransactionListResponse, MempoolContractCallTransaction,
+  TransactionResults, ContractCallTransaction
+} from '@blockstack/stacks-blockchain-api-types';
 
-export const transactionHandler = async () => {
+export const getAccountTransactions = async (address:string, contractAddress:string) => {
   const config = new Configuration({ basePath: network.coreApiUrl });
   const api = new AccountsApi(config);
-  const address = useSTXAddress();
+  const txs = await api.getAccountTransactions({ principal: address, limit: 50 });
+  const list = (txs as TransactionResults).results.filter(tx =>
+    tx.tx_type === 'contract_call' &&
+    tx.contract_call.contract_id.split('.')[0] === contractAddress &&
+    tx.tx_status === 'success'
+  );
+  
+  return list as ContractCallTransaction[];
+};
 
-  const info = await api.getAccountTransactions({
-    principal: address || '',
-    limit: 50
-  });
-  console.log(info);
+export const getPendingTransactions = async (address:string) => {
+  const config = new Configuration({ basePath: network.coreApiUrl });
+  const api = new TransactionsApi(config);
+  const txs = await api.getMempoolTransactionList({ limit: 96 });
+  const list = (txs as MempoolTransactionListResponse).results.filter(tx =>
+    tx.tx_type === 'contract_call' &&
+    tx.contract_call.contract_id.split('.')[0] === address &&
+    tx.tx_status === 'pending'
+  );
+  
+  return list as MempoolContractCallTransaction[];
 };

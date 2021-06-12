@@ -1,6 +1,49 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { getAccountTransactions, getPendingTransactions } from '@common/transactions';
+import { useSTXAddress } from '@common/use-stx-address';
+import { MempoolContractCallTransaction, ContractCallTransaction } from '@blockstack/stacks-blockchain-api-types';
+import { ContractTransaction } from '@components/contract-transaction';
 
 export const TxSidebar = ({ setShowSidebar }) => {
+  const address = useSTXAddress();
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const [transactions, setTransactions] = useState<ContractCallTransaction[]>();
+  const [pendingTransactions, setPendingTransactions] = useState<MempoolTransaction[]>();
+
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchTransations = async () => {
+      if (mounted) {
+        const txs = await getAccountTransactions(address || '', contractAddress || '');
+        let index = 0;
+        const txMap = txs.map((tx: ContractCallTransaction) => {
+          index += 1;
+          return <ContractTransaction
+            key={index}
+            transaction={tx}
+            status='success'
+          />
+        });
+
+        setTransactions(txMap);
+        const pending = await getPendingTransactions(contractAddress || '');
+        const pendingMap = pending.map((tx: MempoolContractCallTransaction) => {
+          index += 1;
+          return <ContractTransaction
+            key={index}
+            transaction={tx}
+            status='pending'
+          />
+        });
+        setPendingTransactions(pendingMap);
+      }
+    };
+
+    fetchTransations();
+    return () => { mounted = false; }
+  }, []);
+
   return (
     <div className="fixed inset-0 overflow-hidden z-50" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
       <div className="absolute inset-0 overflow-hidden">
@@ -34,8 +77,11 @@ export const TxSidebar = ({ setShowSidebar }) => {
               </div>
               <div className="relative flex-1 py-6 px-4 sm:px-6">
                 <div className="absolute inset-0 py-6 px-4 sm:px-6">
-                  <div className="h-full border-2 border-dashed border-gray-200" aria-hidden="true">
-                    Blaat
+                  <div className="h-full" aria-hidden="true">
+                    <ul className="divide-y divide-gray-200">
+                      {pendingTransactions}
+                      {transactions}
+                    </ul>
                   </div>
                 </div>
               </div>
