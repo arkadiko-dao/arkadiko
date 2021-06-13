@@ -18,13 +18,14 @@ export const getAccountTransactions = async (address:string, contractAddress:str
   return list as ContractCallTransaction[];
 };
 
-export const getPendingTransactions = async (address:string) => {
+export const getPendingTransactions = async (address:string, contractAddress:string) => {
   const config = new Configuration({ basePath: network.coreApiUrl });
   const api = new TransactionsApi(config);
   const txs = await api.getMempoolTransactionList({ limit: 96 });
   const list = (txs as MempoolTransactionListResponse).results.filter(tx =>
     tx.tx_type === 'contract_call' &&
-    tx.contract_call.contract_id.split('.')[0] === address &&
+    tx.contract_call.contract_id.split('.')[0] === contractAddress &&
+    tx.sender_address === address &&
     tx.tx_status === 'pending'
   );
   

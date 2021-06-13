@@ -27,7 +27,7 @@ export const TxSidebar = ({ setShowSidebar }) => {
         });
 
         setTransactions(txMap);
-        const pending = await getPendingTransactions(contractAddress || '');
+        const pending = await getPendingTransactions(address || '', contractAddress || '');
         const pendingMap = pending.map((tx: MempoolContractCallTransaction) => {
           index += 1;
           return <ContractTransaction
