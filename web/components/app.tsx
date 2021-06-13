@@ -22,7 +22,7 @@ export const App: React.FC = () => {
   const [state, setState] = React.useState<AppState>(defaultState());
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const location = useLocation();
-  const [showSidebar, setShowSidebar] = useState(true);
+  const [showSidebar, setShowSidebar] = useState(false);
 
   const appConfig = new AppConfig(['store_write', 'publish_data'], document.location.href);
   const userSession = new UserSession({ appConfig });
