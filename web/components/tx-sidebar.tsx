@@ -7,8 +7,8 @@ import { ContractTransaction } from '@components/contract-transaction';
 export const TxSidebar = ({ setShowSidebar }) => {
   const address = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const [transactions, setTransactions] = useState<ContractCallTransaction[]>();
-  const [pendingTransactions, setPendingTransactions] = useState<MempoolTransaction[]>();
+  const [transactions, setTransactions] = useState<typeof ContractTransaction[]>();
+  const [pendingTransactions, setPendingTransactions] = useState<typeof ContractTransaction[]>();
 
   useEffect(() => {
     let mounted = true;
