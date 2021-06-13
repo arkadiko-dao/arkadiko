@@ -18,22 +18,22 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ name, url, token
         </div>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">{stabilityFeeApy / 100}%</span>
+        <span className="text-gray-900">{stabilityFeeApy / 100}%</span>
       </td>
       <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-gray-500 md:block">
-        <span className="text-gray-900 font-medium">{liquidationRatio}%</span>
+        <span className="text-gray-900">{liquidationRatio}%</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">{liquidationPenalty}%</span>
+        <span className="text-gray-900">{liquidationPenalty}%</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">${maximumDebt / 1000000000000} million</span>
+        <span className="text-gray-900">${maximumDebt / 1000000000000} million</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">${totalDebt / 1000000}</span>
+        <span className="text-gray-900">${totalDebt / 1000000}</span>
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <RouterLink to={`/vaults/new?type=${tokenType}&token=${token}`} exact className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-5">
+      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+        <RouterLink to={`/vaults/new?type=${tokenType}&token=${token}`} exact className="text-indigo-600 hover:text-indigo-900">
           New Vault
         </RouterLink>
       </td>
