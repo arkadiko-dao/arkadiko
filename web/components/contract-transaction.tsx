@@ -8,6 +8,7 @@ type ComponentProps = {
 
 export const ContractTransaction: React.FC<ComponentProps> = ({ transaction, status }) => {
   const contract_id = transaction.contract_call.contract_id.split('.')[1];
+  const url = `https://explorer.stacks.co/txid/${transaction.tx_id}?chain=testnet`;
 
   return (
     <li className="py-4">
@@ -19,7 +20,9 @@ export const ContractTransaction: React.FC<ComponentProps> = ({ transaction, sta
         )}
         <div className="flex-1 space-y-1">
           <div className="flex items-center justify-between">
-            <h3 className="text-medium font-medium">{transaction.contract_call.function_name}</h3>
+            <h3 className="text-medium font-medium">
+              <a href={url} target="_blank">{transaction.contract_call.function_name}</a>
+            </h3>
           </div>
           <p className="text-sm text-gray-500">{contract_id}</p>
         </div>
