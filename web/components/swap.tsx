@@ -353,7 +353,7 @@ export const Swap: React.FC = () => {
             </div>
           </div>
           <div className="-mt-4 p-4 pt-8 w-full max-w-md bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
-            <dl className="space-y-1 pb-3 border-b border-indigo-100">
+            <dl className="space-y-1 pb-3">
               <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                 <dt className="text-sm font-medium text-indigo-500">Minimum Received</dt>
                 <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{minimumReceived.toLocaleString()} {tokenY.name}</dd>

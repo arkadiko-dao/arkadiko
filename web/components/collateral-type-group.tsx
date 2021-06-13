@@ -86,6 +86,7 @@ export const CollateralTypeGroup: React.FC<CollateralTypeGroupProps> = ({ types 
             Current Debt
           </th>
           <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <span className="sr-only">New Vault</span>
           </th>
         </tr>
       </thead>
