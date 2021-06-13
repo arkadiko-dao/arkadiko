@@ -16,7 +16,7 @@ export const websocketTxUpdater = (redirectUri:string) => {
   } else if (env.includes('testnet')) {
     coreApiUrl = 'https://stacks-node-api.testnet.stacks.co';
     websocketUrl = 'wss://stacks-node-api.testnet.stacks.co';
-  } else if (env.includes('testnet')) {
+  } else if (env.includes('regtest')) {
     coreApiUrl = 'https://stacks-node-api.regtest.stacks.co';
     websocketUrl = 'wss://stacks-node-api.regtest.stacks.co';
   }
