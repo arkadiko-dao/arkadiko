@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ThemeProvider, theme, Flex, CSSReset, Tooltip } from '@blockstack/ui';
 import { Connect } from '@stacks/connect-react';
 import { AuthOptions } from '@stacks/connect';
@@ -12,6 +12,7 @@ import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, tupleCV, ClarityVa
 import { VaultProps } from './vault';
 import { resolveSTXAddress } from '@common/use-stx-address';
 import { TxStatus } from '@components/tx-status';
+import { TxSidebar } from '@components/tx-sidebar';
 import { useLocation } from 'react-router-dom';
 
 type TupleData = { [key: string]: ClarityValue };
@@ -21,6 +22,7 @@ export const App: React.FC = () => {
   const [state, setState] = React.useState<AppState>(defaultState());
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const location = useLocation();
+  const [showSidebar, setShowSidebar] = useState(false);
 
   const appConfig = new AppConfig(['store_write', 'publish_data'], document.location.href);
   const userSession = new UserSession({ appConfig });
@@ -196,8 +198,11 @@ export const App: React.FC = () => {
           <CSSReset />
           <Flex direction="column" minHeight="100vh" bg="white">
 
-            <Header signOut={signOut} />
+            <Header signOut={signOut} setShowSidebar={setShowSidebar} />
             <TxStatus />
+            {showSidebar ? (
+              <TxSidebar setShowSidebar={setShowSidebar} />
+            ) : null}
 
             <div className="fixed bottom-0 right-0 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end" style={{zIndex: 99999}}>
               <Tooltip label={`Got feedback?`}>
