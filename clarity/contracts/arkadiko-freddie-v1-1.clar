@@ -513,6 +513,7 @@
         updated-at-block-height: block-height
       }))
     )
+    (try! (contract-call? .arkadiko-collateral-types-v1-1 subtract-debt-from-collateral-type (get collateral-type vault) debt))
     (ok true)
   )
 )
