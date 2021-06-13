@@ -6,10 +6,10 @@ import { Mint } from './mint';
 
 export const Container: React.FC<BoxProps> = ({ children, ...props }) => {
   return (
-    <Box className="bg-gray-100 h-screen" width="100%" px={6} {...props}>
-      <Box maxWidth="1400px" mx="auto">
+    <Box className="bg-gray-100 min-h-screen w-full" {...props}>
+      <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
         {children}
-      </Box>
+      </div>
     </Box>
   );
 };
@@ -23,7 +23,7 @@ export const Home: React.FC = () => {
         <Container>
           <Mint />
         </Container>
-      ) : (
+      ) : ( 
         <Landing />
       )}
     </Box>  
