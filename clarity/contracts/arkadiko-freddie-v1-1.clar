@@ -83,7 +83,7 @@
   )
 )
 
-(define-read-only (calculate-current-collateral-to-debt-ratio (vault-id uint))
+(define-public (calculate-current-collateral-to-debt-ratio (vault-id uint))
   (let ((vault (get-vault-by-id vault-id)))
     (if (is-eq (get is-liquidated vault) true)
       (ok u0)
@@ -555,11 +555,14 @@
   )
 )
 
-(define-read-only (get-stability-fee-for-vault (vault-id uint))
+(define-public (get-stability-fee-for-vault
+  (vault-id uint)
+  (coll-type <collateral-types-trait>)
+)
   (let (
     (vault (get-vault-by-id vault-id))
     (number-of-blocks (- block-height (get stability-fee-last-accrued vault)))
-    (collateral-type (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-collateral-type-by-name (get collateral-type vault))))
+    (collateral-type (unwrap-panic (contract-call? coll-type get-collateral-type-by-name (get collateral-type vault))))
     (fee (get stability-fee collateral-type))
     (decimals (get stability-fee-decimals collateral-type))
     (interest (/ (* (get debt vault) fee) (pow u10 decimals)))
@@ -568,13 +571,16 @@
   )
 )
 
-(define-public (accrue-stability-fee (vault-id uint))
+(define-public (accrue-stability-fee
+  (vault-id uint)
+  (coll-type <collateral-types-trait>)
+)
   (let (
     (vault (get-vault-by-id vault-id))
   )
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
         updated-at-block-height: block-height,
-        stability-fee-accrued: (unwrap-panic (get-stability-fee-for-vault vault-id)),
+        stability-fee-accrued: (unwrap-panic (get-stability-fee-for-vault vault-id coll-type)),
         stability-fee-last-accrued: block-height
       }))
     )
@@ -582,10 +588,13 @@
   )
 )
 
-(define-public (pay-stability-fee (vault-id uint))
+(define-public (pay-stability-fee
+  (vault-id uint)
+  (coll-type <collateral-types-trait>)
+)
   (let (
     (vault (get-vault-by-id vault-id))
-    (fee (+ (get stability-fee-accrued vault) (unwrap-panic (get-stability-fee-for-vault vault-id))))
+    (fee (+ (get stability-fee-accrued vault) (unwrap-panic (get-stability-fee-for-vault vault-id coll-type))))
   )
     (if (> fee u0)
       (begin
@@ -603,7 +612,10 @@
   )
 )
 
-(define-public (liquidate (vault-id uint))
+(define-public (liquidate
+  (vault-id uint)
+  (coll-type <collateral-types-trait>)
+)
   (let ((vault (get-vault-by-id vault-id)))
     (asserts!
       (and
@@ -618,7 +630,7 @@
     (try! (contract-call? .arkadiko-vault-rewards-v1-1 remove-collateral (get collateral vault) (get owner vault)))
     (let (
       (collateral (get collateral vault))
-      (liquidation-penalty (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-liquidation-penalty (get collateral-type vault))))
+      (liquidation-penalty (unwrap-panic (contract-call? coll-type get-liquidation-penalty (get collateral-type vault))))
       (fee (unwrap-panic (get-stability-fee-for-vault vault-id)))
       (penalty (/ (* liquidation-penalty (+ fee (get debt vault))) u10000))
       (extra-debt (/ (* u60 penalty) u100)) ;; 60% of the penalty is extra debt.
@@ -659,7 +671,11 @@
   )
 )
 
-(define-public (finalize-liquidation (vault-id uint) (leftover-collateral uint))
+(define-public (finalize-liquidation
+  (vault-id uint)
+  (leftover-collateral uint)
+  (coll-type <collateral-types-trait>)
+)
   (let ((vault (get-vault-by-id vault-id)))
     (asserts!
       (and
@@ -678,7 +694,7 @@
         leftover-collateral: leftover-collateral
       }))
     )
-    (try! (contract-call? .arkadiko-collateral-types-v1-1 subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault)))
+    (try! (contract-call? coll-type subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault)))
     (ok true)
   )
 )
@@ -690,7 +706,12 @@
   )
 )
 
-(define-public (withdraw-leftover-collateral (vault-id uint) (reserve <vault-trait>) (ft <ft-trait>))
+(define-public (withdraw-leftover-collateral
+  (vault-id uint)
+  (reserve <vault-trait>)
+  (ft <ft-trait>)
+  (coll-type <collateral-types-trait>)
+)
   (let (
     (vault (get-vault-by-id vault-id))
     (collateral-token (unwrap-panic (get-collateral-token-for-vault vault-id)))
@@ -709,7 +730,7 @@
     (asserts!
       (or
         (is-eq collateral-token "xSTX")
-        (is-eq (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-token-address (get collateral-type vault))) (contract-of ft))
+        (is-eq (unwrap-panic (contract-call? coll-type get-token-address (get collateral-type vault))) (contract-of ft))
       )
       (err ERR-WRONG-COLLATERAL-TOKEN)
     )
