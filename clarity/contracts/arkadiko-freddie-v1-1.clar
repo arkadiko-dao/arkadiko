@@ -93,7 +93,10 @@
             (ok
               (/
                 (* (get collateral vault) (get last-price-in-cents stx-price-in-cents))
-                (+ (get debt vault) (unwrap-panic (get-stability-fee-for-vault vault-id coll-type)))
+                (+
+                  (get debt vault)
+                  (unwrap-panic (stability-fee-helper (get stability-fee-last-accrued vault) (get debt vault) (get collateral-type vault) coll-type))
+                )
               )
             )
             (err u0)
@@ -564,11 +567,24 @@
 )
   (let (
     (vault (get-vault-by-id vault-id))
-    (number-of-blocks (- block-height (get stability-fee-last-accrued vault)))
-    (collateral-type (unwrap-panic (contract-call? coll-type get-collateral-type-by-name (get collateral-type vault))))
+  )
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
+    (stability-fee-helper (get stability-fee-last-accrued vault) (get debt vault) (get collateral-type vault) coll-type)
+  )
+)
+
+(define-private (stability-fee-helper
+  (stability-fee-last-accrued uint)
+  (debt uint)
+  (collateral-type-string (string-ascii 12))
+  (coll-type <collateral-types-trait>)
+)
+  (let (
+    (number-of-blocks (- block-height stability-fee-last-accrued))
+    (collateral-type (unwrap-panic (contract-call? coll-type get-collateral-type-by-name collateral-type-string)))
     (fee (get stability-fee collateral-type))
     (decimals (get stability-fee-decimals collateral-type))
-    (interest (/ (* (get debt vault) fee) (pow u10 decimals)))
+    (interest (/ (* debt fee) (pow u10 decimals)))
   )
     (ok (* number-of-blocks interest))
   )
