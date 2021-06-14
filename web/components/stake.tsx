@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState } from 'react';
-import { Box, Modal } from '@blockstack/ui';
+import { Modal } from '@blockstack/ui';
 import { AppContext } from '@common/context';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
@@ -14,7 +14,7 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
 import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { microToReadable } from '@common/vault-utils';
-import BN from 'bn.js';
+import { tokenList } from '@components/token-swap-list';
 
 export const Stake = () => {
   const [state, setState] = useContext(AppContext);
@@ -188,7 +188,7 @@ export const Stake = () => {
   };
 
   return (
-    <Box>
+    <div>
       <Modal isOpen={showStakeModal}>
         <div className="flex pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           {errors.length > 0 ? (
@@ -319,129 +319,98 @@ export const Stake = () => {
 
       {state.userData ? (
         <Container>
-          <Box py={6}>
-            <main className="flex-1 relative pb-8 z-0 overflow-y-auto">
-              <div className="mt-8">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-
-                  <div className="bg-indigo-700">
-                    <div className="max-w-2xl mx-auto text-center py-5 px-4 sm:py-5 sm:px-6 lg:px-8">
-                      <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
-                        <span className="block">Arkadiko Staking</span>
-                      </h2>
-                      <p className="mt-4 text-lg leading-6 text-indigo-200">
-                        Stake your DIKO tokens to earn rewards. For every DIKO staked, you get stDIKO in return which can be used to vote in governance.
-                      </p>
-                    </div>
+          <main className="flex-1 relative pb-8 z-0 overflow-y-auto py-12">
+            <section>
+              <header>
+                <div className="bg-indigo-700 rounded-md">
+                  <div className="max-w-2xl mx-auto text-center py-5 px-4 sm:py-5 sm:px-6 lg:px-8">
+                    <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
+                      <span className="block">Arkadiko Staking</span>
+                    </h2>
+                    <p className="mt-4 text-lg leading-6 text-indigo-200">
+                      Stake your DIKO tokens to earn rewards. For every DIKO staked, you get stDIKO in return which can be used to vote in governance.
+                    </p>
                   </div>
+                </div>
+              </header>
 
-                  <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-5 lg:grid-cols-5">
-                    <div className="bg-white overflow-hidden shadow rounded-lg">
-                      <div className="p-5">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0">
-                            <svg className="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                          </div>
-                          <div className="ml-5 w-0 flex-1">
-                            <dl>
-                              <dt className="text-sm font-medium text-gray-500 truncate">
-                                Staked Value
-                              </dt>
-                              <dd>
-                                <div className="text-lg font-medium text-gray-900">
+              <div className="flex flex-col mt-4">
+                <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                  <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                    <div className="shadow overflow-hidden sm:rounded-lg">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Stacked Value
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Current APY
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Pending rewards
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              <span className="sr-only">Actions</span>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          <tr className="bg-white">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <div className="flex items-center">
+                                <div className="flex-shrink-0 h-10 w-10">
+                                  <img className="h-10 w-10 rounded-full" src={tokenList[1].logo} alt="" />
+                                </div>
+                                <div className="ml-4">
                                   {microToReadable(stakedAmount).toLocaleString()} DIKO
                                 </div>
-                              </dd>
-                            </dl>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
+                              {apy}%
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              {pendingRewards.toLocaleString()} DIKO
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                              <button type="button" onClick={() => setShowStakeModal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+                                Stake
+                              </button>
 
-                    <div className="bg-white overflow-hidden shadow rounded-lg">
-                      <div className="p-5">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0">
-                            <svg className="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                          </div>
-                          <div className="ml-5 w-0 flex-1">
-                            <dl>
-                              <dt className="text-sm font-medium text-gray-500 truncate">
-                                Pending Rewards
-                              </dt>
-                              <dd>
-                                <div className="text-lg font-medium text-gray-900">
-                                  {pendingRewards.toLocaleString()} DIKO
-                                </div>
-                              </dd>
-                            </dl>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                              <button type="button" onClick={() => setShowUnstakeModal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+                                Unstake
+                              </button>
 
-                    <div className="bg-white overflow-hidden shadow rounded-lg">
-                      <div className="p-5">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0">
-                            <svg className="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                          </div>
-                          <div className="ml-5 w-0 flex-1">
-                            <dl>
-                              <dt className="text-sm font-medium text-gray-500 truncate">
-                                Current APY
-                              </dt>
-                              <dd>
-                                <div className="text-lg font-medium text-gray-900">
-                                  {apy}%
-                                </div>
-                              </dd>
-                            </dl>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="rounded-lg col-span-2">
-                      <div className="p-5">
-                        <div className="flex items-center">
-                          <div className="ml-5 w-0 flex-1">
-                            <dl>
-                              <dd>
-                                <div className="text-lg font-medium text-gray-900">
-                                  <button type="button" onClick={() => setShowStakeModal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
-                                    Stake
-                                  </button>
-                                  <button type="button" onClick={() => setShowUnstakeModal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
-                                    Unstake
-                                  </button>
-
-                                  <button type="button" onClick={() => claimRewards()} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
-                                    Claim Rewards
-                                  </button>
-                                </div>
-                              </dd>
-                            </dl>
-                          </div>
-                        </div>
-                      </div>
+                              <button type="button" onClick={() => claimRewards()} className="inline-flex items-right px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+                                Claim Rewards
+                              </button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
                   </div>
-
                 </div>
               </div>
-            </main>
-          </Box>
+            </section>
+          </main>
         </Container>
       ) : (
         <Redirect to={{ pathname: '/' }} />
       )}
-    </Box>
+    </div>
   );
 };
