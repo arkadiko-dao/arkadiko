@@ -459,7 +459,7 @@
       (err ERR-MAXIMUM-DEBT-REACHED)
     )
 
-    (try! (pay-stability-fee vault-id))
+    (try! (pay-stability-fee vault-id coll-type))
     (try! (contract-call? reserve mint
         (get collateral-token vault)
         (get owner vault)
@@ -502,7 +502,7 @@
       (err ERR-WRONG-COLLATERAL-TOKEN)
     )
 
-    (try! (pay-stability-fee vault-id))
+    (try! (pay-stability-fee vault-id coll-type))
     (if (is-eq debt (get debt vault))
       (close-vault vault-id reserve ft coll-type)
       (burn-partial-debt vault-id debt reserve ft coll-type)
@@ -735,7 +735,7 @@
       (err ERR-WRONG-COLLATERAL-TOKEN)
     )
 
-    (try! (pay-stability-fee vault-id))
+    (try! (pay-stability-fee vault-id coll-type))
     (if (unwrap-panic (contract-call? reserve withdraw ft collateral-token (get owner vault) (get leftover-collateral vault)))
       (begin
         (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {

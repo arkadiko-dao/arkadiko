@@ -116,7 +116,8 @@ class VaultManager {
   payStabilityFee(user: Account, vaultId: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "pay-stability-fee", [
-        types.uint(vaultId)
+        types.uint(vaultId),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], user.address)
     ]);
     return block.receipts[0].result;
@@ -175,6 +176,7 @@ class VaultManager {
         types.uint(1),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xstx-token"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], user.address)
     ]);
     return block.receipts[0].result;
@@ -212,6 +214,7 @@ class VaultLiquidator {
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1'),
         types.uint(vaultId),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], user.address),
     ]);
     return block.receipts[0].result;
@@ -274,6 +277,7 @@ class VaultAuction {
       Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1'),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1"),
         types.uint(vaultId),
         types.uint(lot),
         types.uint(bid * 1000000)
