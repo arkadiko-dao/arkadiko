@@ -33,7 +33,7 @@
         token-type: "",
         token-address: OWNER,
         url: "",
-        total-debt: u0,
+        total-debt: u1,
         liquidation-ratio: u0,
         collateral-to-debt-ratio: u0,
         maximum-debt: u0,

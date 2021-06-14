@@ -3,6 +3,7 @@
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait stacker-trait .arkadiko-stacker-trait-v1.stacker-trait)
 (use-trait vault-manager-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
+(use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
 
 ;; Freddie - The Vault Manager
 ;; Freddie is an abstraction layer that interacts with collateral type reserves
@@ -272,10 +273,12 @@
     (collateral-type (string-ascii 12))
     (reserve <vault-trait>)
     (ft <ft-trait>)
+    (coll-type <collateral-types-trait>)
   )
   (let (
     (sender tx-sender)
-    (collateral-token (get token (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-collateral-type-by-name collateral-type))))
+    (collateral-type-object (unwrap-panic (contract-call? coll-type get-collateral-type-by-name collateral-type)))
+    (collateral-token (get token collateral-type-object))
     (ratio (unwrap! (contract-call? reserve calculate-current-collateral-to-debt-ratio collateral-token debt collateral-amount) (err ERR-WRONG-DEBT)))
   )
     (asserts!
@@ -285,18 +288,18 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-    (asserts! (>= ratio (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-liquidation-ratio collateral-type))) (err ERR-INSUFFICIENT-COLLATERAL))
+    (asserts! (>= ratio (get liquidation-ratio collateral-type-object)) (err ERR-INSUFFICIENT-COLLATERAL))
     (asserts!
-      (<
-        (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-total-debt collateral-type))
-        (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-maximum-debt collateral-type))
+      (<=
+        (get total-debt collateral-type-object)
+        (get maximum-debt collateral-type-object)
       )
       (err ERR-MAXIMUM-DEBT-REACHED)
     )
     (asserts!
       (or
         (is-eq collateral-token "STX")
-        (is-eq (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-token-address collateral-type)) (contract-of ft))
+        (is-eq (get token-address collateral-type-object) (contract-of ft))
       )
       (err ERR-WRONG-COLLATERAL-TOKEN)
     )
@@ -327,7 +330,7 @@
       (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id vault))
       (try! (contract-call? .arkadiko-vault-rewards-v1-1 add-collateral collateral-amount sender))
       (try! (contract-call? .arkadiko-vault-data-v1-1 set-last-vault-id vault-id))
-      (try! (contract-call? .arkadiko-collateral-types-v1-1 add-debt-to-collateral-type collateral-type debt))
+      (try! (contract-call? coll-type add-debt-to-collateral-type collateral-type debt))
       (print { type: "vault", action: "created", data: vault })
       (ok debt)
     )

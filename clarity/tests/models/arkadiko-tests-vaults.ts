@@ -56,6 +56,7 @@ class VaultManager {
         types.ascii(collateralType),
         reserve,
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], user.address)
     ]);
     return block.receipts[0].result;

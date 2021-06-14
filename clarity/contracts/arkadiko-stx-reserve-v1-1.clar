@@ -171,22 +171,6 @@
   )
 )
 
-;; liquidate a vault-address' vault
-;; should only be callable by the liquidator smart contract address
-;; the xUSD in the vault need to be covered & burnt
-;; by xUSD earned through auctioning off the collateral in the current vault
-;; 1. Mark vault as liquidated?
-;; 2. Send collateral into the liquidator's liquidation reserve
-(define-public (liquidate (token (string-ascii 12)) (stx-collateral uint) (current-debt uint))
-  (begin
-    (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
-
-    (let ((new-debt (/ (* (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-liquidation-penalty token)) current-debt) u100)))
-      (ok (tuple (ustx-amount stx-collateral) (debt (+ new-debt current-debt))))
-    )
-  )
-)
-
 (define-public (redeem-collateral (token <ft-trait>) (token-string (string-ascii 12)) (stx-collateral uint) (owner principal))
   (begin
     (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))

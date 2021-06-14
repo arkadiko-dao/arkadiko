@@ -3,14 +3,11 @@ import { space, Text, Box } from '@blockstack/ui';
 import { useConnect } from '@stacks/connect-react';
 import { stacksNetwork as network } from '@common/utils';
 import {
-  standardPrincipalCV,
   contractPrincipalCV,
   uintCV,
   stringAsciiCV,
   makeStandardSTXPostCondition,
-  makeStandardFungiblePostCondition,
-  FungibleConditionCode,
-  createAssetInfo
+  FungibleConditionCode
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ExplorerLink } from './explorer-link';
@@ -33,7 +30,8 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       uintCV(parseInt(coinAmounts['amounts']['xusd'], 10) * 1000000),
       stringAsciiCV(coinAmounts['token-type'].toUpperCase()),
       contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', resolveReserveName(coinAmounts['token-name'].toUpperCase())),
-      contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token)
+      contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
+      contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
     ];
 
     let postConditions = [];
