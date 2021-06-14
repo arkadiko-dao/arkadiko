@@ -208,7 +208,10 @@ Clarinet.test({
     call.result.expectOk().expectUint(39998921); // ~40 = 1000 * 4%
 
     chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "accrue-stability-fee", [types.uint(1)], deployer.address),
+      Tx.contractCall("arkadiko-freddie-v1-1", "accrue-stability-fee", [
+        types.uint(1),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
+      ], deployer.address),
       Tx.contractCall("arkadiko-collateral-types-v1-1", "change-risk-parameters", [
         types.ascii("STX-A"),
         types.list([
@@ -271,6 +274,7 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
         ),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(98); // wrong token error
@@ -284,6 +288,7 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
         ),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(410); // wrong collateral type
@@ -297,6 +302,7 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
         ),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(98); // wrong token error
@@ -310,6 +316,7 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token",
         ),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(410); // wrong collateral type
@@ -323,6 +330,7 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
         ),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(410); // wrong collateral type
@@ -352,6 +360,7 @@ Clarinet.test({
         types.uint(500000000), // 500 STX
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], deployer.address)
     ]);
     block.receipts[0].result

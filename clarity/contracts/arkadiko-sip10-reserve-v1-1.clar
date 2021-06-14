@@ -16,7 +16,7 @@
     (let ((amount
       (/
         (* ucollateral-amount (get last-price-in-cents price-in-cents))
-        (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-collateral-to-debt-ratio collateral-type))
+        u200 ;; TODO: not always 200?
       )))
       (ok amount)
     )

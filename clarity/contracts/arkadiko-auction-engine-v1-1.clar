@@ -4,6 +4,7 @@
 (use-trait vault-manager-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
 (use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
 (use-trait auction-engine-trait .arkadiko-auction-engine-trait-v1.auction-engine-trait)
+(use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
 
 ;; errors
 (define-constant ERR-LOT-NOT-OPEN u21)
@@ -266,12 +267,20 @@
   )
 )
 
-(define-public (bid (vault-manager <vault-manager-trait>) (oracle <oracle-trait>) (auction-id uint) (lot-index uint) (xusd uint))
+(define-public (bid
+  (vault-manager <vault-manager-trait>)
+  (oracle <oracle-trait>)
+  (coll-type <collateral-types-trait>)
+  (auction-id uint)
+  (lot-index uint)
+  (xusd uint)
+)
   (let ((auction (get-auction-by-id auction-id)))
     (asserts! (is-eq lot-index (get lots-sold auction)) (err ERR-LOT-NOT-OPEN))
     (asserts! (is-eq (unwrap-panic (get-auction-open auction-id)) true) (err ERR-AUCTION-NOT-OPEN))
     (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts!
       (and
         (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
@@ -280,11 +289,18 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
 
-    (register-bid vault-manager oracle auction-id lot-index xusd)
+    (register-bid vault-manager oracle coll-type auction-id lot-index xusd)
   )
 )
 
-(define-private (register-bid (vault-manager <vault-manager-trait>) (oracle <oracle-trait>) (auction-id uint) (lot-index uint) (xusd uint))
+(define-private (register-bid
+  (vault-manager <vault-manager-trait>)
+  (oracle <oracle-trait>)
+  (coll-type <collateral-types-trait>)
+  (auction-id uint)
+  (lot-index uint)
+  (xusd uint)
+)
   (let (
     (auction (get-auction-by-id auction-id))
     (last-bid (get-last-bid auction-id lot-index))
@@ -348,7 +364,7 @@
       )
       ;; auction is over - close all bids
       ;; send collateral to winning bidders
-      (close-auction vault-manager auction-id)
+      (close-auction vault-manager coll-type auction-id)
       (ok true)
     )
 
@@ -441,7 +457,11 @@
 ;; DONE     4. update vault to allow vault owner to withdraw leftover collateral (if any)
 ;; DONE     5. if not all vault debt is covered: auction off collateral again (if any left)
 ;; DONE     6. if not all vault debt is covered and no collateral is left: cover xUSD with gov token
-(define-public (close-auction (vault-manager <vault-manager-trait>) (auction-id uint))
+(define-public (close-auction
+  (vault-manager <vault-manager-trait>)
+  (coll-type <collateral-types-trait>)
+  (auction-id uint)
+)
   (let ((auction (get-auction-by-id auction-id)))
     (asserts!
       (or
@@ -452,6 +472,7 @@
     )
     (asserts! (is-eq (unwrap-panic (get-auction-open auction-id)) false) (err ERR-AUCTION-NOT-CLOSED))
     (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts!
       (and
         (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
@@ -486,12 +507,14 @@
             finalize-liquidation
             (get vault-id auction)
             (- (get collateral-amount auction) (get total-collateral-sold auction))
+            coll-type
           )
           (contract-call?
             vault-manager
             finalize-liquidation
             (get vault-id auction)
             u0
+            coll-type
           )
         )
         (if (< (get total-collateral-sold auction) (get collateral-amount auction)) ;; we have some collateral left to auction
