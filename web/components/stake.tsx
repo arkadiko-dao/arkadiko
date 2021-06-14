@@ -319,7 +319,7 @@ export const Stake = () => {
 
       {state.userData ? (
         <Container>
-          <main className="flex-1 relative pb-8 z-0 overflow-y-auto py-12">
+          <main className="flex-1 relative py-12">
             <section>
               <header>
                 <div className="bg-indigo-700 rounded-md">
