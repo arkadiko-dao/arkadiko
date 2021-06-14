@@ -168,7 +168,8 @@ export const ManageVault = ({ match }) => {
       contractName: 'arkadiko-freddie-v1-1',
       functionName: 'pay-stability-fee',
       functionArgs: [
-        uintCV(match.params.id)
+        uintCV(match.params.id),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
       ],
       postConditionMode: 0x01,
       postConditions,
