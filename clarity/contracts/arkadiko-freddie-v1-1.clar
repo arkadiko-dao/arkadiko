@@ -286,6 +286,7 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (>= ratio (get liquidation-ratio collateral-type-object)) (err ERR-INSUFFICIENT-COLLATERAL))
     (asserts!
       (<=
@@ -358,6 +359,7 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
     (asserts!
       (or
@@ -393,6 +395,7 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (> uamount u0) (err ERR-INSUFFICIENT-COLLATERAL))
@@ -447,6 +450,7 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts!
@@ -489,6 +493,7 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (<= debt (get debt vault)) (err ERR-WRONG-DEBT))
@@ -565,6 +570,7 @@
     (decimals (get stability-fee-decimals collateral-type))
     (interest (/ (* (get debt vault) fee) (pow u10 decimals)))
   )
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (ok (* number-of-blocks interest))
   )
 )
@@ -576,6 +582,7 @@
   (let (
     (vault (get-vault-by-id vault-id))
   )
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
         updated-at-block-height: block-height,
         stability-fee-accrued: (unwrap-panic (get-stability-fee-for-vault vault-id coll-type)),
@@ -594,6 +601,7 @@
     (vault (get-vault-by-id vault-id))
     (fee (+ (get stability-fee-accrued vault) (unwrap-panic (get-stability-fee-for-vault vault-id coll-type))))
   )
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (if (> fee u0)
       (begin
         (try! (contract-call? .xusd-token transfer fee tx-sender (as-contract tx-sender) none))
