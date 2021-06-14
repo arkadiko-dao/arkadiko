@@ -335,6 +335,7 @@ class VaultAuction {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v1-1", "close-auction", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1"),
         types.uint(auctionId)
       ], user.address)
     ]);
