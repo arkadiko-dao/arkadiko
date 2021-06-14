@@ -69,6 +69,7 @@ class VaultManager {
         types.uint(extraCollateral * 1000000),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], user.address)
     ]);
     return block.receipts[0].result;
@@ -79,7 +80,8 @@ class VaultManager {
       Tx.contractCall("arkadiko-freddie-v1-1", "mint", [
         types.uint(vaultId),
         types.uint(amount * 1000000), 
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1")
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], user.address),
     ]);
     return block.receipts[0].result;
@@ -91,7 +93,8 @@ class VaultManager {
         types.uint(vaultId),
         types.uint(amount * 1000000),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token")
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], user.address),
     ]);
     return block.receipts[0].result;
@@ -104,6 +107,7 @@ class VaultManager {
         types.uint(amount * 1000000),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], user.address)
     ]);
     return block.receipts[0].result;

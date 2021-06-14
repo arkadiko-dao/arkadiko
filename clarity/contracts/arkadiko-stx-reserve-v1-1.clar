@@ -76,7 +76,7 @@
     (let ((amount
       (/
         (* ustx-amount (get last-price-in-cents stx-price-in-cents))
-        (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-collateral-to-debt-ratio collateral-type))
+        u200 ;; always calculate based on 200 coll-to-debt?
       )))
       (ok amount)
     )

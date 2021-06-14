@@ -337,7 +337,13 @@
   )
 )
 
-(define-public (deposit (vault-id uint) (uamount uint) (reserve <vault-trait>) (ft <ft-trait>))
+(define-public (deposit
+  (vault-id uint)
+  (uamount uint)
+  (reserve <vault-trait>)
+  (ft <ft-trait>)
+  (coll-type <collateral-types-trait>)
+)
   (let (
     (vault (get-vault-by-id vault-id))
     (collateral-token (unwrap-panic (get-collateral-token-for-vault vault-id)))
@@ -358,7 +364,7 @@
     (asserts!
       (or
         (is-eq collateral-token "STX")
-        (is-eq (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-token-address (get collateral-type vault))) (contract-of ft))
+        (is-eq (unwrap-panic (contract-call? coll-type get-token-address (get collateral-type vault))) (contract-of ft))
       )
       (err ERR-WRONG-COLLATERAL-TOKEN)
     )
@@ -371,7 +377,13 @@
   )
 )
 
-(define-public (withdraw (vault-id uint) (uamount uint) (reserve <vault-trait>) (ft <ft-trait>))
+(define-public (withdraw
+  (vault-id uint)
+  (uamount uint)
+  (reserve <vault-trait>)
+  (ft <ft-trait>)
+  (coll-type <collateral-types-trait>)
+)
   (let (
     (vault (get-vault-by-id vault-id))
     (collateral-token (unwrap-panic (get-collateral-token-for-vault vault-id)))
@@ -391,7 +403,7 @@
     (asserts!
       (or
         (is-eq collateral-token "STX")
-        (is-eq (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-token-address (get collateral-type vault))) (contract-of ft))
+        (is-eq (unwrap-panic (contract-call? coll-type get-token-address (get collateral-type vault))) (contract-of ft))
       )
       (err ERR-WRONG-COLLATERAL-TOKEN)
     )
@@ -408,7 +420,7 @@
             collateral: new-collateral,
             updated-at-block-height: block-height
           })))
-      (asserts! (>= ratio (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-collateral-to-debt-ratio (get collateral-type vault)))) (err ERR-INSUFFICIENT-COLLATERAL))
+      (asserts! (>= ratio (unwrap-panic (contract-call? coll-type get-collateral-to-debt-ratio (get collateral-type vault)))) (err ERR-INSUFFICIENT-COLLATERAL))
       (unwrap! (contract-call? reserve withdraw ft collateral-token (get owner vault) uamount) (err ERR-WITHDRAW-FAILED))
       (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id updated-vault))
       (try! (contract-call? .arkadiko-vault-rewards-v1-1 remove-collateral uamount (get owner vault)))
@@ -418,7 +430,12 @@
   )
 )
 
-(define-public (mint (vault-id uint) (extra-debt uint) (reserve <vault-trait>))
+(define-public (mint
+  (vault-id uint)
+  (extra-debt uint)
+  (reserve <vault-trait>)
+  (coll-type <collateral-types-trait>)
+)
   (let ((vault (get-vault-by-id vault-id))
        (new-total-debt (+ extra-debt (get debt vault)))
        (updated-vault (merge vault {
@@ -436,8 +453,8 @@
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts!
       (<
-        (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-total-debt (get collateral-type vault)))
-        (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-maximum-debt (get collateral-type vault)))
+        (unwrap-panic (contract-call? coll-type get-total-debt (get collateral-type vault)))
+        (unwrap-panic (contract-call? coll-type get-maximum-debt (get collateral-type vault)))
       )
       (err ERR-MAXIMUM-DEBT-REACHED)
     )
@@ -453,13 +470,19 @@
       )
     )
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id updated-vault))
-    (try! (contract-call? .arkadiko-collateral-types-v1-1 add-debt-to-collateral-type (get collateral-type vault) extra-debt))
+    (try! (contract-call? coll-type add-debt-to-collateral-type (get collateral-type vault) extra-debt))
     (print { type: "vault", action: "mint", data: updated-vault })
     (ok true)
   )
 )
 
-(define-public (burn (vault-id uint) (debt uint) (reserve <vault-trait>) (ft <ft-trait>))
+(define-public (burn
+  (vault-id uint)
+  (debt uint)
+  (reserve <vault-trait>)
+  (ft <ft-trait>)
+  (coll-type <collateral-types-trait>)
+)
   (let ((vault (get-vault-by-id vault-id)))
     (asserts!
       (and
@@ -474,20 +497,25 @@
     (asserts!
       (or
         (is-eq (get collateral-token vault) "STX")
-        (is-eq (unwrap-panic (contract-call? .arkadiko-collateral-types-v1-1 get-token-address (get collateral-type vault))) (contract-of ft))
+        (is-eq (unwrap-panic (contract-call? coll-type get-token-address (get collateral-type vault))) (contract-of ft))
       )
       (err ERR-WRONG-COLLATERAL-TOKEN)
     )
 
     (try! (pay-stability-fee vault-id))
     (if (is-eq debt (get debt vault))
-      (close-vault vault-id reserve ft)
-      (burn-partial-debt vault-id debt reserve ft)
+      (close-vault vault-id reserve ft coll-type)
+      (burn-partial-debt vault-id debt reserve ft coll-type)
     )
   )
 )
 
-(define-private (close-vault (vault-id uint) (reserve <vault-trait>) (ft <ft-trait>))
+(define-private (close-vault
+  (vault-id uint)
+  (reserve <vault-trait>)
+  (ft <ft-trait>)
+  (coll-type <collateral-types-trait>)
+)
   (let ((vault (get-vault-by-id vault-id))
        (updated-vault (merge vault {
           collateral: u0,
@@ -499,7 +527,7 @@
 
     (try! (contract-call? .arkadiko-dao burn-token .xusd-token (get debt vault) (get owner vault)))
     (try! (contract-call? reserve burn ft (get owner vault) (get collateral vault)))
-    (try! (contract-call? .arkadiko-collateral-types-v1-1 subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault)))
+    (try! (contract-call? coll-type subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault)))
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id updated-vault))
     (try! (contract-call? .arkadiko-vault-rewards-v1-1 remove-collateral (get collateral vault) (get owner vault)))
     (print { type: "vault", action: "burn", data: updated-vault })
@@ -508,7 +536,13 @@
   )
 )
 
-(define-private (burn-partial-debt (vault-id uint) (debt uint) (reserve <vault-trait>) (ft <ft-trait>))
+(define-private (burn-partial-debt
+  (vault-id uint)
+  (debt uint)
+  (reserve <vault-trait>)
+  (ft <ft-trait>)
+  (coll-type <collateral-types-trait>)
+)
   (let ((vault (get-vault-by-id vault-id)))
     (try! (contract-call? .arkadiko-dao burn-token .xusd-token debt (get owner vault)))
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
@@ -516,7 +550,7 @@
         updated-at-block-height: block-height
       }))
     )
-    (try! (contract-call? .arkadiko-collateral-types-v1-1 subtract-debt-from-collateral-type (get collateral-type vault) debt))
+    (try! (contract-call? coll-type subtract-debt-from-collateral-type (get collateral-type vault) debt))
     (ok true)
   )
 )
