@@ -219,7 +219,7 @@
       total-debt: u0,
       liquidation-ratio: u175, ;;175
       collateral-to-debt-ratio: u200,
-      maximum-debt: u1500000000000000, ;; 1.5B
+      maximum-debt: u10000000000000000, ;; 10B
       liquidation-penalty: u1000, ;; 10% in basis points
       stability-fee: u7610350076, ;; 4% / 365 days / (24*6) blocks = 0.00007610350076 fee per block
       stability-fee-decimals: u16,
@@ -237,7 +237,7 @@
       total-debt: u0,
       liquidation-ratio: u150,
       collateral-to-debt-ratio: u200,
-      maximum-debt: u40000000000000, ;; 400 mio
+      maximum-debt: u400000000000000, ;; 4B
       liquidation-penalty: u1000,
       stability-fee: u1331811263, ;; 7% / 365 days / (24*6) blocks = 0.0001331811263 fee per block
       stability-fee-decimals: u15,

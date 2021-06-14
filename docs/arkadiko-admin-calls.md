@@ -11,3 +11,7 @@ Regtest:
 
 Regtest:
 `stx call_contract_func -t -H "https://stacks-node-api.regtest.stacks.co" -I "https://stacks-node-api.regtest.stacks.co" --contract_address ST2SVD7CS7HB1DV7T4AXZJ9DZAQC7C9QMQF7X356R --contract_name arkadiko-stacker-v1-1 --function_name initiate-stacking --fee 500 --nonce 122 --payment_key KEY`
+
+3. Withdraw Swap revenue
+
+`stx call_contract_func -t -H "https://stacks-node-api.regtest.stacks.co" -I "https://stacks-node-api.regtest.stacks.co" --contract_address ST2SVD7CS7HB1DV7T4AXZJ9DZAQC7C9QMQF7X356R --contract_name arkadiko-swap-v1-1 --function_name collect-fees --fee 500 --nonce 122 --payment_key KEY`
