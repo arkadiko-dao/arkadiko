@@ -61,6 +61,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
       functionArgs: [
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-freddie-v1-1'),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1'),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1'),
         uintCV(bidAuctionId),
         uintCV(bidLotId),
         uintCV(bidAmount * 1000000)

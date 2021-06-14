@@ -113,7 +113,10 @@ export const ManageVault = ({ match }) => {
         contractAddress,
         contractName: "arkadiko-freddie-v1-1",
         functionName: "get-stability-fee-for-vault",
-        functionArgs: [uintCV(vault?.id)],
+        functionArgs: [
+          uintCV(vault?.id),
+          contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v1-1')
+        ],
         senderAddress: contractAddress || '',
         network: network,
       });
@@ -152,12 +155,12 @@ export const ManageVault = ({ match }) => {
     const postConditions = [
       makeStandardFungiblePostCondition(
         senderAddress || '',
-        FungibleConditionCode.Equal,
+        FungibleConditionCode.GreaterEqual,
         new BN(fee),
         createAssetInfo(
           contractAddress,
           "xusd-token",
-          "xUSD"
+          "xusd"
         )
       )
     ];

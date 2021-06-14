@@ -54,7 +54,10 @@ export const Vault: React.FC<VaultProps> = ({
         contractAddress,
         contractName: "arkadiko-freddie-v1-1",
         functionName: "get-stability-fee-for-vault",
-        functionArgs: [uintCV(id)],
+        functionArgs: [
+          uintCV(id),
+          contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v1-1')
+        ],
         senderAddress: contractAddress || '',
         network: network,
       });
