@@ -570,7 +570,6 @@
     (decimals (get stability-fee-decimals collateral-type))
     (interest (/ (* (get debt vault) fee) (pow u10 decimals)))
   )
-    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (ok (* number-of-blocks interest))
   )
 )
