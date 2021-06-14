@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
-import { Box } from '@blockstack/ui';
 import { Container } from './home';
 import { SwitchVerticalIcon, PlusCircleIcon, MinusCircleIcon } from '@heroicons/react/solid';
 import { microToReadable } from '@common/vault-utils';
@@ -18,7 +17,6 @@ import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { tokenTraits } from '@common/vault-utils';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { SwapSettings } from '@components/swap-settings';
-import { NavLink as RouterLink } from 'react-router-dom';
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
@@ -220,170 +218,168 @@ export const Swap: React.FC = () => {
   };
 
   return (
-    <Box>
-      <Container>
-        <main className="flex-1 relative pb-8 flex flex-col items-center justify-center">
-          <div className="mt-12 w-full max-w-lg bg-white shadow rounded-lg relative z-10">
-            <div className="flex flex-col p-4">
-              <div className="flex justify-between mb-4">
-                <h2 className="text-lg leading-6 font-medium text-gray-900">
-                  Swap Tokens
-                </h2>
-                <SwapSettings
-                  slippageTolerance={slippageTolerance}
-                  setDefaultSlippage={setDefaultSlippage}
-                  setSlippageTolerance={setSlippageTolerance}
-                />
-              </div>
+    <Container>
+      <main className="flex-1 relative pb-8 flex flex-col items-center justify-center py-12">
+        <div className="w-full max-w-lg bg-white shadow rounded-lg relative z-10">
+          <div className="flex flex-col p-4">
+            <div className="flex justify-between mb-4">
+              <h2 className="text-lg leading-6 font-medium text-gray-900">
+                Swap Tokens
+              </h2>
+              <SwapSettings
+                slippageTolerance={slippageTolerance}
+                setDefaultSlippage={setDefaultSlippage}
+                setSlippageTolerance={setSlippageTolerance}
+              />
+            </div>
 
-              <form>
-                <div className="rounded-md shadow-sm bg-gray-50 border border-gray-200 hover:border-gray-300 focus-within:border-indigo-200">
-                  <div className="flex items-center p-4 pb-2">
+            <form>
+              <div className="rounded-md shadow-sm bg-gray-50 border border-gray-200 hover:border-gray-300 focus-within:border-indigo-200">
+                <div className="flex items-center p-4 pb-2">
 
-                    <TokenSwapList
-                      selected={tokenX}
-                      setSelected={setTokenX}
-                    />
+                  <TokenSwapList
+                    selected={tokenX}
+                    setSelected={setTokenX}
+                  />
 
-                    <label htmlFor="tokenXAmount" className="sr-only">{tokenX.name}</label>
-                    <input
-                      type="number"
-                      inputMode="decimal" 
-                      autoFocus={true}
-                      autoComplete="off"
-                      autoCorrect="off"
-                      name="tokenXAmount"
-                      id="tokenXAmount"
-                      pattern="^[0-9]*[.,]?[0-9]*$"
-                      placeholder="0.0"
-                      value={tokenXAmount || ''}
-                      onChange={onInputChange}
-                      className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1"
-                      style={{appearance: 'textfield'}} />
-                  </div>
+                  <label htmlFor="tokenXAmount" className="sr-only">{tokenX.name}</label>
+                  <input
+                    type="number"
+                    inputMode="decimal" 
+                    autoFocus={true}
+                    autoComplete="off"
+                    autoCorrect="off"
+                    name="tokenXAmount"
+                    id="tokenXAmount"
+                    pattern="^[0-9]*[.,]?[0-9]*$"
+                    placeholder="0.0"
+                    value={tokenXAmount || ''}
+                    onChange={onInputChange}
+                    className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1"
+                    style={{appearance: 'textfield'}} />
+                </div>
 
-                  <div className="flex items-center text-sm p-4 pt-0 justify-end">
-                    <div className="flex items-center justify-between w-full">
-                      <div className="flex items-center justify-start">
-                        <p className="text-gray-500">Balance: {balanceSelectedTokenX.toLocaleString()} {tokenX.name}</p>
-                        {parseInt(balanceSelectedTokenX, 10) > 0 ? (
-                          <button
-                            type="button"
-                            onClick={() => setTokenXAmount(parseInt(balanceSelectedTokenX, 10))}
-                            className="ml-2 p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
-                          >
-                            Max.
-                          </button>
-                        ) : `` }
-                      </div>
+                <div className="flex items-center text-sm p-4 pt-0 justify-end">
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center justify-start">
+                      <p className="text-gray-500">Balance: {balanceSelectedTokenX.toLocaleString()} {tokenX.name}</p>
+                      {parseInt(balanceSelectedTokenX, 10) > 0 ? (
+                        <button
+                          type="button"
+                          onClick={() => setTokenXAmount(parseInt(balanceSelectedTokenX, 10))}
+                          className="ml-2 p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                        >
+                          Max.
+                        </button>
+                      ) : `` }
                     </div>
                   </div>
                 </div>
+              </div>
 
+              <button
+                type="button"
+                onClick={switchTokens}
+                className="-mb-4 -ml-4 -mt-4 bg-white border border-gray-300 flex h-8 bg-white  items-center justify-center left-1/2 relative rounded-md text-gray-400 transform w-8 z-10 hover:text-indigo-700 focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-indigo-500"
+              >
+                <SwitchVerticalIcon className="h-5 w-5" aria-hidden="true" />
+              </button>
+
+              <div className="rounded-md shadow-sm bg-gray-50 border border-gray-200 hover:border-gray-300 focus-within:border-indigo-200 mt-1">
+                <div className="flex items-center p-4 pb-2">
+
+                  <TokenSwapList
+                    selected={tokenY}
+                    setSelected={setTokenY}
+                  />
+
+                  <label htmlFor="tokenYAmount" className="sr-only">{tokenY.name}</label>
+                  <input 
+                    inputMode="decimal"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    type="text"
+                    name="tokenYAmount"
+                    id="tokenYAmount"
+                    pattern="^[0-9]*[.,]?[0-9]*$" 
+                    placeholder="0.0"
+                    value={tokenYAmount.toLocaleString()}
+                    onChange={onInputChange}
+                    disabled={true}
+                    className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1 text-gray-600" />
+                </div>
+
+                <div className="flex items-center text-sm p-4 pt-0 justify-end">
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center justify-start">
+                      <p className="text-gray-500">Balance: {balanceSelectedTokenY.toLocaleString()} {tokenY.name}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-sm mt-2 font-semibold text-right text-gray-400">1 {tokenY.name} = ~{currentPrice} {tokenX.name}</p>
+
+              {state.userData && !foundPair ? (
                 <button
                   type="button"
-                  onClick={switchTokens}
-                  className="-mb-4 -ml-4 -mt-4 bg-white border border-gray-300 flex h-8 bg-white  items-center justify-center left-1/2 relative rounded-md text-gray-400 transform w-8 z-10 hover:text-indigo-700 focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-indigo-500"
+                  disabled={true}
+                  className="w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-lg rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                  <SwitchVerticalIcon className="h-5 w-5" aria-hidden="true" />
+                  No liquidity for this pair. Try another one
                 </button>
-
-                <div className="rounded-md shadow-sm bg-gray-50 border border-gray-200 hover:border-gray-300 focus-within:border-indigo-200 mt-1">
-                  <div className="flex items-center p-4 pb-2">
-
-                    <TokenSwapList
-                      selected={tokenY}
-                      setSelected={setTokenY}
-                    />
-
-                    <label htmlFor="tokenYAmount" className="sr-only">{tokenY.name}</label>
-                    <input 
-                      inputMode="decimal"
-                      autoComplete="off"
-                      autoCorrect="off"
-                      type="text"
-                      name="tokenYAmount"
-                      id="tokenYAmount"
-                      pattern="^[0-9]*[.,]?[0-9]*$" 
-                      placeholder="0.0"
-                      value={tokenYAmount.toLocaleString()}
-                      onChange={onInputChange}
-                      disabled={true}
-                      className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1 text-gray-600" />
-                  </div>
-
-                  <div className="flex items-center text-sm p-4 pt-0 justify-end">
-                    <div className="flex items-center justify-between w-full">
-                      <div className="flex items-center justify-start">
-                        <p className="text-gray-500">Balance: {balanceSelectedTokenY.toLocaleString()} {tokenY.name}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <p className="text-sm mt-2 font-semibold text-right text-gray-400">1 {tokenY.name} = ~{currentPrice} {tokenX.name}</p>
-
-                {state.userData && !foundPair ? (
-                  <button
-                    type="button"
-                    disabled={true}
-                    className="w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-lg rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    No liquidity for this pair. Try another one
-                  </button>
-                ) : state.userData ? (
-                  <button
-                    type="button"
-                    disabled={tokenYAmount === 0}
-                    onClick={() => swapTokens()}
-                    className="w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    Swap
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => doOpenAuth()}
-                    className="w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    Connect Wallet
-                  </button>
-                )}
-              </form>
+              ) : state.userData ? (
+                <button
+                  type="button"
+                  disabled={tokenYAmount === 0}
+                  onClick={() => swapTokens()}
+                  className="w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Swap
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => doOpenAuth()}
+                  className="w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Connect Wallet
+                </button>
+              )}
+            </form>
+          </div>
+        </div>
+        <div className="-mt-4 p-4 pt-8 w-full max-w-md bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
+          <dl className="space-y-1 pb-3">
+            <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+              <dt className="text-sm font-medium text-indigo-500">Minimum Received</dt>
+              <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{minimumReceived.toLocaleString()} {tokenY.name}</dd>
             </div>
-          </div>
-          <div className="-mt-4 p-4 pt-8 w-full max-w-md bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
-            <dl className="space-y-1 pb-3">
-              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                <dt className="text-sm font-medium text-indigo-500">Minimum Received</dt>
-                <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{minimumReceived.toLocaleString()} {tokenY.name}</dd>
-              </div>
-              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                <dt className="text-sm font-medium text-indigo-500">Price Impact</dt>
-                <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">~{priceImpact}%</dd>
-              </div>
-              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                <dt className="text-sm font-medium text-indigo-500">Liquidity Provider fee</dt>
-                <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{lpFee} {tokenX.name}</dd>
-              </div>
-            </dl>
-            {/* <div className="space-y flex flex-col mt-3">
-              <Box className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
-                <RouterLink className="inline-flex items-center" to={`swap/add/${tokenX.name}/${tokenY.name}`}>
-                  <PlusCircleIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                  Add Liquidity to {tokenX.name}-{tokenY.name}
-                </RouterLink>
-              </Box>
-              <Box className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
-                <RouterLink className="inline-flex items-center" to={`swap/remove/${tokenX.name}/${tokenY.name}`}>
-                  <MinusCircleIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                  Remove Liquidity from {tokenX.name}-{tokenY.name}
-                </RouterLink>
-              </Box>
-            </div> */}
-          </div>
-        </main>
-      </Container>
-    </Box>  
+            <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+              <dt className="text-sm font-medium text-indigo-500">Price Impact</dt>
+              <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">~{priceImpact}%</dd>
+            </div>
+            <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+              <dt className="text-sm font-medium text-indigo-500">Liquidity Provider fee</dt>
+              <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{lpFee} {tokenX.name}</dd>
+            </div>
+          </dl>
+          {/* <div className="space-y flex flex-col mt-3">
+            <Box className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
+              <RouterLink className="inline-flex items-center" to={`swap/add/${tokenX.name}/${tokenY.name}`}>
+                <PlusCircleIcon className="h-5 w-5 mr-1" aria-hidden="true" />
+                Add Liquidity to {tokenX.name}-{tokenY.name}
+              </RouterLink>
+            </Box>
+            <Box className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
+              <RouterLink className="inline-flex items-center" to={`swap/remove/${tokenX.name}/${tokenY.name}`}>
+                <MinusCircleIcon className="h-5 w-5 mr-1" aria-hidden="true" />
+                Remove Liquidity from {tokenX.name}-{tokenY.name}
+              </RouterLink>
+            </Box>
+          </div> */}
+        </div>
+      </main>
+    </Container>
   );
 };
