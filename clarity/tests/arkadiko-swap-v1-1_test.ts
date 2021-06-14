@@ -202,11 +202,8 @@ Clarinet.test({
 Clarinet.test({
   name: "swap: protocol fees",
   async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
-    
+    let deployer = accounts.get("deployer")!;    
     let swap = new Swap(chain, deployer);
-    let xusdManager = new XusdManager(chain, deployer);
 
     // Create pair
     let result = swap.createPair(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, "DIKO-xUSD", 5000, 1000);
