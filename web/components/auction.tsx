@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AuctionProps} from './auction-group';
-import { callReadOnlyFunction, cvToJSON, uintCV } from '@stacks/transactions';
+import { callReadOnlyFunction, contractPrincipalCV, cvToJSON, uintCV } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { getPrice } from '@common/get-price';
@@ -44,7 +44,10 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, en
         contractAddress,
         contractName: "arkadiko-auction-engine-v1-1",
         functionName: "get-minimum-collateral-amount",
-        functionArgs: [uintCV(price), uintCV(id)],
+        functionArgs: [
+          contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v1-1'),
+          uintCV(id)
+        ],
         senderAddress: stxAddress || '',
         network: network,
       });
