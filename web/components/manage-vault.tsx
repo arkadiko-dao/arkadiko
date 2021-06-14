@@ -148,16 +148,15 @@ export const ManageVault = ({ match }) => {
   }, [collateralType?.collateralToDebtRatio, price]);
 
   const payStabilityFee = async () => {
-    const fee = stabilityFee / 1000000;
     const postConditions = [
       makeStandardFungiblePostCondition(
         senderAddress || '',
-        FungibleConditionCode.Equal,
-        new BN(fee),
+        FungibleConditionCode.GreaterEqual,
+        new BN(stabilityFee),
         createAssetInfo(
           contractAddress,
           "xusd-token",
-          "xUSD"
+          "xusd"
         )
       )
     ];
