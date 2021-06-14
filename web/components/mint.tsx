@@ -19,9 +19,8 @@ import { AppContext } from '@common/context';
 import { useConnect } from '@stacks/connect-react';
 import { CollateralTypeGroup } from '@components/collateral-type-group';
 import { useEffect } from 'react';
-import { TestnetModal } from './testnet-modal';
 import { microToReadable } from '@common/vault-utils';
-import { TokenSwapList, tokenList } from '@components/token-swap-list';
+import { tokenList } from '@components/token-swap-list';
 
 export const Mint = () => {
   const address = useSTXAddress();
@@ -106,8 +105,6 @@ export const Mint = () => {
 
   return (
     <Box py={6}>
-      <TestnetModal />
-
       <main>
         <div className="mt-8">
           <section className="">

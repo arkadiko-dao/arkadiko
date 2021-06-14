@@ -17,7 +17,7 @@ export const TestnetModal = () => {
 
   return (
     <div>
-      {env === 'mocknet' ? (        
+      {env === 'regtest' || env === 'testnet' ? (
         <Modal isOpen={showTestnetModal}>
           <div className="flex p-4 text-center sm:block sm:p-0">
             <div className="inline-block align-bottom bg-white rounded-lg px-2 pt-5 pb-4 text-left w-24 overflow-hidden align-middle max-w-sm w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
@@ -29,13 +29,13 @@ export const TestnetModal = () => {
                 </div>
                 <div className="mt-3 text-center sm:mt-5">
                   <h3 className="text-lg leading-6 font-medium text-gray-900">
-                    Welcome to Arkadiko Testnet!
+                    Welcome to Arkadiko Regtest!
                   </h3>
                   <div className="mt-2">
                     <p className="text-left text-sm text-gray-500">
-                      The testnet launch is a functional equivalent to mainnet, which will be launched later this year.
-                      The purpose of tesnet is to work out small bugs and issues that will enhance the user experience on mainnet.
-                      Testnet does not use any real money, so you are open to try whatever without using actual money!
+                      The regtest launch is a functional equivalent to mainnet, which will be launched later this year.
+                      The purpose of regtest is to work out small bugs and issues that will enhance the user experience on mainnet.
+                      Regtest does not use any real money, so you are open to try whatever without using actual money!
                     </p>
                     <p className="text-left text-sm text-gray-500 mt-2">
                       What we have in store:
