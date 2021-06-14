@@ -83,7 +83,7 @@
   )
 )
 
-(define-public (calculate-current-collateral-to-debt-ratio (vault-id uint))
+(define-public (calculate-current-collateral-to-debt-ratio (vault-id uint) (coll-type <collateral-types-trait>))
   (let ((vault (get-vault-by-id vault-id)))
     (if (is-eq (get is-liquidated vault) true)
       (ok u0)
@@ -93,9 +93,7 @@
             (ok
               (/
                 (* (get collateral vault) (get last-price-in-cents stx-price-in-cents))
-                ;; (get debt vault)
-                ;; TODO: cost is too high to use this in the front-end - fix this
-                (+ (get debt vault) (unwrap-panic (get-stability-fee-for-vault vault-id)))
+                (+ (get debt vault) (unwrap-panic (get-stability-fee-for-vault vault-id coll-type)))
               )
             )
             (err u0)
@@ -631,7 +629,7 @@
     (let (
       (collateral (get collateral vault))
       (liquidation-penalty (unwrap-panic (contract-call? coll-type get-liquidation-penalty (get collateral-type vault))))
-      (fee (unwrap-panic (get-stability-fee-for-vault vault-id)))
+      (fee (unwrap-panic (get-stability-fee-for-vault vault-id coll-type)))
       (penalty (/ (* liquidation-penalty (+ fee (get debt vault))) u10000))
       (extra-debt (/ (* u60 penalty) u100)) ;; 60% of the penalty is extra debt.
       (discount (/ (* u40 liquidation-penalty) u10000)) ;; 40% of liquidation penalty is discount % for liquidator

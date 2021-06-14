@@ -34,11 +34,22 @@ class VaultManager {
   }
 
   getCurrentCollateralToDebtRatio(vaultId: number, caller: Account = this.deployer) {
-    return this.chain.callReadOnlyFn("arkadiko-freddie-v1-1", "calculate-current-collateral-to-debt-ratio", [types.uint(vaultId)], caller.address);
+    return this.chain.callReadOnlyFn(
+      "arkadiko-freddie-v1-1",
+      "calculate-current-collateral-to-debt-ratio",
+      [
+        types.uint(vaultId),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
+      ],
+      caller.address
+    );
   }
 
   getStabilityFee(vaultId: number, caller: Account = this.deployer) {
-    return this.chain.callReadOnlyFn("arkadiko-freddie-v1-1", "get-stability-fee-for-vault", [types.uint(vaultId)], caller.address);
+    return this.chain.callReadOnlyFn("arkadiko-freddie-v1-1", "get-stability-fee-for-vault", [
+      types.uint(vaultId),
+      types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
+    ], caller.address);
   }
 
   createVault(user: Account, collateralType: string, amount: number, xusd: number) {

@@ -208,7 +208,10 @@ Clarinet.test({
     call.result.expectOk().expectUint(39998921); // ~40 = 1000 * 4%
 
     chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "accrue-stability-fee", [types.uint(1)], deployer.address),
+      Tx.contractCall("arkadiko-freddie-v1-1", "accrue-stability-fee", [
+        types.uint(1),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
+      ], deployer.address),
       Tx.contractCall("arkadiko-collateral-types-v1-1", "change-risk-parameters", [
         types.ascii("STX-A"),
         types.list([
