@@ -9,7 +9,8 @@ import {
   makeSTXTokenTransfer,
   privateKeyToString,
   uintCV,
-  contractPrincipalCV
+  contractPrincipalCV,
+  makeContractCall
 } from '@stacks/transactions';
 import { VaultGroup } from './vault-group';
 import { getPrice } from '@common/get-price';
@@ -53,6 +54,23 @@ export const Mint = () => {
       amount: new BN(5000000000),
       senderKey: privateKeyToString(senderKey),
       network: network
+    });
+    await broadcastTransaction(transaction, network);
+  };
+
+  const unlockVault = async () => {
+    const key = '';
+    const senderKey = createStacksPrivateKey(key);
+    const transaction = await makeContractCall({
+      network,
+      contractAddress,
+      contractName: 'arkadiko-freddie-v1-1',
+      functionName: 'enable-vault-withdrawals',
+      functionArgs: [
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-stacker-v1-1'),
+        uintCV(1)
+      ],
+      senderKey: privateKeyToString(senderKey)
     });
     await broadcastTransaction(transaction, network);
   };
