@@ -176,7 +176,7 @@ export const Mint = () => {
                           scope="col"
                           className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                         >
-                          Last Price
+                          Last Oracle Price
                         </th>
                       </tr>
                     </thead>
