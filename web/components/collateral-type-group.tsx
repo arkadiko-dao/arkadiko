@@ -34,10 +34,10 @@ export const CollateralTypeGroup: React.FC<CollateralTypeGroupProps> = ({ types 
     <table className="min-w-full divide-y divide-gray-200">
       <thead>
         <tr>
-          <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
             Collateral
           </th>
-          <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
             <div className="flex items-stretch">
               <div className="h-2">
                 Stability Fee
@@ -51,7 +51,7 @@ export const CollateralTypeGroup: React.FC<CollateralTypeGroupProps> = ({ types 
               </div>
             </div>
           </th>
-          <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
             <div className="flex items-stretch">
               <div className="h-2">
                 Liq. Ratio
@@ -65,7 +65,7 @@ export const CollateralTypeGroup: React.FC<CollateralTypeGroupProps> = ({ types 
               </div>
             </div>
           </th>
-          <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
             <div className="flex items-stretch">
               <div className="h-2">
                 Liq. Penalty
@@ -79,13 +79,13 @@ export const CollateralTypeGroup: React.FC<CollateralTypeGroupProps> = ({ types 
               </div>
             </div>
           </th>
-          <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
             Max Debt
           </th>
-          <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
             Current Debt
           </th>
-          <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" className="relative bg-gray-50 px-6 py-3">
             <span className="sr-only">New Vault</span>
           </th>
         </tr>
