@@ -24,7 +24,7 @@ import { tokenList } from '@components/token-swap-list';
 
 export const Mint = () => {
   const address = useSTXAddress();
-  const env = process.env.REACT_APP_NETWORK_ENV;
+  const env = process.env.REACT_APP_NETWORK_ENV || 'regtest';
   const [state, _] = useContext(AppContext);
   const [{ vaults, collateralTypes }, _x] = useContext(AppContext);
   const { doContractCall } = useConnect();
@@ -144,9 +144,9 @@ export const Mint = () => {
                 </div>
               ) : (
                 <div className="flex items-center justify-end mb-4">
-                  <span className="text-gray-800 text-xs py-1 px-2">Testnet actions:</span>
+                  <span className="text-gray-800 text-xs py-1 px-2">{env.replace(/^\w/, (c) => c.toUpperCase())} actions:</span>
                   <Link onClick={() => addTestnetStx()} className="ml-1 inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Get STX from testnet
+                    Get STX from {env}
                   </Link>
                 </div>
               )}
