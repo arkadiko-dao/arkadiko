@@ -35,7 +35,8 @@ export const TestnetModal = () => {
                     <p className="text-left text-sm text-gray-500">
                       The regtest launch is a functional equivalent to mainnet, which will be launched later this year.
                       The purpose of regtest is to work out small bugs and issues that will enhance the user experience on mainnet.
-                      Regtest does not use any real money, so you are open to try whatever without using actual money!
+                      Regtest does not use any real money, so you are open to play around!
+                      You can request some regtest STX tokens on the Mint tab in case you need some.
                     </p>
                     <p className="text-left text-sm text-gray-500 mt-2">
                       What we have in store:
