@@ -4,6 +4,8 @@ import { useSTXAddress } from '@common/use-stx-address';
 import BN from 'bn.js';
 import {
   broadcastTransaction,
+  callReadOnlyFunction,
+  cvToJSON,
   createStacksPrivateKey,
   standardPrincipalCV,
   makeSTXTokenTransfer,
@@ -21,16 +23,18 @@ import { CollateralTypeGroup } from '@components/collateral-type-group';
 import { useEffect } from 'react';
 import { microToReadable } from '@common/vault-utils';
 import { tokenList } from '@components/token-swap-list';
+import { VaultProps } from './vault';
 
 export const Mint = () => {
   const address = useSTXAddress();
   const env = process.env.REACT_APP_NETWORK_ENV || 'regtest';
-  const [state, _] = useContext(AppContext);
+  const [state, setState] = useContext(AppContext);
   const [{ vaults, collateralTypes }, _x] = useContext(AppContext);
   const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [stxPrice, setStxPrice] = useState(0.0);
   const [dikoPrice, setDikoPrice] = useState(0.0);
+  const [loadingVaults, setLoadingVaults] = useState(true);
 
   useEffect(() => {
     const fetchPrices = async () => {
@@ -42,6 +46,68 @@ export const Mint = () => {
     };
 
     fetchPrices();
+  }, []);
+
+  useEffect(() => {
+    const fetchVault = async (vaultId:number) => {
+      const vault = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-vault-data-v1-1",
+        functionName: "get-vault-by-id",
+        functionArgs: [uintCV(vaultId)],
+        senderAddress: address || '',
+        network: network,
+      });
+      const json = cvToJSON(vault);
+      return json;
+    };
+
+    async function asyncForEach(array:any, callback:any) {
+      for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array);
+      }
+    }
+
+    const fetchVaults = async () => {
+      const vaults = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-vault-data-v1-1",
+        functionName: "get-vault-entries",
+        functionArgs: [standardPrincipalCV(address || '')],
+        senderAddress: address || '',
+        network: network,
+      });
+      const json = cvToJSON(vaults);
+      let arr:Array<VaultProps> = [];
+
+      await asyncForEach(json.value.ids.value, async (vaultId:any) => {
+        if (vaultId.value !== 0) {
+          const vault = await fetchVault(vaultId.value);
+          const data = vault.value;
+          arr.push({
+            id: data['id'].value,
+            owner: data['owner'].value,
+            collateral: data['collateral'].value,
+            collateralType: data['collateral-type'].value,
+            collateralToken: data['collateral-token'].value,
+            isLiquidated: data['is-liquidated'].value,
+            auctionEnded: data['auction-ended'].value,
+            leftoverCollateral: data['leftover-collateral'].value,
+            debt: data['debt'].value,
+            stackedTokens: data['stacked-tokens'].value,
+            collateralData: {}
+          });
+        }
+      });
+
+      setState(prevState => ({
+        ...prevState,
+        vaults: arr
+      }));
+      setLoadingVaults(false);
+    };
+
+    fetchVaults();
   }, []);
 
   const addMocknetStx = async () => {
@@ -267,8 +333,11 @@ export const Mint = () => {
           <div className="mt-4">
             {vaults.length && Object.keys(collateralTypes).length === state.definedCollateralTypes.length ? (
               <VaultGroup vaults={vaults} />
-            ): (
-              
+            ) : loadingVaults === true ? (
+              <div>
+                <p className="text-sm">Loading your vaults...</p>
+              </div>
+            ) : (
               <div>
                 <p className="text-sm">You currently have no open vaults</p>
               </div>

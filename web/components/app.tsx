@@ -8,8 +8,7 @@ import { Header } from '@components/header';
 import { Routes } from '@components/routes';
 import { getRPCClient } from '@common/utils';
 import { stacksNetwork as network } from '@common/utils';
-import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, tupleCV, ClarityValue, stringAsciiCV } from '@stacks/transactions';
-import { VaultProps } from './vault';
+import { callReadOnlyFunction, cvToJSON, ClarityValue, stringAsciiCV } from '@stacks/transactions';
 import { resolveSTXAddress } from '@common/use-stx-address';
 import { TxStatus } from '@components/tx-status';
 import { TxSidebar } from '@components/tx-sidebar';
@@ -35,43 +34,6 @@ export const App: React.FC = () => {
   const signOut = () => {
     userSession.signUserOut();
     setState(defaultState());
-  };
-  const fetchVaults = async (address: string) => {
-    const vaults = await callReadOnlyFunction({
-      contractAddress,
-      contractName: "arkadiko-vault-data-v1-1",
-      functionName: "get-vaults",
-      functionArgs: [standardPrincipalCV(address)],
-      senderAddress: address,
-      network: network,
-    });
-    const json = cvToJSON(vaults);
-    let arr:Array<VaultProps> = [];
-
-    json.value.value.forEach((e: TupleData) => {
-      const vault = tupleCV(e);
-      const data = (vault.data.value as object);
-      if (data['id'].value !== 0) {
-        arr.push({
-          id: data['id'].value,
-          owner: data['owner'].value,
-          collateral: data['collateral'].value,
-          collateralType: data['collateral-type'].value,
-          collateralToken: data['collateral-token'].value,
-          isLiquidated: data['is-liquidated'].value,
-          auctionEnded: data['auction-ended'].value,
-          leftoverCollateral: data['leftover-collateral'].value,
-          debt: data['debt'].value,
-          stackedTokens: data['stacked-tokens'].value,
-          collateralData: {}
-        });
-      }
-    });
-
-    setState(prevState => ({
-      ...prevState,
-      vaults: arr
-    }));
   };
 
   const fetchBalance = async (address: string) => {
@@ -138,15 +100,12 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    let mounted = true;
-
     if (userSession.isUserSignedIn()) {
       const userData = userSession.loadUserData();
 
       const getData = async () => {
         try {
           fetchBalance(resolveSTXAddress(userData));
-          fetchVaults(resolveSTXAddress(userData));
           fetchCollateralTypes(resolveSTXAddress(userData));
         } catch (error) {
           console.error(error);
@@ -154,15 +113,12 @@ export const App: React.FC = () => {
       };
       void getData();
     }
-
-    return () => { mounted = false; }
   }, []);
 
   const handleRedirectAuth = async () => {
     if (userSession.isSignInPending()) {
       const userData = await userSession.handlePendingSignIn();
       fetchBalance(resolveSTXAddress(userData));
-      fetchVaults(resolveSTXAddress(userData));
       fetchCollateralTypes(resolveSTXAddress(userData));
       setState(prevState => ({ ...prevState, userData }));
     }
@@ -179,7 +135,6 @@ export const App: React.FC = () => {
     finished: ({ userSession }) => {
       const userData = userSession.loadUserData();
       fetchBalance(resolveSTXAddress(userData));
-      fetchVaults(resolveSTXAddress(userData));
       fetchCollateralTypes(resolveSTXAddress(userData));
       setState(prevState => ({ ...prevState, userData }));
     },
