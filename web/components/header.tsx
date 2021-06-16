@@ -1,10 +1,14 @@
 import React, { useContext } from 'react';
-import { Flex, Box, Button } from '@blockstack/ui';
+import { Disclosure } from '@headlessui/react'
+import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import { AppContext } from '@common/context';
-import { Link } from '@components/link';
 import { NavLink as RouterLink } from 'react-router-dom'
 import { useConnect } from '@stacks/connect-react';
 import { useSTXAddress } from '@common/use-stx-address';
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(' ')
+}
 
 interface HeaderProps {
   signOut: () => void;
@@ -26,85 +30,160 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
   const address = useSTXAddress();
 
   return (
-    <Flex as="nav" justifyContent="space-between" alignItems="center" height="64px" px={6} className="border-b-2 border-gray-100">
-      <Box verticalAlign="center" display="inline-block" className={`px-4 py-2 rounded-md bg-amber-100 text-amber-700`}>
-        <div className="flex items-center">
-          <Box display="inline-block" mr={3}>
-            <img className="h-8 w-auto sm:h-8" src="/assets/logo.png" alt="Arkadiko"></img>
-          </Box>
-          <RouterLink to="/vaults">
-            <span className="inline-block align-middle font-semibold">Arkadiko</span>
-          </RouterLink>
-        </div>
-      </Box>
-      <Box>
-        {state.userData ? (
-          <Box display="inline-block" alignItems="right">
-            <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <RouterLink to="/swap" activeClassName="border-b-2 border-indigo-500 pt-6">Swap</RouterLink>
-            </Box>
-            <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <RouterLink to="/vaults" activeClassName="border-b-2 border-indigo-500 pt-6">Mint</RouterLink>
-            </Box>
-            <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <RouterLink to="/auctions" exact activeClassName="border-b-2 border-indigo-500 pt-6">Auctions</RouterLink>
-            </Box>
-            <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <RouterLink to="/stake" activeClassName="border-b-2 border-indigo-500 pt-6">Stake</RouterLink>
-            </Box>
-            <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <RouterLink to="/governance" activeClassName="border-b-2 border-indigo-500 pt-6">Governance</RouterLink>
-            </Box>
-            <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <a href="https://docs.arkadiko.finance/" target="_blank">
-                Docs
-              </a>
-            </Box>
-            <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <a href="https://github.com/arkadiko-dao/arkadiko/blob/master/SECURITY.md" target="_blank">
-                Security
-              </a>
-            </Box>
-            <Box display="inline-block" ml={5} mr={5} className="text-base font-medium text-gray-900 hover:text-gray-700">
-              <Link
-                onClick={() => { setShowSidebar(true); }}
-                display="inline-block"
-                textStyle="caption.medium"
-              >
-                <span className="inline-block w-3 h-3 bg-green-400 border-2 border-white rounded-full mr-2 pt-2"></span>
-                {shortAddress(address)}
-              </Link>
-            </Box>
-            <Link
-              display="inline-block"
-              ml={5}
-              textStyle="caption.medium"
-              color="blue"
-              onClick={() => {
-                signOut();
-              }}
-            >
-              Sign out
-            </Link>
-          </Box>
-        ) :
-          <Box display="inline-block">
-            <a href="https://docs.arkadiko.finance/" target="_blank" className="text-base font-medium text-gray-900 hover:text-gray-700">
-              Docs
-            </a>
+    <Disclosure as="nav" className="bg-white shadow relative">
+      {({ open }) => (
+        <>
+          <div className="max-w-7xl mx-auto px-4 px-6 lg:px-8">
+            <div className="flex justify-between h-16">
+              <div className="flex justify-between flex-1">
+                <RouterLink className="flex-shrink-0 flex items-center" to="/vaults">
+                  <img className="hidden lg:block h-8 w-auto sm:h-8" src="/assets/logo.png" alt="Arkadiko" />
+                  <span className="ml-2 inline-block align-middle font-semibold">Arkadiko</span>
+                </RouterLink>
+                {state.userData ? (
+                  <div className="hidden lg:ml-6 lg:flex lg:space-x-8">
+                    <RouterLink to="/swap" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" activeClassName="border-indigo-500 text-gray-900">Swap</RouterLink>
+                    
+                    <RouterLink to="/vaults" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" activeClassName="border-indigo-500 text-gray-900">Mint</RouterLink>
 
-            <a href="https://github.com/arkadiko-dao/arkadiko/blob/master/SECURITY.md" target="_blank" className="ml-5 text-base font-medium text-gray-900 hover:text-gray-700">
-              Security
-            </a>
+                    <RouterLink to="/auctions" exact className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" activeClassName="border-indigo-500 text-gray-900">Auctions</RouterLink>
 
-            {showWallet ? (
-              <Button ml={5} mode="secondary" onClick={() => doOpenAuth()}>
-                Connect Wallet
-              </Button>
-            ) : null}
-          </Box>
-        }
-      </Box>
-    </Flex>
+                    <RouterLink to="/stake" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" activeClassName="border-indigo-500 text-gray-900">Stake</RouterLink>
+
+                    <RouterLink to="/governance" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center border-b-2 text-sm font-medium" activeClassName="border-indigo-500 text-gray-900">Governance</RouterLink>
+                    
+                    <a className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" href="https://docs.arkadiko.finance/" target="_blank">
+                      Docs
+                    </a>
+                    
+                    <a className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" href="https://github.com/arkadiko-dao/arkadiko/blob/master/SECURITY.md" target="_blank">
+                      Security
+                    </a>
+
+                    <button
+                      type="button"
+                      className="block px-1 text-sm font-medium text-gray-500 hover:text-gray-700 "
+                      onClick={() => { setShowSidebar(true); }}
+                    >
+                      <span className="inline-block w-3 h-3 bg-green-400 border-2 border-white rounded-full mr-2 pt-2"></span>
+                      {shortAddress(address)}
+                    </button>
+
+                    <button
+                      type="button"
+                      className="block px-1 text-sm font-medium text-indigo-500 hover:text-indigo-700 "
+                      onClick={() => { signOut(); }}
+                    >
+                      Sign out
+                    </button>
+                  </div>
+                ) :
+                <div className="hidden lg:ml-6 lg:flex lg:space-x-8 lg:items-center">
+                  <div className="sm:flex sm:space-x-8 sm:h-full">
+                    <a className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" href="https://docs.arkadiko.finance/" target="_blank">
+                      Docs
+                    </a>
+                  
+                    <a className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" href="https://github.com/arkadiko-dao/arkadiko/blob/master/SECURITY.md" target="_blank">
+                      Security
+                    </a>
+                  </div>
+        
+                  {showWallet ? (
+                    <div>
+                      <button
+                        type="button"
+                        className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 shadow-sm hover:bg-indigo-700 "
+                        onClick={() => doOpenAuth()}>
+                        <span>Connect Wallet</span>
+                      </button>
+                    </div>
+                  ) : null}
+                  </div>
+                }
+              </div>
+              <div className="-mr-2 flex items-center lg:hidden">
+                <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 ">
+                  <span className="sr-only">Open main menu</span>
+                  {open ? (
+                    <XIcon className="block h-6 w-6" aria-hidden="true" />
+                  ) : (
+                    <MenuIcon className="block h-6 w-6" aria-hidden="true" />
+                  )}
+                </Disclosure.Button>
+              </div>
+            </div>
+          </div>
+
+          <Disclosure.Panel className="lg:hidden">
+            {state.userData ? (
+              <div>
+                <div className="pt-2 pb-3 space-y-1">
+                  <RouterLink to="/swap" className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium" activeClassName="border-indigo-500 text-gray-900">Swap</RouterLink>
+                    
+                  <RouterLink to="/vaults" className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium" activeClassName="border-indigo-500 text-gray-900">Mint</RouterLink>
+
+                  <RouterLink to="/auctions" exact className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium" activeClassName="border-indigo-500 text-gray-900">Auctions</RouterLink>
+
+                  <RouterLink to="/stake" className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium" activeClassName="border-indigo-500 text-gray-900">Stake</RouterLink>
+
+                  <RouterLink to="/governance" className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium" activeClassName="border-indigo-500 text-gray-900">Governance</RouterLink>
+                  
+                  <a className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium" href="https://docs.arkadiko.finance/" target="_blank">
+                    Docs
+                  </a>
+                
+                  <a className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium" href="https://github.com/arkadiko-dao/arkadiko/blob/master/SECURITY.md" target="_blank">
+                    Security
+                  </a>
+                </div>
+                <div className="pt-4 pb-3 border-t border-gray-200">
+                  <div className="space-y-1">
+                    <button
+                      type="button"
+                      className="block px-4 py-2 text-base font-medium  text-gray-500 hover:text-gray-800 hover:bg-gray-100 sm:px-6 w-full text-left"
+                      onClick={() => { setShowSidebar(true); }}
+                    >
+                      <span className="inline-block w-3 h-3 bg-green-400 border-2 border-white rounded-full mr-2 pt-2"></span>
+                      {shortAddress(address)}
+                    </button>
+
+                    <button
+                      type="button"
+                      className="block px-4 py-2 text-base font-medium  text-indigo-500 hover:text-indigo-800 hover:bg-indigo-100 sm:px-6 w-full text-left"
+                      onClick={() => { signOut(); }}
+                    >
+                      Sign out
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : 
+              <div>
+                <div className="pt-2 pb-3 space-y-1">
+                  <a className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium" href="https://docs.arkadiko.finance/" target="_blank">
+                    Docs
+                  </a>
+                
+                  <a className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium" href="https://github.com/arkadiko-dao/arkadiko/blob/master/SECURITY.md" target="_blank">
+                    Security
+                  </a>
+                </div>
+                <div className="p-3 border-t border-gray-200">
+                  {showWallet ? (
+                    <button
+                      type="button"
+                      className="relative inline-flex w-full justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 shadow-sm hover:bg-indigo-700 focus:focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                      onClick={() => doOpenAuth()}>
+                      <span>Connect Wallet</span>
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+            }
+          </Disclosure.Panel>
+        </>
+      )}
+    </Disclosure>
   );
 };
