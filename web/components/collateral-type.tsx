@@ -20,7 +20,7 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ name, url, token
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         <span className="text-gray-900">{stabilityFeeApy / 100}%</span>
       </td>
-      <td className="hidden px-6 py-4 whitespace-nowrap text-sm text-gray-500 md:block">
+      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         <span className="text-gray-900">{liquidationRatio}%</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
