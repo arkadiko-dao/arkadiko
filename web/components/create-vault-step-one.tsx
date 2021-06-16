@@ -62,7 +62,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
     if (name === 'collateral') {
       setCollateralAmount(value);
       const error = ['You cannot collateralize more than your balance'];
-      if (value > (state.balance[tokenName.toLowerCase()] / 1000000)) {
+      if (value >= (state.balance[tokenName.toLowerCase()] / 1000000)) {
         setErrors(errors.concat(error));
       } else {
         let filteredAry = errors.filter(e => e !== error[0]);
