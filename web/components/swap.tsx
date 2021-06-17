@@ -160,6 +160,14 @@ export const Swap: React.FC = () => {
     setSlippageTolerance(0.4);
   };
 
+  const setMaximum = () => {
+    if (tokenX['name'].toLowerCase() === 'stx') {
+      setTokenXAmount(parseInt(balanceSelectedTokenX, 10) - 1);
+    } else {
+      setTokenXAmount(parseInt(balanceSelectedTokenX, 10));
+    }
+  };
+
   const swapTokens = async () => {
     let contractName = 'swap-x-for-y';
     let tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
@@ -266,7 +274,7 @@ export const Swap: React.FC = () => {
                       {parseInt(balanceSelectedTokenX, 10) > 0 ? (
                         <button
                           type="button"
-                          onClick={() => setTokenXAmount(parseInt(balanceSelectedTokenX, 10))}
+                          onClick={() => setMaximum()}
                           className="ml-2 p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
                         >
                           Max.
