@@ -8,14 +8,12 @@ import { Header } from '@components/header';
 import { Routes } from '@components/routes';
 import { getRPCClient } from '@common/utils';
 import { stacksNetwork as network } from '@common/utils';
-import { callReadOnlyFunction, cvToJSON, ClarityValue, stringAsciiCV } from '@stacks/transactions';
+import { callReadOnlyFunction, cvToJSON, stringAsciiCV } from '@stacks/transactions';
 import { resolveSTXAddress } from '@common/use-stx-address';
 import { TxStatus } from '@components/tx-status';
 import { TxSidebar } from '@components/tx-sidebar';
 import { useLocation } from 'react-router-dom';
 import { TestnetModal } from './testnet-modal';
-
-type TupleData = { [key: string]: ClarityValue };
 
 const icon = 'https://www.arkadiko.finance/assets/logo.png';
 export const App: React.FC = () => {

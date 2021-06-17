@@ -184,6 +184,7 @@ export const Mint = () => {
     await fetch(url, {
       method: 'POST',
     });
+    setState(prevState => ({ ...prevState, showTxModal: true, currentTxStatus: 'requesting faucet tokens...', currentTxMessage: 'Please refresh this page manually after 5 minutes. Your balance should be updated.' }));
   };
 
   return (
