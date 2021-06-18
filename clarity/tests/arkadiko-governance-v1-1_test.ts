@@ -29,7 +29,9 @@ Clarinet.test({
           types.tuple({
             name: types.ascii("oracle"),
             'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
-            'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle")
+            'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle"),
+            'can-mint': types.bool(true),
+            'can-burn': types.bool(true)
           })
         ])
 
@@ -71,7 +73,9 @@ Clarinet.test({
           types.tuple({
             name: types.ascii("oracle"),
             'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
-            'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle")
+            'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.oracle"),
+            'can-mint': types.bool(true),
+            'can-burn': types.bool(true)
           })
         ])
 
@@ -165,12 +169,16 @@ Clarinet.test({
           types.tuple({
             name: types.ascii("oracle"),
             'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
-            'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-oracle")
+            'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-oracle"),
+            'can-mint': types.bool(true),
+            'can-burn': types.bool(true)
           }),
           types.tuple({
             name: types.ascii("freddie"),
             'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
-            'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-freddie")
+            'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-freddie"),
+            'can-mint': types.bool(true),
+            'can-burn': types.bool(true)
           })
         ])
 
@@ -235,7 +243,9 @@ Clarinet.test({
           types.tuple({
             name: types.ascii("oracle"),
             'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
-            'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-oracle")
+            'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-oracle"),
+            'can-mint': types.bool(true),
+            'can-burn': types.bool(true)
           })
         ])
 
@@ -302,12 +312,16 @@ Clarinet.test({
           types.tuple({
             name: types.ascii("oracle"),
             'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
-            'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-oracle")
+            'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-oracle"),
+            'can-mint': types.bool(true),
+            'can-burn': types.bool(true)
           }),
           types.tuple({
             name: types.ascii("freddie"),
             'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
-            'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-freddie")
+            'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-freddie"),
+            'can-mint': types.bool(true),
+            'can-burn': types.bool(true)
           })
         ])
 
@@ -374,12 +388,16 @@ Clarinet.test({
             types.tuple({
               name: types.ascii("oracle"),
               'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
-              'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-oracle")
+              'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-oracle"),
+              'can-mint': types.bool(true),
+              'can-burn': types.bool(true)
             }),
             types.tuple({
               name: types.ascii("freddie"),
               'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
-              'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-freddie")
+              'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-freddie"),
+              'can-mint': types.bool(true),
+              'can-burn': types.bool(true)
             })
           ])
         ],
@@ -405,12 +423,16 @@ Clarinet.test({
             types.tuple({
               name: types.ascii("oracle"),
               'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
-              'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-oracle")
+              'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-oracle"),
+              'can-mint': types.bool(true),
+              'can-burn': types.bool(true)
             }),
             types.tuple({
               name: types.ascii("freddie"),
               'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
-              'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-freddie")
+              'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.new-freddie"),
+              'can-mint': types.bool(true),
+              'can-burn': types.bool(true)
             })
           ])
         ],
@@ -440,7 +462,9 @@ Clarinet.test({
       Tx.contractCall("arkadiko-governance-v1-1", "add-contract-address", [
         types.ascii("amazing-stacker-that-lends"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-mock-stacker-v1-1")
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-mock-stacker-v1-1"),
+        types.bool(true),
+        types.bool(true)
       ], deployer.address)
     ]);
 
@@ -457,7 +481,9 @@ Clarinet.test({
       Tx.contractCall("arkadiko-governance-v1-1", "add-contract-address", [
         types.ascii("stacker"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-mock-stacker-v1-1")
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-mock-stacker-v1-1"),
+        types.bool(true),
+        types.bool(true)
       ], deployer.address)
     ]);
 

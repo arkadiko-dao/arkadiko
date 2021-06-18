@@ -29,7 +29,7 @@
     end-block-height: uint,
     yes-votes: uint,
     no-votes: uint,
-    contract-changes: (list 10 (tuple (name (string-ascii 256)) (address principal) (qualified-name principal)))
+    contract-changes: (list 10 (tuple (name (string-ascii 256)) (address principal) (qualified-name principal) (can-mint bool) (can-burn bool)))
   }
 )
 
@@ -76,7 +76,7 @@
       end-block-height: u0,
       yes-votes: u0,
       no-votes: u0,
-      contract-changes: (list { name: "", address: DAO-OWNER, qualified-name: DAO-OWNER} )
+      contract-changes: (list { name: "", address: DAO-OWNER, qualified-name: DAO-OWNER, can-mint: false, can-burn: false} )
     }
     (map-get? proposals { id: proposal-id })
   )
@@ -106,7 +106,7 @@
 (define-public (propose
     (start-block-height uint)
     (details (string-utf8 256))
-    (contract-changes (list 10 (tuple (name (string-ascii 256)) (address principal) (qualified-name principal))))
+    (contract-changes (list 10 (tuple (name (string-ascii 256)) (address principal) (qualified-name principal) (can-mint bool) (can-burn bool))))
   )
   (let (
     (proposer-balance (unwrap-panic (contract-call? .arkadiko-token get-balance tx-sender)))
@@ -281,15 +281,17 @@
 )
 
 ;; Helper to execute proposal and change contracts
-(define-private (execute-proposal-change-contract (change (tuple (name (string-ascii 256)) (address principal) (qualified-name principal))))
+(define-private (execute-proposal-change-contract (change (tuple (name (string-ascii 256)) (address principal) (qualified-name principal) (can-mint bool) (can-burn bool))))
   (let (
     (name (get name change))
     (address (get address change))
     (qualified-name (get qualified-name change))
+    (can-mint (get can-mint change))
+    (can-burn (get can-burn change))
   )
     (if (not (is-eq name ""))
       (begin
-        (try! (contract-call? .arkadiko-dao set-contract-address name address qualified-name))
+        (try! (contract-call? .arkadiko-dao set-contract-address name address qualified-name can-mint can-burn))
         (ok true)
       )
       (ok false)
@@ -298,14 +300,14 @@
 )
 
 ;; adds a new contract, only new ones allowed
-(define-public (add-contract-address (name (string-ascii 256)) (address principal) (qualified-name principal))
+(define-public (add-contract-address (name (string-ascii 256)) (address principal) (qualified-name principal) (can-mint bool) (can-burn bool))
   (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
     (if (is-some (contract-call? .arkadiko-dao get-contract-address-by-name name))
       (ok false)
       (begin
-        (try! (contract-call? .arkadiko-dao set-contract-address name address qualified-name))
+        (try! (contract-call? .arkadiko-dao set-contract-address name address qualified-name can-mint can-burn))
         (ok true)
       )
     )

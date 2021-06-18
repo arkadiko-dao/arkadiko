@@ -107,7 +107,7 @@
 )
 
 ;; Governance contract can setup DAO contracts
-(define-public (set-contract-address (name (string-ascii 256)) (address principal) (qualified-name principal))
+(define-public (set-contract-address (name (string-ascii 256)) (address principal) (qualified-name principal) (can-mint bool) (can-burn bool))
   (let (
     (current-contract (map-get? contracts { name: name }))
   )
@@ -119,7 +119,7 @@
         (map-set contracts-data { qualified-name: (unwrap-panic (get qualified-name current-contract)) } { can-mint: false, can-burn: false })
         false
       )
-      (map-set contracts-data { qualified-name: qualified-name } { can-mint: true, can-burn: false })
+      (map-set contracts-data { qualified-name: qualified-name } { can-mint: can-mint, can-burn: can-burn })
       (ok true)
     )
   )
