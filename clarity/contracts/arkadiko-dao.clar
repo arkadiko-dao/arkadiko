@@ -21,7 +21,8 @@
 (define-map contracts-data
   { qualified-name: principal }
   {
-    active: bool
+    can-mint: bool,
+    can-burn: bool
   }
 )
 
@@ -89,11 +90,19 @@
   (get qualified-name (map-get? contracts { name: name }))
 )
 
-;; Check if contract is active in the protocol
-(define-read-only (get-contract-active-by-qualified-name (qualified-name principal))
+;; Check if contract can mint
+(define-read-only (get-contract-can-mint-by-qualified-name (qualified-name principal))
   (default-to 
     false
-    (get active (map-get? contracts-data { qualified-name: qualified-name }))
+    (get can-mint (map-get? contracts-data { qualified-name: qualified-name }))
+  )
+)
+
+;; Check if contract can burn
+(define-read-only (get-contract-can-burn-by-qualified-name (qualified-name principal))
+  (default-to 
+    false
+    (get can-burn (map-get? contracts-data { qualified-name: qualified-name }))
   )
 )
 
@@ -107,10 +116,10 @@
 
       (map-set contracts { name: name } { address: address, qualified-name: qualified-name })
       (if (is-some current-contract)
-        (map-set contracts-data { qualified-name: (unwrap-panic (get qualified-name current-contract)) } { active: false })
+        (map-set contracts-data { qualified-name: (unwrap-panic (get qualified-name current-contract)) } { can-mint: false, can-burn: false })
         false
       )
-      (map-set contracts-data { qualified-name: qualified-name } { active: true })
+      (map-set contracts-data { qualified-name: qualified-name } { can-mint: true, can-burn: false })
       (ok true)
     )
   )
@@ -123,7 +132,7 @@
 ;; Mint protocol tokens
 (define-public (mint-token (token <dao-token-trait>) (amount uint) (recipient principal))
   (begin
-    (asserts! (is-eq (get-contract-active-by-qualified-name contract-caller) true) ERR-NOT-AUTHORIZED)
+    (asserts! (is-eq (get-contract-can-mint-by-qualified-name contract-caller) true) ERR-NOT-AUTHORIZED)
     (contract-call? token mint-for-dao amount recipient)
   )
 )
@@ -131,7 +140,7 @@
 ;; Burn protocol tokens
 (define-public (burn-token (token <dao-token-trait>) (amount uint) (recipient principal))
   (begin
-    (asserts! (is-eq (get-contract-active-by-qualified-name contract-caller) true) ERR-NOT-AUTHORIZED)
+    (asserts! (is-eq (get-contract-can-burn-by-qualified-name contract-caller) true) ERR-NOT-AUTHORIZED)
     (try! (contract-call? token burn-for-dao amount recipient))
     (ok true)
   )
@@ -162,7 +171,8 @@
   (map-set contracts-data
     { qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1 }
     {
-      active: true
+      can-mint: true,
+      can-burn: true
     }
   )
 
@@ -176,7 +186,8 @@
   (map-set contracts-data
     { qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1 }
     {
-      active: true
+      can-mint: true,
+      can-burn: true
     }
   )
 
@@ -211,7 +222,8 @@
   (map-set contracts-data
     { qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1 }
     {
-      active: true
+      can-mint: true,
+      can-burn: true
     }
   )
 
@@ -225,7 +237,8 @@
   (map-set contracts-data
     { qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1 }
     {
-      active: true
+      can-mint: true,
+      can-burn: true
     }
   )
 
@@ -239,7 +252,8 @@
   (map-set contracts-data
     { qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1 }
     {
-      active: true
+      can-mint: true,
+      can-burn: true
     }
   )
 
@@ -253,7 +267,8 @@
   (map-set contracts-data
     { qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-xusd-v1-1 }
     {
-      active: true
+      can-mint: true,
+      can-burn: true
     }
   )
 
@@ -274,7 +289,8 @@
   (map-set contracts-data
     { qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1 }
     {
-      active: true
+      can-mint: true,
+      can-burn: true
     }
   )
 
@@ -288,7 +304,8 @@
   (map-set contracts-data
     { qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1 }
     {
-      active: true
+      can-mint: true,
+      can-burn: true
     }
   )
 
@@ -302,7 +319,8 @@
   (map-set contracts-data
     { qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-diko-guardian-v1-1 }
     {
-      active: true
+      can-mint: true,
+      can-burn: true
     }
   )
 
@@ -316,7 +334,8 @@
   (map-set contracts-data
     { qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-diko-init }
     {
-      active: true
+      can-mint: true,
+      can-burn: true
     }
   )
 
@@ -330,7 +349,8 @@
   (map-set contracts-data
     { qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-vault-rewards-v1-1 }
     {
-      active: true
+      can-mint: true,
+      can-burn: true
     }
   )
 
@@ -344,7 +364,8 @@
   (map-set contracts-data
     { qualified-name: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-v1-1 }
     {
-      active: true
+      can-mint: true,
+      can-burn: true
     }
   )
 )
