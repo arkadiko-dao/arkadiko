@@ -10,6 +10,8 @@ interface UserBalance {
   stdiko: number;
 }
 
+export type UserBalanceKeys = keyof UserBalance;
+
 export interface CollateralTypeProps {
   name: string;
   token: string;
