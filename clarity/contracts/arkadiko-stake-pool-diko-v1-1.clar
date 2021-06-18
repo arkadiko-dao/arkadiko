@@ -7,7 +7,6 @@
 ;; When total stake changes, the cumm reward per stake is increased accordingly.
 
 (impl-trait .arkadiko-stake-pool-trait-v1.stake-pool-trait)
-(impl-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 
 ;; Errors
@@ -21,58 +20,9 @@
 (define-constant BLOCKS-PER-YEAR u52560)
 
 ;; Variables
-(define-data-var token-uri (string-utf8 256) u"")
 (define-data-var total-staked uint u0)
 (define-data-var cumm-reward-per-stake uint u0)
 (define-data-var last-reward-increase-block uint u0) 
-
-
-;; ---------------------------------------------------------
-;; SIP-10 Functions
-;; ---------------------------------------------------------
-
-(define-fungible-token stdiko)
-
-(define-read-only (get-total-supply)
-  (ok (ft-get-supply stdiko))
-)
-
-(define-read-only (get-name)
-  (ok "Staked Arkadiko Token")
-)
-
-(define-read-only (get-symbol)
-  (ok "stDIKO")
-)
-
-(define-read-only (get-decimals)
-  (ok u6)
-)
-
-(define-read-only (get-balance (account principal))
-  (ok (ft-get-balance stdiko account))
-)
-
-(define-public (set-token-uri (value (string-utf8 256)))
-  (if (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner))
-    (ok (var-set token-uri value))
-    (err ERR-NOT-AUTHORIZED)
-  )
-)
-
-(define-read-only (get-token-uri)
-  (ok (some (var-get token-uri)))
-)
-
-(define-public (transfer (amount uint) (sender principal) (recipient principal) (memo (optional (buff 34))))
-  (match (ft-transfer? stdiko amount sender recipient)
-    response (begin
-      (print memo)
-      (ok response)
-    )
-    error (err error)
-  )
-)
 
 ;; ---------------------------------------------------------
 ;; Stake Functions
@@ -143,7 +93,7 @@
       (unwrap-panic (increase-cumm-reward-per-stake))
 
       ;; Mint stDIKO
-      (try! (ft-mint? stdiko amount staker))
+      (try! (contract-call? .arkadiko-dao mint-token .stdiko-token amount staker))
 
       ;; Transfer DIKO to this contract
       (try! (contract-call? .arkadiko-token transfer amount staker (as-contract tx-sender) none))
@@ -183,7 +133,7 @@
       (unwrap-panic (increase-cumm-reward-per-stake))
 
       ;; Burn stDIKO 
-      (try! (ft-burn? stdiko amount staker))
+      (try! (contract-call? .arkadiko-dao burn-token .stdiko-token amount staker))
 
       ;; Transfer DIKO back from this contract to the user
       (try! (contract-call? .arkadiko-token transfer amount (as-contract tx-sender) staker none))
@@ -204,7 +154,8 @@
 
     (let (
       ;; Calculate new stake amount
-      (amount (unwrap! (get-balance tx-sender) ERR-NOT-AUTHORIZED))
+      (amount (unwrap-panic (contract-call? .stdiko-token get-balance tx-sender)))
+
       (stake-amount (get-stake-amount-of tx-sender))
       (new-stake-amount (- stake-amount amount))
     )
@@ -215,7 +166,7 @@
       (unwrap-panic (increase-cumm-reward-per-stake))
 
       ;; Burn stDIKO 
-      (try! (ft-burn? stdiko amount tx-sender))
+      (try! (contract-call? .arkadiko-dao burn-token .stdiko-token amount tx-sender))
 
       ;; Transfer DIKO back from this contract to the user
       (try! (contract-call? .arkadiko-token transfer amount (as-contract tx-sender) tx-sender none))

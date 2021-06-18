@@ -42,7 +42,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Check DIKO and stDIKO balance before staking
   let call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(150000000000);   
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+  call = chain.callReadOnlyFn("stdiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(0);   
 
   // Staked total
@@ -64,7 +64,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Check DIKO and stDIKO balance after staking
   call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(149900000000);
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+  call = chain.callReadOnlyFn("stdiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(100000000);   
 
   // Staked total
@@ -95,7 +95,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Check DIKO and stDIKO balance after unstaking. Should get initial deposit + rewards.
   call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(150250559600);  
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+  call = chain.callReadOnlyFn("stdiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(0);   
 
   // Staked total
@@ -363,7 +363,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Check DIKO and stDIKO balance before staking
   let call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(150000000000);   
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+  call = chain.callReadOnlyFn("stdiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(0);   
 
   // Staked total
@@ -385,7 +385,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Check DIKO and stDIKO balance after staking
   call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(149900000000);   
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+  call = chain.callReadOnlyFn("stdiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(100000000);   
 
   // Advance 3 block
@@ -400,7 +400,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Check DIKO and stDIKO balance after withdraw
   call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(150000000000);   
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+  call = chain.callReadOnlyFn("stdiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(0);  
 
 }
