@@ -8,7 +8,7 @@ const BN = require('bn.js');
 async function getLastVaultId() {
   const lastVaultTx = await tx.callReadOnlyFunction({
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "vault-data",
+    contractName: "arkadiko-vault-data-v1-1",
     functionName: "get-last-vault-id",
     functionArgs: [],
     senderAddress: CONTRACT_ADDRESS,
@@ -21,7 +21,7 @@ async function getLastVaultId() {
 async function getVaultById(vaultId) {
   const vaultTx = await tx.callReadOnlyFunction({
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "freddie",
+    contractName: "arkadiko-freddie-v1-1",
     functionName: "get-vault-by-id",
     functionArgs: [tx.uintCV(vaultId)],
     senderAddress: CONTRACT_ADDRESS,
@@ -34,9 +34,12 @@ async function getVaultById(vaultId) {
 async function getCollateralizationRatio(vaultId) {
   const vaultTx = await tx.callReadOnlyFunction({
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "freddie",
+    contractName: "arkadiko-freddie-v1-1",
     functionName: "calculate-current-collateral-to-debt-ratio",
-    functionArgs: [tx.uintCV(vaultId)],
+    functionArgs: [
+      tx.uintCV(vaultId),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v1-1')
+    ],
     senderAddress: CONTRACT_ADDRESS,
     network
   });
@@ -47,7 +50,7 @@ async function getCollateralizationRatio(vaultId) {
 async function getLiquidationRatio(collateralType) {
   const vaultTx = await tx.callReadOnlyFunction({
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "collateral-types",
+    contractName: "arkadiko-collateral-types-v1-1",
     functionName: "get-liquidation-ratio",
     functionArgs: [tx.stringAsciiCV(collateralType)],
     senderAddress: CONTRACT_ADDRESS,
@@ -57,15 +60,21 @@ async function getLiquidationRatio(collateralType) {
   return tx.cvToJSON(vaultTx).value.value;
 }
 
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
+
 async function liquidateVault(vaultId) {
   const nonce = await utils.getNonce(CONTRACT_ADDRESS);
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "liquidator",
+    contractName: "arkadiko-liquidator-v1-1",
     functionName: "notify-risky-vault",
     functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'freddie'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'auction-engine'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-freddie-v1-1'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-auction-engine-v1-1'),
       tx.uintCV(vaultId)
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
@@ -83,6 +92,7 @@ async function iterateAndCheck() {
   const lastId = await getLastVaultId();
   console.log('Last Vault ID is', lastId, ', iterating vaults');
   let vault;
+  const vaultIds = Array.from(Array(lastId).keys());
   for (let index = 1; index <= lastId; index++) {
     vault = await getVaultById(index);
     if (!vault['is-liquidated']['value']) {
@@ -95,6 +105,7 @@ async function iterateAndCheck() {
         liquidateVault(index);
       }
     }
+    await new Promise(r => setTimeout(r, 500));
   }
 }
 
