@@ -25,3 +25,4 @@ function executeAuctionLogic() {
 console.log('Running Arkadiko scripts');
 setInterval(updateOraclePrice, 60000 * 20); // every 20 mins
 setInterval(executeRewardCalibration, 60000 * 45); // every 45 mins
+setInterval(findUnhealthyVaults, 60000 * 60 * 23); // once every day
