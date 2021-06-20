@@ -89,6 +89,10 @@
   (ok (map get-auction-by-id (var-get auction-ids)))
 )
 
+(define-read-only (get-auction-ids)
+  (ok (var-get auction-ids))
+)
+
 (define-read-only (get-last-bid (auction-id uint) (lot-index uint))
   (default-to
     {
