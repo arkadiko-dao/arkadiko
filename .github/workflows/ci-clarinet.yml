@@ -24,8 +24,6 @@ jobs:
         working-directory: ./clarity
     steps:
       - uses: actions/checkout@v2
-        with:
-          path: ./clarity
       - name: Switch directory
         run: pwd
       - name: Show directory content
