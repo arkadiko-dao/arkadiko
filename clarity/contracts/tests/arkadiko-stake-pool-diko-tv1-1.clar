@@ -221,7 +221,7 @@
       (if (>= pending-rewards u1)
         (begin
           ;; Mint DIKO rewards for staker
-          (try! (contract-call? registry-trait mint-rewards-for-staker pending-rewards staker))
+          (try! (contract-call? .arkadiko-dao mint-token .arkadiko-token pending-rewards staker))
 
           (map-set stakes { staker: staker } (merge stake-of { cumm-reward-per-stake: (var-get cumm-reward-per-stake) }))
 
@@ -286,5 +286,5 @@
 
 ;; Initialize the contract
 (begin
-  (var-set last-reward-increase-block block-height)
+  (var-set last-reward-increase-block u2000)
 )

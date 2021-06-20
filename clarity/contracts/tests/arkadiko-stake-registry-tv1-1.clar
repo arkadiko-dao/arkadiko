@@ -25,9 +25,8 @@
   { pool: principal }
   {
     name: (string-ascii 256),
-    active: bool, ;; TODO: remove and check based on deactivated-block != 0
-    activated-block: uint,
     deactivated-block: uint,
+    deactivated-rewards-per-block: uint,
     rewards-percentage: uint
   }
 )
@@ -42,18 +41,13 @@
   (let (
     (total-staking-rewards (contract-call? .arkadiko-diko-guardian-v1-1 get-staking-rewards-per-block))
     (pool-percentage (get rewards-percentage (get-pool-data pool)))
+    (deactivated-block (get deactivated-block (get-pool-data pool)))
+    (deactivated-rewards-per-block (get deactivated-rewards-per-block (get-pool-data pool)))
   )
-    (ok (/ (* total-staking-rewards pool-percentage) u1000000))
-  )
-)
-
-;; Get pool activated block
-(define-read-only (get-pool-activated-block (pool principal))
-  (let (
-    (pool-info (unwrap! (map-get? pools-data-map { pool: pool }) ERR-POOL-EXIST))
-    (block (get activated-block pool-info))
-  )
-    (ok block)
+    (if (is-eq deactivated-block u0)
+      (ok (/ (* total-staking-rewards pool-percentage) u1000000))
+      (ok deactivated-rewards-per-block)
+    )
   )
 )
 
@@ -75,7 +69,7 @@
       (pool-info (unwrap! (map-get? pools-data-map { pool: pool }) ERR-POOL-EXIST))
     )
       (asserts! (is-eq (as-contract tx-sender) (contract-of registry-trait)) ERR-WRONG-REGISTRY)
-      (asserts! (is-eq (get active pool-info) true) ERR-POOL-INACTIVE)
+      (asserts! (is-eq (get deactivated-block pool-info) u0) ERR-POOL-INACTIVE)
       (try! (contract-call? pool-trait stake registry-trait token-trait tx-sender amount))
       (ok amount)
     )
@@ -120,23 +114,6 @@
   )
 )
 
-;; Mint rewards for staker - for active pools only
-(define-public (mint-rewards-for-staker (amount uint) (staker principal))
-  (begin
-    (let (
-      (pool-data (get-pool-data contract-caller))
-    )
-      ;; Only active pools can mint rewards
-      (asserts! (is-eq (get active pool-data) true) ERR-POOL-INACTIVE)
-
-      ;; Mint DIKO rewards for staker
-      (try! (contract-call? .arkadiko-dao mint-token .arkadiko-token amount staker))
-      
-      (ok amount)
-    )
-  )
-)
-
 ;; ---------------------------------------------------------
 ;; Contract initialisation
 ;; ---------------------------------------------------------
@@ -148,10 +125,9 @@
     { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1 }
     {
       name: "DIKO",
-      active: false,
-      activated-block: block-height,
       deactivated-block: u2000,
-      rewards-percentage: u100000 ;; 10% 
+      deactivated-rewards-per-block: u600, ;; Should be equal to rewards per block at deactivated-block
+      rewards-percentage: u100000 ;; 10%  - Need to keep this so stakers on old pool can still claim rewards
     }
   )
   ;; DIKO pool - new
@@ -159,20 +135,19 @@
     { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-tv1-1 }
     {
       name: "DIKO-V2",
-      active: true,
-      activated-block: u2001,
       deactivated-block: u0,
+      deactivated-rewards-per-block: u0,
       rewards-percentage: u100000 ;; 10% 
     }
   )
+
   ;; DIKO-xUSD LP
   (map-set pools-data-map
     { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1 }
     {
       name: "DIKO-xUSD LP",
-      active: true,
-      activated-block: block-height,
       deactivated-block: u0,
+      deactivated-rewards-per-block: u0,
       rewards-percentage: u300000 ;; 30% 
     }
   )
@@ -181,9 +156,8 @@
     { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-xusd-v1-1 }
     {
       name: "wSTX-xUSD LP",
-      active: true,
-      activated-block: block-height,
       deactivated-block: u0,
+      deactivated-rewards-per-block: u0,
       rewards-percentage: u600000 ;; 60% 
     }
   )
