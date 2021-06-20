@@ -15,7 +15,7 @@ import {
   makeContractCall
 } from '@stacks/transactions';
 import { VaultGroup } from './vault-group';
-import { getPrice } from '@common/get-price';
+import { getPrice, getDikoAmmPrice } from '@common/get-price';
 import { Link } from '@components/link';
 import { AppContext } from '@common/context';
 import { useConnect } from '@stacks/connect-react';
@@ -41,7 +41,7 @@ export const Mint = () => {
       let stxPrice = await getPrice('STX');
       setStxPrice(stxPrice);
 
-      let dikoPrice = await getPrice('DIKO');
+      let dikoPrice = await getDikoAmmPrice();
       setDikoPrice(dikoPrice);
     };
 
@@ -282,7 +282,7 @@ export const Mint = () => {
                           {microToReadable(state.balance['diko']).toLocaleString()} DIKO
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          ${dikoPrice / 100}
+                          ${dikoPrice}
                         </td>
                       </tr>
 
