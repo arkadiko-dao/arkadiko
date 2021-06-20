@@ -29,7 +29,7 @@ jobs:
       - name: Show directory content
         run: ls -al
       - name: "Check contract"
-        uses: docker://ludovic/clarinet:latest
+        uses: cd ./clarity && docker://ludovic/clarinet:latest
         with:
           args: check
       - name: "Execute test suite"
