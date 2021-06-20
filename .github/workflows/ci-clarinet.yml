@@ -30,9 +30,8 @@ jobs:
         run: ls -al
       - name: "Check contract"
         uses: docker://ludovic/clarinet:latest
-        env:
-          WORKDIR: /workspace/clarity
         with:
+          entrypoint: cd ./clarity && clarinet
           args: check
       - name: "Execute test suite"
         uses: docker://ludovic/clarinet:latest
