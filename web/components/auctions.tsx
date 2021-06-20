@@ -43,8 +43,11 @@ export const Auctions: React.FC = () => {
     }
 
     const getData = async () => {
-      const lastAuctionId = 51;
-      const auctionIds = Array.from(Array(lastAuctionId).keys())
+      const auctionIds = [
+        4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+        16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+        27, 28, 29, 30, 31, 32, 33, 34
+      ];
       let serializedAuctions:Array<AuctionProps> = [];
       await asyncForEach(auctionIds, async (auctionId: number) => {
         const auction = await callReadOnlyFunction({
@@ -56,6 +59,7 @@ export const Auctions: React.FC = () => {
           network: network,
         });
         const json = cvToJSON(auction);
+        console.log(json);
 
         const data = json.value;
         const isOpen = await auctionOpen(data['id'].value);
