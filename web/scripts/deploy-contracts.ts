@@ -38,6 +38,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-governance-v1-1' },
   { name: 'arkadiko-diko-guardian-v1-1' },
   { name: 'arkadiko-swap-v1-1' },
+  { name: 'arkadiko-diko-init' },
 
   { name: 'xusd-token' },
   { name: 'xstx-token' },

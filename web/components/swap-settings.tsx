@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Popover, Transition } from '@headlessui/react';
 import { CogIcon } from '@heroicons/react/solid';
 
-export const SwapSettings: React.FC = ({ slippageTolerance, setSlippageTolerance }) => {
+export const SwapSettings: React.FC = ({ slippageTolerance, setDefaultSlippage, setSlippageTolerance }) => {
   const onInputChange = (event: { target: { name: any; value: any; }; }) => {
     const value = event.target.value;
     setSlippageTolerance(value);
@@ -38,9 +38,10 @@ export const SwapSettings: React.FC = ({ slippageTolerance, setSlippageTolerance
                     <h4 className="text-base leading-6 font-medium text-gray-900">Slippage Tolerance</h4>
 
                     <div className="flex items-center justify-between mt-2">
-                      {slippageTolerance > 0 ? (
+                      {slippageTolerance !== 0.4 ? (
                         <button
                           type="button"
+                          onClick={setDefaultSlippage}
                           className="text-grey inline-flex items-right px-4 py-2 border border-transparent shadow-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm focus:ring-indigo-500"
                         >
                           Auto
@@ -48,6 +49,7 @@ export const SwapSettings: React.FC = ({ slippageTolerance, setSlippageTolerance
                       ) : (
                         <button
                           type="button"
+                          onClick={setDefaultSlippage}
                           className="text-white bg-indigo-600 inline-flex items-right px-4 py-2 border border-transparent shadow-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm focus:ring-indigo-500"
                         >
                           Auto

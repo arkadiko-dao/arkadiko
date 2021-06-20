@@ -54,7 +54,10 @@ export const Vault: React.FC<VaultProps> = ({
         contractAddress,
         contractName: "arkadiko-freddie-v1-1",
         functionName: "get-stability-fee-for-vault",
-        functionArgs: [uintCV(id)],
+        functionArgs: [
+          uintCV(id),
+          contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v1-1')
+        ],
         senderAddress: contractAddress || '',
         network: network,
       });
@@ -92,7 +95,8 @@ export const Vault: React.FC<VaultProps> = ({
       functionArgs: [
         uintCV(id),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', resolveReserveName(collateralToken)),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token)
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
       ],
       postConditionMode: 0x01,
       finished: data => {
@@ -121,10 +125,10 @@ export const Vault: React.FC<VaultProps> = ({
         <span className="text-gray-900 font-medium">${stabilityFee / 1000000} xUSD</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">${debt / 1000000} xUSD</span>
+        <span className="text-gray-900 font-medium">${(debt / 1000000).toLocaleString()} xUSD</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">{collateral / 1000000} {collateralToken.toUpperCase()}</span>
+        <span className="text-gray-900 font-medium">{(collateral / 1000000).toLocaleString()} {collateralToken.toUpperCase()}</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-900">
         <span className="text-gray-900 font-medium">

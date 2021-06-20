@@ -1,18 +1,19 @@
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
+(use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
 
 (define-trait vault-manager-trait
   (
     (get-stx-redeemable () (response uint bool))
 
     (get-collateral-type-for-vault (uint) (response (string-ascii 12) bool))
-    (calculate-current-collateral-to-debt-ratio (uint) (response uint uint))
+    (calculate-current-collateral-to-debt-ratio (uint <collateral-types-trait>) (response uint uint))
 
-    (pay-stability-fee (uint) (response bool uint))
-    (accrue-stability-fee (uint) (response bool uint))
+    (pay-stability-fee (uint <collateral-types-trait>) (response bool uint))
+    (accrue-stability-fee (uint <collateral-types-trait>) (response bool uint))
 
-    (liquidate (uint) (response (tuple (ustx-amount uint) (extra-debt uint) (vault-debt uint) (discount uint)) uint))
-    (finalize-liquidation (uint uint) (response bool uint))
+    (liquidate (uint <collateral-types-trait>) (response (tuple (ustx-amount uint) (extra-debt uint) (vault-debt uint) (discount uint)) uint))
+    (finalize-liquidation (uint uint <collateral-types-trait>) (response bool uint))
 
     (redeem-auction-collateral (<ft-trait> (string-ascii 12) <vault-trait> uint principal) (response bool uint))
 

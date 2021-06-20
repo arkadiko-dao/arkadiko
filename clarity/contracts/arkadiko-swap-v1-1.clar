@@ -347,9 +347,9 @@
     (dx (/ (* balance-x dy-with-fees) (+ balance-y dy-with-fees)))
     (fee (/ (* u5 dy) u10000)) ;; 0.05% fee for protocol
     (pair-updated (merge pair {
-      balance-x: (- (get balance-x pair) dx),
-      balance-y: (+ (get balance-y pair) dy),
-      fee-balance-y: (+ fee (get fee-balance-y pair))
+      balance-x: (- balance-x dx),
+      balance-y: (+ balance-y dy),
+      fee-balance-y: (+ fee balance-y)
     }))
   )
     (asserts! (< min-dx dx) too-much-slippage-err)

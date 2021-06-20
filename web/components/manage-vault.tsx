@@ -113,7 +113,10 @@ export const ManageVault = ({ match }) => {
         contractAddress,
         contractName: "arkadiko-freddie-v1-1",
         functionName: "get-stability-fee-for-vault",
-        functionArgs: [uintCV(vault?.id)],
+        functionArgs: [
+          uintCV(vault?.id),
+          contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v1-1')
+        ],
         senderAddress: contractAddress || '',
         network: network,
       });
@@ -148,16 +151,15 @@ export const ManageVault = ({ match }) => {
   }, [collateralType?.collateralToDebtRatio, price]);
 
   const payStabilityFee = async () => {
-    const fee = stabilityFee / 1000000;
     const postConditions = [
       makeStandardFungiblePostCondition(
         senderAddress || '',
-        FungibleConditionCode.Equal,
-        new BN(fee),
+        FungibleConditionCode.GreaterEqual,
+        new BN(stabilityFee),
         createAssetInfo(
           contractAddress,
           "xusd-token",
-          "xUSD"
+          "xusd"
         )
       )
     ];
@@ -168,7 +170,8 @@ export const ManageVault = ({ match }) => {
       contractName: 'arkadiko-freddie-v1-1',
       functionName: 'pay-stability-fee',
       functionArgs: [
-        uintCV(match.params.id)
+        uintCV(match.params.id),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
       ],
       postConditionMode: 0x01,
       postConditions,
@@ -191,7 +194,8 @@ export const ManageVault = ({ match }) => {
         uintCV(match.params.id),
         uintCV(parseFloat(usdToBurn) * 1000000),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token)
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
       ],
       postConditionMode: 0x01,
       finished: data => {
@@ -260,7 +264,8 @@ export const ManageVault = ({ match }) => {
         uintCV(match.params.id),
         uintCV(parseFloat(extraCollateralDeposit) * 1000000),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token)
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
       ],
       postConditionMode: 0x01,
       postConditions,
@@ -319,7 +324,8 @@ export const ManageVault = ({ match }) => {
       functionArgs: [
         uintCV(match.params.id),
         uintCV(parseFloat(usdToMint) * 1000000),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName)
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
       ],
       postConditionMode: 0x01,
       finished: data => {
@@ -375,7 +381,8 @@ export const ManageVault = ({ match }) => {
         uintCV(match.params.id),
         uintCV(parseFloat(collateralToWithdraw) * 1000000),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token)
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
       ],
       postConditionMode: 0x01,
       finished: data => {
@@ -395,7 +402,8 @@ export const ManageVault = ({ match }) => {
       functionArgs: [
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-freddie-v1-1'),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-auction-engine-v1-1'),
-        uintCV(match.params.id)
+        uintCV(match.params.id),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
       ],
       postConditionMode: 0x01,
       finished: data => {
@@ -528,7 +536,7 @@ export const ManageVault = ({ match }) => {
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Choose how much extra xUSD you want to mint. You can mint a maximum of {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio)} {vault?.collateralToken.toUpperCase()}.
+                    Choose how much extra xUSD you want to mint. You can mint a maximum of {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString()} {vault?.collateralToken.toUpperCase()}.
                   </p>
 
                   <div className="mt-4 relative rounded-md shadow-sm">
@@ -905,7 +913,7 @@ export const ManageVault = ({ match }) => {
 
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                          {outstandingDebt()} xUSD
+                          {outstandingDebt().toLocaleString()} xUSD
                         </p>
                       </div>
 
@@ -932,7 +940,7 @@ export const ManageVault = ({ match }) => {
 
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                        ${stabilityFee / 1000000} xUSD
+                        ${(stabilityFee / 1000000).toLocaleString()} xUSD
                         </p>
                       </div>
 
@@ -959,7 +967,7 @@ export const ManageVault = ({ match }) => {
 
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                          ${(outstandingDebt() + stabilityFee / 1000000)} xUSD
+                          ${(outstandingDebt() + stabilityFee / 1000000).toLocaleString()} xUSD
                         </p>
                       </div>
 
@@ -986,7 +994,7 @@ export const ManageVault = ({ match }) => {
 
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                          {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio)} xUSD
+                          {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString()} xUSD
                         </p>
                       </div>
 
@@ -1030,7 +1038,7 @@ export const ManageVault = ({ match }) => {
 
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                          {pendingVaultRewards} DIKO
+                          {pendingVaultRewards.toLocaleString()} DIKO
                         </p>
                       </div>
 

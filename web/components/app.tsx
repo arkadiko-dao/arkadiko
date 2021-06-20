@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ThemeProvider, theme, Flex, CSSReset, Tooltip } from '@blockstack/ui';
 import { Connect } from '@stacks/connect-react';
 import { AuthOptions } from '@stacks/connect';
@@ -8,19 +8,19 @@ import { Header } from '@components/header';
 import { Routes } from '@components/routes';
 import { getRPCClient } from '@common/utils';
 import { stacksNetwork as network } from '@common/utils';
-import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, tupleCV, ClarityValue, stringAsciiCV } from '@stacks/transactions';
-import { VaultProps } from './vault';
+import { callReadOnlyFunction, cvToJSON, stringAsciiCV } from '@stacks/transactions';
 import { resolveSTXAddress } from '@common/use-stx-address';
 import { TxStatus } from '@components/tx-status';
+import { TxSidebar } from '@components/tx-sidebar';
 import { useLocation } from 'react-router-dom';
-
-type TupleData = { [key: string]: ClarityValue };
+import { TestnetModal } from './testnet-modal';
 
 const icon = 'https://www.arkadiko.finance/assets/logo.png';
 export const App: React.FC = () => {
   const [state, setState] = React.useState<AppState>(defaultState());
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const location = useLocation();
+  const [showSidebar, setShowSidebar] = useState(false);
 
   const appConfig = new AppConfig(['store_write', 'publish_data'], document.location.href);
   const userSession = new UserSession({ appConfig });
@@ -32,43 +32,6 @@ export const App: React.FC = () => {
   const signOut = () => {
     userSession.signUserOut();
     setState(defaultState());
-  };
-  const fetchVaults = async (address: string) => {
-    const vaults = await callReadOnlyFunction({
-      contractAddress,
-      contractName: "arkadiko-vault-data-v1-1",
-      functionName: "get-vaults",
-      functionArgs: [standardPrincipalCV(address)],
-      senderAddress: address,
-      network: network,
-    });
-    const json = cvToJSON(vaults);
-    let arr:Array<VaultProps> = [];
-
-    json.value.value.forEach((e: TupleData) => {
-      const vault = tupleCV(e);
-      const data = (vault.data.value as object);
-      if (data['id'].value !== 0) {
-        arr.push({
-          id: data['id'].value,
-          owner: data['owner'].value,
-          collateral: data['collateral'].value,
-          collateralType: data['collateral-type'].value,
-          collateralToken: data['collateral-token'].value,
-          isLiquidated: data['is-liquidated'].value,
-          auctionEnded: data['auction-ended'].value,
-          leftoverCollateral: data['leftover-collateral'].value,
-          debt: data['debt'].value,
-          stackedTokens: data['stacked-tokens'].value,
-          collateralData: {}
-        });
-      }
-    });
-
-    setState(prevState => ({
-      ...prevState,
-      vaults: arr
-    }));
   };
 
   const fetchBalance = async (address: string) => {
@@ -104,7 +67,7 @@ export const App: React.FC = () => {
 
   const fetchCollateralTypes = async (address: string) => {
     let collTypes = {};
-    ['STX-A', 'STX-B', 'DIKO-A'].forEach(async (token) => {
+    ['STX-A', 'STX-B'].forEach(async (token) => {
       const types = await callReadOnlyFunction({
         contractAddress,
         contractName: "arkadiko-collateral-types-v1-1",
@@ -135,15 +98,12 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    let mounted = true;
-
     if (userSession.isUserSignedIn()) {
       const userData = userSession.loadUserData();
 
       const getData = async () => {
         try {
           fetchBalance(resolveSTXAddress(userData));
-          fetchVaults(resolveSTXAddress(userData));
           fetchCollateralTypes(resolveSTXAddress(userData));
         } catch (error) {
           console.error(error);
@@ -151,15 +111,12 @@ export const App: React.FC = () => {
       };
       void getData();
     }
-
-    return () => { mounted = false; }
   }, []);
 
   const handleRedirectAuth = async () => {
     if (userSession.isSignInPending()) {
       const userData = await userSession.handlePendingSignIn();
       fetchBalance(resolveSTXAddress(userData));
-      fetchVaults(resolveSTXAddress(userData));
       fetchCollateralTypes(resolveSTXAddress(userData));
       setState(prevState => ({ ...prevState, userData }));
     }
@@ -176,7 +133,6 @@ export const App: React.FC = () => {
     finished: ({ userSession }) => {
       const userData = userSession.loadUserData();
       fetchBalance(resolveSTXAddress(userData));
-      fetchVaults(resolveSTXAddress(userData));
       fetchCollateralTypes(resolveSTXAddress(userData));
       setState(prevState => ({ ...prevState, userData }));
     },
@@ -196,8 +152,12 @@ export const App: React.FC = () => {
           <CSSReset />
           <Flex direction="column" minHeight="100vh" bg="white">
 
-            <Header signOut={signOut} />
+            <Header signOut={signOut} setShowSidebar={setShowSidebar} />
             <TxStatus />
+            {showSidebar ? (
+              <TxSidebar setShowSidebar={setShowSidebar} />
+            ) : null}
+            <TestnetModal />
 
             <div className="fixed bottom-0 right-0 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end" style={{zIndex: 99999}}>
               <Tooltip label={`Got feedback?`}>

@@ -16,11 +16,11 @@ export const TestnetModal = () => {
   };
 
   return (
-    <div className="hidden sm:block">
-      {env === 'mocknet' ? (        
+    <div>
+      {env === 'regtest' || env === 'testnet' ? (
         <Modal isOpen={showTestnetModal}>
-          <div className="flex pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="inline-block align-bottom bg-white rounded-lg px-2 pt-5 pb-4 text-left w-24 overflow-hidden my-8 align-middle max-w-sm w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+          <div className="flex p-4 text-center sm:block sm:p-0">
+            <div className="inline-block align-bottom bg-white rounded-lg px-2 pt-5 pb-4 text-left w-24 overflow-hidden align-middle max-w-sm w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
               <div>
                 <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -29,19 +29,21 @@ export const TestnetModal = () => {
                 </div>
                 <div className="mt-3 text-center sm:mt-5">
                   <h3 className="text-lg leading-6 font-medium text-gray-900">
-                    Welcome to Arkadiko Testnet!
+                    Welcome to Arkadiko Regtest!
                   </h3>
                   <div className="mt-2">
                     <p className="text-left text-sm text-gray-500">
-                      The testnet launch is a functional equivalent to mainnet, which will be launched later this year.
-                      The purpose of tesnet is to work out small bugs and issues that will enhance the user experience on mainnet.
-                      Testnet does not use any real money, so you are open to try whatever without using actual money!
+                      The regtest launch is a functional equivalent to mainnet, which will be launched later this year.
+                      The purpose of regtest is to work out small bugs and issues that will enhance the user experience on mainnet.
+                      Regtest does not use any real money, so you are open to play around!
+                      You can request some regtest STX tokens on the Mint tab in case you need some.
                     </p>
                     <p className="text-left text-sm text-gray-500 mt-2">
                       What we have in store:
                     </p>
-                    <ul className="list-disc">
+                    <ul className="text-left text-sm text-gray-500 my-2 pl-4 list-disc">
                       <li>Create vaults and mint xUSD with two collateral types: STX-A and STX-B</li>
+                      <li>Swap xUSD/DIKO and xUSD/STX</li>
                       <li>Buy up collateral in liquidated vault auctions</li>
                       <li>Earn DIKO vault rewards</li>
                       <li>Stake your DIKO governance tokens to earn extra DIKO</li>
@@ -53,7 +55,7 @@ export const TestnetModal = () => {
                 </div>
               </div>
               <div className="mt-5 sm:mt-6">
-                <button type="button" onClick={() => hideTestnetModal()} className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-600 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:text-sm">
+                <button type="button" onClick={() => hideTestnetModal()} className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
                   Got it!
                 </button>
               </div>

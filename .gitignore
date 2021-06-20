@@ -10,6 +10,9 @@ docs/deploy.md
 .DS_Store
 clarity/history.txt
 keychain_testnet.json
+keychain_regtest.json
+keychain_regtest_2.json
+keychain_regtest_3.json
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
@@ -70,6 +73,7 @@ typings/
 # dotenv environment variables file
 .env
 .env.test
+.env.regtest
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache

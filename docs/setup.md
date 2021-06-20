@@ -36,9 +36,13 @@ There is no separate CONTRIBUTING.md instructions for now, but you can use the f
 1. Add correct CONTRACT_PRIVATE_KEY in .env to deploy
 2. Comment/Uncomment minting in arkadiko-token.clar and xusd-token.clar
 3. Replace SIP10 trait
-4. Replace all correct addresses in arkadiko DAO map
+4. Replace all correct addresses in arkadiko DAO map and pools data in stake registry
 5. Run deploy script (deploy-contracts.ts)
 6. Deploy external scripts
 
 For testnet:
 Faucet: curl -X POST "https://stacks-node-api.testnet.stacks.co/extended/v1/faucets/stx?address=<ADDR>"
+
+### Creating a regtest account
+
+stx make_keychain -t -H "https://stacks-node-api.regtest.stacks.co:20443" -I "https://stacks-node-api.regtest.stacks.co:3999"

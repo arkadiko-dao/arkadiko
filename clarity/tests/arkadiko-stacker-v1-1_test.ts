@@ -24,6 +24,7 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
         ),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], deployer.address),
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(500000000),
@@ -33,6 +34,7 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
         ),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], wallet_1.address)
     ]);
 
@@ -99,6 +101,7 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
         ),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], deployer.address)
     ]);
 
@@ -156,6 +159,7 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
         ),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], deployer.address),
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(500000000),
@@ -165,6 +169,7 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
         ),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], wallet_1.address)
     ]);
 
@@ -243,6 +248,7 @@ Clarinet.test({
         types.ascii("STX-A"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], deployer.address),
       Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
         types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
@@ -260,6 +266,7 @@ Clarinet.test({
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1'),
         types.uint(1),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], deployer.address),
     ]);
     block.receipts[1].result
@@ -270,6 +277,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1'),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1"),
         types.uint(1),
         types.uint(0),
         types.uint(1000000000)
@@ -281,6 +289,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1'),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1"),
         types.uint(1),
         types.uint(1),
         types.uint(432965517) // 1.46 (price of STX) * minimum collateral: 296551724 * 1.46
@@ -351,6 +360,7 @@ Clarinet.test({
         types.ascii("STX-A"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], deployer.address),
       Tx.contractCall("arkadiko-stacker-v1-1", "toggle-stacker-shutdown", [], deployer.address),
       Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
@@ -441,6 +451,7 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
         ),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], deployer.address),
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(500000000),
@@ -450,6 +461,7 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
         ),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], wallet_1.address)
     ]);
 
@@ -494,6 +506,7 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
         ),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], deployer.address)
     ]);
 
@@ -551,6 +564,7 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
         ),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], deployer.address)
     ]);
 
@@ -605,6 +619,7 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
         ),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
       ], deployer.address)
     ]);
 

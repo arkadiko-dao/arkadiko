@@ -2,7 +2,7 @@ import { useContext, useState, useEffect } from 'react';
 import { AppContext } from '@common/context';
 import { useSTXAddress } from './use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
-import { callReadOnlyFunction, cvToJSON, uintCV } from '@stacks/transactions';
+import { callReadOnlyFunction, contractPrincipalCV, cvToJSON, uintCV } from '@stacks/transactions';
 
 export const getCollateralToDebtRatio = (vaultId: string) => {
   const stxAddress = useSTXAddress();
@@ -16,7 +16,10 @@ export const getCollateralToDebtRatio = (vaultId: string) => {
         contractAddress,
         contractName: "arkadiko-freddie-v1-1",
         functionName: "calculate-current-collateral-to-debt-ratio",
-        functionArgs: [uintCV(vaultId)],
+        functionArgs: [
+          uintCV(vaultId),
+          contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v1-1')
+        ],
         senderAddress: stxAddress || '',
         network: network
       });

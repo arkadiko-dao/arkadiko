@@ -1,3 +1,11 @@
+## Version 0.9.2
+
+- Add dynamic smart contract function parameters for collateral types
+
+## Version 0.9.1
+
+- Add pending & confirmed transactions in sidebar
+
 ## Version 0.9.0
 
 - Add basic swapping functionality to trade tokens (xUSD, DIKO, STX)
