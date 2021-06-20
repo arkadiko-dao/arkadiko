@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Switch directory
-        run: cd ./clarity
+        run: pwd
       - name: "Check contract"
         uses: docker://ludovic/clarinet:latest
         with:
