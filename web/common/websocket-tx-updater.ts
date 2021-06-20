@@ -16,14 +16,14 @@ export const websocketTxUpdater = (redirectUri:string) => {
   } else if (env.includes('testnet')) {
     coreApiUrl = 'https://stacks-node-api.testnet.stacks.co';
     websocketUrl = 'wss://stacks-node-api.testnet.stacks.co';
-  } else if (env.includes('testnet')) {
+  } else if (env.includes('regtest')) {
     coreApiUrl = 'https://stacks-node-api.regtest.stacks.co';
     websocketUrl = 'wss://stacks-node-api.regtest.stacks.co';
   }
 
   useEffect(() => {
     const subscribe = async (txId:string) => {
-      const client = await connectWebSocketClient(`${coreApiUrl}`);
+      const client = await connectWebSocketClient(`${websocketUrl}`);
       await client.subscribeTxUpdates(txId, update => {
         console.log('Got an update:', update);
         if (update['tx_status'] == 'success') {
