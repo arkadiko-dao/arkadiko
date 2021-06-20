@@ -31,7 +31,6 @@ jobs:
       - name: "Check contract"
         uses: docker://ludovic/clarinet:latest
         with:
-          workdir: clarity
           args: check
       - name: "Execute test suite"
         uses: docker://ludovic/clarinet:latest
