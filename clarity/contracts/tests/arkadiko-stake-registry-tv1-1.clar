@@ -143,13 +143,24 @@
 
 ;; Initialize the contract
 (begin
-  ;; DIKO pool
+  ;; DIKO pool - old
   (map-set pools-data-map
     { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1 }
     {
       name: "DIKO",
-      active: true,
+      active: false,
       activated-block: block-height,
+      deactivated-block: u2000,
+      rewards-percentage: u100000 ;; 10% 
+    }
+  )
+  ;; DIKO pool - new
+  (map-set pools-data-map
+    { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-tv1-1 }
+    {
+      name: "DIKO-V2",
+      active: true,
+      activated-block: u2001,
       deactivated-block: u0,
       rewards-percentage: u100000 ;; 10% 
     }

@@ -8,19 +8,20 @@
 
 (impl-trait .arkadiko-stake-pool-trait-v1.stake-pool-trait)
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
+(use-trait stake-registry-trait .arkadiko-stake-registry-trait-v1.stake-registry-trait)
 
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED (err u18401))
 (define-constant ERR-REWARDS-CALC (err u18001))
 (define-constant ERR-WRONG-TOKEN (err u18002))
 (define-constant ERR-INSUFFICIENT-STAKE (err u18003))
+(define-constant ERR-WRONG-REGISTRY (err u18004))
 
 ;; Constants
 (define-constant POOL-TOKEN .arkadiko-swap-token-wstx-xusd)
 (define-constant BLOCKS-PER-YEAR u52560)
 
 ;; Variables
-(define-data-var token-uri (string-utf8 256) u"")
 (define-data-var total-staked uint u0)
 (define-data-var cumm-reward-per-stake uint u0)
 (define-data-var last-reward-increase-block uint u0) 
@@ -71,13 +72,13 @@
 )
 
 ;; Stake tokens
-(define-public (stake (token <ft-trait>) (staker principal) (amount uint))
+(define-public (stake (registry-trait <stake-registry-trait>) (token <ft-trait>) (staker principal) (amount uint))
   (begin
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-NOT-AUTHORIZED)
     (asserts! (is-eq POOL-TOKEN (contract-of token)) ERR-WRONG-TOKEN)
 
     ;; Save currrent cumm reward per stake
-    (unwrap-panic (increase-cumm-reward-per-stake))
+    (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
 
     (let (
       ;; Calculate new stake amount
@@ -85,13 +86,13 @@
       (new-stake-amount (+ stake-amount amount))
     )
       ;; Claim all pending rewards for staker so we can set the new cumm-reward for this user
-      (try! (claim-pending-rewards staker))
+      (try! (claim-pending-rewards registry-trait staker))
 
       ;; Update total stake
       (var-set total-staked (+ (var-get total-staked) amount))
 
       ;; Update cumm reward per stake now that total is updated
-      (unwrap-panic (increase-cumm-reward-per-stake))
+      (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
 
       ;; Transfer LP token to this contract
       (try! (contract-call? .arkadiko-swap-token-wstx-xusd transfer amount staker (as-contract tx-sender) none))
@@ -105,7 +106,7 @@
 )
 
 ;; Unstake tokens
-(define-public (unstake (token <ft-trait>) (staker principal) (amount uint))
+(define-public (unstake (registry-trait <stake-registry-trait>) (token <ft-trait>) (staker principal) (amount uint))
   (let (
     ;; Staked amount of staker
     (stake-amount (get-stake-amount-of staker))
@@ -115,20 +116,20 @@
     (asserts! (>= stake-amount amount) ERR-INSUFFICIENT-STAKE)
 
     ;; Save currrent cumm reward per stake
-    (unwrap-panic (increase-cumm-reward-per-stake))
+    (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
 
     (let (
       ;; Calculate new stake amount
       (new-stake-amount (- stake-amount amount))
     )
       ;; Claim all pending rewards for staker so we can set the new cumm-reward for this user
-      (try! (claim-pending-rewards staker))
+      (try! (claim-pending-rewards registry-trait staker))
 
       ;; Update total stake
       (var-set total-staked (- (var-get total-staked) amount))
 
       ;; Update cumm reward per stake now that total is updated
-      (unwrap-panic (increase-cumm-reward-per-stake))
+      (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
 
       ;; Transfer LP token back from this contract to the user
       (try! (contract-call? .arkadiko-swap-token-wstx-xusd transfer amount (as-contract tx-sender) staker none))
@@ -142,10 +143,13 @@
 )
 
 ;; Sender can unstake all tokens without claiming rewards
-(define-public (emergency-withdraw)
+(define-public (emergency-withdraw (registry-trait <stake-registry-trait>))
   (begin
     ;; Save currrent cumm reward per stake
-    (unwrap-panic (increase-cumm-reward-per-stake))
+    (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
+
+    ;; Check given registry
+    (asserts! (is-eq (contract-of registry-trait) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-WRONG-REGISTRY)
 
     (let (
       (stake-amount (get-stake-amount-of tx-sender))
@@ -155,7 +159,7 @@
       (var-set total-staked (- (var-get total-staked) stake-amount))
 
       ;; Update cumm reward per stake now that total is updated
-      (unwrap-panic (increase-cumm-reward-per-stake))
+      (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
 
       ;; Transfer LP token back from this contract to the user
       (try! (contract-call? .arkadiko-swap-token-wstx-xusd transfer stake-amount (as-contract tx-sender) tx-sender none))
@@ -168,22 +172,22 @@
   )
 )
 
-(define-read-only (get-apy-for (staker principal))
+(define-public (get-apy-for (registry-trait <stake-registry-trait>) (staker principal))
   (let (
-    (rewards-per-block (contract-call? .arkadiko-stake-registry-v1-1 get-rewards-per-block-for-pool .stake-pool-diko))
+    (rewards-per-block (unwrap-panic (contract-call? registry-trait get-rewards-per-block-for-pool .arkadiko-stake-pool-wstx-xusd-v1-1)))
     (diko-staked (get-stake-amount-of staker))
     (reward-percentage (/ u100 (/ (var-get total-staked) diko-staked)))
     (diko-per-year (* rewards-per-block reward-percentage))
   )
-    (* (/ diko-per-year diko-staked) u100)
+    (ok (* (/ diko-per-year diko-staked) u100))
   )
 )
 
 ;; Get pending rewards for staker
-(define-read-only (get-pending-rewards (staker principal))
+(define-public (get-pending-rewards (registry-trait <stake-registry-trait>) (staker principal))
   (let (
     (stake-amount (get-stake-amount-of staker))
-    (amount-owed-per-token (- (calculate-cumm-reward-per-stake) (get-stake-cumm-reward-per-stake-of staker)))
+    (amount-owed-per-token (- (unwrap-panic (calculate-cumm-reward-per-stake registry-trait)) (get-stake-cumm-reward-per-stake-of staker)))
     (rewards-decimals (* stake-amount amount-owed-per-token))
     (rewards (/ rewards-decimals u1000000))
   )
@@ -192,20 +196,20 @@
 )
 
 ;; Claim rewards for staker
-(define-public (claim-pending-rewards (staker principal))
+(define-public (claim-pending-rewards (registry-trait <stake-registry-trait>) (staker principal))
   (begin
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-NOT-AUTHORIZED)
-    (unwrap-panic (increase-cumm-reward-per-stake))
+    (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
 
     (let (
-      (pending-rewards (unwrap! (get-pending-rewards staker) ERR-REWARDS-CALC))
+      (pending-rewards (unwrap! (get-pending-rewards registry-trait staker) ERR-REWARDS-CALC))
       (stake-of (get-stake-of staker))
     )
       ;; Only mint if enough pending rewards and amount is positive
       (if (>= pending-rewards u1)
         (begin
           ;; Mint DIKO rewards for staker
-          (try! (contract-call? .arkadiko-stake-registry-v1-1 mint-rewards-for-staker pending-rewards staker))
+          (try! (contract-call? registry-trait mint-rewards-for-staker pending-rewards staker))
 
           (map-set stakes { staker: staker } (merge stake-of { cumm-reward-per-stake: (var-get cumm-reward-per-stake) }))
 
@@ -219,12 +223,13 @@
 
 
 ;; Increase cumm reward per stake and save
-(define-public (increase-cumm-reward-per-stake)
+(define-public (increase-cumm-reward-per-stake (registry-trait <stake-registry-trait>))
   (let (
     ;; Calculate new cumm reward per stake
-    (new-cumm-reward-per-stake (calculate-cumm-reward-per-stake))
-    (last-block-height (get-last-block-height))
+    (new-cumm-reward-per-stake (unwrap-panic (calculate-cumm-reward-per-stake registry-trait)))
+    (last-block-height (get-last-block-height registry-trait))
   )
+    (asserts! (is-eq (contract-of registry-trait) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-WRONG-REGISTRY)
     (var-set cumm-reward-per-stake new-cumm-reward-per-stake)
     (var-set last-reward-increase-block last-block-height)
     (ok new-cumm-reward-per-stake)
@@ -232,11 +237,11 @@
 )
 
 ;; Calculate current cumm reward per stake
-(define-read-only (calculate-cumm-reward-per-stake)
+(define-public (calculate-cumm-reward-per-stake (registry-trait <stake-registry-trait>))
   (let (
-    (rewards-per-block (contract-call? .arkadiko-stake-registry-v1-1 get-rewards-per-block-for-pool .arkadiko-stake-pool-wstx-xusd-v1-1))
+    (rewards-per-block (unwrap-panic (contract-call? registry-trait get-rewards-per-block-for-pool .arkadiko-stake-pool-wstx-xusd-v1-1)))
     (current-total-staked (var-get total-staked))
-    (last-block-height (get-last-block-height))
+    (last-block-height (get-last-block-height registry-trait))
     (block-diff (- last-block-height (var-get last-reward-increase-block)))
     (current-cumm-reward-per-stake (var-get cumm-reward-per-stake)) 
   )
@@ -246,21 +251,19 @@
         (reward-added-per-token (/ (* total-rewards-to-distribute u1000000) current-total-staked))
         (new-cumm-reward-per-stake (+ current-cumm-reward-per-stake reward-added-per-token))
       )
-        new-cumm-reward-per-stake
+        (ok new-cumm-reward-per-stake)
       )
-      current-cumm-reward-per-stake
+      (ok current-cumm-reward-per-stake)
     )
   )
 )
 
 ;; Helper for current-cumm-reward-per-stake
 ;; Return current block height, or block height when pool was deactivated
-(define-private (get-last-block-height)
+(define-private (get-last-block-height (registry-trait <stake-registry-trait>))
   (let (
-    ;; TODO: stake-registry should be dynamic
-    (pool-data (contract-call? .arkadiko-stake-registry-v1-1 get-pool-data .arkadiko-stake-pool-wstx-xusd-v1-1))
-    (pool-active (get active pool-data))
-    (deactivated-block (get deactivated-block pool-data))
+    (deactivated-block (unwrap-panic (contract-call? registry-trait get-pool-deactivated-block .arkadiko-stake-pool-wstx-xusd-v1-1)))
+    (pool-active (is-eq deactivated-block u0))
   )
     (if (is-eq pool-active true)
       block-height
