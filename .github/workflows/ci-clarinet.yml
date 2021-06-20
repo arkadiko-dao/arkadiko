@@ -29,9 +29,9 @@ jobs:
       - name: Show directory content
         run: ls -al
       - name: "Check contract"
-        uses: docker://ludovic/clarinet:latest -v "/home/runner/work/arkadiko/arkadiko/clarity":"/github/workspace"
+        uses: docker://ludovic/clarinet:latest
         with:
-          args: check
+          args: -v "/home/runner/work/arkadiko/arkadiko/clarity":"/github/workspace" check
       - name: "Execute test suite"
         uses: docker://ludovic/clarinet:latest
         with:
