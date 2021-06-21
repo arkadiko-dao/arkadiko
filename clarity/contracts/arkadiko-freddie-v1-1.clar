@@ -86,6 +86,8 @@
 
 (define-public (calculate-current-collateral-to-debt-ratio (vault-id uint) (coll-type <collateral-types-trait>) (oracle <oracle-trait>))
   (let ((vault (get-vault-by-id vault-id)))
+    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
+
     (if (is-eq (get is-liquidated vault) true)
       (ok u0)
       (begin
@@ -569,7 +571,6 @@
   (let (
     (vault (get-vault-by-id vault-id))
   )
-    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (stability-fee-helper (get stability-fee-last-accrued vault) (get debt vault) (get collateral-type vault) coll-type)
   )
 )
@@ -587,6 +588,7 @@
     (decimals (get stability-fee-decimals collateral-type))
     (interest (/ (* debt fee) (pow u10 decimals)))
   )
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (ok (* number-of-blocks interest))
   )
 )

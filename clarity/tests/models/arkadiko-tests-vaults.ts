@@ -39,7 +39,8 @@ class VaultManager {
       "calculate-current-collateral-to-debt-ratio",
       [
         types.uint(vaultId),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1")
       ],
       caller.address
     );
