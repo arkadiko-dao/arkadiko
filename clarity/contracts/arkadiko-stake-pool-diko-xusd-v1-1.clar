@@ -145,11 +145,11 @@
 ;; Sender can unstake all tokens without claiming rewards
 (define-public (emergency-withdraw (registry-trait <stake-registry-trait>))
   (begin
-    ;; Save currrent cumm reward per stake
-    (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
-
     ;; Check given registry
     (asserts! (is-eq (contract-of registry-trait) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-WRONG-REGISTRY)
+
+    ;; Save currrent cumm reward per stake
+    (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
 
     (let (
       (stake-amount (get-stake-amount-of tx-sender))

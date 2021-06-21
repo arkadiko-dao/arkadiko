@@ -924,7 +924,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "dao: replace pool through new registry",
+  name: "stake-registry: replace pool through new registry",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -1085,7 +1085,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "dao: shut down pool because of critical bug",
+  name: "stake-registry: shut down pool because of critical bug",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -1206,6 +1206,69 @@ Clarinet.test({
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectUint(0)
+
+  }
+});
+
+Clarinet.test({
+  name: "stake-registry: wrong stake registry parameter",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    // Stake funds - fails with wrong registry
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-tv1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token'),
+          types.uint(100000000)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(19004);
+
+    // Stake funds
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token'),
+          types.uint(100000000)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectUint(100000000); 
+
+    // Unstake funds - fails with wrong registry
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-tv1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token'),
+          types.uint(100000000)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(19004);
+
+    let call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-tv1-1'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1')
+    ], deployer.address);
+    call.result.expectErr().expectUint(19004);   
+
+    // Emergency withdraw
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-diko-v1-1", "emergency-withdraw", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-tv1-1'),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(18004);
+
+    // Increase cummulative rewards
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-diko-v1-1", "increase-cumm-reward-per-stake", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-tv1-1'),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(18004);
 
   }
 });
