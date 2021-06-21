@@ -38,7 +38,8 @@ async function getCollateralizationRatio(vaultId) {
     functionName: "calculate-current-collateral-to-debt-ratio",
     functionArgs: [
       tx.uintCV(vaultId),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v1-1')
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v1-1'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v1-1')
     ],
     senderAddress: CONTRACT_ADDRESS,
     network

@@ -4,6 +4,7 @@
 (use-trait stacker-trait .arkadiko-stacker-trait-v1.stacker-trait)
 (use-trait vault-manager-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
 (use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
+(use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
 
 ;; Freddie - The Vault Manager
 ;; Freddie is an abstraction layer that interacts with collateral type reserves
@@ -83,12 +84,12 @@
   )
 )
 
-(define-public (calculate-current-collateral-to-debt-ratio (vault-id uint) (coll-type <collateral-types-trait>))
+(define-public (calculate-current-collateral-to-debt-ratio (vault-id uint) (coll-type <collateral-types-trait>) (oracle <oracle-trait>))
   (let ((vault (get-vault-by-id vault-id)))
     (if (is-eq (get is-liquidated vault) true)
       (ok u0)
       (begin
-        (let ((stx-price-in-cents (contract-call? .arkadiko-oracle-v1-1 get-price (get collateral-token vault))))
+        (let ((stx-price-in-cents (unwrap-panic (contract-call? oracle fetch-price (get collateral-token vault)))))
           (if (> (get debt vault) u0)
             (ok
               (/

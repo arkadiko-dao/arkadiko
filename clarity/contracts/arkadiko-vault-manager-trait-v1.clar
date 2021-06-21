@@ -1,13 +1,14 @@
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
 (use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
+(use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
 
 (define-trait vault-manager-trait
   (
     (get-stx-redeemable () (response uint bool))
 
     (get-collateral-type-for-vault (uint) (response (string-ascii 12) bool))
-    (calculate-current-collateral-to-debt-ratio (uint <collateral-types-trait>) (response uint uint))
+    (calculate-current-collateral-to-debt-ratio (uint <collateral-types-trait> <oracle-trait>) (response uint uint))
 
     (pay-stability-fee (uint <collateral-types-trait>) (response bool uint))
     (accrue-stability-fee (uint <collateral-types-trait>) (response bool uint))
