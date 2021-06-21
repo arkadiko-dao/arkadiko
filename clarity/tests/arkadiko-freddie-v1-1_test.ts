@@ -42,25 +42,25 @@ Clarinet.test({
     result = vaultManager.createVault(deployer, "STX-A", 5, 1.925)
     result.expectOk().expectUint(1925000);
 
-    // // Let's say STX price crash to 55 cents
-    // result = oracleManager.updatePrice("STX", 55);
-    // result.expectOk().expectUint(55);
+    // Let's say STX price crash to 55 cents
+    result = oracleManager.updatePrice("STX", 55);
+    result.expectOk().expectUint(55);
 
-    // // Notify liquidator
-    // // Q: How are we supposed to guess the vault-id?
-    // result = vaultLiquidator.notifyRiskyVault(deployer, 1);
-    // result.expectOk().expectUint(5200);
+    // Notify liquidator
+    // Q: How are we supposed to guess the vault-id?
+    result = vaultLiquidator.notifyRiskyVault(deployer, 1);
+    result.expectOk().expectUint(5200);
 
-    // let call = await vaultAuction.getAuctions();
-    // let auctions:any = call.result.expectOk().expectList().map((e: String) => e.expectTuple());
-    // auctions[0]["vault-id"].expectUint(0);
-    // auctions[1]["vault-id"].expectUint(1);
+    let call = await vaultAuction.getAuctions();
+    let auctions:any = call.result.expectOk().expectList().map((e: String) => e.expectTuple());
+    auctions[0]["vault-id"].expectUint(0);
+    auctions[1]["vault-id"].expectUint(1);
 
-    // call = await vaultAuction.getAuctionOpen(0, wallet_1);
-    // call.result.expectOk().expectBool(false);
+    call = await vaultAuction.getAuctionOpen(0, wallet_1);
+    call.result.expectOk().expectBool(false);
 
-    // call = await vaultAuction.getAuctionOpen(1, wallet_1);
-    // call.result.expectOk().expectBool(true);
+    call = await vaultAuction.getAuctionOpen(1, wallet_1);
+    call.result.expectOk().expectBool(true);
   },
 });
 
@@ -274,7 +274,8 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
         ),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1")
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(98); // wrong token error
@@ -288,7 +289,8 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
         ),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1")
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(410); // wrong collateral type
@@ -302,7 +304,8 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
         ),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1")
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(98); // wrong token error
@@ -316,7 +319,8 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token",
         ),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1")
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(410); // wrong collateral type
@@ -330,7 +334,8 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
         ),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1")
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(410); // wrong collateral type
