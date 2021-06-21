@@ -1,13 +1,14 @@
 ;; implements a trait that allows collateral of any token (e.g. stx, bitcoin)
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
+(use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
 
 (define-trait vault-trait
   (
     ;; calculate stablecoin count to mint from posted collateral
-    (calculate-xusd-count ((string-ascii 12) uint (string-ascii 12)) (response uint uint))
+    (calculate-xusd-count ((string-ascii 12) uint (string-ascii 12) <oracle-trait>) (response uint uint))
 
     ;; calculate the current collateral to debt ratio against USD value of collateral
-    (calculate-current-collateral-to-debt-ratio ((string-ascii 12) uint uint) (response uint uint))
+    (calculate-current-collateral-to-debt-ratio ((string-ascii 12) uint uint <oracle-trait>) (response uint uint))
 
     ;; collateralize tokens and mint stablecoin according to collateral-to-debt ratio
     (collateralize-and-mint (<ft-trait> (string-ascii 12) uint uint principal) (response uint uint))

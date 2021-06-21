@@ -1,6 +1,7 @@
 (impl-trait .arkadiko-vault-trait-v1.vault-trait)
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
+(use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
 
 ;; errors
 (define-constant ERR-NOT-AUTHORIZED u11401)
@@ -38,7 +39,7 @@
 
 (define-public (subtract-tokens-to-stack (token-amount uint))
   (begin
-    (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vault-manager"))) (err ERR-NOT-AUTHORIZED))
 
     (var-set tokens-to-stack (- (var-get tokens-to-stack) token-amount))
     (ok u200)
@@ -47,7 +48,7 @@
 
 (define-public (toggle-stacking (revoked-stacking bool) (ustx-collateral uint))
   (begin
-    (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vault-manager"))) (err ERR-NOT-AUTHORIZED))
 
     (if (is-eq true revoked-stacking)
       (ok (try! (subtract-tokens-to-stack ustx-collateral)))
@@ -71,8 +72,13 @@
 ;; calculate the amount of stablecoins to mint, based on posted STX amount
 ;; ustx-amount * stx-price-in-cents == dollar-collateral-posted-in-cents
 ;; (dollar-collateral-posted-in-cents / collateral-to-debt-ratio) == stablecoins to mint
-(define-read-only (calculate-xusd-count (token (string-ascii 12)) (ustx-amount uint) (collateral-type (string-ascii 12)))
-  (let ((stx-price-in-cents (contract-call? .arkadiko-oracle-v1-1 get-price token)))
+(define-public (calculate-xusd-count
+  (token (string-ascii 12))
+  (ustx-amount uint)
+  (collateral-type (string-ascii 12))
+  (oracle <oracle-trait>)
+)
+  (let ((stx-price-in-cents (unwrap-panic (contract-call? oracle fetch-price token))))
     (let ((amount
       (/
         (* ustx-amount (get last-price-in-cents stx-price-in-cents))
@@ -83,8 +89,13 @@
   )
 )
 
-(define-read-only (calculate-current-collateral-to-debt-ratio (token (string-ascii 12)) (debt uint) (ustx uint))
-  (let ((stx-price-in-cents (contract-call? .arkadiko-oracle-v1-1 get-price token)))
+(define-public (calculate-current-collateral-to-debt-ratio
+  (token (string-ascii 12))
+  (debt uint)
+  (ustx uint)
+  (oracle <oracle-trait>)
+)
+  (let ((stx-price-in-cents (unwrap-panic (contract-call? oracle fetch-price token))))
     (if (> debt u0)
       (ok (/ (* ustx (get last-price-in-cents stx-price-in-cents)) debt))
       (err u0)
@@ -97,7 +108,7 @@
 ;; calculate price and collateralisation ratio
 (define-public (collateralize-and-mint (token <ft-trait>) (token-string (string-ascii 12)) (ustx-amount uint) (debt uint) (sender principal))
   (begin
-    (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vault-manager"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq token-string "STX") (err ERR-WRONG-TOKEN))
 
     (match (print (stx-transfer? ustx-amount sender (as-contract tx-sender)))
@@ -113,7 +124,7 @@
 ;; deposit extra collateral in vault
 (define-public (deposit (token <ft-trait>) (token-string (string-ascii 12)) (additional-ustx-amount uint))
   (begin
-    (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vault-manager"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq token-string "STX") (err ERR-WRONG-TOKEN))
 
     (match (print (stx-transfer? additional-ustx-amount tx-sender (as-contract tx-sender)))
@@ -129,7 +140,7 @@
 ;; withdraw collateral (e.g. if collateral goes up in value)
 (define-public (withdraw (token <ft-trait>) (token-string (string-ascii 12)) (vault-owner principal) (ustx-amount uint))
   (begin
-    (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vault-manager"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq token-string "STX") (err ERR-WRONG-TOKEN))
 
     (match (print (as-contract (stx-transfer? ustx-amount (as-contract tx-sender) vault-owner)))
@@ -142,7 +153,7 @@
 ;; mint new tokens when collateral to debt allows it (i.e. > collateral-to-debt-ratio)
 (define-public (mint (token-string (string-ascii 12)) (vault-owner principal) (ustx-amount uint) (current-debt uint) (extra-debt uint) (collateral-type (string-ascii 12)))
   (begin
-    (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vault-manager"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq token-string "STX") (err ERR-WRONG-TOKEN))
 
     (let ((max-new-debt (- (unwrap-panic (calculate-xusd-count token-string ustx-amount collateral-type)) current-debt)))
@@ -162,7 +173,7 @@
 ;; and thus collateral to debt ratio > liquidation ratio
 (define-public (burn (token <ft-trait>) (vault-owner principal) (collateral-to-return uint))
   (begin
-    (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vault-manager"))) (err ERR-NOT-AUTHORIZED))
 
     (match (print (as-contract (stx-transfer? collateral-to-return (as-contract tx-sender) vault-owner)))
       transferred (ok true)
@@ -173,7 +184,7 @@
 
 (define-public (redeem-collateral (token <ft-trait>) (token-string (string-ascii 12)) (stx-collateral uint) (owner principal))
   (begin
-    (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vault-manager"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq token-string "STX") (err ERR-WRONG-TOKEN))
 
     (as-contract (stx-transfer? stx-collateral (as-contract tx-sender) owner))
@@ -182,7 +193,7 @@
 
 (define-public (redeem-xstx (ustx-amount uint) (sender principal))
   (begin
-    (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vault-manager"))) (err ERR-NOT-AUTHORIZED))
 
     (match (print (as-contract (stx-transfer? ustx-amount (as-contract tx-sender) sender)))
       transferred (ok true)

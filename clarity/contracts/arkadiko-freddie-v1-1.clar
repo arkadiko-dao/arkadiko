@@ -278,12 +278,13 @@
     (reserve <vault-trait>)
     (ft <ft-trait>)
     (coll-type <collateral-types-trait>)
+    (oracle <oracle-trait>)
   )
   (let (
     (sender tx-sender)
     (collateral-type-object (unwrap-panic (contract-call? coll-type get-collateral-type-by-name collateral-type)))
     (collateral-token (get token collateral-type-object))
-    (ratio (unwrap! (contract-call? reserve calculate-current-collateral-to-debt-ratio collateral-token debt collateral-amount) (err ERR-WRONG-DEBT)))
+    (ratio (unwrap! (contract-call? reserve calculate-current-collateral-to-debt-ratio collateral-token debt collateral-amount oracle) (err ERR-WRONG-DEBT)))
   )
     (asserts!
       (and
@@ -293,6 +294,7 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (>= ratio (get liquidation-ratio collateral-type-object)) (err ERR-INSUFFICIENT-COLLATERAL))
     (asserts!
       (<=
@@ -389,6 +391,7 @@
   (reserve <vault-trait>)
   (ft <ft-trait>)
   (coll-type <collateral-types-trait>)
+  (oracle <oracle-trait>)
 )
   (let (
     (vault (get-vault-by-id vault-id))
@@ -402,6 +405,7 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (> uamount u0) (err ERR-INSUFFICIENT-COLLATERAL))
@@ -421,7 +425,10 @@
               calculate-current-collateral-to-debt-ratio 
               (get collateral-token vault) 
               (get debt vault) 
-              (- (get collateral vault) uamount))))
+              (- (get collateral vault) uamount)
+              oracle
+            )
+          ))
           (new-collateral (- (get collateral vault) uamount))
           (updated-vault (merge vault {
             collateral: new-collateral,
