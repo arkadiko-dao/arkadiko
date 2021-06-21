@@ -394,33 +394,33 @@ Clarinet.test({
     result = vaultManager.mint(deployer, 1, 200);
     result.expectOk().expectBool(true);
     
-    // // Should not be able to mint extra 2000 xUSD
-    // result = vaultManager.mint(deployer, 1, 2000);
-    // result.expectErr().expectUint(119); // error: trying to create too much debt
+    // Should not be able to mint extra 2000 xUSD
+    result = vaultManager.mint(deployer, 1, 2000);
+    result.expectErr().expectUint(119); // error: trying to create too much debt
 
-    // // Burn 300
-    // result = vaultManager.burn(deployer, 1, 300)
-    // result.expectOk().expectBool(true);
+    // Burn 300
+    result = vaultManager.burn(deployer, 1, 300)
+    result.expectOk().expectBool(true);
 
-    // result = vaultManager.toggleStacking(deployer, 1);
-    // result = vaultManager.enableVaultWithdrawals(1);
+    result = vaultManager.toggleStacking(deployer, 1);
+    result = vaultManager.enableVaultWithdrawals(1);
 
-    // let call = await vaultManager.getVaultById(1, deployer);
-    // let vault:any = call.result.expectTuple();
-    // vault['revoked-stacking'].expectBool(true);
-    // vault['stacked-tokens'].expectUint(0);
+    let call = await vaultManager.getVaultById(1, deployer);
+    let vault:any = call.result.expectTuple();
+    vault['revoked-stacking'].expectBool(true);
+    vault['stacked-tokens'].expectUint(0);
 
-    // call = await chain.callReadOnlyFn(
-    //   "arkadiko-stx-reserve-v1-1",
-    //   "get-stx-balance",
-    //   [],
-    //   deployer.address
-    // );
-    // call.result.expectUint(1000000000);
+    call = await chain.callReadOnlyFn(
+      "arkadiko-stx-reserve-v1-1",
+      "get-stx-balance",
+      [],
+      deployer.address
+    );
+    call.result.expectUint(1000000000);
 
-    // // Burn last 200 which should close the vault
-    // result = vaultManager.burn(deployer, 1, 200);
-    // result.expectOk().expectBool(true);
+    // Burn last 200 which should close the vault
+    result = vaultManager.burn(deployer, 1, 200);
+    result.expectOk().expectBool(true);
   }
 });
 
