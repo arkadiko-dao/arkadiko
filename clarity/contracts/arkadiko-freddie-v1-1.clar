@@ -449,6 +449,7 @@
   (extra-debt uint)
   (reserve <vault-trait>)
   (coll-type <collateral-types-trait>)
+  (oracle <oracle-trait>)
 )
   (let ((vault (get-vault-by-id vault-id))
        (new-total-debt (+ extra-debt (get debt vault)))
@@ -482,6 +483,7 @@
         (get debt vault)
         extra-debt
         (get collateral-type vault)
+        oracle
       )
     )
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id updated-vault))

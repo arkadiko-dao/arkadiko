@@ -20,7 +20,7 @@
     (withdraw (<ft-trait> (string-ascii 12) principal uint) (response bool uint))
 
     ;; mint additional stablecoin
-    (mint ((string-ascii 12) principal uint uint uint (string-ascii 12)) (response bool uint))
+    (mint ((string-ascii 12) principal uint uint uint (string-ascii 12) <oracle-trait>) (response bool uint))
 
     ;; burn all the stablecoin in the vault of tx-sender and return collateral
     (burn (<ft-trait> principal uint) (response bool uint))
