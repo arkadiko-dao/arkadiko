@@ -220,7 +220,7 @@ export const Stake = () => {
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    You have a balance of {microToReadable(state.balance['diko']).toLocaleString()} DIKO
+                    You have a balance of {microToReadable(state.balance['diko']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
                   </p>
 
                   <div className="mt-4 relative rounded-md shadow-sm">
@@ -284,7 +284,7 @@ export const Stake = () => {
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    You are current staking {microToReadable(stakedAmount).toLocaleString()} DIKO
+                    You are current staking {microToReadable(stakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
                   </p>
 
                   <div className="mt-4 relative rounded-md shadow-sm">
@@ -376,7 +376,7 @@ export const Stake = () => {
                                   <img className="h-10 w-10 rounded-full" src={tokenList[1].logo} alt="" />
                                 </div>
                                 <div className="ml-4">
-                                  {microToReadable(stakedAmount).toLocaleString()} DIKO
+                                  {microToReadable(stakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
                                 </div>
                               </div>
                             </td>
@@ -384,7 +384,7 @@ export const Stake = () => {
                               {apy}%
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
-                              {pendingRewards.toLocaleString()} DIKO
+                              {pendingRewards.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
                               <button type="button" onClick={() => setShowStakeModal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">

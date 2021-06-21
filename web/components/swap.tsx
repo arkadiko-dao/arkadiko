@@ -133,8 +133,8 @@ export const Swap: React.FC = () => {
     setMinimumReceived((amount * 0.97));
     setTokenYAmount(amount);
     const impact = ((balanceX / 1000000) / tokenXAmount);
-    setPriceImpact((100 / impact).toLocaleString());
-    setLpFee((0.003 * tokenXAmount).toLocaleString());
+    setPriceImpact((100 / impact).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 }));
+    setLpFee((0.003 * tokenXAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 }));
   };
 
   const onInputChange = (event: { target: { name: any; value: any; }; }) => {
@@ -270,7 +270,7 @@ export const Swap: React.FC = () => {
                 <div className="flex items-center text-sm p-4 pt-0 justify-end">
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center justify-start">
-                      <p className="text-gray-500">Balance: {balanceSelectedTokenX.toLocaleString()} {tokenX.name}</p>
+                      <p className="text-gray-500">Balance: {balanceSelectedTokenX.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenX.name}</p>
                       {parseInt(balanceSelectedTokenX, 10) > 0 ? (
                         <button
                           type="button"
@@ -311,7 +311,7 @@ export const Swap: React.FC = () => {
                     id="tokenYAmount"
                     pattern="^[0-9]*[.,]?[0-9]*$" 
                     placeholder="0.0"
-                    value={tokenYAmount.toLocaleString()}
+                    value={tokenYAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
                     onChange={onInputChange}
                     disabled={true}
                     className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1 text-gray-600" />
@@ -320,7 +320,7 @@ export const Swap: React.FC = () => {
                 <div className="flex items-center text-sm p-4 pt-0 justify-end">
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center justify-start">
-                      <p className="text-gray-500">Balance: {balanceSelectedTokenY.toLocaleString()} {tokenY.name}</p>
+                      <p className="text-gray-500">Balance: {balanceSelectedTokenY.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenY.name}</p>
                     </div>
                   </div>
                 </div>
@@ -361,7 +361,7 @@ export const Swap: React.FC = () => {
           <dl className="space-y-1 pb-3">
             <div className="sm:grid sm:grid-cols-2 sm:gap-4">
               <dt className="text-sm font-medium text-indigo-500">Minimum Received</dt>
-              <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{minimumReceived.toLocaleString()} {tokenY.name}</dd>
+              <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{minimumReceived.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenY.name}</dd>
             </div>
             <div className="sm:grid sm:grid-cols-2 sm:gap-4">
               <dt className="text-sm font-medium text-indigo-500">Price Impact</dt>
