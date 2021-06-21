@@ -79,9 +79,9 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Advanced 3 blocks for user plus one in calculation
   // At start there are ~626 rewards per block. 4*626=2504 - if 100% of rewards go to this pool
   // But this pool only gets 10% of total rewards
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "get-pending-rewards", [
+  call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
     types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-    types.principal(wallet_1.address)
+    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1')
   ], wallet_1.address);
   call.result.expectOk().expectUint(250559600);   
 
@@ -126,9 +126,9 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   call.result.expectOk().expectUint(0);
 
   // Pending rewards should be 0
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "get-pending-rewards", [
+  call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
     types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-    types.principal(wallet_1.address)
+    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1')
   ], wallet_1.address);
   call.result.expectOk().expectUint(0);
 
@@ -175,9 +175,9 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Advanced 0 blocks for user. 
   // Pending rewards takes into account 1 block extra, 626 at start - if 100% of rewards go to this pool
   // But pool only gets 10% of total staking rewards
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "get-pending-rewards", [
+  call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
     types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-    types.principal(wallet_1.address)
+    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1')
   ], wallet_1.address);
   call.result.expectOk().expectUint(62639900);
 
@@ -201,9 +201,9 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Advanced 3 blocks for user plus one in calculation
   // 4 blocks * ~626 rewards = 2504
   // But we only get 10% of total rewards in this pool
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "get-pending-rewards", [
+  call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
     types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-    types.principal(wallet_1.address)
+    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1')
   ], wallet_1.address);
   call.result.expectOk().expectUint(250559600);   
   
@@ -245,18 +245,18 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // User just staked, so only advanced 1 block. 
   // 626 block rewards. ~626 * (2/3) = 417
   // But only 10% of staking rewards are for this pool
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "get-pending-rewards", [
+  call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
     types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-    types.principal(wallet_2.address)
+    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1')
   ], wallet_2.address);
   call.result.expectOk().expectUint(41759800);  
 
   // Was ~2505. Now one block later, but only 1/3 of pool.
   // 2505 + (626 * (1/3)) = 2713
   // But only 10% of staking rewards are for this pool
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "get-pending-rewards", [
+  call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
     types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-    types.principal(wallet_1.address)
+    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1')
   ], wallet_1.address);
   call.result.expectOk().expectUint(271439500);   
 

@@ -91,20 +91,17 @@
 )
 
 ;; Get pending pool rewards
-;; A bug in traits blocks this from being read-only
-;; see https://github.com/blockstack/stacks-blockchain/issues/1981
-;; Workaround: get-pending-rewards on pool directly
-;; (define-read-only (get-pending-rewards (pool-trait <stake-pool-trait>))
-;;   (begin
-;;     (let (
-;;       (pool (contract-of pool-trait)) 
-;;       (pool-info (unwrap! (map-get? pools-data-map { pool: pool }) ERR-POOL-EXIST))
-;;     )
-;;       (contract-call? pool-trait get-pending-rewards tx-sender)
-;;       (ok u1)
-;;     )
-;;   )
-;; )
+(define-public (get-pending-rewards (registry-trait <stake-registry-trait>) (pool-trait <stake-pool-trait>))
+  (begin
+    (let (
+      (pool (contract-of pool-trait)) 
+      (pool-info (unwrap! (map-get? pools-data-map { pool: pool }) ERR-POOL-EXIST))
+    )
+      (asserts! (is-eq (as-contract tx-sender) (contract-of registry-trait)) ERR-WRONG-REGISTRY)
+      (contract-call? pool-trait get-pending-rewards registry-trait tx-sender)
+    )
+  )
+)
 
 ;; Claim pool rewards
 (define-public (claim-pending-rewards (registry-trait <stake-registry-trait>) (pool-trait <stake-pool-trait>))
