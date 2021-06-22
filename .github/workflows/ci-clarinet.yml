@@ -19,15 +19,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./clarity
     steps:
       - uses: actions/checkout@v2
-      - name: Switch directory
-        run: pwd
-      - name: Show directory content
-        run: ls -al
       - name: "Check contract"
         uses: docker://ludovic/clarinet:latest
         with:
