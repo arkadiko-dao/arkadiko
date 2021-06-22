@@ -10,6 +10,8 @@ interface UserBalance {
   stdiko: number;
 }
 
+export type UserBalanceKeys = keyof UserBalance;
+
 export interface CollateralTypeProps {
   name: string;
   token: string;
@@ -30,6 +32,7 @@ export interface AppState {
   vaults: VaultProps[];
   definedCollateralTypes: [string, string];
   collateralTypes: object;
+  showTxModal: boolean;
   currentTxId: string;
   currentTxStatus: string;
   currentTxMessage: string;

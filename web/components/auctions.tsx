@@ -16,6 +16,7 @@ export const Auctions: React.FC = () => {
   const stxAddress = useSTXAddress();
   const [auctions, setAuctions] = useState([]);
   const [lots, setLots] = useState([]);
+  const [loadingAuctions, setLoadingAuctions] = useState(true);
   const [redeemableStx, setRedeemableStx] = useState(0);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
@@ -42,19 +43,25 @@ export const Auctions: React.FC = () => {
     }
 
     const getData = async () => {
-      const auctions = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-auction-engine-v1-1",
-        functionName: "get-auctions",
-        functionArgs: [],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const json = cvToJSON(auctions);
+      const auctionIds = [
+        4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+        16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+        27, 28, 29, 30, 31, 32, 33, 34
+      ];
       let serializedAuctions:Array<AuctionProps> = [];
-      await asyncForEach(json.value.value, async (e: object) => {
-        const vault = tupleCV(e);
-        const data = vault.data.value;
+      await asyncForEach(auctionIds, async (auctionId: number) => {
+        const auction = await callReadOnlyFunction({
+          contractAddress,
+          contractName: "arkadiko-auction-engine-v1-1",
+          functionName: "get-auction-by-id",
+          functionArgs: [uintCV(auctionId)],
+          senderAddress: stxAddress || '',
+          network: network,
+        });
+        const json = cvToJSON(auction);
+        console.log(json);
+
+        const data = json.value;
         const isOpen = await auctionOpen(data['id'].value);
         if (isOpen) {
           serializedAuctions.push({
@@ -114,6 +121,7 @@ export const Auctions: React.FC = () => {
       });
 
       setAuctions(serializedAuctions);
+      setLoadingAuctions(false);
 
       const stxRedeemable = await callReadOnlyFunction({
         contractAddress,
@@ -190,6 +198,8 @@ export const Auctions: React.FC = () => {
 
                   {auctions.length > 0 ? (
                     <AuctionGroup auctions={auctions} />
+                  ) : loadingAuctions ? (
+                    <p>Loading auctions...</p>
                   ) : (
                     <p>There are currently no open auctions</p>
                   )}

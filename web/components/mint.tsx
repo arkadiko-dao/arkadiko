@@ -4,12 +4,15 @@ import { useSTXAddress } from '@common/use-stx-address';
 import BN from 'bn.js';
 import {
   broadcastTransaction,
+  callReadOnlyFunction,
+  cvToJSON,
   createStacksPrivateKey,
   standardPrincipalCV,
   makeSTXTokenTransfer,
   privateKeyToString,
   uintCV,
-  contractPrincipalCV
+  contractPrincipalCV,
+  makeContractCall
 } from '@stacks/transactions';
 import { VaultGroup } from './vault-group';
 import { getPrice } from '@common/get-price';
@@ -18,19 +21,20 @@ import { AppContext } from '@common/context';
 import { useConnect } from '@stacks/connect-react';
 import { CollateralTypeGroup } from '@components/collateral-type-group';
 import { useEffect } from 'react';
-import { TestnetModal } from './testnet-modal';
 import { microToReadable } from '@common/vault-utils';
 import { tokenList } from '@components/token-swap-list';
+import { VaultProps } from './vault';
 
 export const Mint = () => {
   const address = useSTXAddress();
-  const env = process.env.REACT_APP_NETWORK_ENV;
-  const [state, _] = useContext(AppContext);
+  const env = process.env.REACT_APP_NETWORK_ENV || 'regtest';
+  const [state, setState] = useContext(AppContext);
   const [{ vaults, collateralTypes }, _x] = useContext(AppContext);
   const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [stxPrice, setStxPrice] = useState(0.0);
   const [dikoPrice, setDikoPrice] = useState(0.0);
+  const [loadingVaults, setLoadingVaults] = useState(true);
 
   useEffect(() => {
     const fetchPrices = async () => {
@@ -44,6 +48,68 @@ export const Mint = () => {
     fetchPrices();
   }, []);
 
+  useEffect(() => {
+    const fetchVault = async (vaultId:number) => {
+      const vault = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-vault-data-v1-1",
+        functionName: "get-vault-by-id",
+        functionArgs: [uintCV(vaultId)],
+        senderAddress: address || '',
+        network: network,
+      });
+      const json = cvToJSON(vault);
+      return json;
+    };
+
+    async function asyncForEach(array:any, callback:any) {
+      for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array);
+      }
+    }
+
+    const fetchVaults = async () => {
+      const vaults = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-vault-data-v1-1",
+        functionName: "get-vault-entries",
+        functionArgs: [standardPrincipalCV(address || '')],
+        senderAddress: address || '',
+        network: network,
+      });
+      const json = cvToJSON(vaults);
+      let arr:Array<VaultProps> = [];
+
+      await asyncForEach(json.value.ids.value, async (vaultId:any) => {
+        if (vaultId.value !== 0) {
+          const vault = await fetchVault(vaultId.value);
+          const data = vault.value;
+          arr.push({
+            id: data['id'].value,
+            owner: data['owner'].value,
+            collateral: data['collateral'].value,
+            collateralType: data['collateral-type'].value,
+            collateralToken: data['collateral-token'].value,
+            isLiquidated: data['is-liquidated'].value,
+            auctionEnded: data['auction-ended'].value,
+            leftoverCollateral: data['leftover-collateral'].value,
+            debt: data['debt'].value,
+            stackedTokens: data['stacked-tokens'].value,
+            collateralData: {}
+          });
+        }
+      });
+
+      setState(prevState => ({
+        ...prevState,
+        vaults: arr
+      }));
+      setLoadingVaults(false);
+    };
+
+    fetchVaults();
+  }, []);
+
   const addMocknetStx = async () => {
     const key = '26f235698d02803955b7418842affbee600fc308936a7ca48bf5778d1ceef9df01';
     const senderKey = createStacksPrivateKey(key);
@@ -54,6 +120,23 @@ export const Mint = () => {
       amount: new BN(5000000000),
       senderKey: privateKeyToString(senderKey),
       network: network
+    });
+    await broadcastTransaction(transaction, network);
+  };
+
+  const unlockVault = async () => {
+    const key = '';
+    const senderKey = createStacksPrivateKey(key);
+    const transaction = await makeContractCall({
+      network,
+      contractAddress,
+      contractName: 'arkadiko-freddie-v1-1',
+      functionName: 'enable-vault-withdrawals',
+      functionArgs: [
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-stacker-v1-1'),
+        uintCV(1)
+      ],
+      senderKey: privateKeyToString(senderKey)
     });
     await broadcastTransaction(transaction, network);
   };
@@ -92,16 +175,20 @@ export const Mint = () => {
   };
 
   const addTestnetStx = async () => {
-    const url = `https://stacks-node-api.testnet.stacks.co/extended/v1/debug/faucet?address=${address}`;
+    let url;
+    if (env === 'testnet') {
+      url = `https://stacks-node-api.testnet.stacks.co/extended/v1/debug/faucet?address=${address}`;
+    } else {
+      url = `https://stacks-node-api.regtest.stacks.co/extended/v1/debug/faucet?address=${address}`;
+    }
     await fetch(url, {
       method: 'POST',
     });
+    setState(prevState => ({ ...prevState, showTxModal: true, currentTxStatus: 'requesting faucet tokens...', currentTxMessage: 'Please refresh this page manually after 5 minutes. Your balance should be updated.' }));
   };
 
   return (
     <div>
-      <TestnetModal />
-
       <main className="py-12">
         <section>
           <header className="pb-5 border-b border-gray-200 sm:flex sm:items-center sm:justify-between">
@@ -124,9 +211,9 @@ export const Mint = () => {
                 </div>
               ) : (
                 <div className="flex items-center justify-end mb-4">
-                  <span className="text-gray-800 text-xs py-1 px-2">Testnet actions:</span>
+                  <span className="text-gray-800 text-xs py-1 px-2">{env.replace(/^\w/, (c) => c.toUpperCase())} actions:</span>
                   <Link onClick={() => addTestnetStx()} className="ml-1 inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Get STX from testnet
+                    Get STX from {env}
                   </Link>
                 </div>
               )}
@@ -156,7 +243,7 @@ export const Mint = () => {
                           scope="col"
                           className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                         >
-                          Last Price
+                          Last Oracle Price
                         </th>
                       </tr>
                     </thead>
@@ -247,8 +334,11 @@ export const Mint = () => {
           <div className="mt-4">
             {vaults.length && Object.keys(collateralTypes).length === state.definedCollateralTypes.length ? (
               <VaultGroup vaults={vaults} />
-            ): (
-              
+            ) : loadingVaults === true ? (
+              <div>
+                <p className="text-sm">Loading your vaults...</p>
+              </div>
+            ) : (
               <div>
                 <p className="text-sm">You currently have no open vaults</p>
               </div>

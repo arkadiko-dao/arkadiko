@@ -1,16 +1,38 @@
-name: CI
-on: [push]
+# GitHub action to verify `clarinet check` runs against contract
+# Uses a prepare script outlined in testing section of README
+
+name: CI Clarinet
+
+# Controls when the action will run.
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  tests:
-    name: "Test contracts"
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: "Check contract"
+        uses: docker://ludovic/clarinet:latest
+        with:
+          entrypoint: "bash"
+          args: -c "cd clarity && clarinet check"
       - name: "Execute test suite"
         uses: docker://ludovic/clarinet:latest
-        with: 
-          args: test --coverage
+        with:
+          entrypoint: "bash"
+          args: -c "cd clarity && clarinet test --coverage"
       - name: "Export code coverage"
         uses: codecov/codecov-action@v1
         with:
           files: ./coverage.lcov
+          verbose: true
