@@ -31,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
   const address = useSTXAddress();
 
   return (
-    <Disclosure as="nav" className="bg-white shadow relative">
+    <Disclosure as="nav" className="bg-white shadow relative sticky top-0 z-50">
       {({ open }) => (
         <>
           <div className="max-w-7xl mx-auto px-4 px-6 lg:px-8">
@@ -45,7 +45,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   <div className="hidden lg:ml-6 lg:flex lg:space-x-8">
                     <RouterLink to="/swap" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" activeClassName="border-indigo-500 text-gray-900">Swap</RouterLink>
                     
-                    <RouterLink to="/vaults" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" activeClassName="border-indigo-500 text-gray-900">Mint</RouterLink>
+                    <RouterLink to="/vaults" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" activeClassName="border-indigo-500 text-gray-900">Vaults</RouterLink>
 
                     <RouterLink to="/auctions" exact className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" activeClassName="border-indigo-500 text-gray-900">Auctions</RouterLink>
 
