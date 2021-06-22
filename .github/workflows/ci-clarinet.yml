@@ -31,8 +31,8 @@ jobs:
       - name: "Check contract"
         uses: docker://ludovic/clarinet:latest
         with:
-          entrypoint: bash -c "cd clarity"
-          args: "check"
+          entrypoint: "bash"
+          args: -c "cd clarity && clarinet check"
       - name: "Execute test suite"
         uses: docker://ludovic/clarinet:latest
         with:
