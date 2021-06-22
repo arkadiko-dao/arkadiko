@@ -31,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
   const address = useSTXAddress();
 
   return (
-    <Disclosure as="nav" className="bg-white shadow relative">
+    <Disclosure as="nav" className="bg-white shadow relative sticky top-0 z-50">
       {({ open }) => (
         <>
           <div className="max-w-7xl mx-auto px-4 px-6 lg:px-8">
