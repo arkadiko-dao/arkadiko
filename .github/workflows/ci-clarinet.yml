@@ -31,11 +31,13 @@ jobs:
       - name: "Check contract"
         uses: docker://ludovic/clarinet:latest
         with:
-          args: check
+          entrypoint: ""
+          args: bash -c "cd clarity && clarinet check"
       - name: "Execute test suite"
         uses: docker://ludovic/clarinet:latest
         with:
-          args: test --coverage
+          entrypoint: ""
+          args: bash -c "cd clarity && clarinet test --coverage"
       - name: "Export code coverage"
         uses: codecov/codecov-action@v1
         with:
