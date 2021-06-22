@@ -16,6 +16,7 @@ import { useConnect } from '@stacks/connect-react';
 import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { microToReadable } from '@common/vault-utils';
 import { tokenList } from '@components/token-swap-list';
+import { InputAmount } from './input-amount';
 
 export const Stake = () => {
   const [state, setState] = useContext(AppContext);
@@ -189,6 +190,10 @@ export const Stake = () => {
     });
   };
 
+  const stakeMaxAmount = (event: any) => {
+    //
+  }
+
   return (
     <div>
       <Modal isOpen={showStakeModal}>
@@ -231,34 +236,16 @@ export const Stake = () => {
                   Stake DIKO tokens at {apy}% (estimated APY) and start earning rewards now.
                 </p>
                 <div className="mt-6">
-                  <div className="flex flex-col relative">
-                    <span className="text-right text-xs">Available amount {microToReadable(state.balance['diko']).toLocaleString()} DIKO</span>
-                    <div className="min-w-0 h-10 inline-flex items-center border border-gray-300 rounded-md w-full mt-2 mb-2 focus-within:ring-indigo-500 focus-within:border-indigo-500">
-                      <input
-                        name="stakeDiko" 
-                        id="stakeAmount" 
-                        aria-label="Stake DIKO" 
-                        placeholder="0.0" 
-                        className="sm:text-sm px-3 focus:outline-none" 
-                        value={stakeAmount}
-                        onChange={onInputStakeChange}
-                        />
-                      <div className="flex-shrink-0 mx-1 text-sm ml-auto">
-                        <div className="flex items-center min-w-0">
-                          <span className="sm:text-sm text-gray-400">DIKO</span>
-                          <div className="w-px h-3 bg-gray-400 mx-2"></div>
-                          <button
-                            type="button"
-                            onClick={() => {console.log('To the moon!')}}
-                            className="p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
-                          >
-                            Max.
-                          </button>
-                        </div>
-                      </div>
-                      <label className="sr-only">Stack DIKO</label>
-                    </div>
-                  </div>
+                  <InputAmount
+                    balance={microToReadable(state.balance['diko']).toLocaleString()}
+                    token="DIKO"
+                    inputName="stakeDiko"
+                    inputId="stakeAmount"
+                    inputValue={stakeAmount}
+                    inputLabel="Stack DIKO"
+                    onInputChange={onInputStakeChange}
+                    onClickMax={stakeMaxAmount}
+                  />
                 </div>
               </div>
             </div>
@@ -322,34 +309,16 @@ export const Stake = () => {
                   You are current staking {microToReadable(stakedAmount).toLocaleString()} DIKO.
                 </p>
                 <div className="mt-6">
-                  <div className="flex flex-col relative">
-                    <span className="text-right text-xs">Available amount {microToReadable(state.balance['diko']).toLocaleString()} DIKO</span>
-                    <div className="min-w-0 h-10 inline-flex items-center border border-gray-300 rounded-md w-full mt-2 mb-2 focus-within:ring-indigo-500 focus-within:border-indigo-500">
-                      <input
-                        name="unstakeDiko" 
-                        id="unstakeAmount" 
-                        aria-label="Stake DIKO" 
-                        placeholder="0.0" 
-                        className="sm:text-sm px-3 focus:outline-none" 
-                        value={stakeAmount}
-                        onChange={onInputStakeChange}
-                        />
-                      <div className="flex-shrink-0 mx-1 text-sm ml-auto">
-                        <div className="flex items-center min-w-0">
-                          <span className="sm:text-sm text-gray-400">DIKO</span>
-                          <div className="w-px h-3 bg-gray-400 mx-2"></div>
-                          <button
-                            type="button"
-                            onClick={() => {console.log('To the moon!')}}
-                            className="p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
-                          >
-                            Max.
-                          </button>
-                        </div>
-                      </div>
-                      <label className="sr-only">Stack DIKO</label>
-                    </div>
-                  </div>
+                  <InputAmount
+                    balance={microToReadable(state.balance['diko']).toLocaleString()}
+                    token="DIKO"
+                    inputName="unstakeDiko"
+                    inputId="unstakeAmount"
+                    inputValue={stakeAmount}
+                    inputLabel="Unstack DIKO"
+                    onInputChange={onInputStakeChange}
+                    onClickMax={stakeMaxAmount}
+                  />
                 </div>
               </div>
             </div>
