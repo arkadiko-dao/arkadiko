@@ -1,5 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { Modal } from '@blockstack/ui';
+import { XIcon } from '@heroicons/react/outline';
 import { AppContext } from '@common/context';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
@@ -191,7 +192,7 @@ export const Stake = () => {
   return (
     <div>
       <Modal isOpen={showStakeModal}>
-        <div className="flex pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div className="flex items-end justify-center pt-6 px-4 pb-6 text-center sm:block sm:p-0">
           {errors.length > 0 ? (
             <div className="bg-red-50 border-l-4 border-red-400 p-4 mt-4">
               <div className="flex">
@@ -208,46 +209,73 @@ export const Stake = () => {
           ) : `` }
 
           <div className="inline-block align-bottom bg-white rounded-lg px-2 text-left overflow-hidden sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+            <div className="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
+              <button
+                type="button"
+                className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={() => setShowStakeModal(false)}
+              >
+                <span className="sr-only">Close</span>
+                <XIcon className="h-6 w-6" aria-hidden="true" />
+              </button>
+            </div>
+            <div className="mx-auto flex items-center justify-center rounded-full">
+              <img className="h-10 w-10 rounded-full" src={tokenList[1].logo} alt="" />
+            </div>
             <div>
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                <svg className="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
               <div className="mt-3 text-center sm:mt-5">
                 <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
                   Stake DIKO
                 </h3>
-                <div className="mt-2">
-                  <p className="text-sm text-gray-500">
-                    You have a balance of {microToReadable(state.balance['diko']).toLocaleString()} DIKO
-                  </p>
-
-                  <div className="mt-4 relative rounded-md shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    </div>
-                    <input type="text" name="stakeDiko" id="stakeAmount"
-                          value={stakeAmount}
-                          onChange={onInputStakeChange}
-                          className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
-                          placeholder="0.00" aria-describedby="stake-diko" />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm" id="stake-diko">
-                        DIKO
-                      </span>
+                <p className="mt-3 text-sm text-gray-500">
+                  Stake DIKO tokens at {apy}% (estimated APY) and start earning rewards now.
+                </p>
+                <div className="mt-6">
+                  <div className="flex flex-col relative">
+                    <span className="text-right text-xs">Available amount {microToReadable(state.balance['diko']).toLocaleString()} DIKO</span>
+                    <div className="min-w-0 h-10 inline-flex items-center border border-gray-300 rounded-md w-full mt-2 mb-2 focus-within:ring-indigo-500 focus-within:border-indigo-500">
+                      <input
+                        name="stakeDiko" 
+                        id="stakeAmount" 
+                        aria-label="Stake DIKO" 
+                        placeholder="0.0" 
+                        className="sm:text-sm px-3 focus:outline-none" 
+                        value={stakeAmount}
+                        onChange={onInputStakeChange}
+                        />
+                      <div className="flex-shrink-0 mx-1 text-sm ml-auto">
+                        <div className="flex items-center min-w-0">
+                          <span className="sm:text-sm text-gray-400">DIKO</span>
+                          <div className="w-px h-3 bg-gray-400 mx-2"></div>
+                          <button
+                            type="button"
+                            onClick={() => {console.log('To the moon!')}}
+                            className="p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                          >
+                            Max.
+                          </button>
+                        </div>
+                      </div>
+                      <label className="sr-only">Stack DIKO</label>
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
-            <div className="mt-5 sm:mt-6">
-              <button type="button" onClick={() => stakeDiko()} className="mb-5 inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+            <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+              <button
+                type="button"
+                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+                onClick={() => stakeDiko()}
+              >
                 Stake
               </button>
-
-              <button type="button" onClick={() => setShowStakeModal(false)} className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-600 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:text-sm">
-                Close
+              <button
+                type="button"
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                onClick={() => setShowStakeModal(false)}
+              >
+                Cancel
               </button>
             </div>
           </div>
@@ -255,7 +283,7 @@ export const Stake = () => {
       </Modal>
 
       <Modal isOpen={showUnstakeModal}>
-        <div className="flex pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div className="flex items-end justify-center pt-6 px-4 pb-6 text-center sm:block sm:p-0">
           {errors.length > 0 ? (
             <div className="bg-red-50 border-l-4 border-red-400 p-4 mt-4">
               <div className="flex">
@@ -272,46 +300,73 @@ export const Stake = () => {
           ) : `` }
 
           <div className="inline-block align-bottom bg-white rounded-lg px-2 text-left overflow-hidden sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+            <div className="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
+              <button
+                type="button"
+                className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={() => setShowUnstakeModal(false)}
+              >
+                <span className="sr-only">Close</span>
+                <XIcon className="h-6 w-6" aria-hidden="true" />
+              </button>
+            </div>
+            <div className="mx-auto flex items-center justify-center rounded-full">
+              <img className="h-10 w-10 rounded-full" src={tokenList[1].logo} alt="" />
+            </div>
             <div>
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                <svg className="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
               <div className="mt-3 text-center sm:mt-5">
                 <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
                   Unstake DIKO
                 </h3>
-                <div className="mt-2">
-                  <p className="text-sm text-gray-500">
-                    You are current staking {microToReadable(stakedAmount).toLocaleString()} DIKO
-                  </p>
-
-                  <div className="mt-4 relative rounded-md shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    </div>
-                    <input type="text" name="unstakeDiko" id="unstakeAmount"
-                          value={stakeAmount}
-                          onChange={onInputStakeChange}
-                          className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
-                          placeholder="0.00" aria-describedby="stake-diko" />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm" id="stake-diko">
-                        DIKO
-                      </span>
+                <p className="mt-3 text-sm text-gray-500">
+                  You are current staking {microToReadable(stakedAmount).toLocaleString()} DIKO.
+                </p>
+                <div className="mt-6">
+                  <div className="flex flex-col relative">
+                    <span className="text-right text-xs">Available amount {microToReadable(state.balance['diko']).toLocaleString()} DIKO</span>
+                    <div className="min-w-0 h-10 inline-flex items-center border border-gray-300 rounded-md w-full mt-2 mb-2 focus-within:ring-indigo-500 focus-within:border-indigo-500">
+                      <input
+                        name="unstakeDiko" 
+                        id="unstakeAmount" 
+                        aria-label="Stake DIKO" 
+                        placeholder="0.0" 
+                        className="sm:text-sm px-3 focus:outline-none" 
+                        value={stakeAmount}
+                        onChange={onInputStakeChange}
+                        />
+                      <div className="flex-shrink-0 mx-1 text-sm ml-auto">
+                        <div className="flex items-center min-w-0">
+                          <span className="sm:text-sm text-gray-400">DIKO</span>
+                          <div className="w-px h-3 bg-gray-400 mx-2"></div>
+                          <button
+                            type="button"
+                            onClick={() => {console.log('To the moon!')}}
+                            className="p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                          >
+                            Max.
+                          </button>
+                        </div>
+                      </div>
+                      <label className="sr-only">Stack DIKO</label>
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
-            <div className="mt-5 sm:mt-6">
-              <button type="button" onClick={() => unstakeDiko()} className="mb-5 inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+            <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+              <button
+                type="button"
+                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+                onClick={() => unstakeDiko()}
+              >
                 Unstake
               </button>
-
-              <button type="button" onClick={() => setShowUnstakeModal(false)} className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-600 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:text-sm">
-                Close
+              <button
+                type="button"
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                onClick={() => setShowUnstakeModal(false)}
+              >
+                Cancel
               </button>
             </div>
           </div>
