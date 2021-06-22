@@ -240,8 +240,8 @@
 (define-read-only (get-minimum-collateral-amount (oracle <oracle-trait>) (auction-id uint))
   (let (
     (auction (get-auction-by-id auction-id))
-    (collateral-left (- (get collateral-amount auction) (get total-collateral-sold auction)))
-    (debt-left-to-raise (- (get debt-to-raise auction) (get total-debt-raised auction)))
+    (collateral-left (- (get collateral-amount auction) (get total-collateral-sold auction))) ;; TODO: this can be below zero, fix
+    (debt-left-to-raise (- (get debt-to-raise auction) (get total-debt-raised auction))) ;; TODO: this can be below zero, fix
     (collateral-price-in-cents (contract-call? .arkadiko-oracle-v1-1 get-price (collateral-token (get collateral-token auction))))
     (discounted-price (unwrap-panic (discounted-auction-price (get last-price-in-cents collateral-price-in-cents) auction-id)))
   )
