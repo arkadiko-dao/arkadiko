@@ -416,6 +416,10 @@ export const ManageVault = ({ match }) => {
     });
   };
 
+  const depositMaxAmount = () => {
+    setExtraCollateralDeposit((state.balance['stx'] / 1000000) - 1);
+  };
+
   const mintMaxAmount = (event: any) => {
     //
   };
@@ -468,7 +472,7 @@ export const ManageVault = ({ match }) => {
                       inputValue={extraCollateralDeposit}
                       inputLabel="Deposit Extra Collateral"
                       onInputChange={onInputChange}
-                      onClickMax={mintMaxAmount}
+                      onClickMax={depositMaxAmount}
                     />
                   </div>
 
