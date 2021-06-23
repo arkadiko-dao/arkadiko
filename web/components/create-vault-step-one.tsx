@@ -3,6 +3,7 @@ import { Box } from '@blockstack/ui';
 import { AppContext, UserBalanceKeys } from '@common/context';
 import { getPrice } from '@common/get-price';
 import { getLiquidationPrice, getCollateralToDebtRatio } from '@common/vault-utils';
+import { InputAmount } from './input-amount';
 import { useLocation } from 'react-router-dom';
 
 interface VaultProps {
@@ -178,39 +179,18 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
               </div>
               <div className="mt-2 mb-1 sm:flex sm:items-start sm:justify-between">
                 <div className="max-w-xl text-sm text-gray-500">
-                  <div className="mt-1 relative rounded-md shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm"></span>
-                    </div>
-                    <input
-                      type="text"
-                      name="collateral"
-                      id="collateralAmount"
-                      value={collateralAmount}
-                      onChange={setCollateral}
-                      className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
-                      placeholder="0.00"
-                      aria-describedby="collateral-currency"
+                  <div className="mt-1">
+                    <InputAmount
+                      balance={state.balance[tokenKey] / 1000000}
+                      token={tokenName}
+                      inputName="collateral"
+                      inputId="collateralAmount"
+                      inputValue={collateralAmount}
+                      inputLabel={`Collateralize ${tokenName}`}
+                      onInputChange={setCollateral}
+                      onClickMax={setMaxBalance}
                     />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm" id="collateral-currency">
-                        {tokenName}
-                      </span>
-                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="sm:flex sm:items-start sm:justify-between">
-                <div className="max-w-xl text-sm text-gray-500">
-                  <p className="text-xs font-medium text-gray-500 uppercase">
-                    <span
-                      className="text-indigo-600 hover:text-indigo-900 cursor-pointer ml-1"
-                      onClick={setMaxBalance}
-                    >
-                      Your balance
-                    </span>
-                    : {state.balance[tokenKey] / 1000000} {tokenName}
-                  </p>
                 </div>
               </div>
 
@@ -224,39 +204,18 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
               </div>
               <div className="mt-2 mb-1 sm:flex sm:items-start sm:justify-between">
                 <div className="max-w-xl text-sm text-gray-500">
-                  <div className="mt-1 relative rounded-md shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm">$</span>
-                    </div>
-                    <input
-                      type="text"
-                      name="coins"
-                      id="coinAmount"
-                      value={coinAmount}
-                      onChange={setCoins}
-                      className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
-                      placeholder="0.00"
-                      aria-describedby="coin-currency"
+                  <div className="mt-1">
+                    <InputAmount
+                      balance={maximumToMint / 1000000}
+                      token="xUSD"
+                      inputName="coins"
+                      inputId="coinsAmount"
+                      inputValue={coinAmount}
+                      inputLabel="Mint xUSD"
+                      onInputChange={setCoins}
+                      onClickMax={setMaxCoins}
                     />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm" id="coin-currency">
-                        xUSD
-                      </span>
-                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="sm:flex sm:items-start sm:justify-between">
-                <div className="max-w-xl text-sm text-gray-500">
-                  <p className="text-xs font-medium text-gray-500 uppercase">
-                    <span
-                      className="text-indigo-600 hover:text-indigo-900 cursor-pointer ml-1"
-                      onClick={setMaxCoins}
-                    >
-                      Maximum to mint
-                    </span>
-                    : {maximumToMint / 1000000} xUSD
-                  </p>
                 </div>
               </div>
             </div>
