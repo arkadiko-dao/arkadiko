@@ -35,6 +35,10 @@ export const getDikoAmmPrice = async () => {
   };
 
   const pair = await fetchPair();
-  const pairDetails = pair.value.value.value;
-  return (pairDetails['balance-y'].value / pairDetails['balance-x'].value).toFixed(2);
+  if (pair.success) {
+    const pairDetails = pair.value.value.value;
+    return (pairDetails['balance-y'].value / pairDetails['balance-x'].value).toFixed(2);
+  } else {
+    return 0;
+  }
 };

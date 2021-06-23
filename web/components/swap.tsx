@@ -34,6 +34,7 @@ export const Swap: React.FC = () => {
   const [priceImpact, setPriceImpact] = useState('0');
   const [lpFee, setLpFee] = useState('0');
   const [foundPair, setFoundPair] = useState(true);
+  const defaultFee = 0.4;
 
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -122,16 +123,19 @@ export const Swap: React.FC = () => {
     const balanceX = currentPair['balance-x'].value;
     const balanceY = currentPair['balance-y'].value;
     let amount = 0;
+    let tokenYAmount = 0;
 
     const slippage = (100 - slippageTolerance) / 100;
     // amount = ((slippage * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
     if (inverseDirection) {
-      amount = slippage * (balanceX / balanceY) * tokenXAmount;
+      amount = slippage * (balanceX / balanceY) * Number(tokenXAmount);
+      tokenYAmount = defaultFee * (balanceX / balanceY) * Number(tokenXAmount);
     } else {
-      amount = slippage * (balanceY / balanceX) * tokenXAmount;
+      amount = slippage * (balanceY / balanceX) * Number(tokenXAmount);
+      tokenYAmount = defaultFee * (balanceY / balanceX) * Number(tokenXAmount);
     }
     setMinimumReceived((amount * 0.97));
-    setTokenYAmount(amount);
+    setTokenYAmount(tokenYAmount);
     const impact = ((balanceX / 1000000) / tokenXAmount);
     setPriceImpact((100 / impact).toLocaleString());
     setLpFee((0.003 * tokenXAmount).toLocaleString());
