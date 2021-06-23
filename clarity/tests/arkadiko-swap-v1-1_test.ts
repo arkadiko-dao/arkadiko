@@ -36,8 +36,8 @@ Clarinet.test({
 
     // Check initial balances
     let call = await swap.getBalances(dikoTokenAddress, xusdTokenAddress);
-    call.result.expectOk().expectList()[0].expectUint(500);
-    call.result.expectOk().expectList()[1].expectUint(100);
+    call.result.expectOk().expectList()[0].expectUint(500000000);
+    call.result.expectOk().expectList()[1].expectUint(100000000);
 
     // Add extra lquidity
     result = swap.addToPosition(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, 500, 0);
@@ -45,21 +45,21 @@ Clarinet.test({
 
     // Check new balances (both tokens should have increased, price remains the same)
     call = await swap.getBalances(dikoTokenAddress, xusdTokenAddress);
-    call.result.expectOk().expectList()[0].expectUint(1000);
-    call.result.expectOk().expectList()[1].expectUint(200);
+    call.result.expectOk().expectList()[0].expectUint(1000000000);
+    call.result.expectOk().expectList()[1].expectUint(200000000);
 
     // Check if tracked balances is the same as tokens owned by contract
     call = await chain.callReadOnlyFn("arkadiko-token", "get-balance", [
       types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-v1-1"),
     ], deployer.address);
-    call.result.expectOk().expectUint(1000);
+    call.result.expectOk().expectUint(1000000000);
     call = await xusdManager.balanceOf("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-v1-1");
-    call.result.expectOk().expectUint(200);
+    call.result.expectOk().expectUint(200000000);
 
     // Remove other 90% of liquidity
     result = swap.reducePosition(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, 100);
-    result.expectOk().expectList()[0].expectUint(1000);
-    result.expectOk().expectList()[1].expectUint(200);
+    result.expectOk().expectList()[0].expectUint(1000000000);
+    result.expectOk().expectList()[1].expectUint(200000000);
 
     // Balances again at 0
     call = await swap.getBalances(dikoTokenAddress, xusdTokenAddress);

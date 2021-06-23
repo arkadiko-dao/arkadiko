@@ -243,7 +243,7 @@ Clarinet.test({
     result = vaultManager.payStabilityFee(deployer, 1);
  
     call = vaultManager.getStabilityFee(1, deployer);
-    call.result.expectOk().expectUint(19); // ~$0
+    call.result.expectOk().expectUint(1918);
 
     call = await vaultManager.getVaultById(1, deployer);
     vault = call.result.expectTuple();
