@@ -260,7 +260,7 @@ export const Mint = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          {microToReadable(state.balance['stx']).toLocaleString()} STX
+                          {microToReadable(state.balance['stx']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} STX
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           ${stxPrice / 100}
@@ -279,7 +279,7 @@ export const Mint = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          {microToReadable(state.balance['diko']).toLocaleString()} DIKO
+                          {microToReadable(state.balance['diko']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           ${dikoPrice}
@@ -298,7 +298,7 @@ export const Mint = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          {microToReadable(state.balance['xusd']).toLocaleString()} xUSD
+                          {microToReadable(state.balance['xusd']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xUSD
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           $1
