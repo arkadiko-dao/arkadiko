@@ -78,7 +78,8 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
       setCoinAmount(value);
       const error = [`You cannot mint more than ${maximumToMint / 1000000} xUSD`];
       if (parseFloat(value) > maximumToMint / 1000000) {
-        setErrors(errors.concat(error));
+        const filteredAry = errors.filter(e => e !== error[0]);
+        setErrors(filteredAry.concat(error));
       } else {
         const filteredAry = errors.filter(e => e !== error[0]);
         setErrors(filteredAry);
