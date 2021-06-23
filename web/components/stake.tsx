@@ -54,7 +54,7 @@ export const Stake = () => {
         senderAddress: stxAddress || '',
         network: network,
       });
-      const totalStaked = cvToJSON(totalStakedCall).value / 1000000;
+      let totalStaked = cvToJSON(totalStakedCall).value / 1000000;
 
       const stakerInfoCall = await callReadOnlyFunction({
         contractAddress,
@@ -65,27 +65,18 @@ export const Stake = () => {
         network: network,
       });
       const stakerInfo = cvToJSON(stakerInfoCall).value;
-      const dikoStaked = stakerInfo['uamount'].value / 1000000;
+      let dikoStaked = stakerInfo['uamount'].value / 1000000;
       setStakedAmount(dikoStaked * 1000000);
 
-      // const rewardsPerBlockCall = await callReadOnlyFunction({
-      //   contractAddress,
-      //   contractName: "arkadiko-stake-registry-v1-1",
-      //   functionName: "get-rewards-per-block-for-pool",
-      //   functionArgs: [
-      //     contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1')
-      //   ],
-      //   senderAddress: stxAddress || '',
-      //   network: network,
-      // });
-      // const rewardsPerBlock = cvToJSON(rewardsPerBlockCall).value;
-      const rewardPercentage = (dikoStaked / totalStaked);
-      const dikoPerYear = 23500000; // TODO: hardcoded 25mio for this year. 144 * 365 * (rewardsPerBlock) / 1000000;
-      console.log(rewardPercentage, dikoPerYear, dikoStaked);
+      const dikoPerYear = 23500000; // TODO: hardcoded 25mio for first year. 144 * 365 * (rewardsPerBlock) / 1000000;
       if (dikoStaked > 0) {
+        const rewardPercentage = (dikoStaked / totalStaked);
         setApy(((dikoPerYear / dikoStaked) * rewardPercentage * 100).toFixed(0));
       } else {
-        setApy(0);
+        let dikoStaked = state.balance['diko'] / 1000000;
+        if (totalStaked === 0) { totalStaked = dikoStaked };
+        const rewardPercentage = (dikoStaked / totalStaked);
+        setApy(((dikoPerYear / dikoStaked) * rewardPercentage * 100).toFixed(0));
       }
     };
     if (mounted) {
@@ -93,7 +84,7 @@ export const Stake = () => {
     }
 
     return () => { mounted = false; }
-  }, []);
+  }, [state.balance]);
 
   const onInputStakeChange = (event:any) => {
     const value = event.target.value;
