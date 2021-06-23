@@ -17,6 +17,7 @@ export const InputAmount: React.FC<InputAmountProps> = ({balance, token, inputNa
       <span className="text-right text-xs">Available amount {balance} {token}</span>
       <div className="min-w-0 h-10 inline-flex items-center border border-gray-300 rounded-md w-full mt-2 mb-2 focus-within:ring-indigo-500 focus-within:border-indigo-500">
         <input
+          type="text"
           inputMode="decimal"
           autoComplete="off"
           autoCorrect="off"
@@ -25,7 +26,7 @@ export const InputAmount: React.FC<InputAmountProps> = ({balance, token, inputNa
           name={inputName} 
           id={inputId}
           aria-label={inputLabel}
-          className="sm:text-sm px-3 focus:outline-none border-0 rounded-md" 
+          className="sm:text-sm px-3 focus:outline-none focus:ring-0 border-0 rounded-md" 
           value={inputValue}
           onChange={onInputChange}
           />
