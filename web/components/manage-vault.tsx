@@ -214,6 +214,30 @@ export const ManageVault = ({ match }) => {
     websocketTxUpdater();
   }
 
+  const closeVault = async () => {
+    const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
+
+    await doContractCall({
+      network,
+      contractAddress,
+      contractName: "arkadiko-freddie-v1-1",
+      functionName: 'burn',
+      functionArgs: [
+        uintCV(match.params.id),
+        uintCV(outstandingDebt() * 1000000),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
+      ],
+      postConditionMode: 0x01,
+      finished: data => {
+        console.log('finished closing vault!', data);
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setShowBurnModal(false);
+      },
+    });
+  };
+
   const claimPendingRewards = async () => {
     await doContractCall({
       network,
@@ -1043,10 +1067,10 @@ export const ManageVault = ({ match }) => {
                       {isVaultOwner ? (
                         <div className="max-w-xl text-sm text-gray-500">
                           <p>
-                            <Text onClick={() => setShowBurnModal(true)}
+                            <Text onClick={() => closeVault()}
                                   _hover={{ cursor: 'pointer'}}
                                   className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                              Pay back
+                              Close Vault
                             </Text>
                           </p>
                         </div>
