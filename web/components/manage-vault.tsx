@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Box, Modal, Text } from '@blockstack/ui';
+import { XIcon } from '@heroicons/react/outline';
 import { Container } from './home';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
@@ -18,6 +19,8 @@ import { Link } from '@components/link';
 import { Redirect } from 'react-router-dom';
 import { resolveReserveName, tokenTraits } from '@common/vault-utils';
 import BN from 'bn.js';
+import { tokenList } from '@components/token-swap-list';
+import { InputAmount } from './input-amount';
 
 export const ManageVault = ({ match }) => {
   const { doContractCall } = useConnect();
@@ -413,6 +416,10 @@ export const ManageVault = ({ match }) => {
     });
   };
 
+  const mintMaxAmount = (event: any) => {
+    //
+  };
+
   return (
     <Container>
       {auctionEnded && <Redirect to="/vaults" />}
@@ -420,12 +427,20 @@ export const ManageVault = ({ match }) => {
       <Modal isOpen={showDepositModal}>
         <div className="flex pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <div className="inline-block align-bottom bg-white rounded-lg px-2 pt-5 pb-4 text-left overflow-hidden sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+            <div className="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
+              <button
+                type="button"
+                className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={() => setShowDepositModal(false)}
+              >
+                <span className="sr-only">Close</span>
+                <XIcon className="h-6 w-6" aria-hidden="true" />
+              </button>
+            </div>
+            <div className="mx-auto flex items-center justify-center rounded-full">
+              <img className="h-10 w-10 rounded-full" src={tokenList[2].logo} alt="" />
+            </div>
             <div>
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                <svg className="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
               <div className="mt-3 text-center sm:mt-5">
                 <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
                   Deposit Extra Collateral
@@ -438,31 +453,36 @@ export const ManageVault = ({ match }) => {
                     We will automatically harvest any DIKO you are eligible for when depositing.
                   </p>
 
-                  <div className="mt-4 relative rounded-md shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    </div>
-                    <input type="text" name="depositCollateral" id="collateralAmount"
-                           value={extraCollateralDeposit}
-                           onChange={onInputChange}
-                           className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
-                           placeholder="0.00" aria-describedby="collateral-currency" />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm" id="collateral-currency">
-                        {vault?.collateralToken.toUpperCase()}
-                      </span>
-                    </div>
+                  <div className="mt-6">
+                    <InputAmount
+                      balance={state.balance['stx'] / 1000000}
+                      token={vault?.collateralToken.toUpperCase()}
+                      inputName="depositExtraStx"
+                      inputId="depositExtraStxAmount"
+                      inputValue={extraCollateralDeposit}
+                      inputLabel="Deposit Extra Collateral"
+                      onInputChange={onInputChange}
+                      onClickMax={mintMaxAmount}
+                    />
                   </div>
 
                 </div>
               </div>
             </div>
-            <div className="mt-5 sm:mt-6">
-              <button type="button" onClick={() => addDeposit()} className="mb-5 inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
-                Add deposit
+            <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+              <button
+                type="button"
+                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+                onClick={() => addDeposit()}
+              >
+                Mint
               </button>
-
-              <button type="button" onClick={() => setShowDepositModal(false)} className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-600 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:text-sm">
-                Close
+              <button
+                type="button"
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                onClick={() => setShowDepositModal(false)}
+              >
+                Cancel
               </button>
             </div>
           </div>
@@ -524,12 +544,20 @@ export const ManageVault = ({ match }) => {
       <Modal isOpen={showMintModal}>
         <div className="flex pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <div className="inline-block align-bottom bg-white rounded-lg px-2 pt-5 pb-4 text-left overflow-hidden sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+            <div className="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
+              <button
+                type="button"
+                className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={() => setShowMintModal(false)}
+              >
+                <span className="sr-only">Close</span>
+                <XIcon className="h-6 w-6" aria-hidden="true" />
+              </button>
+            </div>
+            <div className="mx-auto flex items-center justify-center rounded-full">
+              <img className="h-10 w-10 rounded-full" src={tokenList[0].logo} alt="" />
+            </div>
             <div>
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                <svg className="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
               <div className="mt-3 text-center sm:mt-5">
                 <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
                   Mint extra xUSD
@@ -539,31 +567,36 @@ export const ManageVault = ({ match }) => {
                     Choose how much extra xUSD you want to mint. You can mint a maximum of {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString()} {vault?.collateralToken.toUpperCase()}.
                   </p>
 
-                  <div className="mt-4 relative rounded-md shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    </div>
-                    <input type="text" name="mintDebt" id="mintAmount"
-                           value={usdToMint}
-                           onChange={onInputChange}
-                           className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
-                           placeholder="0.00" aria-describedby="collateral-mint-currency" />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm" id="collateral-mint-currency">
-                        {vault?.collateralToken.toUpperCase()}
-                      </span>
-                    </div>
+                  <div className="mt-6">
+                    <InputAmount
+                      balance={availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString()}
+                      token={vault?.collateralToken.toUpperCase()}
+                      inputName="mintxUSD"
+                      inputId="mintxUSDAmount"
+                      inputValue={usdToMint}
+                      inputLabel="Mint DIKO"
+                      onInputChange={onInputChange}
+                      onClickMax={mintMaxAmount}
+                    />
                   </div>
 
                 </div>
               </div>
             </div>
-            <div className="mt-5 sm:mt-6">
-              <button type="button" onClick={() => callMint()} className="mb-5 inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+            <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+              <button
+                type="button"
+                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+                onClick={() => callMint()}
+              >
                 Mint
               </button>
-
-              <button type="button" onClick={() => setShowMintModal(false)} className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-600 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:text-sm">
-                Close
+              <button
+                type="button"
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                onClick={() => setShowMintModal(false)}
+              >
+                Cancel
               </button>
             </div>
           </div>

@@ -43,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                 </RouterLink>
                 {state.userData ? (
                   <div className="hidden lg:ml-6 lg:flex lg:space-x-8">
-                    <RouterLink to="/" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" activeClassName="border-indigo-500 text-gray-900">Swap</RouterLink>
+                    <RouterLink to="/swap" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" activeClassName="border-indigo-500 text-gray-900">Swap</RouterLink>
                     
                     <RouterLink to="/vaults" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" activeClassName="border-indigo-500 text-gray-900">Vaults</RouterLink>
 
