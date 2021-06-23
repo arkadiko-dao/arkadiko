@@ -30,7 +30,7 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ name, url, token
         <span className="text-gray-900">${maximumDebt / 1000000000000} million</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900">${(totalDebt / 1000000).toLocaleString()}</span>
+        <span className="text-gray-900">${(totalDebt / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</span>
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
         <RouterLink to={`/vaults/new?type=${tokenType}&token=${token}`} exact className="text-indigo-600 hover:text-indigo-900">

@@ -584,7 +584,7 @@ export const ManageVault = ({ match }) => {
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Choose how much extra xUSD you want to mint. You can mint a maximum of {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString()} {vault?.collateralToken.toUpperCase()}.
+                    Choose how much extra xUSD you want to mint. You can mint a maximum of {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {vault?.collateralToken.toUpperCase()}.
                   </p>
 
                   <div className="mt-6">
@@ -978,7 +978,7 @@ export const ManageVault = ({ match }) => {
 
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                          {outstandingDebt().toLocaleString()} xUSD
+                          {outstandingDebt().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xUSD
                         </p>
                       </div>
 
@@ -1005,7 +1005,7 @@ export const ManageVault = ({ match }) => {
 
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                        ${(stabilityFee / 1000000).toLocaleString()} xUSD
+                        ${(stabilityFee / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xUSD
                         </p>
                       </div>
 
@@ -1032,7 +1032,7 @@ export const ManageVault = ({ match }) => {
 
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                          ${(outstandingDebt() + stabilityFee / 1000000).toLocaleString()} xUSD
+                          ${(outstandingDebt() + stabilityFee / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xUSD
                         </p>
                       </div>
 
@@ -1059,7 +1059,7 @@ export const ManageVault = ({ match }) => {
 
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                          {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString()} xUSD
+                          {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xUSD
                         </p>
                       </div>
 
@@ -1103,7 +1103,7 @@ export const ManageVault = ({ match }) => {
 
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                          {pendingVaultRewards.toLocaleString()} DIKO
+                          {pendingVaultRewards.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
                         </p>
                       </div>
 

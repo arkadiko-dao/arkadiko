@@ -34,6 +34,7 @@ export const Swap: React.FC = () => {
   const [priceImpact, setPriceImpact] = useState('0');
   const [lpFee, setLpFee] = useState('0');
   const [foundPair, setFoundPair] = useState(true);
+  const defaultFee = 0.4;
 
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -122,19 +123,22 @@ export const Swap: React.FC = () => {
     const balanceX = currentPair['balance-x'].value;
     const balanceY = currentPair['balance-y'].value;
     let amount = 0;
+    let tokenYAmount = 0;
 
     const slippage = (100 - slippageTolerance) / 100;
     // amount = ((slippage * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
     if (inverseDirection) {
-      amount = slippage * (balanceX / balanceY) * tokenXAmount;
+      amount = slippage * (balanceX / balanceY) * Number(tokenXAmount);
+      tokenYAmount = ((100 - defaultFee) / 100) * (balanceX / balanceY) * Number(tokenXAmount);
     } else {
-      amount = slippage * (balanceY / balanceX) * tokenXAmount;
+      amount = slippage * (balanceY / balanceX) * Number(tokenXAmount);
+      tokenYAmount = ((100 - defaultFee) / 100) * (balanceY / balanceX) * Number(tokenXAmount);
     }
     setMinimumReceived((amount * 0.97));
-    setTokenYAmount(amount);
+    setTokenYAmount(tokenYAmount);
     const impact = ((balanceX / 1000000) / tokenXAmount);
-    setPriceImpact((100 / impact).toLocaleString());
-    setLpFee((0.003 * tokenXAmount).toLocaleString());
+    setPriceImpact((100 / impact).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 }));
+    setLpFee((0.003 * tokenXAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 }));
   };
 
   const onInputChange = (event: { target: { name: any; value: any; }; }) => {
@@ -270,7 +274,7 @@ export const Swap: React.FC = () => {
                 <div className="flex items-center text-sm p-4 pt-0 justify-end">
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center justify-start">
-                      <p className="text-gray-500">Balance: {balanceSelectedTokenX.toLocaleString()} {tokenX.name}</p>
+                      <p className="text-gray-500">Balance: {balanceSelectedTokenX.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenX.name}</p>
                       {parseInt(balanceSelectedTokenX, 10) > 0 ? (
                         <button
                           type="button"
@@ -311,7 +315,7 @@ export const Swap: React.FC = () => {
                     id="tokenYAmount"
                     pattern="^[0-9]*[.,]?[0-9]*$" 
                     placeholder="0.0"
-                    value={tokenYAmount.toLocaleString()}
+                    value={tokenYAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
                     onChange={onInputChange}
                     disabled={true}
                     className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1 text-gray-600" />
@@ -320,7 +324,7 @@ export const Swap: React.FC = () => {
                 <div className="flex items-center text-sm p-4 pt-0 justify-end">
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center justify-start">
-                      <p className="text-gray-500">Balance: {balanceSelectedTokenY.toLocaleString()} {tokenY.name}</p>
+                      <p className="text-gray-500">Balance: {balanceSelectedTokenY.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenY.name}</p>
                     </div>
                   </div>
                 </div>
@@ -361,7 +365,7 @@ export const Swap: React.FC = () => {
           <dl className="space-y-1 pb-3">
             <div className="sm:grid sm:grid-cols-2 sm:gap-4">
               <dt className="text-sm font-medium text-indigo-500">Minimum Received</dt>
-              <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{minimumReceived.toLocaleString()} {tokenY.name}</dd>
+              <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{minimumReceived.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenY.name}</dd>
             </div>
             <div className="sm:grid sm:grid-cols-2 sm:gap-4">
               <dt className="text-sm font-medium text-indigo-500">Price Impact</dt>
