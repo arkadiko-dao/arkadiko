@@ -444,15 +444,20 @@ export const ManageVault = ({ match }) => {
     setExtraCollateralDeposit((state.balance['stx'] / 1000000) - 1);
   };
 
-  const mintMaxAmount = (event: any) => {
-    //
+  const mintMaxAmount = () => {
+    setUsdToMint(
+      availableCoinsToMint(
+        price,
+        collateralLocked(),
+        outstandingDebt(),
+        collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 }
+      )
+    );
   };
   
-  const burnMaxAmount = (event: any) => {
-    //
+  const burnMaxAmount = () => {
+    setUsdToBurn(outstandingDebt());
   };
-
-
 
   return (
     <Container>
@@ -489,7 +494,7 @@ export const ManageVault = ({ match }) => {
 
                   <div className="mt-6">
                     <InputAmount
-                      balance={state.balance['stx'] / 1000000}
+                      balance={(state.balance['stx'] / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
                       token={vault?.collateralToken.toUpperCase()}
                       inputName="depositExtraStx"
                       inputId="depositExtraStxAmount"
@@ -612,17 +617,17 @@ export const ManageVault = ({ match }) => {
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Choose how much extra xUSD you want to mint. You can mint a maximum of {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {vault?.collateralToken.toUpperCase()}.
+                    Choose how much extra xUSD you want to mint. You can mint a maximum of {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xUSD.
                   </p>
 
                   <div className="mt-6">
                     <InputAmount
-                      balance={availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString()}
-                      token={vault?.collateralToken.toUpperCase()}
-                      inputName="mintxUSD"
+                      balance={availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                      token="xUSD"
+                      inputName="mintDebt"
                       inputId="mintxUSDAmount"
                       inputValue={usdToMint}
-                      inputLabel="Mint DIKO"
+                      inputLabel="Mint xUSD"
                       onInputChange={onInputChange}
                       onClickMax={mintMaxAmount}
                     />
@@ -679,7 +684,7 @@ export const ManageVault = ({ match }) => {
 
                   <div className="mt-6">
                     <InputAmount
-                      balance="xxx"
+                      balance={(state.balance['xusd'] / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
                       token="xUSD"
                       inputName="burnDebt"
                       inputId="burnAmount"
