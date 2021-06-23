@@ -55,7 +55,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       postConditions,
       finished: data => {
         console.log('finished collateralizing!', data);
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'Collateralize and Mint' }));
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'creating vault...' }));
       },
     });
   };
@@ -68,7 +68,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
     <Box>
       <h2 className="text-2xl font-bold text-gray-900 text-center">
         {state.currentTxId ? (
-          <span>Your vault is being minted.</span>
+          <span>Your vault is being created.</span>
         ) : (
           <span>Confirm the transaction to create your new vault</span>
         )}   
@@ -82,11 +82,11 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
                 {state.currentTxId && (
                   <Text textStyle="body.large" display="block" my={space('base')}>
                     <Text color="green" fontSize={1}>
-                      Successfully broadcasted &quot;{state.currentTxStatus}&quot;. This can take a few minutes.
+                      Successfully broadcasted the creation of your vault. This can take up to 15 minutes.
                     </Text>
                     <br/>
                     <Text color="green" fontSize={1}>
-                      You may close this window. Your vault will appear automatically on the Mint page after creation.
+                      You may close this window. Your vault will appear automatically on the Vaults page after creation.
                     </Text>
                     <ExplorerLink txId={state.currentTxId} />
                   </Text>

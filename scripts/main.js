@@ -1,11 +1,28 @@
-function execute() {
-  console.log('1. run price oracle');
-  require('child_process').fork('update-price.js');
-
-  console.log('2. end auctions that are running?');
-  console.log('3. end governance proposals that are running?');
-  console.log('4. liquidate vaults');
+function updateOraclePrice() {
+  console.log('- run price oracle');
+  setTimeout(function() {
+    require('child_process').fork('update-price.js');
+  }, 0);
 }
 
-console.log('Running price, auction and governance scripts');
-setInterval(execute, 60000 * 20); // every 20 minutes
+function executeRewardCalibration() {
+  console.log('- increase cumm rewards');
+  setTimeout(function() {
+    require('child_process').fork('update-cumm-rewards.js');
+  }, 2000);
+}
+
+function findUnhealthyVaults() {
+  console.log('- liquidate vaults');
+  // TODO
+}
+
+function executeAuctionLogic() {
+  console.log('2. end auctions that are running?');
+  console.log('3. end governance proposals that are running?');
+}
+
+console.log('Running Arkadiko scripts');
+setInterval(updateOraclePrice, 60000 * 20); // every 20 mins
+setInterval(executeRewardCalibration, 60000 * 45); // every 45 mins
+setInterval(findUnhealthyVaults, 60000 * 60 * 23); // once every day

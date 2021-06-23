@@ -151,12 +151,11 @@ export const ManageVault = ({ match }) => {
   }, [collateralType?.collateralToDebtRatio, price]);
 
   const payStabilityFee = async () => {
-    const fee = stabilityFee / 1000000;
     const postConditions = [
       makeStandardFungiblePostCondition(
         senderAddress || '',
         FungibleConditionCode.GreaterEqual,
-        new BN(fee),
+        new BN(stabilityFee),
         createAssetInfo(
           contractAddress,
           "xusd-token",
@@ -326,7 +325,8 @@ export const ManageVault = ({ match }) => {
         uintCV(match.params.id),
         uintCV(parseFloat(usdToMint) * 1000000),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1'),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1')
       ],
       postConditionMode: 0x01,
       finished: data => {
@@ -537,7 +537,7 @@ export const ManageVault = ({ match }) => {
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Choose how much extra xUSD you want to mint. You can mint a maximum of {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio)} {vault?.collateralToken.toUpperCase()}.
+                    Choose how much extra xUSD you want to mint. You can mint a maximum of {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString()} {vault?.collateralToken.toUpperCase()}.
                   </p>
 
                   <div className="mt-4 relative rounded-md shadow-sm">
@@ -914,7 +914,7 @@ export const ManageVault = ({ match }) => {
 
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                          {outstandingDebt()} xUSD
+                          {outstandingDebt().toLocaleString()} xUSD
                         </p>
                       </div>
 
@@ -941,7 +941,7 @@ export const ManageVault = ({ match }) => {
 
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                        ${stabilityFee / 1000000} xUSD
+                        ${(stabilityFee / 1000000).toLocaleString()} xUSD
                         </p>
                       </div>
 
@@ -968,7 +968,7 @@ export const ManageVault = ({ match }) => {
 
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                          ${(outstandingDebt() + stabilityFee / 1000000)} xUSD
+                          ${(outstandingDebt() + stabilityFee / 1000000).toLocaleString()} xUSD
                         </p>
                       </div>
 
@@ -995,7 +995,7 @@ export const ManageVault = ({ match }) => {
 
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                          {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio)} xUSD
+                          {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString()} xUSD
                         </p>
                       </div>
 

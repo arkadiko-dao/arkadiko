@@ -1,8 +1,9 @@
 import React, { useContext } from 'react';
-import { Disclosure } from '@headlessui/react'
-import { MenuIcon, XIcon } from '@heroicons/react/outline'
+import { Disclosure } from '@headlessui/react';
+import { MenuIcon, XIcon } from '@heroicons/react/outline';
+import { ExternalLinkIcon } from '@heroicons/react/solid'
 import { AppContext } from '@common/context';
-import { NavLink as RouterLink } from 'react-router-dom'
+import { NavLink as RouterLink } from 'react-router-dom';
 import { useConnect } from '@stacks/connect-react';
 import { useSTXAddress } from '@common/use-stx-address';
 
@@ -30,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
   const address = useSTXAddress();
 
   return (
-    <Disclosure as="nav" className="bg-white shadow relative">
+    <Disclosure as="nav" className="bg-white shadow relative sticky top-0 z-50">
       {({ open }) => (
         <>
           <div className="max-w-7xl mx-auto px-4 px-6 lg:px-8">
@@ -44,20 +45,22 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   <div className="hidden lg:ml-6 lg:flex lg:space-x-8">
                     <RouterLink to="/swap" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" activeClassName="border-indigo-500 text-gray-900">Swap</RouterLink>
                     
-                    <RouterLink to="/vaults" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" activeClassName="border-indigo-500 text-gray-900">Mint</RouterLink>
+                    <RouterLink to="/vaults" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" activeClassName="border-indigo-500 text-gray-900">Vaults</RouterLink>
 
                     <RouterLink to="/auctions" exact className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" activeClassName="border-indigo-500 text-gray-900">Auctions</RouterLink>
 
                     <RouterLink to="/stake" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" activeClassName="border-indigo-500 text-gray-900">Stake</RouterLink>
 
-                    <RouterLink to="/governance" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center border-b-2 text-sm font-medium" activeClassName="border-indigo-500 text-gray-900">Governance</RouterLink>
+                    <RouterLink to="/governance" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" activeClassName="border-indigo-500 text-gray-900">Governance</RouterLink>
                     
-                    <a className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" href="https://docs.arkadiko.finance/" target="_blank">
+                    <a className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" href="https://docs.arkadiko.finance/" target="_blank" rel="noopener noreferrer">
                       Docs
+                      <ExternalLinkIcon className="block h-3 w-3 ml-2" aria-hidden="true" />
                     </a>
                     
-                    <a className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" href="https://github.com/arkadiko-dao/arkadiko/blob/master/SECURITY.md" target="_blank">
+                    <a className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" href="https://github.com/arkadiko-dao/arkadiko/blob/master/SECURITY.md" target="_blank" rel="noopener noreferrer">
                       Security
+                      <ExternalLinkIcon className="block h-3 w-3 ml-2" aria-hidden="true" />
                     </a>
 
                     <button
@@ -82,10 +85,12 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   <div className="sm:flex sm:space-x-8 sm:h-full">
                     <a className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" href="https://docs.arkadiko.finance/" target="_blank">
                       Docs
+                      <ExternalLinkIcon className="block h-3 w-3 ml-2" aria-hidden="true" />
                     </a>
                   
                     <a className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" href="https://github.com/arkadiko-dao/arkadiko/blob/master/SECURITY.md" target="_blank">
                       Security
+                      <ExternalLinkIcon className="block h-3 w-3 ml-2" aria-hidden="true" />
                     </a>
                   </div>
         

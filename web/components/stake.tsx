@@ -66,21 +66,22 @@ export const Stake = () => {
       const dikoStaked = stakerInfo['uamount'].value / 1000000;
       setStakedAmount(dikoStaked * 1000000);
 
-      const rewardsPerBlockCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-registry-v1-1",
-        functionName: "get-rewards-per-block-for-pool",
-        functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1')
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const rewardsPerBlock = cvToJSON(rewardsPerBlockCall).value;
-      const rewardPercentage = (totalStaked / dikoStaked);
-      const dikoPerYear = 144 * 365 * (rewardsPerBlock * rewardPercentage) / 1000000;
+      // const rewardsPerBlockCall = await callReadOnlyFunction({
+      //   contractAddress,
+      //   contractName: "arkadiko-stake-registry-v1-1",
+      //   functionName: "get-rewards-per-block-for-pool",
+      //   functionArgs: [
+      //     contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1')
+      //   ],
+      //   senderAddress: stxAddress || '',
+      //   network: network,
+      // });
+      // const rewardsPerBlock = cvToJSON(rewardsPerBlockCall).value;
+      const rewardPercentage = (dikoStaked / totalStaked);
+      const dikoPerYear = 23500000; // TODO: hardcoded 25mio for this year. 144 * 365 * (rewardsPerBlock) / 1000000;
+      console.log(rewardPercentage, dikoPerYear, dikoStaked);
       if (dikoStaked > 0) {
-        setApy(((dikoPerYear / dikoStaked) * 100).toFixed(0));
+        setApy(((dikoPerYear / dikoStaked) * rewardPercentage * 100).toFixed(0));
       } else {
         setApy(0);
       }
@@ -345,7 +346,7 @@ export const Stake = () => {
                               scope="col"
                               className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                             >
-                              Stacked Value
+                              Staked Value
                             </th>
                             <th
                               scope="col"
