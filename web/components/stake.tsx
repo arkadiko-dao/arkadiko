@@ -190,9 +190,13 @@ export const Stake = () => {
     });
   };
 
-  const stakeMaxAmount = (event: any) => {
-    //
-  }
+  const stakeMaxAmount = () => {
+    setStakeAmount(state.balance['diko'] / 1000000);
+  };
+
+  const unstakeMaxAmount = () => {
+    setStakeAmount(stakedAmount / 1000000);
+  };
 
   return (
     <div>
@@ -310,14 +314,14 @@ export const Stake = () => {
                 </p>
                 <div className="mt-6">
                   <InputAmount
-                    balance={microToReadable(state.balance['diko']).toLocaleString()}
-                    token="DIKO"
+                    balance={microToReadable(state.balance['stdiko']).toLocaleString()}
+                    token="stDIKO"
                     inputName="unstakeDiko"
                     inputId="unstakeAmount"
                     inputValue={stakeAmount}
                     inputLabel="Unstack DIKO"
                     onInputChange={onInputStakeChange}
-                    onClickMax={stakeMaxAmount}
+                    onClickMax={unstakeMaxAmount}
                   />
                 </div>
               </div>

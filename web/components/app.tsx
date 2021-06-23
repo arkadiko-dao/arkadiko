@@ -44,13 +44,13 @@ export const App: React.FC = () => {
     const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
     const xusdBalance = data.fungible_tokens[`${contractAddress}.xusd-token::xusd`];
     const xStxBalance = data.fungible_tokens[`${contractAddress}.xstx-token::xstx`];
-    const stDikoBalance = data.fungible_tokens[`${contractAddress}.stake-pool-diko::stdiko`];
+    const stDikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-stake-pool-diko-v1-1::stdiko`];
     const account = {
       stx: data.stx.balance,
       xusd: xusdBalance ? xusdBalance.balance : 0,
       diko: dikoBalance ? dikoBalance.balance : 0,
       xstx: xStxBalance ? xStxBalance.balance : 0,
-      stDiko: stDikoBalance ? stDikoBalance.balance : 0
+      stdiko: stDikoBalance ? stDikoBalance.balance : 0
     };
 
     setState(prevState => ({
@@ -60,7 +60,7 @@ export const App: React.FC = () => {
         diko: account.diko.toString(),
         stx: account.stx.toString(),
         xstx: account.xstx.toString(),
-        stdiko: account.stDiko.toString()
+        stdiko: account.stdiko.toString()
       }
     }));
   };
