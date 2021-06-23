@@ -129,10 +129,10 @@ export const Swap: React.FC = () => {
     // amount = ((slippage * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
     if (inverseDirection) {
       amount = slippage * (balanceX / balanceY) * Number(tokenXAmount);
-      tokenYAmount = defaultFee * (balanceX / balanceY) * Number(tokenXAmount);
+      tokenYAmount = ((100 - defaultFee) / 100) * (balanceX / balanceY) * Number(tokenXAmount);
     } else {
       amount = slippage * (balanceY / balanceX) * Number(tokenXAmount);
-      tokenYAmount = defaultFee * (balanceY / balanceX) * Number(tokenXAmount);
+      tokenYAmount = ((100 - defaultFee) / 100) * (balanceY / balanceX) * Number(tokenXAmount);
     }
     setMinimumReceived((amount * 0.97));
     setTokenYAmount(tokenYAmount);
