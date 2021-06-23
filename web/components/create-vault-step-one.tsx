@@ -42,15 +42,20 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   const [errors, setErrors] = useState<string[]>([]);
 
   const maximumCoinsToMint = (value: string) => {
+    console.log('setting max coins...');
     const maxRatio = Math.max(200, parseInt(liquidationRatio, 10) + 30);
+    console.log(maxRatio);
     const uCollateralAmount = parseInt(value, 10) * 1000000;
+    console.log(uCollateralAmount, price);
     setMaximumToMint(Math.floor((uCollateralAmount * price) / maxRatio));
+    console.log(maximumToMint);
   };
 
   useEffect(() => {
     const fetchPrice = async () => {
       const price = await getPrice(tokenName);
       setPrice(price);
+      console.log('price = ', price);
     };
 
     fetchPrice();
@@ -96,7 +101,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
     const balanceString = balance.toString();
     setCollateralAmount(balanceString);
     maximumCoinsToMint(balanceString);
-  }, [state, tokenKey]);
+  }, [state, tokenKey, price]);
 
   const setMaxCoins = useCallback(() => {
     setCoinAmount((maximumToMint / 1000000).toString());
