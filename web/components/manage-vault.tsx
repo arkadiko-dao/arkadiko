@@ -10,7 +10,6 @@ import {
   createAssetInfo, FungibleConditionCode, makeStandardSTXPostCondition } from '@stacks/transactions';
 import { AppContext, CollateralTypeProps } from '@common/context';
 import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
-import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { debtClass, VaultProps } from './vault';
 import { getPrice } from '@common/get-price';
 import { getLiquidationPrice, availableCollateralToWithdraw, availableCoinsToMint } from '@common/vault-utils';
@@ -208,8 +207,13 @@ export const ManageVault = ({ match }) => {
   let debtRatio = 0;
   if (match.params.id) {
     debtRatio = getCollateralToDebtRatio(match.params.id)?.collateralToDebt;
-    websocketTxUpdater();
   }
+
+  useEffect(() => {
+    if (state.currentTxStatus === 'success') {
+      window.location.reload();
+    }
+  }, [state.currentTxStatus]);
 
   const claimPendingRewards = async () => {
     await doContractCall({

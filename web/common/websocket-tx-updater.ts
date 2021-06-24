@@ -1,5 +1,3 @@
-import { useContext, useEffect } from 'react';
-import { AppContext } from '@common/context';
 import { connectWebSocketClient } from '@stacks/blockchain-api-client';
 
 const env = process.env.REACT_APP_NETWORK_ENV || 'testnet';
@@ -47,26 +45,6 @@ const parseTransaction = (update:any, setState:any) => {
     });
   }
 }
-
-export const websocketTxUpdater = async (redirectUri:string) => {
-  const [state, setState] = useContext(AppContext);
-
-  useEffect(() => {
-    const subscribe = async (txId:string) => {
-      await client.subscribeTxUpdates(txId, update => {
-        console.log('Got an update:', update);
-        parseTransaction(update, setState, redirectUri);
-      });
-    };
-    if (state.currentTxId) {
-      setState(prevState => ({
-        ...prevState,
-        currentTxMessage: ''
-      }));
-      subscribe(state.currentTxId);
-    }
-  }, [state.currentTxId]);
-};
 
 const errToHumanReadable = (err: string) => {
   const errId = err.split("(err")[1].replace(/ /g, '').replace(')', '');

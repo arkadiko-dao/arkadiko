@@ -12,7 +12,6 @@ import {
  } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
-import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { microToReadable } from '@common/vault-utils';
 import { tokenList } from '@components/token-swap-list';
 
@@ -28,7 +27,12 @@ export const Stake = () => {
   const [stakedAmount, setStakedAmount] = useState(0);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
-  websocketTxUpdater();
+
+  useEffect(() => {
+    if (state.currentTxStatus === 'success') {
+      window.location.reload();
+    }
+  }, [state.currentTxStatus]);
 
   useEffect(() => {
     let mounted = true;
