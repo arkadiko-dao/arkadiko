@@ -63,7 +63,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts }) => {
                     <p className="text-sm sm:max-w-2xl text-gray-600">Indicates the amount of collateral you deposit in a vault versus the stablecoin debt you are minting against it. Ideal values are over 250%.</p>
                   </div>
                   <p className="mt-1 text-lg text-gray-600 font-bold whitespace-nowrap sm:mt-0 sm:ml-3">
-                    {coinAmounts['collateral-to-debt-ratio']}%
+                    {coinAmounts['collateral-to-debt-ratio'].toFixed(2)}%
                   </p>
                 </div>
 
