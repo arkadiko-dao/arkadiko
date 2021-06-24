@@ -55,7 +55,8 @@ export const defaultState = (): AppState => {
       collateralTypes: [],
       currentTxId: '',
       currentTxStatus: '',
-      currentTxMessage: ''
+      currentTxMessage: '',
+      showTxModal: false
     };
   }
 
@@ -67,7 +68,8 @@ export const defaultState = (): AppState => {
     collateralTypes: [],
     currentTxId: '',
     currentTxStatus: '',
-    currentTxMessage: ''
+    currentTxMessage: '',
+    showTxModal: false
   };
 };
 

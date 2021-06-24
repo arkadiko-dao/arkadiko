@@ -24,22 +24,21 @@ export const initiateConnection = async (address:string, setState:any) => {
 
   client.subscribeAddressTransactions(address, function (transactionInfo) {
     console.log('Got new TX', transactionInfo);
-    parseTransaction(transactionInfo, setState);
-  });
-  client.subscribeAddressBalanceUpdates(address, function (balanceInfo) {
-    console.log('New balance:', balanceInfo);
+    parseTransaction(transactionInfo, setState, '');
   });
 };
 
 const parseTransaction = (update:any, setState:any, redirectUri:string) => {
   if (update['tx_status'] == 'success') {
-    setState(prevState => ({
-      ...prevState,
-      currentTxMessage: 'Transaction successful'
-    }));
     if (redirectUri) {
       window.location.pathname = redirectUri;
     }
+
+    setState(prevState => ({
+      ...prevState,
+      currentTxStatus: 'success',
+      currentTxMessage: 'Transaction successful'
+    }));
   } else if (update['tx_status'] == 'abort_by_response' || update['tx_status'] == 'abort_by_post_condition') {
     let url = `${coreApiUrl}/extended/v1/tx/${update['tx_id']}`;
     fetch(url).then(response => response.json()).then(data => {
@@ -58,7 +57,6 @@ export const websocketTxUpdater = async (redirectUri:string) => {
 
   useEffect(() => {
     const subscribe = async (txId:string) => {
-      const client = await connectWebSocketClient(`${websocketUrl}`);
       await client.subscribeTxUpdates(txId, update => {
         console.log('Got an update:', update);
         parseTransaction(update, setState, redirectUri);

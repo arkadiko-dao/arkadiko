@@ -5,6 +5,16 @@ import { XIcon } from '@heroicons/react/outline';
 export const TxStatus = () => {
   const [state, setState] = useContext(AppContext);
 
+  const statusClass = () => {
+    if (state.currentTxStatus === 'success') {
+      return 'text-green-500';
+    } else if (state.currentTxStatus === 'pending') {
+      return 'text-gray-500';
+    }
+
+    return 'text-red-500';
+  };
+
   return (
     <div className="hidden sm:block">
       {state.currentTxId || state.showTxModal ? (
@@ -35,12 +45,12 @@ export const TxStatus = () => {
                     Status: {state.currentTxStatus}
                   </p>
                   {state.currentTxMessage ? (
-                    <p className="mt-1 text-sm text-red-500">
+                    <p className={`mt-1 text-sm ${statusClass()}`}>
                       {state.currentTxMessage}
                     </p>
                   ) : (
                     <p className="mt-1 text-sm text-gray-500">
-                      This page will be reloaded automatically when the transaction succeeds.
+                      This page will be updated automatically when the transaction succeeds.
                     </p>
                   )}
                 </div>
