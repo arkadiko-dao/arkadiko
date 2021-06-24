@@ -142,7 +142,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
               <div className="w-5.5 h-5.5 rounded-full bg-indigo-200 flex items-center justify-center">
                 <QuestionMarkCircleIcon className="text-indigo-600 h-5 w-5" aria-hidden="true" />
               </div>
-              <a className="border-transparent text-indigo-500 hover:border-indigo-300 hover:text-indigo-700 inline-flex items-center px-2 text-sm font-medium" href="https://app.gitbook.com/@arkadiko/s/arkadiko/protocol/vaults" target="_blank" rel="noopener noreferrer">
+              <a className="border-transparent text-indigo-500 hover:border-indigo-300 hover:text-indigo-700 inline-flex items-center px-2 text-sm font-medium" href="https://docs.arkadiko.finance/protocol/vaults" target="_blank" rel="noopener noreferrer">
                 Need help with vaults?
                 <ExternalLinkIcon className="block h-3 w-3 ml-2" aria-hidden="true" />
               </a>
