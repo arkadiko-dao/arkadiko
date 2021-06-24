@@ -4,6 +4,7 @@
 (use-trait stacker-trait .arkadiko-stacker-trait-v1.stacker-trait)
 (use-trait vault-manager-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
 (use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
+(use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
 
 ;; Freddie - The Vault Manager
 ;; Freddie is an abstraction layer that interacts with collateral type reserves
@@ -83,12 +84,14 @@
   )
 )
 
-(define-public (calculate-current-collateral-to-debt-ratio (vault-id uint) (coll-type <collateral-types-trait>))
+(define-public (calculate-current-collateral-to-debt-ratio (vault-id uint) (coll-type <collateral-types-trait>) (oracle <oracle-trait>))
   (let ((vault (get-vault-by-id vault-id)))
+    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
+
     (if (is-eq (get is-liquidated vault) true)
       (ok u0)
       (begin
-        (let ((stx-price-in-cents (contract-call? .arkadiko-oracle-v1-1 get-price (get collateral-token vault))))
+        (let ((stx-price-in-cents (unwrap-panic (contract-call? oracle fetch-price (get collateral-token vault)))))
           (if (> (get debt vault) u0)
             (ok
               (/
@@ -275,12 +278,13 @@
     (reserve <vault-trait>)
     (ft <ft-trait>)
     (coll-type <collateral-types-trait>)
+    (oracle <oracle-trait>)
   )
   (let (
     (sender tx-sender)
     (collateral-type-object (unwrap-panic (contract-call? coll-type get-collateral-type-by-name collateral-type)))
     (collateral-token (get token collateral-type-object))
-    (ratio (unwrap! (contract-call? reserve calculate-current-collateral-to-debt-ratio collateral-token debt collateral-amount) (err ERR-WRONG-DEBT)))
+    (ratio (unwrap! (contract-call? reserve calculate-current-collateral-to-debt-ratio collateral-token debt collateral-amount oracle) (err ERR-WRONG-DEBT)))
   )
     (asserts!
       (and
@@ -290,6 +294,7 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (>= ratio (get liquidation-ratio collateral-type-object)) (err ERR-INSUFFICIENT-COLLATERAL))
     (asserts!
       (<=
@@ -386,6 +391,7 @@
   (reserve <vault-trait>)
   (ft <ft-trait>)
   (coll-type <collateral-types-trait>)
+  (oracle <oracle-trait>)
 )
   (let (
     (vault (get-vault-by-id vault-id))
@@ -399,6 +405,7 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (> uamount u0) (err ERR-INSUFFICIENT-COLLATERAL))
@@ -418,7 +425,10 @@
               calculate-current-collateral-to-debt-ratio 
               (get collateral-token vault) 
               (get debt vault) 
-              (- (get collateral vault) uamount))))
+              (- (get collateral vault) uamount)
+              oracle
+            )
+          ))
           (new-collateral (- (get collateral vault) uamount))
           (updated-vault (merge vault {
             collateral: new-collateral,
@@ -439,6 +449,7 @@
   (extra-debt uint)
   (reserve <vault-trait>)
   (coll-type <collateral-types-trait>)
+  (oracle <oracle-trait>)
 )
   (let ((vault (get-vault-by-id vault-id))
        (new-total-debt (+ extra-debt (get debt vault)))
@@ -454,6 +465,7 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts!
@@ -472,6 +484,7 @@
         (get debt vault)
         extra-debt
         (get collateral-type vault)
+        oracle
       )
     )
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id updated-vault))
@@ -568,7 +581,6 @@
   (let (
     (vault (get-vault-by-id vault-id))
   )
-    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (stability-fee-helper (get stability-fee-last-accrued vault) (get debt vault) (get collateral-type vault) coll-type)
   )
 )
@@ -586,6 +598,7 @@
     (decimals (get stability-fee-decimals collateral-type))
     (interest (/ (* debt fee) (pow u10 decimals)))
   )
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (ok (* number-of-blocks interest))
   )
 )

@@ -244,7 +244,7 @@
 ;; calculates the minimum collateral amount to sell
 ;; e.g. if we need to cover 10 xUSD debt, and we have 20 STX at $1/STX,
 ;; we only need to auction off 10 STX with a discount
-(define-read-only (get-minimum-collateral-amount (oracle <oracle-trait>) (auction-id uint))
+(define-public (get-minimum-collateral-amount (oracle <oracle-trait>) (auction-id uint))
   (let (
     (auction (get-auction-by-id auction-id))
     (collateral-amount-auction (get collateral-amount auction))
@@ -263,7 +263,7 @@
         u0
       )
     )
-    (collateral-price-in-cents (contract-call? .arkadiko-oracle-v1-1 get-price (collateral-token (get collateral-token auction))))
+    (collateral-price-in-cents (unwrap-panic (contract-call? oracle fetch-price (collateral-token (get collateral-token auction)))))
     (discounted-price (unwrap-panic (discounted-auction-price (get last-price-in-cents collateral-price-in-cents) auction-id)))
   )
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
