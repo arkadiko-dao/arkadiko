@@ -43,23 +43,26 @@ export const Auctions: React.FC = () => {
     }
 
     const getData = async () => {
-      const auctionIds = [
-        4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-        16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
-        27, 28, 29, 30, 31, 32, 33, 34
-      ];
+      const auctionIdsCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-auction-engine-v1-1",
+        functionName: "get-auction-ids",
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const auctionIds = auctionIdsCall.value.list;
       let serializedAuctions:Array<AuctionProps> = [];
       await asyncForEach(auctionIds, async (auctionId: number) => {
         const auction = await callReadOnlyFunction({
           contractAddress,
           contractName: "arkadiko-auction-engine-v1-1",
           functionName: "get-auction-by-id",
-          functionArgs: [uintCV(auctionId)],
+          functionArgs: [uintCV(auctionId.value)],
           senderAddress: stxAddress || '',
           network: network,
         });
         const json = cvToJSON(auction);
-        console.log(json);
 
         const data = json.value;
         const isOpen = await auctionOpen(data['id'].value);
