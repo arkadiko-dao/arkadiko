@@ -24,16 +24,12 @@ export const initiateConnection = async (address:string, setState:any) => {
 
   client.subscribeAddressTransactions(address, function (transactionInfo) {
     console.log('Got new TX', transactionInfo);
-    parseTransaction(transactionInfo, setState, '');
+    parseTransaction(transactionInfo, setState);
   });
 };
 
-const parseTransaction = (update:any, setState:any, redirectUri:string) => {
+const parseTransaction = (update:any, setState:any) => {
   if (update['tx_status'] == 'success') {
-    if (redirectUri) {
-      window.location.pathname = redirectUri;
-    }
-
     setState(prevState => ({
       ...prevState,
       currentTxStatus: 'success',

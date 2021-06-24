@@ -12,7 +12,6 @@ import {
 import { useSTXAddress } from '@common/use-stx-address';
 import { ExplorerLink } from './explorer-link';
 import { resolveReserveName, tokenTraits } from '@common/vault-utils';
-import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { AppContext } from '@common/context';
 
 export const CreateVaultTransact = ({ coinAmounts }) => {
@@ -20,7 +19,6 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
   const { doContractCall } = useConnect();
   const address = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  websocketTxUpdater('/vaults');
 
   const callCollateralizeAndMint = async () => {
     const token = tokenTraits[coinAmounts['token-name'].toLowerCase()]['name'];
