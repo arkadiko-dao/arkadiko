@@ -118,10 +118,10 @@ export const Auctions: React.FC = () => {
               'collateral-token': lastBid['collateral-token'].value,
               'xusd': lastBid['xusd'].value
             });
-            setLots(serializedLots);
           }
         }
       });
+      setLots(serializedLots);
 
       setAuctions(serializedAuctions);
       setLoadingAuctions(false);
