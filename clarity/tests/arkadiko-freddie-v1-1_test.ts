@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.10.0/index.ts";
+} from "https://deno.land/x/clarinet@v0.13.0/index.ts";
 
 import { 
   OracleManager,
@@ -243,7 +243,7 @@ Clarinet.test({
     result = vaultManager.payStabilityFee(deployer, 1);
  
     call = vaultManager.getStabilityFee(1, deployer);
-    call.result.expectOk().expectUint(19); // ~$0
+    call.result.expectOk().expectUint(1918);
 
     call = await vaultManager.getVaultById(1, deployer);
     vault = call.result.expectTuple();
