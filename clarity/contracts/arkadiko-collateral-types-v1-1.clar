@@ -218,7 +218,7 @@
       url: "https://www.stacks.co/",
       total-debt: u0,
       liquidation-ratio: u175, ;;175
-      collateral-to-debt-ratio: u300,
+      collateral-to-debt-ratio: u250,
       maximum-debt: u4000000000000000, ;; 4B
       liquidation-penalty: u1000, ;; 10% in basis points
       stability-fee: u7610350076, ;; 4% / 365 days / (24*6) blocks = 0.00007610350076 fee per block

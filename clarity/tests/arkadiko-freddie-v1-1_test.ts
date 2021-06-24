@@ -39,12 +39,12 @@ Clarinet.test({
 
     // Provide a collateral of 5000000 STX, so 1925000 stx-a can be minted (5 * 0.77) / 2 = 1.925
     // Q: why do we need to provide sender in the arguments?
-    result = vaultManager.createVault(deployer, "STX-A", 5, 1.925)
-    result.expectOk().expectUint(1925000);
+    result = vaultManager.createVault(deployer, "STX-A", 5, 1);
+    result.expectOk().expectUint(1000000);
 
-    // Let's say STX price crash to 55 cents
-    result = oracleManager.updatePrice("STX", 55);
-    result.expectOk().expectUint(55);
+    // Let's say STX price crash to 35 cents
+    result = oracleManager.updatePrice("STX", 35);
+    result.expectOk().expectUint(35);
 
     // Notify liquidator
     // Q: How are we supposed to guess the vault-id?
@@ -75,11 +75,11 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 77);
     result.expectOk().expectUint(77);
 
-    result = vaultManager.createVault(deployer, "STX-A", 5, 1.925)
-    result.expectOk().expectUint(1925000);
+    result = vaultManager.createVault(deployer, "STX-A", 5, 1)
+    result.expectOk().expectUint(1000000);
 
     let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
-    call.result.expectOk().expectUint(199);
+    call.result.expectOk().expectUint(385);
   }
 });
 
@@ -94,17 +94,17 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 200);
     result.expectOk().expectUint(200);
 
-    result = vaultManager.createVault(deployer, "STX-B", 900, 900)
-    result.expectOk().expectUint(900000000);
+    result = vaultManager.createVault(deployer, "STX-B", 900, 700)
+    result.expectOk().expectUint(700000000);
 
     let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
-    call.result.expectOk().expectUint(199);
+    call.result.expectOk().expectUint(257);
 
     chain.mineEmptyBlock(365*144);
 
     // after 1 year of not paying debt on vault, collateralisation ratio should be lower
     call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);    
-    call.result.expectOk().expectUint(186);
+    call.result.expectOk().expectUint(240);
 
     // Change price
     result = oracleManager.updatePrice("STX", 400);
@@ -112,7 +112,7 @@ Clarinet.test({
 
     // Price doubled
     call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
-    call.result.expectOk().expectUint(373);
+    call.result.expectOk().expectUint(480);
   }
 });
 
@@ -127,14 +127,14 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 200);
     result.expectOk().expectUint(200);
 
-    result = vaultManager.createVault(deployer, "STX-A", 1000, 1000)
-    result.expectOk().expectUint(1000000000);
+    result = vaultManager.createVault(deployer, "STX-A", 1000, 500)
+    result.expectOk().expectUint(500000000);
 
     // mine 1 year of blocks
     chain.mineEmptyBlock(365*144);
 
     let call = vaultManager.getStabilityFee(1, deployer);
-    call.result.expectOk().expectUint(39998921);
+    call.result.expectOk().expectUint(19973180);
   }
 });
 
@@ -150,22 +150,22 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 200);
     result.expectOk().expectUint(200);
 
-    result = vaultManager.createVault(deployer, "STX-A", 1000, 1000)
-    result.expectOk().expectUint(1000000000);
+    result = vaultManager.createVault(deployer, "STX-A", 1000, 500)
+    result.expectOk().expectUint(500000000);
     
     // mine 1 year of blocks
     chain.mineEmptyBlock(365*144);
 
     let call = vaultManager.getStabilityFee(1, deployer);
-    const fee = call.result.expectOk().expectUint(39998921);
+    const fee = call.result.expectOk().expectUint(19973180);
 
     call = await xusdManager.balanceOf(deployer.address)
-    const balance = call.result.expectOk().expectUint(1001000000000);
+    const balance = call.result.expectOk().expectUint(1000500000000);
 
     result = vaultManager.payStabilityFee(deployer, 1);
     result.expectOk().expectBool(true);
     call = vaultManager.getStabilityFee(1, deployer);
-    call.result.expectOk().expectUint(761); // approx 0 (761/10^6)
+    call.result.expectOk().expectUint(380); // approx 0 (380/10^6)
 
     // now check balance of freddie contract
     call = await xusdManager.balanceOf('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1')
@@ -184,7 +184,7 @@ Clarinet.test({
     call.result.expectOk().expectUint(0);
 
     call = await xusdManager.balanceOf('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7')
-    call.result.expectOk().expectUint(1995001084 + 4998916 + 999000000000);
+    call.result.expectOk().expectUint(1000500000000);
   }
 });
 
@@ -199,13 +199,13 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 200);
     result.expectOk().expectUint(200);
 
-    result = vaultManager.createVault(deployer, "STX-A", 1000, 1000)
-    result.expectOk().expectUint(1000000000);
+    result = vaultManager.createVault(deployer, "STX-A", 1000, 500)
+    result.expectOk().expectUint(500000000);
 
     // mine 1 year of blocks
     chain.mineEmptyBlock(365*144);
     let call = vaultManager.getStabilityFee(1, deployer);
-    call.result.expectOk().expectUint(39998921); // ~40 = 1000 * 4%
+    call.result.expectOk().expectUint(19973180); // ~20 = 500 xUSD * 4%
 
     chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "accrue-stability-fee", [
@@ -233,17 +233,17 @@ Clarinet.test({
 
     call = await vaultManager.getVaultById(1, deployer);
     let vault:any = call.result.expectTuple();
-    vault['stability-fee-accrued'].expectUint(39998921);
+    vault['stability-fee-accrued'].expectUint(19973180);
 
     chain.mineEmptyBlock(365*144);
     call = vaultManager.getStabilityFee(1, deployer);
 
-    call.result.expectOk().expectUint(100811998);
+    call.result.expectOk().expectUint(50405999); // 10% APY of 500 xUSD => 50 xUSD
 
     result = vaultManager.payStabilityFee(deployer, 1);
  
     call = vaultManager.getStabilityFee(1, deployer);
-    call.result.expectOk().expectUint(1918);
+    call.result.expectOk().expectUint(959);
 
     call = await vaultManager.getVaultById(1, deployer);
     vault = call.result.expectTuple();
@@ -443,7 +443,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
     
     // Mint extra
-    result = vaultManager.mint(deployer, 1, 1000);
+    result = vaultManager.mint(deployer, 1, 500);
     result.expectOk().expectBool(true);
 
     result = vaultManager.toggleStacking(deployer, 1);
@@ -541,8 +541,8 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 77);
     result.expectOk().expectUint(77);
 
-    result = vaultManager.createVault(deployer, "STX-A", 5, 1.925);
-    result.expectOk().expectUint(1925000);
+    result = vaultManager.createVault(deployer, "STX-A", 5, 1);
+    result.expectOk().expectUint(1000000);
 
     // Advance 30 blocks
     chain.mineEmptyBlock(144*30);
@@ -560,8 +560,8 @@ Clarinet.test({
     call = await dikoManager.balanceOf('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1');
     call.result.expectOk().expectUint(0);
 
-    result = oracleManager.updatePrice("STX", 55);
-    result.expectOk().expectUint(55);
+    result = oracleManager.updatePrice("STX", 35);
+    result.expectOk().expectUint(35);
 
     result = vaultLiquidator.notifyRiskyVault(deployer, 1);
     result.expectOk().expectUint(5200);
