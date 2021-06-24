@@ -16,6 +16,26 @@ import { useLocation } from 'react-router-dom';
 import { TestnetModal } from './testnet-modal';
 import { initiateConnection } from '@common/websocket-tx-updater';
 
+export const getBalance = async (address: string) => {
+  const client = getRPCClient();
+  const url = `${client.url}/extended/v1/address/${address}/balances`;
+  const response = await fetch(url, { credentials: 'omit' });
+  const data = await response.json();
+  // console.log(data);
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
+  const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
+  const xusdBalance = data.fungible_tokens[`${contractAddress}.xusd-token::xusd`];
+  const xStxBalance = data.fungible_tokens[`${contractAddress}.xstx-token::xstx`];
+  const stDikoBalance = data.fungible_tokens[`${contractAddress}.stake-pool-diko::stdiko`];
+  return {
+    stx: data.stx.balance,
+    xusd: xusdBalance ? xusdBalance.balance : 0,
+    diko: dikoBalance ? dikoBalance.balance : 0,
+    xstx: xStxBalance ? xStxBalance.balance : 0,
+    stDiko: stDikoBalance ? stDikoBalance.balance : 0
+  };
+};
+
 const icon = 'https://www.arkadiko.finance/assets/logo.png';
 export const App: React.FC = () => {
   const [state, setState] = React.useState<AppState>(defaultState());
@@ -36,24 +56,7 @@ export const App: React.FC = () => {
   };
 
   const fetchBalance = async (address: string) => {
-    const client = getRPCClient();
-    const url = `${client.url}/extended/v1/address/${address}/balances`;
-    const response = await fetch(url, { credentials: 'omit' });
-    const data = await response.json();
-    // console.log(data);
-    const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
-    const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
-    const xusdBalance = data.fungible_tokens[`${contractAddress}.xusd-token::xusd`];
-    const xStxBalance = data.fungible_tokens[`${contractAddress}.xstx-token::xstx`];
-    const stDikoBalance = data.fungible_tokens[`${contractAddress}.stake-pool-diko::stdiko`];
-    const account = {
-      stx: data.stx.balance,
-      xusd: xusdBalance ? xusdBalance.balance : 0,
-      diko: dikoBalance ? dikoBalance.balance : 0,
-      xstx: xStxBalance ? xStxBalance.balance : 0,
-      stDiko: stDikoBalance ? stDikoBalance.balance : 0
-    };
-
+    const account = await getBalance(address);
     setState(prevState => ({
       ...prevState,
       balance: {

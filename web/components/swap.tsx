@@ -16,6 +16,7 @@ import { useConnect } from '@stacks/connect-react';
 import { tokenTraits } from '@common/vault-utils';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { SwapSettings } from '@components/swap-settings';
+import { getBalance } from '@components/app';
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
@@ -49,8 +50,29 @@ export const Swap: React.FC = () => {
   }, [state.balance]);
 
   useEffect(() => {
+    const fetchBalance = async () => {
+      const account = await getBalance(stxAddress || '');
+
+      setTokenXAmount(undefined);
+      setTokenYAmount(0.0);
+      setMinimumReceived(0);
+      setPriceImpact('0');
+      setLpFee('0');
+      setState(prevState => ({
+        ...prevState,
+        balance: {
+          xusd: account.xusd.toString(),
+          diko: account.diko.toString(),
+          stx: account.stx.toString(),
+          xstx: account.xstx.toString(),
+          stdiko: account.stDiko.toString()
+        }
+      }));
+    };
+
     if (state.currentTxStatus === 'success') {
       console.log('running callback');
+      fetchBalance();
     }
   }, [state.currentTxStatus]);
 
