@@ -61,19 +61,19 @@ export const SmartContractBalance = ({ address }) => {
         {address}
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        {stxBalance.toLocaleString()} STX
+        {stxBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} STX
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        {dikoBalance.toLocaleString()} DIKO
+        {dikoBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        {xusdBalance.toLocaleString()} xUSD
+        {xusdBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xUSD
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        {wStxBalance.toLocaleString()} wSTX
+        {wStxBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} wSTX
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        {xStxBalance.toLocaleString()} xSTX
+        {xStxBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xSTX
       </td>
     </tr>
   )

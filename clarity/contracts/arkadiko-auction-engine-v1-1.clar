@@ -234,14 +234,35 @@
   )
 )
 
+(define-private (min-of (i1 uint) (i2 uint))
+  (if (< i1 i2)
+    i1
+    i2
+  )
+)
+
 ;; calculates the minimum collateral amount to sell
 ;; e.g. if we need to cover 10 xUSD debt, and we have 20 STX at $1/STX,
 ;; we only need to auction off 10 STX with a discount
 (define-public (get-minimum-collateral-amount (oracle <oracle-trait>) (auction-id uint))
   (let (
     (auction (get-auction-by-id auction-id))
-    (collateral-left (- (get collateral-amount auction) (get total-collateral-sold auction)))
-    (debt-left-to-raise (- (get debt-to-raise auction) (get total-debt-raised auction)))
+    (collateral-amount-auction (get collateral-amount auction))
+    (collateral-sold (get total-collateral-sold auction))
+    (collateral-left
+      (if (> collateral-amount-auction collateral-sold)
+        (- collateral-amount-auction collateral-sold)
+        u0
+      )
+    )
+    (debt-to-raise (get debt-to-raise auction))
+    (total-debt-raised (get total-debt-raised auction))
+    (debt-left-to-raise
+      (if (> debt-to-raise total-debt-raised)
+        (- debt-to-raise total-debt-raised)
+        u0
+      )
+    )
     (collateral-price-in-cents (unwrap-panic (contract-call? oracle fetch-price (collateral-token (get collateral-token auction)))))
     (discounted-price (unwrap-panic (discounted-auction-price (get last-price-in-cents collateral-price-in-cents) auction-id)))
   )
@@ -445,13 +466,6 @@
       (as-contract (contract-call? .xusd-token transfer xusd (as-contract tx-sender) owner none))
     )
     (err u0) ;; don't really care if this fails.
-  )
-)
-
-(define-private (min-of (i1 uint) (i2 uint))
-  (if (< i1 i2)
-    i1
-    i2
   )
 )
 

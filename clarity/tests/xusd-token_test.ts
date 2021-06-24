@@ -3,7 +3,7 @@ import {
   Chain,
   Clarinet,
   types,
-} from "https://deno.land/x/clarinet@v0.10.0/index.ts";
+} from "https://deno.land/x/clarinet@v0.13.0/index.ts";
 
 Clarinet.test({
   name: "xusd-token: returns the correct name of the xUSD Token",

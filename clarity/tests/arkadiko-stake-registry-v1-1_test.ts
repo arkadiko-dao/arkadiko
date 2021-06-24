@@ -4,7 +4,7 @@ import {
     Clarinet,
     Tx,
     types,
-} from "https://deno.land/x/clarinet@v0.10.0/index.ts";
+} from "https://deno.land/x/clarinet@v0.13.0/index.ts";
 
 import { 
   OracleManager
@@ -200,7 +200,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Total staked 100 + 200 = 300
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "get-total-staked", [], wallet_1.address);
-  call.result.expectUint(300);
+  call.result.expectUint(300000000);
 
   // First blocks have 626 rewards. Start cumm reward: 626 / 100 = 6.26
   // 4 blocks later: 4 * 6.26 = 25.04
@@ -507,7 +507,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
     ], wallet_1.address)
   ]);
   // Can not burn 0 tokens
-  block.receipts[0].result.expectErr().expectUint(1);
+  block.receipts[0].result.expectErr().expectUint(18003);
 }
 });
 
