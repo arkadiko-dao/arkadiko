@@ -5,7 +5,7 @@
 (define-trait vault-trait
   (
     ;; calculate stablecoin count to mint from posted collateral
-    (calculate-xusd-count ((string-ascii 12) uint (string-ascii 12) <oracle-trait>) (response uint uint))
+    (calculate-xusd-count ((string-ascii 12) uint uint <oracle-trait>) (response uint uint))
 
     ;; calculate the current collateral to debt ratio against USD value of collateral
     (calculate-current-collateral-to-debt-ratio ((string-ascii 12) uint uint <oracle-trait>) (response uint uint))
@@ -20,7 +20,7 @@
     (withdraw (<ft-trait> (string-ascii 12) principal uint) (response bool uint))
 
     ;; mint additional stablecoin
-    (mint ((string-ascii 12) principal uint uint uint (string-ascii 12) <oracle-trait>) (response bool uint))
+    (mint ((string-ascii 12) principal uint uint uint uint <oracle-trait>) (response bool uint))
 
     ;; burn all the stablecoin in the vault of tx-sender and return collateral
     (burn (<ft-trait> principal uint) (response bool uint))
