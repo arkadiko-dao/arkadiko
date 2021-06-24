@@ -31,12 +31,15 @@ export const initiateConnection = async (address:string, setState:any) => {
   });
 };
 
-const parseTransaction = (update:any, setState:any) => {
+const parseTransaction = (update:any, setState:any, redirectUri:string) => {
   if (update['tx_status'] == 'success') {
     setState(prevState => ({
       ...prevState,
       currentTxMessage: 'Transaction successful'
     }));
+    if (redirectUri) {
+      window.location.pathname = redirectUri;
+    }
   } else if (update['tx_status'] == 'abort_by_response' || update['tx_status'] == 'abort_by_post_condition') {
     let url = `${coreApiUrl}/extended/v1/tx/${update['tx_id']}`;
     fetch(url).then(response => response.json()).then(data => {
@@ -50,25 +53,25 @@ const parseTransaction = (update:any, setState:any) => {
   }
 }
 
-export const websocketTxUpdater = (redirectUri:string) => {
-  // const [state, setState] = useContext(AppContext);
+export const websocketTxUpdater = async (redirectUri:string) => {
+  const [state, setState] = useContext(AppContext);
 
-  // useEffect(() => {
-  //   const subscribe = async (txId:string) => {
-  //     const client = await connectWebSocketClient(`${websocketUrl}`);
-  //     await client.subscribeTxUpdates(txId, update => {
-  //       console.log('Got an update:', update);
-        
-  //     });
-  //   };
-  //   if (state.currentTxId) {
-  //     setState(prevState => ({
-  //       ...prevState,
-  //       currentTxMessage: ''
-  //     }));
-  //     subscribe(state.currentTxId);
-  //   }
-  // }, [state.currentTxId]);
+  useEffect(() => {
+    const subscribe = async (txId:string) => {
+      const client = await connectWebSocketClient(`${websocketUrl}`);
+      await client.subscribeTxUpdates(txId, update => {
+        console.log('Got an update:', update);
+        parseTransaction(update, setState, redirectUri);
+      });
+    };
+    if (state.currentTxId) {
+      setState(prevState => ({
+        ...prevState,
+        currentTxMessage: ''
+      }));
+      subscribe(state.currentTxId);
+    }
+  }, [state.currentTxId]);
 };
 
 const errToHumanReadable = (err: string) => {
