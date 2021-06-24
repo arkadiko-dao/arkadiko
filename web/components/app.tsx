@@ -108,9 +108,10 @@ export const App: React.FC = () => {
       const getData = async () => {
         try {
           // TODO - make network agnostic
-          initiateConnection(userData.profile.stxAddress.testnet, setState);
-          fetchBalance(resolveSTXAddress(userData));
-          fetchCollateralTypes(resolveSTXAddress(userData));
+          const address = resolveSTXAddress(userData);
+          initiateConnection(address, setState);
+          fetchBalance(address);
+          fetchCollateralTypes(address);
         } catch (error) {
           console.error(error);
         }

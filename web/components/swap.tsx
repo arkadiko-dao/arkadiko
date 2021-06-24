@@ -71,7 +71,6 @@ export const Swap: React.FC = () => {
     };
 
     if (state.currentTxStatus === 'success') {
-      console.log('running callback');
       fetchBalance();
     }
   }, [state.currentTxStatus]);

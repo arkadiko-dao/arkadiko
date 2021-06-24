@@ -21,7 +21,6 @@ export const initiateConnection = async (address:string, setState:any) => {
   const client = await connectWebSocketClient(websocketUrl);
 
   client.subscribeAddressTransactions(address, function (transactionInfo) {
-    console.log('Got new TX', transactionInfo);
     parseTransaction(transactionInfo, setState);
   });
 };
