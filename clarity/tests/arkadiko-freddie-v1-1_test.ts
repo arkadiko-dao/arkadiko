@@ -37,7 +37,7 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 77);
     result.expectOk().expectUint(77);
 
-    // Provide a collateral of 5000000 STX, so 1925000 stx-a can be minted (5 * 0.77) / 2 = 1.925
+    // Provide a collateral of 5000000 STX, so 1000000 stx-a can be minted (5 * 0.77) / 2 = 1.925
     // Q: why do we need to provide sender in the arguments?
     result = vaultManager.createVault(deployer, "STX-A", 5, 1);
     result.expectOk().expectUint(1000000);
