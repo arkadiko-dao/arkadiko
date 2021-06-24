@@ -14,6 +14,7 @@ import { TxStatus } from '@components/tx-status';
 import { TxSidebar } from '@components/tx-sidebar';
 import { useLocation } from 'react-router-dom';
 import { TestnetModal } from './testnet-modal';
+import { initiateConnection } from '@common/websocket-tx-updater';
 
 const icon = 'https://www.arkadiko.finance/assets/logo.png';
 export const App: React.FC = () => {
@@ -103,6 +104,8 @@ export const App: React.FC = () => {
 
       const getData = async () => {
         try {
+          // TODO - make network agnostic
+          initiateConnection(userData.profile.stxAddress.testnet, setState);
           fetchBalance(resolveSTXAddress(userData));
           fetchCollateralTypes(resolveSTXAddress(userData));
         } catch (error) {
