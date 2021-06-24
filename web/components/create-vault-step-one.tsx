@@ -302,7 +302,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                             <dt className="flex-shrink-0 text-sm font-medium text-indigo-500 inline-flex items-center sm:mr-2">
                               Liquidation Ratio
                               <div className="ml-2">
-                                <Tooltip shouldWrapChildren={true} label={`The LTV ratio when your vault gets liquidated`}>
+                                <Tooltip shouldWrapChildren={true} label={`The collateral-to-debt ratio when your vault gets liquidated`}>
                                   <InformationCircleIcon className="block h-5 w-5 text-indigo-400" aria-hidden="true" />
                                 </Tooltip>
                               </div>
