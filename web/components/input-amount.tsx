@@ -14,7 +14,7 @@ interface InputAmountProps {
 export const InputAmount: React.FC<InputAmountProps> = ({balance, token, inputName, inputId, inputValue, inputLabel, onInputChange, onClickMax}) => {
   return (
     <div className="flex flex-col relative">
-      <span className="text-right text-xs">Available amount {balance} {token}</span>
+      <span className="text-xs text-gray-600">Available amount {balance} {token}</span>
       <div className="min-w-0 h-10 inline-flex items-center border border-gray-300 rounded-md w-full mt-2 mb-2 focus-within:ring-indigo-500 focus-within:border-indigo-500">
         <input
           type="text"
