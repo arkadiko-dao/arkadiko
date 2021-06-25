@@ -31,7 +31,8 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       stringAsciiCV(coinAmounts['token-type'].toUpperCase()),
       contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', resolveReserveName(coinAmounts['token-name'].toUpperCase())),
       contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
-      contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
+      contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1'),
+      contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1')
     ];
 
     let postConditions = [];
