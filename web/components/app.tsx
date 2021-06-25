@@ -5,6 +5,7 @@ import { AuthOptions } from '@stacks/connect';
 import { UserSession, AppConfig } from '@stacks/auth';
 import { defaultState, AppContext, AppState } from '@common/context';
 import { Header } from '@components/header';
+import { SubHeader } from '@components/sub-header';
 import { Routes } from '@components/routes';
 import { getRPCClient } from '@common/utils';
 import { stacksNetwork as network } from '@common/utils';
@@ -136,9 +137,6 @@ export const App: React.FC = () => {
       fetchCollateralTypes(resolveSTXAddress(userData));
       setState(prevState => ({ ...prevState, userData }));
     },
-    onCancel: () => {
-      console.log('popup closed!');
-    },
     appDetails: {
       name: 'Arkadiko',
       icon,
@@ -153,6 +151,9 @@ export const App: React.FC = () => {
           <Flex direction="column" minHeight="100vh" bg="white">
 
             <Header signOut={signOut} setShowSidebar={setShowSidebar} />
+            {state.userData ? (
+              <SubHeader />
+            ) : null}
             <TxStatus />
             {showSidebar ? (
               <TxSidebar setShowSidebar={setShowSidebar} />
