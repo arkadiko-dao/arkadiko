@@ -7,10 +7,6 @@ import { NavLink as RouterLink } from 'react-router-dom';
 import { useConnect } from '@stacks/connect-react';
 import { useSTXAddress } from '@common/use-stx-address';
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
-}
-
 interface HeaderProps {
   signOut: () => void;
   setShowSidebar: (status:boolean) => void;
