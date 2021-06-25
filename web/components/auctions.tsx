@@ -9,6 +9,7 @@ import { callReadOnlyFunction, cvToJSON, tupleCV, uintCV, standardPrincipalCV } 
 import { useSTXAddress } from '@common/use-stx-address';
 import { AuctionProps, AuctionGroup } from '@components/auction-group';
 import { LotGroup } from '@components/lot-group';
+import { getRPCClient } from '@common/utils';
 
 export const Auctions: React.FC = () => {
   const { doContractCall } = useConnect();
@@ -18,6 +19,7 @@ export const Auctions: React.FC = () => {
   const [lots, setLots] = useState([]);
   const [loadingAuctions, setLoadingAuctions] = useState(true);
   const [redeemableStx, setRedeemableStx] = useState(0);
+  const [stacksTipHeight, setStacksTipHeight] = useState(0);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   useEffect(() => {
@@ -43,6 +45,11 @@ export const Auctions: React.FC = () => {
     }
 
     const getData = async () => {
+      const client = getRPCClient();
+      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
+      const data = await response.json();
+      setStacksTipHeight(data['stacks_tip_height']);
+
       const auctionIdsCall = await callReadOnlyFunction({
         contractAddress,
         contractName: "arkadiko-auction-engine-v1-1",
@@ -199,8 +206,9 @@ export const Auctions: React.FC = () => {
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                   <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8">Auctions</h2>
 
+                  <p>Current Block Height: {stacksTipHeight}</p>
                   {auctions.length > 0 ? (
-                    <AuctionGroup auctions={auctions} />
+                    <AuctionGroup auctions={auctions} stacksTipHeight={stacksTipHeight} />
                   ) : loadingAuctions ? (
                     <p>Loading auctions...</p>
                   ) : (
