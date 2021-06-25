@@ -13,10 +13,10 @@ import {
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
-import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { tokenTraits } from '@common/vault-utils';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { SwapSettings } from '@components/swap-settings';
+import { getBalance } from '@components/app';
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
@@ -39,7 +39,6 @@ export const Swap: React.FC = () => {
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall, doOpenAuth } = useConnect();
-  websocketTxUpdater();
 
   const setTokenBalances = () => {
     setBalanceSelectedTokenX(microToReadable(state.balance[tokenX['name'].toLowerCase()]));
@@ -49,6 +48,32 @@ export const Swap: React.FC = () => {
   useEffect(() => {
     setTokenBalances();
   }, [state.balance]);
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      const account = await getBalance(stxAddress || '');
+
+      setTokenXAmount(undefined);
+      setTokenYAmount(0.0);
+      setMinimumReceived(0);
+      setPriceImpact('0');
+      setLpFee('0');
+      setState(prevState => ({
+        ...prevState,
+        balance: {
+          xusd: account.xusd.toString(),
+          diko: account.diko.toString(),
+          stx: account.stx.toString(),
+          xstx: account.xstx.toString(),
+          stdiko: account.stDiko.toString()
+        }
+      }));
+    };
+
+    if (state.currentTxStatus === 'success') {
+      fetchBalance();
+    }
+  }, [state.currentTxStatus]);
 
   useEffect(() => {
     const fetchPair = async (tokenXContract:string, tokenYContract:string) => {
@@ -224,7 +249,12 @@ export const Swap: React.FC = () => {
       postConditions,
       finished: data => {
         console.log('finished swap!', data);
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxMessage: '',
+          currentTxId: data.txId,
+          currentTxStatus: 'pending'
+        }));
       },
     });
   };
