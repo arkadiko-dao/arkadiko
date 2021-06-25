@@ -15,8 +15,10 @@ export const ContractTransaction: React.FC<ComponentProps> = ({ transaction, sta
       <div className="flex space-x-3">
         {status === 'success' ? (
           <span className="mt-3 space-y-1 w-1.5 h-1.5 bg-green-400 rounded-full"></span>
+        ) : status === 'error' ? (
+          <span className="mt-3 space-y-1 w-1.5 h-1.5 bg-red-600 rounded-full"></span>
         ) : (
-          <span className="mt-3 space-y-1 w-1.5 h-1.5 bg-red-400 rounded-full"></span>
+          <span className="mt-3 space-y-1 w-1.5 h-1.5 bg-yellow-300 rounded-full"></span>
         )}
         <div className="flex-1 space-y-1">
           <div className="flex items-center justify-between">
