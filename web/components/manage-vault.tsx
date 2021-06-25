@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Box, Modal, Text } from '@blockstack/ui';
+import { XIcon } from '@heroicons/react/outline';
 import { Container } from './home';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
@@ -17,6 +18,8 @@ import { Link } from '@components/link';
 import { Redirect } from 'react-router-dom';
 import { resolveReserveName, tokenTraits } from '@common/vault-utils';
 import BN from 'bn.js';
+import { tokenList } from '@components/token-swap-list';
+import { InputAmount } from './input-amount';
 
 export const ManageVault = ({ match }) => {
   const { doContractCall } = useConnect();
@@ -215,6 +218,30 @@ export const ManageVault = ({ match }) => {
     }
   }, [state.currentTxStatus]);
 
+  const closeVault = async () => {
+    const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
+
+    await doContractCall({
+      network,
+      contractAddress,
+      contractName: "arkadiko-freddie-v1-1",
+      functionName: 'burn',
+      functionArgs: [
+        uintCV(match.params.id),
+        uintCV(outstandingDebt() * 1000000),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
+      ],
+      postConditionMode: 0x01,
+      finished: data => {
+        console.log('finished closing vault!', data);
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setShowBurnModal(false);
+      },
+    });
+  };
+
   const claimPendingRewards = async () => {
     await doContractCall({
       network,
@@ -329,7 +356,8 @@ export const ManageVault = ({ match }) => {
         uintCV(match.params.id),
         uintCV(parseFloat(usdToMint) * 1000000),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1'),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1')
       ],
       postConditionMode: 0x01,
       finished: data => {
@@ -417,6 +445,25 @@ export const ManageVault = ({ match }) => {
     });
   };
 
+  const depositMaxAmount = () => {
+    setExtraCollateralDeposit((state.balance['stx'] / 1000000) - 1);
+  };
+
+  const mintMaxAmount = () => {
+    setUsdToMint(
+      availableCoinsToMint(
+        price,
+        collateralLocked(),
+        outstandingDebt(),
+        collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 }
+      )
+    );
+  };
+  
+  const burnMaxAmount = () => {
+    setUsdToBurn(outstandingDebt());
+  };
+
   return (
     <Container>
       {auctionEnded && <Redirect to="/vaults" />}
@@ -424,12 +471,20 @@ export const ManageVault = ({ match }) => {
       <Modal isOpen={showDepositModal}>
         <div className="flex pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <div className="inline-block align-bottom bg-white rounded-lg px-2 pt-5 pb-4 text-left overflow-hidden sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+            <div className="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
+              <button
+                type="button"
+                className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={() => setShowDepositModal(false)}
+              >
+                <span className="sr-only">Close</span>
+                <XIcon className="h-6 w-6" aria-hidden="true" />
+              </button>
+            </div>
+            <div className="mx-auto flex items-center justify-center rounded-full">
+              <img className="h-10 w-10 rounded-full" src={tokenList[2].logo} alt="" />
+            </div>
             <div>
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                <svg className="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
               <div className="mt-3 text-center sm:mt-5">
                 <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
                   Deposit Extra Collateral
@@ -442,31 +497,36 @@ export const ManageVault = ({ match }) => {
                     We will automatically harvest any DIKO you are eligible for when depositing.
                   </p>
 
-                  <div className="mt-4 relative rounded-md shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    </div>
-                    <input type="text" name="depositCollateral" id="collateralAmount"
-                           value={extraCollateralDeposit}
-                           onChange={onInputChange}
-                           className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
-                           placeholder="0.00" aria-describedby="collateral-currency" />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm" id="collateral-currency">
-                        {vault?.collateralToken.toUpperCase()}
-                      </span>
-                    </div>
+                  <div className="mt-6">
+                    <InputAmount
+                      balance={(state.balance['stx'] / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                      token={vault?.collateralToken.toUpperCase()}
+                      inputName="depositCollateral"
+                      inputId="depositExtraStxAmount"
+                      inputValue={extraCollateralDeposit}
+                      inputLabel="Deposit Extra Collateral"
+                      onInputChange={onInputChange}
+                      onClickMax={depositMaxAmount}
+                    />
                   </div>
 
                 </div>
               </div>
             </div>
-            <div className="mt-5 sm:mt-6">
-              <button type="button" onClick={() => addDeposit()} className="mb-5 inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+            <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+              <button
+                type="button"
+                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+                onClick={() => addDeposit()}
+              >
                 Add deposit
               </button>
-
-              <button type="button" onClick={() => setShowDepositModal(false)} className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-600 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:text-sm">
-                Close
+              <button
+                type="button"
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                onClick={() => setShowDepositModal(false)}
+              >
+                Cancel
               </button>
             </div>
           </div>
@@ -476,12 +536,20 @@ export const ManageVault = ({ match }) => {
       <Modal isOpen={showWithdrawModal}>
         <div className="flex pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <div className="inline-block align-bottom bg-white rounded-lg px-2 pt-5 pb-4 text-left overflow-hidden sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+            <div className="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
+              <button
+                type="button"
+                className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={() => setShowWithdrawModal(false)}
+              >
+                <span className="sr-only">Close</span>
+                <XIcon className="h-6 w-6" aria-hidden="true" />
+              </button>
+            </div>
+            <div className="mx-auto flex items-center justify-center rounded-full">
+              <img className="h-10 w-10 rounded-full" src={tokenList[1].logo} alt="" />
+            </div>
             <div>
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                <svg className="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
               <div className="mt-3 text-center sm:mt-5">
                 <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
                   Withdraw Collateral
@@ -494,31 +562,37 @@ export const ManageVault = ({ match }) => {
                     We will automatically harvest any DIKO you are eligible for when withdrawing.
                   </p>
 
-                  <div className="mt-4 relative rounded-md shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    </div>
-                    <input type="text" name="withdrawCollateral" id="withdrawCollateralAmount"
-                           value={collateralToWithdraw}
-                           onChange={onInputChange}
-                           className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
-                           placeholder="0.00" aria-describedby="collateral-withdraw-currency" />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm" id="collateral-withdraw-currency">
-                        {vault?.collateralToken.toUpperCase()}
-                      </span>
-                    </div>
+                  <div className="mt-6">
+                    <InputAmount
+                      balance={maximumCollateralToWithdraw}
+                      token={vault?.collateralToken.toUpperCase()}
+                      inputName="withdrawCollateral"
+                      inputId="withdrawCollateralAmount"
+                      inputValue={collateralToWithdraw}
+                      inputLabel="Withdraw Collateral"
+                      onInputChange={onInputChange}
+                      onClickMax={mintMaxAmount}
+                    />
                   </div>
 
                 </div>
               </div>
             </div>
-            <div className="mt-5 sm:mt-6">
-              <button type="button" onClick={() => callWithdraw()} className="mb-5 inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+
+            <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+              <button
+                type="button"
+                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+                onClick={() => callWithdraw()}
+              >
                 Withdraw
               </button>
-
-              <button type="button" onClick={() => setShowWithdrawModal(false)} className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-600 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:text-sm">
-                Close
+              <button
+                type="button"
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                onClick={() => setShowWithdrawModal(false)}
+              >
+                Cancel
               </button>
             </div>
           </div>
@@ -528,46 +602,59 @@ export const ManageVault = ({ match }) => {
       <Modal isOpen={showMintModal}>
         <div className="flex pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <div className="inline-block align-bottom bg-white rounded-lg px-2 pt-5 pb-4 text-left overflow-hidden sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+            <div className="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
+              <button
+                type="button"
+                className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={() => setShowMintModal(false)}
+              >
+                <span className="sr-only">Close</span>
+                <XIcon className="h-6 w-6" aria-hidden="true" />
+              </button>
+            </div>
+            <div className="mx-auto flex items-center justify-center rounded-full">
+              <img className="h-10 w-10 rounded-full" src={tokenList[0].logo} alt="" />
+            </div>
             <div>
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                <svg className="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
               <div className="mt-3 text-center sm:mt-5">
                 <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
                   Mint extra xUSD
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Choose how much extra xUSD you want to mint. You can mint a maximum of {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {vault?.collateralToken.toUpperCase()}.
+                    Choose how much extra xUSD you want to mint. You can mint a maximum of {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xUSD.
                   </p>
 
-                  <div className="mt-4 relative rounded-md shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    </div>
-                    <input type="text" name="mintDebt" id="mintAmount"
-                           value={usdToMint}
-                           onChange={onInputChange}
-                           className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
-                           placeholder="0.00" aria-describedby="collateral-mint-currency" />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm" id="collateral-mint-currency">
-                        {vault?.collateralToken.toUpperCase()}
-                      </span>
-                    </div>
+                  <div className="mt-6">
+                    <InputAmount
+                      balance={availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                      token="xUSD"
+                      inputName="mintDebt"
+                      inputId="mintxUSDAmount"
+                      inputValue={usdToMint}
+                      inputLabel="Mint xUSD"
+                      onInputChange={onInputChange}
+                      onClickMax={mintMaxAmount}
+                    />
                   </div>
 
                 </div>
               </div>
             </div>
-            <div className="mt-5 sm:mt-6">
-              <button type="button" onClick={() => callMint()} className="mb-5 inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+            <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+              <button
+                type="button"
+                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+                onClick={() => callMint()}
+              >
                 Mint
               </button>
-
-              <button type="button" onClick={() => setShowMintModal(false)} className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-600 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:text-sm">
-                Close
+              <button
+                type="button"
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                onClick={() => setShowMintModal(false)}
+              >
+                Cancel
               </button>
             </div>
           </div>
@@ -577,12 +664,20 @@ export const ManageVault = ({ match }) => {
       <Modal isOpen={showBurnModal}>
         <div className="flex pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <div className="inline-block align-bottom bg-white rounded-lg px-2 pt-5 pb-4 text-left overflow-hidden sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+            <div className="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
+              <button
+                type="button"
+                className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={() => setShowBurnModal(false)}
+              >
+                <span className="sr-only">Close</span>
+                <XIcon className="h-6 w-6" aria-hidden="true" />
+              </button>
+            </div>
+            <div className="mx-auto flex items-center justify-center rounded-full">
+              <img className="h-10 w-10 rounded-full" src={tokenList[0].logo} alt="" />
+            </div>
             <div>
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                <svg className="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
               <div className="mt-3 text-center sm:mt-5">
                 <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
                   Burn xUSD
@@ -592,32 +687,36 @@ export const ManageVault = ({ match }) => {
                     Choose how much xUSD you want to burn. If you burn all xUSD, your vault will be closed.
                   </p>
 
-                  <div className="mt-4 relative rounded-md shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      $
-                    </div>
-                    <input type="text" name="burnDebt" id="burnAmount"
-                           value={usdToBurn}
-                           onChange={onInputChange}
-                           className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
-                           placeholder="0.00" aria-describedby="collateral-burn-currency" />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm" id="collateral-burn-currency">
-                        xUSD
-                      </span>
-                    </div>
+                  <div className="mt-6">
+                    <InputAmount
+                      balance={(state.balance['xusd'] / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                      token="xUSD"
+                      inputName="burnDebt"
+                      inputId="burnAmount"
+                      inputValue={usdToBurn}
+                      inputLabel="Burn xUSD"
+                      onInputChange={onInputChange}
+                      onClickMax={burnMaxAmount}
+                    />
                   </div>
 
                 </div>
               </div>
             </div>
-            <div className="mt-5 sm:mt-6">
-              <button type="button" onClick={() => callBurn()} className="mb-5 inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+            <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+              <button
+                type="button"
+                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+                onClick={() => callBurn()}
+              >
                 Burn
               </button>
-
-              <button type="button" onClick={() => setShowBurnModal(false)} className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-600 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:text-sm">
-                Close
+              <button
+                type="button"
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                onClick={() => setShowBurnModal(false)}
+              >
+                Cancel
               </button>
             </div>
           </div>
@@ -978,10 +1077,10 @@ export const ManageVault = ({ match }) => {
                       {isVaultOwner ? (
                         <div className="max-w-xl text-sm text-gray-500">
                           <p>
-                            <Text onClick={() => setShowBurnModal(true)}
+                            <Text onClick={() => closeVault()}
                                   _hover={{ cursor: 'pointer'}}
                                   className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                              Pay back
+                              Close Vault
                             </Text>
                           </p>
                         </div>

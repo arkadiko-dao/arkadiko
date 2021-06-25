@@ -18,11 +18,17 @@ export const TxSidebar = ({ setShowSidebar }) => {
         const txs = await getAccountTransactions(address || '', contractAddress || '');
         let index = 0;
         const txMap = txs.map((tx: ContractCallTransaction) => {
+          let status = 'error';
+          if (tx.tx_status === 'success') {
+            status = 'success';
+          } else if (tx.tx_status === 'pending') {
+            status = 'pending';
+          }
           index += 1;
           return <ContractTransaction
             key={index}
             transaction={tx}
-            status='success'
+            status={status}
           />
         });
 

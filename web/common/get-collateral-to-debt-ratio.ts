@@ -18,7 +18,8 @@ export const getCollateralToDebtRatio = (vaultId: string) => {
         functionName: "calculate-current-collateral-to-debt-ratio",
         functionArgs: [
           uintCV(vaultId),
-          contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v1-1')
+          contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v1-1'),
+          contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v1-1')
         ],
         senderAddress: stxAddress || '',
         network: network
