@@ -497,7 +497,7 @@ export const ManageVault = ({ match }) => {
                     <InputAmount
                       balance={(state.balance['stx'] / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
                       token={vault?.collateralToken.toUpperCase()}
-                      inputName="depositExtraStx"
+                      inputName="depositCollateral"
                       inputId="depositExtraStxAmount"
                       inputValue={extraCollateralDeposit}
                       inputLabel="Deposit Extra Collateral"
