@@ -57,6 +57,9 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
         console.log('finished collateralizing!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'creating vault...' }));
       },
+      onCancel: () => {
+        window.location.href = '/';
+      }
     });
   };
 
