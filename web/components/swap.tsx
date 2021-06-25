@@ -251,6 +251,7 @@ export const Swap: React.FC = () => {
         console.log('finished swap!', data);
         setState(prevState => ({
           ...prevState,
+          showTxModal: true,
           currentTxMessage: '',
           currentTxId: data.txId,
           currentTxStatus: 'pending'
