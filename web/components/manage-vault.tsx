@@ -11,7 +11,6 @@ import {
   createAssetInfo, FungibleConditionCode, makeStandardSTXPostCondition } from '@stacks/transactions';
 import { AppContext, CollateralTypeProps } from '@common/context';
 import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
-import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { debtClass, VaultProps } from './vault';
 import { getPrice } from '@common/get-price';
 import { getLiquidationPrice, availableCollateralToWithdraw, availableCoinsToMint } from '@common/vault-utils';
@@ -211,8 +210,13 @@ export const ManageVault = ({ match }) => {
   let debtRatio = 0;
   if (match.params.id) {
     debtRatio = getCollateralToDebtRatio(match.params.id)?.collateralToDebt;
-    websocketTxUpdater();
   }
+
+  useEffect(() => {
+    if (state.currentTxStatus === 'success') {
+      window.location.reload();
+    }
+  }, [state.currentTxStatus]);
 
   const closeVault = async () => {
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
@@ -352,7 +356,8 @@ export const ManageVault = ({ match }) => {
         uintCV(match.params.id),
         uintCV(parseFloat(usdToMint) * 1000000),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1'),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1')
       ],
       postConditionMode: 0x01,
       finished: data => {
@@ -496,7 +501,7 @@ export const ManageVault = ({ match }) => {
                     <InputAmount
                       balance={(state.balance['stx'] / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
                       token={vault?.collateralToken.toUpperCase()}
-                      inputName="depositExtraStx"
+                      inputName="depositCollateral"
                       inputId="depositExtraStxAmount"
                       inputValue={extraCollateralDeposit}
                       inputLabel="Deposit Extra Collateral"

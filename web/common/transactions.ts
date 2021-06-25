@@ -11,8 +11,7 @@ export const getAccountTransactions = async (address:string, contractAddress:str
   const txs = await api.getAccountTransactions({ principal: address, limit: 50 });
   const list = (txs as TransactionResults).results.filter(tx =>
     tx.tx_type === 'contract_call' &&
-    tx.contract_call.contract_id.split('.')[0] === contractAddress &&
-    tx.tx_status === 'success'
+    tx.contract_call.contract_id.split('.')[0] === contractAddress
   );
   
   return list as ContractCallTransaction[];

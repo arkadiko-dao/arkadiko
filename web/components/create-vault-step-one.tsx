@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { Box } from '@blockstack/ui';
 import { AppContext, UserBalanceKeys } from '@common/context';
 import { getPrice } from '@common/get-price';
 import { getLiquidationPrice, getCollateralToDebtRatio } from '@common/vault-utils';
 import { InputAmount } from './input-amount';
 import { useLocation } from 'react-router-dom';
+import { QuestionMarkCircleIcon, InformationCircleIcon, ExternalLinkIcon } from '@heroicons/react/solid';
+import { Tooltip } from '@blockstack/ui';
 
 interface VaultProps {
   setStep: (arg: number) => void;
@@ -85,7 +86,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
         setErrors(filteredAry);
       }
     },
-    [state, errors]
+    [state, maximumToMint, errors]
   );
 
   const setMaxBalance = useCallback(() => {
@@ -127,14 +128,31 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   }, [tokenType, state.collateralTypes]);
 
   return (
-    <Box>
-      <h2 className="text-2xl font-bold text-gray-900 text-center">
-        Deposit {tokenName} and generate xUSD
-      </h2>
+    <>
+      <section>
+        <header className="pb-5 border-b border-gray-200 sm:flex sm:justify-between sm:items-end">
+          <div>
+            <h2 className="text-2xl leading-6 font-bold text-gray-900">Create a new vault</h2>
+            <p className="mt-2 max-w-4xl text-sm text-gray-500">
+              Deposit {tokenName} and generate xUSD
+            </p>
+          </div>
+          <div>
+            <div className="flex items-center">
+              <div className="w-5.5 h-5.5 rounded-full bg-indigo-200 flex items-center justify-center">
+                <QuestionMarkCircleIcon className="text-indigo-600 h-5 w-5" aria-hidden="true" />
+              </div>
+              <a className="border-transparent text-indigo-500 hover:border-indigo-300 hover:text-indigo-700 inline-flex items-center px-2 text-sm font-medium" href="https://docs.arkadiko.finance/protocol/vaults" target="_blank" rel="noopener noreferrer">
+                Need help with vaults?
+                <ExternalLinkIcon className="block h-3 w-3 ml-2" aria-hidden="true" />
+              </a>
+            </div>
 
-      <ul className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4 mt-3">
-        <li className="relative col-span-3 flex shadow-sm rounded-md">
-          <div className="bg-white shadow sm:rounded-lg mt-5 w-full">
+          </div>
+        </header>
+
+        <div className="mt-4 shadow sm:rounded-md sm:overflow-hidden">
+          <div className="px-4 py-5 bg-white space-y-6 sm:p-6">
             {errors.length > 0 ? (
               <div className="bg-red-50 border-l-4 border-red-400 p-4">
                 <div className="flex">
@@ -165,105 +183,170 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
             ) : (
               ``
             )}
+                                            
+            <form className="space-y-8 divide-y divide-gray-200">
+              <div className="space-y-8 divide-y divide-gray-200">
+                <div>
+                  <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-8">
+                    <div className="sm:col-span-4 space-y-6">
+                      <div>
+                        <h3 className="text-lg leading-6 font-medium text-gray-900">
+                          How much {tokenName} do you want to collateralize?
+                        </h3>
+                        <p className="mt-2 text-sm text-gray-500">
+                          The amount of {tokenName} you deposit determines how much xUSD you can generate
+                        </p>
 
-            <div className="px-4 py-5 sm:p-6">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">
-                How much {tokenName} do you want to collateralize?
-              </h3>
-              <div className="mt-2 sm:flex sm:items-start sm:justify-between">
-                <div className="max-w-xl text-sm text-gray-500">
-                  <p>
-                    The amount of {tokenName} you deposit determines how much xUSD you can generate
-                  </p>
-                </div>
-              </div>
-              <div className="mt-2 mb-1 sm:flex sm:items-start sm:justify-between">
-                <div className="max-w-xl text-sm text-gray-500">
-                  <div className="mt-1">
-                    <InputAmount
-                      balance={state.balance[tokenKey] / 1000000}
-                      token={tokenName}
-                      inputName="collateral"
-                      inputId="collateralAmount"
-                      inputValue={collateralAmount}
-                      inputLabel={`Collateralize ${tokenName}`}
-                      onInputChange={setCollateral}
-                      onClickMax={setMaxBalance}
-                    />
+                        <div className="mt-4">
+                          <InputAmount
+                            balance={state.balance[tokenKey] / 1000000}
+                            token={tokenName}
+                            inputName="collateral"
+                            inputId="collateralAmount"
+                            inputValue={collateralAmount}
+                            inputLabel={`Collateralize ${tokenName}`}
+                            onInputChange={setCollateral}
+                            onClickMax={setMaxBalance}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="text-lg leading-6 font-medium text-gray-900">
+                          How much xUSD would you like to mint?
+                        </h3>
+                        <p className="mt-2 text-sm text-gray-500">
+                          Mint an amount that is safely above the liquidation ratio
+                        </p>
+                        
+                        <div className="mt-4">
+                          <InputAmount
+                            balance={maximumToMint / 1000000}
+                            token="xUSD"
+                            inputName="coins"
+                            inputId="coinsAmount"
+                            inputValue={coinAmount}
+                            inputLabel="Mint xUSD"
+                            onInputChange={setCoins}
+                            onClickMax={setMaxCoins}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="sm:col-start-6 sm:col-span-5">
+                      <div className="w-full bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
+                        <dl className="sm:divide-y sm:divide-indigo-200">
+                          <div className="sm:flex sm:items-center sm:flex-1 sm:flex-wrap p-3 sm:p-4">
+                            <dt className="flex-shrink-0 text-sm font-medium text-indigo-500 inline-flex items-center sm:mr-2">
+                              Collateral to Debt Ratio
+                              <div className="ml-2">
+                                <Tooltip shouldWrapChildren={true} label={`The amount of collateral you deposit in a vault versus the stablecoin debt you are minting against it`}>
+                                  <InformationCircleIcon className="block h-5 w-5 text-indigo-400" aria-hidden="true" />
+                                </Tooltip>
+                              </div>
+                            </dt>
+                            <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:ml-auto">
+                              {collateralToDebt > 0 ? ( 
+                                <>
+                                  {collateralToDebt.toFixed(2)}%
+                                </>
+                              ) : (
+                                <>—</>
+                              )}
+                            </dd>
+                          </div>
+
+                          <div className="sm:flex sm:items-center sm:flex-1 sm:flex-wrap p-3 sm:p-4">
+                            <dt className="flex-shrink-0 text-sm font-medium text-indigo-500 inline-flex items-center sm:mr-2">
+                              Liquidation Price
+                              <div className="ml-2">
+                                <Tooltip shouldWrapChildren={true} label={`The price at which the vault gets tagged for auction`}>
+                                  <InformationCircleIcon className="block h-5 w-5 text-indigo-400" aria-hidden="true" />
+                                </Tooltip>
+                              </div>
+                            </dt>
+                            <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:ml-auto">
+                              {liquidationPrice > 0 ? ( 
+                                <>
+                                  ${liquidationPrice}%
+                                </>
+                              ) : (
+                                <>—</>
+                              )}
+                            </dd>
+                          </div>
+
+                          <div className="sm:flex sm:items-center sm:flex-1 sm:flex-wrap p-3 sm:p-4">
+                            <dt className="flex-shrink-0 text-sm font-medium text-indigo-500 inline-flex items-center sm:mr-2">
+                              Current {tokenName} Price
+                            </dt>
+                            <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:ml-auto">
+                              ${price / 100}
+                            </dd>
+                          </div>
+
+                          <div className="sm:flex sm:items-center sm:flex-1 sm:flex-wrap p-3 sm:p-4">
+                            <dt className="flex-shrink-0 text-sm font-medium text-indigo-500 inline-flex items-center sm:mr-2">
+                              Stability Fee
+                              <div className="ml-2">
+                                <Tooltip shouldWrapChildren={true} label={`The interest in percentage to borrow xUSD`}>
+                                  <InformationCircleIcon className="block h-5 w-5 text-indigo-400" aria-hidden="true" />
+                                </Tooltip>
+                              </div>
+                            </dt>
+                            <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:ml-auto">
+                              {stabilityFeeApy / 100}%
+                            </dd>
+                          </div>
+
+                          <div className="sm:flex sm:items-center sm:flex-1 sm:flex-wrap p-3 sm:p-4">
+                            <dt className="flex-shrink-0 text-sm font-medium text-indigo-500 inline-flex items-center sm:mr-2">
+                              Liquidation Ratio
+                              <div className="ml-2">
+                                <Tooltip shouldWrapChildren={true} label={`The collateral-to-debt ratio when your vault gets liquidated`}>
+                                  <InformationCircleIcon className="block h-5 w-5 text-indigo-400" aria-hidden="true" />
+                                </Tooltip>
+                              </div>
+                            </dt>
+                            <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:ml-auto">
+                              {liquidationRatio}%
+                            </dd>
+                          </div>
+
+                          <div className="sm:flex sm:items-center sm:flex-1 sm:flex-wrap p-3 sm:p-4">
+                            <dt className="flex-shrink-0 text-sm font-medium text-indigo-500 inline-flex items-center sm:mr-2">
+                              Liquidation Penalty
+                              <div className="ml-2">
+                                <Tooltip shouldWrapChildren={true} label={`The penalty you pay when your vault gets liquidated`}>
+                                  <InformationCircleIcon className="block h-5 w-5 text-indigo-400" aria-hidden="true" />
+                                </Tooltip>
+                              </div>
+                            </dt>
+                            <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:ml-auto">
+                              {liquidationPenalty}%
+                            </dd>
+                          </div>
+                        </dl>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-
-              <h3 className="text-lg leading-6 font-medium text-gray-900 mt-10">
-                How much xUSD would you like to mint?
-              </h3>
-              <div className="mt-2 sm:flex sm:items-start sm:justify-between">
-                <div className="max-w-xl text-sm text-gray-500">
-                  <p>Mint an amount that is safely above the liquidation ratio</p>
+              <div className="pt-5">
+                <div className="flex justify-end">
+                  <button
+                    disabled={!coinAmount || errors.length > 0}
+                    onClick={() => continueVault()}
+                    type="submit"
+                    className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    Continue
+                  </button>
                 </div>
               </div>
-              <div className="mt-2 mb-1 sm:flex sm:items-start sm:justify-between">
-                <div className="max-w-xl text-sm text-gray-500">
-                  <div className="mt-1">
-                    <InputAmount
-                      balance={maximumToMint / 1000000}
-                      token="xUSD"
-                      inputName="coins"
-                      inputId="coinsAmount"
-                      inputValue={coinAmount}
-                      inputLabel="Mint xUSD"
-                      onInputChange={setCoins}
-                      onClickMax={setMaxCoins}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </li>
-        <li className="relative col-span-1 flex shadow-sm rounded-md">
-          <div className="bg-white shadow sm:rounded-lg mt-5">
-            <div className="px-4 py-5 sm:p-6">
-              <h3 className="text-md leading-6 font-medium text-gray-900">
-                Collateral to Debt Ratio
-              </h3>
-              <p className="max-w-xl text-sm text-gray-500 mb-3">{collateralToDebt}%</p>
-
-              <h3 className="text-md leading-6 font-medium text-gray-900">Liquidation Price</h3>
-              <p className="max-w-xl text-sm text-gray-500 mb-3">${liquidationPrice}</p>
-
-              <h3 className="text-md leading-6 font-medium text-gray-900">
-                Current {tokenName} Price
-              </h3>
-              <p className="max-w-xl text-sm text-gray-500 mb-3">${price / 100}</p>
-
-              <h3 className="text-md leading-6 font-medium text-gray-900">Stability Fee</h3>
-              <p className="max-w-xl text-sm text-gray-500 mb-3">{stabilityFeeApy / 100}%</p>
-
-              <h3 className="text-md leading-6 font-medium text-gray-900">Liquidation Ratio</h3>
-              <p className="max-w-xl text-sm text-gray-500 mb-3">{liquidationRatio}%</p>
-
-              <h3 className="text-md leading-6 font-medium text-gray-900">Liquidation Penalty</h3>
-              <p className="max-w-xl text-sm text-gray-500 mb-3">{liquidationPenalty}%</p>
-            </div>
-          </div>
-        </li>
-      </ul>
-
-      <div className="mt-5 ml-5 sm:flex sm:items-start sm:justify-between">
-        <div className="max-w-xl text-sm text-gray-500">
-          <div className="mt-5 sm:mt-0 sm:flex-shrink-0 sm:flex sm:items-right">
-            <button
-              type="button"
-              disabled={!coinAmount || errors.length > 0}
-              onClick={() => continueVault()}
-              className="inline-flex items-right px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
-            >
-              Continue
-            </button>
+            </form>
           </div>
         </div>
-      </div>
-    </Box>
+      </section>
+    </>
   );
 };
