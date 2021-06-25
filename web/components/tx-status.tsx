@@ -3,6 +3,7 @@ import { AppContext } from '@common/context';
 import { Transition } from '@headlessui/react';
 import { CheckCircleIcon } from '@heroicons/react/outline';
 import { XIcon } from '@heroicons/react/solid';
+import { ExplorerLink } from './explorer-link';
 
 export const TxStatus = () => {
   const [state, setState] = useContext(AppContext);
@@ -31,7 +32,7 @@ export const TxStatus = () => {
         <div className="w-full flex flex-col items-center space-y-4 sm:items-end">
           {state.currentTxId || state.showTxModal ? (
             <Transition
-              show={state.showTxModal}
+              show={state.showTxModal || state.currentTxId !== undefined}
               as={Fragment}
               enter="transform ease-out duration-300 transition"
               enterFrom="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
@@ -50,9 +51,12 @@ export const TxStatus = () => {
                       <p className="text-sm font-medium text-gray-900">
                         Successfully broadcasted transaction!
                       </p>
-                      <p className="mt-1 text-sm text-gray-500">
-                        Status: {state.currentTxStatus}
-                      </p>
+                      {state.currentTxStatus !== 'success' ? (
+                        <p className="mt-1 text-sm text-gray-500">
+                          Status: {state.currentTxStatus}
+                        </p>
+                      ) : null }
+                      <ExplorerLink txId={state.currentTxId} />
                       {state.currentTxMessage ? (
                         <p className={`mt-1 text-sm ${statusClass()}`}>
                           {state.currentTxMessage}
