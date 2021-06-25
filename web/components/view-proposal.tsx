@@ -59,6 +59,7 @@ export const ViewProposal = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress,
       contractName: 'arkadiko-governance-v1-1',
       functionName: 'vote-for',
       functionArgs: [
@@ -77,6 +78,7 @@ export const ViewProposal = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress,
       contractName: 'arkadiko-governance-v1-1',
       functionName: 'vote-against',
       functionArgs: [

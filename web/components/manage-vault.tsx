@@ -170,6 +170,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: senderAddress,
       contractName: 'arkadiko-freddie-v1-1',
       functionName: 'pay-stability-fee',
       functionArgs: [
@@ -191,6 +192,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: senderAddress,
       contractName: "arkadiko-freddie-v1-1",
       functionName: 'burn',
       functionArgs: [
@@ -220,6 +222,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: senderAddress,
       contractName: "arkadiko-freddie-v1-1",
       functionName: 'burn',
       functionArgs: [
@@ -242,6 +245,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: senderAddress,
       contractName: "arkadiko-vault-rewards-v1-1",
       functionName: "claim-pending-rewards",
       functionArgs: [],
@@ -285,6 +289,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: senderAddress,
       contractName: "arkadiko-freddie-v1-1",
       functionName: 'deposit',
       functionArgs: [
@@ -346,6 +351,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: senderAddress,
       contractName: "arkadiko-freddie-v1-1",
       functionName: 'mint',
       functionArgs: [
@@ -368,6 +374,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: senderAddress,
       contractName: "arkadiko-freddie-v1-1",
       functionName: 'toggle-stacking',
       functionArgs: [uintCV(match.params.id)],
@@ -383,6 +390,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: senderAddress,
       contractName: "arkadiko-freddie-v1-1",
       functionName: 'stack-collateral',
       functionArgs: [uintCV(match.params.id)],
@@ -403,6 +411,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: senderAddress,
       contractName: "arkadiko-freddie-v1-1",
       functionName: 'withdraw',
       functionArgs: [
@@ -425,6 +434,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: senderAddress,
       contractName: 'arkadiko-liquidator-v1-1',
       functionName: 'notify-risky-vault',
       functionArgs: [

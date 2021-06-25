@@ -127,6 +127,7 @@ export const Stake = () => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress,
       contractName: 'arkadiko-stake-registry-v1-1',
       functionName: 'stake',
       functionArgs: [
@@ -148,6 +149,7 @@ export const Stake = () => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress,
       contractName: 'arkadiko-stake-registry-v1-1',
       functionName: 'claim-pending-rewards',
       functionArgs: [
@@ -165,6 +167,7 @@ export const Stake = () => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress,
       contractName: 'arkadiko-stake-registry-v1-1',
       functionName: 'unstake',
       functionArgs: [

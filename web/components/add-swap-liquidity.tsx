@@ -91,6 +91,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress,
       contractName: 'arkadiko-swap-v1-1',
       functionName: 'add-to-position',
       functionArgs: [

@@ -212,6 +212,7 @@ export const Swap: React.FC = () => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress,
       contractName: 'arkadiko-swap-v1-1',
       functionName: contractName,
       functionArgs: [
