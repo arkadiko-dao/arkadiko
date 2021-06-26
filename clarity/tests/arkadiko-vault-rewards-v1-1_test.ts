@@ -19,7 +19,7 @@ Clarinet.test({
       ], deployer.address),
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000),
-        types.uint(1925000),
+        types.uint(1000000),
         types.ascii("STX-A"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -48,7 +48,7 @@ Clarinet.test({
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(500000),
-        types.uint(192500),
+        types.uint(100000),
         types.ascii("STX-A"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -82,7 +82,7 @@ Clarinet.test({
       ], deployer.address),
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000),
-        types.uint(1925000),
+        types.uint(1000000),
         types.ascii("STX-A"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -123,7 +123,7 @@ Clarinet.test({
       ], deployer.address),
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000),
-        types.uint(1925000),
+        types.uint(1000000),
         types.ascii("STX-A"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -147,7 +147,7 @@ Clarinet.test({
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000),
-        types.uint(1925000),
+        types.uint(1000000),
         types.ascii("STX-A"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -242,7 +242,7 @@ Clarinet.test({
       ], deployer.address),
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000),
-        types.uint(1925000),
+        types.uint(1000000),
         types.ascii("STX-A"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -343,7 +343,7 @@ Clarinet.test({
       ], deployer.address),
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000000),
-        types.uint(1925000000),
+        types.uint(1000000000),
         types.ascii("STX-A"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -353,7 +353,7 @@ Clarinet.test({
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1")
       ], deployer.address),
     ]);
-    block.receipts[1].result.expectOk().expectUint(1925000000);
+    block.receipts[1].result.expectOk().expectUint(1000000000);
 
     // Check rewards at start
     let call:any = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
