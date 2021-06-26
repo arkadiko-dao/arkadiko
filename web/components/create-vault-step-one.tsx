@@ -44,7 +44,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   const [errors, setErrors] = useState<string[]>([]);
 
   const maximumCoinsToMint = (value: string) => {
-    const maxRatio = Math.max(200, parseInt(liquidationRatio, 10) + 30);
+    const maxRatio = Math.max(250, parseInt(liquidationRatio, 10) + 30);
     const uCollateralAmount = parseInt(value, 10) * 1000000;
     setMaximumToMint(Math.floor((uCollateralAmount * price) / maxRatio));
   };
