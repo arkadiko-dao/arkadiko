@@ -384,19 +384,19 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 200);
-    result.expectOk().expectUint(200);
+    let result = oracleManager.updatePrice("STX", 300);
+    result.expectOk().expectUint(300);
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
     result.expectOk().expectUint(300000000);
 
     // Mint extra
-    result = vaultManager.mint(deployer, 1, 200);
+    result = vaultManager.mint(deployer, 1, 100);
     result.expectOk().expectBool(true);
     
     // Should not be able to mint extra 2000 xUSD
     result = vaultManager.mint(deployer, 1, 2000);
-    result.expectErr().expectUint(119); // error: trying to create too much debt
+    result.expectErr().expectUint(49); // error: trying to create too much debt (or insufficient collateral)
 
     // Burn 300
     result = vaultManager.burn(deployer, 1, 300)
@@ -418,8 +418,8 @@ Clarinet.test({
     );
     call.result.expectUint(1000000000);
 
-    // Burn last 200 which should close the vault
-    result = vaultManager.burn(deployer, 1, 200);
+    // Burn last 100 which should close the vault
+    result = vaultManager.burn(deployer, 1, 100);
     result.expectOk().expectBool(true);
   }
 });
