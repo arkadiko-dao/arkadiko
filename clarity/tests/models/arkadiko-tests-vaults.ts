@@ -311,6 +311,9 @@ class VaultAuction {
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1", 
         ),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1", 
+        ),
         types.uint(vaultId),
         types.uint(lot)
       ], user.address)
@@ -327,6 +330,9 @@ class VaultAuction {
         ),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1",
+        ),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1", 
         ),
         types.uint(vaultId),
         types.uint(lot)

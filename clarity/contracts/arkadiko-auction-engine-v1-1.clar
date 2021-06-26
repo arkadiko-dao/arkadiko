@@ -397,7 +397,14 @@
   )
 )
 
-(define-public (redeem-lot-collateral (vault-manager <vault-manager-trait>) (ft <ft-trait>) (reserve <vault-trait>) (auction-id uint) (lot-index uint))
+(define-public (redeem-lot-collateral
+  (vault-manager <vault-manager-trait>)
+  (ft <ft-trait>)
+  (reserve <vault-trait>)
+  (coll-type <collateral-types-trait>)
+  (auction-id uint)
+  (lot-index uint)
+)
   (let (
     (last-bid (get-last-bid auction-id lot-index))
     (auction (get-auction-by-id auction-id))
@@ -440,9 +447,21 @@
       )
       (try! (contract-call? vault-manager redeem-auction-collateral ft token-string reserve (get collateral-amount last-bid) tx-sender))
     )
+    (if (< (get xusd last-bid) (var-get lot-size))
+      (begin
+        (map-set auctions
+          { id: auction-id }
+          (merge auction {
+            lots-sold: (+ u1 (get lots-sold auction)),
+          })
+        )
+        (try! (close-auction vault-manager coll-type auction-id))
+      )
+      false
+    )
+
     (print { type: "lot", action: "redeemed", data: { auction-id: auction-id, lot-index: lot-index } })
     (ok true)
-
   )
 )
 
@@ -504,14 +523,13 @@
       (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id (get vault-id auction)))
     )
       (if (> (get debt vault) (get total-debt-burned auction))
-        (begin
-          (try! (contract-call? .arkadiko-dao burn-token .xusd-token
-            (min-of (get total-debt-raised auction) (- (get debt vault) (get total-debt-burned auction)))
-            (as-contract tx-sender))
-          )
+        (let (
+          (amount-to-burn (min-of (- (get total-debt-raised auction) (get total-debt-burned auction)) (- (get debt vault) (get total-debt-burned auction))))
+        )
+          (try! (contract-call? .arkadiko-dao burn-token .xusd-token amount-to-burn (as-contract tx-sender)))
           (map-set auctions
             { id: auction-id }
-            (merge auction { total-debt-burned: (min-of (get total-debt-raised auction) (- (get debt vault) (get total-debt-burned auction))) })
+            (merge auction { total-debt-burned: (+ (get total-debt-burned auction) amount-to-burn) })
           )
         )
         true
@@ -560,6 +578,7 @@
 
 (define-private (extend-auction (auction-id uint))
   (let ((auction (get-auction-by-id auction-id)))
+    (print "EXTENDING AUCTION!!!")
     (map-set auctions
       { id: auction-id }
       (merge auction {

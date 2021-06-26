@@ -54,8 +54,8 @@ const setPrice = async (price) => {
   await utils.processing(result2, transaction2.txid(), 0);
 };
 
-rp(requestOptions).then(async (response) => {
-  let price = response['data']['4847']['quote']['USD']['price'];
-  await setPrice(price);
-});
-// setPrice(1.11);
+// rp(requestOptions).then(async (response) => {
+//   let price = response['data']['4847']['quote']['USD']['price'];
+//   await setPrice(price);
+// });
+setPrice(0.51);

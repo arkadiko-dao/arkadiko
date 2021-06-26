@@ -615,6 +615,9 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1",
         ),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1",
+        ),
         types.uint(1),
         types.uint(0)
       ], deployer.address)
@@ -664,6 +667,9 @@ Clarinet.test({
         ),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
+        ),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1",
         ),
         types.uint(1),
         types.uint(0)
@@ -725,6 +731,9 @@ Clarinet.test({
         ),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1",
+        ),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1",
         ),
         types.uint(1),
         types.uint(0)
@@ -867,6 +876,9 @@ Clarinet.test({
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
         ),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1",
+        ),
         types.uint(1),
         types.uint(0)
       ], deployer.address)
@@ -876,5 +888,122 @@ Clarinet.test({
     // Redeem the STX tokens from STX reserve
     result = vaultAuction.redeemLotCollateralStx(deployer, 1, 0);
     result.expectOk().expectBool(true);
+  }
+});
+
+Clarinet.test({
+  name:
+    "auction engine: advanced auction test - scenario 1",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultLiquidator = new VaultLiquidator(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
+
+    // Initialize price of STX to $0.63 in the oracle
+    let result = oracleManager.updatePrice("STX", 63);
+
+    // Create vault - 4999 STX, 1500 xUSD
+    result = vaultManager.createVault(deployer, "STX-A", 4999, 1500);
+    result.expectOk().expectUint(1500000000);
+
+    // Upate price to $0.51 and notify risky vault
+    result = oracleManager.updatePrice("STX", 51);
+    result = vaultLiquidator.notifyRiskyVault(deployer);
+    result.expectOk().expectUint(5200);
+
+    result = vaultAuction.bid(deployer, 450, 1, 0);
+    result.expectOk().expectBool(true);
+    chain.mineEmptyBlock(144);
+
+    // Won the bid for 450 xUSD - redeem
+    result = vaultAuction.redeemLotCollateral(deployer, 1, 0);
+    result.expectOk().expectBool(true);
+
+    // Auction should be extended since not all bad debt was raised yet
+    result = vaultAuction.bid(deployer, 1000, 1, 1);
+    result.expectOk().expectBool(true);
+
+    result = vaultAuction.bid(deployer, 100, 1, 2);
+    result.expectOk().expectBool(true);
+
+    chain.mineEmptyBlock(144);
+
+    result = vaultAuction.redeemLotCollateral(deployer, 1, 1);
+    result.expectOk().expectBool(true);
+
+    result = vaultAuction.redeemLotCollateral(deployer, 1, 2);
+    result.expectOk().expectBool(true);
+
+    result = vaultAuction.bid(deployer, 60, 1, 3);
+    result.expectOk().expectBool(true);
+
+    chain.mineEmptyBlock(144);
+    result = vaultAuction.redeemLotCollateral(deployer, 1, 3);
+    result.expectOk().expectBool(true);
+  }
+});
+
+Clarinet.test({
+  name:
+    "auction engine: advanced auction test - scenario 2",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultLiquidator = new VaultLiquidator(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
+
+    // Initialize price of STX to $0.63 in the oracle
+    let result = oracleManager.updatePrice("STX", 63);
+
+    // Create vault - 4999 STX, 1500 xUSD
+    result = vaultManager.createVault(deployer, "STX-A", 4999, 1500);
+    result.expectOk().expectUint(1500000000);
+
+    // Upate price to $0.51 and notify risky vault
+    result = oracleManager.updatePrice("STX", 51);
+    result = vaultLiquidator.notifyRiskyVault(deployer);
+    result.expectOk().expectUint(5200);
+
+    result = vaultAuction.bid(deployer, 450, 1, 0);
+    result.expectOk().expectBool(true);
+    chain.mineEmptyBlock(144);
+
+    // Won the bid for 450 xUSD - redeem
+    result = vaultAuction.redeemLotCollateral(deployer, 1, 0);
+    result.expectOk().expectBool(true);
+
+    // Auction should be extended since not all bad debt was raised yet
+    result = vaultAuction.bid(deployer, 1000, 1, 1);
+    result.expectOk().expectBool(true);
+
+    result = vaultAuction.bid(deployer, 100, 1, 2);
+    result.expectOk().expectBool(true);
+
+    chain.mineEmptyBlock(144);
+
+    result = vaultAuction.redeemLotCollateral(deployer, 1, 2);
+    result.expectOk().expectBool(true);
+
+    let call = await vaultManager.getVaultById(1, deployer);
+    let vault:any = call.result.expectTuple();
+    vault['leftover-collateral'].expectUint(0);
+    vault['auction-ended'].expectBool(false);
+
+    result = vaultAuction.bid(deployer, 60, 1, 3);
+    result.expectOk().expectBool(true);
+
+    chain.mineEmptyBlock(144);
+    result = vaultAuction.redeemLotCollateral(deployer, 1, 3);
+    result.expectOk().expectBool(true);
+
+    call = await vaultManager.getVaultById(1, deployer);
+    vault = call.result.expectTuple();
+    vault['leftover-collateral'].expectUint(457332768);
+    vault['auction-ended'].expectBool(true);
   }
 });
