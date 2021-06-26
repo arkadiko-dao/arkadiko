@@ -1,10 +1,9 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { LotProps } from './lot-group';
 import { contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useConnect } from '@stacks/connect-react';
 import { stacksNetwork as network } from '@common/utils';
 import { resolveReserveName, tokenTraits } from '@common/vault-utils';
-import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { AppContext } from '@common/context';
 import { useSTXAddress } from '@common/use-stx-address';
 
@@ -12,8 +11,7 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collatera
   const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const stxAddress = useSTXAddress();
-  const [_, setState] = useContext(AppContext);
-  websocketTxUpdater();
+  const [state, setState] = useContext(AppContext);
 
   const redeemLot = async () => {
     const token = tokenTraits[collateralToken.toLowerCase()]['name'];
@@ -38,6 +36,12 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collatera
       },
     });
   };
+
+  useEffect(() => {
+    if (state.currentTxStatus === 'success') {
+      window.location.reload();
+    }
+  }, [state.currentTxStatus]);
 
   return (
     <tr className="bg-white">

@@ -1,3 +1,7 @@
+## Version 0.9.3
+
+- Add subheader that shows your token balance (STX, xUSD, DIKO, stDIKO)
+
 ## Version 0.9.2
 
 - Add dynamic smart contract function parameters for collateral types

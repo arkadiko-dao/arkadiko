@@ -8,7 +8,6 @@ import { callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV } from '@st
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
-import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { tokenTraits } from '@common/vault-utils';
 
 export const RemoveSwapLiquidity: React.FC = ({ match }) => {
@@ -27,7 +26,6 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   const tokenXTrait = tokenTraits[tokenX.toLowerCase()]['swap'];
   const tokenYTrait = tokenTraits[tokenY.toLowerCase()]['swap'];
   const swapTrait = tokenTraits[`${tokenX.toLowerCase()}${tokenY.toLowerCase()}`]['name'];
-  websocketTxUpdater();
 
   const setTokenBalances = () => {
     setBalanceSelectedTokenX(microToReadable(state.balance[tokenX.toLowerCase()]));

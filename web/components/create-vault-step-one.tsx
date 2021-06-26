@@ -86,7 +86,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
         setErrors(filteredAry);
       }
     },
-    [state, errors]
+    [state, maximumToMint, errors]
   );
 
   const setMaxBalance = useCallback(() => {

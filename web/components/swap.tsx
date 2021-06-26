@@ -1,7 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Container } from './home';
-import { SwitchVerticalIcon, PlusCircleIcon, MinusCircleIcon } from '@heroicons/react/solid';
+import { SwitchVerticalIcon, InformationCircleIcon, PlusCircleIcon, MinusCircleIcon } from '@heroicons/react/solid';
+import { Tooltip } from '@blockstack/ui';
+
 import { microToReadable } from '@common/vault-utils';
 import {
   callReadOnlyFunction, cvToJSON,
@@ -13,10 +15,10 @@ import {
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
-import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { tokenTraits } from '@common/vault-utils';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { SwapSettings } from '@components/swap-settings';
+import { getBalance } from '@components/app';
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
@@ -39,7 +41,6 @@ export const Swap: React.FC = () => {
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall, doOpenAuth } = useConnect();
-  websocketTxUpdater();
 
   const setTokenBalances = () => {
     setBalanceSelectedTokenX(microToReadable(state.balance[tokenX['name'].toLowerCase()]));
@@ -49,6 +50,32 @@ export const Swap: React.FC = () => {
   useEffect(() => {
     setTokenBalances();
   }, [state.balance]);
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      const account = await getBalance(stxAddress || '');
+
+      setTokenXAmount(undefined);
+      setTokenYAmount(0.0);
+      setMinimumReceived(0);
+      setPriceImpact('0');
+      setLpFee('0');
+      setState(prevState => ({
+        ...prevState,
+        balance: {
+          xusd: account.xusd.toString(),
+          diko: account.diko.toString(),
+          stx: account.stx.toString(),
+          xstx: account.xstx.toString(),
+          stdiko: account.stDiko.toString()
+        }
+      }));
+    };
+
+    if (state.currentTxStatus === 'success') {
+      fetchBalance();
+    }
+  }, [state.currentTxStatus]);
 
   useEffect(() => {
     const fetchPair = async (tokenXContract:string, tokenYContract:string) => {
@@ -225,7 +252,13 @@ export const Swap: React.FC = () => {
       postConditions,
       finished: data => {
         console.log('finished swap!', data);
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          showTxModal: true,
+          currentTxMessage: '',
+          currentTxId: data.txId,
+          currentTxStatus: 'pending'
+        }));
       },
     });
   };
@@ -363,17 +396,38 @@ export const Swap: React.FC = () => {
           </div>
         </div>
         <div className="-mt-4 p-4 pt-8 w-full max-w-md bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
-          <dl className="space-y-1 pb-3">
+          <dl className="space-y-1">
             <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-              <dt className="text-sm font-medium text-indigo-500">Minimum Received</dt>
+              <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
+                Minimum Received
+                <div className="ml-2">
+                  <Tooltip className="z-10" shouldWrapChildren={true} label={`Your transaction will revert if there is a large, unfavorable price movement before it is confirmed`}>
+                    <InformationCircleIcon className="block h-4 w-4 text-indigo-400" aria-hidden="true" />
+                  </Tooltip>
+                </div>
+              </dt>
               <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{minimumReceived.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenY.name}</dd>
             </div>
             <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-              <dt className="text-sm font-medium text-indigo-500">Price Impact</dt>
+              <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
+                Price Impact
+                <div className="ml-2">
+                  <Tooltip className="z-10" shouldWrapChildren={true} label={`The difference between the market price and estimated price due to trade size`}>
+                    <InformationCircleIcon className="block h-4 w-4 text-indigo-400" aria-hidden="true" />
+                  </Tooltip>
+                </div>
+              </dt>
               <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">~{priceImpact}%</dd>
             </div>
             <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-              <dt className="text-sm font-medium text-indigo-500">Liquidity Provider fee</dt>
+              <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
+                Liquidity Provider fee
+                <div className="ml-2">
+                  <Tooltip className="z-10" shouldWrapChildren={true} label={`A portion of each trade goes to liquidity providers as a protocol incentive`}>
+                    <InformationCircleIcon className="block h-4 w-4 text-indigo-400" aria-hidden="true" />
+                  </Tooltip>
+                </div>
+              </dt>
               <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{lpFee} {tokenX.name}</dd>
             </div>
           </dl>
