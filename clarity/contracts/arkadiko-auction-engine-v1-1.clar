@@ -578,7 +578,6 @@
 
 (define-private (extend-auction (auction-id uint))
   (let ((auction (get-auction-by-id auction-id)))
-    (print "EXTENDING AUCTION!!!")
     (map-set auctions
       { id: auction-id }
       (merge auction {
