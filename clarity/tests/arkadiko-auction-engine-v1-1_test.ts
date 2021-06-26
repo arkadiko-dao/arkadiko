@@ -50,7 +50,7 @@ Clarinet.test({
 
     // Check total xUSD supply
     call = await xusdManager.totalSupply();
-    call.result.expectOk().expectUint(2001300000030);
+    call.result.expectOk().expectUint(4001300000010);
 
     // Check auction parameters
     let auction:any = auctions[1];
@@ -94,7 +94,7 @@ Clarinet.test({
     vault['auction-ended'].expectBool(true);
 
     call = await xusdManager.totalSupply();
-    call.result.expectOk().expectUint(2000000000030);
+    call.result.expectOk().expectUint(4000000000010);
 
     // now check the wallet of contract - should have burned all required xUSD, and have some left for burning gov tokens
     call = await xusdManager.balanceOf('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1');
@@ -314,14 +314,14 @@ Clarinet.test({
     call.result.expectOk().expectUint(60000000);
 
     call = await xusdManager.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUint(70000000); // 130 - 60 = 70
+    call.result.expectOk().expectUint(1000070000000); // 130 - 60 = 70
 
     // place new bid higher than 60 (e.g. 100)
     result = vaultAuction.bid(deployer, 1000);
     result.expectOk().expectBool(true);
 
     call = await xusdManager.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUint(130000000); // you get the 60 back since your bid got overruled
+    call.result.expectOk().expectUint(1000130000000); // you get the 60 back since your bid got overruled
   }
 });
 

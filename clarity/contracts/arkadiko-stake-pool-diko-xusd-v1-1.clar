@@ -19,7 +19,6 @@
 
 ;; Constants
 (define-constant POOL-TOKEN .arkadiko-swap-token-diko-xusd)
-(define-constant BLOCKS-PER-YEAR u52560)
 
 ;; Variables
 (define-data-var total-staked uint u0)
@@ -100,7 +99,7 @@
       ;; Update sender stake info
       (map-set stakes { staker: staker } { uamount: new-stake-amount, cumm-reward-per-stake: (var-get cumm-reward-per-stake) })
 
-      (ok new-stake-amount)
+      (ok amount)
     )
   )
 )
@@ -137,7 +136,7 @@
       ;; Update sender stake info
       (map-set stakes { staker: staker } { uamount: new-stake-amount, cumm-reward-per-stake: (var-get cumm-reward-per-stake) })
 
-      (ok new-stake-amount)
+      (ok amount)
     )
   )
 )

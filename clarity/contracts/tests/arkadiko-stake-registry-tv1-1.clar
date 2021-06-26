@@ -70,8 +70,7 @@
     )
       (asserts! (is-eq (as-contract tx-sender) (contract-of registry-trait)) ERR-WRONG-REGISTRY)
       (asserts! (is-eq (get deactivated-block pool-info) u0) ERR-POOL-INACTIVE)
-      (try! (contract-call? pool-trait stake registry-trait token-trait tx-sender amount))
-      (ok amount)
+      (contract-call? pool-trait stake registry-trait token-trait tx-sender amount)
     )
   )
 )
@@ -84,8 +83,7 @@
       (pool-info (unwrap! (map-get? pools-data-map { pool: pool }) ERR-POOL-EXIST))
     )
       (asserts! (is-eq (as-contract tx-sender) (contract-of registry-trait)) ERR-WRONG-REGISTRY)
-      (try! (contract-call? pool-trait unstake registry-trait token-trait tx-sender amount))
-      (ok amount)
+      (contract-call? pool-trait unstake registry-trait token-trait tx-sender amount)
     )
   )
 )
@@ -117,30 +115,30 @@
 
 ;; Initialize the contract
 (begin
-  ;; DIKO pool - old
+  ;; DIKO pool
   (map-set pools-data-map
     { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1 }
     {
       name: "DIKO",
-      deactivated-block: u2000,
-      deactivated-rewards-per-block: u600, ;; Should be equal to rewards per block at deactivated-block
-      rewards-percentage: u100000 ;; 10%  - Need to keep this so stakers on old pool can still claim rewards
-    }
-  )
-  ;; DIKO pool - new
-  (map-set pools-data-map
-    { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-tv1-1 }
-    {
-      name: "DIKO-V2",
       deactivated-block: u0,
       deactivated-rewards-per-block: u0,
-      rewards-percentage: u100000 ;; 10% 
+      rewards-percentage: u100000 ;; 10%
     }
   )
 
-  ;; DIKO-xUSD LP
+  ;; DIKO-xUSD LP - Old
   (map-set pools-data-map
     { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1 }
+    {
+      name: "DIKO-xUSD LP",
+      deactivated-block: u2000,
+      deactivated-rewards-per-block: u187919718,  ;; Should be equal to rewards per block at deactivated-block
+      rewards-percentage: u300000 ;; 30%   - Need to keep this so stakers on old pool can still claim rewards
+    }
+  )
+    ;; DIKO-xUSD LP - New
+  (map-set pools-data-map
+    { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-tv1-1 }
     {
       name: "DIKO-xUSD LP",
       deactivated-block: u0,
@@ -148,6 +146,7 @@
       rewards-percentage: u300000 ;; 30% 
     }
   )
+
   ;; wSTX-xUSD LP
   (map-set pools-data-map
     { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-xusd-v1-1 }
