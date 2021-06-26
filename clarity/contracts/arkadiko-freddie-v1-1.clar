@@ -480,8 +480,8 @@
     )
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
-    (asserts! (>= ratio (get collateral-to-debt-ratio collateral-type)) (err ERR-INSUFFICIENT-COLLATERAL))
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
+    (asserts! (>= ratio (get collateral-to-debt-ratio collateral-type)) (err ERR-INSUFFICIENT-COLLATERAL))
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts!
       (<

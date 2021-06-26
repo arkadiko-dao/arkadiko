@@ -33,7 +33,7 @@ Clarinet.test({
     let vaultAuction = new VaultAuction(chain, deployer);
 
     // Initialize price of STX to $2 in the oracle
-    let result = oracleManager.updatePrice("STX", 200);
+    let result = oracleManager.updatePrice("STX", 300);
 
     // Create vault - 1500 STX, 1000 xUSD
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
