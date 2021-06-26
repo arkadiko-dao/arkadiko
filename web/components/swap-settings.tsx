@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { Popover, Transition } from '@headlessui/react';
-import { CogIcon } from '@heroicons/react/solid';
+import { CogIcon, InformationCircleIcon } from '@heroicons/react/solid';
+import { Tooltip } from '@blockstack/ui';
 
 export const SwapSettings: React.FC = ({ slippageTolerance, setDefaultSlippage, setSlippageTolerance }) => {
   const onInputChange = (event: { target: { name: any; value: any; }; }) => {
@@ -35,7 +36,16 @@ export const SwapSettings: React.FC = ({ slippageTolerance, setDefaultSlippage, 
               <Popover.Panel className="absolute max-w-sm mt-3 px-4 right-0 sm:px-0 w-screen z-20">
                 <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                   <div className="relative bg-white p-4">
-                    <h4 className="text-base leading-6 font-medium text-gray-900">Slippage Tolerance</h4>
+                    <div className="inline-flex items-center">
+                      <h4 className="text-base leading-6 font-medium text-gray-900">
+                        Slippage Tolerance
+                      </h4>
+                      <div className="ml-2">
+                        <Tooltip className="z-10" shouldWrapChildren={true} label={`Your transaction will revert if the price changes unfavorably by more of this percentage`}>
+                          <InformationCircleIcon className="block h-5 w-5 text-gray-400" aria-hidden="true" />
+                        </Tooltip>
+                      </div>
+                    </div>
 
                     <div className="flex items-center justify-between mt-2">
                       {slippageTolerance !== 0.4 ? (

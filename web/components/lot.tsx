@@ -4,15 +4,14 @@ import { contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useConnect } from '@stacks/connect-react';
 import { stacksNetwork as network } from '@common/utils';
 import { resolveReserveName, tokenTraits } from '@common/vault-utils';
-import { TxStatus } from '@components/tx-status';
-import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { AppContext } from '@common/context';
+import { useSTXAddress } from '@common/use-stx-address';
 
 export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collateralToken, xusd }) => {
   const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const [_, setState] = useContext(AppContext);
-  websocketTxUpdater();
+  const stxAddress = useSTXAddress();
+  const [state, setState] = useContext(AppContext);
 
   const redeemLot = async () => {
     const token = tokenTraits[collateralToken.toLowerCase()]['name'];
@@ -20,6 +19,7 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collatera
     await doContractCall({
       network,
       contractAddress,
+      stxAddress,
       contractName: 'arkadiko-auction-engine-v1-1',
       functionName: 'redeem-lot-collateral',
       functionArgs: [
@@ -36,6 +36,12 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collatera
       },
     });
   };
+
+  useEffect(() => {
+    if (state.currentTxStatus === 'success') {
+      window.location.reload();
+    }
+  }, [state.currentTxStatus]);
 
   return (
     <tr className="bg-white">

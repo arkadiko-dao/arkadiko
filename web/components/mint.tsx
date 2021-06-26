@@ -15,7 +15,7 @@ import {
   makeContractCall
 } from '@stacks/transactions';
 import { VaultGroup } from './vault-group';
-import { getPrice } from '@common/get-price';
+import { getPrice, getDikoAmmPrice } from '@common/get-price';
 import { Link } from '@components/link';
 import { AppContext } from '@common/context';
 import { useConnect } from '@stacks/connect-react';
@@ -41,7 +41,7 @@ export const Mint = () => {
       let stxPrice = await getPrice('STX');
       setStxPrice(stxPrice);
 
-      let dikoPrice = await getPrice('DIKO');
+      let dikoPrice = await getDikoAmmPrice();
       setDikoPrice(dikoPrice);
     };
 
@@ -145,6 +145,7 @@ export const Mint = () => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: address,
       contractName: 'arkadiko-dao',
       functionName: 'request-diko-tokens',
       functionArgs: [
@@ -162,6 +163,7 @@ export const Mint = () => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: address,
       contractName: 'arkadiko-freddie-v1-1',
       functionName: 'redeem-xusd',
       functionArgs: [
@@ -260,7 +262,7 @@ export const Mint = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          {microToReadable(state.balance['stx']).toLocaleString()} STX
+                          {microToReadable(state.balance['stx']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} STX
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           ${stxPrice / 100}
@@ -279,10 +281,10 @@ export const Mint = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          {microToReadable(state.balance['diko']).toLocaleString()} DIKO
+                          {microToReadable(state.balance['diko']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          ${dikoPrice / 100}
+                          ${dikoPrice}
                         </td>
                       </tr>
 
@@ -298,7 +300,7 @@ export const Mint = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          {microToReadable(state.balance['xusd']).toLocaleString()} xUSD
+                          {microToReadable(state.balance['xusd']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xUSD
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           $1

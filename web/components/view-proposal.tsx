@@ -5,18 +5,22 @@ import { callReadOnlyFunction, contractPrincipalCV, uintCV, cvToJSON } from '@st
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
-import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { AppContext } from '@common/context';
 
 export const ViewProposal = ({ match }) => {
-  const [_, setState] = useContext(AppContext);
+  const [state, setState] = useContext(AppContext);
   const stxAddress = useSTXAddress();
   const [proposal, setProposal] = useState({});
   const [showVoteModal, setShowVoteModal] = useState(false);
   const [amountOfVotes, setAmountOfVotes] = useState('');
   const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  websocketTxUpdater();
+  
+  useEffect(() => {
+    if (state.currentTxStatus === 'success') {
+      window.location.reload();
+    }
+  }, [state.currentTxStatus]);
 
   useEffect(() => {
     let mounted = true;
@@ -59,6 +63,7 @@ export const ViewProposal = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress,
       contractName: 'arkadiko-governance-v1-1',
       functionName: 'vote-for',
       functionArgs: [
@@ -77,6 +82,7 @@ export const ViewProposal = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress,
       contractName: 'arkadiko-governance-v1-1',
       functionName: 'vote-against',
       functionArgs: [

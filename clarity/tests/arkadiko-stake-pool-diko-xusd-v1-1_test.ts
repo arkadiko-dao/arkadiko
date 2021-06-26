@@ -4,7 +4,7 @@ import {
     Clarinet,
     Tx,
     types,
-} from "https://deno.land/x/clarinet@v0.10.0/index.ts";
+  } from "https://deno.land/x/clarinet@v0.13.0/index.ts";
 
 import { 
   OracleManager
@@ -588,10 +588,10 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
-      types.uint(25000000000)
+      types.uint(0)
     ], wallet_1.address)
   ]);
-  block.receipts[0].result.expectErr().expectUint(1);
+  block.receipts[0].result.expectErr().expectUint(3);
 }
 });
 

@@ -1,11 +1,11 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Auction } from './auction';
 import { Modal } from '@blockstack/ui';
 import { contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { AppContext } from '@common/context';
-import { websocketTxUpdater } from '@common/websocket-tx-updater';
+import { useSTXAddress } from '@common/use-stx-address';
 
 export interface AuctionProps {
   id: string;
@@ -24,8 +24,14 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
   const [bidLotId, setBidLotId] = useState(0);
   const [preferredBid, setPreferredBid] = useState(0);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const stxAddress = useSTXAddress();
   const [state, setState] = useContext(AppContext);
-  websocketTxUpdater();
+
+  useEffect(() => {
+    if (state.currentTxStatus === 'success') {
+      window.location.reload();
+    }
+  }, [state.currentTxStatus]);
 
   const auctionItems = auctions.map((auction: object) =>
     <Auction
@@ -56,6 +62,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress,
       contractName: 'arkadiko-auction-engine-v1-1',
       functionName: 'bid',
       functionArgs: [
