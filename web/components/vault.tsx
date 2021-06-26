@@ -8,7 +8,7 @@ import { useConnect } from '@stacks/connect-react';
 import { uintCV, contractPrincipalCV, callReadOnlyFunction, cvToJSON } from '@stacks/transactions';
 import { resolveReserveName } from '@common/vault-utils';
 import { tokenTraits } from '@common/vault-utils';
-import { websocketTxUpdater } from '@common/websocket-tx-updater';
+import { useSTXAddress } from '@common/use-stx-address';
 
 export interface VaultProps {
   id: string;
@@ -44,9 +44,9 @@ export const Vault: React.FC<VaultProps> = ({
 }) => {
   const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const stxAddress = useSTXAddress();
   const [stabilityFee, setStabilityFee] = useState(0);
   const [_, setState] = useContext(AppContext);
-  websocketTxUpdater();
 
   useEffect(() => {
     const fetchFees = async () => {
@@ -90,6 +90,7 @@ export const Vault: React.FC<VaultProps> = ({
     await doContractCall({
       network,
       contractAddress,
+      stxAddress,
       contractName: 'arkadiko-freddie-v1-1',
       functionName: 'withdraw-leftover-collateral',
       functionArgs: [

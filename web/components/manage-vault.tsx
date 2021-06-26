@@ -11,7 +11,6 @@ import {
   createAssetInfo, FungibleConditionCode, makeStandardSTXPostCondition } from '@stacks/transactions';
 import { AppContext, CollateralTypeProps } from '@common/context';
 import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
-import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { debtClass, VaultProps } from './vault';
 import { getPrice } from '@common/get-price';
 import { getLiquidationPrice, availableCollateralToWithdraw, availableCoinsToMint } from '@common/vault-utils';
@@ -170,6 +169,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: senderAddress,
       contractName: 'arkadiko-freddie-v1-1',
       functionName: 'pay-stability-fee',
       functionArgs: [
@@ -191,6 +191,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: senderAddress,
       contractName: "arkadiko-freddie-v1-1",
       functionName: 'burn',
       functionArgs: [
@@ -211,8 +212,13 @@ export const ManageVault = ({ match }) => {
   let debtRatio = 0;
   if (match.params.id) {
     debtRatio = getCollateralToDebtRatio(match.params.id)?.collateralToDebt;
-    websocketTxUpdater();
   }
+
+  useEffect(() => {
+    if (state.currentTxStatus === 'success') {
+      window.location.reload();
+    }
+  }, [state.currentTxStatus]);
 
   const closeVault = async () => {
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
@@ -220,6 +226,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: senderAddress,
       contractName: "arkadiko-freddie-v1-1",
       functionName: 'burn',
       functionArgs: [
@@ -242,6 +249,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: senderAddress,
       contractName: "arkadiko-vault-rewards-v1-1",
       functionName: "claim-pending-rewards",
       functionArgs: [],
@@ -285,6 +293,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: senderAddress,
       contractName: "arkadiko-freddie-v1-1",
       functionName: 'deposit',
       functionArgs: [
@@ -346,6 +355,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: senderAddress,
       contractName: "arkadiko-freddie-v1-1",
       functionName: 'mint',
       functionArgs: [
@@ -368,6 +378,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: senderAddress,
       contractName: "arkadiko-freddie-v1-1",
       functionName: 'toggle-stacking',
       functionArgs: [uintCV(match.params.id)],
@@ -383,6 +394,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: senderAddress,
       contractName: "arkadiko-freddie-v1-1",
       functionName: 'stack-collateral',
       functionArgs: [uintCV(match.params.id)],
@@ -403,6 +415,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: senderAddress,
       contractName: "arkadiko-freddie-v1-1",
       functionName: 'withdraw',
       functionArgs: [
@@ -425,6 +438,7 @@ export const ManageVault = ({ match }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: senderAddress,
       contractName: 'arkadiko-liquidator-v1-1',
       functionName: 'notify-risky-vault',
       functionArgs: [
@@ -497,7 +511,7 @@ export const ManageVault = ({ match }) => {
                     <InputAmount
                       balance={(state.balance['stx'] / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
                       token={vault?.collateralToken.toUpperCase()}
-                      inputName="depositExtraStx"
+                      inputName="depositCollateral"
                       inputId="depositExtraStxAmount"
                       inputValue={extraCollateralDeposit}
                       inputLabel="Deposit Extra Collateral"

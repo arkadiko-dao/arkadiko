@@ -145,6 +145,7 @@ export const Mint = () => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: address,
       contractName: 'arkadiko-dao',
       functionName: 'request-diko-tokens',
       functionArgs: [
@@ -162,6 +163,7 @@ export const Mint = () => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: address,
       contractName: 'arkadiko-freddie-v1-1',
       functionName: 'redeem-xusd',
       functionArgs: [

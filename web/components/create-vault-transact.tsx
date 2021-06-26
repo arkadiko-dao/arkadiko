@@ -12,7 +12,6 @@ import {
 import { useSTXAddress } from '@common/use-stx-address';
 import { ExplorerLink } from './explorer-link';
 import { resolveReserveName, tokenTraits } from '@common/vault-utils';
-import { websocketTxUpdater } from '@common/websocket-tx-updater';
 import { AppContext } from '@common/context';
 
 export const CreateVaultTransact = ({ coinAmounts }) => {
@@ -20,7 +19,6 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
   const { doContractCall } = useConnect();
   const address = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  websocketTxUpdater('/vaults');
 
   const callCollateralizeAndMint = async () => {
     const token = tokenTraits[coinAmounts['token-name'].toLowerCase()]['name'];
@@ -31,7 +29,8 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       stringAsciiCV(coinAmounts['token-type'].toUpperCase()),
       contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', resolveReserveName(coinAmounts['token-name'].toUpperCase())),
       contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
-      contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
+      contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1'),
+      contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1')
     ];
 
     let postConditions = [];
@@ -48,6 +47,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress: address,
       contractName: 'arkadiko-freddie-v1-1',
       functionName: 'collateralize-and-mint',
       functionArgs: args,
@@ -57,12 +57,21 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
         console.log('finished collateralizing!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'creating vault...' }));
       },
+      onCancel: () => {
+        window.location.href = '/';
+      }
     });
   };
 
   useEffect(() => {
     callCollateralizeAndMint();
   }, []);
+
+  useEffect(() => {
+    if (state.currentTxStatus === 'success') {
+      window.location.href = '/vaults';
+    }
+  }, [state.currentTxStatus]);
 
   return (
     <Box>
