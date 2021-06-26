@@ -1,7 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Container } from './home';
-import { SwitchVerticalIcon, PlusCircleIcon, MinusCircleIcon } from '@heroicons/react/solid';
+import { SwitchVerticalIcon, InformationCircleIcon, PlusCircleIcon, MinusCircleIcon } from '@heroicons/react/solid';
+import { Tooltip } from '@blockstack/ui';
+
 import { microToReadable } from '@common/vault-utils';
 import {
   callReadOnlyFunction, cvToJSON,
@@ -237,6 +239,7 @@ export const Swap: React.FC = () => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress,
       contractName: 'arkadiko-swap-v1-1',
       functionName: contractName,
       functionArgs: [
@@ -393,17 +396,38 @@ export const Swap: React.FC = () => {
           </div>
         </div>
         <div className="-mt-4 p-4 pt-8 w-full max-w-md bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
-          <dl className="space-y-1 pb-3">
+          <dl className="space-y-1">
             <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-              <dt className="text-sm font-medium text-indigo-500">Minimum Received</dt>
+              <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
+                Minimum Received
+                <div className="ml-2">
+                  <Tooltip className="z-10" shouldWrapChildren={true} label={`Your transaction will revert if there is a large, unfavorable price movement before it is confirmed`}>
+                    <InformationCircleIcon className="block h-4 w-4 text-indigo-400" aria-hidden="true" />
+                  </Tooltip>
+                </div>
+              </dt>
               <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{minimumReceived.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenY.name}</dd>
             </div>
             <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-              <dt className="text-sm font-medium text-indigo-500">Price Impact</dt>
+              <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
+                Price Impact
+                <div className="ml-2">
+                  <Tooltip className="z-10" shouldWrapChildren={true} label={`The difference between the market price and estimated price due to trade size`}>
+                    <InformationCircleIcon className="block h-4 w-4 text-indigo-400" aria-hidden="true" />
+                  </Tooltip>
+                </div>
+              </dt>
               <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">~{priceImpact}%</dd>
             </div>
             <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-              <dt className="text-sm font-medium text-indigo-500">Liquidity Provider fee</dt>
+              <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
+                Liquidity Provider fee
+                <div className="ml-2">
+                  <Tooltip className="z-10" shouldWrapChildren={true} label={`A portion of each trade goes to liquidity providers as a protocol incentive`}>
+                    <InformationCircleIcon className="block h-4 w-4 text-indigo-400" aria-hidden="true" />
+                  </Tooltip>
+                </div>
+              </dt>
               <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{lpFee} {tokenX.name}</dd>
             </div>
           </dl>

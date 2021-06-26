@@ -155,6 +155,7 @@ export const Auctions: React.FC = () => {
     await doContractCall({
       network,
       contractAddress,
+      stxAddress,
       contractName: 'arkadiko-freddie-v1-1',
       functionName: 'redeem-stx',
       functionArgs: [
