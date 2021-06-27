@@ -295,7 +295,7 @@
     )
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
-    (asserts! (>= ratio (get liquidation-ratio collateral-type-object)) (err ERR-INSUFFICIENT-COLLATERAL))
+    (asserts! (>= ratio (get collateral-to-debt-ratio collateral-type-object)) (err ERR-INSUFFICIENT-COLLATERAL))
     (asserts!
       (<=
         (get total-debt collateral-type-object)
@@ -451,12 +451,26 @@
   (coll-type <collateral-types-trait>)
   (oracle <oracle-trait>)
 )
-  (let ((vault (get-vault-by-id vault-id))
-       (new-total-debt (+ extra-debt (get debt vault)))
-       (updated-vault (merge vault {
-          debt: new-total-debt,
-          updated-at-block-height: block-height
-        })))
+  (let (
+    (vault (get-vault-by-id vault-id))
+    (new-total-debt (+ extra-debt (get debt vault)))
+    (updated-vault (merge vault {
+      debt: new-total-debt,
+      updated-at-block-height: block-height
+    }))
+    (collateral-type (unwrap-panic (contract-call? coll-type get-collateral-type-by-name (get collateral-type vault))))
+    (ratio
+      (unwrap!
+        (contract-call? reserve calculate-current-collateral-to-debt-ratio
+          (get collateral-token vault)
+          new-total-debt
+          (get collateral vault)
+          oracle
+        )
+        (err ERR-WRONG-DEBT)
+      )
+    )
+  )
     (asserts!
       (and
         (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
@@ -467,11 +481,12 @@
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
+    (asserts! (>= ratio (get collateral-to-debt-ratio collateral-type)) (err ERR-INSUFFICIENT-COLLATERAL))
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts!
       (<
-        (unwrap-panic (contract-call? coll-type get-total-debt (get collateral-type vault)))
-        (unwrap-panic (contract-call? coll-type get-maximum-debt (get collateral-type vault)))
+        (get total-debt collateral-type)
+        (get maximum-debt collateral-type)
       )
       (err ERR-MAXIMUM-DEBT-REACHED)
     )
@@ -483,7 +498,7 @@
         (get collateral vault)
         (get debt vault)
         extra-debt
-        (get collateral-type vault)
+        (get collateral-to-debt-ratio collateral-type)
         oracle
       )
     )

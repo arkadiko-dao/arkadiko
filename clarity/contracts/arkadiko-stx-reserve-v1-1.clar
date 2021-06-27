@@ -75,15 +75,16 @@
 (define-public (calculate-xusd-count
   (token (string-ascii 12))
   (ustx-amount uint)
-  (collateral-type (string-ascii 12))
+  (collateralization-ratio uint)
   (oracle <oracle-trait>)
 )
   (let ((stx-price-in-cents (unwrap-panic (contract-call? oracle fetch-price token))))
     (let ((amount
       (/
         (* ustx-amount (get last-price-in-cents stx-price-in-cents))
-        u200 ;; always calculate based on 200 coll-to-debt?
-      )))
+        collateralization-ratio
+      ))
+    )
       (ok amount)
     )
   )
@@ -157,14 +158,14 @@
   (ustx-amount uint)
   (current-debt uint)
   (extra-debt uint)
-  (collateral-type (string-ascii 12))
+  (collateralization-ratio uint)
   (oracle <oracle-trait>)
 )
   (begin
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq token-string "STX") (err ERR-WRONG-TOKEN))
 
-    (let ((max-new-debt (- (unwrap-panic (calculate-xusd-count token-string ustx-amount collateral-type oracle)) current-debt)))
+    (let ((max-new-debt (- (unwrap-panic (calculate-xusd-count token-string ustx-amount collateralization-ratio oracle)) current-debt)))
       (if (>= max-new-debt extra-debt)
         (match (print (as-contract (contract-call? .arkadiko-dao mint-token .xusd-token extra-debt vault-owner)))
           success (ok true)
