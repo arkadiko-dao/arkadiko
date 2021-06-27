@@ -63,6 +63,7 @@
 (define-data-var auction-ids (list 1500 uint) (list u0))
 (define-data-var lot-size uint u1000000000) ;; 1000 xUSD
 (define-data-var auction-engine-shutdown-activated bool false)
+(define-data-var removing-auction-id uint u0)
 
 (define-read-only (get-auction-by-id (id uint))
   (default-to
@@ -396,7 +397,14 @@
   )
 )
 
-(define-public (redeem-lot-collateral (vault-manager <vault-manager-trait>) (ft <ft-trait>) (reserve <vault-trait>) (auction-id uint) (lot-index uint))
+(define-public (redeem-lot-collateral
+  (vault-manager <vault-manager-trait>)
+  (ft <ft-trait>)
+  (reserve <vault-trait>)
+  (coll-type <collateral-types-trait>)
+  (auction-id uint)
+  (lot-index uint)
+)
   (let (
     (last-bid (get-last-bid auction-id lot-index))
     (auction (get-auction-by-id auction-id))
@@ -439,9 +447,21 @@
       )
       (try! (contract-call? vault-manager redeem-auction-collateral ft token-string reserve (get collateral-amount last-bid) tx-sender))
     )
+    (if (< (get xusd last-bid) (var-get lot-size))
+      (begin
+        (map-set auctions
+          { id: auction-id }
+          (merge auction {
+            lots-sold: (+ u1 (get lots-sold auction)),
+          })
+        )
+        (try! (close-auction vault-manager coll-type auction-id))
+      )
+      false
+    )
+
     (print { type: "lot", action: "redeemed", data: { auction-id: auction-id, lot-index: lot-index } })
     (ok true)
-
   )
 )
 
@@ -502,16 +522,14 @@
     (let (
       (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id (get vault-id auction)))
     )
-      ;; 
       (if (> (get debt vault) (get total-debt-burned auction))
-        (begin
-          (try! (contract-call? .arkadiko-dao burn-token .xusd-token
-            (min-of (get total-debt-raised auction) (- (get debt vault) (get total-debt-burned auction)))
-            (as-contract tx-sender))
-          )
+        (let (
+          (amount-to-burn (min-of (- (get total-debt-raised auction) (get total-debt-burned auction)) (- (get debt vault) (get total-debt-burned auction))))
+        )
+          (try! (contract-call? .arkadiko-dao burn-token .xusd-token amount-to-burn (as-contract tx-sender)))
           (map-set auctions
             { id: auction-id }
-            (merge auction { total-debt-burned: (min-of (get total-debt-raised auction) (- (get debt vault) (get total-debt-burned auction))) })
+            (merge auction { total-debt-burned: (+ (get total-debt-burned auction) amount-to-burn) })
           )
         )
         true
@@ -519,30 +537,36 @@
     )
     (try!
       (if (>= (get total-debt-raised auction) (get debt-to-raise auction))
-        (if (is-eq (get auction-type auction) "collateral")
-          (contract-call?
-            vault-manager
-            finalize-liquidation
-            (get vault-id auction)
-            (- (get collateral-amount auction) (get total-collateral-sold auction))
-            coll-type
-          )
-          (contract-call?
-            vault-manager
-            finalize-liquidation
-            (get vault-id auction)
-            u0
-            coll-type
+        (begin
+          (try! (remove-auction auction-id))
+          (if (is-eq (get auction-type auction) "collateral")
+            (contract-call?
+              vault-manager
+              finalize-liquidation
+              (get vault-id auction)
+              (- (get collateral-amount auction) (get total-collateral-sold auction))
+              coll-type
+            )
+            (contract-call?
+              vault-manager
+              finalize-liquidation
+              (get vault-id auction)
+              u0
+              coll-type
+            )
           )
         )
         (if (< (get total-collateral-sold auction) (get collateral-amount auction)) ;; we have some collateral left to auction
           ;; extend auction with collateral that is left
           (extend-auction auction-id)
-          ;; no collateral left. Need to sell governance token to raise more xUSD
-          (start-debt-auction
-            (get vault-id auction)
-            (- (get debt-to-raise auction) (get total-debt-raised auction))
-            u0
+          (begin
+            ;; no collateral left. Need to sell governance token to raise more xUSD
+            (try! (remove-auction auction-id))
+            (start-debt-auction
+              (get vault-id auction)
+              (- (get debt-to-raise auction) (get total-debt-raised auction))
+              u0
+            )
           )
         )
       )
@@ -562,6 +586,24 @@
       })
     )
     (ok true)
+  )
+)
+
+(define-private (remove-auction (auction-id uint))
+  (if true
+    (begin
+      (var-set removing-auction-id auction-id)
+      (var-set auction-ids (unwrap-panic (as-max-len? (filter remove-closed-auction (var-get auction-ids)) u1500)))
+      (ok true)
+    )
+    (err u0)
+  )
+)
+
+(define-private (remove-closed-auction (auction-id uint))
+  (if (is-eq auction-id (var-get removing-auction-id))
+    false
+    true
   )
 )
 
