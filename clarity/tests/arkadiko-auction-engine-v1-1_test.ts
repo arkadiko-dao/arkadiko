@@ -900,12 +900,12 @@ Clarinet.test({
     // Initialize price of STX to $0.63 in the oracle
     let result = oracleManager.updatePrice("STX", 63);
 
-    // Create vault - 4999 STX, 1500 xUSD
-    result = vaultManager.createVault(deployer, "STX-A", 4999, 1500);
+    // Create vault - 6100 STX, 1500 xUSD
+    result = vaultManager.createVault(deployer, "STX-A", 6100, 1500);
     result.expectOk().expectUint(1500000000);
 
-    // Upate price to $0.51 and notify risky vault
-    result = oracleManager.updatePrice("STX", 51);
+    // Upate price to $0.41 and notify risky vault
+    result = oracleManager.updatePrice("STX", 41);
     result = vaultLiquidator.notifyRiskyVault(deployer);
     result.expectOk().expectUint(5200);
 
@@ -955,12 +955,12 @@ Clarinet.test({
     // Initialize price of STX to $0.63 in the oracle
     let result = oracleManager.updatePrice("STX", 63);
 
-    // Create vault - 4999 STX, 1500 xUSD
-    result = vaultManager.createVault(deployer, "STX-A", 4999, 1500);
+    // Create vault - 5999 STX, 1500 xUSD
+    result = vaultManager.createVault(deployer, "STX-A", 5999, 1500);
     result.expectOk().expectUint(1500000000);
 
-    // Upate price to $0.51 and notify risky vault
-    result = oracleManager.updatePrice("STX", 51);
+    // Upate price to $0.41 and notify risky vault
+    result = oracleManager.updatePrice("STX", 41);
     result = vaultLiquidator.notifyRiskyVault(deployer);
     result.expectOk().expectUint(5200);
 
@@ -998,7 +998,7 @@ Clarinet.test({
 
     call = await vaultManager.getVaultById(1, deployer);
     vault = call.result.expectTuple();
-    vault['leftover-collateral'].expectUint(457332768);
+    vault['leftover-collateral'].expectUint(409255714);
     vault['auction-ended'].expectBool(true);
   }
 });
