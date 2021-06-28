@@ -3,6 +3,8 @@ import { AppContext } from '@common/context';
 import { Container } from './home';
 import { SwitchVerticalIcon, InformationCircleIcon, PlusCircleIcon, MinusCircleIcon } from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
+import { NavLink as RouterLink } from 'react-router-dom'
+
 
 import { microToReadable } from '@common/vault-utils';
 import {
@@ -364,7 +366,7 @@ export const Swap: React.FC = () => {
                 </div>
               </div>
 
-              <p className="text-sm mt-2 font-semibold text-right text-gray-400">1 {tokenY.name} = ~{currentPrice} {tokenX.name}</p>
+              <p className="text-sm mt-2 font-semibold text-right text-gray-400">1 {tokenY.name} = ≈{currentPrice} {tokenX.name}</p>
 
               {state.userData && !foundPair ? (
                 <button
@@ -417,7 +419,7 @@ export const Swap: React.FC = () => {
                   </Tooltip>
                 </div>
               </dt>
-              <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">~{priceImpact}%</dd>
+              <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">≈{priceImpact}%</dd>
             </div>
             <div className="sm:grid sm:grid-cols-2 sm:gap-4">
               <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
@@ -431,20 +433,20 @@ export const Swap: React.FC = () => {
               <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{lpFee} {tokenX.name}</dd>
             </div>
           </dl>
-          {/* <div className="space-y flex flex-col mt-3">
-            <Box className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
+          <div className="space-y flex flex-col mt-3">
+            <div className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
               <RouterLink className="inline-flex items-center" to={`swap/add/${tokenX.name}/${tokenY.name}`}>
                 <PlusCircleIcon className="h-5 w-5 mr-1" aria-hidden="true" />
                 Add Liquidity to {tokenX.name}-{tokenY.name}
               </RouterLink>
-            </Box>
-            <Box className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
+            </div>
+            <div className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
               <RouterLink className="inline-flex items-center" to={`swap/remove/${tokenX.name}/${tokenY.name}`}>
                 <MinusCircleIcon className="h-5 w-5 mr-1" aria-hidden="true" />
                 Remove Liquidity from {tokenX.name}-{tokenY.name}
               </RouterLink>
-            </Box>
-          </div> */}
+            </div>
+          </div>
         </div>
       </main>
     </Container>

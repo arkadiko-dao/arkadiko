@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
-import { Box } from '@blockstack/ui';
 import { Landing } from './landing';
 import { Container } from './home'
 import { microToReadable } from '@common/vault-utils';
@@ -9,6 +8,12 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { tokenTraits } from '@common/vault-utils';
+import { InformationCircleIcon, PlusCircleIcon, MinusCircleIcon } from '@heroicons/react/solid';
+import { CashIcon } from '@heroicons/react/outline';
+import { PlusIcon } from '@heroicons/react/outline';
+import { TokenSwapList, tokenList } from '@components/token-swap-list';
+import { Tooltip } from '@blockstack/ui';
+
 
 export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -23,6 +28,8 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
 
   const tokenX = match.params.currencyIdA;
   const tokenY = match.params.currencyIdB;
+  const setTokenX = useState(tokenList[0]);
+  const setTokenY = useState(tokenList[1]);
   const tokenXTrait = tokenTraits[tokenX.toLowerCase()]['swap'];
   const tokenYTrait = tokenTraits[tokenY.toLowerCase()]['swap'];
   const swapTrait = tokenTraits[`${tokenX.toLowerCase()}${tokenY.toLowerCase()}`]['name'];
@@ -108,9 +115,195 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
   };
 
   return (
-    <Box>
+    <>
       {state.userData ? (
         <Container>
+          <main className="flex-1 relative pb-8 flex flex-col items-center justify-center py-12">
+            <div className="w-full max-w-lg bg-white shadow rounded-lg relative z-10">
+              <div className="flex flex-col p-4">
+                <div className="flex justify-between mb-4">
+                  <div>
+                    <h2 className="text-lg leading-6 font-medium text-gray-900">
+                      Liquidity
+                    </h2>
+                    <p className="mt-1 text-sm text-gray-600 inline-flex items-center">
+                      Add liquidity to receive LP tokens
+                      <Tooltip className="z-10" shouldWrapChildren={true} label={`Providing liquidity through a pair of assets is a great way to earn passive income from your idle crypto tokens.`}>
+                        <InformationCircleIcon className="ml-2 block h-5 w-5 text-gray-400" aria-hidden="true" />
+                      </Tooltip>
+                    </p>
+                  </div>
+                </div>
+                <div className="group p-0.5 rounded-lg flex w-full bg-gray-50 hover:bg-gray-100">
+                  <button className="p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md flex items-center justify-center flex-1 text-sm text-gray-600 font-medium focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus:outline-none focus-visible:ring-offset-gray-100 bg-white ring-1 ring-black ring-opacity-5">
+                    <span className="sr-only lg:not-sr-only text-gray-600 group-hover:text-gray-900 inline-flex items-center">
+                      <PlusCircleIcon className="h-4 w-4 mr-1 text-indigo-500" aria-hidden="true" />
+                      Add
+                    </span>
+                  </button>
+
+                  <button className="ml-0.5 flex items-center justify-center flex-1 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 rounded-md focus:outline-none focus-visible:ring-offset-gray-100" >
+                    <span className="p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md inline-flex items-center text-sm font-medium">
+                      <span className="sr-only lg:not-sr-only text-gray-600 group-hover:text-gray-900 inline-flex items-center">
+                        <MinusCircleIcon className="lg:mr-2 text-gray-500 group-hover:text-gray-900 h-4 w-4 mr-1" aria-hidden="true" />
+                        Remove
+                      </span>
+                    </span>
+                  </button>
+                </div>
+              
+                <form className="mt-4">
+                  <div className="rounded-md shadow-sm bg-gray-50 border border-gray-200 hover:border-gray-300 focus-within:border-indigo-200">
+                    <div className="flex items-center p-4 pb-2">
+
+                      <TokenSwapList
+                        selected={tokenX}
+                        setSelected={setTokenX}
+                      />
+
+                      <label htmlFor="tokenXAmount" className="sr-only">{tokenX.name}</label>
+                      <input
+                        type="number"
+                        inputMode="decimal" 
+                        autoFocus={true}
+                        autoComplete="off"
+                        autoCorrect="off"
+                        name="tokenXAmount"
+                        id="tokenXAmount"
+                        pattern="^[0-9]*[.,]?[0-9]*$"
+                        placeholder="0.0"
+                        value={tokenXAmount || ''}
+                        onChange={onInputChange}
+                        className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1"
+                        style={{appearance: 'textfield'}} />
+                    </div>
+
+                    <div className="flex items-center text-sm p-4 pt-0 justify-end">
+                      <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center justify-start">
+                          <p className="text-gray-500">Balance: {balanceSelectedTokenX.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenX.name}</p>
+                          {parseInt(balanceSelectedTokenX, 10) > 0 ? (
+                            <button
+                              type="button"
+                              onClick={() => setMaximum()}
+                              className="ml-2 p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                            >
+                              Max.
+                            </button>
+                          ) : `` }
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                
+                  <div className="my-3 flex items-center justify-center">
+                    <PlusIcon className="text-gray-500 h-6 w-6" aria-hidden="true" />
+                  </div>
+
+                  <div className="rounded-md shadow-sm bg-gray-50 border border-gray-200 hover:border-gray-300 focus-within:border-indigo-200">
+                    <div className="flex items-center p-4 pb-2">
+
+                      <TokenSwapList
+                        selected={tokenX}
+                        setSelected={setTokenX}
+                      />
+
+                      <label htmlFor="tokenXAmount" className="sr-only">{tokenX.name}</label>
+                      <input
+                        type="number"
+                        inputMode="decimal" 
+                        autoFocus={true}
+                        autoComplete="off"
+                        autoCorrect="off"
+                        name="tokenXAmount"
+                        id="tokenXAmount"
+                        pattern="^[0-9]*[.,]?[0-9]*$"
+                        placeholder="0.0"
+                        value={tokenXAmount || ''}
+                        onChange={onInputChange}
+                        className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1"
+                        style={{appearance: 'textfield'}} />
+                    </div>
+
+                    <div className="flex items-center text-sm p-4 pt-0 justify-end">
+                      <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center justify-start">
+                          <p className="text-gray-500">Balance: {balanceSelectedTokenX.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenX.name}</p>
+                          {parseInt(balanceSelectedTokenX, 10) > 0 ? (
+                            <button
+                              type="button"
+                              onClick={() => setMaximum()}
+                              className="ml-2 p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                            >
+                              Max.
+                            </button>
+                          ) : `` }
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 p-4 w-full bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
+                    <h4 className="uppercase font-semibold text-xs text-indigo-700 ">Prices and pool share</h4>
+                    <dl className="mt-2 space-y-1">
+                      <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                        <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
+                          Your pool tokens
+                          <div className="ml-2">
+                            <Tooltip className="z-10" shouldWrapChildren={true} label={`Your transaction will revert if there is a large, unfavorable price movement before it is confirmed`}>
+                              <InformationCircleIcon className="block h-4 w-4 text-indigo-400" aria-hidden="true" />
+                            </Tooltip>
+                          </div>
+                        </dt>
+                        <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">0.6548</dd>
+                      </div>
+                      <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                        <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
+                          Your pool share
+                          <div className="ml-2">
+                            <Tooltip className="z-10" shouldWrapChildren={true} label={`The difference between the market price and estimated price due to trade size`}>
+                              <InformationCircleIcon className="block h-4 w-4 text-indigo-400" aria-hidden="true" />
+                            </Tooltip>
+                          </div>
+                        </dt>
+                        <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">0.00853%</dd>
+                      </div>
+                      <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                        <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
+                          Pooled xUSD
+                        </dt>
+                        <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">336.39</dd>
+                      </div>
+                      <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                        <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
+                          Pooled DIKO
+                        </dt>
+                        <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">98.26290</dd>
+                      </div>
+                    </dl>
+                  </div>
+
+                  <button
+                    type="button"                  
+                    className="w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                  Confirm adding liquidity
+                  </button>
+
+                  <div className="flex-1 flex items-start mt-4">
+                    <span className="flex p-2 rounded-lg bg-gray-100">
+                      <CashIcon className="h-6 w-6 text-indigo-500" aria-hidden="true" />
+                    </span>
+                    <p className="ml-4 text-sm text-gray-500">
+                      By adding liquidity, you will earn 0.3% on trades for this pool, proportional to your share of liquidity. Earned fees are added back to the pool and claimable by removing liquidity.
+                    </p>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </main>
+
+
           <main className="flex-1 relative pb-8 z-0 overflow-y-auto">
             <div className="mt-8">
               <h2 className="text-lg leading-6 font-medium text-gray-900 mb-4">
@@ -211,7 +404,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                 </div>
               </div>
               <p className="font-light ml-2">Balance: {balanceSelectedTokenY} {tokenY}</p>
-              <p className="font-light ml-2">1 {tokenY} = ~{currentPrice} {tokenX}</p>
+              <p className="font-light ml-2">1 {tokenY} = ≈{currentPrice} {tokenX}</p>
 
               <div className="mt-5 ml-5 sm:flex sm:items-start sm:justify-between">
                 <div className="max-w-xl text-sm text-gray-500">
@@ -228,6 +421,6 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
       ) : (
         <Landing />
       )}
-    </Box>
+    </>
   );
 };
