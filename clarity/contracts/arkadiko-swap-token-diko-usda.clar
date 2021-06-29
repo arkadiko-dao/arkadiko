@@ -1,11 +1,11 @@
 (impl-trait .arkadiko-swap-trait-v1.swap-trait)
 
-(define-fungible-token diko-xusd)
+(define-fungible-token diko-usda)
 
 (define-constant ERR-NOT-AUTHORIZED u21401)
 
 (define-public (transfer (amount uint) (sender principal) (recipient principal) (memo (optional (buff 34))))
-  (match (ft-transfer? diko-xusd amount sender recipient)
+  (match (ft-transfer? diko-usda amount sender recipient)
     response (begin
       (print memo)
       (ok response)
@@ -15,11 +15,11 @@
 )
 
 (define-read-only (get-name)
-  (ok "DIKO xUSD LP Token")
+  (ok "DIKO USDA LP Token")
 )
 
 (define-read-only (get-symbol)
-  (ok "DIKO-xUSD")
+  (ok "DIKO-USDA")
 )
 
 (define-read-only (get-decimals)
@@ -27,19 +27,19 @@
 )
 
 (define-read-only (get-balance (owner principal))
-  (ok (ft-get-balance diko-xusd owner))
+  (ok (ft-get-balance diko-usda owner))
 )
 
 (define-read-only (get-total-supply)
-  (ok (ft-get-supply diko-xusd))
+  (ok (ft-get-supply diko-usda))
 )
 
 (define-read-only (get-token-uri)
-  (ok (some u"https://arkadiko.finance/tokens/diko-xusd-token.json"))
+  (ok (some u"https://arkadiko.finance/tokens/diko-usda-token.json"))
 )
 ;; {
-;;   "name":"DIKO-xUSD",
-;;   "description":"DIKO-xUSD Arkadiko LP token",
+;;   "name":"DIKO-USDA",
+;;   "description":"DIKO-USDA Arkadiko LP token",
 ;;   "image":"url",
 ;;   "vector":"url"
 ;; }
@@ -65,7 +65,7 @@
     (print amount)
     ;; TODO - make dynamic
     (asserts! (is-eq contract-caller .arkadiko-swap-v1-1) (err ERR-NOT-AUTHORIZED))
-    (ft-mint? diko-xusd amount recipient)
+    (ft-mint? diko-usda amount recipient)
   )
 )
 
@@ -79,6 +79,6 @@
     (print amount)
     ;; TODO - make dynamic
     (asserts! (is-eq contract-caller .arkadiko-swap-v1-1) (err ERR-NOT-AUTHORIZED))
-    (ft-burn? diko-xusd amount recipient)
+    (ft-burn? diko-usda amount recipient)
   )
 )

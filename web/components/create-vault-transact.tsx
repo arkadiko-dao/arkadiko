@@ -25,7 +25,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
     const amount = uintCV(parseInt(coinAmounts['amounts']['collateral'], 10) * 1000000)
     const args = [
       amount,
-      uintCV(parseInt(coinAmounts['amounts']['xusd'], 10) * 1000000),
+      uintCV(parseInt(coinAmounts['amounts']['usda'], 10) * 1000000),
       stringAsciiCV(coinAmounts['token-type'].toUpperCase()),
       contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', resolveReserveName(coinAmounts['token-name'].toUpperCase())),
       contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),

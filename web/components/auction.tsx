@@ -79,8 +79,8 @@ export const Auction: React.FC<AuctionProps> = (
       });
 
       const json = cvToJSON(currentBid);
-      if (json.value.xusd.value > 0) {
-        setCurrentBid(json.value.xusd.value);
+      if (json.value.usda.value > 0) {
+        setCurrentBid(json.value.usda.value);
         setMinimumCollateralAmount(json.value['collateral-amount'].value);
         setDebtToRaise(Math.min(debtMax, json.value['collateral-amount'].value * discountedPrice / 100));
       }

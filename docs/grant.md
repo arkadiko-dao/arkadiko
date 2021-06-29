@@ -11,14 +11,14 @@ The Stacks (DeFi) ecosystem is quite new and does not have any of the crucial De
 ## Project Overview
 **What solution are you providing? Who will it serve?**
 
-Arkadiko implements a stablecoin soft-pegged to 1 USD called xUSD and a Governance Token called DIKO that create the foundational primitives for a lending/borrowing platform.
+Arkadiko implements a stablecoin soft-pegged to 1 USD called USDA and a Governance Token called DIKO that create the foundational primitives for a lending/borrowing platform.
 
-The Arkadiko protocol trustlessly provides stable loans backed by the Stacks Tokens (STX), known as xUSD. In order to mint xUSD, you need to over-collateralise Stacks (STX) tokens into an Arkadiko Stacks Vault. In other words, xUSD is a stablecoin, existing to maintain relative price stability in volatile markets. People repay their loans by returning xUSD plus a little more to cover the fixed interest on the loan (called the stability fee). The loan can be paid back anytime, as there is no repayment schedule. The protocol enforces the price by selling off a person's STX if its total value falls below 150 percent (liquidation ratio) of how ever much STX the user borrowed. All STX will be sold through auctions to stackers who are registered with the protocol.
+The Arkadiko protocol trustlessly provides stable loans backed by the Stacks Tokens (STX), known as USDA. In order to mint USDA, you need to over-collateralise Stacks (STX) tokens into an Arkadiko Stacks Vault. In other words, USDA is a stablecoin, existing to maintain relative price stability in volatile markets. People repay their loans by returning USDA plus a little more to cover the fixed interest on the loan (called the stability fee). The loan can be paid back anytime, as there is no repayment schedule. The protocol enforces the price by selling off a person's STX if its total value falls below 150 percent (liquidation ratio) of how ever much STX the user borrowed. All STX will be sold through auctions to stackers who are registered with the protocol.
 
-No more and no less xUSD exist in the world than loans made in it at that time. Every single xUSD is some piece of someone’s STX, locked up on the Arkadiko protocol until the person who put in their STX pays the xUSD back. When xUSD goes into the system to repay a loan, it just gets burnt and disappears forever. Only the interest (i.e. stability fee) remains for Arkadiko to use to reward DIKO holders or cover expenses for the protocol.
+No more and no less USDA exist in the world than loans made in it at that time. Every single USDA is some piece of someone’s STX, locked up on the Arkadiko protocol until the person who put in their STX pays the USDA back. When USDA goes into the system to repay a loan, it just gets burnt and disappears forever. Only the interest (i.e. stability fee) remains for Arkadiko to use to reward DIKO holders or cover expenses for the protocol.
 
 When STX are posted as collateral to mint stablecoins, the STX tokens will automatically be used to stack natively on the Stacks protocol (either autonomously or through a delegation pool). The yield earned in bitcoin will be used for three purposes:
-1. Reward xUSD stablecoin minters to HODL and use their stablecoins (e.g. they take 80% of the yield)
+1. Reward USDA stablecoin minters to HODL and use their stablecoins (e.g. they take 80% of the yield)
 2. Go into the reserve of the DAO to cover expenses (e.g. the reserve takes 5% of the yield)
 3. Distribute earnings among the DIKO governance token holders (e.g. the token holders get 15% of the yield)
 
@@ -45,15 +45,15 @@ These parameters are subject to change.
 
 ### Stablecoin Risk Parameters
 
-- Maximum Debt:​ A Debt Ceiling is the maximum amount of debt that can be created by a single collateral type. Arkadiko Governance assigns every collateral type a Debt Ceiling, which is used to ensure sufficient diversification of the Arkadiko Protocol collateral portfolio. Today, only one type of collateral is accepted (STX) but this will change as soon as more (SRC20) tokens get accepted by the community. Once a collateral type has reached its Debt Ceiling, it becomes impossible to create more debt unless some existing users pay back all their Vault debt (and thus burns their xUSD).
+- Maximum Debt:​ A Debt Ceiling is the maximum amount of debt that can be created by a single collateral type. Arkadiko Governance assigns every collateral type a Debt Ceiling, which is used to ensure sufficient diversification of the Arkadiko Protocol collateral portfolio. Today, only one type of collateral is accepted (STX) but this will change as soon as more (SRC20) tokens get accepted by the community. Once a collateral type has reached its Debt Ceiling, it becomes impossible to create more debt unless some existing users pay back all their Vault debt (and thus burns their USDA).
 
-- Stability​ ​Fee:​ The Stability Fee is an annual percentage yield calculated on top of how much xUSD has been generated against a Vault's collateral. The fee is paid in STX, and then sent into the Arkadiko Buffer.
+- Stability​ ​Fee:​ The Stability Fee is an annual percentage yield calculated on top of how much USDA has been generated against a Vault's collateral. The fee is paid in STX, and then sent into the Arkadiko Buffer.
 
 - Collateral to Debt Ratio: Indicates how much collateral needs to be posted to create an amount of debt. A collateral to debt of 200 means that two times as much collateral needs to be posted as the amount minted (e.g. $10 stablecoin needs $20 STX collateral).
 
 - Liquidation​ ​Ratio:​ ​A low Liquidation Ratio means Arkadiko Governance expects low price volatility of the collateral; a high Liquidation Ratio means high volatility is expected.
 
-- Liquidation Penalty:​ The Liquidation Penalty is a fee added to a Vault's total outstanding generated xUSD when a Liquidation occurs. The Liquidation Penalty is used to encourage xUSD owners to keep appropriate collateral levels.
+- Liquidation Penalty:​ The Liquidation Penalty is a fee added to a Vault's total outstanding generated USDA when a Liquidation occurs. The Liquidation Penalty is used to encourage USDA owners to keep appropriate collateral levels.
 
 The DAO will eventually be supported by a foundation, where the foundation will initiate a governance token sale for those interested. The amount of DIKO governance tokens has yet to be decided (e.g. 1 billion tokens), and can be subject to low perpetual inflation (e.g. between 1 and 3%) that is fixed in the protocol. This ensures continued participation and contribution to Arkadiko, at the expense of passive DIKO holders. The token supply & distribution will be laid out in the coming months. Ultimately, Arkadiko wants to position itself as a community-led growth and development vehicle.
 
@@ -120,7 +120,7 @@ After successfully authenticating with the Stacks Wallet browser extension, a st
 the Clarity Contract must do the following, atomically:
 - Add the user's address to the map of vaults
 - Transfer STX to the STX reserve pool to stack in the Stacks protocol
-- Mint the amount of xUSD according to the collateral to debt ratio
+- Mint the amount of USDA according to the collateral to debt ratio
 
 After a successful response, the newly created vault is visible in the UI.
 
@@ -139,7 +139,7 @@ the Clarity Contract must do the following, atomically:
 
 #### Acceptance Criteria
 the Clarity Contract must do the following, atomically:
-- Burn the xUSD tokens in the vault
+- Burn the USDA tokens in the vault
 - Transfer the STX tokens back to the user's principal address
 - Remove the vault from the map of vaults
 
@@ -149,7 +149,7 @@ the Clarity Contract must do the following, atomically:
 
 #### Acceptance Criteria
 the Clarity Contract must do the following, atomically:
-- Burn part of the xUSD tokens in the vault
+- Burn part of the USDA tokens in the vault
 - Recalculate collateral to debt
 
 ---
@@ -164,11 +164,11 @@ Currently, there are no special prerequisites to become an Arkadiko Stacker. Thi
 
 ---
 
-7. As a user, I can transfer xUSD
+7. As a user, I can transfer USDA
 
 #### Acceptance Criteria
 the Clarity Contract must do the following, atomically:
-- Transfer xUSD to the new user's principal
+- Transfer USDA to the new user's principal
 
 ---
 
@@ -190,7 +190,7 @@ the Clarity Contract must do the following, atomically:
 - If the identified vault is near or over liquidation (parameter TBD), it will call the STX Reserve liquidate function
 - The STX reserve liquidate function does the following:
   - Transfer the STX collateral to a liquidation pool ready for auctioning
-  - Burn the xUSD
+  - Burn the USDA
   - Remove the vault (i.e. remove the vault ID from the map)
 
 ---
@@ -253,14 +253,14 @@ the Clarity Contract must do the following, atomically:
 
 ---
 
-17. As a stacker, I can buy up collateral from liquidated vaults in lots of 100 xUSD
+17. As a stacker, I can buy up collateral from liquidated vaults in lots of 100 USDA
 
-When a vault gets liquidated, the collateral will be auctioned off for xUSD, to keep the debt in the system in balance. By default, this auction will be split up in lots of 100 xUSD, but this is yet another configurable parameter by the DAO. Once all collateral is auctioned off, the protocol should have raised enough xUSD to burn and keep the system in balance.
+When a vault gets liquidated, the collateral will be auctioned off for USDA, to keep the debt in the system in balance. By default, this auction will be split up in lots of 100 USDA, but this is yet another configurable parameter by the DAO. Once all collateral is auctioned off, the protocol should have raised enough USDA to burn and keep the system in balance.
 
 #### Acceptance Criteria
 the Clarity Contract must do the following, atomically:
-- Split up the collateral in lots of 100 xUSD
-- Allow bids on the collateral. If the bid is 100 xUSD or more, the bid is automatically accepted and the collateral is assigned to the winning stacker
+- Split up the collateral in lots of 100 USDA
+- Allow bids on the collateral. If the bid is 100 USDA or more, the bid is automatically accepted and the collateral is assigned to the winning stacker
 
 ---
 
@@ -282,7 +282,7 @@ This project will take hundreds of hours (probably more like thousands for a mai
 | 4   | As a user, I can destroy a vault to burn the stablecoins, and return me the STX collateral minus the stability fee   | 6 days | $6000    |
 | 5   | As a user, I can burn a (partial?) stablecoin position   | 6 days | $6000    |
 | 6   | As a user, I can register to become a stacker and help liquidate risky positions   | 2 days | $2000    |
-| 7   | As a user, I can transfer xUSD   | 1 day | $1000    |
+| 7   | As a user, I can transfer USDA   | 1 day | $1000    |
 | 8   | As a stacker, I can look up the collateral to debt ratio of vaults and identify risky ones   | 1 day | $1000    |
 | 9   | As a stacker, I can alert the liquidator (engine) for risky vaults  | 5 days | $5000    |
 | 10  | As a user, I can vote on risk parameters with a governance token  | 10 days | $10000    |
@@ -292,7 +292,7 @@ This project will take hundreds of hours (probably more like thousands for a mai
 | 14  | As a stacker, I can buy up liquidated STX tokens in an auction   | 4 days | $4000    |
 | 15  | As a guest, I can browse the main page | 5 days  | $5000    |
 | 16  | As a user, I can take out collateral when my collateral to debt ratio goes over 200 | 6 days | $6000 |
-| 17  | As a stacker, I can buy up collateral from liquidated vaults in lots of 100 xUSD | 6 days | $6000 |
+| 17  | As a stacker, I can buy up collateral from liquidated vaults in lots of 100 USDA | 6 days | $6000 |
 | | | 89 days | $ 89,000 |
 
 The above includes only application functionality and is an estimation after subtracting the work already done. I have not included work on setting up a reliable CI pipeline to have automated testing on each build, documentation writing, legal work etc, which will take the total estimate over $100K. The total time and cost of this project exceeds the scope of the grant, but the grant would deliver significant support to bootstrap the development.
@@ -344,9 +344,9 @@ A stablecoin and liquidity protocol is one of the cornerstones of DeFi, and will
 - Trading Liquidity (e.g. can be the standard to trade against on Stacks DEXes) & Market-Making
 - Enables stacking with a tradeable derivative (i.e. allows trading a productive asset that yields btc while the STX are locked up)
 - Lending & Borrowing liquidity milestone to build out Arkadiko Lending & Borrowing Platform which will support a multitude of assets (and SRC20 tokens)
-- Integration into apps like Pravica which could turn it into a WeChat-like platform with chat, xUSD stablecoin payments (e-commerce?) etc
+- Integration into apps like Pravica which could turn it into a WeChat-like platform with chat, USDA stablecoin payments (e-commerce?) etc
 - Any application that wants to make use of stable prices & liquidity (e.g. games, prediction markets)
-- When a Stacks-native peg against another stablecoin exists (e.g. USDT/USDC/...), you could even trade the xUSD for it, transfer the coins to a CEX, cash out into "real fiat" and use it to cover real-life investments and expenses. Your STX (or other forms of collateral) will be there for you unless you get liquidated.
+- When a Stacks-native peg against another stablecoin exists (e.g. USDT/USDC/...), you could even trade the USDA for it, transfer the coins to a CEX, cash out into "real fiat" and use it to cover real-life investments and expenses. Your STX (or other forms of collateral) will be there for you unless you get liquidated.
 
 ## Risks
 
@@ -359,7 +359,7 @@ A stablecoin and liquidity protocol is one of the cornerstones of DeFi, and will
   - Probably need another stablecoin (e.g. USDT, USDC, PAX) on Stacks to peg against at some point
 - The Discord community is still small (but active) so getting questions answered & debugging can take slightly longer
 - One `tx-sender` address can only stack once at the moment, as far as I'm aware. This would make stacking inefficient on the Arkadiko protocol level, since all STX collateral is held in 1 address. I believe this will be fixed mid to long term on the Stacks stacking protocol, and a SIP is already open AFAIK (on https://github.com/stacksgov/sips/issues).
-- xUSD is soft-pegged to 1 USD. This peg only holds as long as it holds (i.e. if market participants are nice relative to the liquidity available in the protocol :-)). I am not sure how to guarantee this peg in volatile markets (i.e. that it keeps holding 1 USD as countervalue at all times). This is more of a question rather than a real risk, but just dropping it here.
+- USDA is soft-pegged to 1 USD. This peg only holds as long as it holds (i.e. if market participants are nice relative to the liquidity available in the protocol :-)). I am not sure how to guarantee this peg in volatile markets (i.e. that it keeps holding 1 USD as countervalue at all times). This is more of a question rather than a real risk, but just dropping it here.
 
 Apart from the above, there is a set of more generic risks (e.g. protocol risk wrt security, economic risks if you decide to buy the governance token, regulatory risk that needs to be resolved etc).
 

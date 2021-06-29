@@ -145,7 +145,7 @@ describe("environment prep", () => {
       await deployContract('vault-trait');
 
       await deployContract('oracle');
-      await deployContract('xusd-token');
+      await deployContract('usda-token');
       await deployContract('arkadiko-token');
       await deployContract('dao');
 

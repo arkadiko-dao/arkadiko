@@ -5,8 +5,8 @@ import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
 export const tokenList = [
   {
     id: 1,
-    name: 'xUSD',
-    logo: '/assets/tokens/xusd.png',
+    name: 'USDA',
+    logo: '/assets/tokens/usda.png',
   },
   {
     id: 2,

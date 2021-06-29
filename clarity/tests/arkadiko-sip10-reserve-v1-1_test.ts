@@ -18,14 +18,14 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //     let deployer = accounts.get("deployer")!;
 //     let wallet_1 = accounts.get("wallet_1")!;
 
-//     // Initial supply of xUSD should be 30
+//     // Initial supply of USDA should be 30
 //     let call = chain.callReadOnlyFn(
-//       "xusd-token",
+//       "usda-token",
 //       "get-total-supply",
 //       [],
 //       wallet_1.address,
 //     );
-//     let xusdInitialSupply = call.result
+//     let usdaInitialSupply = call.result
 //       .expectOk()
 //       .expectUint(1001000000030);
 
@@ -55,7 +55,7 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //       .expectOk()
 //       .expectUint(5000000);
 
-//     let [dikoTransferEvent, _memoEvent, xusdMintEvent, vaultNotifEvent] =
+//     let [dikoTransferEvent, _memoEvent, usdaMintEvent, vaultNotifEvent] =
 //       block.receipts[1].events;
 //     // Ensure that 20000000 units from .arkadiko-token::diko where successfully transfered from wallet_1 to .arkadiko-sip10-reserve-v1-1
 //     dikoTransferEvent.ft_transfer_event.sender
@@ -72,14 +72,14 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //       ),
 //     );
 
-//     // Ensure that 5000000 units from .xusd-token::xusd where successfully minted for wallet_1
-//     xusdMintEvent.ft_mint_event.recipient
+//     // Ensure that 5000000 units from .usda-token::usda where successfully minted for wallet_1
+//     usdaMintEvent.ft_mint_event.recipient
 //       .expectPrincipal(deployer.address);
-//     xusdMintEvent.ft_mint_event.amount
+//     usdaMintEvent.ft_mint_event.amount
 //       .expectInt(5000000);
 //     assert(
-//       xusdMintEvent.ft_mint_event.asset_identifier.endsWith(
-//         ".xusd-token::xusd",
+//       usdaMintEvent.ft_mint_event.asset_identifier.endsWith(
+//         ".usda-token::usda",
 //       ),
 //     );
 
@@ -92,16 +92,16 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //     vault["collateral-type"].expectAscii("DIKO-A");
 //     vault["owner"].expectPrincipal(deployer.address);
 
-//     // Ensure that the xUSD total supply increased
+//     // Ensure that the USDA total supply increased
 //     call = chain.callReadOnlyFn(
-//       "xusd-token",
+//       "usda-token",
 //       "get-total-supply",
 //       [],
 //       wallet_1.address,
 //     );
 //     call.result
 //       .expectOk()
-//       .expectUint(xusdInitialSupply + 5000000);
+//       .expectUint(usdaInitialSupply + 5000000);
 //   },
 // });
 
@@ -271,7 +271,7 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 // });
 
 // Clarinet.test({
-//   name: "sip10-reserve: should mint xUSD",
+//   name: "sip10-reserve: should mint USDA",
 //   async fn(chain: Chain, accounts: Map<string, Account>) {
 //     let deployer = accounts.get("deployer")!;
 //     let wallet_1 = accounts.get("wallet_1")!;
@@ -309,7 +309,7 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //     var vault = vaultEvent["data"].expectTuple();
 //     var vauldId = vault["id"].expectUint(1);
 
-//     let call = await chain.callReadOnlyFn("xusd-token", "get-balance", [
+//     let call = await chain.callReadOnlyFn("usda-token", "get-balance", [
 //       types.principal(deployer.address),
 //     ], deployer.address);
 //     call.result.expectOk().expectUint(1005000000);
@@ -324,15 +324,15 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //       ], deployer.address),
 //     ]);
 
-//     var [xUSDMintEvent, vaultNotifEvent] = block.receipts[0].events;
-//     // Ensure that 1_000_000 units from .xusd-token::xusd where successfully minted for wallet_1
-//     xUSDMintEvent.ft_mint_event.recipient
+//     var [USDAMintEvent, vaultNotifEvent] = block.receipts[0].events;
+//     // Ensure that 1_000_000 units from .usda-token::usda where successfully minted for wallet_1
+//     USDAMintEvent.ft_mint_event.recipient
 //       .expectPrincipal(deployer.address);
-//     xUSDMintEvent.ft_mint_event.amount
+//     USDAMintEvent.ft_mint_event.amount
 //       .expectInt(1000000);
 //     assert(
-//       xUSDMintEvent.ft_mint_event.asset_identifier.endsWith(
-//         ".xusd-token::xusd",
+//       USDAMintEvent.ft_mint_event.asset_identifier.endsWith(
+//         ".usda-token::usda",
 //       ),
 //     );
 
@@ -345,7 +345,7 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 // });
 
 // Clarinet.test({
-//   name: "sip10-reserve: should burn xUSD",
+//   name: "sip10-reserve: should burn USDA",
 //   async fn(chain: Chain, accounts: Map<string, Account>) {
 //     let deployer = accounts.get("deployer")!;
 //     let wallet_1 = accounts.get("wallet_1")!;
@@ -426,15 +426,15 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //       .expectOk()
 //       .expectBool(true);
 
-//     var [xUSDMintEvent, vaultNotifEvent] = block.receipts[0].events;
-//     // Ensure that 1_000_000 units from .xusd-token::xusd where successfully minted for wallet_1
-//     xUSDMintEvent.ft_mint_event.recipient
+//     var [USDAMintEvent, vaultNotifEvent] = block.receipts[0].events;
+//     // Ensure that 1_000_000 units from .usda-token::usda where successfully minted for wallet_1
+//     USDAMintEvent.ft_mint_event.recipient
 //       .expectPrincipal(deployer.address);
-//     xUSDMintEvent.ft_mint_event.amount
+//     USDAMintEvent.ft_mint_event.amount
 //       .expectInt(1000000);
 //     assert(
-//       xUSDMintEvent.ft_mint_event.asset_identifier.endsWith(
-//         ".xusd-token::xusd",
+//       USDAMintEvent.ft_mint_event.asset_identifier.endsWith(
+//         ".usda-token::usda",
 //       ),
 //     );
 
@@ -457,15 +457,15 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //       ], deployer.address),
 //     ]);
 
-//     var [_, _e1, xUSDBurnEvent, dikoTransferEvent, _dikoMintEvent, _e2, vaultNotifEvent] = block.receipts[0].events;
-//     // Ensure that 6_000_000 units from .xusd-token::xusd where successfully burnt
-//     xUSDBurnEvent.ft_burn_event.sender
+//     var [_, _e1, USDABurnEvent, dikoTransferEvent, _dikoMintEvent, _e2, vaultNotifEvent] = block.receipts[0].events;
+//     // Ensure that 6_000_000 units from .usda-token::usda where successfully burnt
+//     USDABurnEvent.ft_burn_event.sender
 //       .expectPrincipal(deployer.address);
-//     xUSDBurnEvent.ft_burn_event.amount
+//     USDABurnEvent.ft_burn_event.amount
 //       .expectInt(6000000);
 //     assert(
-//       xUSDBurnEvent.ft_burn_event.asset_identifier.endsWith(
-//         ".xusd-token::xusd",
+//       USDABurnEvent.ft_burn_event.asset_identifier.endsWith(
+//         ".usda-token::usda",
 //       ),
 //     );
 
