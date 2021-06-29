@@ -109,7 +109,7 @@ export const Auctions: React.FC = () => {
       const jsonLots = cvToJSON(lots);
       let isAuctionOpen;
 
-      let serializedLots:Array<{ 'lot-id':string, 'auction-id': string, 'collateral-amount': number, 'collateral-token': string, 'xusd': number }> = [];
+      let serializedLots:Array<{ 'lot-id':string, 'auction-id': string, 'collateral-amount': number, 'collateral-token': string, 'usda': number }> = [];
       await asyncForEach(jsonLots.value.ids.value, async (e: object) => {
         const lot = tupleCV(e);
         const data = lot.data.value;
@@ -123,7 +123,7 @@ export const Auctions: React.FC = () => {
               'auction-id': data['auction-id'].value,
               'collateral-amount': lastBid['collateral-amount'].value,
               'collateral-token': lastBid['collateral-token'].value,
-              'xusd': lastBid['xusd'].value
+              'usda': lastBid['usda'].value
             });
           }
         }

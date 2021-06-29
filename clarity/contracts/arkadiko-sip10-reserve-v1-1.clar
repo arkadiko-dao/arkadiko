@@ -12,7 +12,7 @@
 (define-constant ERR-WRONG-TOKEN u98)
 (define-constant ERR-TOO-MUCH-DEBT u99)
 
-(define-public (calculate-xusd-count
+(define-public (calculate-usda-count
   (token (string-ascii 12))
   (ucollateral-amount uint)
   (collateralization-ratio uint)
@@ -104,9 +104,9 @@
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (not (is-eq token-string "STX")) (err ERR-WRONG-TOKEN))
 
-    (let ((max-new-debt (- (unwrap-panic (calculate-xusd-count token-string ucollateral-amount collateralization-ratio oracle)) current-debt)))
+    (let ((max-new-debt (- (unwrap-panic (calculate-usda-count token-string ucollateral-amount collateralization-ratio oracle)) current-debt)))
       (if (>= max-new-debt extra-debt)
-        (match (as-contract (contract-call? .arkadiko-dao mint-token .xusd-token extra-debt vault-owner))
+        (match (as-contract (contract-call? .arkadiko-dao mint-token .usda-token extra-debt vault-owner))
           success (ok true)
           error (err ERR-MINT-FAILED)
         )

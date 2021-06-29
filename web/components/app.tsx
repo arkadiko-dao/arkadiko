@@ -25,14 +25,14 @@ export const getBalance = async (address: string) => {
   // console.log(data);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
   const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
-  const xusdBalance = data.fungible_tokens[`${contractAddress}.xusd-token::xusd`];
+  const usdaBalance = data.fungible_tokens[`${contractAddress}.usda-token::usda`];
   const xStxBalance = data.fungible_tokens[`${contractAddress}.xstx-token::xstx`];
   const stDikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-stake-pool-diko-v1-1::stdiko`];
   const lpDikoXusdBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-diko-xusd::diko-xusd`];
   const lpStxxusdBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-xusd::wstx-xusd`];
   return {
     stx: data.stx.balance,
-    xusd: xusdBalance ? xusdBalance.balance : 0,
+    usda: usdaBalance ? usdaBalance.balance : 0,
     diko: dikoBalance ? dikoBalance.balance : 0,
     xstx: xStxBalance ? xStxBalance.balance : 0,
     stDiko: stDikoBalance ? stDikoBalance.balance : 0,
@@ -65,7 +65,7 @@ export const App: React.FC = () => {
     setState(prevState => ({
       ...prevState,
       balance: {
-        xusd: account.xusd.toString(),
+        usda: account.usda.toString(),
         diko: account.diko.toString(),
         stx: account.stx.toString(),
         xstx: account.xstx.toString(),

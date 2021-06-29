@@ -4,7 +4,7 @@ import { getRPCClient } from '@common/utils';
 export const SmartContractBalance = ({ address }) => {
   const [stxBalance, setStxBalance] = useState(0.0);
   const [dikoBalance, setDikoBalance] = useState(0.0);
-  const [xusdBalance, setXusdBalance] = useState(0.0);
+  const [usdaBalance, setUsdaBalance] = useState(0.0);
   const [wStxBalance, setWStxBalance] = useState(0.0);
   const [xStxBalance, setXStxBalance] = useState(0.0);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -27,11 +27,11 @@ export const SmartContractBalance = ({ address }) => {
         setDikoBalance(0.0);
       }
 
-      const xusdBalance = data.fungible_tokens[`${contractAddress}.xusd-token::xusd`];
-      if (xusdBalance) {
-        setXusdBalance(xusdBalance.balance / 1000000);
+      const usdaBalance = data.fungible_tokens[`${contractAddress}.usda-token::usda`];
+      if (usdaBalance) {
+        setUsdaBalance(usdaBalance.balance / 1000000);
       } else {
-        setXusdBalance(0.0);
+        setUsdaBalance(0.0);
       }
 
       const wStxBalance = data.fungible_tokens[`${contractAddress}.wrapped-stx-token::wstx`];
@@ -67,7 +67,7 @@ export const SmartContractBalance = ({ address }) => {
         {dikoBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        {xusdBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xUSD
+        {usdaBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         {wStxBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} wSTX

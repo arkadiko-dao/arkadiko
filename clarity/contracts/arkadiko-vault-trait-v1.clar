@@ -5,7 +5,7 @@
 (define-trait vault-trait
   (
     ;; calculate stablecoin count to mint from posted collateral
-    (calculate-xusd-count ((string-ascii 12) uint uint <oracle-trait>) (response uint uint))
+    (calculate-usda-count ((string-ascii 12) uint uint <oracle-trait>) (response uint uint))
 
     ;; calculate the current collateral to debt ratio against USD value of collateral
     (calculate-current-collateral-to-debt-ratio ((string-ascii 12) uint uint <oracle-trait>) (response uint uint))

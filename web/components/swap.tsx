@@ -69,7 +69,7 @@ export const Swap: React.FC = () => {
       setState(prevState => ({
         ...prevState,
         balance: {
-          xusd: account.xusd.toString(),
+          usda: account.usda.toString(),
           diko: account.diko.toString(),
           stx: account.stx.toString(),
           xstx: account.xstx.toString(),

@@ -25,7 +25,7 @@ export const getDikoAmmPrice = async () => {
       functionName: "get-pair-details",
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
-        contractPrincipalCV(contractAddress, 'xusd-token')
+        contractPrincipalCV(contractAddress, 'usda-token')
       ],
       senderAddress: contractAddress,
       network: network,

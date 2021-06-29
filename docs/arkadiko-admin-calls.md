@@ -2,7 +2,7 @@
 
 The below calls can be used to call admin-only functions to manage Arkadiko. Nonces can be found on the smart contract address in the explorer (e.g. https://explorer.stacks.co/address/STB44HYPYAT2BB2QE513NSP81HTMYWBJP02HPGK6?chain=testnet).
 
-1. Withdraw xUSD revenue from Freddie
+1. Withdraw USDA revenue from Freddie
 
 Regtest:
 `stx call_contract_func -t -H "https://stacks-node-api.regtest.stacks.co" -I "https://stacks-node-api.regtest.stacks.co" --contract_address ST1A0EP8AWV24G1BETM154DYWXGB4Q7MDB5WXXFTB --contract_name arkadiko-freddie-v1-1 --function_name redeem-tokens --fee 500 --nonce 122 --payment_key KEY`

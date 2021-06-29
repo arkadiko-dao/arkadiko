@@ -13,8 +13,8 @@ export const Balances = () => {
     `${contractAddress}.arkadiko-governance-v1-1`,
     `${contractAddress}.arkadiko-stacker-v1-1`,
     `${contractAddress}.arkadiko-stake-pool-diko-v1-1`,
-    `${contractAddress}.arkadiko-stake-pool-diko-xusd-v1-1`,
-    `${contractAddress}.arkadiko-stake-pool-wstx-xusd-v1-1`,
+    `${contractAddress}.arkadiko-stake-pool-diko-usda-v1-1`,
+    `${contractAddress}.arkadiko-stake-pool-wstx-usda-v1-1`,
     `${contractAddress}.arkadiko-swap-v1-1`,
   ]
   let index = -1;
@@ -57,7 +57,7 @@ export const Balances = () => {
                       DIKO Balance
                     </th>
                     <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      xUSD Balance
+                      USDA Balance
                     </th>
                     <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       wSTX Balance

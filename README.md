@@ -1,11 +1,11 @@
 # Arkadiko
 https://www.arkadiko.finance/
 
-Arkadiko implements a stablecoin soft-pegged to 1 USD called xUSD and a Governance Token DIKO that create the foundational primitives for a lending/borrowing platform.
+Arkadiko implements a stablecoin soft-pegged to 1 USD called USDA and a Governance Token DIKO that create the foundational primitives for a lending/borrowing platform.
 
-The Arkadiko protocol trustlessly provides stable loans backed by Stacks Tokens (STX), known as xUSD. In order to mint xUSD, you need to over-collateralise Stacks (STX) tokens into an Arkadiko Stacks Vault. In other words, xUSD is a stablecoin, existing to maintain relative price stability in volatile markets. People repay their loans by returning xUSD plus a little more to cover the fixed interest on the loan (called the stability fee). The loan can be paid back anytime, as there is no repayment schedule. The protocol enforces the price by selling off a person's STX if its total value falls below 150 percent (liquidation ratio) of however much STX the user borrowed. All STX will be sold through auctions to stackers who are registered with the protocol.
+The Arkadiko protocol trustlessly provides stable loans backed by Stacks Tokens (STX), known as USDA. In order to mint USDA, you need to over-collateralise Stacks (STX) tokens into an Arkadiko Stacks Vault. In other words, USDA is a stablecoin, existing to maintain relative price stability in volatile markets. People repay their loans by returning USDA plus a little more to cover the fixed interest on the loan (called the stability fee). The loan can be paid back anytime, as there is no repayment schedule. The protocol enforces the price by selling off a person's STX if its total value falls below 150 percent (liquidation ratio) of however much STX the user borrowed. All STX will be sold through auctions to stackers who are registered with the protocol.
 
-No more and no less xUSD exist in the world than loans made in it at that time. Every single xUSD is some piece of someone’s STX, locked up on the Arkadiko protocol until the person who put in their STX pays the xUSD back. When xUSD goes into the system to repay a loan, it just gets burnt and disappears forever. Only the interest (i.e. stability fee) remains for Arkadiko to use to reward DIKO holders or cover expenses for the protocol.
+No more and no less USDA exist in the world than loans made in it at that time. Every single USDA is some piece of someone’s STX, locked up on the Arkadiko protocol until the person who put in their STX pays the USDA back. When USDA goes into the system to repay a loan, it just gets burnt and disappears forever. Only the interest (i.e. stability fee) remains for Arkadiko to use to reward DIKO holders or cover expenses for the protocol.
 
 When STX are posted as collateral to mint stablecoins, the STX tokens will automatically be used to stack natively on the Stacks protocol (either autonomously or through a delegation pool).
 
@@ -18,19 +18,19 @@ A high-level architecture would look as follows:
 ![Architecture](https://github.com/philipdesmedt/arkadiko-dao/blob/master/docs/architecture-high-level.png?raw=true)
 
 
-## xUSD: Arkadiko Stablecoin
+## USDA: Arkadiko Stablecoin
 
-Whenever new xUSD is minted, debt (as collateral) is created in the network. With every type of collateral (in principle only $STX will be accepted as collateral), a set of Risk parameters will be decided on by the community. These parameters can be voted on through the DIKO governance token. Each token has 1 vote.
+Whenever new USDA is minted, debt (as collateral) is created in the network. With every type of collateral (in principle only $STX will be accepted as collateral), a set of Risk parameters will be decided on by the community. These parameters can be voted on through the DIKO governance token. Each token has 1 vote.
 
 ### Stablecoin Risk Parameters
 
 - Debt​ ​Ceiling:​ A Debt Ceiling is the maximum amount of debt that can be created by a single collateral type. Arkadiko Governance assigns every collateral type a Debt Ceiling, which is used to ensure sufficient diversification of the Arkadiko Protocol collateral portfolio. Once a collateral type has reached its Debt Ceiling, it becomes impossible to create more debt unless some existing users pay back all or a portion of their Reserve debt.
 
-- Stability​ ​Fee:​ The Stability Fee is an annual percentage yield calculated on top of how much xUSD has been generated against a Reserve's collateral. The fee is paid in $STX, and then sent into the Arkadiko Buffer.
+- Stability​ ​Fee:​ The Stability Fee is an annual percentage yield calculated on top of how much USDA has been generated against a Reserve's collateral. The fee is paid in $STX, and then sent into the Arkadiko Buffer.
 
 - Liquidation​ ​Ratio:​ ​A low Liquidation Ratio means Arkadiko Governance expects low price volatility of the collateral; a high Liquidation Ratio means high volatility is expected.
 
-- Liquidation Penalty:​ The Liquidation Penalty is a fee added to a Reserve's total outstanding generated xUSD when a Liquidation occurs. The Liquidation Penalty is used to encourage xUSD owners to keep appropriate collateral levels.
+- Liquidation Penalty:​ The Liquidation Penalty is a fee added to a Reserve's total outstanding generated USDA when a Liquidation occurs. The Liquidation Penalty is used to encourage USDA owners to keep appropriate collateral levels.
 
 
 ## Arkadiko Governance Token
@@ -69,10 +69,10 @@ All errors thrown by the smart contracts are unsigned integers. The format used 
 11 - stx-reserve
 12 - 
 13 - xstx-token
-14 - xusd-token
+14 - usda-token
 16 - diko-staker
 17 - collateral-types
 18 - 
 19 - stacker
 20 - swap
-21 - swap-token-diko-xusd
+21 - swap-token-diko-usda

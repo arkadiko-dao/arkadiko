@@ -18,7 +18,7 @@
 
     (redeem-auction-collateral (<ft-trait> (string-ascii 12) <vault-trait> uint principal) (response bool uint))
 
-    (get-xusd-balance () (response uint bool))
+    (get-usda-balance () (response uint bool))
     (set-stx-redeemable (uint) (response bool uint))
     (set-block-height-last-paid (uint) (response bool uint))
     (set-maximum-debt-surplus (uint) (response bool uint))

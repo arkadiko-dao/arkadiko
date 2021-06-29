@@ -16,7 +16,7 @@ export const SubHeader: React.FC = () => {
                 <span className="font-semibold">{microToReadable(state.balance['stx']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</span> <span className="opacity-75">STX</span>
               </span>
               <span className="text-sm block sm:mt-0 sm:inline-block">
-                <span className="font-semibold">{microToReadable(state.balance['xusd']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</span> <span className="opacity-75">xUSD</span>
+                <span className="font-semibold">{microToReadable(state.balance['usda']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</span> <span className="opacity-75">USDA</span>
               </span>
               <span className="text-sm block sm:mt-0 sm:inline-block">
                 <span className="font-semibold">{microToReadable(state.balance['diko']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</span> <span className="opacity-75">DIKO</span>

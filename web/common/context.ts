@@ -4,7 +4,7 @@ import { VaultProps } from '@components/vault';
 
 interface UserBalance {
   stx: number;
-  xusd: number;
+  usda: number;
   xstx: number;
   diko: number;
   stDiko: number;
@@ -41,7 +41,11 @@ export interface AppState {
 }
 
 export const defaultBalance = () => {
+<<<<<<< HEAD
   return { stx: 0, xusd: 0, diko: 0, xstx: 0, stDiko: 0, dikoxusd: 0, stxxusd: 0 };
+=======
+  return { stx: 0, usda: 0, diko: 0, xstx: 0, stdiko: 0 };
+>>>>>>> master
 };
 
 export const defaultState = (): AppState => {
@@ -64,7 +68,11 @@ export const defaultState = (): AppState => {
 
   return {
     userData: null,
+<<<<<<< HEAD
     balance: { stx: 0, xusd: 0, diko: 0, xstx: 0, stDiko: 0, dikoxusd: 0, stxxusd: 0 },
+=======
+    balance: { stx: 0, usda: 0, diko: 0, xstx: 0, stdiko: 0 },
+>>>>>>> master
     vaults: [],
     definedCollateralTypes: ['STX-A', 'STX-B'],
     collateralTypes: [],

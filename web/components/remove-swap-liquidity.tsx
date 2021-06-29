@@ -157,7 +157,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                           </dt>
                           <dd>
                             <div className="text-lg font-medium text-gray-900">
-                              {microToReadable(state.balance[tokenY.toLowerCase()])} xUSD
+                              {microToReadable(state.balance[tokenY.toLowerCase()])} USDA
                             </div>
                           </dd>
                         </dl>
