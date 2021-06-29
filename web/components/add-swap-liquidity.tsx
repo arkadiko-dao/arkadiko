@@ -22,15 +22,17 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [tokenXAmount, setTokenXAmount] = useState(0.0);
   const [tokenYAmount, setTokenYAmount] = useState(0.0);
   const [currentPrice, setCurrentPrice] = useState(0.0);
+  const [pooledX, setPooledX] = useState(0.0);
+  const [pooledY, setPooledY] = useState(0.0);
   const [tokenX, setTokenX] = useState(tokenList[0]);
-  const [tokenY, setTokenY] = useState(tokenList[1]); // match.params.currencyIdA
+  const [tokenY, setTokenY] = useState(tokenList[1]); // TODO match.params.currencyIdA
+  const [inverseDirection, setInverseDirection] = useState(false);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const stxAddress = useSTXAddress();
   const { doContractCall } = useConnect();
 
   const tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
   const tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
-  const swapTrait = tokenTraits[`${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`]['name'];
 
   const setTokenBalances = () => {
     setBalanceSelectedTokenX(microToReadable(state.balance[tokenX['name'].toLowerCase()]));
@@ -40,6 +42,12 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
   useEffect(() => {
     setTokenBalances();
   }, [state.balance]);
+
+  useEffect(() => {
+    if (state.currentTxStatus === 'success') {
+      window.location.reload();
+    }
+  }, [state.currentTxStatus]);
 
   useEffect(() => {
     const fetchPair = async (tokenXContract:string, tokenYContract:string) => {
@@ -67,13 +75,18 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
         const basePrice = (balanceX / balanceY).toFixed(2);
-        // const price = parseFloat(basePrice) + (parseFloat(basePrice) * 0.01);
+        setPooledX(balanceX / 1000000);
+        setPooledY(balanceY / 1000000);
+        setInverseDirection(false);
         setCurrentPrice(basePrice);
       } else if (json3['value']['value']['value'] === 201) {
         const json4 = await fetchPair(tokenYTrait, tokenXTrait);
         if (json4['success']) {
           const balanceX = json4['value']['value']['value']['balance-x'].value;
           const balanceY = json4['value']['value']['value']['balance-y'].value;
+          setPooledX(balanceX / 1000000);
+          setPooledY(balanceY / 1000000);
+          setInverseDirection(true);
           const basePrice = (balanceX / balanceY).toFixed(2);
           setCurrentPrice(basePrice);
         }
@@ -88,9 +101,18 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
 
     setTokenXAmount(value);
     setTokenYAmount(currentPrice * value);
+    console.log(currentPrice, value, tokenYAmount);
   };
 
   const addLiquidity = async () => {
+    let swapTrait = tokenTraits[`${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`]['name'];
+    let tokenXParam = tokenXTrait;
+    let tokenYParam = tokenYTrait;
+    if (inverseDirection) {
+      swapTrait = tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['name'];
+      tokenXParam = tokenYTrait;
+      tokenYParam = tokenXTrait;
+    }
     await doContractCall({
       network,
       contractAddress,
@@ -98,8 +120,8 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
       contractName: 'arkadiko-swap-v1-1',
       functionName: 'add-to-position',
       functionArgs: [
-        contractPrincipalCV(contractAddress, tokenXTrait),
-        contractPrincipalCV(contractAddress, tokenYTrait),
+        contractPrincipalCV(contractAddress, tokenXParam),
+        contractPrincipalCV(contractAddress, tokenYParam),
         contractPrincipalCV(contractAddress, swapTrait),
         uintCV(tokenXAmount * 1000000),
         uintCV(tokenYAmount * 1000000)
@@ -206,36 +228,26 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                         setSelected={setTokenY}
                       />
 
-                      <label htmlFor="tokenXAmount" className="sr-only">{tokenX.name}</label>
+                      <label htmlFor="tokenYAmount" className="sr-only">{tokenY.name}</label>
                       <input
-                        type="number"
+                        type="text"
                         inputMode="decimal" 
-                        autoFocus={true}
                         autoComplete="off"
                         autoCorrect="off"
-                        name="tokenXAmount"
-                        id="tokenXAmount"
+                        name="tokenYAmount"
+                        id="tokenYAmount"
                         pattern="^[0-9]*[.,]?[0-9]*$"
                         placeholder="0.0"
-                        value={tokenXAmount || ''}
-                        onChange={onInputChange}
+                        value={tokenYAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                        disabled={true}
                         className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1"
-                        style={{appearance: 'textfield'}} />
+                        />
                     </div>
 
                     <div className="flex items-center text-sm p-4 pt-0 justify-end">
                       <div className="flex items-center justify-between w-full">
                         <div className="flex items-center justify-start">
-                          <p className="text-gray-500">Balance: {balanceSelectedTokenX.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenX.name}</p>
-                          {parseInt(balanceSelectedTokenX, 10) > 0 ? (
-                            <button
-                              type="button"
-                              onClick={() => setMaximum()}
-                              className="ml-2 p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
-                            >
-                              Max.
-                            </button>
-                          ) : `` }
+                          <p className="text-gray-500">Balance: {balanceSelectedTokenY.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenY.name}</p>
                         </div>
                       </div>
                     </div>
@@ -268,21 +280,22 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                       </div>
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                         <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
-                          Pooled xUSD
+                          Pooled {tokenX.name}
                         </dt>
-                        <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">336.39</dd>
+                        <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{pooledX.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</dd>
                       </div>
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                         <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
-                          Pooled DIKO
+                          Pooled {tokenY.name}
                         </dt>
-                        <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">98.26290</dd>
+                        <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{pooledY.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</dd>
                       </div>
                     </dl>
                   </div>
 
                   <button
-                    type="button"                  
+                    type="button"
+                    onClick={addLiquidity}
                     className="w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   >
                   Confirm adding liquidity
