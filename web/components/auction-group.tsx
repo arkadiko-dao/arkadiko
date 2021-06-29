@@ -16,7 +16,7 @@ export interface AuctionProps {
   endsAt: string;
 }
 
-export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
+export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeight }) => {
   const { doContractCall } = useConnect();
   const [showBidModal, setShowBidModal] = useState(false);
   const [bidAmount, setBidAmount] = useState('');
@@ -41,6 +41,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
       auctionType={auction['auctionType']}
       collateralToken={auction['collateralToken']}
       endsAt={auction['endsAt']}
+      stacksTipHeight={stacksTipHeight}
       setShowBidModal={setShowBidModal}
       setBidAuctionId={setBidAuctionId}
       setBidLotId={setBidLotId}

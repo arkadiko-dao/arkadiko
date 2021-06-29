@@ -102,9 +102,10 @@
     ;; freddie should be calling this method
     (asserts! (is-eq contract-caller .arkadiko-freddie-v1-1) (err ERR-NOT-AUTHORIZED))
     (let ((collateral-type (unwrap-panic (get-collateral-type-by-name token))))
-      (map-set collateral-types
-        { name: token }
-        (merge collateral-type { total-debt: (- (get total-debt collateral-type) debt) }))
+      (if (> (get total-debt collateral-type) debt)
+        (map-set collateral-types { name: token } (merge collateral-type { total-debt: (- (get total-debt collateral-type) debt) }))
+        (map-set collateral-types { name: token } (merge collateral-type { total-debt: u0 }))
+      )
       (ok debt)
     )
   )

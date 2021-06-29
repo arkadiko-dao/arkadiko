@@ -9,6 +9,7 @@ import { callReadOnlyFunction, cvToJSON, tupleCV, uintCV, standardPrincipalCV } 
 import { useSTXAddress } from '@common/use-stx-address';
 import { AuctionProps, AuctionGroup } from '@components/auction-group';
 import { LotGroup } from '@components/lot-group';
+import { getRPCClient } from '@common/utils';
 
 export const Auctions: React.FC = () => {
   const { doContractCall } = useConnect();
@@ -18,6 +19,7 @@ export const Auctions: React.FC = () => {
   const [lots, setLots] = useState([]);
   const [loadingAuctions, setLoadingAuctions] = useState(true);
   const [redeemableStx, setRedeemableStx] = useState(0);
+  const [stacksTipHeight, setStacksTipHeight] = useState(0);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   useEffect(() => {
@@ -43,23 +45,31 @@ export const Auctions: React.FC = () => {
     }
 
     const getData = async () => {
-      const auctionIds = [
-        4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-        16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
-        27, 28, 29, 30, 31, 32, 33, 34
-      ];
+      const client = getRPCClient();
+      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
+      const data = await response.json();
+      setStacksTipHeight(data['stacks_tip_height']);
+
+      const auctionIdsCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-auction-engine-v1-1",
+        functionName: "get-auction-ids",
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const auctionIds = auctionIdsCall.value.list;
       let serializedAuctions:Array<AuctionProps> = [];
       await asyncForEach(auctionIds, async (auctionId: number) => {
         const auction = await callReadOnlyFunction({
           contractAddress,
           contractName: "arkadiko-auction-engine-v1-1",
           functionName: "get-auction-by-id",
-          functionArgs: [uintCV(auctionId)],
+          functionArgs: [uintCV(auctionId.value)],
           senderAddress: stxAddress || '',
           network: network,
         });
         const json = cvToJSON(auction);
-        console.log(json);
 
         const data = json.value;
         const isOpen = await auctionOpen(data['id'].value);
@@ -115,10 +125,10 @@ export const Auctions: React.FC = () => {
               'collateral-token': lastBid['collateral-token'].value,
               'xusd': lastBid['xusd'].value
             });
-            setLots(serializedLots);
           }
         }
       });
+      setLots(serializedLots);
 
       setAuctions(serializedAuctions);
       setLoadingAuctions(false);
@@ -197,8 +207,9 @@ export const Auctions: React.FC = () => {
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                   <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8">Auctions</h2>
 
+                  <p>Current Block Height: {stacksTipHeight}</p>
                   {auctions.length > 0 ? (
-                    <AuctionGroup auctions={auctions} />
+                    <AuctionGroup auctions={auctions} stacksTipHeight={stacksTipHeight} />
                   ) : loadingAuctions ? (
                     <p>Loading auctions...</p>
                   ) : (
