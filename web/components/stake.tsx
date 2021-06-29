@@ -42,9 +42,12 @@ export const Stake = () => {
     const getData = async () => {
       const pendingRewards = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-stake-pool-diko-v1-1",
+        contractName: "arkadiko-stake-registry-v1-1",
         functionName: "get-pending-rewards",
-        functionArgs: [standardPrincipalCV(stxAddress || '')],
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1')
+        ],
         senderAddress: stxAddress || '',
         network: network,
       });
@@ -59,18 +62,8 @@ export const Stake = () => {
         network: network,
       });
       let totalStaked = cvToJSON(totalStakedCall).value / 1000000;
-
-      const stakerInfoCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-diko-v1-1",
-        functionName: "get-stake-of",
-        functionArgs: [standardPrincipalCV(stxAddress || '')],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const stakerInfo = cvToJSON(stakerInfoCall).value;
-      let dikoStaked = stakerInfo['uamount'].value / 1000000;
-      setStakedAmount(dikoStaked * 1000000);
+      let dikoStaked = state.balance['stdiko'];
+      setStakedAmount(dikoStaked);
 
       const dikoPerYear = 23500000; // TODO: hardcoded 25mio for first year. 144 * 365 * (rewardsPerBlock) / 1000000;
       if (dikoStaked > 0) {
@@ -135,6 +128,7 @@ export const Stake = () => {
       contractName: 'arkadiko-stake-registry-v1-1',
       functionName: 'stake',
       functionArgs: [
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
         amount

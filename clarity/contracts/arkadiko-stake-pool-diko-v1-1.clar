@@ -146,6 +146,10 @@
   )
 )
 
+(define-read-only (get-total-staked)
+  (unwrap-panic (contract-call? .arkadiko-token get-balance (as-contract tx-sender)))
+)
+
 ;; Needed because of pool trait
 (define-public (claim-pending-rewards (registry-trait <stake-registry-trait>) (staker principal))
   (ok u0)
