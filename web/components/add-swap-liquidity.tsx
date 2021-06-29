@@ -24,8 +24,8 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [currentPrice, setCurrentPrice] = useState(0.0);
   const [pooledX, setPooledX] = useState(0.0);
   const [pooledY, setPooledY] = useState(0.0);
-  const [tokenX, setTokenX] = useState(tokenList[0]);
-  const [tokenY, setTokenY] = useState(tokenList[1]); // TODO match.params.currencyIdA
+  const [tokenX, setTokenX] = useState(tokenList[tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdA.toLowerCase())]);
+  const [tokenY, setTokenY] = useState(tokenList[tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdB.toLowerCase())]);
   const [inverseDirection, setInverseDirection] = useState(false);
   const [totalShares, setTotalShares] = useState(0);
   const [newTokens, setNewTokens] = useState(0);
