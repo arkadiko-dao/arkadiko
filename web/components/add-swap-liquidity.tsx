@@ -14,6 +14,9 @@ import { PlusIcon } from '@heroicons/react/outline';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
 
+function classNames(...classes) {
+  return classes.filter(Boolean).sort().join(' ')
+}
 
 export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -27,6 +30,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [tokenX, setTokenX] = useState(tokenList[tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdA.toLowerCase())]);
   const [tokenY, setTokenY] = useState(tokenList[tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdB.toLowerCase())]);
   const [inverseDirection, setInverseDirection] = useState(false);
+  const [foundPair, setFoundPair] = useState(false);
   const [totalShares, setTotalShares] = useState(0);
   const [newTokens, setNewTokens] = useState(0);
   const [newShare, setNewShare] = useState(0);
@@ -83,6 +87,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         setInverseDirection(false);
         setCurrentPrice(basePrice);
         setTotalShares(json3['value']['value']['value']['shares-total'].value);
+        setFoundPair(true);
       } else if (json3['value']['value']['value'] === 201) {
         const json4 = await fetchPair(tokenYTrait, tokenXTrait);
         if (json4['success']) {
@@ -94,6 +99,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
           const basePrice = (balanceX / balanceY).toFixed(2);
           setCurrentPrice(basePrice);
           setTotalShares(json4['value']['value']['value']['shares-total'].value);
+          setFoundPair(true);
         }
       }
     };
@@ -305,10 +311,16 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
 
                   <button
                     type="button"
-                    onClick={addLiquidity}
-                    className="w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    disabled={tokenYAmount === 0 || !foundPair}
+                    onClick={() => addLiquidity()}
+                    className={classNames((tokenYAmount === 0 || !foundPair) ?
+                      'bg-indigo-300 hover:bg-indigo-300 pointer-events-none' :
+                      'bg-indigo-600 hover:bg-indigo-700 cursor-pointer',
+                      'w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500')}
                   >
-                  Confirm adding liquidity
+                    { !foundPair ? "No liquidity for this pair. Try another one."
+                    : tokenYAmount === 0 ? "Please enter an amount"
+                    : "Confirm adding liquidity"}
                   </button>
 
                   <div className="flex-1 flex items-start mt-4">
