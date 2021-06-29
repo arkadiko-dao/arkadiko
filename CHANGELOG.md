@@ -1,6 +1,6 @@
 ## Version 0.9.3
 
-- Add subheader that shows your token balance (STX, xUSD, DIKO, stDIKO)
+- Add subheader that shows your token balance (STX, USDA, DIKO, stDIKO)
 
 ## Version 0.9.2
 
@@ -12,7 +12,7 @@
 
 ## Version 0.9.0
 
-- Add basic swapping functionality to trade tokens (xUSD, DIKO, STX)
+- Add basic swapping functionality to trade tokens (USDA, DIKO, STX)
 
 ## Version 0.8.1
 
@@ -60,7 +60,7 @@
 
 ### New features
 
-- When the amount of collateral in a normal collateral liquidation auction does not cover the xUSD debt, a debt auction will be started afterwards. A debt auction sells governance tokens from the Arkadiko pool to cover bad debt in the system.
+- When the amount of collateral in a normal collateral liquidation auction does not cover the USDA debt, a debt auction will be started afterwards. A debt auction sells governance tokens from the Arkadiko pool to cover bad debt in the system.
 
 ## Version 0.3.1
 
@@ -72,7 +72,7 @@
 
 ### New Features
 
-- Improve auction logic by selling lots of 100 xUSD
+- Improve auction logic by selling lots of 100 USDA
 
 ## Version 0.2.0
 
@@ -84,7 +84,7 @@
 
 ### Bug Fixes
 
-- Fix burning xUSD debt after running auction
+- Fix burning USDA debt after running auction
 - Show only one lot for sale in an auction at once
 
 ## Version 0.1.6
@@ -92,14 +92,14 @@
 ### New Features
 
 - Allow partial withdrawal of collateral from a vault
-- Allow minting xUSD without hitting the maximum collateralization ratio
+- Allow minting USDA without hitting the maximum collateralization ratio
 - Burn partial debt, or all debt to close a vault
 
 ## Version 0.1.5
 
 ### New Features
 
-- Do not allow minting xUSD if maximum debt of a collateral type is reached
+- Do not allow minting USDA if maximum debt of a collateral type is reached
 
 ## Version 0.1.4
 
@@ -111,7 +111,7 @@
 
 ### New Features
 
-- Split up auction in lots of 100 xUSD instead of 100 STX
+- Split up auction in lots of 100 USDA instead of 100 STX
 
 ### Bug Fixes
 
@@ -128,7 +128,7 @@
 
 ### Bug fixes
 
-- Fix minting extra debt (xUSD) based on the correct collateral type
+- Fix minting extra debt (USDA) based on the correct collateral type
 
 ## Version 0.1.0
 
@@ -137,7 +137,7 @@
 - Authenticate with Arkadiko through Stacks Web Wallet extension
 - Add 3 collateral types: STX-A, STX-B and DIKO
 - Add SIP10 reserve to allow creation of vaults with multiple collateral types
-- Mint extra xUSD to use excess collateral
+- Mint extra USDA to use excess collateral
 - Deposit extra collateral to protect a risky vault
 - Withdraw extra collateral when collateralization ratio is healthy
 - Pay back all debt in vault

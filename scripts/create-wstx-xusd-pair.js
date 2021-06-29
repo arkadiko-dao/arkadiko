@@ -17,11 +17,11 @@ const createPair = async () => {
     functionName: FUNCTION_NAME,
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wrapped-stx-token'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'xusd-token'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-swap-token-wstx-xusd'),
-      tx.stringAsciiCV('wSTX-xUSD'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'usda-token'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-swap-token-wstx-usda'),
+      tx.stringAsciiCV('wSTX-USDA'),
       tx.uintCV(new BN(500000000000)), // 500000 wSTX
-      tx.uintCV(new BN(500000000000)) // 500000 xUSD
+      tx.uintCV(new BN(500000000000)) // 500000 USDA
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     nonce: new BN(nonce),

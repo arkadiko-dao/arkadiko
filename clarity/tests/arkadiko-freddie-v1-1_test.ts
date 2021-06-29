@@ -9,7 +9,7 @@ import {
 import { 
   OracleManager,
   DikoManager,
-  XusdManager,
+  UsdaManager,
   XstxManager
 } from './models/arkadiko-tests-tokens.ts';
 
@@ -144,7 +144,7 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
 
     let oracleManager = new OracleManager(chain, deployer);
-    let xusdManager = new XusdManager(chain, deployer);
+    let usdaManager = new UsdaManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
     let result = oracleManager.updatePrice("STX", 200);
@@ -159,7 +159,7 @@ Clarinet.test({
     let call = vaultManager.getStabilityFee(1, deployer);
     const fee = call.result.expectOk().expectUint(19973180);
 
-    call = await xusdManager.balanceOf(deployer.address)
+    call = await usdaManager.balanceOf(deployer.address)
     const balance = call.result.expectOk().expectUint(1000500000000);
 
     result = vaultManager.payStabilityFee(deployer, 1);
@@ -168,22 +168,22 @@ Clarinet.test({
     call.result.expectOk().expectUint(380); // approx 0 (380/10^6)
 
     // now check balance of freddie contract
-    call = await xusdManager.balanceOf('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1')
+    call = await usdaManager.balanceOf('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1')
     call.result.expectOk().expectUint(fee);
 
-    call = await xusdManager.balanceOf(deployer.address)
+    call = await usdaManager.balanceOf(deployer.address)
     call.result.expectOk().expectUint(balance - fee);
 
-    // withdraw the xUSD from freddie to the deployer's (contract owner) address
+    // withdraw the USDA from freddie to the deployer's (contract owner) address
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "redeem-tokens", [types.uint(fee), types.uint(0)], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    call = await xusdManager.balanceOf('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1')
+    call = await usdaManager.balanceOf('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1')
     call.result.expectOk().expectUint(0);
 
-    call = await xusdManager.balanceOf('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7')
+    call = await usdaManager.balanceOf('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7')
     call.result.expectOk().expectUint(1000500000000);
   }
 });
@@ -205,7 +205,7 @@ Clarinet.test({
     // mine 1 year of blocks
     chain.mineEmptyBlock(365*144);
     let call = vaultManager.getStabilityFee(1, deployer);
-    call.result.expectOk().expectUint(19973180); // ~20 = 500 xUSD * 4%
+    call.result.expectOk().expectUint(19973180); // ~20 = 500 USDA * 4%
 
     chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "accrue-stability-fee", [
@@ -238,7 +238,7 @@ Clarinet.test({
     chain.mineEmptyBlock(365*144);
     call = vaultManager.getStabilityFee(1, deployer);
 
-    call.result.expectOk().expectUint(50405999); // 10% APY of 500 xUSD => 50 xUSD
+    call.result.expectOk().expectUint(50405999); // 10% APY of 500 USDA => 50 USDA
 
     result = vaultManager.payStabilityFee(deployer, 1);
  
@@ -317,7 +317,7 @@ Clarinet.test({
         types.ascii("DIKO-A"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1"),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token",
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.usda-token",
         ),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1"),
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1")
@@ -394,7 +394,7 @@ Clarinet.test({
     result = vaultManager.mint(deployer, 1, 100);
     result.expectOk().expectBool(true);
     
-    // Should not be able to mint extra 2000 xUSD
+    // Should not be able to mint extra 2000 USDA
     result = vaultManager.mint(deployer, 1, 2000);
     result.expectErr().expectUint(49); // error: trying to create too much debt (or insufficient collateral)
 

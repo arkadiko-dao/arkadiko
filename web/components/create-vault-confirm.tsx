@@ -48,10 +48,10 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts }) => {
                     <h3 className="text-lg leading-6 font-medium text-gray-900 mb-2">
                       Minting
                     </h3>
-                    <p className="text-sm sm:max-w-2xl text-gray-600">The total amount of xUSD that you want to mint.</p>
+                    <p className="text-sm sm:max-w-2xl text-gray-600">The total amount of USDA that you want to mint.</p>
                   </div>
                   <p className="mt-1 text-lg text-gray-600 font-bold whitespace-nowrap sm:mt-0 sm:ml-3">
-                    {coinAmounts['amounts']['xusd']} xUSD
+                    {coinAmounts['amounts']['usda']} USDA
                   </p>
                 </div>
 
@@ -108,7 +108,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts }) => {
                     <h3 className="text-lg leading-6 font-medium text-gray-900 mb-2">
                       Stability Fee
                     </h3>
-                    <p className="text-sm sm:max-w-2xl text-gray-600">This is the total cost of borrowing for a vault. A stability fee of {coinAmounts['stability-fee-apy'] / 100}% means that any debt you create will increase by {coinAmounts['stability-fee-apy'] / 100}% over the period of one year. Think of it as yearly interest on your xUSD loan.</p>
+                    <p className="text-sm sm:max-w-2xl text-gray-600">This is the total cost of borrowing for a vault. A stability fee of {coinAmounts['stability-fee-apy'] / 100}% means that any debt you create will increase by {coinAmounts['stability-fee-apy'] / 100}% over the period of one year. Think of it as yearly interest on your USDA loan.</p>
                   </div>
                   <p className="mt-1 text-lg text-gray-600 font-bold whitespace-nowrap sm:mt-0 sm:ml-3">
                     {coinAmounts['stability-fee-apy'] / 100}%

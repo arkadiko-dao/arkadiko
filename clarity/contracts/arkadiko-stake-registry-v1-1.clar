@@ -128,22 +128,22 @@
       rewards-percentage: u100000 ;; 10% 
     }
   )
-  ;; DIKO-xUSD LP
+  ;; DIKO-USDA LP
   (map-set pools-data-map
-    { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1 }
+    { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1 }
     {
-      name: "DIKO-xUSD LP",
+      name: "DIKO-USDA LP",
       active: true,
       activated-block: block-height,
       deactivated-block: u0,
       rewards-percentage: u300000 ;; 30% 
     }
   )
-  ;; wSTX-xUSD LP
+  ;; wSTX-USDA LP
   (map-set pools-data-map
-    { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-xusd-v1-1 }
+    { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-usda-v1-1 }
     {
-      name: "wSTX-xUSD LP",
+      name: "wSTX-USDA LP",
       active: true,
       activated-block: block-height,
       deactivated-block: u0,

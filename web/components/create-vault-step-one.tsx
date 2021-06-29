@@ -21,7 +21,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
 
   const continueVault = () => {
     setCoinAmounts({
-      amounts: { collateral: collateralAmount, xusd: coinAmount },
+      amounts: { collateral: collateralAmount, usda: coinAmount },
       'liquidation-price': liquidationPrice,
       'collateral-to-debt-ratio': collateralToDebt,
       'liquidation-ratio': liquidationRatio,
@@ -78,7 +78,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const { value } = event.target;
       setCoinAmount(value);
-      const error = [`You cannot mint more than ${maximumToMint / 1000000} xUSD`];
+      const error = [`You cannot mint more than ${maximumToMint / 1000000} USDA`];
       const filteredAry = errors.filter(e => e !== error[0]);
       if (parseFloat(value) > maximumToMint / 1000000) {
         setErrors(filteredAry.concat(error));
@@ -134,7 +134,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
           <div>
             <h2 className="text-2xl leading-6 font-bold text-gray-900">Create a new vault</h2>
             <p className="mt-2 max-w-4xl text-sm text-gray-500">
-              Deposit {tokenName} and generate xUSD
+              Deposit {tokenName} and generate USDA
             </p>
           </div>
           <div>
@@ -194,7 +194,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                           How much {tokenName} do you want to collateralize?
                         </h3>
                         <p className="mt-2 text-sm text-gray-500">
-                          The amount of {tokenName} you deposit determines how much xUSD you can generate
+                          The amount of {tokenName} you deposit determines how much USDA you can generate
                         </p>
 
                         <div className="mt-4">
@@ -212,7 +212,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                       </div>
                       <div>
                         <h3 className="text-lg leading-6 font-medium text-gray-900">
-                          How much xUSD would you like to mint?
+                          How much USDA would you like to mint?
                         </h3>
                         <p className="mt-2 text-sm text-gray-500">
                           Mint an amount that is safely above the liquidation ratio
@@ -221,11 +221,11 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                         <div className="mt-4">
                           <InputAmount
                             balance={maximumToMint / 1000000}
-                            token="xUSD"
+                            token="USDA"
                             inputName="coins"
                             inputId="coinsAmount"
                             inputValue={coinAmount}
-                            inputLabel="Mint xUSD"
+                            inputLabel="Mint USDA"
                             onInputChange={setCoins}
                             onClickMax={setMaxCoins}
                           />
@@ -288,7 +288,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                             <dt className="flex-shrink-0 text-sm font-medium text-indigo-500 inline-flex items-center sm:mr-2">
                               Stability Fee
                               <div className="ml-2">
-                                <Tooltip shouldWrapChildren={true} label={`The interest in percentage to borrow xUSD`}>
+                                <Tooltip shouldWrapChildren={true} label={`The interest in percentage to borrow USDA`}>
                                   <InformationCircleIcon className="block h-5 w-5 text-indigo-400" aria-hidden="true" />
                                 </Tooltip>
                               </div>
