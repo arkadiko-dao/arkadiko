@@ -6,8 +6,7 @@ import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import { stacksNetwork as network } from '@common/utils';
 import {
-  callReadOnlyFunction, contractPrincipalCV, uintCV,
-  standardPrincipalCV, cvToJSON,
+  callReadOnlyFunction, contractPrincipalCV, uintCV, cvToJSON,
   createAssetInfo, FungibleConditionCode,
   makeStandardFungiblePostCondition
  } from '@stacks/transactions';
@@ -23,7 +22,6 @@ export const Stake = () => {
   const [showStakeModal, setShowStakeModal] = useState(false);
   const [showUnstakeModal, setShowUnstakeModal] = useState(false);
   const [stakeAmount, setStakeAmount] = useState('');
-  const [pendingRewards, setPendingRewards] = useState(0);
   const [apy, setApy] = useState(0);
   const [errors, setErrors] = useState<Array<string>>([]);
   const [stakedAmount, setStakedAmount] = useState(0);
@@ -40,19 +38,6 @@ export const Stake = () => {
     let mounted = true;
 
     const getData = async () => {
-      const pendingRewards = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-registry-v1-1",
-        functionName: "get-pending-rewards",
-        functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-          contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1')
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      setPendingRewards(cvToJSON(pendingRewards).value.value / 1000000);
-
       const totalStakedCall = await callReadOnlyFunction({
         contractAddress,
         contractName: "arkadiko-stake-pool-diko-v1-1",
@@ -140,24 +125,6 @@ export const Stake = () => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowStakeModal(false);
       },
-    });
-  };
-
-  const claimRewards = async () => {
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-registry-v1-1',
-      functionName: 'claim-pending-rewards',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1')
-      ],
-      postConditionMode: 0x01,
-      finished: data => {
-        console.log('finished broadcasting claim rewards tx!', data);
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
-      }
     });
   };
 
@@ -404,7 +371,7 @@ export const Stake = () => {
                               {apy}%
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
-                              {pendingRewards.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
+                              auto-compounding
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
                               <button type="button" onClick={() => setShowStakeModal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
@@ -413,10 +380,6 @@ export const Stake = () => {
 
                               <button type="button" onClick={() => setShowUnstakeModal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
                                 Unstake
-                              </button>
-
-                              <button type="button" onClick={() => claimRewards()} className="inline-flex items-right px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
-                                Claim Rewards
                               </button>
                             </td>
                           </tr>
