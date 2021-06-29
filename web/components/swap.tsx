@@ -305,7 +305,7 @@ export const Swap: React.FC = () => {
                     placeholder="0.0"
                     value={tokenXAmount || ''}
                     onChange={onInputChange}
-                    className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1"
+                    className="ml-4 font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1"
                     style={{appearance: 'textfield'}} />
                 </div>
 
@@ -356,7 +356,7 @@ export const Swap: React.FC = () => {
                     value={tokenYAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
                     onChange={onInputChange}
                     disabled={true}
-                    className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1 text-gray-600" />
+                    className="ml-4 font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1 text-gray-600" />
                 </div>
 
                 <div className="flex items-center text-sm p-4 pt-0 justify-end">
@@ -407,7 +407,10 @@ export const Swap: React.FC = () => {
                   </Tooltip>
                 </div>
               </dt>
-              <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{minimumReceived.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenY.name}</dd>
+              <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:justify-end sm:inline-flex">
+                <div className="truncate mr-1">{minimumReceived.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</div>
+                {tokenY.name}
+              </dd>
             </div>
             <div className="sm:grid sm:grid-cols-2 sm:gap-4">
               <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
@@ -418,7 +421,10 @@ export const Swap: React.FC = () => {
                   </Tooltip>
                 </div>
               </dt>
-              <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">~{priceImpact}%</dd>
+              <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:justify-end sm:inline-flex">
+                ~<div className="truncate mr-1">{priceImpact}</div>
+                %
+              </dd>
             </div>
             <div className="sm:grid sm:grid-cols-2 sm:gap-4">
               <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
@@ -429,7 +435,10 @@ export const Swap: React.FC = () => {
                   </Tooltip>
                 </div>
               </dt>
-              <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{lpFee} {tokenX.name}</dd>
+              <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:justify-end sm:inline-flex">
+                <div className="truncate mr-1">{lpFee}</div>
+                {tokenX.name}
+              </dd>
             </div>
           </dl>
           {/* <div className="space-y flex flex-col mt-3">
