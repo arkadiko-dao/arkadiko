@@ -29,11 +29,13 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [pooledY, setPooledY] = useState(0.0);
   const [tokenX, setTokenX] = useState(tokenList[tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdA.toLowerCase())]);
   const [tokenY, setTokenY] = useState(tokenList[tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdB.toLowerCase())]);
+  const [tokenPair, setTokenPair] = useState('');
   const [inverseDirection, setInverseDirection] = useState(false);
   const [foundPair, setFoundPair] = useState(false);
-  const [totalShares, setTotalShares] = useState(0);
+  const [totalTokens, setTotalTokens] = useState(0);
   const [newTokens, setNewTokens] = useState(0);
   const [newShare, setNewShare] = useState(0);
+  const [totalShare, setTotalShare] = useState(0);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const stxAddress = useSTXAddress();
   const { doContractCall } = useConnect();
@@ -55,6 +57,14 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
       window.location.reload();
     }
   }, [state.currentTxStatus]);
+
+  const setMaximum = () => {
+    if (tokenX['name'].toLowerCase() === 'stx') {
+      setTokenXAmount(parseInt(balanceSelectedTokenX, 10) - 1);
+    } else {
+      setTokenXAmount(parseInt(balanceSelectedTokenX, 10));
+    }
+  };
 
   useEffect(() => {
     const fetchPair = async (tokenXContract:string, tokenYContract:string) => {
@@ -85,8 +95,16 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         setPooledX(balanceX / 1000000);
         setPooledY(balanceY / 1000000);
         setInverseDirection(false);
+        setTokenPair(`${tokenX.name.toLowerCase()}${tokenY.name.toLowerCase()}`);
         setCurrentPrice(basePrice);
-        setTotalShares(json3['value']['value']['value']['shares-total'].value);
+        const totalTokens = json3['value']['value']['value']['shares-total'].value;
+        setTotalTokens(totalTokens);
+        const totalShare = Number(((state.balance[`${tokenX.name.toLowerCase()}${tokenY.name.toLowerCase()}`] / totalTokens) * 100).toFixed(2));
+        if (totalShare > 100) {
+          setTotalShare(100);
+        } else {
+          setTotalShare(totalShare);
+        }
         setFoundPair(true);
       } else if (json3['value']['value']['value'] === 201) {
         const json4 = await fetchPair(tokenYTrait, tokenXTrait);
@@ -96,25 +114,48 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
           setPooledX(balanceX / 1000000);
           setPooledY(balanceY / 1000000);
           setInverseDirection(true);
+          setTokenPair(`${tokenY.name.toLowerCase()}${tokenX.name.toLowerCase()}`);
           const basePrice = (balanceX / balanceY).toFixed(2);
           setCurrentPrice(basePrice);
-          setTotalShares(json4['value']['value']['value']['shares-total'].value);
+          const totalTokens = json4['value']['value']['value']['shares-total'].value;
+          setTotalTokens(totalTokens);
+          const totalShare = Number(((state.balance[`${tokenY.name.toLowerCase()}${tokenX.name.toLowerCase()}`] / totalTokens) * 100).toFixed(2));
+          if (totalShare > 100) {
+            setTotalShare(100);
+          } else {
+            setTotalShare(totalShare);
+          }
           setFoundPair(true);
         }
       }
     };
 
     resolvePair();
-  }, [tokenX, tokenY]);
+  }, [tokenX, tokenY, state.balance]);
+
+  useEffect(() => {
+    if (currentPrice > 0) {
+      calculateTokenYAmount();
+    }
+  }, [tokenXAmount]);
 
   const onInputChange = (event: { target: { name: any; value: any; }; }) => {
     const value = event.target.value;
 
     setTokenXAmount(value);
-    setTokenYAmount(currentPrice * value);
-    setNewTokens((totalShares / 1000000 * value) / pooledX);
-    if (value > 0) {
-      setNewShare(Number((100 * newTokens / (totalShares / 1000000)).toFixed(8)));
+    calculateTokenYAmount();
+  };
+
+  const calculateTokenYAmount = () => {
+    setTokenYAmount(currentPrice * tokenXAmount);
+    setNewTokens((totalTokens / 1000000 * tokenXAmount) / pooledX);
+    if (tokenXAmount > 0) {
+      const share = Number((100 * newTokens / (totalTokens / 1000000)).toFixed(8));
+      if (share > 100) {
+        setNewShare(100);
+      } else {
+        setNewShare(share);
+      }
     } else {
       setNewShare(0);
     }
@@ -276,23 +317,31 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                         <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
                           Your pool tokens
                           <div className="ml-2">
-                            <Tooltip className="z-10" shouldWrapChildren={true} label={`Your transaction will revert if there is a large, unfavorable price movement before it is confirmed`}>
+                            <Tooltip className="z-10" shouldWrapChildren={true} label={`Indicates the total amount of LP tokens you own of the pair in this pool`}>
                               <InformationCircleIcon className="block h-4 w-4 text-indigo-400" aria-hidden="true" />
                             </Tooltip>
                           </div>
                         </dt>
-                        <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{newTokens}</dd>
+                        <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">
+                          {state.balance[tokenPair] > 0 ? (
+                            `${state.balance[tokenPair] / 1000000 + newTokens} (${newTokens} new)`
+                          ) : newTokens }
+                        </dd>
                       </div>
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                         <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
                           Your pool share
                           <div className="ml-2">
-                            <Tooltip className="z-10" shouldWrapChildren={true} label={`The difference between the market price and estimated price due to trade size`}>
+                            <Tooltip className="z-10" shouldWrapChildren={true} label={`The percentual share of LP tokens you own agains the whole pool supply`}>
                               <InformationCircleIcon className="block h-4 w-4 text-indigo-400" aria-hidden="true" />
                             </Tooltip>
                           </div>
                         </dt>
-                        <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{newShare}%</dd>
+                        <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">
+                          {state.balance[tokenPair] > 0 ? (
+                            `${totalShare + newShare}% (${newShare}% new)`
+                          ) : `${newShare}%` }
+                        </dd>
                       </div>
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                         <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">

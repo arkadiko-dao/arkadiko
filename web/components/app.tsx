@@ -28,12 +28,16 @@ export const getBalance = async (address: string) => {
   const xusdBalance = data.fungible_tokens[`${contractAddress}.xusd-token::xusd`];
   const xStxBalance = data.fungible_tokens[`${contractAddress}.xstx-token::xstx`];
   const stDikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-stake-pool-diko-v1-1::stdiko`];
+  const lpDikoXusdBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-diko-xusd::diko-xusd`];
+  const lpStxxusdBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-xusd::wstx-xusd`];
   return {
     stx: data.stx.balance,
     xusd: xusdBalance ? xusdBalance.balance : 0,
     diko: dikoBalance ? dikoBalance.balance : 0,
     xstx: xStxBalance ? xStxBalance.balance : 0,
-    stDiko: stDikoBalance ? stDikoBalance.balance : 0
+    stDiko: stDikoBalance ? stDikoBalance.balance : 0,
+    dikoxusd: lpDikoXusdBalance ? lpDikoXusdBalance.balance : 0,
+    stxxusd: lpStxxusdBalance ? lpStxxusdBalance.balance : 0
   };
 };
 
@@ -65,7 +69,9 @@ export const App: React.FC = () => {
         diko: account.diko.toString(),
         stx: account.stx.toString(),
         xstx: account.xstx.toString(),
-        stdiko: account.stDiko.toString()
+        stDiko: account.stDiko.toString(),
+        dikoxusd: account.dikoxusd.toString(),
+        stxxusd: account.stxxusd.toString()
       }
     }));
   };
