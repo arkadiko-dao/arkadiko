@@ -48,6 +48,36 @@
   )
 )
 
+;; Amount of DIKO to receive for given stDIKO
+(define-read-only (diko-for-stdiko (amount uint))
+  (let (
+    ;; Total DIKO (staked + rewards)
+    (diko-supply (unwrap-panic (contract-call? .arkadiko-token get-balance (as-contract tx-sender))))
+    
+    ;; Total stDIKO supply
+    (stdiko-supply (unwrap-panic (contract-call? .stdiko-token get-total-supply)))
+
+    ;; User stDIKO percentage
+    (stdiko-percentage (/ (* amount u1000000) stdiko-supply))
+
+    ;; Amount of DIKO the user will receive
+    (diko-to-receive (/ (* stdiko-percentage diko-supply) u1000000))
+  )
+    diko-to-receive
+  )
+)
+
+;; Get total amount of DIKO in pool for given staker
+(define-read-only (get-total-staked)
+  (let (
+    ;; Sender stDIKO balance
+    (stdiko-balance (unwrap-panic (contract-call? .stdiko-token get-balance tx-sender)))
+  )
+    ;; Amount of DIKO the user would receive when unstaking
+    (diko-for-stdiko stdiko-balance)
+  )
+)
+
 ;; Stake tokens (provide amount of DIKO)
 (define-public (stake (registry-trait <stake-registry-trait>) (token <ft-trait>) (staker principal) (amount uint))
   (begin
@@ -85,18 +115,8 @@
     (try! (add-rewards-to-pool registry-trait))
 
     (let (
-      ;; Total DIKO (staked + rewards)
-      (diko-supply (unwrap-panic (contract-call? .arkadiko-token get-balance (as-contract tx-sender))))
-      
-      ;; Total stDIKO supply
-      (stdiko-supply (unwrap-panic (contract-call? .stdiko-token get-total-supply)))
-
-      ;; User stDIKO percentage
-      (stdiko-percentage (/ (* amount u1000000) stdiko-supply))
-
       ;; Amount of DIKO the user will receive
-      (diko-to-receive (/ (* stdiko-percentage diko-supply) u1000000))
-
+      (diko-to-receive (diko-for-stdiko amount))
     )
       ;; Burn stDIKO 
       (try! (contract-call? .arkadiko-dao burn-token .stdiko-token amount staker))

@@ -102,6 +102,10 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
     types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1')
   ], wallet_1.address);
   call.result.expectOk().expectUint(413199530);
+
+  // Amount of DIKO staked for wallet_1 (initial stake + auto-compounded rewards)
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "get-total-staked", [], wallet_1.address);
+  call.result.expectUint(413199530);   
   
   // Still only 100 stDIKO for 1 staker
   call = chain.callReadOnlyFn("stdiko-token", "get-total-supply", [], wallet_1.address);
@@ -110,7 +114,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // New ratio =  413199530 / 100000000
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "diko-stdiko-ratio", [], wallet_1.address);
   call.result.expectUint(4131995);   
-
+  
   // Unstake funds
   block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
