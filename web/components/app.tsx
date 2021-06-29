@@ -27,7 +27,7 @@ export const getBalance = async (address: string) => {
   const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
   const xusdBalance = data.fungible_tokens[`${contractAddress}.xusd-token::xusd`];
   const xStxBalance = data.fungible_tokens[`${contractAddress}.xstx-token::xstx`];
-  const stDikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-stake-pool-diko-v1-1::stdiko`];
+  const stDikoBalance = data.fungible_tokens[`${contractAddress}.stdiko-token::stdiko`];
   return {
     stx: data.stx.balance,
     xusd: xusdBalance ? xusdBalance.balance : 0,
