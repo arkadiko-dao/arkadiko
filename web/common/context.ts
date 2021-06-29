@@ -8,8 +8,8 @@ interface UserBalance {
   xstx: number;
   diko: number;
   stDiko: number;
-  dikoxusd: number;
-  stxxusd: number;
+  dikousda: number;
+  stxusda: number;
 }
 
 export type UserBalanceKeys = keyof UserBalance;
@@ -41,11 +41,7 @@ export interface AppState {
 }
 
 export const defaultBalance = () => {
-<<<<<<< HEAD
-  return { stx: 0, xusd: 0, diko: 0, xstx: 0, stDiko: 0, dikoxusd: 0, stxxusd: 0 };
-=======
-  return { stx: 0, usda: 0, diko: 0, xstx: 0, stdiko: 0 };
->>>>>>> master
+  return { stx: 0, usda: 0, diko: 0, xstx: 0, stDiko: 0, dikousda: 0, stxusda: 0 };
 };
 
 export const defaultState = (): AppState => {
@@ -68,11 +64,7 @@ export const defaultState = (): AppState => {
 
   return {
     userData: null,
-<<<<<<< HEAD
-    balance: { stx: 0, xusd: 0, diko: 0, xstx: 0, stDiko: 0, dikoxusd: 0, stxxusd: 0 },
-=======
-    balance: { stx: 0, usda: 0, diko: 0, xstx: 0, stdiko: 0 },
->>>>>>> master
+    balance: { stx: 0, usda: 0, diko: 0, xstx: 0, stDiko: 0, dikousda: 0, stxusda: 0 },
     vaults: [],
     definedCollateralTypes: ['STX-A', 'STX-B'],
     collateralTypes: [],
