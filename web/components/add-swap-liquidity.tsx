@@ -27,6 +27,9 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [tokenX, setTokenX] = useState(tokenList[0]);
   const [tokenY, setTokenY] = useState(tokenList[1]); // TODO match.params.currencyIdA
   const [inverseDirection, setInverseDirection] = useState(false);
+  const [totalShares, setTotalShares] = useState(0);
+  const [newTokens, setNewTokens] = useState(0);
+  const [newShare, setNewShare] = useState(0);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const stxAddress = useSTXAddress();
   const { doContractCall } = useConnect();
@@ -79,6 +82,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         setPooledY(balanceY / 1000000);
         setInverseDirection(false);
         setCurrentPrice(basePrice);
+        setTotalShares(json3['value']['value']['value']['shares-total'].value);
       } else if (json3['value']['value']['value'] === 201) {
         const json4 = await fetchPair(tokenYTrait, tokenXTrait);
         if (json4['success']) {
@@ -89,6 +93,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
           setInverseDirection(true);
           const basePrice = (balanceX / balanceY).toFixed(2);
           setCurrentPrice(basePrice);
+          setTotalShares(json4['value']['value']['value']['shares-total'].value);
         }
       }
     };
@@ -101,7 +106,12 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
 
     setTokenXAmount(value);
     setTokenYAmount(currentPrice * value);
-    console.log(currentPrice, value, tokenYAmount);
+    setNewTokens((totalShares / 1000000 * value) / pooledX);
+    if (value > 0) {
+      setNewShare(Number((100 * newTokens / (totalShares / 1000000)).toFixed(8)));
+    } else {
+      setNewShare(0);
+    }
   };
 
   const addLiquidity = async () => {
@@ -265,7 +275,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                             </Tooltip>
                           </div>
                         </dt>
-                        <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">0.6548</dd>
+                        <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{newTokens}</dd>
                       </div>
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                         <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
@@ -276,7 +286,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                             </Tooltip>
                           </div>
                         </dt>
-                        <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">0.00853%</dd>
+                        <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{newShare}%</dd>
                       </div>
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                         <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
