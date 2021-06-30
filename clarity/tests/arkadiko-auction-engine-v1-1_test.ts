@@ -50,7 +50,7 @@ Clarinet.test({
 
     // Check total USDA supply
     call = await usdaManager.totalSupply();
-    call.result.expectOk().expectUint(2001000000030);
+    call.result.expectOk().expectUint(4001000000010);
 
     // Check auction parameters
     let auction:any = auctions[1];
@@ -94,7 +94,7 @@ Clarinet.test({
     vault['auction-ended'].expectBool(true);
 
     call = await usdaManager.totalSupply();
-    call.result.expectOk().expectUint(2000000000030);
+    call.result.expectOk().expectUint(4000000000010);
 
     // now check the wallet of contract - should have burned all required USDA, and have some left for burning gov tokens
     call = await usdaManager.balanceOf('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1');
@@ -314,14 +314,14 @@ Clarinet.test({
     call.result.expectOk().expectUint(60000000);
 
     call = await usdaManager.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUint(40000000); // 100 - 60 = 40
+    call.result.expectOk().expectUint(1000040000000); // 100 - 60 = 40
 
     // place new bid higher than 60 (e.g. 100)
     result = vaultAuction.bid(deployer, 1000);
     result.expectOk().expectBool(true);
 
     call = await usdaManager.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUint(100000000); // you get the 100 USDA back since your bid got overruled
+    call.result.expectOk().expectUint(1000100000000); // you get the 100 USDA back since your bid got overruled
   }
 });
 

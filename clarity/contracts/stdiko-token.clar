@@ -1,31 +1,26 @@
-;;;;;;;;;;;;;;;;;;;;; SIP 010 ;;;;;;;;;;;;;;;;;;;;;;
-;; testnet: (impl-trait 'STR8P3RD1EHA8AA37ERSSSZSWKS9T2GYQFGXNA4C.sip-010-trait-ft-standard.sip-010-trait)
-;; (impl-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 (impl-trait .sip-010-trait-ft-standard.sip-010-trait)
 (impl-trait .arkadiko-dao-token-trait-v1.dao-token-trait)
 
-;; Defines the USDA Stablecoin according to the SIP-010 Standard
-(define-fungible-token usda)
+(define-constant ERR-NOT-AUTHORIZED u22401)
 
 (define-data-var token-uri (string-utf8 256) u"")
-
-;; errors
-(define-constant ERR-NOT-AUTHORIZED u14401)
 
 ;; ---------------------------------------------------------
 ;; SIP-10 Functions
 ;; ---------------------------------------------------------
 
+(define-fungible-token stdiko)
+
 (define-read-only (get-total-supply)
-  (ok (ft-get-supply usda))
+  (ok (ft-get-supply stdiko))
 )
 
 (define-read-only (get-name)
-  (ok "USDA")
+  (ok "Staked Arkadiko Token")
 )
 
 (define-read-only (get-symbol)
-  (ok "USDA")
+  (ok "stDIKO")
 )
 
 (define-read-only (get-decimals)
@@ -33,7 +28,7 @@
 )
 
 (define-read-only (get-balance (account principal))
-  (ok (ft-get-balance usda account))
+  (ok (ft-get-balance stdiko account))
 )
 
 (define-public (set-token-uri (value (string-utf8 256)))
@@ -48,7 +43,7 @@
 )
 
 (define-public (transfer (amount uint) (sender principal) (recipient principal) (memo (optional (buff 34))))
-  (match (ft-transfer? usda amount sender recipient)
+  (match (ft-transfer? stdiko amount sender recipient)
     response (begin
       (print memo)
       (ok response)
@@ -65,7 +60,7 @@
 (define-public (mint-for-dao (amount uint) (recipient principal))
   (begin
     (asserts! (is-eq contract-caller .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
-    (ft-mint? usda amount recipient)
+    (ft-mint? stdiko amount recipient)
   )
 )
 
@@ -73,17 +68,6 @@
 (define-public (burn-for-dao (amount uint) (sender principal))
   (begin
     (asserts! (is-eq contract-caller .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
-    (ft-burn? usda amount sender)
+    (ft-burn? stdiko amount sender)
   )
-)
-
-
-;; Initialize the contract
-(begin
-  ;; TODO: do not do this on testnet or mainnet
-  (try! (ft-mint? usda u10 'STB2BWB0K5XZGS3FXVTG3TKS46CQVV66NAK3YVN8))
-  (try! (ft-mint? usda u1000000000000 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7)) ;; 1 million USDA
-  (try! (ft-mint? usda u1000000000000 'ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF)) ;; 1 million USDA
-  (try! (ft-mint? usda u1000000000000 'ST3EQ88S02BXXD0T5ZVT3KW947CRMQ1C6DMQY8H19)) ;; 1 million USDA
-  (try! (ft-mint? usda u1000000000000 'ST3KCNDSWZSFZCC6BE4VA9AXWXC9KEB16FBTRK36T)) ;; 1 million USDA  
 )
