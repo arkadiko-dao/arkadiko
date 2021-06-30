@@ -165,13 +165,13 @@ export const Mint = () => {
       contractAddress,
       stxAddress: address,
       contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'redeem-xusd',
+      functionName: 'redeem-usda',
       functionArgs: [
         uintCV(1502707),
       ],
       postConditionMode: 0x01,
       finished: data => {
-        console.log('finished redeeming xUSD!', data.txId);
+        console.log('finished redeeming USDA!', data.txId);
       },
     });
   };
@@ -295,12 +295,12 @@ export const Mint = () => {
                               <img className="h-10 w-10 rounded-full" src={tokenList[0].logo} alt="" />
                             </div>
                             <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">xUSD</div>
+                              <div className="text-sm font-medium text-gray-900">USDA</div>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          {microToReadable(state.balance['xusd']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xUSD
+                          {microToReadable(state.balance['usda']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           $1

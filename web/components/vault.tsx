@@ -123,10 +123,10 @@ export const Vault: React.FC<VaultProps> = ({
         <span className={`${debtClass(collateralData.liquidationRatio, debtRatio)} font-medium`}>{debtRatio}% (&gt; {collateralData['liquidationRatio']}%)</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">${stabilityFee / 1000000} xUSD</span>
+        <span className="text-gray-900 font-medium">${stabilityFee / 1000000} USDA</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">${(debt / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xUSD</span>
+        <span className="text-gray-900 font-medium">${(debt / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         <span className="text-gray-900 font-medium">{(collateral / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {collateralToken.toUpperCase()}</span>

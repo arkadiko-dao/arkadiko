@@ -1,4 +1,4 @@
-;; Stake Pool - Stake DIKO-xUSD LP tokens
+;; Stake Pool - Stake DIKO-USDA LP tokens
 ;; 
 ;; A fixed amount of rewards per block will be distributed across all stakers, according to their size in the pool
 ;; Rewards will be automatically staked before staking or unstaking. 
@@ -18,7 +18,7 @@
 (define-constant ERR-WRONG-REGISTRY (err u18004))
 
 ;; Constants
-(define-constant POOL-TOKEN .arkadiko-swap-token-diko-xusd)
+(define-constant POOL-TOKEN .arkadiko-swap-token-diko-usda)
 
 ;; Variables
 (define-data-var total-staked uint u0)
@@ -94,7 +94,7 @@
       (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
 
       ;; Transfer LP token to this contract
-      (try! (contract-call? .arkadiko-swap-token-diko-xusd transfer amount staker (as-contract tx-sender) none))
+      (try! (contract-call? .arkadiko-swap-token-diko-usda transfer amount staker (as-contract tx-sender) none))
 
       ;; Update sender stake info
       (map-set stakes { staker: staker } { uamount: new-stake-amount, cumm-reward-per-stake: (var-get cumm-reward-per-stake) })
@@ -131,7 +131,7 @@
       (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
 
       ;; Transfer LP token back from this contract to the user
-      (try! (contract-call? .arkadiko-swap-token-diko-xusd transfer amount (as-contract tx-sender) staker none))
+      (try! (contract-call? .arkadiko-swap-token-diko-usda transfer amount (as-contract tx-sender) staker none))
 
       ;; Update sender stake info
       (map-set stakes { staker: staker } { uamount: new-stake-amount, cumm-reward-per-stake: (var-get cumm-reward-per-stake) })
@@ -161,7 +161,7 @@
       (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
 
       ;; Transfer LP token back from this contract to the user
-      (try! (contract-call? .arkadiko-swap-token-diko-xusd transfer stake-amount (as-contract tx-sender) tx-sender none))
+      (try! (contract-call? .arkadiko-swap-token-diko-usda transfer stake-amount (as-contract tx-sender) tx-sender none))
 
       ;; Update sender stake info
       (map-set stakes { staker: tx-sender } { uamount: new-stake-amount, cumm-reward-per-stake: (var-get cumm-reward-per-stake) })
@@ -173,7 +173,7 @@
 
 (define-public (get-apy-for (registry-trait <stake-registry-trait>) (staker principal))
   (let (
-    (rewards-per-block (unwrap-panic (contract-call? registry-trait get-rewards-per-block-for-pool .arkadiko-stake-pool-diko-xusd-v1-1)))
+    (rewards-per-block (unwrap-panic (contract-call? registry-trait get-rewards-per-block-for-pool .arkadiko-stake-pool-diko-usda-v1-1)))
     (diko-staked (get-stake-amount-of staker))
     (reward-percentage (/ u100 (/ (var-get total-staked) diko-staked)))
     (diko-per-year (* rewards-per-block reward-percentage))
@@ -238,7 +238,7 @@
 ;; Calculate current cumm reward per stake
 (define-public (calculate-cumm-reward-per-stake (registry-trait <stake-registry-trait>))
   (let (
-    (rewards-per-block (unwrap-panic (contract-call? registry-trait get-rewards-per-block-for-pool .arkadiko-stake-pool-diko-xusd-v1-1)))
+    (rewards-per-block (unwrap-panic (contract-call? registry-trait get-rewards-per-block-for-pool .arkadiko-stake-pool-diko-usda-v1-1)))
     (current-total-staked (var-get total-staked))
     (last-block-height (get-last-block-height registry-trait))
     (block-diff (- last-block-height (var-get last-reward-increase-block)))
@@ -261,7 +261,7 @@
 ;; Return current block height, or block height when pool was deactivated
 (define-private (get-last-block-height (registry-trait <stake-registry-trait>))
   (let (
-    (deactivated-block (unwrap-panic (contract-call? registry-trait get-pool-deactivated-block .arkadiko-stake-pool-diko-xusd-v1-1)))
+    (deactivated-block (unwrap-panic (contract-call? registry-trait get-pool-deactivated-block .arkadiko-stake-pool-diko-usda-v1-1)))
     (pool-active (is-eq deactivated-block u0))
   )
     (if (is-eq pool-active true)

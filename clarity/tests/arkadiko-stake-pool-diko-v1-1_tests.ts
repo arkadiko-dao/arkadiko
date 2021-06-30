@@ -284,7 +284,7 @@ Clarinet.test({
           'can-burn': types.bool(true)
         }),
         types.tuple({
-          'name': types.ascii("stake-pool-diko-xusd-2"),
+          'name': types.ascii("stake-pool-diko-usda-2"),
           'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
           'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-tv1-1"),
           'can-mint': types.bool(true),
@@ -531,8 +531,8 @@ Clarinet.test({
       // Only 1, so total pool balance is mostly rewards
       Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
         types.uint(1)
       ], wallet_1.address)
     ]);

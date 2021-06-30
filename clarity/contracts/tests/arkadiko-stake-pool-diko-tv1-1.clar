@@ -130,30 +130,6 @@
   )
 )
 
-;; Unstake tokens without adding pending rewards to pool
-(define-public (emergency-withdraw (registry-trait <stake-registry-trait>))
-  (begin
-    ;; Check given registry
-    (asserts! (is-eq (contract-of registry-trait) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-WRONG-REGISTRY)
-
-    (let (
-      ;; Sender stDIKO balance
-      (stdiko-balance (unwrap-panic (contract-call? .stdiko-token get-balance tx-sender)))
-
-      ;; Amount of DIKO the user will receive
-      (diko-to-receive (diko-for-stdiko stdiko-balance))
-    )
-      ;; Burn stDIKO 
-      (try! (contract-call? .arkadiko-dao burn-token .stdiko-token stdiko-balance tx-sender))
-
-      ;; Transfer DIKO back from this contract to the user
-      (try! (contract-call? .arkadiko-token transfer diko-to-receive (as-contract tx-sender) tx-sender none))
-
-      (ok diko-to-receive)
-    )
-  )
-)
-
 ;; Add DIKO rewards to pool
 (define-public (add-rewards-to-pool (registry-trait <stake-registry-trait>))
   (let (

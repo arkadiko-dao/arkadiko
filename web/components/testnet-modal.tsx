@@ -42,8 +42,8 @@ export const TestnetModal = () => {
                       What we have in store:
                     </p>
                     <ul className="text-left text-sm text-gray-500 my-2 pl-4 list-disc">
-                      <li>Create vaults and mint xUSD with two collateral types: STX-A and STX-B</li>
-                      <li>Swap xUSD/DIKO and xUSD/STX</li>
+                      <li>Create vaults and mint USDA with two collateral types: STX-A and STX-B</li>
+                      <li>Swap USDA/DIKO and USDA/STX</li>
                       <li>Buy up collateral in liquidated vault auctions</li>
                       <li>Earn DIKO vault rewards</li>
                       <li>Stake your DIKO governance tokens to earn extra DIKO</li>

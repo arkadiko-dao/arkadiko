@@ -160,8 +160,8 @@ export const ManageVault = ({ match }) => {
         new BN(stabilityFee),
         createAssetInfo(
           contractAddress,
-          "xusd-token",
-          "xusd"
+          "usda-token",
+          "usda"
         )
       )
     ];
@@ -445,7 +445,8 @@ export const ManageVault = ({ match }) => {
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-freddie-v1-1'),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-auction-engine-v1-1'),
         uintCV(match.params.id),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1'),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1')
       ],
       postConditionMode: 0x01,
       finished: data => {
@@ -628,21 +629,21 @@ export const ManageVault = ({ match }) => {
             <div>
               <div className="mt-3 text-center sm:mt-5">
                 <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
-                  Mint extra xUSD
+                  Mint extra USDA
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Choose how much extra xUSD you want to mint. You can mint a maximum of {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xUSD.
+                    Choose how much extra USDA you want to mint. You can mint a maximum of {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA.
                   </p>
 
                   <div className="mt-6">
                     <InputAmount
                       balance={availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
-                      token="xUSD"
+                      token="USDA"
                       inputName="mintDebt"
-                      inputId="mintxUSDAmount"
+                      inputId="mintUSDAAmount"
                       inputValue={usdToMint}
-                      inputLabel="Mint xUSD"
+                      inputLabel="Mint USDA"
                       onInputChange={onInputChange}
                       onClickMax={mintMaxAmount}
                     />
@@ -690,21 +691,21 @@ export const ManageVault = ({ match }) => {
             <div>
               <div className="mt-3 text-center sm:mt-5">
                 <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
-                  Burn xUSD
+                  Burn USDA
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Choose how much xUSD you want to burn. If you burn all xUSD, your vault will be closed.
+                    Choose how much USDA you want to burn. If you burn all USDA, your vault will be closed.
                   </p>
 
                   <div className="mt-6">
                     <InputAmount
-                      balance={(state.balance['xusd'] / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
-                      token="xUSD"
+                      balance={(state.balance['usda'] / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                      token="USDA"
                       inputName="burnDebt"
                       inputId="burnAmount"
                       inputValue={usdToBurn}
-                      inputLabel="Burn xUSD"
+                      inputLabel="Burn USDA"
                       onInputChange={onInputChange}
                       onClickMax={burnMaxAmount}
                     />
@@ -737,7 +738,7 @@ export const ManageVault = ({ match }) => {
         <main className="flex-1 relative pb-8 z-0 overflow-y-auto">
           <div className="mt-8">
             <h1 className="text-2xl leading-6 font-medium text-gray-900 mb-4">
-              {vault?.collateralToken.toUpperCase()}/xUSD Vault #{match.params.id}
+              {vault?.collateralToken.toUpperCase()}/USDA Vault #{match.params.id}
             </h1>
           </div>
 
@@ -883,7 +884,7 @@ export const ManageVault = ({ match }) => {
 
               <li className="relative col-span-2 flex shadow-sm rounded-md">
                 <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8 mb-4">
-                  Outstanding xUSD debt
+                  Outstanding USDA debt
                 </h2>
               </li>
             </ul>
@@ -1020,13 +1021,13 @@ export const ManageVault = ({ match }) => {
                     <div className="mt-2 sm:flex sm:items-start sm:justify-between mb-5">
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                          Outstanding xUSD debt
+                          Outstanding USDA debt
                         </p>
                       </div>
 
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                          {outstandingDebt().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xUSD
+                          {outstandingDebt().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA
                         </p>
                       </div>
 
@@ -1053,7 +1054,7 @@ export const ManageVault = ({ match }) => {
 
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                        ${(stabilityFee / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xUSD
+                        ${(stabilityFee / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA
                         </p>
                       </div>
 
@@ -1080,7 +1081,7 @@ export const ManageVault = ({ match }) => {
 
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                          ${(outstandingDebt() + stabilityFee / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xUSD
+                          ${(outstandingDebt() + stabilityFee / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA
                         </p>
                       </div>
 
@@ -1107,7 +1108,7 @@ export const ManageVault = ({ match }) => {
 
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
-                          {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xUSD
+                          {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA
                         </p>
                       </div>
 

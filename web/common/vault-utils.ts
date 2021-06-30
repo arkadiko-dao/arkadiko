@@ -38,21 +38,21 @@ export const tokenTraits = {
     'name': 'xstx-token',
     'swap': 'xstx-token'
   },
-  'xusd': {
-    'name': 'xusd-token',
-    'swap': 'xusd-token'
+  'usda': {
+    'name': 'usda-token',
+    'swap': 'usda-token'
   },
-  'dikoxusd': {
-    'name': 'arkadiko-swap-token-diko-xusd'
+  'dikousda': {
+    'name': 'arkadiko-swap-token-diko-usda'
   },
-  'xusddiko': {
-    'name': 'arkadiko-swap-token-diko-xusd'
+  'usdadiko': {
+    'name': 'arkadiko-swap-token-diko-usda'
   },
-  'wstxxusd': {
-    'name': 'arkadiko-swap-token-wstx-xusd'
+  'wstxusda': {
+    'name': 'arkadiko-swap-token-wstx-usda'
   },
-  'xusdwstx': {
-    'name': 'arkadiko-swap-token-wstx-xusd'
+  'usdawstx': {
+    'name': 'arkadiko-swap-token-wstx-usda'
   }
 };
 

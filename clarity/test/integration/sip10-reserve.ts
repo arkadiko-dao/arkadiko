@@ -44,7 +44,7 @@ describe("freddie test suite", () => {
       await deployContract('arkadiko-governance-v1-1');
       await deployContract('arkadiko-diko-guardian-v1-1');
 
-      await deployContract('xusd-token');
+      await deployContract('usda-token');
       await deployContract('xstx-token');
 
       await deployContract('arkadiko-vault-data-v1-1');
@@ -114,7 +114,7 @@ describe("freddie test suite", () => {
 
       const supply = await callReadOnlyFunction({
         contractAddress: deployContractAddress,
-        contractName: "xusd-token",
+        contractName: "usda-token",
         functionName: "get-total-supply",
         functionArgs: [],
         senderAddress: contractAddress,
@@ -212,8 +212,8 @@ describe("freddie test suite", () => {
       );
     });
 
-    it("should mint xUSD", async () => {
-      const value = 1000000; // equivalent to 1 xUSD
+    it("should mint USDA", async () => {
+      const value = 1000000; // equivalent to 1 USDA
       const vaultEntries = await callReadOnlyFunction({
         contractAddress: deployContractAddress,
         contractName: "arkadiko-freddie-v1-1",
@@ -255,8 +255,8 @@ describe("freddie test suite", () => {
       );
     });
 
-    it("should burn xUSD", async () => {
-      const value = 1000000; // equivalent to 1 xUSD
+    it("should burn USDA", async () => {
+      const value = 1000000; // equivalent to 1 USDA
       const vaultEntries = await callReadOnlyFunction({
         contractAddress: deployContractAddress,
         contractName: "arkadiko-freddie-v1-1",

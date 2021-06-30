@@ -53,7 +53,7 @@ class VaultManager {
     ], caller.address);
   }
 
-  createVault(user: Account, collateralType: string, amount: number, xusd: number) {
+  createVault(user: Account, collateralType: string, amount: number, usda: number) {
     // Get reserve based on collateralType
     var reserve = types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1");
     if (collateralType.lastIndexOf("STX-", 0) === 0) {
@@ -63,7 +63,7 @@ class VaultManager {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(amount * 1000000), 
-        types.uint(xusd * 1000000), 
+        types.uint(usda * 1000000), 
         types.ascii(collateralType),
         reserve,
         types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
@@ -311,6 +311,9 @@ class VaultAuction {
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1", 
         ),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1", 
+        ),
         types.uint(vaultId),
         types.uint(lot)
       ], user.address)
@@ -327,6 +330,9 @@ class VaultAuction {
         ),
         types.principal(
           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1",
+        ),
+        types.principal(
+          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1", 
         ),
         types.uint(vaultId),
         types.uint(lot)

@@ -72,7 +72,7 @@
 ;; calculate the amount of stablecoins to mint, based on posted STX amount
 ;; ustx-amount * stx-price-in-cents == dollar-collateral-posted-in-cents
 ;; (dollar-collateral-posted-in-cents / collateral-to-debt-ratio) == stablecoins to mint
-(define-public (calculate-xusd-count
+(define-public (calculate-usda-count
   (token (string-ascii 12))
   (ustx-amount uint)
   (collateralization-ratio uint)
@@ -165,9 +165,9 @@
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq token-string "STX") (err ERR-WRONG-TOKEN))
 
-    (let ((max-new-debt (- (unwrap-panic (calculate-xusd-count token-string ustx-amount collateralization-ratio oracle)) current-debt)))
+    (let ((max-new-debt (- (unwrap-panic (calculate-usda-count token-string ustx-amount collateralization-ratio oracle)) current-debt)))
       (if (>= max-new-debt extra-debt)
-        (match (print (as-contract (contract-call? .arkadiko-dao mint-token .xusd-token extra-debt vault-owner)))
+        (match (print (as-contract (contract-call? .arkadiko-dao mint-token .usda-token extra-debt vault-owner)))
           success (ok true)
           error (err ERR-MINT-FAILED)
         )

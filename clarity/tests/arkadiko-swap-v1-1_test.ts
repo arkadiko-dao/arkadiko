@@ -12,14 +12,14 @@ import {
 
 import { 
   OracleManager,
-  XusdManager,
+  UsdaManager,
   XstxManager,
-  DikoXusdPoolToken
+  DikoUsdaPoolToken
 } from './models/arkadiko-tests-tokens.ts';
 
 const dikoTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"
-const xusdTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"
-const dikoXusdPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd"
+const usdaTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.usda-token"
+const dikoUsdaPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda"
 
 Clarinet.test({
   name: "swap: create pair, add and remove liquidity",
@@ -28,23 +28,23 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let swap = new Swap(chain, deployer);
-    let xusdManager = new XusdManager(chain, deployer);
+    let usdaManager = new UsdaManager(chain, deployer);
 
     // Create pair
-    let result = swap.createPair(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, "DIKO-xUSD", 500, 100);
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
     result.expectOk().expectBool(true);
 
     // Check initial balances
-    let call = await swap.getBalances(dikoTokenAddress, xusdTokenAddress);
+    let call = await swap.getBalances(dikoTokenAddress, usdaTokenAddress);
     call.result.expectOk().expectList()[0].expectUint(500000000);
     call.result.expectOk().expectList()[1].expectUint(100000000);
 
     // Add extra lquidity
-    result = swap.addToPosition(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, 500, 0);
+    result = swap.addToPosition(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 500, 0);
     result.expectOk().expectBool(true);
 
     // Check new balances (both tokens should have increased, price remains the same)
-    call = await swap.getBalances(dikoTokenAddress, xusdTokenAddress);
+    call = await swap.getBalances(dikoTokenAddress, usdaTokenAddress);
     call.result.expectOk().expectList()[0].expectUint(1000000000);
     call.result.expectOk().expectList()[1].expectUint(200000000);
 
@@ -53,16 +53,16 @@ Clarinet.test({
       types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-v1-1"),
     ], deployer.address);
     call.result.expectOk().expectUint(1000000000);
-    call = await xusdManager.balanceOf("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-v1-1");
+    call = await usdaManager.balanceOf("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-v1-1");
     call.result.expectOk().expectUint(200000000);
 
     // Remove other 90% of liquidity
-    result = swap.reducePosition(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, 100);
+    result = swap.reducePosition(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 100);
     result.expectOk().expectList()[0].expectUint(1000000000);
     result.expectOk().expectList()[1].expectUint(200000000);
 
     // Balances again at 0
-    call = await swap.getBalances(dikoTokenAddress, xusdTokenAddress);
+    call = await swap.getBalances(dikoTokenAddress, usdaTokenAddress);
     call.result.expectOk().expectList()[0].expectUint(0);
     call.result.expectOk().expectList()[1].expectUint(0);
   },
@@ -75,14 +75,14 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
     
     let swap = new Swap(chain, deployer);
-    let xusdManager = new XusdManager(chain, deployer);
+    let usdaManager = new UsdaManager(chain, deployer);
 
     // Create pair
-    let result = swap.createPair(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, "DIKO-xUSD", 5000, 1000);
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
     result.expectOk().expectBool(true);
 
     // Swap
-    result = swap.swapXForY(deployer, dikoTokenAddress, xusdTokenAddress, 200, 38);
+    result = swap.swapXForY(deployer, dikoTokenAddress, usdaTokenAddress, 200, 38);
     result.expectOk().expectList()[0].expectUint(200000000); 
     // K = 1000 * 5000 = 5,000,000
     // y = K / 5200 = 961.53
@@ -91,7 +91,7 @@ Clarinet.test({
     result.expectOk().expectList()[1].expectUint(38350578); 
 
     // Swap back
-    result = swap.swapYForX(deployer, dikoTokenAddress, xusdTokenAddress, 30, 155);
+    result = swap.swapYForX(deployer, dikoTokenAddress, usdaTokenAddress, 30, 155);
     // x = 5200 - K / (1000 - 38.46 + 30)  = 157.34
     // Without 0.03% fees: 156.86
     result.expectOk().expectList()[0].expectUint(156855954); 
@@ -106,45 +106,45 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
     
     let swap = new Swap(chain, deployer);
-    let xusdManager = new XusdManager(chain, deployer);
-    let dikoXusdPoolToken = new DikoXusdPoolToken(chain, deployer);
+    let usdaManager = new UsdaManager(chain, deployer);
+    let dikoUsdaPoolToken = new DikoUsdaPoolToken(chain, deployer);
 
     // Create pair
-    let result = swap.createPair(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, "DIKO-xUSD", 5000, 1000);
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
     result.expectOk().expectBool(true);
 
     // Check initial LP tokens
     // K = 5000*1000 = 5,000,000
     // sqrt(5,000,000) = 2236
-    let call = await dikoXusdPoolToken.balanceOf(deployer.address);
+    let call = await dikoUsdaPoolToken.balanceOf(deployer.address);
     call.result.expectOk().expectUint(2236067977);
  
-    // Swap DIKO for xUSD
-    result = swap.swapXForY(deployer, dikoTokenAddress, xusdTokenAddress, 200, 38);
+    // Swap DIKO for USDA
+    result = swap.swapXForY(deployer, dikoTokenAddress, usdaTokenAddress, 200, 38);
     result.expectOk().expectList()[0].expectUint(200000000); 
     result.expectOk().expectList()[1].expectUint(38350578); 
 
     // Remove liquidity
-    // Initially we provided 5000 DIKO and 1000 xUSD
-    // We added 200 DIKO, and removed 38.35 xUSD
-    result = swap.reducePosition(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, 100);
+    // Initially we provided 5000 DIKO and 1000 USDA
+    // We added 200 DIKO, and removed 38.35 USDA
+    result = swap.reducePosition(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 100);
     result.expectOk().expectList()[0].expectUint(5200000000);
     result.expectOk().expectList()[1].expectUint(961649422);
     
     // Add start liquidity again
-    result = swap.addToPosition(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, 5000, 1000);
+    result = swap.addToPosition(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 5000, 1000);
     result.expectOk().expectBool(true);
 
-    // Swap xUSD for DIKO
-    result = swap.swapYForX(deployer, dikoTokenAddress, xusdTokenAddress, 40, 1);
+    // Swap USDA for DIKO
+    result = swap.swapYForX(deployer, dikoTokenAddress, usdaTokenAddress, 40, 1);
     // 5000 - (5000000/1040) = 192.31
     // minus fees = 191.73
     result.expectOk().expectList()[0].expectUint(191752894); 
     result.expectOk().expectList()[1].expectUint(40000000); 
 
     // Remove liquidity
-    // Initially we provided 5000 DIKO and 1000 xUSD
-    result = swap.reducePosition(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, 100);
+    // Initially we provided 5000 DIKO and 1000 USDA
+    result = swap.reducePosition(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 100);
     // 5000 - 191.73 = 4808.27
     result.expectOk().expectList()[0].expectUint(4808247106);
     result.expectOk().expectList()[1].expectUint(1040000000);
@@ -158,42 +158,42 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
     
     let swap = new Swap(chain, deployer);
-    let xusdManager = new XusdManager(chain, deployer);
-    let dikoXusdPoolToken = new DikoXusdPoolToken(chain, deployer);
+    let usdaManager = new UsdaManager(chain, deployer);
+    let dikoUsdaPoolToken = new DikoUsdaPoolToken(chain, deployer);
 
     // Create pair
-    let result = swap.createPair(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, "DIKO-xUSD", 5000, 1000);
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
     result.expectOk().expectBool(true);
 
     // LP position
-    let call = await swap.getPosition(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress);
+    let call = await swap.getPosition(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress);
     call.result.expectOk().expectList()[0].expectUint(5000000000); 
     call.result.expectOk().expectList()[1].expectUint(1000000000); 
 
-    // Swap DIKO for xUSD
-    result = swap.swapXForY(deployer, dikoTokenAddress, xusdTokenAddress, 200, 38);
+    // Swap DIKO for USDA
+    result = swap.swapXForY(deployer, dikoTokenAddress, usdaTokenAddress, 200, 38);
     result.expectOk().expectList()[0].expectUint(200000000); 
     result.expectOk().expectList()[1].expectUint(38350578); 
 
     // LP position
-    call = await swap.getPosition(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress);
+    call = await swap.getPosition(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress);
     call.result.expectOk().expectList()[0].expectUint(5200000000); 
     call.result.expectOk().expectList()[1].expectUint(961649422); 
 
-    // Swap xUSD for DIKO
-    result = swap.swapYForX(deployer, dikoTokenAddress, xusdTokenAddress, 38.350578, 1);
+    // Swap USDA for DIKO
+    result = swap.swapYForX(deployer, dikoTokenAddress, usdaTokenAddress, 38.350578, 1);
     result.expectOk().expectList()[0].expectUint(198847613); 
     result.expectOk().expectList()[1].expectUint(38350578); 
 
     // LP position
-    call = await swap.getPosition(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress);
+    call = await swap.getPosition(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress);
     call.result.expectOk().expectList()[0].expectUint(5001152387); 
     call.result.expectOk().expectList()[1].expectUint(1000000000); 
 
     // Remove liquidity
     // 0.3% fee on 2 swaps of ~200 DIKO = ~1.15
-    // xUSD is 1000 again
-    result = swap.reducePosition(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, 100);
+    // USDA is 1000 again
+    result = swap.reducePosition(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 100);
     result.expectOk().expectList()[0].expectUint(5001152387);
     result.expectOk().expectList()[1].expectUint(1000000000);
   },
@@ -206,28 +206,28 @@ Clarinet.test({
     let swap = new Swap(chain, deployer);
 
     // Create pair
-    let result = swap.createPair(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, "DIKO-xUSD", 5000, 1000);
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
     result.expectOk().expectBool(true);
 
     // Swap
-    result = swap.swapXForY(deployer, dikoTokenAddress, xusdTokenAddress, 200, 38);
+    result = swap.swapXForY(deployer, dikoTokenAddress, usdaTokenAddress, 200, 38);
     result.expectOk().expectList()[0].expectUint(200000000); 
     result.expectOk().expectList()[1].expectUint(38350578); 
 
     // Protocol fees
     // 200 DIKO * 0.05% = 0.1 DIKO
-    let call = await swap.getFees(dikoTokenAddress, xusdTokenAddress);
+    let call = await swap.getFees(dikoTokenAddress, usdaTokenAddress);
     call.result.expectOk().expectList()[0].expectUint(100000);
     call.result.expectOk().expectList()[1].expectUint(0);
 
     // Swap back
-    result = swap.swapYForX(deployer, dikoTokenAddress, xusdTokenAddress, 40, 1);
+    result = swap.swapYForX(deployer, dikoTokenAddress, usdaTokenAddress, 40, 1);
     result.expectOk().expectList()[0].expectUint(207059318);
     result.expectOk().expectList()[1].expectUint(40000000); 
 
     // // Protocol fees
-    // // 40 xUSD * 0.05% = 0.02 xUSD
-    call = await swap.getFees(dikoTokenAddress, xusdTokenAddress);
+    // // 40 USDA * 0.05% = 0.02 USDA
+    call = await swap.getFees(dikoTokenAddress, usdaTokenAddress);
     call.result.expectOk().expectList()[0].expectUint(100000);
     // TODO: this fails? call.result.expectOk().expectList()[1].expectUint(20000);
   },

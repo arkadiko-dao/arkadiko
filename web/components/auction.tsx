@@ -5,7 +5,19 @@ import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { getPrice } from '@common/get-price';
 
-export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, endsAt, setShowBidModal, setBidAuctionId, setBidLotId, setPreferredBid }) => {
+export const Auction: React.FC<AuctionProps> = (
+  {
+    id,
+    lotId,
+    collateralToken,
+    endsAt,
+    stacksTipHeight,
+    setShowBidModal,
+    setBidAuctionId,
+    setBidLotId,
+    setPreferredBid
+  }
+) => {
   const [minimumCollateralAmount, setMinimumCollateralAmount] = useState(0);
   const [currentBid, setCurrentBid] = useState(0);
   const [isClosed, setIsClosed] = useState(false);
@@ -67,8 +79,8 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, en
       });
 
       const json = cvToJSON(currentBid);
-      if (json.value.xusd.value > 0) {
-        setCurrentBid(json.value.xusd.value);
+      if (json.value.usda.value > 0) {
+        setCurrentBid(json.value.usda.value);
         setMinimumCollateralAmount(json.value['collateral-amount'].value);
         setDebtToRaise(Math.min(debtMax, json.value['collateral-amount'].value * discountedPrice / 100));
       }
@@ -124,7 +136,7 @@ export const Auction: React.FC<AuctionProps> = ({ id, lotId, collateralToken, en
         <span className="text-gray-900 font-medium">${currentBid / 1000000}</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">{endsAt}</span>
+        <span className="text-gray-900 font-medium">{endsAt} (~{((Number(endsAt) - stacksTipHeight) * 10 / 60).toFixed(2)} hours)</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         <span className="text-gray-900 font-medium">

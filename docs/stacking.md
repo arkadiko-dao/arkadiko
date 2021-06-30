@@ -27,7 +27,7 @@ From here on, the DAO will distribute the earned yield as follows:
 
 ## Liquidations
 
-When a vault gets liquidated, enough STX collateral will need to be auctioned to cover the xUSD debt of the vault. 
+When a vault gets liquidated, enough STX collateral will need to be auctioned to cover the USDA debt of the vault. 
 
 When a vault gets liquidated during the stacking cycle, the vault owner will not be eligible to get the yield of the part of the STX collateral that had to be auctioned off. By default, the yield of the current stacking cycle of the liquidated collateral will be distributed as follows:
 

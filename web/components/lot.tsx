@@ -7,7 +7,7 @@ import { resolveReserveName, tokenTraits } from '@common/vault-utils';
 import { AppContext } from '@common/context';
 import { useSTXAddress } from '@common/use-stx-address';
 
-export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collateralToken, xusd }) => {
+export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collateralToken, usda }) => {
   const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const stxAddress = useSTXAddress();
@@ -26,6 +26,7 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collatera
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-freddie-v1-1'),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', resolveReserveName(collateralToken.toLowerCase())),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1'),
         uintCV(id),
         uintCV(lotId)
       ],
@@ -52,7 +53,7 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collatera
         <span className="text-gray-900 font-medium">{collateralAmount / 1000000} {collateralToken.toUpperCase()}</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">{xusd / 1000000} xUSD</span>
+        <span className="text-gray-900 font-medium">{usda / 1000000} USDA</span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         <button type="button" onClick={() => redeemLot()} className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">

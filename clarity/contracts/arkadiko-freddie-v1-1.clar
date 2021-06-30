@@ -35,7 +35,7 @@
 
 (define-data-var stx-redeemable uint u0) ;; how much STX is available to trade for xSTX
 (define-data-var block-height-last-paid uint u0) ;; when the foundation was last paid
-(define-data-var maximum-debt-surplus uint u10000000000000) ;; 10 million default - above that we sell the xUSD on the DIKO/xUSD pair to burn DIKO
+(define-data-var maximum-debt-surplus uint u10000000000000) ;; 10 million default - above that we sell the USDA on the DIKO/USDA pair to burn DIKO
 (define-data-var freddie-shutdown-activated bool false)
 
 ;; getters
@@ -312,7 +312,7 @@
     )
 
     (try! (contract-call? reserve collateralize-and-mint ft collateral-token collateral-amount debt sender))
-    (try! (as-contract (contract-call? .arkadiko-dao mint-token .xusd-token debt sender)))
+    (try! (as-contract (contract-call? .arkadiko-dao mint-token .usda-token debt sender)))
     (let (
       (vault-id (+ (contract-call? .arkadiko-vault-data-v1-1 get-last-vault-id) u1))
       (vault {
@@ -559,7 +559,7 @@
     (asserts! (is-eq u0 (get stacked-tokens vault)) (err ERR-STACKING-IN-PROGRESS))
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
 
-    (try! (contract-call? .arkadiko-dao burn-token .xusd-token (get debt vault) (get owner vault)))
+    (try! (contract-call? .arkadiko-dao burn-token .usda-token (get debt vault) (get owner vault)))
     (try! (contract-call? reserve burn ft (get owner vault) (get collateral vault)))
     (try! (contract-call? coll-type subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault)))
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id updated-vault))
@@ -578,7 +578,7 @@
   (coll-type <collateral-types-trait>)
 )
   (let ((vault (get-vault-by-id vault-id)))
-    (try! (contract-call? .arkadiko-dao burn-token .xusd-token debt (get owner vault)))
+    (try! (contract-call? .arkadiko-dao burn-token .usda-token debt (get owner vault)))
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
         debt: (- (get debt vault) debt),
         updated-at-block-height: block-height
@@ -647,7 +647,7 @@
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (if (> fee u0)
       (begin
-        (try! (contract-call? .xusd-token transfer fee tx-sender (as-contract tx-sender) none))
+        (try! (contract-call? .usda-token transfer fee tx-sender (as-contract tx-sender) none))
         (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
             updated-at-block-height: block-height,
             stability-fee-accrued: u0,
@@ -804,29 +804,29 @@
 ;; Admin Functions
 ;; ---------------------------------------------------------
 
-(define-read-only (get-xusd-balance)
-  (contract-call? .xusd-token get-balance (as-contract tx-sender))
+(define-read-only (get-usda-balance)
+  (contract-call? .usda-token get-balance (as-contract tx-sender))
 )
 
 (define-read-only (get-diko-balance)
   (contract-call? .arkadiko-token get-balance (as-contract tx-sender))
 )
 
-;; redeem xUSD and DIKO working capital for the foundation
+;; redeem USDA and DIKO working capital for the foundation
 ;; taken from stability fees paid by vault owners
-(define-public (redeem-tokens (xusd-amount uint) (diko-amount uint))
+(define-public (redeem-tokens (usda-amount uint) (diko-amount uint))
   (begin
     (asserts! (> (- block-height (var-get block-height-last-paid)) (* BLOCKS-PER-DAY u31)) (err ERR-NOT-AUTHORIZED))
 
     (var-set block-height-last-paid block-height)
 
-    (if (and (> xusd-amount u0) (> diko-amount u0))
+    (if (and (> usda-amount u0) (> diko-amount u0))
       (begin
         (try! (contract-call? .arkadiko-token transfer diko-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none))
-        (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none)
+        (contract-call? .usda-token transfer usda-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none)
       )
-      (if (> xusd-amount u0)
-        (contract-call? .xusd-token transfer xusd-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none)
+      (if (> usda-amount u0)
+        (contract-call? .usda-token transfer usda-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none)
         (contract-call? .arkadiko-token transfer diko-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none)
       )
     )
@@ -834,7 +834,7 @@
 )
 
 ;; this should be called when upgrading contracts
-;; freddie should only contain xUSD
+;; freddie should only contain USDA
 (define-public (migrate-funds (new-vault-manager <vault-manager-trait>) (token <ft-trait>))
   (begin
     (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))

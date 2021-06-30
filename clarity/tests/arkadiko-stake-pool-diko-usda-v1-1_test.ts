@@ -26,9 +26,9 @@ Clarinet.test({
 
     // Get pool info
     let call:any = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pool-data", [
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1')
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1')
     ], wallet_1.address);
-    call.result.expectTuple()['name'].expectAscii('DIKO-xUSD LP');
+    call.result.expectTuple()['name'].expectAscii('DIKO-USDA LP');
   }
 });
 
@@ -42,42 +42,42 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Create swap pair to get LP tokens
   const dikoTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"
-  const xusdTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"
-  const dikoXusdPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd"
-  let result = swap.createPair(wallet_1, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, "DIKO-xUSD", 500, 100);
+  const usdaTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.usda-token"
+  const dikoUsdaPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda"
+  let result = swap.createPair(wallet_1, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
   result.expectOk().expectBool(true);
 
   // Check DIKO and stDIKO balance before staking
-  let call = chain.callReadOnlyFn("arkadiko-swap-token-diko-xusd", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+  let call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(223606797);   
   call = chain.callReadOnlyFn("stdiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(0);   
 
   // Staked total
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-stake-amount-of", [types.principal(wallet_1.address)], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-amount-of", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectUint(0);
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-total-staked", [], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-total-staked", [], wallet_1.address);
   call.result.expectUint(0);
 
   // Stake funds
   let block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
       types.uint(223606797)
     ], wallet_1.address)
   ]);
   block.receipts[0].result.expectOk().expectUint(223606797); // 22 with 6 decimals
 
   // Check LP tokens after staking
-  call = chain.callReadOnlyFn("arkadiko-swap-token-diko-xusd", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(0);   
 
   // Staked total
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-stake-amount-of", [types.principal(wallet_1.address)], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-amount-of", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectUint(223606797);
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-total-staked", [], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-total-staked", [], wallet_1.address);
   call.result.expectUint(223606797);
 
   // Advance 3 block
@@ -88,7 +88,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // But this pool only gets 30% of total rewards
   call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
     types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1')
+    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1')
   ], wallet_1.address);
   call.result.expectOk().expectUint(751678844);   
 
@@ -96,23 +96,23 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
       types.uint(223606797)
     ], wallet_1.address)
   ]);
   block.receipts[0].result.expectOk().expectUint(223606797);
 
   // Check DIKO and LP token balance after unstake
-  call = chain.callReadOnlyFn("arkadiko-swap-token-diko-xusd", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(223606797);   
   call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(150251678844);   
 
   // Staked total
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-stake-amount-of", [types.principal(wallet_1.address)], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-amount-of", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectUint(0);
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-total-staked", [], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-total-staked", [], wallet_1.address);
   call.result.expectUint(0);
 }
 });
@@ -128,17 +128,17 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Create swap pair to get LP tokens
   const dikoTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"
-  const xusdTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"
-  const dikoXusdPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd"
-  let result = swap.createPair(wallet_1, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, "DIKO-xUSD", 500, 100);
+  const usdaTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.usda-token"
+  const dikoUsdaPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda"
+  let result = swap.createPair(wallet_1, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
   result.expectOk().expectBool(true);
-  result = swap.addToPosition(wallet_2, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, 500, 100);
+  result = swap.addToPosition(wallet_2, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 500, 100);
   result.expectOk().expectBool(true);
 
   // Cumm rewards should be 0
-  let call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-cumm-reward-per-stake", [], wallet_1.address);
+  let call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-cumm-reward-per-stake", [], wallet_1.address);
   call.result.expectUint(0);
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "calculate-cumm-reward-per-stake", [
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "calculate-cumm-reward-per-stake", [
     types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
   ], wallet_1.address);
   call.result.expectOk().expectUint(0);
@@ -146,14 +146,14 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Pending rewards should be 0
   call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
     types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1')
+    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1')
   ], wallet_1.address);
   call.result.expectOk().expectUint(0);
 
   // Initial stake should be 0
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-stake-amount-of", [types.principal(wallet_1.address)], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-amount-of", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectUint(0);
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-total-staked", [], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-total-staked", [], wallet_1.address);
   call.result.expectUint(0);
 
 
@@ -161,33 +161,33 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
         types.uint(223606797)
     ], wallet_1.address)
   ]);
   block.receipts[0].result.expectOk().expectUint(223606797);
 
   // New stake amounts = 223
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-stake-amount-of", [types.principal(wallet_1.address)], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-amount-of", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectUint(223606797);
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-total-staked", [], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-total-staked", [], wallet_1.address);
   call.result.expectUint(223606797);
 
   // Not advanced blocks yet.  
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-cumm-reward-per-stake", [], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-cumm-reward-per-stake", [], wallet_1.address);
   call.result.expectUint(0);
 
   // Started at 0. Calculation takes into account 1 extra block.
   // First block has 626 rewards. 1 * (626 / 223) = 2.807 - if 100% of rewards go to this pool
   // But pool only gets 30% of total staking rewards
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "calculate-cumm-reward-per-stake", [
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "calculate-cumm-reward-per-stake", [
     types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
   ], wallet_1.address);
   call.result.expectOk().expectUint(840402);
 
   // Wallet 1 starts at 20
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-stake-cumm-reward-per-stake-of", [types.principal(wallet_1.address)], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-cumm-reward-per-stake-of", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectUint(0);
 
   // Advanced 0 blocks for user. 
@@ -195,7 +195,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // But pool only gets 30% of total staking rewards
   call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
     types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1')
+    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1')
   ], wallet_1.address);
   call.result.expectOk().expectUint(187919599);
 
@@ -204,14 +204,14 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   chain.mineEmptyBlock(3);
 
   // Total stake did not change, so cumm reward per stake should not change either
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-cumm-reward-per-stake", [], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-cumm-reward-per-stake", [], wallet_1.address);
   call.result.expectUint(0);
 
   // Advanced 3 blocks. Calculate function takes into account current rewards, so adds 1 block
   // First block has 626 rewards. Start cumm reward: 1 * (626 / 223) = 2.807
   // 4 blocks later: 4 * 2.807 = 11.22
   // But we only get 30% of total rewards in this pool
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "calculate-cumm-reward-per-stake", [
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "calculate-cumm-reward-per-stake", [
     types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
   ], wallet_1.address);
   call.result.expectOk().expectUint(3361610);
@@ -221,7 +221,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // But we only get 30% of total rewards in this pool
   call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
     types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1')
+    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1')
   ], wallet_1.address);
   call.result.expectOk().expectUint(751678844);   
   
@@ -230,32 +230,32 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
         types.uint(200000000)
     ], wallet_2.address)
   ]);
   block.receipts[0].result.expectOk().expectUint(200000000);
 
   // Total staked
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-total-staked", [], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-total-staked", [], wallet_1.address);
   call.result.expectUint(423606797);
 
   // First blocks have 626 rewards. Start cumm reward: 626 / 223 = 2.807
   // 4 blocks later: 4 * 2.807 = 11.228
   // But only 30% of staking rewards are for this pool
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-stake-cumm-reward-per-stake-of", [types.principal(wallet_2.address)], wallet_2.address);
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-cumm-reward-per-stake-of", [types.principal(wallet_2.address)], wallet_2.address);
   call.result.expectUint(3361610);
 
   // Should be same as previous check (get-stake-cumm-reward-per-stake-of)
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-cumm-reward-per-stake", [], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-cumm-reward-per-stake", [], wallet_1.address);
   call.result.expectUint(3361610);
 
   // We had 11.228. Now wallet 2 staked. 
   // 626 block rewards / 423 staking amount = 1.4799
   // 11.228 + 1.4799 = 12.70
   // But only 30% of staking rewards are for this pool
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "calculate-cumm-reward-per-stake", [
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "calculate-cumm-reward-per-stake", [
     types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
   ], wallet_1.address);
   call.result.expectOk().expectUint(3805228);
@@ -263,13 +263,13 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // User just staked, so only advanced 1 block. 
   call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
     types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1')
+    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1')
   ], wallet_2.address);
   call.result.expectOk().expectUint(88723600);  
 
   call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
     types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1')
+    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1')
   ], wallet_1.address);
   call.result.expectOk().expectUint(850874844);   
 
@@ -278,19 +278,19 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
         types.uint(100000000)
     ], wallet_1.address)
   ]);
   block.receipts[0].result.expectOk().expectUint(100000000);
 
   // New cumm reward for wallet
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-cumm-reward-per-stake", [], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-cumm-reward-per-stake", [], wallet_1.address);
   call.result.expectUint(3805228);
 
   // New cumm reward per stake
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "calculate-cumm-reward-per-stake", [
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "calculate-cumm-reward-per-stake", [
     types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
   ], wallet_1.address);
   call.result.expectOk().expectUint(4385931);
@@ -307,29 +307,29 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Create swap pair to get LP tokens
   const dikoTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"
-  const xusdTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"
-  const dikoXusdPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd"
-  let result = swap.createPair(wallet_1, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, "DIKO-xUSD", 500, 100);
+  const usdaTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.usda-token"
+  const dikoUsdaPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda"
+  let result = swap.createPair(wallet_1, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
   result.expectOk().expectBool(true);
-  result = swap.addToPosition(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, 500, 100);
+  result = swap.addToPosition(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 500, 100);
   result.expectOk().expectBool(true);
 
   // Check initial user balance
-  let call = chain.callReadOnlyFn("arkadiko-swap-token-diko-xusd", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+  let call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(223606797);   
 
   // Stake
   let block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
       types.uint(100000000)
     ], wallet_1.address),
     Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
       types.uint(100000000)
     ], deployer.address)
   ]);
@@ -341,7 +341,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Advanced 3 blocks for user plus one in calculation  
   // 626 pool rewards * 4 blocks * 50% of pool = 1252
   // But only 30% of staking rewards are for this pool
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-pending-rewards", [
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-pending-rewards", [
     types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
     types.principal(wallet_1.address)
   ], wallet_1.address);
@@ -351,7 +351,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "claim-pending-rewards", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
     ], wallet_1.address)
   ]);
   block.receipts[0].result.expectOk().expectUint(375839400);
@@ -361,7 +361,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   call.result.expectOk().expectUint(149875839400);
   
   // Just claimed rewards, so this is for 1 block only.
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-pending-rewards", [
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-pending-rewards", [
     types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
     types.principal(wallet_1.address)
   ], wallet_1.address);
@@ -379,8 +379,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.usda-token'),
       types.uint(100)
     ], wallet_1.address)
   ]);
@@ -388,10 +388,10 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Try to stake in pool directly as user - unauthorised
   block = chain.mineBlock([
-    Tx.contractCall("arkadiko-stake-pool-diko-xusd-v1-1", "stake", [
+    Tx.contractCall("arkadiko-stake-pool-diko-usda-v1-1", "stake", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
       types.uint(100)
     ], wallet_1.address)
   ]);
@@ -399,10 +399,10 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Try to unstake in pool directly as user - unauthorised
   block = chain.mineBlock([
-    Tx.contractCall("arkadiko-stake-pool-diko-xusd-v1-1", "unstake", [
+    Tx.contractCall("arkadiko-stake-pool-diko-usda-v1-1", "unstake", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
       types.uint(100)
     ], wallet_1.address)
   ]);
@@ -410,7 +410,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Try to claim rewards on pool directly - unauthorised
   block = chain.mineBlock([
-    Tx.contractCall("arkadiko-stake-pool-diko-xusd-v1-1", "claim-pending-rewards", [
+    Tx.contractCall("arkadiko-stake-pool-diko-usda-v1-1", "claim-pending-rewards", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
       types.principal(wallet_1.address)
     ], wallet_1.address)
@@ -430,34 +430,34 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Create swap pair to get LP tokens
   const dikoTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"
-  const xusdTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"
-  const dikoXusdPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd"
-  let result = swap.createPair(wallet_1, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, "DIKO-xUSD", 500, 100);
+  const usdaTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.usda-token"
+  const dikoUsdaPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda"
+  let result = swap.createPair(wallet_1, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
   result.expectOk().expectBool(true);
 
   // Check LP before staking
-  let call = chain.callReadOnlyFn("arkadiko-swap-token-diko-xusd", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+  let call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(223606797);   
 
   // Staked total
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-stake-amount-of", [types.principal(wallet_1.address)], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-amount-of", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectUint(0);
-  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-total-staked", [], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-total-staked", [], wallet_1.address);
   call.result.expectUint(0);
 
   // Stake funds
   let block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
         types.uint(223606797)
     ], wallet_1.address)
   ]);
   block.receipts[0].result.expectOk().expectUint(223606797); // 10 with 6 decimals
 
   // Check LP after staking
-  call = chain.callReadOnlyFn("arkadiko-swap-token-diko-xusd", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(0);   
 
   // Advance 3 block
@@ -465,14 +465,14 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Emergency withdraw
   block = chain.mineBlock([
-    Tx.contractCall("arkadiko-stake-pool-diko-xusd-v1-1", "emergency-withdraw", [
+    Tx.contractCall("arkadiko-stake-pool-diko-usda-v1-1", "emergency-withdraw", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
     ], wallet_1.address)
   ]);
   block.receipts[0].result.expectOk().expectUint(0); 
 
   // Check LPs after withdraw
-  call = chain.callReadOnlyFn("arkadiko-swap-token-diko-xusd", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+  call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(223606797);   
 }
 });
@@ -491,8 +491,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
         types.uint(1500000000000)
     ], wallet_1.address)
   ]);
@@ -513,7 +513,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "claim-pending-rewards", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
     ], wallet_1.address)
   ]);
   // No rewards
@@ -532,20 +532,20 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Create swap pair to get LP tokens
   const dikoTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"
-  const xusdTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"
-  const dikoXusdPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd"
-  let result = swap.createPair(wallet_1, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, "DIKO-xUSD", 500, 100);
+  const usdaTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.usda-token"
+  const dikoUsdaPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda"
+  let result = swap.createPair(wallet_1, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
   result.expectOk().expectBool(true);
 
-  let call = chain.callReadOnlyFn("arkadiko-swap-token-diko-xusd", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+  let call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(223606797);   
 
   // Stake
   let block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
       types.uint(223606797)
     ], wallet_1.address)
   ]);
@@ -555,8 +555,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
       types.uint(25000000000)
     ], wallet_1.address)
   ]);
@@ -575,8 +575,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
       types.uint(0)
     ], wallet_1.address)
   ]);
@@ -586,8 +586,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
       types.uint(0)
     ], wallet_1.address)
   ]);
@@ -606,23 +606,23 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Create swap pair to get LP tokens
   const dikoTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"
-  const xusdTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"
-  const dikoXusdPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd"
-  let result = swap.createPair(wallet_1, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, "DIKO-xUSD", 500, 100);
+  const usdaTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.usda-token"
+  const dikoUsdaPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda"
+  let result = swap.createPair(wallet_1, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
   result.expectOk().expectBool(true);
 
   // Stake
   let block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
       types.uint(223606797)
     ], wallet_1.address),
 
     Tx.contractCall("arkadiko-stake-registry-v1-1", "claim-pending-rewards", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
     ], wallet_1.address)
   ]);
   // Should have staked, but no rewards yet as not advanced
@@ -641,19 +641,19 @@ Clarinet.test({
 
     // Create swap pair to get LP tokens
     const dikoTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"
-    const xusdTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"
-    const dikoXusdPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd"
-    let result = swap.createPair(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, "DIKO-xUSD", 500, 100);
+    const usdaTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.usda-token"
+    const dikoUsdaPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda"
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
     result.expectOk().expectBool(true);
 
     // Pool at start
-    let call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-stake-amount-of", [types.principal(deployer.address)], deployer.address);
+    let call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-amount-of", [types.principal(deployer.address)], deployer.address);
     call.result.expectUint(0);
-    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-total-staked", [], deployer.address);
+    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-total-staked", [], deployer.address);
     call.result.expectUint(0);
   
     // LP at start
-    call = chain.callReadOnlyFn("arkadiko-swap-token-diko-xusd", "get-balance", [types.principal(deployer.address)], deployer.address);
+    call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(deployer.address)], deployer.address);
     call.result.expectOk().expectUint(223606797);  
 
     // DIKO at start
@@ -664,28 +664,28 @@ Clarinet.test({
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
           types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
           types.uint(100000000)
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectUint(100000000); // 10 with 6 decimals
 
     // Staked total
-    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-stake-amount-of", [types.principal(deployer.address)], deployer.address);
+    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-amount-of", [types.principal(deployer.address)], deployer.address);
     call.result.expectUint(100000000);
-    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-total-staked", [], deployer.address);
+    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-total-staked", [], deployer.address);
     call.result.expectUint(100000000);
 
     // LPs left in wallet
-    call = chain.callReadOnlyFn("arkadiko-swap-token-diko-xusd", "get-balance", [types.principal(deployer.address)], deployer.address);
+    call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(deployer.address)], deployer.address);
     call.result.expectOk().expectUint(123606797);  
   
     // Advance 3 block
     chain.mineEmptyBlock(3);
   
     // Advanced 3 blocks for user plus one in calculation
-    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-pending-rewards", [
+    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-pending-rewards", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
       types.principal(deployer.address)
     ], deployer.address);
@@ -695,15 +695,15 @@ Clarinet.test({
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
           types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
           types.uint(100000000)
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectUint(100000000);
   
     // Check if we got LP back
-    call = chain.callReadOnlyFn("arkadiko-swap-token-diko-xusd", "get-balance", [types.principal(deployer.address)], deployer.address);
+    call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(deployer.address)], deployer.address);
     call.result.expectOk().expectUint(223606797);  
 
     // Rewards are claimed
@@ -711,9 +711,9 @@ Clarinet.test({
     call.result.expectOk().expectUint(890251678800);   
   
     // Staked total
-    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-stake-amount-of", [types.principal(deployer.address)], deployer.address);
+    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-amount-of", [types.principal(deployer.address)], deployer.address);
     call.result.expectUint(0);
-    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-total-staked", [], deployer.address);
+    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-total-staked", [], deployer.address);
     call.result.expectUint(0);
   }
 });
@@ -727,17 +727,17 @@ Clarinet.test({
 
     // Create swap pair to get LP tokens
     const dikoTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"
-    const xusdTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"
-    const dikoXusdPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd"
-    let result = swap.createPair(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, "DIKO-xUSD", 500, 100);
+    const usdaTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.usda-token"
+    const dikoUsdaPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda"
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
     result.expectOk().expectBool(true);
 
     // Stake funds - fails with wrong registry
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
           types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-tv1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
           types.uint(100000000)
       ], deployer.address)
     ]);
@@ -747,8 +747,8 @@ Clarinet.test({
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
           types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
           types.uint(100000000)
       ], deployer.address)
     ]);
@@ -758,8 +758,8 @@ Clarinet.test({
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
           types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-tv1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
           types.uint(100000000)
       ], deployer.address)
     ]);
@@ -767,13 +767,13 @@ Clarinet.test({
 
     let call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-tv1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1')
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1')
     ], deployer.address);
     call.result.expectErr().expectUint(19004);   
 
     // Emergency withdraw
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-diko-xusd-v1-1", "emergency-withdraw", [
+      Tx.contractCall("arkadiko-stake-pool-diko-usda-v1-1", "emergency-withdraw", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-tv1-1'),
       ], deployer.address)
     ]);
@@ -781,7 +781,7 @@ Clarinet.test({
 
     // Increase cummulative rewards
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-diko-xusd-v1-1", "increase-cumm-reward-per-stake", [
+      Tx.contractCall("arkadiko-stake-pool-diko-usda-v1-1", "increase-cumm-reward-per-stake", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-tv1-1'),
       ], deployer.address)
     ]);
@@ -800,17 +800,17 @@ Clarinet.test({
 
     // Create swap pair to get LP tokens
     const dikoTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"
-    const xusdTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"
-    const dikoXusdPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd"
-    let result = swap.createPair(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, "DIKO-xUSD", 500, 100);
+    const usdaTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.usda-token"
+    const dikoUsdaPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda"
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
     result.expectOk().expectBool(true);
 
     // Stake funds
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
         types.uint(100000000)
       ], deployer.address)
     ]);
@@ -830,9 +830,9 @@ Clarinet.test({
           'can-burn': types.bool(true)
         }),
         types.tuple({
-          'name': types.ascii("stake-pool-diko-xusd-2"),
+          'name': types.ascii("stake-pool-diko-usda-2"),
           'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
-          'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-tv1-1"),
+          'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-tv1-1"),
           'can-mint': types.bool(true),
           'can-burn': types.bool(true)
         })
@@ -886,18 +886,18 @@ Clarinet.test({
     call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-burn-by-qualified-name", [types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-tv1-1")], deployer.address);
     call.result.expectBool(true)
 
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-mint-by-qualified-name", [types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1")], deployer.address);
+    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-mint-by-qualified-name", [types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1")], deployer.address);
     call.result.expectBool(true)
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-burn-by-qualified-name", [types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1")], deployer.address);
+    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-burn-by-qualified-name", [types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1")], deployer.address);
     call.result.expectBool(true)
       
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-mint-by-qualified-name", [types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-tv1-1")], deployer.address);
+    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-mint-by-qualified-name", [types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-tv1-1")], deployer.address);
     call.result.expectBool(true)
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-burn-by-qualified-name", [types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-tv1-1")], deployer.address);
+    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-burn-by-qualified-name", [types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-tv1-1")], deployer.address);
     call.result.expectBool(true)
 
     // Pending rewards on old pool
-    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-pending-rewards", [
+    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-pending-rewards", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-tv1-1'),
       types.principal(deployer.address)
     ], deployer.address);
@@ -907,7 +907,7 @@ Clarinet.test({
     chain.mineEmptyBlock(1500);
 
     // Pending rewards on old pool stay the same
-    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-pending-rewards", [
+    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-pending-rewards", [
       types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-tv1-1'),
       types.principal(deployer.address)
     ], deployer.address);
@@ -917,8 +917,8 @@ Clarinet.test({
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-tv1-1", "stake", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-tv1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
         types.uint(100000000)
       ], deployer.address)
     ]);
@@ -928,8 +928,8 @@ Clarinet.test({
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-tv1-1", "stake", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
         types.uint(100000000)
       ], deployer.address)
     ]);
@@ -939,8 +939,8 @@ Clarinet.test({
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-tv1-1", "unstake", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
         types.uint(100000000)
       ], deployer.address)
     ]);
@@ -950,8 +950,8 @@ Clarinet.test({
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-tv1-1", "unstake", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-tv1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
         types.uint(100000000)
       ], deployer.address)
     ]);
@@ -970,17 +970,17 @@ Clarinet.test({
 
     // Create swap pair to get LP tokens
     const dikoTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"
-    const xusdTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"
-    const dikoXusdPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd"
-    let result = swap.createPair(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, "DIKO-xUSD", 500, 100);
+    const usdaTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.usda-token"
+    const dikoUsdaPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda"
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
     result.expectOk().expectBool(true);
 
     // Stake funds
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
           types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
           types.uint(100000000)
       ], deployer.address)
     ]);
@@ -1002,7 +1002,7 @@ Clarinet.test({
         types.tuple({
           'name': types.ascii("stake-pool-diko"),
           'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
-          'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1"),
+          'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1"),
           'can-mint': types.bool(false),
           'can-burn': types.bool(true)
         }),
@@ -1063,9 +1063,9 @@ Clarinet.test({
     call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-burn-by-qualified-name", [types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-tv1-1")], deployer.address);
     call.result.expectBool(true)
 
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-mint-by-qualified-name", [types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1")], deployer.address);
+    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-mint-by-qualified-name", [types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1")], deployer.address);
     call.result.expectBool(false)
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-burn-by-qualified-name", [types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1")], deployer.address);
+    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-burn-by-qualified-name", [types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1")], deployer.address);
     call.result.expectBool(true)
       
     call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-mint-by-qualified-name", [types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-tv1-1")], deployer.address);
@@ -1077,8 +1077,8 @@ Clarinet.test({
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-tv1-1", "unstake", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-tv1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
         types.uint(100000000)
       ], deployer.address)
     ]);
@@ -1086,7 +1086,7 @@ Clarinet.test({
 
     // Can use emergency withdraw method
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-diko-xusd-v1-1", "emergency-withdraw", [
+      Tx.contractCall("arkadiko-stake-pool-diko-usda-v1-1", "emergency-withdraw", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-tv1-1')
       ], deployer.address)
     ]);
@@ -1105,11 +1105,11 @@ Clarinet.test({
 
     // Create swap pair to get LP tokens
     const dikoTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"
-    const xusdTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"
-    const dikoXusdPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd"
-    let result = swap.createPair(wallet_1, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, "DIKO-xUSD", 500, 100);
+    const usdaTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.usda-token"
+    const dikoUsdaPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda"
+    let result = swap.createPair(wallet_1, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
     result.expectOk().expectBool(true);
-    result = swap.addToPosition(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, 500, 100);
+    result = swap.addToPosition(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 500, 100);
     result.expectOk().expectBool(true);
 
     // Stake funds
@@ -1118,8 +1118,8 @@ Clarinet.test({
       // Stake DIKO as wallet_1
       Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
         types.uint(223606797)
       ], wallet_1.address)
     ]);
@@ -1134,20 +1134,20 @@ Clarinet.test({
       let block = chain.mineBlock([
         Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
           types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
           types.uint(1)
         ], deployer.address),
         Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
           types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
           types.uint(1)
       ], deployer.address)
       ]);
 
       // Check pending rewards
-      let call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-pending-rewards", [
+      let call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-pending-rewards", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
         types.principal(wallet_1.address)
       ], wallet_1.address);
@@ -1184,41 +1184,41 @@ Clarinet.test({
     let swap = new Swap(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    // Mint xUSD for wallet_2
+    // Mint USDA for wallet_2
     let result = oracleManager.updatePrice("STX", 200);
     result = vaultManager.createVault(wallet_2, "STX-A", 1500, 1300);
 
     // Get LP tokens
     const dikoTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"
-    const xusdTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xusd-token"
+    const usdaTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.usda-token"
     const wstxTokenAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.wrapped-stx-token"
-    const dikoXusdPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd"
-    const wstxXusdPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-wstx-xusd"
-    result = swap.createPair(deployer, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, "DIKO-xUSD", 500, 100);
+    const dikoUsdaPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda"
+    const wstxUsdaPoolAddress = "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-wstx-usda"
+    result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
     result.expectOk().expectBool(true);
-    result = swap.createPair(deployer, wstxTokenAddress, xusdTokenAddress, wstxXusdPoolAddress, "wSTX-xUSD", 500, 100);
+    result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
     result.expectOk().expectBool(true);
-    result = swap.addToPosition(wallet_2, dikoTokenAddress, xusdTokenAddress, dikoXusdPoolAddress, 500, 100);
+    result = swap.addToPosition(wallet_2, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 500, 100);
     result.expectOk().expectBool(true);
-    result = swap.addToPosition(wallet_2, wstxTokenAddress, xusdTokenAddress, wstxXusdPoolAddress, 500, 100);
+    result = swap.addToPosition(wallet_2, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, 500, 100);
     result.expectOk().expectBool(true);
 
     // Stake funds
     let block = chain.mineBlock([
 
-      // Stake DIKO/xUSD LP from wallet_2
+      // Stake DIKO/USDA LP from wallet_2
       Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
         types.uint(50000000)
       ], wallet_2.address),
 
-      // Stake wSTX/xUSD LP from wallet_2
+      // Stake wSTX/USDA LP from wallet_2
       Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-xusd-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-wstx-xusd'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-usda-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-wstx-usda'),
         types.uint(50000000)
       ], wallet_2.address),
     ]);
@@ -1237,56 +1237,56 @@ Clarinet.test({
         // DIKO
         Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
             types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-            types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-            types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+            types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+            types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
             types.uint(1)
         ], deployer.address),
         Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
           types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
           types.uint(1)
         ], deployer.address),
 
-        // DIKO/xUSD
+        // DIKO/USDA
         Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
           types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
           types.uint(1)
         ], deployer.address),
         Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
           types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-xusd-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-xusd'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
           types.uint(1)
         ], deployer.address),
 
-        // wSTX/xUSD
+        // wSTX/USDA
         Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
           types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-xusd-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-wstx-xusd'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-usda-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-wstx-usda'),
           types.uint(1)
         ], deployer.address),
         Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
           types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-xusd-v1-1'),
-          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-wstx-xusd'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-usda-v1-1'),
+          types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-wstx-usda'),
           types.uint(1)
         ], deployer.address),
       ]);
 
       // Check pending rewards
-      let call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-pending-rewards", [
+      let call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-pending-rewards", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
         types.principal(wallet_2.address)
       ], wallet_2.address);
-      let callLp1 = chain.callReadOnlyFn("arkadiko-stake-pool-diko-xusd-v1-1", "get-pending-rewards", [
+      let callLp1 = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-pending-rewards", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
         types.principal(wallet_2.address)
       ], wallet_2.address);
-      let callLp2 = chain.callReadOnlyFn("arkadiko-stake-pool-wstx-xusd-v1-1", "get-pending-rewards", [
+      let callLp2 = chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-pending-rewards", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
         types.principal(wallet_2.address)
       ], wallet_2.address);

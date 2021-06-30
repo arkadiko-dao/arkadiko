@@ -42,10 +42,10 @@ const contracts: Contract[] = [
   { name: 'arkadiko-swap-v1-1' },
   { name: 'arkadiko-diko-init' },
 
-  { name: 'xusd-token' },
+  { name: 'usda-token' },
   { name: 'xstx-token' },
-  { name: 'arkadiko-swap-token-diko-xusd' },
-  { name: 'arkadiko-swap-token-wstx-xusd' },
+  { name: 'arkadiko-swap-token-diko-usda' },
+  { name: 'arkadiko-swap-token-wstx-usda' },
 
   { name: 'arkadiko-vault-data-v1-1' },
   { name: 'arkadiko-vault-rewards-v1-1' },

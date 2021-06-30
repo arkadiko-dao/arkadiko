@@ -16,7 +16,7 @@ export interface AuctionProps {
   endsAt: string;
 }
 
-export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
+export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeight }) => {
   const { doContractCall } = useConnect();
   const [showBidModal, setShowBidModal] = useState(false);
   const [bidAmount, setBidAmount] = useState('');
@@ -41,6 +41,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
       auctionType={auction['auctionType']}
       collateralToken={auction['collateralToken']}
       endsAt={auction['endsAt']}
+      stacksTipHeight={stacksTipHeight}
       setShowBidModal={setShowBidModal}
       setBidAuctionId={setBidAuctionId}
       setBidLotId={setBidLotId}
@@ -113,7 +114,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions }) => {
                           placeholder="0.00" aria-describedby="stx-currency" />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                       <span className="text-gray-500 sm:text-sm" id="stx-currency">
-                        xUSD
+                        USDA
                       </span>
                     </div>
                   </div>

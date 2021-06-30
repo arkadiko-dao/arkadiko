@@ -20,6 +20,10 @@ import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { SwapSettings } from '@components/swap-settings';
 import { getBalance } from '@components/app';
 
+function classNames(...classes) {
+  return classes.filter(Boolean).sort().join(' ')
+}
+
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
   const [tokenX, setTokenX] = useState(tokenList[0]);
@@ -63,7 +67,7 @@ export const Swap: React.FC = () => {
       setState(prevState => ({
         ...prevState,
         balance: {
-          xusd: account.xusd.toString(),
+          usda: account.usda.toString(),
           diko: account.diko.toString(),
           stx: account.stx.toString(),
           xstx: account.xstx.toString(),
@@ -301,7 +305,7 @@ export const Swap: React.FC = () => {
                     placeholder="0.0"
                     value={tokenXAmount || ''}
                     onChange={onInputChange}
-                    className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1"
+                    className="ml-4 font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1"
                     style={{appearance: 'textfield'}} />
                 </div>
 
@@ -352,7 +356,7 @@ export const Swap: React.FC = () => {
                     value={tokenYAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
                     onChange={onInputChange}
                     disabled={true}
-                    className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1 text-gray-600" />
+                    className="ml-4 font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1 text-gray-600" />
                 </div>
 
                 <div className="flex items-center text-sm p-4 pt-0 justify-end">
@@ -366,22 +370,19 @@ export const Swap: React.FC = () => {
 
               <p className="text-sm mt-2 font-semibold text-right text-gray-400">1 {tokenY.name} = ~{currentPrice} {tokenX.name}</p>
 
-              {state.userData && !foundPair ? (
+              {state.userData ? (
                 <button
                   type="button"
-                  disabled={true}
-                  className="w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-lg rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  No liquidity for this pair. Try another one
-                </button>
-              ) : state.userData ? (
-                <button
-                  type="button"
-                  disabled={tokenYAmount === 0}
+                  disabled={tokenYAmount === 0 || !foundPair}
                   onClick={() => swapTokens()}
-                  className="w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className={classNames((tokenYAmount === 0 || !foundPair) ? 
+                    'bg-indigo-300 hover:bg-indigo-300 pointer-events-none' :
+                    'bg-indigo-600 hover:bg-indigo-700 cursor-pointer', 
+                    'w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500')}
                 >
-                  Swap
+                  { !foundPair ? "No liquidity for this pair. Try another one."
+                  : tokenYAmount === 0 ? "Please enter an amount" 
+                  : "Swap"}
                 </button>
               ) : (
                 <button
@@ -406,7 +407,10 @@ export const Swap: React.FC = () => {
                   </Tooltip>
                 </div>
               </dt>
-              <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{minimumReceived.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenY.name}</dd>
+              <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:justify-end sm:inline-flex">
+                <div className="truncate mr-1">{minimumReceived.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</div>
+                {tokenY.name}
+              </dd>
             </div>
             <div className="sm:grid sm:grid-cols-2 sm:gap-4">
               <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
@@ -417,7 +421,10 @@ export const Swap: React.FC = () => {
                   </Tooltip>
                 </div>
               </dt>
-              <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">~{priceImpact}%</dd>
+              <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:justify-end sm:inline-flex">
+                ~<div className="truncate mr-1">{priceImpact}</div>
+                %
+              </dd>
             </div>
             <div className="sm:grid sm:grid-cols-2 sm:gap-4">
               <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
@@ -428,7 +435,10 @@ export const Swap: React.FC = () => {
                   </Tooltip>
                 </div>
               </dt>
-              <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">{lpFee} {tokenX.name}</dd>
+              <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:justify-end sm:inline-flex">
+                <div className="truncate mr-1">{lpFee}</div>
+                {tokenX.name}
+              </dd>
             </div>
           </dl>
           {/* <div className="space-y flex flex-col mt-3">
