@@ -19,14 +19,14 @@ Clarinet.test({
     );
     call.result
       .expectOk()
-      .expectUint(2000000000030);
+      .expectUint(4000000000010);
 
     call = await chain.callReadOnlyFn("usda-token", "get-balance", [
       types.principal(wallet_2.address),
     ], wallet_2.address);
     call.result
       .expectOk()
-      .expectUint(20);
+      .expectUint(1000000000000);
 
     call = await chain.callReadOnlyFn("usda-token", "get-balance", [
       types.principal(wallet_3.address),

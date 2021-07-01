@@ -115,19 +115,42 @@
 
 ;; Initialize the contract
 (begin
-  ;; DIKO pool
+
+  ;; DIKO pool - Old
   (map-set pools-data-map
     { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1 }
     {
       name: "DIKO",
-      deactivated-block: u0,
-      deactivated-rewards-per-block: u0,
-      rewards-percentage: u100000 ;; 10% 
+      deactivated-block: u2000,
+      deactivated-rewards-per-block: u0, ;; No need to set for this pool
+      rewards-percentage: u100000 ;; 10% - Need to keep this so stakers on old pool can still claim rewards
     }
   )
-  ;; DIKO-USDA LP
+  ;; DIKO pool - New
+  (map-set pools-data-map
+    { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-tv1-1 }
+    {
+      name: "DIKO",
+      deactivated-block: u0,
+      deactivated-rewards-per-block: u0,
+      rewards-percentage: u100000 ;; 10%
+    }
+  )
+
+
+  ;; DIKO-USDA LP - Old
   (map-set pools-data-map
     { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1 }
+    {
+      name: "DIKO-USDA LP",
+      deactivated-block: u2000,
+      deactivated-rewards-per-block: u187919718, ;; Should be equal to rewards per block at deactivated-block
+      rewards-percentage: u300000 ;; 30% - Need to keep this so stakers on old pool can still claim rewards
+    }
+  )
+  ;; DIKO-USDA LP - New
+  (map-set pools-data-map
+    { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-tv1-1 }
     {
       name: "DIKO-USDA LP",
       deactivated-block: u0,
@@ -135,6 +158,7 @@
       rewards-percentage: u300000 ;; 30% 
     }
   )
+
   ;; wSTX-USDA LP
   (map-set pools-data-map
     { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-usda-v1-1 }
