@@ -445,22 +445,13 @@ export const Swap: React.FC = () => {
               </dd>
             </div>
           </dl>
-          <div className="space-y flex flex-col mt-3">
-            { foundPair ? (
-              <div className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
-                <RouterLink className="inline-flex items-center" to={`swap/add/${tokenX.name}/${tokenY.name}`}>
-                  <PlusCircleIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                  Add Liquidity to {tokenX.name}-{tokenY.name}
-                </RouterLink>
-              </div>
-              /* <div className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
-                <RouterLink className="inline-flex items-center" to={`swap/remove/${tokenX.name}/${tokenY.name}`}>
-                  <MinusCircleIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                  Remove Liquidity from {tokenX.name}-{tokenY.name}
-                </RouterLink>
-              </div> */
-            ) : null }
-          </div>
+          { foundPair ? (
+            <div className="flex flex-col mt-3">
+              <RouterLink className="inline-flex items-center justify-center px-3 py-2 border border-indigo-400 text-sm leading-4 font-medium rounded text-indigo-700 bg-transparent hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" to={`swap/add/${tokenX.name}/${tokenY.name}`}>
+                Add/remove liquidity
+              </RouterLink>
+            </div>
+          ) : null }
         </div>
       </main>
     </Container>
