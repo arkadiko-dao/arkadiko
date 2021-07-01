@@ -74,8 +74,8 @@ export const Swap: React.FC = () => {
           stx: account.stx.toString(),
           xstx: account.xstx.toString(),
           stDiko: account.stDiko.toString(),
-          dikoxusd: account.dikoxusd.toString(),
-          stxxusd: account.stxxusd.toString()
+          dikousda: account.dikousda.toString(),
+          stxusda: account.stxusda.toString()
         }
       }));
     };
