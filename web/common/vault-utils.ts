@@ -53,6 +53,12 @@ export const tokenTraits = {
   },
   'usdawstx': {
     'name': 'arkadiko-swap-token-wstx-usda'
+  },
+  'usdastx': {
+    'name': 'arkadiko-swap-token-wstx-xusd'
+  },
+  'stxusda': {
+    'name': 'arkadiko-swap-token-wstx-xusd'
   }
 };
 

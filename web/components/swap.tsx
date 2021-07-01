@@ -3,6 +3,8 @@ import { AppContext } from '@common/context';
 import { Container } from './home';
 import { SwitchVerticalIcon, InformationCircleIcon, PlusCircleIcon, MinusCircleIcon } from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
+import { NavLink as RouterLink } from 'react-router-dom'
+
 
 import { microToReadable } from '@common/vault-utils';
 import {
@@ -71,7 +73,9 @@ export const Swap: React.FC = () => {
           diko: account.diko.toString(),
           stx: account.stx.toString(),
           xstx: account.xstx.toString(),
-          stdiko: account.stDiko.toString()
+          stdiko: account.stdiko.toString(),
+          dikousda: account.dikousda.toString(),
+          stxusda: account.stxusda.toString()
         }
       }));
     };
@@ -368,7 +372,7 @@ export const Swap: React.FC = () => {
                 </div>
               </div>
 
-              <p className="text-sm mt-2 font-semibold text-right text-gray-400">1 {tokenY.name} = ~{currentPrice} {tokenX.name}</p>
+              <p className="text-sm mt-2 font-semibold text-right text-gray-400">1 {tokenY.name} = ≈{currentPrice} {tokenX.name}</p>
 
               {state.userData ? (
                 <button
@@ -422,7 +426,7 @@ export const Swap: React.FC = () => {
                 </div>
               </dt>
               <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:justify-end sm:inline-flex">
-                ~<div className="truncate mr-1">{priceImpact}</div>
+                ≈<div className="truncate mr-1">{priceImpact}</div>
                 %
               </dd>
             </div>
@@ -441,20 +445,22 @@ export const Swap: React.FC = () => {
               </dd>
             </div>
           </dl>
-          {/* <div className="space-y flex flex-col mt-3">
-            <Box className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
-              <RouterLink className="inline-flex items-center" to={`swap/add/${tokenX.name}/${tokenY.name}`}>
-                <PlusCircleIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                Add Liquidity to {tokenX.name}-{tokenY.name}
-              </RouterLink>
-            </Box>
-            <Box className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
-              <RouterLink className="inline-flex items-center" to={`swap/remove/${tokenX.name}/${tokenY.name}`}>
-                <MinusCircleIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                Remove Liquidity from {tokenX.name}-{tokenY.name}
-              </RouterLink>
-            </Box>
-          </div> */}
+          <div className="space-y flex flex-col mt-3">
+            { foundPair ? (
+              <div className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
+                <RouterLink className="inline-flex items-center" to={`swap/add/${tokenX.name}/${tokenY.name}`}>
+                  <PlusCircleIcon className="h-5 w-5 mr-1" aria-hidden="true" />
+                  Add Liquidity to {tokenX.name}-{tokenY.name}
+                </RouterLink>
+              </div>
+              /* <div className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
+                <RouterLink className="inline-flex items-center" to={`swap/remove/${tokenX.name}/${tokenY.name}`}>
+                  <MinusCircleIcon className="h-5 w-5 mr-1" aria-hidden="true" />
+                  Remove Liquidity from {tokenX.name}-{tokenY.name}
+                </RouterLink>
+              </div> */
+            ) : null }
+          </div>
         </div>
       </main>
     </Container>

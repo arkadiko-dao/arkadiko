@@ -211,7 +211,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                 </div>
               </div>
               <p className="font-light ml-2">Balance: {balanceSelectedTokenY} {tokenY}</p>
-              <p className="font-light ml-2">1 {tokenY} = ~{currentPrice} {tokenX}</p>
+              <p className="font-light ml-2">1 {tokenY} = ≈{currentPrice} {tokenX}</p>
 
               <div className="mt-5 ml-5 sm:flex sm:items-start sm:justify-between">
                 <div className="max-w-xl text-sm text-gray-500">
