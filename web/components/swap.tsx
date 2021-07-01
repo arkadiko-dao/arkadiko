@@ -452,12 +452,12 @@ export const Swap: React.FC = () => {
                 Add Liquidity to {tokenX.name}-{tokenY.name}
               </RouterLink>
             </div>
-            <div className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
+            {/* <div className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
               <RouterLink className="inline-flex items-center" to={`swap/remove/${tokenX.name}/${tokenY.name}`}>
                 <MinusCircleIcon className="h-5 w-5 mr-1" aria-hidden="true" />
                 Remove Liquidity from {tokenX.name}-{tokenY.name}
               </RouterLink>
-            </div>
+            </div> */}
           </div>
         </div>
       </main>
