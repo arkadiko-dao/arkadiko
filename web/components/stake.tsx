@@ -93,7 +93,7 @@ export const Stake = () => {
   };
 
   const stakeDiko = async () => {
-    const amount = uintCV(parseInt(stakeAmount, 10) * 1000000);
+    const amount = uintCV(Number(stakeAmount) * 1000000);
     const postConditions = [
       makeStandardFungiblePostCondition(
         stxAddress || '',
@@ -138,7 +138,7 @@ export const Stake = () => {
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
-        uintCV(parseInt(stakeAmount, 10) * 1000000)
+        uintCV(Number(stakeAmount) * 1000000)
       ],
       postConditionMode: 0x01,
       finished: data => {
