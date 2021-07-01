@@ -126,6 +126,8 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
             setTotalShare(totalShare);
           }
           setFoundPair(true);
+        } else {
+          setFoundPair(false);
         }
       }
     };
