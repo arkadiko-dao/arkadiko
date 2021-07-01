@@ -26,7 +26,7 @@ export const InputAmount: React.FC<InputAmountProps> = ({balance, token, inputNa
           name={inputName} 
           id={inputId}
           aria-label={inputLabel}
-          className="sm:text-sm px-3 focus:outline-none focus:ring-0 border-0 rounded-md" 
+          className="sm:text-sm px-3 focus:outline-none focus:ring-0 border-0 rounded-md min-w-0" 
           value={inputValue}
           onChange={onInputChange}
           />
