@@ -67,7 +67,21 @@
   )
 )
 
-;; Get total amount of DIKO in pool for given staker
+;; Get total amount of DIKO in pool for staker
+(define-read-only (get-stake-of (staker principal))
+  (let (
+    ;; Sender stDIKO balance
+    (stdiko-balance (unwrap-panic (contract-call? .stdiko-token get-balance tx-sender)))
+  )
+    (if (> stdiko-balance u0)
+      ;; Amount of DIKO the user would receive when unstaking
+      (diko-for-stdiko stdiko-balance)
+      u0
+    )
+  )
+)
+
+;; Get total amount of DIKO in pool
 (define-read-only (get-total-staked)
   (unwrap-panic (contract-call? .arkadiko-token get-balance (as-contract tx-sender)))
 )
