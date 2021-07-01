@@ -148,9 +148,10 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
 
   const calculateTokenYAmount = () => {
     setTokenYAmount(currentPrice * tokenXAmount);
-    setNewTokens((totalTokens / 1000000 * tokenXAmount) / pooledX);
+    const newTokens = (totalTokens / 1000000 * tokenXAmount) / pooledX;
+    setNewTokens(newTokens);
     if (tokenXAmount > 0) {
-      const share = Number((100 * newTokens / (totalTokens / 1000000)).toFixed(8));
+      const share = Number((1000000 * 100 * newTokens / totalTokens).toFixed(8));
       if (share > 100) {
         setNewShare(100);
       } else {
