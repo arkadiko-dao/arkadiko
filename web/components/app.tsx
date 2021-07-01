@@ -35,7 +35,7 @@ export const getBalance = async (address: string) => {
     usda: usdaBalance ? usdaBalance.balance : 0,
     diko: dikoBalance ? dikoBalance.balance : 0,
     xstx: xStxBalance ? xStxBalance.balance : 0,
-    stDiko: stDikoBalance ? stDikoBalance.balance : 0,
+    stdiko: stDikoBalance ? stDikoBalance.balance : 0,
     dikousda: lpDikoUsdaBalance ? lpDikoUsdaBalance.balance : 0,
     stxusda: lpStxUsdaBalance ? lpStxUsdaBalance.balance : 0
   };
@@ -69,7 +69,7 @@ export const App: React.FC = () => {
         diko: account.diko.toString(),
         stx: account.stx.toString(),
         xstx: account.xstx.toString(),
-        stDiko: account.stDiko.toString(),
+        stdiko: account.stdiko.toString(),
         dikousda: account.dikousda.toString(),
         stxusda: account.stxusda.toString()
       }

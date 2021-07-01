@@ -273,7 +273,7 @@ export const Stake = () => {
                 </p>
                 <div className="mt-6">
                   <InputAmount
-                    balance={microToReadable(state.balance['stDiko']).toLocaleString()}
+                    balance={microToReadable(state.balance['stdiko']).toLocaleString()}
                     token="stDIKO"
                     inputName="unstakeDiko"
                     inputId="unstakeAmount"
