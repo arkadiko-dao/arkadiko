@@ -366,7 +366,8 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                     className={classNames((tokenYAmount === 0 || !foundPair) ?
                       'bg-indigo-300 hover:bg-indigo-300 pointer-events-none' :
                       'bg-indigo-600 hover:bg-indigo-700 cursor-pointer',
-                      'w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500')}
+                      'w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500')
+                    }
                   >
                     { !foundPair ? "No liquidity for this pair. Try another one."
                     : tokenYAmount === 0 ? "Please enter an amount"
