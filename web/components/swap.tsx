@@ -398,6 +398,13 @@ export const Swap: React.FC = () => {
                 </button>
               )}
             </form>
+            { foundPair ? (
+              <div className="mt-3 w-full text-center">
+                <RouterLink className="text-sm font-medium text-indigo-700 hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-sm" to={`swap/add/${tokenX.name}/${tokenY.name}`}>
+                  Add/remove liquidity to {tokenX.name}-{tokenY.name}
+                </RouterLink>
+              </div>
+            ) : null }
           </div>
         </div>
         <div className="-mt-4 p-4 pt-8 w-full max-w-md bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
@@ -445,13 +452,6 @@ export const Swap: React.FC = () => {
               </dd>
             </div>
           </dl>
-          { foundPair ? (
-            <div className="flex flex-col mt-3">
-              <RouterLink className="inline-flex items-center justify-center px-3 py-2 border border-indigo-400 text-sm leading-4 font-medium rounded text-indigo-700 bg-transparent hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" to={`swap/add/${tokenX.name}/${tokenY.name}`}>
-                Add/remove liquidity
-              </RouterLink>
-            </div>
-          ) : null }
         </div>
       </main>
     </Container>
