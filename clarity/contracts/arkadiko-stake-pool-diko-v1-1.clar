@@ -49,11 +49,17 @@
 )
 
 ;; Amount of DIKO to receive for given stDIKO
-(define-read-only (diko-for-stdiko (amount uint))
+(define-public (diko-for-stdiko (registry-trait <stake-registry-trait>) (amount uint))
   (let (
-    ;; Total DIKO (staked + rewards)
+    ;; DIKO already in pool
     (diko-supply (unwrap-panic (contract-call? .arkadiko-token get-balance (as-contract tx-sender))))
-    
+
+    ;; DIKO still to be added to pool
+    (rewards-to-add (calculate-pending-rewards-for-pool registry-trait))
+
+    ;; Total DIKO
+    (total-diko-supply (+ diko-supply rewards-to-add))
+
     ;; Total stDIKO supply
     (stdiko-supply (unwrap-panic (contract-call? .stdiko-token get-total-supply)))
 
@@ -61,22 +67,22 @@
     (stdiko-percentage (/ (* amount u1000000) stdiko-supply))
 
     ;; Amount of DIKO the user will receive
-    (diko-to-receive (/ (* stdiko-percentage diko-supply) u1000000))
+    (diko-to-receive (/ (* stdiko-percentage total-diko-supply) u1000000))
   )
-    diko-to-receive
+    (ok diko-to-receive)
   )
 )
 
 ;; Get total amount of DIKO in pool for staker
-(define-read-only (get-stake-of (staker principal))
+(define-public (get-stake-of (registry-trait <stake-registry-trait>) (staker principal))
   (let (
     ;; Sender stDIKO balance
     (stdiko-balance (unwrap-panic (contract-call? .stdiko-token get-balance tx-sender)))
   )
     (if (> stdiko-balance u0)
       ;; Amount of DIKO the user would receive when unstaking
-      (diko-for-stdiko stdiko-balance)
-      u0
+      (ok (unwrap-panic (diko-for-stdiko registry-trait stdiko-balance)))
+      (ok u0)
     )
   )
 )
@@ -124,7 +130,7 @@
 
     (let (
       ;; Amount of DIKO the user will receive
-      (diko-to-receive (diko-for-stdiko amount))
+      (diko-to-receive (unwrap-panic (diko-for-stdiko registry-trait amount)))
     )
       ;; Burn stDIKO 
       (try! (contract-call? .arkadiko-dao burn-token .stdiko-token amount staker))
@@ -141,10 +147,7 @@
 ;; Add DIKO rewards to pool
 (define-public (add-rewards-to-pool (registry-trait <stake-registry-trait>))
   (let (
-    (rewards-per-block (unwrap-panic (contract-call? registry-trait get-rewards-per-block-for-pool .arkadiko-stake-pool-diko-v1-1)))
-    (last-block-height (get-last-block-height registry-trait))
-    (block-diff (- last-block-height (var-get last-reward-add-block)))
-    (rewards-to-add (* rewards-per-block block-diff))
+    (rewards-to-add (calculate-pending-rewards-for-pool registry-trait))
     (deactivated-block (unwrap-panic (contract-call? registry-trait get-pool-deactivated-block .arkadiko-stake-pool-diko-v1-1)))
   )
     ;; Rewards to add can be 0 if called multiple times in same block
@@ -155,9 +158,28 @@
     )
 
     ;; Update block number
-    (var-set last-reward-add-block last-block-height)
+    (var-set last-reward-add-block (get-last-block-height registry-trait))
 
     (ok rewards-to-add)
+  )
+)
+
+;; Amount of rewards still to be added to the pool
+;; This is an approximation as the rewards per block change every block
+(define-private (calculate-pending-rewards-for-pool (registry-trait <stake-registry-trait>))
+  (let (
+    (rewards-per-block (unwrap-panic (contract-call? registry-trait get-rewards-per-block-for-pool .arkadiko-stake-pool-diko-v1-1)))
+    (last-block-height (get-last-block-height registry-trait))
+    (block-diff (- last-block-height (var-get last-reward-add-block)))
+    (rewards-to-add (* rewards-per-block block-diff))
+    (deactivated-block (unwrap-panic (contract-call? registry-trait get-pool-deactivated-block .arkadiko-stake-pool-diko-v1-1)))
+  )
+    ;; Rewards to add can be 0 if called multiple times in same block
+    ;; Do not mint if pool deactivated
+    (if (or (is-eq rewards-to-add u0) (not (is-eq deactivated-block u0)))
+      u0
+      rewards-to-add
+    )
   )
 )
 

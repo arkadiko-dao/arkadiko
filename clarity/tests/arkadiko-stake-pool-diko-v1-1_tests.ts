@@ -221,6 +221,69 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 });
 
 Clarinet.test({
+name: "staking - get current stake of user",
+async fn(chain: Chain, accounts: Map<string, Account>) {
+  let deployer = accounts.get("deployer")!;
+  let wallet_1 = accounts.get("wallet_1")!;
+  let wallet_2 = accounts.get("wallet_2")!;
+
+  // Stake
+  let block = chain.mineBlock([
+    Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token'),
+        types.uint(100000000)
+    ], wallet_1.address)
+  ]);
+  block.receipts[0].result.expectOk().expectUint(100000000);
+
+  // Initial stake + 2 blocks of ~62 rewards = ~225
+  block = chain.mineBlock([
+    Tx.contractCall("arkadiko-stake-pool-diko-v1-1", "get-stake-of", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
+        types.principal(wallet_1.address),
+    ], wallet_1.address)
+  ]);
+  block.receipts[0].result.expectOk().expectUint(225279812);
+
+  // Advance 2 blocks
+  chain.mineEmptyBlock(2);
+
+  // 225 + 3 blocks of ~62 rewards = ~413
+  block = chain.mineBlock([
+    Tx.contractCall("arkadiko-stake-pool-diko-v1-1", "get-stake-of", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
+        types.principal(wallet_1.address),
+    ], wallet_1.address)
+  ]);
+  block.receipts[0].result.expectOk().expectUint(413199530);
+
+  // Advance 200 blocks
+  chain.mineEmptyBlock(200);
+
+  block = chain.mineBlock([
+    Tx.contractCall("arkadiko-stake-pool-diko-v1-1", "get-stake-of", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
+        types.principal(wallet_1.address),
+    ], wallet_1.address)
+  ]);
+  block.receipts[0].result.expectOk().expectUint(13003820636);
+
+  // Advance 2000 blocks
+  chain.mineEmptyBlock(2000);
+
+  block = chain.mineBlock([
+    Tx.contractCall("arkadiko-stake-pool-diko-v1-1", "get-stake-of", [
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
+        types.principal(wallet_1.address),
+    ], wallet_1.address)
+  ]);
+  block.receipts[0].result.expectOk().expectUint(135688894058);
+}
+});
+
+Clarinet.test({
   name: "staking - multiple stakers in same block",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -531,8 +594,8 @@ Clarinet.test({
       // Only 1, so total pool balance is mostly rewards
       Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-swap-token-diko-usda'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1'),
+        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token'),
         types.uint(1)
       ], wallet_1.address)
     ]);
@@ -562,15 +625,16 @@ Clarinet.test({
       switch (index)
       {
         // Pool only gets 10% from total rewards
-        case 53: call.result.expectOk().expectUint(2527601505186); break; // 25 mio total rewards
-        case 106: call.result.expectOk().expectUint(3744272038716); break; // 25 + 12.5 = 37.5 mio total rewards
-        case 159: call.result.expectOk().expectUint(4344706832454); break; // 37.5 + 6.25 = 43.75 mio
-        case 212: call.result.expectOk().expectUint(4641125918444); break; // 43.75 + 3.125 = 46.875 mio
-        case 265: call.result.expectOk().expectUint(4802365153678); break; // 46.875 + 1.5625 = 48.4375 mio
-        case 318: call.result.expectOk().expectUint(4952100753678); break; // 48.4375 + 1.5 = 49.9375 mio
-        case 371: call.result.expectOk().expectUint(5101836353678); break; // 49.9375 + 1.5 = 51.4375 mio
+        case 53: call.result.expectOk().expectUint(2527601505187); break; // 25 mio total rewards
+        case 106: call.result.expectOk().expectUint(3744272038717); break; // 25 + 12.5 = 37.5 mio total rewards
+        case 159: call.result.expectOk().expectUint(4344706832455); break; // 37.5 + 6.25 = 43.75 mio
+        case 212: call.result.expectOk().expectUint(4641125918445); break; // 43.75 + 3.125 = 46.875 mio
+        case 265: call.result.expectOk().expectUint(4802365153679); break; // 46.875 + 1.5625 = 48.4375 mio
+        case 318: call.result.expectOk().expectUint(4952100753679); break; // 48.4375 + 1.5 = 49.9375 mio
+        case 371: call.result.expectOk().expectUint(5101836353679); break; // 49.9375 + 1.5 = 51.4375 mio
         default: break;
       }
     }
   }
 });
+
