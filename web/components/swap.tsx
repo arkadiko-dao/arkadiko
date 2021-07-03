@@ -398,6 +398,13 @@ export const Swap: React.FC = () => {
                 </button>
               )}
             </form>
+            { foundPair ? (
+              <div className="mt-3 w-full text-center">
+                <RouterLink className="text-sm font-medium text-indigo-700 hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-sm" to={`swap/add/${tokenX.name}/${tokenY.name}`}>
+                  Add/remove liquidity on {tokenX.name}-{tokenY.name}
+                </RouterLink>
+              </div>
+            ) : null }
           </div>
         </div>
         <div className="-mt-4 p-4 pt-8 w-full max-w-md bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
@@ -445,22 +452,6 @@ export const Swap: React.FC = () => {
               </dd>
             </div>
           </dl>
-          <div className="space-y flex flex-col mt-3">
-            { foundPair ? (
-              <div className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
-                <RouterLink className="inline-flex items-center" to={`swap/add/${tokenX.name}/${tokenY.name}`}>
-                  <PlusCircleIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                  Add Liquidity to {tokenX.name}-{tokenY.name}
-                </RouterLink>
-              </div>
-              /* <div className="text-sm font-semibold text-indigo-700 hover:text-indigo-500">
-                <RouterLink className="inline-flex items-center" to={`swap/remove/${tokenX.name}/${tokenY.name}`}>
-                  <MinusCircleIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                  Remove Liquidity from {tokenX.name}-{tokenY.name}
-                </RouterLink>
-              </div> */
-            ) : null }
-          </div>
         </div>
       </main>
     </Container>
