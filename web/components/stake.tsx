@@ -52,14 +52,17 @@ export const Stake = () => {
         contractAddress,
         contractName: "arkadiko-stake-pool-diko-v1-1",
         functionName: "get-stake-of",
-        functionArgs: [standardPrincipalCV(stxAddress || '')],
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          standardPrincipalCV(stxAddress || '')
+        ],
         senderAddress: stxAddress || '',
         network: network,
       });
-      let dikoStaked = cvToJSON(userStakedCall).value;
+      let dikoStaked = cvToJSON(userStakedCall).value.value;
       setStakedAmount(dikoStaked);
 
-      const dikoPerYear = 23500000; // TODO: hardcoded 25mio for first year. 144 * 365 * (rewardsPerBlock) / 1000000;
+      const dikoPerYear = 2350000; // TODO: hardcoded 23.5mio*10% for first year. 144 * 365 * (rewardsPerBlock) / 1000000;
       if (dikoStaked > 0) {
         dikoStaked = dikoStaked / 1000000;
         const rewardPercentage = (dikoStaked / totalStaked);
