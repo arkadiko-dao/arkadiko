@@ -48,13 +48,23 @@ export const Stake = () => {
       });
       let totalStaked = cvToJSON(totalStakedCall).value / 1000000;
 
+      const stDikoSupplyCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "stdiko-token",
+        functionName: "get-total-supply",
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const stDikoSupply = cvToJSON(stDikoSupplyCall).value.value;
       const userStakedCall = await callReadOnlyFunction({
         contractAddress,
         contractName: "arkadiko-stake-pool-diko-v1-1",
         functionName: "get-stake-of",
         functionArgs: [
           contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-          standardPrincipalCV(stxAddress || '')
+          standardPrincipalCV(stxAddress || ''),
+          uintCV(stDikoSupply)
         ],
         senderAddress: stxAddress || '',
         network: network,
