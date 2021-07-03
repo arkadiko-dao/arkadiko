@@ -401,7 +401,7 @@ export const Swap: React.FC = () => {
             { foundPair ? (
               <div className="mt-3 w-full text-center">
                 <RouterLink className="text-sm font-medium text-indigo-700 hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-sm" to={`swap/add/${tokenX.name}/${tokenY.name}`}>
-                  Add/remove liquidity to {tokenX.name}-{tokenY.name}
+                  Add/remove liquidity on {tokenX.name}-{tokenY.name}
                 </RouterLink>
               </div>
             ) : null }
