@@ -208,7 +208,7 @@
     )
     (asserts!
       (and
-        (is-none (map-get? pairs-data-map { token-x: token-x, token-y: token-y }))
+        (is-none (map-get? pairs-map { token-x: token-x, token-y: token-y }))
         (is-none (map-get? pairs-data-map { token-x: token-y, token-y: token-x }))
       )
       pair-already-exists-err
