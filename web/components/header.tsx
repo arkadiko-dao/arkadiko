@@ -5,7 +5,7 @@ import { ExternalLinkIcon } from '@heroicons/react/solid'
 import { AppContext } from '@common/context';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { useConnect } from '@stacks/connect-react';
-import { useSTXAddress, bnsName } from '@common/use-stx-address';
+import { bnsName } from '@common/use-stx-address';
 
 interface HeaderProps {
   signOut: () => void;
@@ -27,7 +27,6 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
   const [state, _] = useContext(AppContext);
   const showWallet = process.env.REACT_APP_SHOW_CONNECT_WALLET === 'true';
   const { doOpenAuth } = useConnect();
-  const address = useSTXAddress();
   const name = bnsName();
 
   return (
@@ -150,7 +149,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                       onClick={() => { setShowSidebar(true); }}
                     >
                       <span className="inline-block w-3 h-3 bg-green-400 border-2 border-white rounded-full mr-2 pt-2"></span>
-                      {shortAddress(address)}
+                      {shortAddress(name)}
                     </button>
 
                     <button
