@@ -12,6 +12,7 @@ import { InformationCircleIcon, PlusCircleIcon, MinusCircleIcon } from '@heroico
 import { CashIcon, PlusIcon } from '@heroicons/react/outline';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
+import { NavLink as RouterLink } from 'react-router-dom';
 
 function classNames(...classes) {
   return classes.filter(Boolean).sort().join(' ')
@@ -224,9 +225,11 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                   <button className="ml-0.5 flex items-center justify-center flex-1 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 rounded-md focus:outline-none focus-visible:ring-offset-gray-100">
                     <span className="p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md inline-flex items-center text-sm font-medium">
                       <MinusCircleIcon className="mr-2 text-gray-500 group-hover:text-gray-900 h-4 w-4" aria-hidden="true" />
-                      <span className="text-gray-600 group-hover:text-gray-900">
-                        Remove
-                      </span>
+                      <RouterLink to={`/swap/remove/${match.params.currencyIdA}/${match.params.currencyIdB}`} exact>
+                        <span className="text-gray-600 group-hover:text-gray-900">
+                          Remove
+                        </span>
+                      </RouterLink>
                     </span>
                   </button>
                 </div>
