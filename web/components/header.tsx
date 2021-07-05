@@ -5,7 +5,7 @@ import { ExternalLinkIcon } from '@heroicons/react/solid'
 import { AppContext } from '@common/context';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { useConnect } from '@stacks/connect-react';
-import { useSTXAddress } from '@common/use-stx-address';
+import { bnsName } from '@common/use-stx-address';
 
 interface HeaderProps {
   signOut: () => void;
@@ -14,6 +14,9 @@ interface HeaderProps {
 
 const shortAddress = (address: string | null) => {
   if (address) {
+    if (address.includes('.')) {
+      return address;
+    }
     return `${address.substring(0, 5)}...${address.substring(address.length - 1, address.length - 6)}`;
   }
 
@@ -24,7 +27,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
   const [state, _] = useContext(AppContext);
   const showWallet = process.env.REACT_APP_SHOW_CONNECT_WALLET === 'true';
   const { doOpenAuth } = useConnect();
-  const address = useSTXAddress();
+  const name = bnsName();
 
   return (
     <Disclosure as="nav" className="bg-white shadow relative sticky top-0 z-50">
@@ -65,7 +68,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                       onClick={() => { setShowSidebar(true); }}
                     >
                       <span className="inline-block w-3 h-3 bg-green-400 border-2 border-white rounded-full mr-2 pt-2"></span>
-                      {shortAddress(address)}
+                      {shortAddress(name)}
                     </button>
 
                     <button
@@ -146,7 +149,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                       onClick={() => { setShowSidebar(true); }}
                     >
                       <span className="inline-block w-3 h-3 bg-green-400 border-2 border-white rounded-full mr-2 pt-2"></span>
-                      {shortAddress(address)}
+                      {shortAddress(name)}
                     </button>
 
                     <button
