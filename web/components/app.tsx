@@ -28,8 +28,8 @@ export const getBalance = async (address: string) => {
   const usdaBalance = data.fungible_tokens[`${contractAddress}.usda-token::usda`];
   const xStxBalance = data.fungible_tokens[`${contractAddress}.xstx-token::xstx`];
   const stDikoBalance = data.fungible_tokens[`${contractAddress}.stdiko-token::stdiko`];
-  const lpDikoUsdaBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-diko-xusd::diko-xusd`];
-  const lpStxUsdaBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-xusd::wstx-xusd`];
+  const lpDikoUsdaBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-diko-usda::diko-usda`];
+  const lpStxUsdaBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-usda::wstx-usda`];
   return {
     stx: data.stx.balance,
     usda: usdaBalance ? usdaBalance.balance : 0,

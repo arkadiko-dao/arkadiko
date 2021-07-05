@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Landing } from './landing';
 import { Container } from './home'
-import { microToReadable } from '@common/vault-utils';
 import { callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
@@ -10,34 +9,26 @@ import { useConnect } from '@stacks/connect-react';
 import { tokenTraits } from '@common/vault-utils';
 import { InformationCircleIcon, PlusCircleIcon, MinusCircleIcon } from '@heroicons/react/solid';
 import { ArrowDownIcon } from '@heroicons/react/outline';
-import { TokenSwapList, tokenList } from '@components/token-swap-list';
+import { tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 
 export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   const [state, setState] = useContext(AppContext);
-  const [balanceSelectedTokenX, setBalanceSelectedTokenX] = useState(0.0);
-  const [balanceSelectedTokenY, setBalanceSelectedTokenY] = useState(0.0);
   const [tokenXPrice, setTokenXPrice] = useState(0.0);
   const [tokenYPrice, setTokenYPrice] = useState(0.0);
+  const [tokenXToReceive, setTokenXToReceive] = useState(0.0);
+  const [tokenYToReceive, setTokenYToReceive] = useState(0.0);
   const [tokensToRemove, setTokensToRemove] = useState(0.0);
-  const [tokenX, setTokenX] = useState(tokenList[tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdA.toLowerCase())]);
-  const [tokenY, setTokenY] = useState(tokenList[tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdB.toLowerCase())]);
+  const [tokenX] = useState(tokenList[tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdA.toLowerCase())]);
+  const [tokenY] = useState(tokenList[tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdB.toLowerCase())]);
+  const [balance, setBalance] = useState(0.0);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const stxAddress = useSTXAddress();
   const { doContractCall } = useConnect();
 
   const tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
   const tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
-
-  const setTokenBalances = () => {
-    setBalanceSelectedTokenX(microToReadable(state.balance[tokenX['name'].toLowerCase()]));
-    setBalanceSelectedTokenY(microToReadable(state.balance[tokenY['name'].toLowerCase()]));
-  };
-
-  useEffect(() => {
-    setTokenBalances();
-  }, [state.balance]);
 
   useEffect(() => {
     const fetchPair = async (tokenXContract:string, tokenYContract:string) => {
@@ -57,8 +48,6 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
     };
 
     const resolvePair = async () => {
-      setTokenBalances();
-
       const json3 = await fetchPair(tokenXTrait, tokenYTrait);
       console.log('Pair Details:', json3);
       if (json3['success']) {
@@ -68,6 +57,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         // const price = parseFloat(basePrice) + (parseFloat(basePrice) * 0.01);
         setTokenXPrice(basePrice);
         setTokenYPrice((balanceY / balanceX).toFixed(2));
+        setBalance(state.balance[`${tokenX.name.toLowerCase()}${tokenY.name.toLowerCase()}`]);
       } else if (json3['value']['value']['value'] === 201) {
         const json4 = await fetchPair(tokenYTrait, tokenXTrait);
         if (json4['success']) {
@@ -76,6 +66,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
           const basePrice = (balanceX / balanceY).toFixed(2);
           setTokenXPrice(basePrice);
           setTokenYPrice((balanceY / balanceX).toFixed(2));
+          setBalance(state.balance[`${tokenY.name.toLowerCase()}${tokenX.name.toLowerCase()}`]);
         }
       }
     };
@@ -87,6 +78,10 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
     const value = event.target.value;
 
     setTokensToRemove(value);
+  };
+
+  const removePercentage = (percentage: number) => {
+    setTokensToRemove(balance * percentage / (100 * 1000000));
   };
 
   const removeLiquidity = async () => {
@@ -185,10 +180,34 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                           </div> */}
 
                           <div className="mt-4 flex items-center justify-between">
-                            <button type="button" className="rounded-md font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-1 text-xs focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500">25%</button>
-                            <button type="button" className="rounded-md font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-1 text-xs focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500">50%</button>
-                            <button type="button" className="rounded-md font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-1 text-xs focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500">75%</button>
-                            <button type="button" className="rounded-md font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-1 text-xs focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500">Max.</button>
+                            <button
+                              type="button"
+                              className="rounded-md font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-1 text-xs focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                              onClick={() => { removePercentage(25); }}
+                            >
+                              25%
+                            </button>
+                            <button
+                              type="button"
+                              className="rounded-md font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-1 text-xs focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                              onClick={() => { removePercentage(50); }}
+                            >
+                              50%
+                            </button>
+                            <button
+                              type="button"
+                              className="rounded-md font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-1 text-xs focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                              onClick={() => { removePercentage(75); }}
+                            >
+                              75%
+                            </button>
+                            <button
+                              type="button"
+                              className="rounded-md font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-1 text-xs focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                              onClick={() => { removePercentage(100); }}
+                            >
+                              Max.
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -208,30 +227,30 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                           <dt className="text-lg font-medium">
                             <div className="flex items-center">
                               <div className="flex-shrink-0 h-8 w-8">
-                                <img className="h-8 w-8 rounded-full" src={tokenList[2].logo} alt="" />
+                                <img className="h-8 w-8 rounded-full" src={tokenX.logo} alt="" />
                               </div>
                               <div className="ml-4">
-                                <div className="text-base text-gray-900">STX</div>
+                                <div className="text-base text-gray-900">{tokenX.name}</div>
                               </div>
                             </div>                          
                           </dt>
                           <dd className="font-semibold mt-1 sm:mt-0 text-lg sm:justify-end sm:inline-flex">
-                            12345648.92 
+                            {tokenXToReceive}
                           </dd>
                         </div>
                         <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                           <dt className="text-lg font-medium">
                             <div className="flex items-center">
                               <div className="flex-shrink-0 h-8 w-8">
-                                <img className="h-8 w-8 rounded-full" src={tokenList[1].logo} alt="" />
+                                <img className="h-8 w-8 rounded-full" src={tokenY.logo} alt="" />
                               </div>
                               <div className="ml-4">
-                                <div className="text-base text-gray-900">DIKO</div>
+                                <div className="text-base text-gray-900">{tokenY.name}</div>
                               </div>
                             </div>                          
                           </dt>
                           <dd className="font-semibold mt-1 sm:mt-0 text-lg sm:justify-end sm:inline-flex">
-                            356648.92 
+                            {tokenYToReceive}
                           </dd>
                         </div>
                       </dl>
