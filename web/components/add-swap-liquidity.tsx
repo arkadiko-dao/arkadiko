@@ -9,8 +9,7 @@ import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { tokenTraits } from '@common/vault-utils';
 import { InformationCircleIcon, PlusCircleIcon, MinusCircleIcon } from '@heroicons/react/solid';
-import { CashIcon } from '@heroicons/react/outline';
-import { PlusIcon } from '@heroicons/react/outline';
+import { CashIcon, PlusIcon } from '@heroicons/react/outline';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
 
@@ -216,16 +215,16 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                 </div>
                 <div className="group p-0.5 rounded-lg flex w-full bg-gray-50 hover:bg-gray-100">
                   <button className="p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md flex items-center justify-center flex-1 text-sm text-gray-600 font-medium focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus:outline-none focus-visible:ring-offset-gray-100 bg-white ring-1 ring-black ring-opacity-5">
-                    <span className="sr-only lg:not-sr-only text-gray-600 group-hover:text-gray-900 inline-flex items-center">
-                      <PlusCircleIcon className="h-4 w-4 mr-1 text-indigo-500" aria-hidden="true" />
+                    <PlusCircleIcon className="h-4 w-4 mr-2 text-indigo-500" aria-hidden="true" />
+                    <span className="text-gray-900">
                       Add
                     </span>
                   </button>
 
-                  <button className="ml-0.5 flex items-center justify-center flex-1 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 rounded-md focus:outline-none focus-visible:ring-offset-gray-100" >
+                  <button className="ml-0.5 flex items-center justify-center flex-1 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 rounded-md focus:outline-none focus-visible:ring-offset-gray-100">
                     <span className="p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md inline-flex items-center text-sm font-medium">
-                      <span className="sr-only lg:not-sr-only text-gray-600 group-hover:text-gray-900 inline-flex items-center">
-                        <MinusCircleIcon className="lg:mr-2 text-gray-500 group-hover:text-gray-900 h-4 w-4 mr-1" aria-hidden="true" />
+                      <MinusCircleIcon className="mr-2 text-gray-500 group-hover:text-gray-900 h-4 w-4" aria-hidden="true" />
+                      <span className="text-gray-600 group-hover:text-gray-900">
                         Remove
                       </span>
                     </span>
@@ -266,7 +265,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                             <button
                               type="button"
                               onClick={() => setMaximum()}
-                              className="ml-2 p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                              className="ml-2 rounded-md font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-1 text-xs focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
                             >
                               Max.
                             </button>

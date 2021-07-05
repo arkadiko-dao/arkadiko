@@ -321,7 +321,7 @@ export const Swap: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setMaximum()}
-                          className="ml-2 p-0 rounded-sm font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                          className="ml-2 rounded-md font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-1 text-xs focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
                         >
                           Max.
                         </button>
