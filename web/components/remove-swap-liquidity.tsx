@@ -153,7 +153,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                   <div className="rounded-md shadow-sm bg-gray-50 border border-gray-200 hover:border-gray-300 focus-within:border-indigo-200">
                     <div className="flex items-center p-4">
                       <div className="lg:flex lg:items-start lg:flex-1 lg:justify-between">
-                        <label htmlFor="removeLiquidityAmount" className="block text-base text-gray-700">Amount to remove</label>
+                        <label htmlFor="removeLiquidityAmount" className="flex-shrink-0 mr-4 block text-base text-gray-700">Amount to remove</label>
                         <div className="flex flex-col">
                           <div className="rounded-md relative">
                             <input
@@ -168,7 +168,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                               placeholder="0.0"
                               value={tokensToRemove}
                               onChange={onInputChange}
-                              className="ml-4 font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 truncate p-0 m-0 text-right block w-full pr-8 text-3xl"
+                              className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 truncate p-0 m-0 text-right block w-52 pr-4 text-3xl"
                               style={{appearance: 'textfield'}}
                             />
                             <div className="absolute inset-y-0 right-0 pb-1 flex items-end pointer-events-none">
