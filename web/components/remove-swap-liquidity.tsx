@@ -127,18 +127,16 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                   </div>
                 </div>
                 <div className="group p-0.5 rounded-lg flex w-full bg-gray-50 hover:bg-gray-100">
-                  <button className="flex items-center justify-center flex-1 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 rounded-md focus:outline-none focus-visible:ring-offset-gray-100">
-                    <RouterLink to={`/swap/add/${match.params.currencyIdA}/${match.params.currencyIdB}`} exact>
-                      <span className="p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md inline-flex items-center text-sm font-medium">
-                        <PlusCircleIcon className="mr-2 text-gray-500 group-hover:text-gray-900 h-4 w-4" aria-hidden="true" />
-                        <span className="text-gray-600 group-hover:text-gray-900">
-                          Add
-                        </span>
+                  <RouterLink className="flex items-center justify-center flex-1 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 rounded-md focus:outline-none focus-visible:ring-offset-gray-100" to={`/swap/add/${match.params.currencyIdA}/${match.params.currencyIdB}`} exact>
+                    <span className="p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md inline-flex items-center text-sm font-medium">
+                      <PlusCircleIcon className="mr-2 text-gray-500 group-hover:text-gray-900 h-4 w-4" aria-hidden="true" />
+                      <span className="text-gray-600 group-hover:text-gray-900">
+                        Add
                       </span>
-                    </RouterLink>
-                  </button>
+                    </span>
+                  </RouterLink>
 
-                  <button className="ml-0.5 p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md flex items-center justify-center flex-1 text-sm text-gray-600 font-medium focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus:outline-none focus-visible:ring-offset-gray-100 bg-white ring-1 ring-black ring-opacity-5">
+                  <button type="button" className="ml-0.5 p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md flex items-center justify-center flex-1 text-sm text-gray-600 font-medium focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus:outline-none focus-visible:ring-offset-gray-100 bg-white ring-1 ring-black ring-opacity-5">
                     <MinusCircleIcon className="h-4 w-4 mr-2 text-indigo-500" aria-hidden="true" />
                     <span className="text-gray-900">
                       Remove
@@ -150,23 +148,29 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                   <div className="rounded-md shadow-sm bg-gray-50 border border-gray-200 hover:border-gray-300 focus-within:border-indigo-200">
                     <div className="flex items-center p-4">
                       <div className="lg:flex lg:items-start lg:flex-1 lg:justify-between">
-                        <label htmlFor="removeLiquidityAmount" className="block text-base text-gray-700">Amount to remove</label>
-                        <div className="flex flex-col lg:w-1/2">
-                          <input
-                            type="number"
-                            inputMode="decimal" 
-                            autoFocus={true}
-                            autoComplete="off"
-                            autoCorrect="off"
-                            name="removeLiquidityAmount"
-                            id="removeLiquidityAmount"
-                            pattern="^[0-9]*[.,]?[0-9]*$"
-                            placeholder="0.0"
-                            value={tokensToRemove}
-                            onChange={onInputChange}
-                            className="ml-4 font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 truncate p-0 m-0 text-right flex-1"
-                            style={{appearance: 'textfield'}}
-                          />
+                        <label htmlFor="removeLiquidityAmount" className="flex-shrink-0 mr-4 block text-base text-gray-700">Amount to remove</label>
+                        <div className="flex flex-col">
+                          <div className="rounded-md relative">
+                            <input
+                              type="number"
+                              inputMode="decimal" 
+                              autoFocus={true}
+                              autoComplete="off"
+                              autoCorrect="off"
+                              name="removeLiquidityAmount"
+                              id="removeLiquidityAmount"
+                              pattern="^[0-9]*[.,]?[0-9]*$"
+                              placeholder="0.0"
+                              value={tokensToRemove}
+                              onChange={onInputChange}
+                              className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 truncate p-0 m-0 text-right block w-52 pr-4 text-3xl"
+                              style={{appearance: 'textfield'}}
+                            />
+                            <div className="absolute inset-y-0 right-0 pb-1 flex items-end pointer-events-none">
+                              %
+                            </div>
+                          </div>
+                          
 
                           {/* Hidden native range input */}
                           {/* <input type="range" step="100" min="0" max="100" name="removeLiquidityAmount" className="absolute pointer-events-none appearance-none h-0 w-full opacity-0 cursor-pointer" /> */}
