@@ -144,6 +144,40 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                   </button>
                 </div>
 
+                <div className="mt-4 p-4 w-full bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
+                  <h4 className="uppercase font-semibold text-xs text-indigo-700">Your position</h4>
+                  <dl className="mt-2 space-y-1">
+                    <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                      <dt className="text-base font-medium text-indigo-500 inline-flex items-center">
+                        <div className="flex -space-x-2 overflow-hidden mr-2">
+                          <img className="inline-block h-6 w-6 rounded-full ring-2 ring-white" src={tokenX.logo} alt="" />
+                          <img className="inline-block h-6 w-6 rounded-full ring-2 ring-white" src={tokenY.logo} alt="" />
+                        </div>
+                        {tokenX.name}/{tokenY.name}
+                      </dt>
+                      <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-lg sm:text-right">
+                        {balance}
+                      </dd>
+                    </div>
+                    <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                      <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
+                        {tokenX.name}
+                      </dt>
+                      <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">
+                        {balance}
+                      </dd>
+                    </div>
+                    <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                      <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
+                        {tokenY.name}
+                      </dt>
+                      <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">
+                        {balance}
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+
                 <form className="mt-4">
                   <div className="rounded-md shadow-sm bg-gray-50 border border-gray-200 hover:border-gray-300 focus-within:border-indigo-200">
                     <div className="flex items-center p-4">
@@ -170,18 +204,6 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                               %
                             </div>
                           </div>
-                          
-
-                          {/* Hidden native range input */}
-                          {/* <input type="range" step="100" min="0" max="100" name="removeLiquidityAmount" className="absolute pointer-events-none appearance-none h-0 w-full opacity-0 cursor-pointer" /> */}
-
-                          {/* Fake range input */}
-                          {/* <div className="h-2 bg-gray-200 rounded-full relative mt-3">
-                            <div className="absolute h-2 rounded-full bg-indigo-500 w-0" style={{width: '58%'}}>
-                              <div className="absolute h-4 flex items-center justify-center w-4 rounded-full bg-white shadow border border-gray-300 -ml-2 top-0 cursor-pointer -mt-1 right-0">
-                              </div>
-                            </div>
-                          </div> */}
 
                           <div className="mt-4 flex items-center justify-between">
                             <button
