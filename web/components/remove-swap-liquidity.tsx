@@ -115,7 +115,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         contractPrincipalCV(contractAddress, tokenXTrait),
         contractPrincipalCV(contractAddress, tokenYTrait),
         contractPrincipalCV(contractAddress, swapTrait),
-        uintCV(100) // 100%
+        uintCV(percentageToRemove)
       ],
       postConditionMode: 0x01,
       finished: data => {
