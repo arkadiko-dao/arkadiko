@@ -12,6 +12,7 @@ import { ArrowDownIcon } from '@heroicons/react/outline';
 import { tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
+import { microToReadable } from '@common/vault-utils';
 
 export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -19,10 +20,12 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   const [tokenYPrice, setTokenYPrice] = useState(0.0);
   const [tokenXToReceive, setTokenXToReceive] = useState(0.0);
   const [tokenYToReceive, setTokenYToReceive] = useState(0.0);
-  const [tokensToRemove, setTokensToRemove] = useState(0.0);
   const [tokenX] = useState(tokenList[tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdA.toLowerCase())]);
   const [tokenY] = useState(tokenList[tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdB.toLowerCase())]);
   const [balance, setBalance] = useState(0.0);
+  const [percentageToRemove, setPercentageToRemove] = useState(50);
+  const [balanceX, setBalanceX] = useState(0.0);
+  const [balanceY, setBalanceY] = useState(0.0);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const stxAddress = useSTXAddress();
   const { doContractCall } = useConnect();
@@ -54,19 +57,33 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
         const basePrice = (balanceX / balanceY).toFixed(2);
-        // const price = parseFloat(basePrice) + (parseFloat(basePrice) * 0.01);
+        const balance = state.balance[`${tokenX.name.toLowerCase()}${tokenY.name.toLowerCase()}`];
+        const totalShares = json3['value']['value']['value']['shares-total'].value;
+        const poolPercentage = balance / totalShares;
         setTokenXPrice(basePrice);
         setTokenYPrice((balanceY / balanceX).toFixed(2));
-        setBalance(state.balance[`${tokenX.name.toLowerCase()}${tokenY.name.toLowerCase()}`]);
+        setBalance(balance);
+        setBalanceX(balanceX * poolPercentage);
+        setBalanceY((balanceX * poolPercentage) / (balanceY / balanceX));
+        setTokenXToReceive(balanceX * poolPercentage * percentageToRemove / 100);
+        setTokenYToReceive(balanceY * poolPercentage * percentageToRemove / 100);
       } else if (json3['value']['value']['value'] === 201) {
         const json4 = await fetchPair(tokenYTrait, tokenXTrait);
         if (json4['success']) {
+          console.log(json4);
           const balanceX = json4['value']['value']['value']['balance-x'].value;
           const balanceY = json4['value']['value']['value']['balance-y'].value;
           const basePrice = (balanceX / balanceY).toFixed(2);
+          const balance = state.balance[`${tokenY.name.toLowerCase()}${tokenX.name.toLowerCase()}`];
+          const totalShares = json4['value']['value']['value']['shares-total'].value;
+          const poolPercentage = balance / totalShares;
           setTokenXPrice(basePrice);
           setTokenYPrice((balanceY / balanceX).toFixed(2));
-          setBalance(state.balance[`${tokenY.name.toLowerCase()}${tokenX.name.toLowerCase()}`]);
+          setBalance(balance);
+          setBalanceX(balanceX * poolPercentage);
+          setBalanceY((balanceX * poolPercentage) / (balanceY / balanceX));
+          setTokenXToReceive(balanceX * poolPercentage * percentageToRemove / 100);
+          setTokenYToReceive(balanceY * poolPercentage * percentageToRemove / 100);
         }
       }
     };
@@ -77,11 +94,13 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   const onInputChange = (event: { target: { name: any; value: any; }; }) => {
     const value = event.target.value;
 
-    setTokensToRemove(value);
+    removePercentage(value);
   };
 
   const removePercentage = (percentage: number) => {
-    setTokensToRemove(balance * percentage / (100 * 1000000));
+    setPercentageToRemove(percentage);
+    setTokenXToReceive(balanceX * percentage / 100);
+    setTokenYToReceive(balanceY * percentage / 100);
   };
 
   const removeLiquidity = async () => {
@@ -156,7 +175,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                         {tokenX.name}/{tokenY.name}
                       </dt>
                       <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-lg sm:text-right">
-                        {balance}
+                        {microToReadable(balance)}
                       </dd>
                     </div>
                     <div className="sm:grid sm:grid-cols-2 sm:gap-4">
@@ -164,7 +183,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                         {tokenX.name}
                       </dt>
                       <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">
-                        {balance}
+                        {microToReadable(balanceX)}
                       </dd>
                     </div>
                     <div className="sm:grid sm:grid-cols-2 sm:gap-4">
@@ -172,7 +191,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                         {tokenY.name}
                       </dt>
                       <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">
-                        {balance}
+                        {microToReadable(balanceY)}
                       </dd>
                     </div>
                   </dl>
@@ -195,7 +214,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                               id="removeLiquidityAmount"
                               pattern="^[0-9]*[.,]?[0-9]*$"
                               placeholder="0.0"
-                              value={tokensToRemove}
+                              value={percentageToRemove}
                               onChange={onInputChange}
                               className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 truncate p-0 m-0 text-right block w-52 pr-4 text-3xl"
                               style={{appearance: 'textfield'}}
@@ -261,7 +280,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                             </div>                          
                           </dt>
                           <dd className="font-semibold mt-1 sm:mt-0 text-lg sm:justify-end sm:inline-flex">
-                            {tokenXToReceive}
+                            {microToReadable(tokenXToReceive)}
                           </dd>
                         </div>
                         <div className="sm:grid sm:grid-cols-2 sm:gap-4">
@@ -276,7 +295,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                             </div>                          
                           </dt>
                           <dd className="font-semibold mt-1 sm:mt-0 text-lg sm:justify-end sm:inline-flex">
-                            {tokenYToReceive}
+                            {microToReadable(tokenYToReceive)}
                           </dd>
                         </div>
                       </dl>
