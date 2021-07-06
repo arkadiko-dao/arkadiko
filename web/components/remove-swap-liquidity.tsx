@@ -14,6 +14,10 @@ import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { microToReadable } from '@common/vault-utils';
 
+function classNames(...classes) {
+  return classes.filter(Boolean).sort().join(' ')
+}
+
 export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   const [state, setState] = useContext(AppContext);
   const [tokenXPrice, setTokenXPrice] = useState(0.0);
@@ -23,6 +27,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   const [tokenX] = useState(tokenList[tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdA.toLowerCase())]);
   const [tokenY] = useState(tokenList[tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdB.toLowerCase())]);
   const [inverseDirection, setInverseDirection] = useState(false);
+  const [foundPair, setFoundPair] = useState(false);
   const [balance, setBalance] = useState(0.0);
   const [percentageToRemove, setPercentageToRemove] = useState(50);
   const [balanceX, setBalanceX] = useState(0.0);
@@ -67,6 +72,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         const balance = state.balance[`${tokenX.name.toLowerCase()}${tokenY.name.toLowerCase()}`];
         const totalShares = json3['value']['value']['value']['shares-total'].value;
         const poolPercentage = balance / totalShares;
+        setFoundPair(true);
         setTokenXPrice(basePrice);
         setTokenYPrice((balanceY / balanceX).toFixed(2));
         setInverseDirection(false);
@@ -85,6 +91,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
           const balance = state.balance[`${tokenY.name.toLowerCase()}${tokenX.name.toLowerCase()}`];
           const totalShares = json4['value']['value']['value']['shares-total'].value;
           const poolPercentage = balance / totalShares;
+          setFoundPair(true);
           setTokenXPrice(basePrice);
           setTokenYPrice((balanceY / balanceX).toFixed(2));
           setInverseDirection(true);
@@ -103,6 +110,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   const onInputChange = (event: { target: { name: any; value: any; }; }) => {
     const value = event.target.value;
 
+    console.log(value);
     removePercentage(value);
   };
 
@@ -332,10 +340,18 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                   <div className="mt-4 lg:flex lg:items-center lg:flex-1 lg:space-x-2">
                     <button
                       type="button"
-                      className="w-full inline-flex items-center justify-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white bg-indigo-600 hover:bg-indigo-700 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                      onClick={removeLiquidity}
+                      disabled={tokenXToReceive === 0 || !foundPair}
+                      onClick={() => removeLiquidity()}
+                      className={classNames((tokenXToReceive === 0 || !foundPair) ?
+                        'bg-indigo-300 hover:bg-indigo-300 pointer-events-none' :
+                        'bg-indigo-600 hover:bg-indigo-700 cursor-pointer',
+                        'w-full inline-flex items-center justify-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white hover:bg-indigo-700 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500')
+                      }
                     >
-                      Remove
+                      { !foundPair ? "No liquidity for this pair. Try another one."
+                      : (!percentageToRemove || percentageToRemove === 0) ? "Please enter an amount"
+                      : (tokenXToReceive === 0) ? "Please enter an amount"
+                      : "Remove liquidity"}
                     </button>
                   </div>
                 </form>
