@@ -22,6 +22,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   const [tokenYToReceive, setTokenYToReceive] = useState(0.0);
   const [tokenX] = useState(tokenList[tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdA.toLowerCase())]);
   const [tokenY] = useState(tokenList[tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdB.toLowerCase())]);
+  const [inverseDirection, setInverseDirection] = useState(false);
   const [balance, setBalance] = useState(0.0);
   const [percentageToRemove, setPercentageToRemove] = useState(50);
   const [balanceX, setBalanceX] = useState(0.0);
@@ -32,6 +33,12 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
 
   const tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
   const tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
+
+  useEffect(() => {
+    if (state.currentTxStatus === 'success') {
+      window.location.reload();
+    }
+  }, [state.currentTxStatus]);
 
   useEffect(() => {
     const fetchPair = async (tokenXContract:string, tokenYContract:string) => {
@@ -62,6 +69,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         const poolPercentage = balance / totalShares;
         setTokenXPrice(basePrice);
         setTokenYPrice((balanceY / balanceX).toFixed(2));
+        setInverseDirection(false);
         setBalance(balance);
         setBalanceX(balanceX * poolPercentage);
         setBalanceY((balanceX * poolPercentage) / (balanceY / balanceX));
@@ -79,6 +87,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
           const poolPercentage = balance / totalShares;
           setTokenXPrice(basePrice);
           setTokenYPrice((balanceY / balanceX).toFixed(2));
+          setInverseDirection(true);
           setBalance(balance);
           setBalanceX(balanceX * poolPercentage);
           setBalanceY((balanceX * poolPercentage) / (balanceY / balanceX));
@@ -105,6 +114,13 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
 
   const removeLiquidity = async () => {
     let swapTrait = tokenTraits[`${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`]['name'];
+    let tokenXParam = tokenXTrait;
+    let tokenYParam = tokenYTrait;
+    if (inverseDirection) {
+      swapTrait = tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['name'];
+      tokenXParam = tokenYTrait;
+      tokenYParam = tokenXTrait;
+    }
     await doContractCall({
       network,
       contractAddress,
@@ -112,14 +128,13 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
       contractName: 'arkadiko-swap-v1-1',
       functionName: 'reduce-position',
       functionArgs: [
-        contractPrincipalCV(contractAddress, tokenXTrait),
-        contractPrincipalCV(contractAddress, tokenYTrait),
+        contractPrincipalCV(contractAddress, tokenXParam),
+        contractPrincipalCV(contractAddress, tokenYParam),
         contractPrincipalCV(contractAddress, swapTrait),
         uintCV(percentageToRemove)
       ],
       postConditionMode: 0x01,
       finished: data => {
-        console.log('finished collateralizing!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
     });
