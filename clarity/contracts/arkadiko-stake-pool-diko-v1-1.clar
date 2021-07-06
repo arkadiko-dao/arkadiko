@@ -60,16 +60,8 @@
     ;; Total DIKO
     (total-diko-supply (+ diko-supply rewards-to-add))
 
-    ;; Total stDIKO supply
-    (calculated-stdiko-supply
-      (if (is-eq u0 stdiko-supply)
-        (unwrap-panic (contract-call? .stdiko-token get-total-supply))
-        stdiko-supply
-      )
-    )
-
     ;; User stDIKO percentage
-    (stdiko-percentage (/ (* amount u1000000) calculated-stdiko-supply))
+    (stdiko-percentage (/ (* amount u1000000) stdiko-supply))
 
     ;; Amount of DIKO the user will receive
     (diko-to-receive (/ (* stdiko-percentage total-diko-supply) u1000000))
@@ -135,7 +127,7 @@
 
     (let (
       ;; Amount of DIKO the user will receive
-      (diko-to-receive (unwrap-panic (diko-for-stdiko registry-trait amount u0)))
+      (diko-to-receive (unwrap-panic (diko-for-stdiko registry-trait amount (unwrap-panic (contract-call? .stdiko-token get-total-supply)))))
     )
       ;; Burn stDIKO 
       (try! (contract-call? .arkadiko-dao burn-token .stdiko-token amount staker))
