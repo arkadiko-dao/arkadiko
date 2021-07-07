@@ -97,18 +97,18 @@ export const Governance = () => {
                 {proposals.length > 0 ? (
                   <ProposalGroup proposals={proposals} />
                 ) : (
-                  <div className="flex justify-center mx-auto mt-12 w-2/3">
+                  <div className="flex justify-center mx-auto mt-12 w-full md:w-2/3">
                     <div className="flow-root bg-gray-100 border-dotted border-2 border-gray-300 rounded-lg p-8">
                       <div className="relative">
                         <div>
-                          <div className="absolute flex items-center justify-center h-24 w-24 text-gray-600 transform -rotate-12 bg-gray-100 -top-12 -left-16">
+                          <div className="md:absolute flex items-center justify-center h-24 w-24 text-gray-600 transform -rotate-12 bg-gray-100 md:-top-12 md:-left-16 mx-auto mb-4 md:mb-0">
                             <DocumentTextIcon className="h-24 w-24 text-gray-600" aria-hidden="true" />
                           </div>
-                          <p className="ml-16 text-lg leading-6 font-medium text-gray-900">There are currently no proposals to vote on.</p>
+                          <p className="md:ml-16 text-lg leading-6 font-medium text-gray-900">There are currently no proposals to vote on.</p>
                         </div>
-                        <div className="mt-2 ml-16 text-base text-gray-500">
+                        <p className="mt-2 md:ml-16 text-base text-gray-500">
                           Nothing to see here. Be sure to check out later to not miss any proposals and make your vote count.
-                        </div>
+                        </p>
                       </div>
                     </div>
                   </div>

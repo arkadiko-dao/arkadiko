@@ -9,7 +9,7 @@ export const Proposal: React.FC<ProposalProps> = ({ id, changes, proposer, isOpe
       <RouterLink to={`governance/${id}`} exact className="block hover:bg-gray-50">
         <div className="px-4 py-4 sm:px-6">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-indigo-600 truncate">
+            <p className="text-base font-medium text-indigo-600 truncate">
               Change contract {deductTitle(changes)}
             </p>
             <div className="ml-2 flex-shrink-0 flex">
