@@ -339,7 +339,7 @@ export const Stake = () => {
                       <span className="block">Arkadiko Staking</span>
                     </h2>
                     <p className="mt-4 text-lg leading-6 text-indigo-200">
-                      Stake your DIKO tokens to earn rewards. For every DIKO staked, you get stDIKO in return which can be used to vote in governance.
+                      Stake your DIKO or LP tokens to earn rewards. For every DIKO/LP staked, you get stDIKO in return which can be used to vote in governance.
                     </p>
                   </div>
                 </div>
@@ -395,6 +395,60 @@ export const Stake = () => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                               auto-compounding
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                              <button type="button" onClick={() => setShowStakeModal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+                                Stake
+                              </button>
+
+                              <button type="button" onClick={() => setShowUnstakeModal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+                                Unstake
+                              </button>
+                            </td>
+                          </tr>
+                          <tr className="bg-white">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <div className="flex items-center">
+                                <div className="flex-shrink-0 h-10 w-10">
+                                  <img className="h-10 w-10 rounded-full" src={tokenList[1].logo} alt="" />
+                                </div>
+                                <div className="ml-4">
+                                  0.00 ARKV1DIKOUSDA
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
+                              {apy}%
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              0 DIKO
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                              <button type="button" onClick={() => setShowStakeModal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+                                Stake
+                              </button>
+
+                              <button type="button" onClick={() => setShowUnstakeModal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+                                Unstake
+                              </button>
+                            </td>
+                          </tr>
+                          <tr className="bg-white">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <div className="flex items-center">
+                                <div className="flex-shrink-0 h-10 w-10">
+                                  <img className="h-10 w-10 rounded-full" src={tokenList[1].logo} alt="" />
+                                </div>
+                                <div className="ml-4">
+                                  0.00 ARKV1WSTXUSDA
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
+                              {apy}%
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              0 DIKO
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
                               <button type="button" onClick={() => setShowStakeModal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
