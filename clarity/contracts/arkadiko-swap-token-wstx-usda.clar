@@ -15,11 +15,11 @@
 )
 
 (define-read-only (get-name)
-  (ok "wSTX USDA LP Token")
+  (ok "Arkadiko V1 wSTX USDA LP Token")
 )
 
 (define-read-only (get-symbol)
-  (ok "wSTX-USDA")
+  (ok "ARKV1WSTXUSDA")
 )
 
 (define-read-only (get-decimals)

@@ -15,11 +15,11 @@
 )
 
 (define-read-only (get-name)
-  (ok "DIKO USDA LP Token")
+  (ok "Arkadiko V1 DIKO USDA LP Token")
 )
 
 (define-read-only (get-symbol)
-  (ok "DIKO-USDA")
+  (ok "ARKV1DIKOUSDA")
 )
 
 (define-read-only (get-decimals)
