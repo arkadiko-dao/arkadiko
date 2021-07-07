@@ -1,5 +1,4 @@
 import React, { useEffect, useContext, useState } from 'react';
-import { Box } from '@blockstack/ui';
 import { AppContext } from '@common/context';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
@@ -7,6 +6,7 @@ import { stacksNetwork as network } from '@common/utils';
 import { callReadOnlyFunction, cvToJSON } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ProposalGroup } from '@components/proposal-group';
+import { DocumentTextIcon } from '@heroicons/react/outline';
 
 export const Governance = () => {
   const [state, _] = useContext(AppContext);
@@ -70,41 +70,56 @@ export const Governance = () => {
   }, []);
 
   return (
-    <Box>
+    <>
       {state.userData ? (
         <Container>
-          <Box py={6}>
-            <main className="flex-1 relative pb-8 z-0 overflow-y-auto">
-              <div className="mt-8">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <main className="flex-1 py-12">
+            <section>
+              <header>
+                <div className="bg-indigo-700 rounded-md">
+                  <div className="max-w-2xl mx-auto text-center py-5 px-4 sm:py-5 sm:px-6 lg:px-8">
+                    <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
+                      <span className="block">Arkadiko Governance</span>
+                    </h2>
+                    <p className="mt-4 text-lg leading-6 text-indigo-200">
+                      DIKO tokens represent voting shares in Arkadiko governance. <br />
+                      You can vote on each proposal and cannot delegate any votes.
+                    </p>
+                  </div>
+                </div>
+              </header>
 
-                  <div className="bg-indigo-700">
-                    <div className="max-w-2xl mx-auto text-center py-5 px-4 sm:py-5 sm:px-6 lg:px-8">
-                      <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
-                        <span className="block">Arkadiko Governance</span>
-                      </h2>
-                      <p className="mt-4 text-lg leading-6 text-indigo-200">
-                        DIKO tokens represent voting shares in Arkadiko governance. You can vote on each proposal and cannot delegate any votes.
-                      </p>
+              <div className="mt-8">
+                <header className="pb-5 border-b border-gray-200">
+                  <h2 className="text-lg leading-6 font-medium text-gray-900">Recent Proposals</h2>
+                </header>
+
+                {proposals.length > 0 ? (
+                  <ProposalGroup proposals={proposals} />
+                ) : (
+                  <div className="flex justify-center mx-auto mt-12 w-2/3">
+                    <div className="flow-root bg-gray-100 border-dotted border-2 border-gray-300 rounded-lg p-8">
+                      <div className="relative">
+                        <div>
+                          <div className="absolute flex items-center justify-center h-24 w-24 text-gray-600 transform -rotate-12 bg-gray-100 -top-12 -left-16">
+                            <DocumentTextIcon className="h-24 w-24 text-gray-600" aria-hidden="true" />
+                          </div>
+                          <p className="ml-16 text-lg leading-6 font-medium text-gray-900">There are currently no proposals to vote on.</p>
+                        </div>
+                        <div className="mt-2 ml-16 text-base text-gray-500">
+                          Nothing to see here. Be sure to check out later to not miss any proposals and make your vote count.
+                        </div>
+                      </div>
                     </div>
                   </div>
-
-                  <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8">
-                    Recent Proposals
-                  </h2>
-                  {proposals.length > 0 ? (
-                    <ProposalGroup proposals={proposals} />
-                  ) : (
-                    <p>There are currently no proposals to vote on.</p>
-                  )}
-                </div>
+                )}
               </div>
-            </main>
-          </Box>
+            </section>
+          </main>
         </Container>
       ) : (
         <Redirect to={{ pathname: '/' }} />
       )}
-    </Box>
+    </>
   );
 };
