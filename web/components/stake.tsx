@@ -4,9 +4,7 @@ import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import { stacksNetwork as network } from '@common/utils';
 import {
-  callReadOnlyFunction, contractPrincipalCV, uintCV, cvToJSON,
-  createAssetInfo, FungibleConditionCode, standardPrincipalCV,
-  makeStandardFungiblePostCondition
+  callReadOnlyFunction, contractPrincipalCV, uintCV, cvToJSON, standardPrincipalCV
 } from '@stacks/transactions';
 import { StakeDikoModal } from './stake-diko-modal';
 import { UnstakeDikoModal } from './unstake-diko-modal';
@@ -15,11 +13,10 @@ import { microToReadable } from '@common/vault-utils';
 import { tokenList } from '@components/token-swap-list';
 
 export const Stake = () => {
-  const [state, setState] = useContext(AppContext);
+  const [state, _] = useContext(AppContext);
   const stxAddress = useSTXAddress();
   const [showStakeModal, setShowStakeModal] = useState(false);
   const [showUnstakeModal, setShowUnstakeModal] = useState(false);
-  const [stakeAmount, setStakeAmount] = useState('');
   const [apy, setApy] = useState(0);
   const [stakedAmount, setStakedAmount] = useState(0);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
