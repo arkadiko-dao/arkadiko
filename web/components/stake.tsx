@@ -7,7 +7,7 @@ import { Container } from './home';
 import { stacksNetwork as network } from '@common/utils';
 import {
   callReadOnlyFunction, contractPrincipalCV, uintCV, cvToJSON,
-  createAssetInfo, FungibleConditionCode,
+  createAssetInfo, FungibleConditionCode, standardPrincipalCV,
   makeStandardFungiblePostCondition
  } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
@@ -47,15 +47,38 @@ export const Stake = () => {
         network: network,
       });
       let totalStaked = cvToJSON(totalStakedCall).value / 1000000;
-      let dikoStaked = state.balance['stdiko'];
+
+      const stDikoSupplyCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "stdiko-token",
+        functionName: "get-total-supply",
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const stDikoSupply = cvToJSON(stDikoSupplyCall).value.value;
+      const userStakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-stake-pool-diko-v1-1",
+        functionName: "get-stake-of",
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          standardPrincipalCV(stxAddress || ''),
+          uintCV(stDikoSupply)
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      let dikoStaked = cvToJSON(userStakedCall).value.value;
       setStakedAmount(dikoStaked);
 
-      const dikoPerYear = 23500000; // TODO: hardcoded 25mio for first year. 144 * 365 * (rewardsPerBlock) / 1000000;
+      const dikoPerYear = 2350000; // TODO: hardcoded 23.5mio*10% for first year. 144 * 365 * (rewardsPerBlock) / 1000000;
       if (dikoStaked > 0) {
+        dikoStaked = dikoStaked / 1000000;
         const rewardPercentage = (dikoStaked / totalStaked);
         setApy(((dikoPerYear / dikoStaked) * rewardPercentage * 100).toFixed(0));
       } else {
-        let dikoStaked = state.balance['diko'] / 1000000;
+        dikoStaked = state.balance['diko'] / 1000000;
         if (totalStaked === 0) { totalStaked = dikoStaked };
         const rewardPercentage = (dikoStaked / totalStaked);
         setApy(((dikoPerYear / dikoStaked) * rewardPercentage * 100).toFixed(0));
