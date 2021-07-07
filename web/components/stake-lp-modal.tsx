@@ -14,7 +14,7 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 
-export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
+export const StakeLpModal = ({ showStakeModal, setShowStakeModal, apy }) => {
   const [state, setState] = useContext(AppContext);
   const [errors, setErrors] = useState<Array<string>>([]);
   const [stakeAmount, setStakeAmount] = useState('');
@@ -23,15 +23,15 @@ export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
   const { doContractCall } = useConnect();
 
   const stakeMaxAmount = () => {
-    setStakeAmount(state.balance['diko'] / 1000000);
+    setStakeAmount(state.balance['dikousda'] / 1000000);
   };
 
   const onInputStakeChange = (event:any) => {
     const value = event.target.value;
     // trying to stake
-    if (value > state.balance['diko'] / 1000000) {
+    if (value > state.balance['dikousda'] / 1000000) {
       if (errors.length < 1) {
-        setErrors(errors.concat([`You cannot stake more than ${state.balance['diko'] / 1000000} DIKO`]));
+        setErrors(errors.concat([`You cannot stake more than ${state.balance['dikousda'] / 1000000} DIKO`]));
       }
     } else {
       setErrors([]);
@@ -39,7 +39,7 @@ export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
     setStakeAmount(value);
   };
 
-  const stakeDiko = async () => {
+  const stake = async () => {
     const amount = uintCV(Number(stakeAmount) * 1000000);
     const postConditions = [
       makeStandardFungiblePostCondition(
@@ -133,7 +133,7 @@ export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
             <button
               type="button"
               className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
-              onClick={() => stakeDiko()}
+              onClick={() => stake()}
             >
               Stake
             </button>

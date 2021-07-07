@@ -8,6 +8,7 @@ import {
 } from '@stacks/transactions';
 import { StakeDikoModal } from './stake-diko-modal';
 import { UnstakeDikoModal } from './unstake-diko-modal';
+import { StakeLpModal } from './stake-lp-modal';
 import { useSTXAddress } from '@common/use-stx-address';
 import { microToReadable } from '@common/vault-utils';
 import { tokenList } from '@components/token-swap-list';
@@ -17,6 +18,7 @@ export const Stake = () => {
   const stxAddress = useSTXAddress();
   const [showStakeModal, setShowStakeModal] = useState(false);
   const [showUnstakeModal, setShowUnstakeModal] = useState(false);
+  const [showStakeLp1Modal, setShowStakeLp1Modal] = useState(false);
   const [apy, setApy] = useState(0);
   const [stakedAmount, setStakedAmount] = useState(0);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -96,6 +98,12 @@ export const Stake = () => {
         showUnstakeModal={showUnstakeModal}
         setShowUnstakeModal={setShowUnstakeModal}
         stakedAmount={stakedAmount}
+      />
+
+      <StakeLpModal
+        showStakeModal={showStakeLp1Modal}
+        setShowStakeModal={setShowStakeLp1Modal}
+        apy={apy}
       />
 
       {state.userData ? (
@@ -194,7 +202,7 @@ export const Stake = () => {
                               0 DIKO
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
-                              <button type="button" onClick={() => setShowStakeModal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+                              <button type="button" onClick={() => setShowStakeLp1Modal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
                                 Stake
                               </button>
 
