@@ -33,6 +33,7 @@ export const UnstakeLpModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAm
       contractName: 'arkadiko-stake-registry-v1-1',
       functionName: 'unstake',
       functionArgs: [
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, contractName),
         contractPrincipalCV(contractAddress, tokenContract),
         uintCV(Number(stakeAmount) * 1000000)
@@ -101,11 +102,11 @@ export const UnstakeLpModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAm
                 Unstake {tokenName}
               </h3>
               <p className="mt-3 text-sm text-gray-500">
-                You are current staking {microToReadable(stakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO.
+                You are current staking {microToReadable(stakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenName}.
               </p>
               <div className="mt-6">
                 <InputAmount
-                  balance={microToReadable(stakeAmount).toLocaleString()}
+                  balance={microToReadable(stakedAmount).toLocaleString()}
                   token={tokenName}
                   inputName={`unstakeDiko${tokenName}`}
                   inputId={`unstakeAmount${tokenName}`}
