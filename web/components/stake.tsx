@@ -9,6 +9,7 @@ import {
 import { StakeDikoModal } from './stake-diko-modal';
 import { UnstakeDikoModal } from './unstake-diko-modal';
 import { StakeLpModal } from './stake-lp-modal';
+import { UnstakeLpModal } from './unstake-lp-modal';
 import { useSTXAddress } from '@common/use-stx-address';
 import { microToReadable } from '@common/vault-utils';
 import { tokenList } from '@components/token-swap-list';
@@ -178,6 +179,22 @@ export const Stake = () => {
         tokenName={'ARKV1WSTXUSDA'}
       />
 
+      <UnstakeLpModal
+        showUnstakeModal={showUnstakeLp1Modal}
+        setShowUnstakeModal={setShowUnstakeLp1Modal}
+        stakedAmount={lpDikoStakedAmount}
+        balanceName={'dikousda'}
+        tokenName={'ARKV1DIKOUSDA'}
+      />
+
+      <UnstakeLpModal
+        showUnstakeModal={showUnstakeLp2Modal}
+        setShowUnstakeModal={setShowUnstakeLp2Modal}
+        stakedAmount={lpStxStakedAmount}
+        balanceName={'wstxusda'}
+        tokenName={'ARKV1WSTXUSDA'}
+      />
+
       {state.userData ? (
         <Container>
           <main className="flex-1 relative py-12">
@@ -278,7 +295,7 @@ export const Stake = () => {
                                 Stake
                               </button>
 
-                              <button type="button" onClick={() => setShowUnstakeModal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+                              <button type="button" onClick={() => setShowUnstakeLp1Modal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
                                 Unstake
                               </button>
                             </td>
@@ -305,7 +322,7 @@ export const Stake = () => {
                                 Stake
                               </button>
 
-                              <button type="button" onClick={() => setShowUnstakeModal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+                              <button type="button" onClick={() => setShowUnstakeLp2Modal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
                                 Unstake
                               </button>
                             </td>
