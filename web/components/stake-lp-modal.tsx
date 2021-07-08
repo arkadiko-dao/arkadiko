@@ -14,7 +14,7 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 
-export const StakeLpModal = ({ showStakeModal, setShowStakeModal, apy }) => {
+export const StakeLpModal = ({ showStakeModal, setShowStakeModal, apy, balanceName, tokenName }) => {
   const [state, setState] = useContext(AppContext);
   const [errors, setErrors] = useState<Array<string>>([]);
   const [stakeAmount, setStakeAmount] = useState('');
@@ -23,15 +23,15 @@ export const StakeLpModal = ({ showStakeModal, setShowStakeModal, apy }) => {
   const { doContractCall } = useConnect();
 
   const stakeMaxAmount = () => {
-    setStakeAmount(state.balance['dikousda'] / 1000000);
+    setStakeAmount(state.balance[balanceName] / 1000000);
   };
 
   const onInputStakeChange = (event:any) => {
     const value = event.target.value;
     // trying to stake
-    if (value > state.balance['dikousda'] / 1000000) {
+    if (value > state.balance[balanceName] / 1000000) {
       if (errors.length < 1) {
-        setErrors(errors.concat([`You cannot stake more than ${state.balance['dikousda'] / 1000000} DIKO`]));
+        setErrors(errors.concat([`You cannot stake more than ${state.balance[balanceName] / 1000000} DIKO`]));
       }
     } else {
       setErrors([]);
@@ -53,6 +53,12 @@ export const StakeLpModal = ({ showStakeModal, setShowStakeModal, apy }) => {
         )
       )
     ];
+    let contractName = 'arkadiko-stake-pool-diko-usda-v1-1';
+    let tokenContract = 'arkadiko-swap-token-diko-usda';
+    if (balanceName === 'wstxusda') {
+      contractName = 'arkadiko-stake-pool-wstx-usda-v1-1';
+      tokenContract = 'arkaidko-swap-token-wstx-usda';
+    }
     await doContractCall({
       network,
       contractAddress,
@@ -61,12 +67,11 @@ export const StakeLpModal = ({ showStakeModal, setShowStakeModal, apy }) => {
       functionName: 'stake',
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-token'),
+        contractPrincipalCV(contractAddress, contractName),
+        contractPrincipalCV(contractAddress, tokenContract),
         amount
       ],
       postConditionMode: 0x01,
-      postConditions,
       finished: data => {
         console.log('finished broadcasting staking tx!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
@@ -110,19 +115,19 @@ export const StakeLpModal = ({ showStakeModal, setShowStakeModal, apy }) => {
           <div>
             <div className="mt-3 text-center sm:mt-5">
               <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
-                Stake DIKO
+                Stake {tokenName} LP Tokens
               </h3>
               <p className="mt-3 text-sm text-gray-500">
-                Stake DIKO tokens at {apy}% (estimated APY) and start earning rewards now.
+                Stake your {tokenName} LP tokens at {apy}% (estimated APY) and start earning rewards now.
               </p>
               <div className="mt-6">
                 <InputAmount
-                  balance={microToReadable(state.balance['diko']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
-                  token="DIKO"
+                  balance={microToReadable(state.balance[balanceName]).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                  token={tokenName}
                   inputName="stakeDiko"
                   inputId="stakeAmount"
                   inputValue={stakeAmount}
-                  inputLabel="Stack DIKO"
+                  inputLabel={`Stake ${tokenName}`}
                   onInputChange={onInputStakeChange}
                   onClickMax={stakeMaxAmount}
                 />

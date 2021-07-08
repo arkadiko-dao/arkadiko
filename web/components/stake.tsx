@@ -19,8 +19,17 @@ export const Stake = () => {
   const [showStakeModal, setShowStakeModal] = useState(false);
   const [showUnstakeModal, setShowUnstakeModal] = useState(false);
   const [showStakeLp1Modal, setShowStakeLp1Modal] = useState(false);
+  const [showStakeLp2Modal, setShowStakeLp2Modal] = useState(false);
+  const [showUnstakeLp1Modal, setShowUnstakeLp1Modal] = useState(false);
+  const [showUnstakeLp2Modal, setShowUnstakeLp2Modal] = useState(false);
   const [apy, setApy] = useState(0);
+  const [dikoLpApy, setDikoLpApy] = useState(0);
+  const [stxLpApy, setStxLpApy] = useState(0);
   const [stakedAmount, setStakedAmount] = useState(0);
+  const [lpDikoStakedAmount, setLpDikoStakedAmount] = useState(0);
+  const [lpStxStakedAmount, setLpStxStakedAmount] = useState(0);
+  const [lpDikoPendingRewards, setLpDikoPendingRewards] = useState(0);
+  const [lpStxPendingRewards, setLpStxPendingRewards] = useState(0);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   useEffect(() => {
@@ -67,6 +76,60 @@ export const Stake = () => {
       let dikoStaked = cvToJSON(userStakedCall).value.value;
       setStakedAmount(dikoStaked);
 
+      const userLpDikoStakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-stake-pool-diko-usda-v1-1",
+        functionName: "get-stake-amount-of",
+        functionArgs: [
+          standardPrincipalCV(stxAddress || '')
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      let dikoLpStaked = cvToJSON(userLpDikoStakedCall).value;
+      setLpDikoStakedAmount(dikoLpStaked);
+
+      const userLpStxStakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-stake-pool-wstx-usda-v1-1",
+        functionName: "get-stake-amount-of",
+        functionArgs: [
+          standardPrincipalCV(stxAddress || '')
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      let stxLpStaked = cvToJSON(userLpStxStakedCall).value;
+      setLpStxStakedAmount(stxLpStaked);
+
+      const dikoPendingRewardsCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-stake-pool-diko-usda-v1-1",
+        functionName: "get-pending-rewards",
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          standardPrincipalCV(stxAddress || '')
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      let dikoLpPendingRewards = cvToJSON(dikoPendingRewardsCall).value.value;
+      setLpDikoPendingRewards(dikoLpPendingRewards);
+
+      const stxPendingRewardsCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-stake-pool-wstx-usda-v1-1",
+        functionName: "get-pending-rewards",
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          standardPrincipalCV(stxAddress || '')
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      let stxLpPendingRewards = cvToJSON(stxPendingRewardsCall).value.value;
+      setLpStxPendingRewards(stxLpPendingRewards);
+
       const dikoPerYear = 2350000; // TODO: hardcoded 23.5mio*10% for first year. 144 * 365 * (rewardsPerBlock) / 1000000;
       if (dikoStaked > 0) {
         dikoStaked = dikoStaked / 1000000;
@@ -78,6 +141,8 @@ export const Stake = () => {
         const rewardPercentage = (dikoStaked / totalStaked);
         setApy(((dikoPerYear / dikoStaked) * rewardPercentage * 100).toFixed(0));
       }
+      setDikoLpApy(500);
+      setStxLpApy(500);
     };
     if (mounted) {
       void getData();
@@ -103,7 +168,17 @@ export const Stake = () => {
       <StakeLpModal
         showStakeModal={showStakeLp1Modal}
         setShowStakeModal={setShowStakeLp1Modal}
-        apy={apy}
+        apy={dikoLpApy}
+        balanceName={'dikousda'}
+        tokenName={'ARKV1DIKOUSDA'}
+      />
+
+      <StakeLpModal
+        showStakeModal={showStakeLp2Modal}
+        setShowStakeModal={setShowStakeLp2Modal}
+        apy={stxLpApy}
+        balanceName={'wstxusda'}
+        tokenName={'ARKV1WSTXUSDA'}
       />
 
       {state.userData ? (
@@ -191,15 +266,15 @@ export const Stake = () => {
                                   <img className="h-10 w-10 rounded-full" src={tokenList[1].logo} alt="" />
                                 </div>
                                 <div className="ml-4">
-                                  0.00 ARKV1DIKOUSDA
+                                  {microToReadable(lpDikoStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ARKV1DIKOUSDA
                                 </div>
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
-                              {apy}%
+                              {dikoLpApy}%
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
-                              0 DIKO
+                              {microToReadable(lpDikoPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
                               <button type="button" onClick={() => setShowStakeLp1Modal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
@@ -218,18 +293,18 @@ export const Stake = () => {
                                   <img className="h-10 w-10 rounded-full" src={tokenList[1].logo} alt="" />
                                 </div>
                                 <div className="ml-4">
-                                  0.00 ARKV1WSTXUSDA
+                                  {microToReadable(lpStxStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ARKV1WSTXUSDA
                                 </div>
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
-                              {apy}%
+                              {stxLpApy}%
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
-                              0 DIKO
+                              {microToReadable(lpStxPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
-                              <button type="button" onClick={() => setShowStakeModal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+                              <button type="button" onClick={() => setShowStakeLp2Modal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
                                 Stake
                               </button>
 
