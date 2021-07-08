@@ -130,19 +130,16 @@ export const Stake = () => {
       let stxLpPendingRewards = cvToJSON(stxPendingRewardsCall).value.value;
       setLpStxPendingRewards(stxLpPendingRewards);
 
-      const dikoPerYear = 2350000; // TODO: hardcoded 23.5mio*10% for first year. 144 * 365 * (rewardsPerBlock) / 1000000;
-      if (dikoStaked > 0) {
-        dikoStaked = dikoStaked / 1000000;
-        const rewardPercentage = (dikoStaked / totalStaked);
-        setApy(((dikoPerYear / dikoStaked) * rewardPercentage * 100).toFixed(0));
-      } else {
-        dikoStaked = state.balance['diko'] / 1000000;
-        if (totalStaked === 0) { totalStaked = dikoStaked };
-        const rewardPercentage = (dikoStaked / totalStaked);
-        setApy(((dikoPerYear / dikoStaked) * rewardPercentage * 100).toFixed(0));
-      }
-      setDikoLpApy(500);
-      setStxLpApy(500);
+      const dikoPoolPerYear = 2350000; // TODO: hardcoded 23.5mio*10% for first year. 144 * 365 * (rewardsPerBlock) / 1000000;
+      if (totalStaked === 0) { totalStaked = state.balance['diko'] / 1000000; };
+      if (totalStaked === 0) { totalStaked = 1 };
+      setApy(Number((100 * (dikoPoolPerYear / totalStaked)).toFixed(2)));
+
+      const dikoLpPoolPerYear = 23500000 * 30 / 100;
+      setDikoLpApy(Number((100 * (dikoLpPoolPerYear / totalStaked)).toFixed(2)));
+
+      const stxLpPoolPerYear = 23500000 * 60 / 100;
+      setStxLpApy(Number((100 * (stxLpPoolPerYear / totalStaked)).toFixed(2)));
     };
     if (mounted) {
       void getData();
