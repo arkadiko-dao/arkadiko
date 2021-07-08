@@ -29,6 +29,8 @@ export const Governance = () => {
       const json = cvToJSON(proposals);
       let serializedProposals:Array<{
         id: string,
+        title: string,
+        url: string,
         proposer: string,
         forVotes: number,
         against: number,
@@ -43,6 +45,8 @@ export const Governance = () => {
         if (element.value['id'].value != 0) {
           serializedProposals.push({
             id: element.value['id'].value,
+            title: element.value['title'].value,
+            url: element.value['url'].value,
             proposer: element.value['proposer'].value,
             forVotes: element.value['yes-votes'].value,
             against: element.value['no-votes'].value,

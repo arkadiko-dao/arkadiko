@@ -23,7 +23,8 @@
   {
     id: uint,
     proposer: principal,
-    details: (string-utf8 256),
+    title: (string-utf8 256),
+    url: (string-utf8 256),
     is-open: bool,
     start-block-height: uint,
     end-block-height: uint,
@@ -64,13 +65,14 @@
   )
 )
 
-;; Get proposal details
+;; Get proposal
 (define-read-only (get-proposal-by-id (proposal-id uint))
   (default-to
     {
       id: u0,
       proposer: DAO-OWNER,
-      details: u"",
+      title: u"",
+      url: u"",
       is-open: false,
       start-block-height: u0,
       end-block-height: u0,
@@ -105,7 +107,8 @@
 ;; Default voting period is 10 days (144 * 10 blocks)
 (define-public (propose
     (start-block-height uint)
-    (details (string-utf8 256))
+    (title (string-utf8 256))
+    (url (string-utf8 256))
     (contract-changes (list 10 (tuple (name (string-ascii 256)) (address principal) (qualified-name principal) (can-mint bool) (can-burn bool))))
   )
   (let (
@@ -130,7 +133,8 @@
       {
         id: proposal-id,
         proposer: tx-sender,
-        details: details,
+        title: title,
+        url: url,
         is-open: true,
         start-block-height: start-block-height,
         end-block-height: (+ start-block-height u1440),

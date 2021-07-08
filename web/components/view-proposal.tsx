@@ -8,16 +8,19 @@ import { useConnect } from '@stacks/connect-react';
 import { AppContext } from '@common/context';
 import { ThumbUpIcon, ThumbDownIcon } from '@heroicons/react/outline';
 import { ExternalLinkIcon } from '@heroicons/react/solid';
+import { getRPCClient } from '@common/utils';
+import { ProposalProps } from './proposal-group';
 
 export const ViewProposal = ({ match }) => {
   const [state, setState] = useContext(AppContext);
   const stxAddress = useSTXAddress();
-  const [proposal, setProposal] = useState({});
+  const [proposal, setProposal] = useState<ProposalProps>({});
   const [showVoteModal, setShowVoteModal] = useState(false);
   const [amountOfVotes, setAmountOfVotes] = useState('');
   const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  
+  const [stacksTipHeight, setStacksTipHeight] = useState(0);
+
   useEffect(() => {
     if (state.currentTxStatus === 'success') {
       window.location.reload();
@@ -28,6 +31,11 @@ export const ViewProposal = ({ match }) => {
     let mounted = true;
 
     const getData = async () => {
+      const client = getRPCClient();
+      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
+      let data = await response.json();
+      setStacksTipHeight(data['stacks_tip_height']);
+
       const proposal = await callReadOnlyFunction({
         contractAddress,
         contractName: "arkadiko-governance-v1-1",
@@ -37,10 +45,12 @@ export const ViewProposal = ({ match }) => {
         network: network,
       });
       const json = cvToJSON(proposal);
-      const data = json.value;
+      data = json.value;
 
       setProposal({
         id: data['id'].value,
+        title: data['title'].value,
+        url: data['url'].value,
         proposer: data['proposer'].value,
         forVotes: data['yes-votes'].value,
         against: data['no-votes'].value,
@@ -121,7 +131,7 @@ export const ViewProposal = ({ match }) => {
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Change contract
+                    {proposal.title}
                   </p>
 
                   <div className="mt-4 relative rounded-md shadow-sm">
@@ -163,7 +173,7 @@ export const ViewProposal = ({ match }) => {
         <section>
           <header className="pb-5 border-b border-gray-200">
             <h2 className="text-2xl leading-6 font-bold text-gray-900">
-              Proposal #{match.params.id} - Lorem ipsum dolor, sit amet consectetur adipisicing elit
+              Proposal #{match.params.id} - {proposal.title}
             </h2>
           </header>
         
@@ -183,15 +193,22 @@ export const ViewProposal = ({ match }) => {
                         <ExternalLinkIcon className="block h-3 w-3 ml-2" aria-hidden="true" />
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        <p className="truncate"><a href="https://www.arkadiko.finance/" className="text-sm font-medium text-indigo-700 hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-sm">https://discuss.arkadiko.finance/governance/proposal-4242</a></p>
+                        <p className="truncate">
+                          <a href={`${proposal.url}`} target="_blank" className="text-sm font-medium text-indigo-700 hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-sm">
+                            {proposal.url}
+                          </a>
+                        </p>
                       </dd>
                     </div>
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="text-sm font-medium text-gray-500">
+                      <dt className="text-sm font-medium text-gray-500 inline-flex items-center">
                         Proposer
+                        <ExternalLinkIcon className="block h-3 w-3 ml-2" aria-hidden="true" />
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        {proposal.proposer}
+                        <a href={`https://explorer.stacks.co/address/${proposal.proposer}`} target="_blank" className="text-sm font-medium text-indigo-700 hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-sm">
+                          {proposal.proposer}
+                        </a>
                       </dd>
                     </div>
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -199,7 +216,7 @@ export const ViewProposal = ({ match }) => {
                         Start date
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        ...
+                        Block {proposal.startBlockHeight}
                       </dd>
                     </div>
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -207,7 +224,7 @@ export const ViewProposal = ({ match }) => {
                         End date
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        Block {proposal.endBlockHeight}
+                        Block {proposal.endBlockHeight} (~{((Number(proposal.endBlockHeight) - stacksTipHeight) * 10 / 60 / 24).toFixed(2)} days)
                       </dd>
                     </div>
                   </dl>
