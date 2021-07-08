@@ -7,7 +7,7 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
 import { AppContext } from '@common/context';
 import { ThumbUpIcon, ThumbDownIcon } from '@heroicons/react/outline';
-import { ExternalLinkIcon } from '@heroicons/react/solid'
+import { ExternalLinkIcon } from '@heroicons/react/solid';
 
 export const ViewProposal = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -244,22 +244,3 @@ export const ViewProposal = ({ match }) => {
     </Container>
   );
 };
-
-
-
-
-          
-            {/* 
-            <div>
-              <h3 className="mt-6 text-lg leading-6 font-medium text-gray-900">
-                  Details
-                </h3>
-                <div className="mt-2 sm:flex sm:items-start sm:justify-between">
-                  Proposer: 
-                </div>
-                {proposal.changes ? (
-                  <div className="mt-2 sm:flex sm:items-start sm:justify-between">
-                    Changes: Change
-                  </div>
-                ): `` }
-            </div> */}
