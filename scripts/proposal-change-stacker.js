@@ -20,7 +20,12 @@ async function transact() {
     contractAddress: CONTRACT_ADDRESS,
     contractName: 'arkadiko-governance-v1-1',
     functionName: 'propose',
-    functionArgs: [tx.uintCV(200), tx.stringUtf8CV('N/A'), list],
+    functionArgs: [
+      tx.uintCV(200),
+      tx.stringUtf8CV('Change Arkadiko Stacker Contract'),
+      tx.stringUtf8CV('https://discuss.arkadiko.finance/123456/thread/a/very/long/path'),
+      list
+    ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network

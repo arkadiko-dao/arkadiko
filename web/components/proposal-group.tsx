@@ -3,6 +3,8 @@ import { Proposal } from './proposal';
 
 export interface ProposalProps {
   id: string;
+  title: string;
+  url: string;
   proposer: string;
   forVotes: number;
   against: number;
@@ -17,6 +19,8 @@ export const ProposalGroup: React.FC<ProposalProps[]> = ({ proposals }) => {
     <Proposal
       key={proposal.id}
       id={proposal.id}
+      title={proposal.title}
+      url={proposal.url}
       proposer={proposal.proposer}
       forVotes={proposal.forVotes}
       against={proposal.against}

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Box } from '@blockstack/ui';
 import { Container } from './home';
 import { CreateVaultStepOne } from './create-vault-step-one';
 import { CreateVaultConfirm } from './create-vault-confirm';
@@ -15,21 +14,15 @@ export const NewVault = () => {
 
   return (
     <Container>
-      <Box py={6}>
-        <main className="flex-1 relative pb-8 z-0 overflow-y-auto">
-          <div className="mt-8">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-              {step === 0 ? (
-                <CreateVaultStepOne setStep={setStep} setCoinAmounts={setCoinAmounts} />
-              ) : step === 1 ? (
-                <CreateVaultConfirm setStep={setStep} coinAmounts={coinAmounts} />
-              ) : (
-                <CreateVaultTransact coinAmounts={coinAmounts} />
-              )}
-            </div>
-          </div>
-        </main>
-      </Box>
+      <main className="py-12">
+        {step === 0 ? (
+          <CreateVaultStepOne setStep={setStep} setCoinAmounts={setCoinAmounts} />
+        ) : step === 1 ? (
+          <CreateVaultConfirm setStep={setStep} coinAmounts={coinAmounts} />
+        ) : (
+          <CreateVaultTransact coinAmounts={coinAmounts} />
+        )}
+      </main>
     </Container>
   );
 };

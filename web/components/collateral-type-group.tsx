@@ -2,6 +2,7 @@ import React from 'react';
 import { CollateralTypeProps } from '@common/context';
 import { CollateralType } from './collateral-type';
 import { Tooltip } from '@blockstack/ui';
+import { InformationCircleIcon } from '@heroicons/react/solid';
 
 interface CollateralTypeGroupProps {
   types: CollateralTypeProps[]
@@ -38,45 +39,27 @@ export const CollateralTypeGroup: React.FC<CollateralTypeGroupProps> = ({ types 
             Collateral
           </th>
           <th scope="col" className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            <div className="flex items-stretch">
-              <div className="h-2">
-                Stability Fee
-              </div>
-              <div className="h-2 ml-2 mb-2 cursor-pointer">
-                <Tooltip label={`The interest in percentage to borrow USDA`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </Tooltip>
-              </div>
+            <div className="flex items-center">
+              Stability Fee
+              <Tooltip className="ml-2" shouldWrapChildren={true} label={`The interest in percentage to borrow USDA`}>
+                <InformationCircleIcon className="ml-2 block h-5 w-5 text-gray-400" aria-hidden="true" />
+              </Tooltip>
             </div>
           </th>
           <th scope="col" className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            <div className="flex items-stretch">
-              <div className="h-2">
-                Liq. Ratio
-              </div>
-              <div className="h-2 ml-2 mb-2 cursor-pointer">
-                <Tooltip label={`The collateral-to-debt ratio when your vault gets liquidated`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </Tooltip>
-              </div>
+            <div className="flex items-center">
+              Liq. Ratio
+              <Tooltip className="ml-2" shouldWrapChildren={true} label={`The collateral-to-debt ratio when your vault gets liquidated`}>
+                <InformationCircleIcon className="ml-2 block h-5 w-5 text-gray-400" aria-hidden="true" />
+              </Tooltip>
             </div>
           </th>
           <th scope="col" className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            <div className="flex items-stretch">
-              <div className="h-2">
-                Liq. Penalty
-              </div>
-              <div className="h-2 ml-2 mb-2 cursor-pointer">
-                <Tooltip label={`The penalty you pay when your vault gets liquidated`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </Tooltip>
-              </div>
+            <div className="flex items-center">
+              Liq. Penalty
+              <Tooltip className="ml-2" shouldWrapChildren={true} label={`The penalty you pay when your vault gets liquidated`}>
+                <InformationCircleIcon className="ml-2 block h-5 w-5 text-gray-400" aria-hidden="true" />
+              </Tooltip>
             </div>
           </th>
           <th scope="col" className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -85,7 +68,7 @@ export const CollateralTypeGroup: React.FC<CollateralTypeGroupProps> = ({ types 
           <th scope="col" className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
             Current Debt
           </th>
-          <th scope="col" className="relative bg-gray-50 px-6 py-3">
+          <th scope="col" className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
             <span className="sr-only">New Vault</span>
           </th>
         </tr>
