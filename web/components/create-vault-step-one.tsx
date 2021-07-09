@@ -147,7 +147,6 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                 <ExternalLinkIcon className="block h-3 w-3 ml-2" aria-hidden="true" />
               </a>
             </div>
-
           </div>
         </header>
 
@@ -188,7 +187,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
               <div className="space-y-8 divide-y divide-gray-200">
                 <div>
                   <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-8">
-                    <div className="sm:col-span-4 space-y-6">
+                    <div className="sm:col-span-3 space-y-6">
                       <div>
                         <h3 className="text-lg leading-6 font-medium text-gray-900">
                           How much {tokenName} do you want to collateralize?

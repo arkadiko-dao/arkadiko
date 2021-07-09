@@ -1,16 +1,15 @@
 import React from 'react';
 import { ProposalProps } from './proposal-group';
 import { NavLink as RouterLink } from 'react-router-dom';
-import { deductTitle } from '@common/proposal-utils';
 
-export const Proposal: React.FC<ProposalProps> = ({ id, changes, proposer, isOpen, endBlockHeight }) => {
+export const Proposal: React.FC<ProposalProps> = ({ id, title, proposer, isOpen, endBlockHeight }) => {
   return (
     <li>
       <RouterLink to={`governance/${id}`} exact className="block hover:bg-gray-50">
         <div className="px-4 py-4 sm:px-6">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-indigo-600 truncate">
-              Change contract {deductTitle(changes)}
+            <p className="text-base font-medium text-indigo-600 truncate">
+              {title}
             </p>
             <div className="ml-2 flex-shrink-0 flex">
               {isOpen ? (

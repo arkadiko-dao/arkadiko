@@ -206,13 +206,14 @@ export const Stake = () => {
                       <span className="block">Arkadiko Staking</span>
                     </h2>
                     <p className="mt-4 text-lg leading-6 text-indigo-200">
-                      Stake your DIKO or LP tokens to earn rewards. For every DIKO/LP staked, you get stDIKO in return which can be used to vote in governance.
+                      Stake your DIKO or LP tokens to earn rewards. For every DIKO/LP staked, <br/>
+                      you get stDIKO in return which can be used to vote in governance.
                     </p>
                   </div>
                 </div>
               </header>
 
-              <div className="flex flex-col mt-4">
+              <div className="flex flex-col mt-8">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                   <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                     <div className="shadow overflow-hidden sm:rounded-lg">

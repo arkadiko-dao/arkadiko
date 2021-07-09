@@ -820,7 +820,8 @@ Clarinet.test({
     block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "propose", [
       types.uint(10),
-      types.utf8("change-reward-distribution"),
+      types.utf8("Change Reward Distribution"),
+      types.utf8("https://discuss.arkadiko.finance"),
       types.list([
         types.tuple({
           'name': types.ascii("stake-registry"),
@@ -990,7 +991,8 @@ Clarinet.test({
     block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "propose", [
       types.uint(10),
-      types.utf8("change-reward-distribution"),
+      types.utf8("Change Reward Distribution"),
+      types.utf8("https://discuss.arkadiko.finance"),
       types.list([
         types.tuple({
           'name': types.ascii("stake-registry"),
