@@ -23,8 +23,8 @@ Clarinet.test({
     let block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "propose", [
         types.uint(10),
-        types.utf8("test details"),
-        
+        types.utf8("Test Title"),
+        types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),        
         types.list([
           types.tuple({
             name: types.ascii("oracle"),
@@ -44,7 +44,7 @@ Clarinet.test({
     call.result.expectOk().expectList();
 
     call = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-proposal-by-id", [types.uint(1)], wallet_1.address);
-    call.result.expectTuple()["details"].expectUtf8("test details");
+    call.result.expectTuple()["title"].expectUtf8("Test Title");
     call.result.expectTuple()["is-open"].expectBool(true);
     call.result.expectTuple()["start-block-height"].expectUint(10);
     call.result.expectTuple()["yes-votes"].expectUint(0);
@@ -67,8 +67,8 @@ Clarinet.test({
     let block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "propose", [
         types.uint(1),
-        types.utf8("test details"),
-        
+        types.utf8("Test Title"),
+        types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),
         types.list([
           types.tuple({
             name: types.ascii("oracle"),
@@ -163,8 +163,8 @@ Clarinet.test({
     let block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "propose", [
         types.uint(1),
-        types.utf8("test details"),
-        
+        types.utf8("Test Title"),
+        types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),
         types.list([
           types.tuple({
             name: types.ascii("oracle"),
@@ -237,8 +237,8 @@ Clarinet.test({
     let block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "propose", [
         types.uint(1),
-        types.utf8("test details"),
-        
+        types.utf8("Test Title"),
+        types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),
         types.list([
           types.tuple({
             name: types.ascii("oracle"),
@@ -306,8 +306,8 @@ Clarinet.test({
     let block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "propose", [
         types.uint(1),
-        types.utf8("test details"),
-        
+        types.utf8("Test Title"),
+        types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),        
         types.list([
           types.tuple({
             name: types.ascii("oracle"),
@@ -383,7 +383,8 @@ Clarinet.test({
       Tx.contractCall("arkadiko-governance-v1-1", "propose",
         [
           types.uint(1),
-          types.utf8("test details"),
+          types.utf8("Test Title"),
+          types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),
           types.list([
             types.tuple({
               name: types.ascii("oracle"),
@@ -418,7 +419,8 @@ Clarinet.test({
       Tx.contractCall("arkadiko-governance-v1-1", "propose",
         [
           types.uint(1),
-          types.utf8("test details"),
+          types.utf8("Test Title"),
+          types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),
           types.list([
             types.tuple({
               name: types.ascii("oracle"),
