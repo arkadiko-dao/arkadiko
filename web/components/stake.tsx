@@ -13,9 +13,10 @@ import { UnstakeLpModal } from './unstake-lp-modal';
 import { useSTXAddress } from '@common/use-stx-address';
 import { microToReadable } from '@common/vault-utils';
 import { tokenList } from '@components/token-swap-list';
+import { useConnect } from '@stacks/connect-react';
 
 export const Stake = () => {
-  const [state, _] = useContext(AppContext);
+  const [state, setState] = useContext(AppContext);
   const stxAddress = useSTXAddress();
   const [showStakeModal, setShowStakeModal] = useState(false);
   const [showUnstakeModal, setShowUnstakeModal] = useState(false);
@@ -32,6 +33,7 @@ export const Stake = () => {
   const [lpDikoPendingRewards, setLpDikoPendingRewards] = useState(0);
   const [lpStxPendingRewards, setLpStxPendingRewards] = useState(0);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const { doContractCall } = useConnect();
 
   useEffect(() => {
     if (state.currentTxStatus === 'success') {
@@ -148,6 +150,42 @@ export const Stake = () => {
 
     return () => { mounted = false; }
   }, [state.balance]);
+
+  const claimDikoLpPendingRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-registry-v1-1',
+      functionName: 'claim-pending-rewards',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-usda-v1-1')
+      ],
+      postConditionMode: 0x01,
+      finished: data => {
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+      },
+    });
+  };
+
+  const claimStxLpPendingRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-registry-v1-1',
+      functionName: 'claim-pending-rewards',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-usda-v1-1')
+      ],
+      postConditionMode: 0x01,
+      finished: data => {
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+      },
+    });
+  };
 
   return (
     <div>
@@ -299,6 +337,10 @@ export const Stake = () => {
                               <button type="button" onClick={() => setShowUnstakeLp1Modal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
                                 Unstake
                               </button>
+
+                              <button type="button" onClick={() => claimDikoLpPendingRewards()} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+                                Claim Rewards
+                              </button>
                             </td>
                           </tr>
                           <tr className="bg-white">
@@ -325,6 +367,10 @@ export const Stake = () => {
 
                               <button type="button" onClick={() => setShowUnstakeLp2Modal(true)} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
                                 Unstake
+                              </button>
+
+                              <button type="button" onClick={() => claimStxLpPendingRewards()} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+                                Claim Rewards
                               </button>
                             </td>
                           </tr>
