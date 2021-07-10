@@ -58,6 +58,8 @@
   (ok (var-get stacking-stx-stacked))
 )
 
+;; Setter to be called when the DAO address has turned PoX yield from BTC into STX
+;; This indicates the amount of STX that was earned from PoX
 (define-public (set-stacking-stx-received (stx-received uint))
   (begin
     (asserts!
@@ -331,7 +333,6 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-    ;; (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-WRONG-COLLATERAL-TOKEN))
     (asserts! (is-eq false (get is-liquidated vault)) (err ERR-VAULT-LIQUIDATED))
     (asserts! (is-eq true (get revoked-stacking vault)) (err ERR-ALREADY-STACKING))
