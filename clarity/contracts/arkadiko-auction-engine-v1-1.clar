@@ -442,7 +442,7 @@
     (if (is-eq (get auction-type auction) "debt")
       ;; request "collateral-amount" gov tokens from the DAO
       (begin
-        (try! (contract-call? .arkadiko-dao request-diko-tokens ft (get collateral-amount auction)))
+        (try! (contract-call? .arkadiko-dao request-diko-tokens (get collateral-amount auction)))
         (try! (contract-call? vault-manager redeem-auction-collateral ft token-string reserve (get collateral-amount last-bid) tx-sender))
       )
       (try! (contract-call? vault-manager redeem-auction-collateral ft token-string reserve (get collateral-amount last-bid) tx-sender))
