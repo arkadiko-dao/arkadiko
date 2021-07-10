@@ -247,14 +247,7 @@
     (asserts! (> (get stacked-tokens vault) u0) (err ERR-NOT-AUTHORIZED))
 
     (if (get auto-payoff vault)
-      (begin
-        ;; 1. turn STX into USDA on swap
-        ;; 2. pay off stability fee
-        ;; 3. pay off (burn) partial debt
-        (try! (contract-call? .arkadiko-swap-v1-1 swap-y-for-x wstx usda earned-amount u1)) ;; don't care about slippage
-        (try! (contract-call? .arkadiko-freddie-v1-1 pay-stability-fee vault-id coll-type)) ;; TODO - check how much USDA we received
-        (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id u1 reserve ft coll-type)) ;; TODO - check how much USDA left to pay off debt
-      )
+      (try! (payoff-vault-debt vault-id earned-amount wstx usda coll-type reserve ft))
       (begin
         (if (get revoked-stacking vault)
           (begin
@@ -280,6 +273,28 @@
     ;; Update vault-rewards
     (try! (contract-call? .arkadiko-vault-rewards-v1-1 add-collateral earned-amount (get owner vault)))
 
+    (ok true)
+  )
+)
+
+;; 1. turn STX into USDA on swap
+;; 2. pay off stability fee
+;; 3. pay off (burn) partial debt
+(define-private (payoff-vault-debt
+  (vault-id uint)
+  (earned-amount uint)
+  (wstx <ft-trait>)
+  (usda <ft-trait>)
+  (coll-type <collateral-types-trait>)
+  (reserve <vault-trait>)
+  (ft <ft-trait>)
+)
+  (let (
+    (swapped-amounts (unwrap-panic (contract-call? .arkadiko-swap-v1-1 swap-y-for-x wstx usda earned-amount u1)))
+    (usda-amount (unwrap-panic (element-at swapped-amounts u1)))
+    (paid-fee (unwrap-panic (contract-call? .arkadiko-freddie-v1-1 pay-stability-fee vault-id coll-type)))
+  )
+    (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id (- usda-amount paid-fee) reserve ft coll-type))
     (ok true)
   )
 )
