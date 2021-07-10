@@ -323,6 +323,7 @@
         collateral-token: collateral-token,
         stacked-tokens: (resolve-stacking-amount collateral-amount collateral-token),
         revoked-stacking: false,
+        auto-payoff: false,
         debt: debt,
         created-at-block-height: block-height,
         updated-at-block-height: block-height,
