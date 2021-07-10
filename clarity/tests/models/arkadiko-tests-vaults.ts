@@ -167,7 +167,6 @@ class VaultManager {
   releaseStackedStx() {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "release-stacked-stx", [
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stacker-v1-1"),
         types.uint(1)
       ], this.deployer.address)
     ]);
