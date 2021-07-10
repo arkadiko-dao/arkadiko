@@ -163,7 +163,7 @@ Clarinet.test({
     const balance = call.result.expectOk().expectUint(1000500000000);
 
     result = vaultManager.payStabilityFee(deployer, 1);
-    result.expectOk().expectBool(true);
+    result.expectOk().expectUint(19973180);
     call = vaultManager.getStabilityFee(1, deployer);
     call.result.expectOk().expectUint(380); // approx 0 (380/10^6)
 
