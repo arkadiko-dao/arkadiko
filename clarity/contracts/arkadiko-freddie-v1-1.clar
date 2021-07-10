@@ -187,7 +187,13 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts!
+      (or
+        (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner))
+        (is-eq tx-sender (get owner vault))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
     (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-WRONG-COLLATERAL-TOKEN))
     (asserts! (is-eq false (get is-liquidated vault)) (err ERR-VAULT-LIQUIDATED))
     (asserts! (is-eq true (get revoked-stacking vault)) (err ERR-STACKING-IN-PROGRESS))
