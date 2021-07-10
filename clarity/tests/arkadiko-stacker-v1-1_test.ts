@@ -74,8 +74,7 @@ Clarinet.test({
     // now we wait until the burn-block-height (300 blocks) is mined
     chain.mineEmptyBlock(300);
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "enable-vault-withdrawals", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stacker-v1-1'),
+      Tx.contractCall("arkadiko-stacker-v1-1", "enable-vault-withdrawals", [
         types.uint(1)
       ], deployer.address)
     ]);

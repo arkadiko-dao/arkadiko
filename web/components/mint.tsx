@@ -130,10 +130,9 @@ export const Mint = () => {
     const transaction = await makeContractCall({
       network,
       contractAddress,
-      contractName: 'arkadiko-freddie-v1-1',
+      contractName: 'arkadiko-stacker-v1-1',
       functionName: 'enable-vault-withdrawals',
       functionArgs: [
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-stacker-v1-1'),
         uintCV(1)
       ],
       senderKey: privateKeyToString(senderKey)

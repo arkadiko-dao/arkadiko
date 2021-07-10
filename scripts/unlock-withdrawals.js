@@ -20,7 +20,7 @@ async function getLastVaultId() {
 async function getVaultById(vaultId) {
   const vaultTx = await tx.callReadOnlyFunction({
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "freddie",
+    contractName: "arkadiko-freddie-v1-1",
     functionName: "get-vault-by-id",
     functionArgs: [tx.uintCV(vaultId)],
     senderAddress: CONTRACT_ADDRESS,
@@ -33,10 +33,9 @@ async function getVaultById(vaultId) {
 async function unlockVault(vaultId) {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "freddie",
+    contractName: "arkadiko-freddie-v1-1",
     functionName: "enable-vault-withdrawals",
     functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacker'),
       tx.uintCV(vaultId)
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
