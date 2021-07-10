@@ -31,3 +31,7 @@ Regtest:
 6. Enable Vault Withdrawals
 
 `stx call_contract_func -t -H "https://stacks-node-api.regtest.stacks.co" -I "https://stacks-node-api.regtest.stacks.co" --contract_address ST1A0EP8AWV24G1BETM154DYWXGB4Q7MDB5WXXFTB --contract_name arkadiko-stacker-v1-1 --function_name enable-vault-withdrawals --fee 500 --nonce 122 --payment_key KEY`
+
+7. Initiate Stacking
+
+`stx call_contract_func -t -H "http://localhost:3999" -I "http://localhost:3999" --contract_address ST3DSDDH2H2QFA6BHEVKTSK5NK54SJWSKB6MQKM8Z --contract_name arkadiko-stacker-v1-1 --function_name initiate-stacking --fee 500 --nonce 122 --payment_key KEY`
