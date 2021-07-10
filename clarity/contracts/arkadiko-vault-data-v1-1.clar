@@ -14,11 +14,11 @@
   collateral-token: (string-ascii 12), ;; e.g. STX, BTC etc (represents the symbol of the collateral)
   stacked-tokens: uint,
   revoked-stacking: bool,
+  auto-payoff: bool,
   debt: uint,
   created-at-block-height: uint,
   updated-at-block-height: uint,
   stability-fee-accrued: uint,
-  auto-payoff: bool,
   stability-fee-last-accrued: uint, ;; indicates the block height at which the stability fee was last accrued (calculated)
   is-liquidated: bool,
   auction-ended: bool,

@@ -1,7 +1,6 @@
 (impl-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
-(use-trait stacker-trait .arkadiko-stacker-trait-v1.stacker-trait)
 (use-trait vault-manager-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
 (use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
 (use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
@@ -36,6 +35,8 @@
 (define-data-var stx-redeemable uint u0) ;; how much STX is available to trade for xSTX
 (define-data-var block-height-last-paid uint u0) ;; when the foundation was last paid
 (define-data-var maximum-debt-surplus uint u10000000000000) ;; 10 million default - above that we sell the USDA on the DIKO/USDA pair to burn DIKO
+(define-data-var stacking-unlock-burn-height uint u0)
+(define-data-var stacking-stx-stacked uint u0)
 (define-data-var freddie-shutdown-activated bool false)
 
 ;; getters
@@ -61,6 +62,22 @@
   (if true
     (ok (var-set stx-redeemable (- (var-get stx-redeemable) token-amount)))
     (err u0)
+  )
+)
+
+(define-public (set-stacking-unlock-burn-height (burn-height uint))
+  (begin
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker"))) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set stacking-unlock-burn-height burn-height))
+  )
+)
+
+(define-public (set-stacking-stx-stacked (stx-stacked uint))
+  (begin
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker"))) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set stacking-stx-stacked stx-stacked))
   )
 )
 
@@ -175,47 +192,46 @@
 ;; after a stacking cycle ends to allow withdrawal of STX collateral
 ;; Only mark vaults that have revoked stacking and not been liquidated
 ;; must be called before a new initiate-stacking method call (stacking cycle)
-(define-public (enable-vault-withdrawals (stacker <stacker-trait>) (vault-id uint))
-  (let (
-    (vault (get-vault-by-id vault-id))
-    (stx-stacked (unwrap-panic (contract-call? stacker get-stacking-stx-stacked)))
-  )
-    (asserts!
-      (and
-        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
-        (is-eq (var-get freddie-shutdown-activated) false)
-      )
-      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
-    )
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-WRONG-COLLATERAL-TOKEN))
-    (asserts! (is-eq false (get is-liquidated vault)) (err ERR-VAULT-LIQUIDATED))
-    (asserts! (is-eq true (get revoked-stacking vault)) (err ERR-STACKING-IN-PROGRESS))
-    (asserts! (is-eq (contract-of stacker) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker"))) (err ERR-NOT-AUTHORIZED))
-    (asserts!
-      (or
-        (is-eq u0 stx-stacked)
-        (>= burn-block-height (unwrap-panic (contract-call? stacker get-stacking-unlock-burn-height)))
-      )
-      (err ERR-BURN-HEIGHT-NOT-REACHED)
-    )
+;; (define-public (enable-vault-withdrawals (stacker <stacker-trait>) (vault-id uint))
+;;   (let (
+;;     (vault (get-vault-by-id vault-id))
+;;   )
+;;     (asserts!
+;;       (and
+;;         (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
+;;         (is-eq (var-get freddie-shutdown-activated) false)
+;;       )
+;;       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+;;     )
+;;     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+;;     (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-WRONG-COLLATERAL-TOKEN))
+;;     (asserts! (is-eq false (get is-liquidated vault)) (err ERR-VAULT-LIQUIDATED))
+;;     (asserts! (is-eq true (get revoked-stacking vault)) (err ERR-STACKING-IN-PROGRESS))
+;;     (asserts! (is-eq (contract-of stacker) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker"))) (err ERR-NOT-AUTHORIZED))
+;;     (asserts!
+;;       (or
+;;         (is-eq u0 (var-get stacking-stx-stacked))
+;;         (>= burn-block-height (var-get stacking-unlock-burn-height))
+;;       )
+;;       (err ERR-BURN-HEIGHT-NOT-REACHED)
+;;     )
 
-    (if (> u0 stx-stacked)
-      (try! (contract-call? stacker request-stx-for-withdrawal (get collateral vault)))
-      false
-    )
-    (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
-        stacked-tokens: u0,
-        updated-at-block-height: block-height
-      }))
-    )
-    (ok true)
-  )
-)
+;;     (if (> u0 (var-get stacking-stx-stacked))
+;;       (try! (contract-call? stacker request-stx-for-withdrawal (get collateral vault)))
+;;       false
+;;     )
+;;     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
+;;         stacked-tokens: u0,
+;;         updated-at-block-height: block-height
+;;       }))
+;;     )
+;;     (ok true)
+;;   )
+;; )
 
 ;; method that can only be called by deployer (contract owner)
 ;; unlocks STX that had their xSTX derivative liquidated in an auction
-(define-public (release-stacked-stx (stacker <stacker-trait>) (vault-id uint))
+(define-public (release-stacked-stx (vault-id uint))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts!
       (and
@@ -228,8 +244,7 @@
     (asserts! (is-eq "xSTX" (get collateral-token vault)) (err ERR-WRONG-COLLATERAL-TOKEN))
     (asserts! (is-eq true (get is-liquidated vault)) (err ERR-VAULT-LIQUIDATED))
     (asserts! (> (get stacked-tokens vault) u0) (err ERR-STACKING-IN-PROGRESS))
-    (asserts! (is-eq (contract-of stacker) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker"))) (err ERR-NOT-AUTHORIZED))
-    (asserts! (>= burn-block-height (unwrap-panic (contract-call? stacker get-stacking-unlock-burn-height))) (err ERR-BURN-HEIGHT-NOT-REACHED))
+    (asserts! (>= burn-block-height (var-get stacking-unlock-burn-height)) (err ERR-BURN-HEIGHT-NOT-REACHED))
 
     (try! (add-stx-redeemable (get stacked-tokens vault)))
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
@@ -655,9 +670,9 @@
             stability-fee-last-accrued: block-height
           }))
         )
-        (ok true)
+        (ok fee)
       )
-      (ok true)
+      (ok fee)
     )
   )
 )
@@ -675,6 +690,7 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
     (asserts! (is-eq contract-caller .arkadiko-liquidator-v1-1) (err ERR-NOT-AUTHORIZED))
+    ;; (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "liquidator"))) (err ERR-NOT-AUTHORIZED))
 
     (try! (contract-call? .arkadiko-vault-rewards-v1-1 claim-pending-rewards-liquidated-vault (get owner vault)))
     (try! (contract-call? .arkadiko-vault-rewards-v1-1 remove-collateral (get collateral vault) (get owner vault)))

@@ -1,4 +1,7 @@
 (impl-trait .arkadiko-stacker-trait-v1.stacker-trait)
+(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
+(use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
+(use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
 
 ;; Stacker can initiate stacking for the STX reserve
 ;; The amount to stack is kept as a data var in the stx reserve
@@ -151,7 +154,14 @@
 ;; it is not possible to transact bitcoin txs from clarity right now
 ;; this means we will need to do this manually until some way exists to do this trustless (if ever?)
 ;; we pay out the yield in STX tokens
-(define-public (payout (vault-id uint))
+(define-public (payout
+  (vault-id uint)
+  (wstx <ft-trait>)
+  (usda <ft-trait>)
+  (coll-type <collateral-types-trait>)
+  (reserve <vault-trait>)
+  (ft <ft-trait>)
+)
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
   )
@@ -174,7 +184,7 @@
 
     (if (and (get is-liquidated vault) (get auction-ended vault))
       (try! (payout-liquidated-vault vault-id))
-      (try! (payout-vault vault-id))
+      (try! (payout-vault vault-id wstx usda coll-type reserve ft))
     )
     ;; (var-set stacking-stx-received u0) ;; set manually back to 0 after we paid everyone, since this method is for 1 vault only
     (ok true)
@@ -220,7 +230,14 @@
   )
 )
 
-(define-private (payout-vault (vault-id uint))
+(define-private (payout-vault
+  (vault-id uint)
+  (wstx <ft-trait>)
+  (usda <ft-trait>)
+  (coll-type <collateral-types-trait>)
+  (reserve <vault-trait>)
+  (ft <ft-trait>)
+)
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
     (earned-amount (calculate-vault-reward vault-id))
@@ -229,22 +246,34 @@
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-NOT-AUTHORIZED))
     (asserts! (> (get stacked-tokens vault) u0) (err ERR-NOT-AUTHORIZED))
 
-    (if (get revoked-stacking vault)
+    (if (get auto-payoff vault)
       (begin
-        (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault { 
-          updated-at-block-height: block-height, 
-          stacked-tokens: u0,
-          collateral: new-collateral-amount 
-        })))
-        (try! (request-stx-for-withdrawal new-collateral-amount))
+        ;; 1. turn STX into USDA on swap
+        ;; 2. pay off stability fee
+        ;; 3. pay off (burn) partial debt
+        (try! (contract-call? .arkadiko-swap-v1-1 swap-y-for-x wstx usda earned-amount u1)) ;; don't care about slippage
+        (try! (contract-call? .arkadiko-freddie-v1-1 pay-stability-fee vault-id coll-type)) ;; TODO - check how much USDA we received
+        (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id u1 reserve ft coll-type)) ;; TODO - check how much USDA left to pay off debt
       )
       (begin
-        (try! (contract-call? .arkadiko-stx-reserve-v1-1 add-tokens-to-stack earned-amount))
-        (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
-          updated-at-block-height: block-height,
-          stacked-tokens: new-collateral-amount,
-          collateral: new-collateral-amount
-        })))
+        (if (get revoked-stacking vault)
+          (begin
+            (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault { 
+              updated-at-block-height: block-height, 
+              stacked-tokens: u0,
+              collateral: new-collateral-amount 
+            })))
+            (try! (request-stx-for-withdrawal new-collateral-amount))
+          )
+          (begin
+            (try! (contract-call? .arkadiko-stx-reserve-v1-1 add-tokens-to-stack earned-amount))
+            (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
+              updated-at-block-height: block-height,
+              stacked-tokens: new-collateral-amount,
+              collateral: new-collateral-amount
+            })))
+          )
+        )
       )
     )
 
