@@ -100,7 +100,7 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
 
-    ;; check if we can stack - if not, then probably cause we have not reached the minimum with (var-get tokens-to-stack)
+    ;; check if we can stack - if not, then probably cause we have not reached the minimum with tokens-to-stack
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox can-stack-stx pox-addr tokens-to-stack start-burn-ht lock-period))
       success (begin
         (if (> tokens-to-stack stx-balance)
@@ -115,8 +115,7 @@
             (ok (get lock-amount result))
           )
           error (begin
-            (print error)
-            (err (to-uint error))
+            (print (err (to-uint error)))
           )
         )
       )
