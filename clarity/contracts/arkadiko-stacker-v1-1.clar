@@ -20,8 +20,6 @@
 ;; 0x00
 
 (define-constant ERR-NOT-AUTHORIZED u19401)
-(define-constant ERR-CANNOT-STACK u191)
-(define-constant ERR-FAILED-STACK-STX u192)
 (define-constant ERR-BURN-HEIGHT-NOT-REACHED u193)
 (define-constant ERR-ALREADY-STACKING u194)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u195)
@@ -90,7 +88,6 @@
   ;; 2. call `stack-stx` for 1 `lock-period` fixed
   (let (
     (tokens-to-stack (unwrap! (contract-call? .arkadiko-stx-reserve-v1-1 get-tokens-to-stack) (ok u0)))
-    (can-stack (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox can-stack-stx pox-addr tokens-to-stack start-burn-ht lock-period)))
     (stx-balance (unwrap-panic (get-stx-balance)))
   )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
@@ -104,8 +101,8 @@
     )
 
     ;; check if we can stack - if not, then probably cause we have not reached the minimum with (var-get tokens-to-stack)
-    (if (unwrap! can-stack (err ERR-CANNOT-STACK))
-      (begin
+    (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox can-stack-stx pox-addr tokens-to-stack start-burn-ht lock-period))
+      success (begin
         (if (> tokens-to-stack stx-balance)
           (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-stack (- tokens-to-stack stx-balance)))
           true
@@ -123,7 +120,7 @@
           )
         )
       )
-      (err ERR-CANNOT-STACK)
+      failure (print (err (to-uint failure)))
     )
   )
 )
