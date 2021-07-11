@@ -119,7 +119,7 @@
           )
           error (begin
             (print error)
-            (ok u200)
+            (err (to-uint error))
           )
         )
       )
