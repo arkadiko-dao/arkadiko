@@ -106,20 +106,21 @@
     ;; check if we can stack - if not, then probably cause we have not reached the minimum with (var-get tokens-to-stack)
     (if (unwrap! can-stack (err ERR-CANNOT-STACK))
       (begin
-        (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-stack (- tokens-to-stack stx-balance)))
-        (let (
-          (result
-            (unwrap!
-              (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox stack-stx tokens-to-stack pox-addr start-burn-ht lock-period))
-              (err ERR-FAILED-STACK-STX)
-            )
-          )
+        (if (> tokens-to-stack stx-balance)
+          (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-stack (- tokens-to-stack stx-balance)))
+          true
         )
-          (var-set stacking-unlock-burn-height (get unlock-burn-height result))
-          (try! (contract-call? .arkadiko-freddie-v1-1 set-stacking-unlock-burn-height (get unlock-burn-height result)))
-          (var-set stacking-stx-stacked (get lock-amount result))
-          (try! (contract-call? .arkadiko-freddie-v1-1 set-stacking-stx-stacked (get lock-amount result)))
-          (ok (get lock-amount result))
+        (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox stack-stx tokens-to-stack pox-addr start-burn-ht lock-period))
+          result (begin
+            (print result)
+            (var-set stacking-unlock-burn-height (get unlock-burn-height result))
+            (var-set stacking-stx-stacked (get lock-amount result))
+            (ok (get lock-amount result))
+          )
+          error (begin
+            (print error)
+            (ok u200)
+          )
         )
       )
       (err ERR-CANNOT-STACK)

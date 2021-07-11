@@ -266,7 +266,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                             <dd className="mt-1 sm:mt-0 text-indigo-900 text-sm sm:ml-auto">
                               {liquidationPrice > 0 ? ( 
                                 <>
-                                  ${liquidationPrice}%
+                                  ${liquidationPrice}
                                 </>
                               ) : (
                                 <>—</>

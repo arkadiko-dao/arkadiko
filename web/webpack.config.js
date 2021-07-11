@@ -175,7 +175,7 @@ module.exports = {
     historyApiFallback: true,
     disableHostCheck: true,
     contentBase: './dist',
-    port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
+    port: process.env.PORT ? parseInt(process.env.PORT) : 9000,
   },
   devtool: getSourceMap(),
   watch: false,
