@@ -107,6 +107,38 @@ export const Mint = () => {
       setLoadingVaults(false);
     };
 
+    let metaInfoUrl = `https://api.stacking.club/api/meta-info`;
+    fetch(metaInfoUrl)
+      .then((res) => res.json())
+      .then((response) => {
+        let cycleNumber = response[0]["pox"]["current_cycle"]["id"];
+
+        let cycleInfoUrl = `https://api.stacking.club/api/cycle-info?cycle=` + cycleNumber;
+        fetch(cycleInfoUrl)
+          .then((res) => res.json())
+          .then((response) => {
+            
+            let startTimestamp = response["startDate"];
+            let endTimestamp = response["endDate"];
+            let currentTimestamp = Date.now();
+
+            let daysPassed = Math.round((currentTimestamp - startTimestamp) / (1000*60*60*24));
+            let daysLeft = Math.round((endTimestamp - currentTimestamp) / (1000*60*60*24));
+
+            let startDate = new Date(startTimestamp).toDateString();
+            let endDate = new Date(endTimestamp).toDateString();
+
+            setState(prevState => ({
+              ...prevState,
+              cycleNumber: cycleNumber,
+              startDate: startDate,
+              endDate: endDate,
+              daysPassed: daysPassed,
+              daysLeft: daysLeft
+            }));
+          });
+      });
+
     fetchVaults();
   }, []);
 
@@ -192,7 +224,20 @@ export const Mint = () => {
   return (
     <div>
       <main className="py-12">
-        <section>
+
+        <section className="mt-8">
+          <header className="pb-5 border-b border-gray-200">
+            <h3 className="text-lg leading-6 font-medium text-gray-900">Stacking Cycle</h3>
+          </header>
+
+          <div className="flex flex-col mt-4">
+          <p>Cycle number <b>{state.cycleNumber}</b></p>
+          <p>From <b>{state.startDate}</b> to <b>{state.endDate}</b></p>
+          <p><b>{state.daysPassed} days</b> in cycle, <b>{state.daysLeft} days</b> left</p>
+          </div>
+        </section>
+
+        <section className="mt-8">
           <header className="pb-5 border-b border-gray-200 sm:flex sm:items-center sm:justify-between">
             <h3 className="text-lg leading-6 font-medium text-gray-900">Overview</h3>
             <div className="mt-3 flex sm:mt-0 sm:ml-4">
