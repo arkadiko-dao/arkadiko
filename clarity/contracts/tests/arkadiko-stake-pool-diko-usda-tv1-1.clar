@@ -171,17 +171,6 @@
   )
 )
 
-(define-public (get-apy-for (registry-trait <stake-registry-trait>) (staker principal))
-  (let (
-    (rewards-per-block (unwrap-panic (contract-call? registry-trait get-rewards-per-block-for-pool .arkadiko-stake-pool-diko-usda-v1-1)))
-    (diko-staked (get-stake-amount-of staker))
-    (reward-percentage (/ u100 (/ (var-get total-staked) diko-staked)))
-    (diko-per-year (* rewards-per-block reward-percentage))
-  )
-    (ok (* (/ diko-per-year diko-staked) u100))
-  )
-)
-
 ;; Get pending rewards for staker
 (define-public (get-pending-rewards (registry-trait <stake-registry-trait>) (staker principal))
   (let (
