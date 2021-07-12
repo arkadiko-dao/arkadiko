@@ -24,6 +24,7 @@ import { useEffect } from 'react';
 import { microToReadable } from '@common/vault-utils';
 import { tokenList } from '@components/token-swap-list';
 import { VaultProps } from './vault';
+import { PlaceHolder } from './placeholder';
 
 export const Mint = () => {
   const address = useSTXAddress();
@@ -35,6 +36,7 @@ export const Mint = () => {
   const [stxPrice, setStxPrice] = useState(0.0);
   const [dikoPrice, setDikoPrice] = useState(0.0);
   const [loadingVaults, setLoadingVaults] = useState(true);
+  const [loadingStackingData, setLoadingStackingData] = useState(false);
 
   useEffect(() => {
     const fetchPrices = async () => {
@@ -108,6 +110,7 @@ export const Mint = () => {
     };
 
     let metaInfoUrl = `https://api.stacking.club/api/meta-info`;
+    setLoadingStackingData(true)
     fetch(metaInfoUrl)
       .then((res) => res.json())
       .then((response) => {
@@ -126,7 +129,7 @@ export const Mint = () => {
             let daysLeft = Math.round((endTimestamp - currentTimestamp) / (1000*60*60*24));
 
             let startDate = new Date(startTimestamp).toDateString();
-            let endDate = new Date(endTimestamp).toDateString();
+            let endDate = new Date(endTimestamp).toDateString().split(' ').slice(1).join(' ');
 
             setState(prevState => ({
               ...prevState,
@@ -136,6 +139,7 @@ export const Mint = () => {
               daysPassed: daysPassed,
               daysLeft: daysLeft
             }));
+            setLoadingStackingData(false);
           });
       });
 
@@ -224,16 +228,58 @@ export const Mint = () => {
   return (
     <div>
       <main className="py-12">
-
-        <section className="mt-8">
-          <header className="pb-5 border-b border-gray-200">
-            <h3 className="text-lg leading-6 font-medium text-gray-900">Stacking Cycle</h3>
-          </header>
-
-          <div className="flex flex-col mt-4">
-          <p>Cycle number <b>{state.cycleNumber}</b></p>
-          <p>From <b>{state.startDate}</b> to <b>{state.endDate}</b></p>
-          <p><b>{state.daysPassed} days</b> in cycle, <b>{state.daysLeft} days</b> left</p>
+        <section>
+          <div>
+            <dl className="grid grid-cols-1 bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg overflow-hidden divide-y divide-indigo-200 md:grid-cols-4 md:divide-y-0 md:divide-x">
+              <div className="px-4 py-5 sm:p-6">
+                <dt className="uppercase font-semibold text-xs text-indigo-800">Stacking Cycle #</dt>
+                <dd className="mt-1 flex justify-between items-baseline md:block lg:flex">
+                  {loadingStackingData === true ? (
+                    <PlaceHolder size={2} color="indigo" />
+                  ) : (
+                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                      {state.cycleNumber}
+                    </div>
+                  )}
+                </dd>
+              </div>
+              <div className="px-4 py-5 sm:p-6">
+                <dt className="uppercase font-semibold text-xs text-indigo-800">End date</dt>
+                <dd className="mt-1 flex justify-between items-baseline md:block lg:flex">
+                  {loadingStackingData === true ? (
+                    <PlaceHolder size={2} color="indigo" />
+                  ) : (
+                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                      {state.endDate}
+                    </div>
+                  )}
+                </dd>
+              </div>
+              <div className="px-4 py-5 sm:p-6">
+                <dt className="uppercase font-semibold text-xs text-indigo-800">Days in cycle</dt>
+                <dd className="mt-1 flex justify-between items-baseline md:block lg:flex">
+                  {loadingStackingData === true ? (
+                    <PlaceHolder size={2} color="indigo" />
+                  ) : (
+                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                      {state.daysPassed}
+                    </div>
+                  )}
+                </dd>
+              </div>
+              <div className="px-4 py-5 sm:p-6">
+                <dt className="uppercase font-semibold text-xs text-indigo-800">Days left</dt>
+                <dd className="mt-1 flex justify-between items-baseline md:block lg:flex">
+                  {loadingStackingData === true ? (
+                    <PlaceHolder size={2} color="indigo" />
+                  ) : (
+                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                      {state.daysLeft}
+                    </div>
+                  )}
+                </dd>
+              </div>
+            </dl>
           </div>
         </section>
 
