@@ -24,6 +24,8 @@ import { useEffect } from 'react';
 import { microToReadable } from '@common/vault-utils';
 import { tokenList } from '@components/token-swap-list';
 import { VaultProps } from './vault';
+import { EmptyState } from './empty-state';
+import { ArchiveIcon } from '@heroicons/react/outline';
 
 export const Mint = () => {
   const address = useSTXAddress();
@@ -341,9 +343,11 @@ export const Mint = () => {
                 <p className="text-sm">Loading your vaults...</p>
               </div>
             ) : (
-              <div>
-                <p className="text-sm">You currently have no open vaults</p>
-              </div>
+              <EmptyState
+                Icon={ArchiveIcon}
+                title="You currently have no open vaults."
+                description="Create a new vault in the table above choosing the appropriate collateral type."
+              />
             )}
           </div>
           
