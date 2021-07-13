@@ -5,7 +5,11 @@ import { tokenList } from '@components/token-swap-list';
 import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { microToReadable } from '@common/vault-utils';
-import { contractPrincipalCV, uintCV } from '@stacks/transactions';
+import {
+  contractPrincipalCV, uintCV,
+  createAssetInfo, FungibleConditionCode,
+  makeStandardFungiblePostCondition
+} from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
@@ -21,10 +25,24 @@ export const UnstakeLpModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAm
   const unstakeDiko = async () => {
     let contractName = 'arkadiko-stake-pool-diko-usda-v1-1';
     let tokenContract = 'arkadiko-swap-token-diko-usda';
+    let ftContract = 'diko-usda';
     if (balanceName === 'wstxusda') {
       contractName = 'arkadiko-stake-pool-wstx-usda-v1-1';
       tokenContract = 'arkaidko-swap-token-wstx-usda';
+      ftContract = 'wstx-usda';
     }
+    const postConditions = [
+      makeStandardFungiblePostCondition(
+        stxAddress || '',
+        FungibleConditionCode.Equal,
+        uintCV(Number(stakeAmount) * 1000000).value,
+        createAssetInfo(
+          contractAddress,
+          tokenContract,
+          ftContract
+        )
+      )
+    ];
 
     await doContractCall({
       network,
@@ -39,6 +57,7 @@ export const UnstakeLpModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAm
         uintCV(Number(stakeAmount) * 1000000)
       ],
       postConditionMode: 0x01,
+      postConditions,
       finished: data => {
         console.log('finished broadcasting unstaking tx!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
