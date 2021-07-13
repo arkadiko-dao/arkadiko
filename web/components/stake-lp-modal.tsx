@@ -41,6 +41,12 @@ export const StakeLpModal = ({ showStakeModal, setShowStakeModal, apy, balanceNa
 
   const stake = async () => {
     const amount = uintCV(Number(stakeAmount) * 1000000);
+    let contractName = 'arkadiko-stake-pool-diko-usda-v1-1';
+    let tokenContract = 'arkadiko-swap-token-diko-usda';
+    if (balanceName === 'wstxusda') {
+      contractName = 'arkadiko-stake-pool-wstx-usda-v1-1';
+      tokenContract = 'arkaidko-swap-token-wstx-usda';
+    }
     const postConditions = [
       makeStandardFungiblePostCondition(
         stxAddress || '',
@@ -48,17 +54,12 @@ export const StakeLpModal = ({ showStakeModal, setShowStakeModal, apy, balanceNa
         amount.value,
         createAssetInfo(
           contractAddress,
-          "arkadiko-token",
-          "diko"
+          tokenContract,
+          "diko-usda"
         )
       )
     ];
-    let contractName = 'arkadiko-stake-pool-diko-usda-v1-1';
-    let tokenContract = 'arkadiko-swap-token-diko-usda';
-    if (balanceName === 'wstxusda') {
-      contractName = 'arkadiko-stake-pool-wstx-usda-v1-1';
-      tokenContract = 'arkaidko-swap-token-wstx-usda';
-    }
+
     await doContractCall({
       network,
       contractAddress,
@@ -72,6 +73,7 @@ export const StakeLpModal = ({ showStakeModal, setShowStakeModal, apy, balanceNa
         amount
       ],
       postConditionMode: 0x01,
+      postConditions,
       finished: data => {
         console.log('finished broadcasting staking tx!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
