@@ -41,7 +41,7 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
   };
 
   const unstakeMaxAmount = () => {
-    setStakeAmount(stakedAmount / 1000000);
+    setStakeAmount(state.balance['stdiko'] / 1000000);
   };
 
   const onInputStakeChange = (event:any) => {
@@ -95,7 +95,7 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
                 Unstake DIKO
               </h3>
               <p className="mt-3 text-sm text-gray-500">
-                You are current staking {microToReadable(stakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO.
+                You are currently staking {microToReadable(stakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO.
               </p>
               <div className="mt-6">
                 <InputAmount
