@@ -187,6 +187,46 @@ export const Stake = () => {
     });
   };
 
+  const stakeDikoLpPendingRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-registry-v1-1',
+      functionName: 'stake-pending-rewards',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-usda-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-token')
+      ],
+      postConditionMode: 0x01,
+      finished: data => {
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+      },
+    });
+  };
+
+  const stakeStxLpPendingRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-registry-v1-1',
+      functionName: 'stake-pending-rewards',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-usda-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-token')
+      ],
+      postConditionMode: 0x01,
+      finished: data => {
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+      },
+    });
+  };
+
   return (
     <div>
       <StakeDikoModal
@@ -341,6 +381,10 @@ export const Stake = () => {
                               <button type="button" onClick={() => claimDikoLpPendingRewards()} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
                                 Claim Rewards
                               </button>
+
+                              <button type="button" onClick={() => stakeDikoLpPendingRewards()} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+                                Stake Rewards
+                              </button>
                             </td>
                           </tr>
                           <tr className="bg-white">
@@ -371,6 +415,10 @@ export const Stake = () => {
 
                               <button type="button" onClick={() => claimStxLpPendingRewards()} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
                                 Claim Rewards
+                              </button>
+
+                              <button type="button" onClick={() => stakeStxLpPendingRewards()} className="inline-flex items-right mr-4 px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+                                Stake Rewards
                               </button>
                             </td>
                           </tr>
