@@ -18,11 +18,6 @@ import { StakeActions } from './stake-actions';
 import { Menu } from '@headlessui/react';
 import { ArrowCircleDownIcon, ArrowCircleUpIcon, CashIcon } from '@heroicons/react/solid';
 
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
-}
-
 export const Stake = () => {
   const [state, setState] = useContext(AppContext);
   const stxAddress = useSTXAddress();
@@ -311,40 +306,46 @@ export const Stake = () => {
                               auto-compounding
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
-                              <StakeActions>
-                                <Menu.Item>
-                                  {({ active }) => (
-                                    <button
-                                      className={`${
-                                        active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                      } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                      onClick={() => setShowStakeModal(true)}
-                                    >
-                                      <ArrowCircleDownIcon
-                                        className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
-                                        aria-hidden="true"
-                                      />
-                                      Stake
-                                    </button>
-                                  )}
-                                </Menu.Item>
-                                <Menu.Item>
-                                  {({ active }) => (
-                                    <button
-                                      className={`${
-                                        active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                      } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                      onClick={() => setShowUnstakeModal(true)}
-                                    >
-                                      <ArrowCircleUpIcon
-                                        className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
-                                        aria-hidden="true"
-                                      />
-                                      Unstake
-                                    </button>
-                                  )}
-                                </Menu.Item>
-                              </StakeActions>
+                              {state.balance['diko'] > 0 || stakedAmount ? (
+                                <StakeActions>
+                                  {state.balance['diko'] > 0 ? (
+                                    <Menu.Item>
+                                      {({ active }) => (
+                                        <button
+                                          className={`${
+                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                          onClick={() => setShowStakeModal(true)}
+                                        >
+                                          <ArrowCircleDownIcon
+                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            aria-hidden="true"
+                                          />
+                                          Stake
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                  ) : null }
+                                  {stakedAmount ? (
+                                    <Menu.Item>
+                                      {({ active }) => (
+                                        <button
+                                          className={`${
+                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                          onClick={() => setShowUnstakeModal(true)}
+                                        >
+                                          <ArrowCircleUpIcon
+                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            aria-hidden="true"
+                                          />
+                                          Unstake
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                  ) : null}
+                                </StakeActions>
+                              ) : null }
                             </td>
                           </tr>
                           <tr className="bg-white">
@@ -365,56 +366,64 @@ export const Stake = () => {
                               {microToReadable(lpDikoPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
-                              <StakeActions>
-                                <Menu.Item>
-                                  {({ active }) => (
-                                    <button
-                                      className={`${
-                                        active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                      } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                      onClick={() => setShowStakeLp1Modal(true)}
-                                    >
-                                      <ArrowCircleDownIcon
-                                        className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
-                                        aria-hidden="true"
-                                      />
-                                      Stake
-                                    </button>
-                                  )}
-                                </Menu.Item>
-                                <Menu.Item>
-                                  {({ active }) => (
-                                    <button
-                                      className={`${
-                                        active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                      } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                      onClick={() => setShowUnstakeLp1Modal(true)}
-                                    >
-                                      <ArrowCircleUpIcon
-                                        className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
-                                        aria-hidden="true"
-                                      />
-                                      Unstake
-                                    </button>
-                                  )}
-                                </Menu.Item>
-                                <Menu.Item>
-                                  {({ active }) => (
-                                    <button
-                                      className={`${
-                                        active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                      } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                      onClick={() => claimDikoLpPendingRewards()}
-                                    >
-                                      <CashIcon
-                                        className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
-                                        aria-hidden="true"
-                                      />
-                                      Claim Rewards
-                                    </button>
-                                  )}
-                                </Menu.Item>
-                              </StakeActions>
+                              {state.balance['dikousda'] > 0 || lpDikoStakedAmount || lpDikoPendingRewards ? (
+                                <StakeActions>
+                                  {state.balance['dikousda'] > 0 ? (
+                                    <Menu.Item>
+                                      {({ active }) => (
+                                        <button
+                                          className={`${
+                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                          onClick={() => setShowStakeLp1Modal(true)}
+                                        >
+                                          <ArrowCircleDownIcon
+                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            aria-hidden="true"
+                                          />
+                                          Stake
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                  ) : null }
+                                  {lpDikoStakedAmount > 0 ? (
+                                    <Menu.Item>
+                                      {({ active }) => (
+                                        <button
+                                          className={`${
+                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                          onClick={() => setShowUnstakeLp1Modal(true)}
+                                        >
+                                          <ArrowCircleUpIcon
+                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            aria-hidden="true"
+                                          />
+                                          Unstake
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                  ) : null }
+                                  {lpDikoPendingRewards > 0 ? (
+                                    <Menu.Item>
+                                      {({ active }) => (
+                                        <button
+                                          className={`${
+                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                          onClick={() => claimDikoLpPendingRewards()}
+                                        >
+                                          <CashIcon
+                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            aria-hidden="true"
+                                          />
+                                          Claim Rewards
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                  ) : null }
+                                </StakeActions>
+                              ) : null }
                             </td>
                           </tr>
                           <tr className="bg-white">
@@ -435,56 +444,64 @@ export const Stake = () => {
                               {microToReadable(lpStxPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
-                              <StakeActions>
-                                <Menu.Item>
-                                  {({ active }) => (
-                                    <button
-                                      className={`${
-                                        active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                      } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                      onClick={() => setShowStakeLp2Modal(true)}
-                                    >
-                                      <ArrowCircleDownIcon
-                                        className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
-                                        aria-hidden="true"
-                                      />
-                                      Stake
-                                    </button>
-                                  )}
-                                </Menu.Item>
-                                <Menu.Item>
-                                  {({ active }) => (
-                                    <button
-                                      className={`${
-                                        active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                      } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                      onClick={() => setShowUnstakeLp2Modal(true)}
-                                    >
-                                      <ArrowCircleUpIcon
-                                        className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
-                                        aria-hidden="true"
-                                      />
-                                      Unstake
-                                    </button>
-                                  )}
-                                </Menu.Item>
-                                <Menu.Item>
-                                  {({ active }) => (
-                                    <button
-                                      className={`${
-                                        active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                      } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                      onClick={() => claimStxLpPendingRewards()}
-                                    >
-                                      <CashIcon
-                                        className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
-                                        aria-hidden="true"
-                                      />
-                                      Claim Rewards
-                                    </button>
-                                  )}
-                                </Menu.Item>
-                              </StakeActions>
+                              {state.balance['stxusda'] > 0 || lpStxStakedAmount || lpStxPendingRewards ? (
+                                <StakeActions>
+                                  {state.balance['stxusda'] > 0 ? (
+                                    <Menu.Item>
+                                      {({ active }) => (
+                                        <button
+                                          className={`${
+                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                          onClick={() => setShowStakeLp2Modal(true)}
+                                        >
+                                          <ArrowCircleDownIcon
+                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            aria-hidden="true"
+                                          />
+                                          Stake
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                  ) : null }
+                                  {lpStxStakedAmount > 0 ? (
+                                    <Menu.Item>
+                                      {({ active }) => (
+                                        <button
+                                          className={`${
+                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                          onClick={() => setShowUnstakeLp2Modal(true)}
+                                        >
+                                          <ArrowCircleUpIcon
+                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            aria-hidden="true"
+                                          />
+                                          Unstake
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                  ) : null }
+                                  {lpStxPendingRewards > 0 ? (
+                                    <Menu.Item>
+                                      {({ active }) => (
+                                        <button
+                                          className={`${
+                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                          onClick={() => claimStxLpPendingRewards()}
+                                        >
+                                          <CashIcon
+                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            aria-hidden="true"
+                                          />
+                                          Claim Rewards
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                  ) : null }
+                                </StakeActions>
+                              ) : null }
                             </td>
                           </tr>
                         </tbody>
