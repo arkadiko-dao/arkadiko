@@ -229,8 +229,18 @@ export const Mint = () => {
     <div>
       <main className="py-12">
         <section>
-          <div>
-            <dl className="grid grid-cols-1 bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg overflow-hidden divide-y divide-indigo-200 md:grid-cols-4 md:divide-y-0 md:divide-x">
+          <div className="relative">
+            <div className="absolute w-full h-full" style={{backgroundImage: 'url(/assets/stacks-pattern.png)', backgroundSize: '20%'}}></div>
+            <div className="absolute bottom-0 right-0 p-2 rounded-full mb-2 mr-2 bg-indigo-600 z-10">
+              <a href="https://stacking.club/" target="_blank" rel="noopener noreferrer">
+                <svg className="w-4 h-4" viewBox="0 0 120 121" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M108.897 120.001L83.4366 81.4259H120V66.872H0V81.4428H36.5512L11.1027 120.001H30.0887L60.0001 74.6811L89.9113 120.001H108.897ZM120 52.7468V38.0464H84.1795L109.29 0H90.3043L59.9997 45.9149L29.6957 0H10.7099L35.8527 38.0805H0V52.7468H120Z" fill="white"/>
+                </svg>
+              </a>
+            </div>
+
+
+            <dl className="grid grid-cols-1 border border-indigo-200 bg-indigo-100 bg-opacity-50 shadow-sm rounded-lg overflow-hidden divide-y divide-indigo-200 md:grid-cols-4 md:divide-y-0 md:divide-x relative">
               <div className="px-4 py-5 sm:p-6">
                 <dt className="uppercase font-semibold text-xs text-indigo-800">Stacking Cycle #</dt>
                 <dd className="mt-1 flex justify-between items-baseline md:block lg:flex">
