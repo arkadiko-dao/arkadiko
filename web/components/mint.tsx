@@ -24,6 +24,9 @@ import { useEffect } from 'react';
 import { microToReadable } from '@common/vault-utils';
 import { tokenList } from '@components/token-swap-list';
 import { VaultProps } from './vault';
+import { EmptyState } from './empty-state';
+import { ArchiveIcon } from '@heroicons/react/outline';
+import { PlaceHolder } from './placeholder';
 
 export const Mint = () => {
   const address = useSTXAddress();
@@ -35,6 +38,7 @@ export const Mint = () => {
   const [stxPrice, setStxPrice] = useState(0.0);
   const [dikoPrice, setDikoPrice] = useState(0.0);
   const [loadingVaults, setLoadingVaults] = useState(true);
+  const [loadingStackingData, setLoadingStackingData] = useState(false);
 
   useEffect(() => {
     const fetchPrices = async () => {
@@ -106,6 +110,40 @@ export const Mint = () => {
       }));
       setLoadingVaults(false);
     };
+
+    let metaInfoUrl = `https://api.stacking.club/api/meta-info`;
+    setLoadingStackingData(true)
+    fetch(metaInfoUrl)
+      .then((res) => res.json())
+      .then((response) => {
+        let cycleNumber = response[0]["pox"]["current_cycle"]["id"];
+
+        let cycleInfoUrl = `https://api.stacking.club/api/cycle-info?cycle=` + cycleNumber;
+        fetch(cycleInfoUrl)
+          .then((res) => res.json())
+          .then((response) => {
+            
+            let startTimestamp = response["startDate"];
+            let endTimestamp = response["endDate"];
+            let currentTimestamp = Date.now();
+
+            let daysPassed = Math.round((currentTimestamp - startTimestamp) / (1000*60*60*24));
+            let daysLeft = Math.round((endTimestamp - currentTimestamp) / (1000*60*60*24));
+
+            let startDate = new Date(startTimestamp).toDateString();
+            let endDate = new Date(endTimestamp).toDateString().split(' ').slice(1).join(' ');
+
+            setState(prevState => ({
+              ...prevState,
+              cycleNumber: cycleNumber,
+              startDate: startDate,
+              endDate: endDate,
+              daysPassed: daysPassed,
+              daysLeft: daysLeft
+            }));
+            setLoadingStackingData(false);
+          });
+      });
 
     fetchVaults();
   }, []);
@@ -193,6 +231,71 @@ export const Mint = () => {
     <div>
       <main className="py-12">
         <section>
+          <div className="relative">
+            <div className="absolute w-full h-full" style={{backgroundImage: 'url(/assets/stacks-pattern.png)', backgroundSize: '20%'}}></div>
+            <div className="absolute bottom-0 right-0 p-2 rounded-full mb-2 mr-2 bg-indigo-600 z-10">
+              <a href="https://stacking.club/" target="_blank" rel="noopener noreferrer">
+                <svg className="w-4 h-4" viewBox="0 0 120 121" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M108.897 120.001L83.4366 81.4259H120V66.872H0V81.4428H36.5512L11.1027 120.001H30.0887L60.0001 74.6811L89.9113 120.001H108.897ZM120 52.7468V38.0464H84.1795L109.29 0H90.3043L59.9997 45.9149L29.6957 0H10.7099L35.8527 38.0805H0V52.7468H120Z" fill="white"/>
+                </svg>
+              </a>
+            </div>
+
+
+            <dl className="grid grid-cols-1 border border-indigo-200 bg-indigo-100 bg-opacity-50 shadow-sm rounded-lg overflow-hidden divide-y divide-indigo-200 md:grid-cols-4 md:divide-y-0 md:divide-x relative">
+              <div className="px-4 py-5 sm:p-6">
+                <dt className="uppercase font-semibold text-xs text-indigo-800">Stacking Cycle #</dt>
+                <dd className="mt-1 flex justify-between items-baseline md:block lg:flex">
+                  {loadingStackingData === true ? (
+                    <PlaceHolder size={2} color="indigo" />
+                  ) : (
+                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                      {state.cycleNumber}
+                    </div>
+                  )}
+                </dd>
+              </div>
+              <div className="px-4 py-5 sm:p-6">
+                <dt className="uppercase font-semibold text-xs text-indigo-800">End date</dt>
+                <dd className="mt-1 flex justify-between items-baseline md:block lg:flex">
+                  {loadingStackingData === true ? (
+                    <PlaceHolder size={2} color="indigo" />
+                  ) : (
+                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                      {state.endDate}
+                    </div>
+                  )}
+                </dd>
+              </div>
+              <div className="px-4 py-5 sm:p-6">
+                <dt className="uppercase font-semibold text-xs text-indigo-800">Days in cycle</dt>
+                <dd className="mt-1 flex justify-between items-baseline md:block lg:flex">
+                  {loadingStackingData === true ? (
+                    <PlaceHolder size={2} color="indigo" />
+                  ) : (
+                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                      {state.daysPassed}
+                    </div>
+                  )}
+                </dd>
+              </div>
+              <div className="px-4 py-5 sm:p-6">
+                <dt className="uppercase font-semibold text-xs text-indigo-800">Days left</dt>
+                <dd className="mt-1 flex justify-between items-baseline md:block lg:flex">
+                  {loadingStackingData === true ? (
+                    <PlaceHolder size={2} color="indigo" />
+                  ) : (
+                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                      {state.daysLeft}
+                    </div>
+                  )}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </section>
+
+        <section className="mt-8">
           <header className="pb-5 border-b border-gray-200 sm:flex sm:items-center sm:justify-between">
             <h3 className="text-lg leading-6 font-medium text-gray-900">Overview</h3>
             <div className="mt-3 flex sm:mt-0 sm:ml-4">
@@ -341,9 +444,11 @@ export const Mint = () => {
                 <p className="text-sm">Loading your vaults...</p>
               </div>
             ) : (
-              <div>
-                <p className="text-sm">You currently have no open vaults</p>
-              </div>
+              <EmptyState
+                Icon={ArchiveIcon}
+                title="You currently have no open vaults."
+                description="Create a new vault in the table above choosing the appropriate collateral type."
+              />
             )}
           </div>
           

@@ -10,6 +10,8 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { AuctionProps, AuctionGroup } from '@components/auction-group';
 import { LotGroup } from '@components/lot-group';
 import { getRPCClient } from '@common/utils';
+import { DocumentSearchIcon, GiftIcon, CashIcon } from '@heroicons/react/outline';
+import { EmptyState } from './empty-state';
 
 export const Auctions: React.FC = () => {
   const { doContractCall } = useConnect();
@@ -190,7 +192,10 @@ export const Auctions: React.FC = () => {
                       </button>
                     </p>
                   ) : (
-                    <p className="mt-2">You have no xSTX you can trade</p>
+                    <EmptyState
+                      Icon={CashIcon}
+                      title="You have no xSTX you can trade."
+                    />
                   )}
                 </div>
 
@@ -200,7 +205,11 @@ export const Auctions: React.FC = () => {
                   {lots.length > 0 ? (
                     <LotGroup lots={lots} />
                   ) : (
-                    <p className="mt-2">You have no winning lots you can redeem. Winning lots can be redeemed when the parent auction closes.</p>
+                    <EmptyState
+                      Icon={GiftIcon}
+                      title="You have no winning lots you can redeem."
+                      description="Winning lots can be redeemed when the parent auction closes."
+                    />
                   )}
                 </div>
 
@@ -213,7 +222,10 @@ export const Auctions: React.FC = () => {
                   ) : loadingAuctions ? (
                     <p>Loading auctions...</p>
                   ) : (
-                    <p>There are currently no open auctions</p>
+                    <EmptyState
+                      Icon={DocumentSearchIcon}
+                      title="There are currently no open auctions."
+                    />
                   )}
                 </div>
 
