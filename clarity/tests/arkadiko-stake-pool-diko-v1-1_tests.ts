@@ -243,6 +243,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
     Tx.contractCall("arkadiko-stake-pool-diko-v1-1", "get-stake-of", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
         types.principal(wallet_1.address),
+        types.uint(100000000)
     ], wallet_1.address)
   ]);
   block.receipts[0].result.expectOk().expectUint(225279812);
@@ -255,6 +256,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
     Tx.contractCall("arkadiko-stake-pool-diko-v1-1", "get-stake-of", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
         types.principal(wallet_1.address),
+        types.uint(100000000)
     ], wallet_1.address)
   ]);
   block.receipts[0].result.expectOk().expectUint(413199530);
@@ -266,6 +268,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
     Tx.contractCall("arkadiko-stake-pool-diko-v1-1", "get-stake-of", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
         types.principal(wallet_1.address),
+        types.uint(100000000)
     ], wallet_1.address)
   ]);
   block.receipts[0].result.expectOk().expectUint(13003820636);
@@ -277,6 +280,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
     Tx.contractCall("arkadiko-stake-pool-diko-v1-1", "get-stake-of", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
         types.principal(wallet_1.address),
+        types.uint(100000000)
     ], wallet_1.address)
   ]);
   block.receipts[0].result.expectOk().expectUint(135688894058);
@@ -338,6 +342,7 @@ Clarinet.test({
     Tx.contractCall("arkadiko-governance-v1-1", "propose", [
       types.uint(10),
       types.utf8("change-reward-distribution"),
+      types.utf8("the-url"),
       types.list([
         types.tuple({
           'name': types.ascii("stake-registry"),
@@ -485,6 +490,7 @@ Clarinet.test({
     Tx.contractCall("arkadiko-governance-v1-1", "propose", [
       types.uint(10),
       types.utf8("change-reward-distribution"),
+      types.utf8("the-url"),
       types.list([
         types.tuple({
           'name': types.ascii("stake-registry"),
