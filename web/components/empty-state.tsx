@@ -12,13 +12,13 @@ export const EmptyState: React.FC<EmptyStateProps> = ({Icon, title, description}
       <div className="flow-root bg-gray-100 border-dotted border-2 border-gray-300 rounded-lg p-8">
         <div className="relative">
           <div>
-            <div className="md:absolute flex items-center justify-center h-24 w-24 text-gray-600 transform -rotate-12 bg-gray-100 md:-top-12 md:-left-16 mx-auto mb-4 md:mb-0">
-              <Icon className="h-16 w-16 text-gray-600" aria-hidden="true" />
+            <div className="md:absolute flex items-center justify-center h-16 w-16 text-gray-600 transform -rotate-12 bg-gray-100 md:-top-12 md:-left-16 mx-auto mb-4 md:mb-0">
+              <Icon className="h-12 w-12 text-gray-600" aria-hidden="true" />
             </div>
-            <p className="md:ml-16 text-lg leading-6 font-medium text-gray-900">{title}</p>
+            <p className="md:ml-8 text-lg leading-6 font-medium text-gray-900">{title}</p>
           </div>
           {description ? (
-            <p className="mt-2 md:ml-16 text-base text-gray-500">
+            <p className="mt-2 md:ml-8 text-base text-gray-500">
               {description}
             </p>
           ) : (
