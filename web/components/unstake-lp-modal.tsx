@@ -31,18 +31,6 @@ export const UnstakeLpModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAm
       tokenContract = 'arkaidko-swap-token-wstx-usda';
       ftContract = 'wstx-usda';
     }
-    const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.Equal,
-        uintCV(Number(stakeAmount) * 1000000).value,
-        createAssetInfo(
-          contractAddress,
-          tokenContract,
-          ftContract
-        )
-      )
-    ];
 
     await doContractCall({
       network,
@@ -57,7 +45,6 @@ export const UnstakeLpModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAm
         uintCV(Number(stakeAmount) * 1000000)
       ],
       postConditionMode: 0x01,
-      postConditions,
       finished: data => {
         console.log('finished broadcasting unstaking tx!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));

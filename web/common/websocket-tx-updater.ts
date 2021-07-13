@@ -33,6 +33,7 @@ const parseTransaction = (update:any, setState:any) => {
       currentTxMessage: 'Transaction successful'
     }));
   } else if (update['tx_status'] == 'abort_by_response' || update['tx_status'] == 'abort_by_post_condition') {
+    console.log(update);
     let url = `${coreApiUrl}/extended/v1/tx/${update['tx_id']}`;
     fetch(url).then(response => response.json()).then(data => {
       const error = errToHumanReadable(data['tx_result']['repr']);
@@ -46,6 +47,7 @@ const parseTransaction = (update:any, setState:any) => {
 }
 
 const errToHumanReadable = (err: string) => {
+  console.log(err);
   const errId = err.split("(err")[1].replace(/ /g, '').replace(')', '');
   if (errId === 'none') {
     return 'An unknown error occurred. Please try again';
