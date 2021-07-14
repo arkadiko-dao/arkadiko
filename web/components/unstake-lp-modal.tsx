@@ -5,7 +5,11 @@ import { tokenList } from '@components/token-swap-list';
 import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { microToReadable } from '@common/vault-utils';
-import { contractPrincipalCV, uintCV } from '@stacks/transactions';
+import {
+  contractPrincipalCV, uintCV,
+  createAssetInfo, FungibleConditionCode,
+  makeStandardFungiblePostCondition
+} from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
@@ -21,9 +25,11 @@ export const UnstakeLpModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAm
   const unstakeDiko = async () => {
     let contractName = 'arkadiko-stake-pool-diko-usda-v1-1';
     let tokenContract = 'arkadiko-swap-token-diko-usda';
+    let ftContract = 'diko-usda';
     if (balanceName === 'wstxusda') {
       contractName = 'arkadiko-stake-pool-wstx-usda-v1-1';
       tokenContract = 'arkaidko-swap-token-wstx-usda';
+      ftContract = 'wstx-usda';
     }
 
     await doContractCall({
