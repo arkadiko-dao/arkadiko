@@ -56,6 +56,8 @@ const contracts: Contract[] = [
   { name: 'arkadiko-freddie-v1-1' },
   { name: 'arkadiko-stake-registry-v1-1' },
   { name: 'arkadiko-stake-pool-diko-v1-1' },
+  { name: 'arkadiko-stake-pool-diko-usda-v1-1' },
+  { name: 'arkadiko-stake-pool-wstx-usda-v1-1' },
 
   { name: 'arkadiko-auction-engine-v1-1' },
   { name: 'arkadiko-liquidator-v1-1' },

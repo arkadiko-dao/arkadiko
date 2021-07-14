@@ -148,9 +148,13 @@
 
 ;; This method is called by the auction engine when more bad debt needs to be burned
 ;; but the vault collateral is not sufficient
-;; As a result, this method requests DIKO from the DAO ("foundation reserves")
-(define-public (request-diko-tokens (ft <ft-trait>) (collateral-amount uint))
-  (contract-call? ft transfer collateral-amount (var-get dao-owner) (as-contract (unwrap-panic (get-qualified-name-by-name "sip10-reserve"))) none)
+;; As a result, additional DIKO will be minted to cover bad debt
+(define-public (request-diko-tokens (collateral-amount uint))
+  (begin
+    (asserts! (is-eq (unwrap-panic (get-qualified-name-by-name "auction-engine")) contract-caller) ERR-NOT-AUTHORIZED)
+
+    (contract-call? .arkadiko-token mint-for-dao collateral-amount (as-contract (unwrap-panic (get-qualified-name-by-name "sip10-reserve"))))
+  )
 )
 
 
