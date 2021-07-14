@@ -111,10 +111,10 @@
 
 ;; Claim pool rewards and stake immediately
 (define-public (stake-pending-rewards 
-  (registry-trait <stake-registry-trait>) 
-  (pool-trait <stake-pool-trait>) 
-  (diko-pool-trait <stake-pool-trait>)
-  (diko-token-trait <ft-trait>)
+    (registry-trait <stake-registry-trait>) 
+    (pool-trait <stake-pool-trait>) 
+    (diko-pool-trait <stake-pool-trait>)
+    (diko-token-trait <ft-trait>)
   )
   (let (
     (claimed-rewards (unwrap-panic (contract-call? pool-trait claim-pending-rewards registry-trait tx-sender)))
