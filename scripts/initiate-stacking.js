@@ -12,7 +12,7 @@ async function initiateStacking() {
     functionName: "initiate-stacking",
     functionArgs: [
       tx.tupleCV({ 'version': tx.bufferCV(new BN(0, 10).toArrayLike(Buffer)), 'hashbytes': tx.bufferCV(Buffer.from('48ca6e0dd09358f003ac')) }),
-      tx.uintCV(394), // prepare_phase_start_block_height
+      tx.uintCV(2549), // prepare_phase_start_block_height
       tx.uintCV(12) // number of cycles
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,

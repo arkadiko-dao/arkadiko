@@ -65,3 +65,7 @@ Regtest:
 6. is pox active
 
 `stx call_read_only_contract_func -t -H "http://localhost:3999" -I "http://localhost:3999" --contract_address ST000000000000000000002AMW42H --contract_name pox --function_name is-pox-active --sender_address ST3DSDDH2H2QFA6BHEVKTSK5NK54SJWSKB6MQKM8Z`
+
+7. get stacker info
+
+`stx call_read_only_contract_func -t -H "http://localhost:3999" -I "http://localhost:3999" --contract_address ST000000000000000000002AMW42H --contract_name pox --function_name get-stacker-info --sender_address ST3DSDDH2H2QFA6BHEVKTSK5NK54SJWSKB6MQKM8Z`
