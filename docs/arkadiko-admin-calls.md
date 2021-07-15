@@ -41,12 +41,14 @@ Regtest:
 
 3x `yarn deploy-contracts`
 
-`stx send_tokens -t -H "http://localhost:3999" -I "http://localhost:3999" --address ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF --amount 1537000000000000 --fee 500 --nonce 44 --payment_key PRIVATE_KEY`
+`stx send_tokens -t -H "http://localhost:3999" -I "http://localhost:3999" --address ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF --amount 56480000000000 --fee 500 --nonce 46 --payment_key PRIVATE_KEY`
 
 1. Set Tokens to Stack
 
-`stx call_contract_func -t -H "http://localhost:3999" -I "http://localhost:3999" --contract_address ST3DSDDH2H2QFA6BHEVKTSK5NK54SJWSKB6MQKM8Z --contract_name arkadiko-stx-reserve-v1-1 --function_name set-tokens-to-stack --fee 500 --nonce 45 --payment_key KEY`
+`stx call_contract_func -t -H "http://localhost:3999" -I "http://localhost:3999" --contract_address ST3DSDDH2H2QFA6BHEVKTSK5NK54SJWSKB6MQKM8Z --contract_name arkadiko-stx-reserve-v1-1 --function_name set-tokens-to-stack --fee 500 --nonce 49 --payment_key KEY`
 (1534000000000000)
+(55479999000000)
+
 
 2. Check if tokens are set
 
