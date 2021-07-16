@@ -109,6 +109,21 @@
   )
 )
 
+;; Claim pool rewards and stake immediately
+(define-public (stake-pending-rewards 
+    (registry-trait <stake-registry-trait>) 
+    (pool-trait <stake-pool-trait>) 
+    (diko-pool-trait <stake-pool-trait>)
+    (diko-token-trait <ft-trait>)
+  )
+  (let (
+    (claimed-rewards (unwrap-panic (contract-call? pool-trait claim-pending-rewards registry-trait tx-sender)))
+  )
+    (asserts! (is-eq (as-contract tx-sender) (contract-of registry-trait)) ERR-WRONG-REGISTRY)
+    (contract-call? diko-pool-trait stake registry-trait diko-token-trait tx-sender claimed-rewards)
+  )
+)
+
 ;; ---------------------------------------------------------
 ;; Contract initialisation
 ;; ---------------------------------------------------------
