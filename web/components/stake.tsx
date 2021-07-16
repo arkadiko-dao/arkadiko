@@ -16,7 +16,7 @@ import { tokenList } from '@components/token-swap-list';
 import { useConnect } from '@stacks/connect-react';
 import { StakeActions } from './stake-actions';
 import { Menu } from '@headlessui/react';
-import { ArrowCircleDownIcon, ArrowCircleUpIcon, CashIcon } from '@heroicons/react/solid';
+import { ArrowCircleDownIcon, ArrowCircleUpIcon, CashIcon, PlusIcon } from '@heroicons/react/solid';
 
 export const Stake = () => {
   const [state, setState] = useContext(AppContext);
@@ -190,6 +190,46 @@ export const Stake = () => {
     });
   };
 
+  const stakeDikoLpPendingRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-registry-v1-1',
+      functionName: 'stake-pending-rewards',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-usda-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-token')
+      ],
+      postConditionMode: 0x01,
+      finished: data => {
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+      },
+    });
+  };
+
+  const stakeStxLpPendingRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-registry-v1-1',
+      functionName: 'stake-pending-rewards',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-usda-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-token')
+      ],
+      postConditionMode: 0x01,
+      finished: data => {
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+      },
+    });
+  };
+
   return (
     <div>
       <StakeDikoModal
@@ -247,8 +287,8 @@ export const Stake = () => {
                       <span className="block">Arkadiko Staking</span>
                     </h2>
                     <p className="mt-4 text-lg leading-6 text-indigo-200">
-                      Stake your DIKO or LP tokens to earn rewards. For every DIKO/LP staked,
-                      you get stDIKO in return which can be used to vote in governance.
+                      Stake your DIKO or LP tokens to earn rewards. When staking DIKO you get 
+                      stDIKO in return which can be used to vote in governance.
                     </p>
                   </div>
                 </div>
@@ -422,6 +462,24 @@ export const Stake = () => {
                                       )}
                                     </Menu.Item>
                                   ) : null }
+                                  {lpDikoPendingRewards > 0 ? (
+                                    <Menu.Item>
+                                      {({ active }) => (
+                                        <button
+                                          className={`${
+                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                          onClick={() => stakeDikoLpPendingRewards()}
+                                        >
+                                          <PlusIcon
+                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            aria-hidden="true"
+                                          />
+                                          Stake Rewards
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                  ) : null }
                                 </StakeActions>
                               ) : null }
                             </td>
@@ -496,6 +554,24 @@ export const Stake = () => {
                                             aria-hidden="true"
                                           />
                                           Claim Rewards
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                  ) : null }
+                                  {lpStxPendingRewards > 0 ? (
+                                    <Menu.Item>
+                                      {({ active }) => (
+                                        <button
+                                          className={`${
+                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                          onClick={() => stakeStxLpPendingRewards()}
+                                        >
+                                          <PlusIcon
+                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            aria-hidden="true"
+                                          />
+                                          Stake Rewards
                                         </button>
                                       )}
                                     </Menu.Item>
