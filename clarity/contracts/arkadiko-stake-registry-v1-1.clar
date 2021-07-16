@@ -142,7 +142,17 @@
       name: "wSTX-USDA LP",
       deactivated-block: u0,
       deactivated-rewards-per-block: u0,
-      rewards-percentage: u600000 ;; 60% 
+      rewards-percentage: u300000 ;; 30% 
+    }
+  )
+  ;; wSTX-DIKO LP
+  (map-set pools-data-map
+    { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-diko-v1-1 }
+    {
+      name: "wSTX-DIKO LP",
+      deactivated-block: u0,
+      deactivated-rewards-per-block: u0,
+      rewards-percentage: u300000 ;; 30% 
     }
   )
 )
