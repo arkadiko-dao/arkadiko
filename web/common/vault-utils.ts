@@ -55,10 +55,22 @@ export const tokenTraits = {
     'name': 'arkadiko-swap-token-wstx-usda'
   },
   'usdastx': {
-    'name': 'arkadiko-swap-token-wstx-xusd'
+    'name': 'arkadiko-swap-token-wstx-usda'
   },
   'stxusda': {
-    'name': 'arkadiko-swap-token-wstx-xusd'
+    'name': 'arkadiko-swap-token-wstx-usda'
+  },
+  'wstxdiko': {
+    'name': 'arkadiko-swap-token-wstx-diko'
+  },
+  'dikowstx': {
+    'name': 'arkadiko-swap-token-wstx-diko'
+  },
+  'dikostx': {
+    'name': 'arkadiko-swap-token-wstx-diko'
+  },
+  'stxdiko': {
+    'name': 'arkadiko-swap-token-wstx-diko'
   }
 };
 
