@@ -46,6 +46,7 @@ const contracts: Contract[] = [
   { name: 'xstx-token' },
   { name: 'arkadiko-swap-token-diko-usda' },
   { name: 'arkadiko-swap-token-wstx-usda' },
+  { name: 'arkadiko-swap-token-wstx-diko' },
 
   { name: 'arkadiko-vault-data-v1-1' },
   { name: 'arkadiko-vault-rewards-v1-1' },
@@ -58,6 +59,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-stake-pool-diko-v1-1' },
   { name: 'arkadiko-stake-pool-diko-usda-v1-1' },
   { name: 'arkadiko-stake-pool-wstx-usda-v1-1' },
+  { name: 'arkadiko-stake-pool-wstx-diko-v1-1' },
 
   { name: 'arkadiko-auction-engine-v1-1' },
   { name: 'arkadiko-liquidator-v1-1' },
