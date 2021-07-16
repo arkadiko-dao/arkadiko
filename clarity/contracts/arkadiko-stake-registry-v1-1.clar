@@ -147,7 +147,7 @@
       name: "DIKO-USDA LP",
       deactivated-block: u0,
       deactivated-rewards-per-block: u0,
-      rewards-percentage: u300000 ;; 30% 
+      rewards-percentage: u200000 ;; 20% 
     }
   )
   ;; wSTX-USDA LP
@@ -157,7 +157,7 @@
       name: "wSTX-USDA LP",
       deactivated-block: u0,
       deactivated-rewards-per-block: u0,
-      rewards-percentage: u300000 ;; 30% 
+      rewards-percentage: u500000 ;; 50% 
     }
   )
   ;; wSTX-DIKO LP
@@ -167,7 +167,7 @@
       name: "wSTX-DIKO LP",
       deactivated-block: u0,
       deactivated-rewards-per-block: u0,
-      rewards-percentage: u300000 ;; 30% 
+      rewards-percentage: u200000 ;; 20% 
     }
   )
 )
