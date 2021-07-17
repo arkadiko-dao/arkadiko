@@ -256,7 +256,7 @@ export const Stake = () => {
         showStakeModal={showStakeLp2Modal}
         setShowStakeModal={setShowStakeLp2Modal}
         apy={stxLpApy}
-        balanceName={'stxusda'}
+        balanceName={'wstxusda'}
         tokenName={'ARKV1WSTXUSDA'}
       />
 
@@ -272,7 +272,7 @@ export const Stake = () => {
         showUnstakeModal={showUnstakeLp2Modal}
         setShowUnstakeModal={setShowUnstakeLp2Modal}
         stakedAmount={lpStxStakedAmount}
-        balanceName={'stxusda'}
+        balanceName={'wstxusda'}
         tokenName={'ARKV1WSTXUSDA'}
       />
 
@@ -502,9 +502,9 @@ export const Stake = () => {
                               {microToReadable(lpStxPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
-                              {state.balance['stxusda'] > 0 || lpStxStakedAmount || lpStxPendingRewards ? (
+                              {state.balance['wstxusda'] > 0 || lpStxStakedAmount || lpStxPendingRewards ? (
                                 <StakeActions>
-                                  {state.balance['stxusda'] > 0 ? (
+                                  {state.balance['wstxusda'] > 0 ? (
                                     <Menu.Item>
                                       {({ active }) => (
                                         <button

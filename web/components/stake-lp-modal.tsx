@@ -44,7 +44,7 @@ export const StakeLpModal = ({ showStakeModal, setShowStakeModal, apy, balanceNa
     let contractName = 'arkadiko-stake-pool-diko-usda-v1-1';
     let tokenContract = 'arkadiko-swap-token-diko-usda';
     let ftContract = 'diko-usda';
-    if (balanceName === 'wstxusda') {
+    if (balanceName === 'stxusda') {
       contractName = 'arkadiko-stake-pool-wstx-usda-v1-1';
       tokenContract = 'arkaidko-swap-token-wstx-usda';
       ftContract = 'wstx-usda';
