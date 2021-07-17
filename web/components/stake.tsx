@@ -256,7 +256,7 @@ export const Stake = () => {
         showStakeModal={showStakeLp2Modal}
         setShowStakeModal={setShowStakeLp2Modal}
         apy={stxLpApy}
-        balanceName={'wstxusda'}
+        balanceName={'stxusda'}
         tokenName={'ARKV1WSTXUSDA'}
       />
 
@@ -272,7 +272,7 @@ export const Stake = () => {
         showUnstakeModal={showUnstakeLp2Modal}
         setShowUnstakeModal={setShowUnstakeLp2Modal}
         stakedAmount={lpStxStakedAmount}
-        balanceName={'wstxusda'}
+        balanceName={'stxusda'}
         tokenName={'ARKV1WSTXUSDA'}
       />
 
