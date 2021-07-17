@@ -38,6 +38,7 @@ Regtest:
 0. In Development Only - Transfer tokens to STX reserve
 
 `curl -s -X POST "http://localhost:3999/extended/v1/faucets/stx?address=ST3DSDDH2H2QFA6BHEVKTSK5NK54SJWSKB6MQKM8Z&stacking=true"`
+stx send_tokens -t -H "http://localhost:20080" -I "http://localhost:20080" --address ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF --amount 32430000000000 --fee 500 --nonce 1 --payment_key 530d9f61984c888536871c6573073bdfc0058896dc1adfe9a6a10dfacadc209101
 
 3x `yarn deploy-contracts`
 
@@ -45,16 +46,17 @@ Regtest:
 
 1. Set Tokens to Stack
 
-`stx call_contract_func -t -H "http://localhost:3999" -I "http://localhost:3999" --contract_address ST3DSDDH2H2QFA6BHEVKTSK5NK54SJWSKB6MQKM8Z --contract_name arkadiko-stx-reserve-v1-1 --function_name set-tokens-to-stack --fee 500 --nonce 49 --payment_key KEY`
+`stx call_contract_func -t -H "http://localhost:3999" -I "http://localhost:3999" --contract_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM --contract_name arkadiko-stx-reserve-v1-1 --function_name set-tokens-to-stack --fee 500 --nonce 38 --payment_key KEY`
 (1534000000000000)
 (55479999000000)
+(32000000000000)
 
 
 2. Check if tokens are set
 
-`stx call_read_only_contract_func -t -H "http://localhost:3999" -I "http://localhost:3999" --contract_address ST3DSDDH2H2QFA6BHEVKTSK5NK54SJWSKB6MQKM8Z --contract_name arkadiko-stx-reserve-v1-1 --function_name get-tokens-to-stack --sender_address ST3DSDDH2H2QFA6BHEVKTSK5NK54SJWSKB6MQKM8Z`
+`stx call_read_only_contract_func -t -H "http://localhost:3999" -I "http://localhost:3999" --contract_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM --contract_name arkadiko-stx-reserve-v1-1 --function_name get-tokens-to-stack --sender_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM`
 
-`stx call_read_only_contract_func -t -H "http://localhost:3999" -I "http://localhost:3999" --contract_address ST3DSDDH2H2QFA6BHEVKTSK5NK54SJWSKB6MQKM8Z --contract_name arkadiko-stacker-v1-1 --function_name get-stx-balance --sender_address ST3DSDDH2H2QFA6BHEVKTSK5NK54SJWSKB6MQKM8Z`
+`stx call_read_only_contract_func -t -H "http://localhost:3999" -I "http://localhost:3999" --contract_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM --contract_name arkadiko-stacker-v1-1 --function_name get-stx-balance --sender_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM`
 
 3. `node update-price.js`
 

@@ -65,7 +65,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-mock-stacker-v1-1' }
 ];
 
-const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');
+const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:20080');
 const privateKey = process.env.CONTRACT_PRIVATE_KEY;
 if (!privateKey) {
   console.error('Provide a private key with `process.env.CONTRACT_PRIVATE_KEY`');
