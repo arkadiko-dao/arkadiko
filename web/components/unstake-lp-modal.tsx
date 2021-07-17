@@ -28,8 +28,12 @@ export const UnstakeLpModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAm
     let ftContract = 'diko-usda';
     if (balanceName === 'wstxusda') {
       contractName = 'arkadiko-stake-pool-wstx-usda-v1-1';
-      tokenContract = 'arkaidko-swap-token-wstx-usda';
+      tokenContract = 'arkadiko-swap-token-wstx-usda';
       ftContract = 'wstx-usda';
+    } else if (balanceName === 'wstxdiko') {
+      contractName = 'arkadiko-stake-pool-wstx-diko-v1-1';
+      tokenContract = 'arkadiko-swap-token-wstx-diko';
+      ftContract = 'wstx-diko';
     }
 
     await doContractCall({

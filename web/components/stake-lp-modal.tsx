@@ -44,10 +44,14 @@ export const StakeLpModal = ({ showStakeModal, setShowStakeModal, apy, balanceNa
     let contractName = 'arkadiko-stake-pool-diko-usda-v1-1';
     let tokenContract = 'arkadiko-swap-token-diko-usda';
     let ftContract = 'diko-usda';
-    if (balanceName === 'stxusda') {
+    if (balanceName === 'wstxusda') {
       contractName = 'arkadiko-stake-pool-wstx-usda-v1-1';
-      tokenContract = 'arkaidko-swap-token-wstx-usda';
+      tokenContract = 'arkadiko-swap-token-wstx-usda';
       ftContract = 'wstx-usda';
+    } else if (balanceName === 'wstxdiko') {
+      contractName = 'arkadiko-stake-pool-wstx-diko-v1-1';
+      tokenContract = 'arkadiko-swap-token-wstx-diko';
+      ftContract = 'wstx-diko';
     }
     const postConditions = [
       makeStandardFungiblePostCondition(
