@@ -136,6 +136,10 @@ path = "contracts/arkadiko-stake-pool-diko-usda-v1-1.clar"
 depends_on = ["arkadiko-stake-pool-trait-v1", "arkadiko-swap-token-wstx-usda", "arkadiko-stake-registry-v1-1"]
 path = "contracts/arkadiko-stake-pool-wstx-usda-v1-1.clar"
 
+[contracts.arkadiko-stake-pool-wstx-diko-v1-1]
+depends_on = ["arkadiko-stake-pool-trait-v1", "arkadiko-swap-token-wstx-diko", "arkadiko-stake-registry-v1-1"]
+path = "contracts/arkadiko-stake-pool-wstx-diko-v1-1.clar"
+
 [contracts.arkadiko-swap-v1-1]
 depends_on = ["sip-010-trait-ft-standard", "arkadiko-swap-trait-v1", "wrapped-stx-token"]
 path = "contracts/arkadiko-swap-v1-1.clar"
@@ -152,6 +156,9 @@ path = "contracts/arkadiko-swap-token-diko-usda.clar"
 depends_on = ["arkadiko-swap-trait-v1"]
 path = "contracts/arkadiko-swap-token-wstx-usda.clar"
 
+[contracts.arkadiko-swap-token-wstx-diko]
+depends_on = ["arkadiko-swap-trait-v1"]
+path = "contracts/arkadiko-swap-token-wstx-diko.clar"
 
 [contracts.wrapped-stx-token]
 depends_on = ["sip-010-trait-ft-standard", "arkadiko-dao"]
