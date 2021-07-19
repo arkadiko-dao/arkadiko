@@ -294,14 +294,21 @@
 )
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
-    (swapped-amounts (unwrap-panic (contract-call? .arkadiko-swap-v1-1 swap-y-for-x wstx usda earned-amount u1)))
+    (swapped-amounts (unwrap-panic (contract-call? .arkadiko-swap-v1-1 swap-x-for-y wstx usda earned-amount u1)))
     (usda-amount (unwrap-panic (element-at swapped-amounts u1)))
-    (paid-fee (unwrap-panic (contract-call? .arkadiko-freddie-v1-1 pay-stability-fee vault-id coll-type)))
-    (leftover-usda (- usda-amount paid-fee))
+    (paid-fee (unwrap-panic (contract-call? .arkadiko-freddie-v1-1 pay-stability-fee vault-id coll-type))) ;; TODO: check if we can pay fee with usda-amount
+    (leftover-usda
+      (if (> usda-amount paid-fee)
+        (- usda-amount paid-fee)
+        u0
+      )
+    )
   )
+    (asserts! (> leftover-usda u0) (ok true))
     (if (> (get debt vault) leftover-usda)
       (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id leftover-usda reserve ft coll-type))
       (begin
+        ;; this is the last payment - after this we paid off all debt
         (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
           updated-at-block-height: block-height,
           stacked-tokens: u0
@@ -315,7 +322,7 @@
   )
 )
 
-;; This method should be ran by the deployer (contract owner)
+;; This method should be ran by anyone
 ;; after a stacking cycle ends to allow withdrawal of STX collateral
 ;; Only mark vaults that have revoked stacking and not been liquidated
 ;; must be called before a new initiate-stacking method call (stacking cycle)
