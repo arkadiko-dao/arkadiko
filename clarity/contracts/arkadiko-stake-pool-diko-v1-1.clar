@@ -192,6 +192,19 @@
   )
 )
 
+;; Execute slash with given percentage
+(define-public (execute-slash (percentage uint))
+  (let (
+    (diko-supply (unwrap-panic (contract-call? .arkadiko-token get-balance (as-contract tx-sender))))
+    (slash-total (/ (* diko-supply percentage) u100))
+    (dao-owner (contract-call? .arkadiko-dao get-dao-owner))
+  )
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "diko-slash"))) ERR-NOT-AUTHORIZED)
+    (try! (contract-call? .arkadiko-token transfer slash-total (as-contract tx-sender) dao-owner none))
+    (ok slash-total)
+  )
+)
+
 ;; Needed because of pool trait
 (define-public (claim-pending-rewards (registry-trait <stake-registry-trait>) (staker principal))
   (ok u0)
