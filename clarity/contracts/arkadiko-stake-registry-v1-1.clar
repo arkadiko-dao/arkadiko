@@ -109,6 +109,21 @@
   )
 )
 
+;; Claim pool rewards and stake immediately
+(define-public (stake-pending-rewards 
+    (registry-trait <stake-registry-trait>) 
+    (pool-trait <stake-pool-trait>) 
+    (diko-pool-trait <stake-pool-trait>)
+    (diko-token-trait <ft-trait>)
+  )
+  (let (
+    (claimed-rewards (unwrap-panic (contract-call? pool-trait claim-pending-rewards registry-trait tx-sender)))
+  )
+    (asserts! (is-eq (as-contract tx-sender) (contract-of registry-trait)) ERR-WRONG-REGISTRY)
+    (contract-call? diko-pool-trait stake registry-trait diko-token-trait tx-sender claimed-rewards)
+  )
+)
+
 ;; ---------------------------------------------------------
 ;; Contract initialisation
 ;; ---------------------------------------------------------
@@ -132,7 +147,7 @@
       name: "DIKO-USDA LP",
       deactivated-block: u0,
       deactivated-rewards-per-block: u0,
-      rewards-percentage: u300000 ;; 30% 
+      rewards-percentage: u200000 ;; 20% 
     }
   )
   ;; wSTX-USDA LP
@@ -142,7 +157,17 @@
       name: "wSTX-USDA LP",
       deactivated-block: u0,
       deactivated-rewards-per-block: u0,
-      rewards-percentage: u600000 ;; 60% 
+      rewards-percentage: u500000 ;; 50% 
+    }
+  )
+  ;; wSTX-DIKO LP
+  (map-set pools-data-map
+    { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-diko-v1-1 }
+    {
+      name: "wSTX-DIKO LP",
+      deactivated-block: u0,
+      deactivated-rewards-per-block: u0,
+      rewards-percentage: u200000 ;; 20% 
     }
   )
 )

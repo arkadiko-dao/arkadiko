@@ -113,6 +113,18 @@ class VaultManager {
     return block.receipts[0].result;
   }
 
+  closeVault(user: Account, vaultId: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "close-vault", [
+        types.uint(vaultId),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1")
+      ], user.address),
+    ]);
+    return block.receipts[0].result;
+  }
+
   withdraw(user: Account, vaultId: number, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "withdraw", [

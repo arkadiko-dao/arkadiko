@@ -228,10 +228,9 @@ export const ManageVault = ({ match }) => {
       contractAddress,
       stxAddress: senderAddress,
       contractName: "arkadiko-freddie-v1-1",
-      functionName: 'burn',
+      functionName: 'close-vault',
       functionArgs: [
         uintCV(match.params.id),
-        uintCV(outstandingDebt() * 1000000),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')

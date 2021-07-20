@@ -511,14 +511,11 @@
     )
 
     (try! (pay-stability-fee vault-id coll-type))
-    (if (is-eq debt (get debt vault))
-      (close-vault vault-id reserve ft coll-type)
-      (burn-partial-debt vault-id debt reserve ft coll-type)
-    )
+    (burn-partial-debt vault-id debt reserve ft coll-type)
   )
 )
 
-(define-private (close-vault
+(define-public (close-vault
   (vault-id uint)
   (reserve <vault-trait>)
   (ft <ft-trait>)
@@ -533,7 +530,10 @@
     (asserts! (is-eq u0 (get stacked-tokens vault)) (err ERR-STACKING-IN-PROGRESS))
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
 
-    (try! (contract-call? .arkadiko-dao burn-token .usda-token (get debt vault) (get owner vault)))
+    (if (is-eq (get debt vault) u0)
+      true
+      (try! (contract-call? .arkadiko-dao burn-token .usda-token (get debt vault) (get owner vault)))
+    )
     (try! (contract-call? reserve burn ft (get owner vault) (get collateral vault)))
     (try! (contract-call? coll-type subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault)))
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id updated-vault))
