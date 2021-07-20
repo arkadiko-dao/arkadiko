@@ -461,6 +461,53 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "freddie: close vault without debt",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+
+    let result = oracleManager.updatePrice("STX", 200);
+    result.expectOk().expectUint(200);
+
+    result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
+    result.expectOk().expectUint(300000000);
+
+    result = vaultManager.burn(deployer, 1, 300);
+    result.expectOk().expectBool(true);
+  
+    result = vaultManager.toggleStacking(deployer, 1);
+    result = vaultManager.enableVaultWithdrawals(1);
+
+    result = vaultManager.closeVault(deployer, 1);
+    result.expectOk().expectBool(true);
+  }
+});
+
+Clarinet.test({
+  name: "freddie: close vault with debt",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+
+    let result = oracleManager.updatePrice("STX", 200);
+    result.expectOk().expectUint(200);
+
+    result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
+    result.expectOk().expectUint(300000000);
+
+    result = vaultManager.toggleStacking(deployer, 1);
+    result = vaultManager.enableVaultWithdrawals(1);
+
+    result = vaultManager.closeVault(deployer, 1);
+    result.expectOk().expectBool(true);
+  }
+});
+
+Clarinet.test({
   name: "freddie: stack collateral",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -603,10 +650,6 @@ Clarinet.test({
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
     result.expectOk().expectUint(300000000);
-
-    // Try burn
-    result = vaultManager.burn(deployer, 1, 300);
-    result.expectErr().expectUint(414); 
 
     result = vaultManager.withdraw(deployer, 1, 200)
     result.expectErr().expectUint(414);
