@@ -36,7 +36,6 @@
 (define-data-var block-height-last-paid uint u0) ;; when the foundation was last paid
 (define-data-var maximum-debt-surplus uint u10000000000000) ;; 10 million default - above that we sell the USDA on the DIKO/USDA pair to burn DIKO
 (define-data-var stacking-unlock-burn-height uint u0)
-(define-data-var stacking-stx-stacked uint u0)
 (define-data-var freddie-shutdown-activated bool false)
 
 ;; getters
@@ -70,14 +69,6 @@
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker"))) (err ERR-NOT-AUTHORIZED))
 
     (ok (var-set stacking-unlock-burn-height burn-height))
-  )
-)
-
-(define-public (set-stacking-stx-stacked (stx-stacked uint))
-  (begin
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker"))) (err ERR-NOT-AUTHORIZED))
-
-    (ok (var-set stacking-stx-stacked stx-stacked))
   )
 )
 

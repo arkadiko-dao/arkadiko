@@ -96,6 +96,7 @@
             (print result)
             (var-set stacking-unlock-burn-height (get unlock-burn-height result))
             (var-set stacking-stx-stacked (get lock-amount result))
+            (try! (contract-call? .arkadiko-freddie-v1-1 set-stacking-unlock-burn-height (get unlock-burn-height result)))
             (ok (get lock-amount result))
           )
           error (begin
