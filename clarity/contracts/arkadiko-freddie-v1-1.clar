@@ -118,8 +118,8 @@
   )
 )
 
-(define-private (resolve-stacking-amount (collateral-amount uint) (collateral-token (string-ascii 12)))
-  (if (is-eq collateral-token "STX")
+(define-private (resolve-stacking-amount (collateral-amount uint) (collateral-token (string-ascii 12)) (stack-pox bool))
+  (if (and (is-eq collateral-token "STX") stack-pox)
     collateral-amount
     u0
   )
@@ -238,6 +238,7 @@
 (define-public (collateralize-and-mint
     (collateral-amount uint)
     (debt uint)
+    (pox-settings (tuple (stack-pox bool) (auto-payoff bool)))
     (collateral-type (string-ascii 12))
     (reserve <vault-trait>)
     (ft <ft-trait>)
@@ -285,9 +286,9 @@
         collateral: collateral-amount,
         collateral-type: collateral-type,
         collateral-token: collateral-token,
-        stacked-tokens: (resolve-stacking-amount collateral-amount collateral-token),
-        revoked-stacking: false,
-        auto-payoff: false,
+        stacked-tokens: (resolve-stacking-amount collateral-amount collateral-token (get stack-pox pox-settings)),
+        revoked-stacking: (get stack-pox pox-settings),
+        auto-payoff: (get auto-payoff pox-settings),
         debt: debt,
         created-at-block-height: block-height,
         updated-at-block-height: block-height,

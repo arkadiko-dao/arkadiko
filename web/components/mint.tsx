@@ -149,7 +149,7 @@ export const Mint = () => {
   }, []);
 
   const addMocknetStx = async () => {
-    const key = '26f235698d02803955b7418842affbee600fc308936a7ca48bf5778d1ceef9df01';
+    const key = '753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601';
     const senderKey = createStacksPrivateKey(key);
     console.log('Adding STX from mocknet address to', address, 'on network', network);
 
