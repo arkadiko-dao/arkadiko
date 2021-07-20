@@ -492,8 +492,6 @@
     )
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
-    (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (<= debt (get debt vault)) (err ERR-WRONG-DEBT))
     (asserts!
       (or
         (is-eq (get collateral-token vault) "STX")
@@ -503,7 +501,7 @@
     )
 
     (try! (pay-stability-fee vault-id coll-type))
-    (burn-partial-debt vault-id debt reserve ft coll-type)
+    (burn-partial-debt vault-id (min-of debt (get debt vault)) reserve ft coll-type)
   )
 )
 
@@ -544,7 +542,7 @@
   (coll-type <collateral-types-trait>)
 )
   (let ((vault (get-vault-by-id vault-id)))
-    (try! (contract-call? .arkadiko-dao burn-token .usda-token debt (get owner vault)))
+    (try! (contract-call? .arkadiko-dao burn-token .usda-token debt tx-sender))
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
         debt: (- (get debt vault) debt),
         updated-at-block-height: block-height

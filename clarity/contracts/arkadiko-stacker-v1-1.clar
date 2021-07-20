@@ -53,6 +53,7 @@
     )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
+    (var-set stacking-stx-stacked u4999000000) ;; TODO: clean up, for testing only
     (ok (var-set stacking-stx-received stx-received))
   )
 )
