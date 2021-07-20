@@ -81,8 +81,6 @@ get stacker info
   node payout-vault.js
 4. For every vault that has revoked stacking
   - Run enable-vault-withdrawals in stacker
-5. For every vault that has been liquidated
+5. For every vault that has been liquidated AND auction ended
   - Run release-stacked-stx
-5. Set tokens to stack on STX reserve contract
-6. update stacking-unlock-burn-height variable in stacker & freddie
-7. When new cycle nears: call stacking contract with updated numbers
+6. When new cycle nears: call stacking contract with updated numbers. Check if stx reserve tokens to stack is correct
