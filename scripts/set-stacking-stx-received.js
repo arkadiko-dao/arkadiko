@@ -3,22 +3,14 @@ const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
-const BN = require('bn.js');
-const stacking = require('@stacks/stacking');
-const c32 = require('c32check');
 
-async function initiateStacking() {
-  const btcAddr = c32.c32ToB58('ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF');
-  const { hashMode, data } = stacking.decodeBtcAddress(btcAddr);
-  const hashbytes = tx.bufferCV(data);
+async function setStacksReceived() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
     contractName: "arkadiko-stacker-v1-1",
-    functionName: "initiate-stacking",
+    functionName: "set-stacking-stx-received",
     functionArgs: [
-      tx.tupleCV({ 'version': tx.bufferCV(new BN(hashMode, 10).toArrayLike(Buffer)), 'hashbytes': hashbytes }),
-      tx.uintCV(149), // prepare_phase_start_block_height
-      tx.uintCV(1) // number of cycles
+      tx.uintCV(50000000000) // 50K STX
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
@@ -30,4 +22,4 @@ async function initiateStacking() {
   await utils.processing(result, transaction.txid(), 0);
 }
 
-initiateStacking();
+setStacksReceived();

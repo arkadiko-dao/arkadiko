@@ -39,7 +39,7 @@ Regtest:
 
 with mocknet: `curl -s -X POST "http://localhost:3999/extended/v1/faucets/stx?address=ST3DSDDH2H2QFA6BHEVKTSK5NK54SJWSKB6MQKM8Z&stacking=true"`
 
-with `clarinet integrate`: stx send_tokens -t -H "http://localhost:20080" -I "http://localhost:20080" --address ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF --amount 32430000000000 --fee 500 --nonce 1 --payment_key 530d9f61984c888536871c6573073bdfc0058896dc1adfe9a6a10dfacadc209101
+with `clarinet integrate`: `stx send_tokens -t -H "http://localhost:20080" -I "http://localhost:20080" --address ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF --amount 430000000000 --fee 500 --nonce 0 --payment_key 753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601`
 
 Run `yarn deploy-contracts`
 
@@ -73,10 +73,16 @@ get stacker info
 ## HOWTO: After a PoX cycle ends
 
 1. Exchange all BTC into STX tokens (Binance? Atomic Swap?)
-2. For every vault that has stacked-tokens > 0
-  - Run payout-vault method in stacker
-3. For every vault that has revoked stacking
+2. Transfer the STX to `arkadiko-stx-reserve-v1-1` and run (set-stacking-stx-received (stx-received uint) on stacker
+  node send-pox-stx-to-reserve.js
+  node set-stacking-stx-received.js
+3. For every vault that has stacked-tokens > 0
+  - Run payout method in stacker
+  node payout-vault.js
+4. For every vault that has revoked stacking
   - Run enable-vault-withdrawals in stacker
-4. Set tokens to stack on STX reserve contract
-5. update stacking-unlock-burn-height variable in stacker & freddie
-6. When new cycle nears: call stacking contract with updated numbers
+5. For every vault that has been liquidated
+  - Run release-stacked-stx
+5. Set tokens to stack on STX reserve contract
+6. update stacking-unlock-burn-height variable in stacker & freddie
+7. When new cycle nears: call stacking contract with updated numbers

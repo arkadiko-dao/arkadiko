@@ -32,22 +32,6 @@
 (define-data-var payout-vault-id uint u0)
 (define-data-var stacker-shutdown-activated bool false)
 
-(define-data-var stacker-yield uint u9000) ;; 90%
-(define-data-var governance-token-yield uint u500) ;; 5%
-(define-data-var governance-reserve-yield uint u500) ;; 5%
-
-(define-read-only (get-stacker-yield)
-  (ok (var-get stacker-yield)) ;; stacker gets 80% of the yield
-)
-
-(define-read-only (get-governance-token-yield)
-  (ok (var-get governance-token-yield)) ;; token holders get 10% of the yield
-)
-
-(define-read-only (get-governance-reserve-yield)
-  (ok (var-get governance-reserve-yield)) ;; reserve gets 10% of the yield
-)
-
 (define-read-only (get-stacking-unlock-burn-height)
   (ok (var-get stacking-unlock-burn-height))
 )
@@ -125,6 +109,7 @@
 )
 
 ;; can be called by the stx reserve to request STX tokens for withdrawal
+;; this can be called per vault that has set revoked stacking to true
 (define-public (request-stx-for-withdrawal (ustx-amount uint))
   (begin
     (asserts!
@@ -189,7 +174,6 @@
       (try! (payout-liquidated-vault vault-id))
       (try! (payout-vault vault-id wstx usda coll-type reserve ft))
     )
-    ;; (var-set stacking-stx-received u0) ;; set manually back to 0 after we paid everyone, since this method is for 1 vault only
     (ok true)
   )
 )
