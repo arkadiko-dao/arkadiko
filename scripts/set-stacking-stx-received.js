@@ -10,7 +10,7 @@ async function setStacksReceived() {
     contractName: "arkadiko-stacker-v1-1",
     functionName: "set-stacking-stx-received",
     functionArgs: [
-      tx.uintCV(300000000) // 50K STX
+      tx.uintCV(500000000)
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,

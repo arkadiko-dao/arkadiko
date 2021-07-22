@@ -306,7 +306,7 @@
           updated-at-block-height: block-height,
           stacked-tokens: u0
         })))
-        (try! (request-stx-for-withdrawal (get collateral vault)))
+        (try! (as-contract (request-stx-for-withdrawal (get collateral vault))))
         (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id (get debt vault) reserve ft coll-type))
         (try! (enable-vault-withdrawals vault-id)) ;; TODO - should we close vault?
       )

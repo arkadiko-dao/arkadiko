@@ -287,7 +287,7 @@
         collateral-type: collateral-type,
         collateral-token: collateral-token,
         stacked-tokens: (resolve-stacking-amount collateral-amount collateral-token (get stack-pox pox-settings)),
-        revoked-stacking: (get stack-pox pox-settings),
+        revoked-stacking: (not (get stack-pox pox-settings)),
         auto-payoff: (get auto-payoff pox-settings),
         debt: debt,
         created-at-block-height: block-height,

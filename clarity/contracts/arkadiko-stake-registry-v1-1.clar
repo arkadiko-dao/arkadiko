@@ -11,7 +11,6 @@
 (impl-trait .arkadiko-stake-registry-trait-v1.stake-registry-trait)
 
 ;; Errors
-(define-constant ERR-NOT-AUTHORIZED (err u19401))
 (define-constant ERR-INVALID-POOL (err u19001))
 (define-constant ERR-POOL-EXIST (err u19002))
 (define-constant ERR-POOL-INACTIVE (err u19003))

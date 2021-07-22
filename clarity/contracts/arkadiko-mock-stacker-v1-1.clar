@@ -16,7 +16,6 @@
 ;; 0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac
 ;; 0x00
 
-(define-constant ERR-NOT-AUTHORIZED u19401)
 (define-constant ERR-CANNOT-STACK u191)
 (define-constant ERR-FAILED-STACK-STX u192)
 (define-constant ERR-BURN-HEIGHT-NOT-REACHED u193)
