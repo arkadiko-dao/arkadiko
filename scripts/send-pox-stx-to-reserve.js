@@ -11,7 +11,7 @@ const senderKey = tx.createStacksPrivateKey(key);
 async function sendTokens() {
   const transaction = await tx.makeSTXTokenTransfer({
     recipient: tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stx-reserve-v1-1'),
-    amount: new BN(300000000), // 50K STX
+    amount: new BN(300000000),
     senderKey: tx.privateKeyToString(senderKey),
     network: network
   });

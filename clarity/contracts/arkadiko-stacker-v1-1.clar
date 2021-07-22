@@ -210,7 +210,7 @@
   )
 )
 
-(define-private (calculate-vault-reward (vault-id uint))
+(define-read-only (calculate-vault-reward (vault-id uint))
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
     (basis-points (/ (* u10000 (get stacked-tokens vault)) (var-get stacking-stx-stacked))) ;; (100 * 100 * vault-stacked-tokens / stx-stacked)
@@ -236,7 +236,10 @@
     (asserts! (> (get stacked-tokens vault) u0) (err ERR-NOT-AUTHORIZED))
 
     (if (get auto-payoff vault)
-      (try! (payoff-vault-debt vault-id earned-amount wstx usda coll-type reserve ft))
+      (begin
+        (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-stack earned-amount))
+        (try! (payoff-vault-debt vault-id earned-amount wstx usda coll-type reserve ft))
+      )
       (begin
         (if (get revoked-stacking vault)
           (begin
@@ -271,7 +274,7 @@
 ;; 3. pay off (burn) partial debt
 (define-private (payoff-vault-debt
   (vault-id uint)
-  (earned-amount uint)
+  (earned-stx-amount uint)
   (wstx <ft-trait>)
   (usda <ft-trait>)
   (coll-type <collateral-types-trait>)
@@ -280,17 +283,21 @@
 )
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
-    (swapped-amounts (unwrap-panic (contract-call? .arkadiko-swap-v1-1 swap-x-for-y wstx usda earned-amount u1)))
+    (swapped-amounts (unwrap-panic (contract-call? .arkadiko-swap-v1-1 swap-x-for-y wstx usda earned-stx-amount u1))) ;; TODO: is slippage important?
     (usda-amount (unwrap-panic (element-at swapped-amounts u1)))
-    (paid-fee (unwrap-panic (contract-call? .arkadiko-freddie-v1-1 pay-stability-fee vault-id coll-type))) ;; TODO: check if we can pay fee with usda-amount
+    (stability-fee (unwrap-panic (contract-call? .arkadiko-freddie-v1-1 get-stability-fee-for-vault vault-id coll-type)))
     (leftover-usda
-      (if (> usda-amount paid-fee)
-        (- usda-amount paid-fee)
+      (if (> usda-amount stability-fee)
+        (- usda-amount stability-fee)
         u0
       )
     )
   )
+    (print usda-amount)
+    (asserts! (>= usda-amount stability-fee) (ok true))
+    (try! (contract-call? .arkadiko-freddie-v1-1 pay-stability-fee vault-id coll-type))
     (asserts! (> leftover-usda u0) (ok true))
+
     (if (> (get debt vault) leftover-usda)
       (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id leftover-usda reserve ft coll-type))
       (begin
@@ -301,7 +308,7 @@
         })))
         (try! (request-stx-for-withdrawal (get collateral vault)))
         (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id (get debt vault) reserve ft coll-type))
-        (try! (enable-vault-withdrawals vault-id))
+        (try! (enable-vault-withdrawals vault-id)) ;; TODO - should we close vault?
       )
     )
     (ok true)
