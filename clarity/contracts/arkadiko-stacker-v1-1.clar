@@ -283,7 +283,7 @@
 )
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
-    (swapped-amounts (unwrap-panic (contract-call? .arkadiko-swap-v1-1 swap-x-for-y wstx usda earned-stx-amount u1))) ;; TODO: is slippage important?
+    (swapped-amounts (unwrap-panic (contract-call? .arkadiko-swap-v1-1 swap-x-for-y wstx usda earned-stx-amount u1)))
     (usda-amount (unwrap-panic (element-at swapped-amounts u1)))
     (stability-fee (unwrap-panic (contract-call? .arkadiko-freddie-v1-1 get-stability-fee-for-vault vault-id coll-type)))
     (leftover-usda
@@ -302,13 +302,14 @@
       (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id leftover-usda reserve ft coll-type))
       (begin
         ;; this is the last payment - after this we paid off all debt
+        ;; we leave the vault open and keep stacking in PoX for the user
         (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
           updated-at-block-height: block-height,
-          stacked-tokens: u0
+          auto-payoff: false
         })))
         (try! (as-contract (request-stx-for-withdrawal (get collateral vault))))
         (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id (get debt vault) reserve ft coll-type))
-        (try! (enable-vault-withdrawals vault-id)) ;; TODO - should we close vault?
+        (try! (enable-vault-withdrawals vault-id))
       )
     )
     (ok true)
