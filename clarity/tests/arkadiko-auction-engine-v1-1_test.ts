@@ -62,7 +62,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // 1000 USDA transferred to the auction engine
-    call = await usdaManager.balanceOf('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1');
+    call = await usdaManager.balanceOf('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-auction-engine-v1-1');
     call.result.expectOk().expectUint(1000000000);
 
     // Last bid of 1000 USDA
@@ -97,7 +97,7 @@ Clarinet.test({
     call.result.expectOk().expectUint(4000000000010);
 
     // now check the wallet of contract - should have burned all required USDA, and have some left for burning gov tokens
-    call = await usdaManager.balanceOf('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1');
+    call = await usdaManager.balanceOf('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-auction-engine-v1-1');
     call.result.expectOk().expectUint(61000000); // 61 dollars left
 
     call = await xstxManager.balanceOf(deployer.address);
@@ -310,7 +310,7 @@ Clarinet.test({
     result = vaultAuction.bid(wallet_1, 60);
     result.expectOk().expectBool(true);
 
-    let call = await usdaManager.balanceOf('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1');
+    let call = await usdaManager.balanceOf('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-auction-engine-v1-1');
     call.result.expectOk().expectUint(60000000);
 
     call = await usdaManager.balanceOf(wallet_1.address);
@@ -418,9 +418,9 @@ Clarinet.test({name: "auction engine: cannot start auction when emergency shutdo
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-oracle-v1-1'),
-        types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1"),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1'),
+        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
         types.uint(1),
         types.uint(0),
         types.uint(1000 * 1000000)
@@ -458,7 +458,7 @@ Clarinet.test({
     result.expectErr().expectUint(23); // poor bid
 
     // USDA balance of auction engine
-    call = await usdaManager.balanceOf('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-auction-engine-v1-1')
+    call = await usdaManager.balanceOf('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-auction-engine-v1-1')
     call.result.expectOk().expectUint(0);
 
     // Advance, so auction is closed
@@ -607,15 +607,15 @@ Clarinet.test({
     // Wrong reserve 
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v1-1", "redeem-lot-collateral", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1'),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xstx-token",
+          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.xstx-token",
         ),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1",
+          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1",
         ),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1",
+          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1",
         ),
         types.uint(1),
         types.uint(0)
@@ -660,15 +660,15 @@ Clarinet.test({
     // Wrong token
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v1-1", "redeem-lot-collateral", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1'),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
         ),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
+          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
         ),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1",
+          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1",
         ),
         types.uint(1),
         types.uint(0)
@@ -724,15 +724,15 @@ Clarinet.test({
     // Withdrawing the xSTX tokens should fail
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v1-1", "redeem-lot-collateral", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1'),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xstx-token",
+          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.xstx-token",
         ),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stx-reserve-v1-1",
+          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1",
         ),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1",
+          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1",
         ),
         types.uint(1),
         types.uint(0)
@@ -864,15 +864,15 @@ Clarinet.test({
     // Can not redeem xSTX tokens from SIP10 reserve
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v1-1", "redeem-lot-collateral", [
-        types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-freddie-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1'),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.xstx-token",
+          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.xstx-token",
         ),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
+          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
         ),
         types.principal(
-          "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-collateral-types-v1-1",
+          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1",
         ),
         types.uint(1),
         types.uint(0)
