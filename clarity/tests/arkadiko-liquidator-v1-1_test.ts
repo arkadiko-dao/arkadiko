@@ -21,6 +21,10 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(150000000), // 150 STX
         types.uint(100000000), // mint 130 USDA
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token"),
