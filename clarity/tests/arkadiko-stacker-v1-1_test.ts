@@ -107,7 +107,7 @@ Clarinet.test({
         types.uint(1000000000), // mint 1000 USDA
         types.tuple({
           'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
+          'auto-payoff': types.bool(false)
         }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
