@@ -248,7 +248,7 @@
               stacked-tokens: u0,
               collateral: new-collateral-amount 
             })))
-            (try! (request-stx-for-withdrawal new-collateral-amount))
+            (try! (as-contract (request-stx-for-withdrawal new-collateral-amount)))
           )
           (begin
             (try! (contract-call? .arkadiko-stx-reserve-v1-1 add-tokens-to-stack earned-amount))
@@ -343,7 +343,7 @@
     )
 
     (if (> (var-get stacking-stx-stacked) u0)
-      (try! (request-stx-for-withdrawal (get collateral vault)))
+      (try! (as-contract (request-stx-for-withdrawal (get collateral vault))))
       false
     )
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {

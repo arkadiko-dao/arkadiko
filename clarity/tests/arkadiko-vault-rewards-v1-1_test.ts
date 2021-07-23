@@ -20,6 +20,10 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000),
         types.uint(1000000),
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -49,6 +53,10 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(500000),
         types.uint(100000),
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -83,6 +91,10 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000),
         types.uint(1000000),
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -124,6 +136,10 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000),
         types.uint(1000000),
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -148,6 +164,10 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000),
         types.uint(1000000),
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -183,6 +203,10 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000),
         types.uint(10000),
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -243,6 +267,10 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000),
         types.uint(1000000),
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -343,6 +371,10 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000000),
         types.uint(1000000000),
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -369,6 +401,10 @@ Clarinet.test({
         Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
           types.uint(10000),
           types.uint(1),
+          types.tuple({
+            'stack-pox': types.bool(true),
+            'auto-payoff': types.bool(true)
+          }),
           types.ascii("STX-A"),
           types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
           types.principal(

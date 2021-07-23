@@ -19,6 +19,10 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000),
         types.uint(1000000000), // mint 1000 USDA
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -30,6 +34,10 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(500000000),
         types.uint(400000000), // mint 400 USDA
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -97,6 +105,10 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000),
         types.uint(1000000000), // mint 1000 USDA
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -130,7 +142,12 @@ Clarinet.test({
         types.uint(1000000000),
       ], deployer.address),
       Tx.contractCall("arkadiko-stacker-v1-1", "payout", [
-        types.uint(1)
+        types.uint(1),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token')
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
@@ -156,6 +173,10 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000),
         types.uint(1000000000), // mint 1000 USDA
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -167,6 +188,10 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(500000000),
         types.uint(400000000), // mint 400 USDA
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -210,10 +235,20 @@ Clarinet.test({
         types.uint(450000000),
       ], deployer.address),
       Tx.contractCall("arkadiko-stacker-v1-1", "payout", [
-        types.uint(1)
+        types.uint(1),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token')
       ], deployer.address),
       Tx.contractCall("arkadiko-stacker-v1-1", "payout", [
-        types.uint(2)
+        types.uint(2),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token')
       ], deployer.address),
       Tx.contractCall("arkadiko-stacker-v1-1", "set-stacking-stx-received", [types.uint(0)], deployer.address)
     ]);
@@ -249,6 +284,10 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1500000000), // 1500 STX
         types.uint(1300000000), // mint 1300 USDA
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token"),
@@ -329,7 +368,12 @@ Clarinet.test({
         types.uint(450000000),
       ], deployer.address),
       Tx.contractCall("arkadiko-stacker-v1-1", "payout", [
-        types.uint(1)
+        types.uint(1),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token')
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
@@ -363,6 +407,10 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000), // 1000 STX
         types.uint(1300000000), // mint 1300 USDA
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token"),
@@ -411,7 +459,12 @@ Clarinet.test({
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-v1-1", "payout", [
-        types.uint(1)
+        types.uint(1),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token')
       ], wallet_1.address)
     ]);
     block.receipts[0].result.expectErr().expectUint(19401);
@@ -453,6 +506,10 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000),
         types.uint(1000000000), // mint 1000 USDA
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -464,6 +521,10 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(500000000),
         types.uint(400000000), // mint 400 USDA
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -509,7 +570,11 @@ Clarinet.test({
       ], deployer.address),
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000), // 1000 STX
-        types.uint(1000000000), 
+        types.uint(1000000000),
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -544,7 +609,12 @@ Clarinet.test({
         types.uint(1000000000),
       ], deployer.address),
       Tx.contractCall("arkadiko-stacker-v1-1", "payout", [
-        types.uint(1)
+        types.uint(1),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token')
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
@@ -568,7 +638,11 @@ Clarinet.test({
       ], deployer.address),
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000),
-        types.uint(1000000000), 
+        types.uint(1000000000),
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -599,7 +673,12 @@ Clarinet.test({
     // trigger payout - but there is 0 STX to pay out
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-v1-1", "payout", [
-        types.uint(1)
+        types.uint(1),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token')
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
@@ -625,6 +704,10 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(1000000000),
         types.uint(1000000000), // mint 1000 USDA
+        types.tuple({
+          'stack-pox': types.bool(true),
+          'auto-payoff': types.bool(true)
+        }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
         types.principal(
@@ -675,7 +758,12 @@ Clarinet.test({
         types.uint(1000000000),
       ], deployer.address),
       Tx.contractCall("arkadiko-stacker-v1-1", "payout", [
-        types.uint(1)
+        types.uint(1),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token')
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
