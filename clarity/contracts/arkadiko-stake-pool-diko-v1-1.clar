@@ -200,7 +200,7 @@
     (dao-owner (contract-call? .arkadiko-dao get-dao-owner))
   )
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "diko-slash"))) ERR-NOT-AUTHORIZED)
-    (try! (contract-call? .arkadiko-token transfer slash-total (as-contract tx-sender) dao-owner none))
+    (try! (as-contract (contract-call? .arkadiko-token transfer slash-total (as-contract tx-sender) dao-owner none)))
     (ok slash-total)
   )
 )
