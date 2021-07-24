@@ -29,6 +29,8 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
       'stability-fee-apy': stabilityFeeApy,
       'token-type': tokenType,
       'token-name': tokenName,
+      'stack-pox': true,
+      'auto-payoff': true
     });
     setStep(1);
   };
