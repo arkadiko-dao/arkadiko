@@ -128,6 +128,10 @@ path = "contracts/stdiko-token.clar"
 depends_on = ["arkadiko-stake-pool-trait-v1", "arkadiko-token", "stdiko-token", "sip-010-trait-ft-standard", "arkadiko-stake-registry-v1-1"]
 path = "contracts/arkadiko-stake-pool-diko-v1-1.clar"
 
+[contracts.arkadiko-stake-pool-diko-slash-v1-1]
+depends_on = ["arkadiko-stake-pool-diko-v1-1"]
+path = "contracts/arkadiko-stake-pool-diko-slash-v1-1.clar"
+
 [contracts.arkadiko-stake-pool-diko-usda-v1-1]
 depends_on = ["arkadiko-stake-pool-trait-v1", "arkadiko-swap-token-diko-usda", "arkadiko-stake-registry-v1-1"]
 path = "contracts/arkadiko-stake-pool-diko-usda-v1-1.clar"
