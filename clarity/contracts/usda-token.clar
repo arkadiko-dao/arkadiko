@@ -81,7 +81,7 @@
 ;; Initialize the contract
 (begin
   ;; TODO: do not do this on testnet or mainnet
-  (try! (ft-mint? usda u10 'STB2BWB0K5XZGS3FXVTG3TKS46CQVV66NAK3YVN8))
+  (try! (ft-mint? usda u10 'ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC))
   (try! (ft-mint? usda u1000000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)) ;; 1 million USDA
   (try! (ft-mint? usda u1000000000000 'ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF)) ;; 1 million USDA
   (try! (ft-mint? usda u1000000000000 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG)) ;; 1 million USDA
