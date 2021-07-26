@@ -16,6 +16,7 @@ import { TxSidebar } from '@components/tx-sidebar';
 import { useLocation } from 'react-router-dom';
 import { TestnetModal } from './testnet-modal';
 import { initiateConnection } from '@common/websocket-tx-updater';
+import ScrollToTop from 'react-router-scroll-top'
 
 export const getBalance = async (address: string) => {
   const client = getRPCClient();
@@ -196,6 +197,7 @@ export const App: React.FC = () => {
           </Flex>
         </AppContext.Provider>
       </ThemeProvider>
+      <ScrollToTop/>
     </Connect>
   );
 };
