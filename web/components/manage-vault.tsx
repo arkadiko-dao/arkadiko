@@ -218,7 +218,6 @@ export const ManageVault = ({ match }) => {
   useEffect(() => {
     if (state.currentTxStatus === 'success') {
       if (closingVault) {
-        console.log('going back to main page uhg');
         window.location.href = '/vaults';
       } else {
         window.location.reload();
