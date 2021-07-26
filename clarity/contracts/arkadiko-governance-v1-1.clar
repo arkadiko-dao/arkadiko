@@ -264,7 +264,7 @@
     (asserts! (>= block-height (get end-block-height proposal)) (err ERR-NOT-AUTHORIZED))
 
     ;; Return DIKO
-    (contract-call? token transfer token-count (as-contract tx-sender) member none)
+    (as-contract (contract-call? token transfer token-count (as-contract tx-sender) member none))
   )
 )
 
