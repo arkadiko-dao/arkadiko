@@ -16,7 +16,7 @@ async function processing(broadcastedResult, tx, count) {
   if (value.tx_status === "pending") {
     // console.log(value);
   } else if (count === 3) {
-    // console.log(value, broadcastedResult);
+    console.log(value, broadcastedResult);
   }
 
   if (count > 20) {
