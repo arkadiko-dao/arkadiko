@@ -491,7 +491,7 @@
       (err ERR-MAXIMUM-DEBT-REACHED)
     )
 
-    (try! (pay-stability-fee vault-id coll-type))
+    (try! (accrue-stability-fee vault-id coll-type))
     (try! (contract-call? reserve mint
         (get collateral-token vault)
         (get owner vault)
