@@ -489,7 +489,9 @@ Clarinet.test({
     ]);
 
     // have not reached minimum to stack
-    block.receipts[0].result.expectErr().expectUint(191);
+    // u18 is the PoX error ERR_STACKING_INVALID_AMOUNT
+    // see https://explorer.stacks.co/txid/0x41356e380d164c5233dd9388799a5508aae929ee1a7e6ea0c18f5359ce7b8c33?chain=mainnet
+    block.receipts[0].result.expectErr().expectUint(18);
   }
 });
 
