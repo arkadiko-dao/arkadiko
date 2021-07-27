@@ -175,7 +175,7 @@ Clarinet.test({
         types.uint(1000000000), // mint 1000 USDA
         types.tuple({
           'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
+          'auto-payoff': types.bool(false)
         }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
@@ -190,7 +190,7 @@ Clarinet.test({
         types.uint(400000000), // mint 400 USDA
         types.tuple({
           'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
+          'auto-payoff': types.bool(false)
         }),
         types.ascii("STX-A"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
@@ -229,7 +229,7 @@ Clarinet.test({
     chain.mineEmptyBlock(300);
 
     // now imagine we receive 450 STX for stacking
-    // and then payout vault 1 (which was the only stacker)
+    // and then payout vault 1 and 2
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-v1-1", "set-stacking-stx-received", [
         types.uint(450000000),
