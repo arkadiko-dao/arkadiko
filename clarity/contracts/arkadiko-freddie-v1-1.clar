@@ -491,10 +491,6 @@
       (err ERR-MAXIMUM-DEBT-REACHED)
     )
 
-    (if (>= (unwrap-panic (contract-call? .usda-token get-balance tx-sender)) (unwrap-panic (get-stability-fee-for-vault vault-id coll-type)))
-      (try! (pay-stability-fee vault-id coll-type))
-      true
-    )
     (try! (contract-call? reserve mint
         (get collateral-token vault)
         (get owner vault)
