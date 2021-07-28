@@ -17,6 +17,7 @@ import { useConnect } from '@stacks/connect-react';
 import { StakeActions } from './stake-actions';
 import { Menu } from '@headlessui/react';
 import { ArrowCircleDownIcon, ArrowCircleUpIcon, CashIcon, PlusIcon } from '@heroicons/react/solid';
+import { PlaceHolder } from './placeholder';
 
 export const Stake = () => {
   const [state, setState] = useContext(AppContext);
@@ -40,6 +41,7 @@ export const Stake = () => {
   const [lpDikoUsdaPendingRewards, setLpDikoUsdaPendingRewards] = useState(0);
   const [lpStxUsdaPendingRewards, setLpStxUsdaPendingRewards] = useState(0);
   const [lpStxDikoPendingRewards, setLpStxDikoPendingRewards] = useState(0);
+  const [loadingData, setLoadingData] = useState(true);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
 
@@ -204,22 +206,24 @@ export const Stake = () => {
       if (totalDikoStaked === 0) { totalDikoStaked = 10 };
       const dikoPoolRewards = totalStakingRewardsYear1 * 0.1;
       const dikoApr = dikoPoolRewards / totalDikoStaked;
-      setApy(Number((100 * dikoApr).toFixed(2)));
+      setApy(Number((100 * dikoApr / 100000).toFixed(2)));
 
       if (totalDikoUsdaStaked === 0) { totalDikoUsdaStaked = 10 };
       const dikoUsdaPoolRewards = totalStakingRewardsYear1 * 0.2;
       const dikoUsdaApr = dikoUsdaPoolRewards / totalDikoUsdaStaked;
-      setDikoUsdaLpApy(Number((100 * dikoUsdaApr).toFixed(2)));
+      setDikoUsdaLpApy(Number((100 * dikoUsdaApr / 100000).toFixed(2)));
 
       if (totalStxUsdaStaked === 0) { totalStxUsdaStaked = 10 };
       const stxUsdaPoolRewards = totalStakingRewardsYear1 * 0.5;
       const stxUsdaApr = stxUsdaPoolRewards / totalStxUsdaStaked;
-      setStxUsdaLpApy(Number((100 * stxUsdaApr).toFixed(2)));
+      setStxUsdaLpApy(Number((100 * stxUsdaApr / 100000).toFixed(2)));
 
       if (totalStxDikoStaked === 0) { totalStxDikoStaked = 10 };
       const stxDikoPoolRewards = totalStakingRewardsYear1 * 0.2;
       const stxDikoApr = stxDikoPoolRewards / totalStxDikoStaked;
-      setStxDikoLpApy(Number((100 * stxDikoApr).toFixed(2)));
+      setStxDikoLpApy(Number((100 * stxDikoApr / 100000).toFixed(2)));
+
+      setLoadingData(false);
     };
     if (mounted) {
       void getData();
@@ -468,7 +472,11 @@ export const Stake = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
-                              {apy}%
+                              {loadingData ? (
+                                <PlaceHolder size={2} color="indigo" />
+                              ) : (
+                                `${apy}%`
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                               auto-compounding
@@ -529,7 +537,11 @@ export const Stake = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
-                              {dikoUsdaLpApy}%
+                              {loadingData ? (
+                                <PlaceHolder size={2} color="indigo" />
+                              ) : (
+                                `${dikoUsdaLpApy}%`
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                               {microToReadable(lpDikoUsdaPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
@@ -626,7 +638,11 @@ export const Stake = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
-                              {stxUsdaLpApy}%
+                              {loadingData ? (
+                                <PlaceHolder size={2} color="indigo" />
+                              ) : (
+                                `${stxUsdaLpApy}%`
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                               {microToReadable(lpStxUsdaPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
@@ -723,7 +739,11 @@ export const Stake = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
-                              {stxDikoLpApy}%
+                              {loadingData ? (
+                                <PlaceHolder size={2} color="indigo" />
+                              ) : (
+                                `${stxDikoLpApy}%`
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                               {microToReadable(lpStxDikoPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
