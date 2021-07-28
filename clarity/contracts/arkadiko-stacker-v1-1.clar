@@ -306,9 +306,7 @@
           updated-at-block-height: block-height,
           auto-payoff: false
         })))
-        (try! (as-contract (request-stx-for-withdrawal (get collateral vault))))
         (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id (get debt vault) reserve ft coll-type))
-        (try! (enable-vault-withdrawals vault-id))
       )
     )
     (ok true)
