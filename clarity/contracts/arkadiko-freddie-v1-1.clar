@@ -276,7 +276,7 @@
       (err ERR-WRONG-COLLATERAL-TOKEN)
     )
 
-    (try! (contract-call? reserve collateralize-and-mint ft collateral-token collateral-amount debt sender))
+    (try! (contract-call? reserve collateralize-and-mint ft collateral-token collateral-amount debt sender (get stack-pox pox-settings)))
     (try! (as-contract (contract-call? .arkadiko-dao mint-token .usda-token debt sender)))
     (let (
       (vault-id (+ (contract-call? .arkadiko-vault-data-v1-1 get-last-vault-id) u1))

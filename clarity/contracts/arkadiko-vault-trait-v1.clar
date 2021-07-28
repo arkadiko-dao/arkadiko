@@ -11,7 +11,7 @@
     (calculate-current-collateral-to-debt-ratio ((string-ascii 12) uint uint <oracle-trait>) (response uint uint))
 
     ;; collateralize tokens and mint stablecoin according to collateral-to-debt ratio
-    (collateralize-and-mint (<ft-trait> (string-ascii 12) uint uint principal) (response uint uint))
+    (collateralize-and-mint (<ft-trait> (string-ascii 12) uint uint principal bool) (response uint uint))
 
     ;; deposit extra collateral
     (deposit (<ft-trait> (string-ascii 12) uint) (response bool uint))

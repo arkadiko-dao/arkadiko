@@ -107,14 +107,17 @@
 ;; accept collateral in STX tokens
 ;; save STX in stx-reserve-address
 ;; calculate price and collateralisation ratio
-(define-public (collateralize-and-mint (token <ft-trait>) (token-string (string-ascii 12)) (ustx-amount uint) (debt uint) (sender principal))
+(define-public (collateralize-and-mint (token <ft-trait>) (token-string (string-ascii 12)) (ustx-amount uint) (debt uint) (sender principal) (stack-pox bool))
   (begin
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq token-string "STX") (err ERR-WRONG-TOKEN))
 
     (match (print (stx-transfer? ustx-amount sender (as-contract tx-sender)))
       success (begin
-        (try! (add-tokens-to-stack ustx-amount))
+        (if (is-eq stack-pox true)
+          (try! (add-tokens-to-stack ustx-amount))
+          u0
+        )
         (ok debt)
       )
       error (err ERR-TRANSFER-FAILED)
