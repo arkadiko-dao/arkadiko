@@ -282,7 +282,7 @@
 )
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
-    (swapped-amounts (unwrap-panic (contract-call? .arkadiko-swap-v1-1 swap-x-for-y wstx usda earned-stx-amount u1)))
+    (swapped-amounts (unwrap-panic (as-contract (contract-call? .arkadiko-swap-v1-1 swap-x-for-y wstx usda earned-stx-amount u1))))
     (usda-amount (unwrap-panic (element-at swapped-amounts u1)))
     (stability-fee (unwrap-panic (contract-call? .arkadiko-freddie-v1-1 get-stability-fee-for-vault vault-id coll-type)))
     (leftover-usda
@@ -306,7 +306,12 @@
           updated-at-block-height: block-height,
           auto-payoff: false
         })))
-        (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id (get debt vault) reserve ft coll-type))
+        (let (
+          (excess-usda (- leftover-usda (get debt vault)))
+        )
+          (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id (get debt vault) reserve ft coll-type))
+          (try! (contract-call? .usda-token transfer excess-usda (as-contract tx-sender) (get owner vault) none))
+        )
       )
     )
     (ok true)

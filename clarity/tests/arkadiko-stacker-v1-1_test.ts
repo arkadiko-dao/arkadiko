@@ -1024,13 +1024,7 @@ Clarinet.test({
     let call:any = chain.callReadOnlyFn("usda-token", "get-balance", [types.principal(wallet_1.address)], deployer.address);
     call.result.expectOk().expectUint(1000001000000);   
 
-    call = chain.callReadOnlyFn("usda-token", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(991000000000);   
-
-    call = chain.callReadOnlyFn("usda-token", "get-balance", [types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1')], deployer.address);
-    call.result.expectOk().expectUint(0);   
-
-    // now imagine we receive 10 STX for stacking
+    // now imagine we receive 100 STX for stacking
     // and then payout vault 1 (which was the only stacker)
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-v1-1", "set-stacking-stx-received", [
@@ -1055,19 +1049,10 @@ Clarinet.test({
     vault['collateral'].expectUint(1000000000);
     vault['debt'].expectUint(0); // PoX yield has paid back all dept
 
-    
-    call = chain.callReadOnlyFn("usda-token", "get-balance", [types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stacker-v1-1')], deployer.address);
-    call.result.expectOk().expectUint(0);   
-
-    call = chain.callReadOnlyFn("usda-token", "get-balance", [types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1')], deployer.address);
-    call.result.expectOk().expectUint(0);   
-
-    call = chain.callReadOnlyFn("usda-token", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(991097715803);   
-
     // Excess yield has been transferred to the user's wallet
+    // User got ~97 USDA extra
     call = chain.callReadOnlyFn("usda-token", "get-balance", [types.principal(wallet_1.address)], deployer.address);
-    call.result.expectOk().expectUint(1000001000000);   
+    call.result.expectOk().expectUint(1000098715803);   
+
   }
 });
-
