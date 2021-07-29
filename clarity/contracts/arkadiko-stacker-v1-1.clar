@@ -1,4 +1,3 @@
-;; (impl-trait .arkadiko-stacker-trait-v1.stacker-trait)
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
@@ -238,6 +237,13 @@
       (begin
         (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-stack earned-amount))
         (try! (payoff-vault-debt vault-id earned-amount wstx usda coll-type reserve ft))
+        (if (get revoked-stacking vault)
+          (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault { 
+            updated-at-block-height: block-height, 
+            stacked-tokens: u0
+          })))
+          true
+        )
       )
       (begin
         (if (get revoked-stacking vault)
