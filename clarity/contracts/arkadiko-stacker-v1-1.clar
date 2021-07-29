@@ -1,4 +1,4 @@
-(impl-trait .arkadiko-stacker-trait-v1.stacker-trait)
+;; (impl-trait .arkadiko-stacker-trait-v1.stacker-trait)
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
