@@ -1098,24 +1098,6 @@ Clarinet.test({
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
       ], deployer.address),
 
-      // Second vault from same user, also stacking
-      // Needed to be able to initiate second cycle, after vault 1 stopped stacking
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1000000000),
-        types.uint(1000000000), // mint 1000 USDA
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], deployer.address),
-
       // We need to make sure there is enough STX in the reserve to perform the auto payoff
       // On prod we will swap PoX yield to STX and transfer it to the reserve
       // Here we just create a second vault to ahve additional STX available in the reserve
@@ -1138,7 +1120,7 @@ Clarinet.test({
 
     // STX from vault 1 and 2 stacked
     let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [], deployer.address);
-    call.result.expectOk().expectUint(2000000000); // 2000 STX
+    call.result.expectOk().expectUint(1000000000); 
 
     // Check initial vault data
     call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
@@ -1154,10 +1136,10 @@ Clarinet.test({
         types.uint(1) // 1 cycle lock period
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(2000000000);
+    block.receipts[0].result.expectOk().expectUint(1000000000);
 
     call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stx-balance", [], deployer.address);
-    call.result.expectOk().expectUint(2000000000);
+    call.result.expectOk().expectUint(1000000000);
 
     chain.mineEmptyBlock(300);
 
@@ -1188,7 +1170,8 @@ Clarinet.test({
     // Check vault data
     call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
     vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(0); // TODO: should be 0??
+    vault['stacked-tokens'].expectUint(0);
 
   }
 });
+

@@ -57,6 +57,17 @@
   )
 )
 
+;; get STX to auto payoff vault
+(define-public (request-stx-to-auto-payoff (requested-ustx uint))
+  (begin
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker"))) (err ERR-NOT-AUTHORIZED))
+
+    (as-contract
+      (stx-transfer? requested-ustx (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker")))
+    )
+  )
+)
+
 ;; transfers (var-get tokens-to-stack) tokens to the stacker contract
 (define-public (request-stx-to-stack (requested-ustx uint))
   (begin

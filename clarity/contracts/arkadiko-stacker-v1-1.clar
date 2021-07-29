@@ -235,7 +235,7 @@
 
     (if (get auto-payoff vault)
       (begin
-        (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-stack earned-amount))
+        (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-auto-payoff earned-amount))
         (try! (payoff-vault-debt vault-id earned-amount wstx usda coll-type reserve ft))
         (if (get revoked-stacking vault)
           (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault { 
