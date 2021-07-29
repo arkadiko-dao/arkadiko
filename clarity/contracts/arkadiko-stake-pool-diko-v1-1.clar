@@ -133,11 +133,10 @@
       (try! (contract-call? .arkadiko-dao burn-token .stdiko-token amount staker))
 
       ;; Transfer DIKO back from this contract to the user
-      (try! (contract-call? .arkadiko-token transfer diko-to-receive (as-contract tx-sender) staker none))
+      (try! (as-contract (contract-call? .arkadiko-token transfer diko-to-receive (as-contract tx-sender) staker none)))
 
       (ok diko-to-receive)
     )
-
   )
 )
 
