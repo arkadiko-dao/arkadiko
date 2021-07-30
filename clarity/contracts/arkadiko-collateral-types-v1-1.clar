@@ -219,8 +219,8 @@
       url: "https://www.stacks.co/",
       total-debt: u0,
       liquidation-ratio: u175, ;;175
-      collateral-to-debt-ratio: u250,
-      maximum-debt: u4000000000000000, ;; 4B
+      collateral-to-debt-ratio: u392, ;; ~25% LTV
+      maximum-debt: u1000000000000000, ;; 1B
       liquidation-penalty: u1000, ;; 10% in basis points
       stability-fee: u7610350076, ;; 4% / 365 days / (24*6) blocks = 0.00007610350076 fee per block
       stability-fee-decimals: u16,
@@ -237,8 +237,8 @@
       url: "https://www.stacks.co/",
       total-debt: u0,
       liquidation-ratio: u150,
-      collateral-to-debt-ratio: u250,
-      maximum-debt: u900000000000000, ;; 900M
+      collateral-to-debt-ratio: u250, ;; ~40% LTV
+      maximum-debt: u500000000000000, ;; 500M
       liquidation-penalty: u1000,
       stability-fee: u1331811263, ;; 7% / 365 days / (24*6) blocks = 0.0001331811263 fee per block
       stability-fee-decimals: u15,
