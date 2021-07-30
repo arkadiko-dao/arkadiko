@@ -165,8 +165,8 @@ Clarinet.test({
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
     let vaultAuction = new VaultAuction(chain, deployer);
 
-    // Initialize price of STX to $2 in the oracle
-    let result = oracleManager.updatePrice("STX", 200);
+    // Initialize price of STX to $3 in the oracle
+    let result = oracleManager.updatePrice("STX", 300);
 
     // Create vault
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
@@ -243,8 +243,8 @@ Clarinet.test({
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
     let vaultAuction = new VaultAuction(chain, deployer);
 
-    // Initialize price of STX to $2 in the oracle
-    let result = oracleManager.updatePrice("STX", 200);
+    // Initialize price of STX to $3 in the oracle
+    let result = oracleManager.updatePrice("STX", 300);
 
     // Create vault
     result = vaultManager.createVault(wallet_1, "STX-A", 1500, 1000);
@@ -293,8 +293,8 @@ Clarinet.test({
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
     let vaultAuction = new VaultAuction(chain, deployer);
 
-    // Initialize price of STX to $2 in the oracle
-    let result = oracleManager.updatePrice("STX", 200);
+    // Initialize price of STX to $3 in the oracle
+    let result = oracleManager.updatePrice("STX", 300);
 
     // Create vault
     result = vaultManager.createVault(wallet_1, "STX-A", 150, 100);
@@ -337,8 +337,8 @@ Clarinet.test({
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
     let vaultAuction = new VaultAuction(chain, deployer);
 
-    // Initialize price of STX to $2 in the oracle
-    let result = oracleManager.updatePrice("STX", 200); 
+    // Initialize price of STX to $3 in the oracle
+    let result = oracleManager.updatePrice("STX", 300); 
 
     // Create vault
     result = vaultManager.createVault(wallet_1, "STX-A", 1500, 1000);
@@ -374,7 +374,7 @@ Clarinet.test({
     let vaultAuction = new VaultAuction(chain, deployer);
 
     // Update price and create vault
-    let result = oracleManager.updatePrice("STX", 200);
+    let result = oracleManager.updatePrice("STX", 300);
     result = vaultManager.createVault(wallet_1, "STX-A", 150, 100);
     result.expectOk().expectUint(100 * 1000000);
 
@@ -404,7 +404,7 @@ Clarinet.test({name: "auction engine: cannot start auction when emergency shutdo
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
 
     // Create vault and liquidate
-    let result = oracleManager.updatePrice("STX", 200);
+    let result = oracleManager.updatePrice("STX", 300);
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
     result = oracleManager.updatePrice("STX", 100);
     result = vaultLiquidator.notifyRiskyVault(deployer);
@@ -444,7 +444,7 @@ Clarinet.test({
     let vaultAuction = new VaultAuction(chain, deployer);
 
     // Create vault and liquidate
-    let result = oracleManager.updatePrice("STX", 200);
+    let result = oracleManager.updatePrice("STX", 300);
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
     result = oracleManager.updatePrice("STX", 100);
     result = vaultLiquidator.notifyRiskyVault(deployer);
@@ -484,8 +484,8 @@ Clarinet.test({
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
     let vaultAuction = new VaultAuction(chain, deployer);
 
-    // Initialize price of STX to $2.5 in the oracle
-    let result = oracleManager.updatePrice("STX", 250);
+    // Initialize price of STX to $3.5 in the oracle
+    let result = oracleManager.updatePrice("STX", 350);
 
     // Create vault for wallet_1 - 1600 STX, 1100 USDA
     result = vaultManager.createVault(wallet_1, "STX-A", 1600, 1100);
@@ -545,8 +545,8 @@ Clarinet.test({
     let vaultManager = new VaultManager(chain, deployer);
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
 
-    // Initialize price of STX to $2 in the oracle
-    let result = oracleManager.updatePrice("STX", 200);
+    // Initialize price of STX to $3 in the oracle
+    let result = oracleManager.updatePrice("STX", 300);
 
     // Create vault for wallet_1 - 1000 STX, 700 USDA
     result = vaultManager.createVault(wallet_1, "STX-A", 1000, 700);
@@ -584,8 +584,8 @@ Clarinet.test({
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
     let vaultAuction = new VaultAuction(chain, deployer);
 
-    // Initialize price of STX to $2 in the oracle
-    let result = oracleManager.updatePrice("STX", 200);
+    // Initialize price of STX to $3 in the oracle
+    let result = oracleManager.updatePrice("STX", 300);
 
     // Create vault - 1500 STX, 1000 USDA
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
@@ -630,15 +630,14 @@ Clarinet.test({
     "auction engine: redeem collateral using wrong token contract",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
 
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
     let vaultAuction = new VaultAuction(chain, deployer);
 
-    // Initialize price of STX to $2 in the oracle
-    let result = oracleManager.updatePrice("STX", 200);
+    // Initialize price of STX to $3 in the oracle
+    let result = oracleManager.updatePrice("STX", 300);
 
     // Create vault - 1500 STX, 1000 USDA
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
@@ -692,8 +691,8 @@ Clarinet.test({
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
     let vaultAuction = new VaultAuction(chain, deployer);
 
-    // Initialize price of STX to $2 in the oracle
-    let result = oracleManager.updatePrice("STX", 200);
+    // Initialize price of STX to $3 in the oracle
+    let result = oracleManager.updatePrice("STX", 300);
 
     // Create vault for wallet_1 - 1500 STX, 1000 USDA
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
@@ -747,8 +746,6 @@ Clarinet.test({
     "auction engine: can not exchange xSTX for STX while vault is stacking",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
-    let wallet_2 = accounts.get("wallet_2")!;
 
     let oracleManager = new OracleManager(chain, deployer);
     let xstxManager = new XstxManager(chain, deployer);
@@ -756,8 +753,8 @@ Clarinet.test({
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
     let vaultAuction = new VaultAuction(chain, deployer);
 
-    // Initialize price of STX to $2 in the oracle
-    let result = oracleManager.updatePrice("STX", 200);
+    // Initialize price of STX to $3 in the oracle
+    let result = oracleManager.updatePrice("STX", 300);
 
     // Create vault for wallet_1 - 1500 STX, 1100 USDA
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1100);
@@ -819,8 +816,8 @@ Clarinet.test({
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
     let vaultAuction = new VaultAuction(chain, deployer);
 
-    // Initialize price of STX to $2 in the oracle
-    let result = oracleManager.updatePrice("STX", 200);
+    // Initialize price of STX in the oracle
+    let result = oracleManager.updatePrice("STX", 300);
 
     // Create vault - 1500 STX, 1100 USDA
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1100);
@@ -897,8 +894,8 @@ Clarinet.test({
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
     let vaultAuction = new VaultAuction(chain, deployer);
 
-    // Initialize price of STX to $0.63 in the oracle
-    let result = oracleManager.updatePrice("STX", 63);
+    // Initialize price of STX in the oracle
+    let result = oracleManager.updatePrice("STX", 100);
 
     // Create vault - 6100 STX, 1500 USDA
     result = vaultManager.createVault(deployer, "STX-A", 6100, 1500);
@@ -952,8 +949,8 @@ Clarinet.test({
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
     let vaultAuction = new VaultAuction(chain, deployer);
 
-    // Initialize price of STX to $0.63 in the oracle
-    let result = oracleManager.updatePrice("STX", 63);
+    // Initialize price of STX in the oracle
+    let result = oracleManager.updatePrice("STX", 120);
 
     // Create vault - 5999 STX, 1500 USDA
     result = vaultManager.createVault(deployer, "STX-A", 5999, 1500);

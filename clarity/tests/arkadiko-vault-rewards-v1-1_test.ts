@@ -15,7 +15,7 @@ Clarinet.test({
       
       Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
-        types.uint(77),
+        types.uint(200),
       ], deployer.address),
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000),
@@ -80,13 +80,11 @@ Clarinet.test({
   name: "vault-rewards: claim DIKO rewards",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
 
-    let block = chain.mineBlock([
-      
+    chain.mineBlock([
       Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
-        types.uint(77),
+        types.uint(200),
       ], deployer.address),
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000),
@@ -131,7 +129,7 @@ Clarinet.test({
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
-        types.uint(77),
+        types.uint(200),
       ], deployer.address),
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000),
@@ -193,12 +191,11 @@ Clarinet.test({
   name: "vault-rewards: auto-harvest vault rewards",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
     
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
-        types.uint(77),
+        types.uint(200),
       ], deployer.address),
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000),
@@ -257,12 +254,11 @@ Clarinet.test({
   name: "vault-rewards: user loses rewards when vault gets liquidated",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
 
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
-        types.uint(77),
+        types.uint(200),
       ], deployer.address),
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000),
@@ -366,7 +362,7 @@ Clarinet.test({
       
       Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
-        types.uint(77),
+        types.uint(200),
       ], deployer.address),
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(5000000000),
