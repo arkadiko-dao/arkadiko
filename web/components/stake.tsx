@@ -17,6 +17,7 @@ import { useConnect } from '@stacks/connect-react';
 import { StakeActions } from './stake-actions';
 import { Menu } from '@headlessui/react';
 import { ArrowCircleDownIcon, ArrowCircleUpIcon, CashIcon, PlusIcon } from '@heroicons/react/solid';
+import { PlaceHolder } from './placeholder';
 
 export const Stake = () => {
   const [state, setState] = useContext(AppContext);
@@ -40,6 +41,7 @@ export const Stake = () => {
   const [lpDikoUsdaPendingRewards, setLpDikoUsdaPendingRewards] = useState(0);
   const [lpStxUsdaPendingRewards, setLpStxUsdaPendingRewards] = useState(0);
   const [lpStxDikoPendingRewards, setLpStxDikoPendingRewards] = useState(0);
+  const [loadingData, setLoadingData] = useState(true);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
 
@@ -53,16 +55,6 @@ export const Stake = () => {
     let mounted = true;
 
     const getData = async () => {
-      const totalStakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-diko-v1-1",
-        functionName: "get-total-staked",
-        functionArgs: [],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let totalStaked = cvToJSON(totalStakedCall).value / 1000000;
-
       const stDikoSupplyCall = await callReadOnlyFunction({
         contractAddress,
         contractName: "stdiko-token",
@@ -168,19 +160,70 @@ export const Stake = () => {
       let stxDikoLpPendingRewards = cvToJSON(stxDikoPendingRewardsCall).value.value;
       setLpStxDikoPendingRewards(stxDikoLpPendingRewards);
 
-      const dikoPoolPerYear = 2350000; // TODO: hardcoded 23.5mio*10% for first year. 144 * 365 * (rewardsPerBlock) / 1000000;
-      if (totalStaked === 0) { totalStaked = state.balance['diko'] / 1000000; };
-      if (totalStaked === 0) { totalStaked = 1 };
-      setApy(Number((100 * (dikoPoolPerYear / totalStaked)).toFixed(2)));
 
-      const dikoUsdaLpPoolPerYear = 23500000 * 30 / 100;
-      setDikoUsdaLpApy(Number((100 * (dikoUsdaLpPoolPerYear / totalStaked)).toFixed(2)));
+      const totalDikoStakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-stake-pool-diko-v1-1",
+        functionName: "get-total-staked",
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      let totalDikoStaked = cvToJSON(totalDikoStakedCall).value / 1000000;
 
-      const stxUsdaLpPoolPerYear = 23500000 * 60 / 100;
-      setStxUsdaLpApy(Number((100 * (stxUsdaLpPoolPerYear / totalStaked)).toFixed(2)));
+      const totalDikoUsdaStakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-stake-pool-diko-usda-v1-1",
+        functionName: "get-total-staked",
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      let totalDikoUsdaStaked = cvToJSON(totalDikoUsdaStakedCall).value / 1000000;
 
-      const stxDikoLpPoolPerYear = 23500000 * 60 / 100;
-      setStxDikoLpApy(Number((100 * (stxDikoLpPoolPerYear / totalStaked)).toFixed(2)));
+      const totalStxUsdaStakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-stake-pool-wstx-usda-v1-1",
+        functionName: "get-total-staked",
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      let totalStxUsdaStaked = cvToJSON(totalStxUsdaStakedCall).value / 1000000;
+
+      const totalStxDikoStakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-stake-pool-wstx-diko-v1-1",
+        functionName: "get-total-staked",
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      let totalStxDikoStaked = cvToJSON(totalStxDikoStakedCall).value / 1000000;
+
+      const totalStakingRewardsYear1 = 23500000;
+
+      if (totalDikoStaked === 0) { totalDikoStaked = 10 };
+      const dikoPoolRewards = totalStakingRewardsYear1 * 0.1;
+      const dikoApr = dikoPoolRewards / totalDikoStaked;
+      setApy(Number((100 * dikoApr).toFixed(2)));
+
+      if (totalDikoUsdaStaked === 0) { totalDikoUsdaStaked = 10 };
+      const dikoUsdaPoolRewards = totalStakingRewardsYear1 * 0.2;
+      const dikoUsdaApr = dikoUsdaPoolRewards / totalDikoUsdaStaked;
+      setDikoUsdaLpApy(Number((100 * dikoUsdaApr).toFixed(2)));
+
+      if (totalStxUsdaStaked === 0) { totalStxUsdaStaked = 10 };
+      const stxUsdaPoolRewards = totalStakingRewardsYear1 * 0.5;
+      const stxUsdaApr = stxUsdaPoolRewards / totalStxUsdaStaked;
+      setStxUsdaLpApy(Number((100 * stxUsdaApr).toFixed(2)));
+
+      if (totalStxDikoStaked === 0) { totalStxDikoStaked = 10 };
+      const stxDikoPoolRewards = totalStakingRewardsYear1 * 0.2;
+      const stxDikoApr = stxDikoPoolRewards / totalStxDikoStaked;
+      setStxDikoLpApy(Number((100 * stxDikoApr).toFixed(2)));
+
+      setLoadingData(false);
     };
     if (mounted) {
       void getData();
@@ -429,7 +472,11 @@ export const Stake = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
-                              {apy}%
+                              {loadingData ? (
+                                <PlaceHolder size={2} color="indigo" />
+                              ) : (
+                                `${apy}%`
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                               auto-compounding
@@ -490,7 +537,11 @@ export const Stake = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
-                              {dikoUsdaLpApy}%
+                              {loadingData ? (
+                                <PlaceHolder size={2} color="indigo" />
+                              ) : (
+                                `${dikoUsdaLpApy}%`
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                               {microToReadable(lpDikoUsdaPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
@@ -587,7 +638,11 @@ export const Stake = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
-                              {stxUsdaLpApy}%
+                              {loadingData ? (
+                                <PlaceHolder size={2} color="indigo" />
+                              ) : (
+                                `${stxUsdaLpApy}%`
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                               {microToReadable(lpStxUsdaPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
@@ -684,7 +739,11 @@ export const Stake = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
-                              {stxDikoLpApy}%
+                              {loadingData ? (
+                                <PlaceHolder size={2} color="indigo" />
+                              ) : (
+                                `${stxDikoLpApy}%`
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                               {microToReadable(lpStxDikoPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
