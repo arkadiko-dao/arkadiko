@@ -30,12 +30,12 @@ Clarinet.test({
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
     let vaultAuction = new VaultAuction(chain, deployer);
 
-    // Initialize price of STX to 77 cents in the oracle
+    // Initialize price of STX to 100 cents in the oracle
     // Q: should prices be coded in cents, or fraction of cents?
     // Q: can the oracle be updated multiple times per block?
     // Q: should this function emit an event, that can be watched?
-    let result = oracleManager.updatePrice("STX", 77);
-    result.expectOk().expectUint(77);
+    let result = oracleManager.updatePrice("STX", 100);
+    result.expectOk().expectUint(100);
 
     // Provide a collateral of 5000000 STX, so 1000000 stx-a can be minted (5 * 0.77) / 2 = 1.925
     // Q: why do we need to provide sender in the arguments?
@@ -72,14 +72,14 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 77);
-    result.expectOk().expectUint(77);
+    let result = oracleManager.updatePrice("STX", 100);
+    result.expectOk().expectUint(100);
 
     result = vaultManager.createVault(deployer, "STX-A", 5, 1)
     result.expectOk().expectUint(1000000);
 
     let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
-    call.result.expectOk().expectUint(385);
+    call.result.expectOk().expectUint(500);
   }
 });
 
@@ -91,28 +91,28 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 200);
-    result.expectOk().expectUint(200);
+    let result = oracleManager.updatePrice("STX", 400);
+    result.expectOk().expectUint(400);
 
     result = vaultManager.createVault(deployer, "STX-B", 900, 700)
     result.expectOk().expectUint(700000000);
 
     let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
-    call.result.expectOk().expectUint(257);
+    call.result.expectOk().expectUint(514);
 
     chain.mineEmptyBlock(365*144);
 
     // after 1 year of not paying debt on vault, collateralisation ratio should be lower
     call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);    
-    call.result.expectOk().expectUint(240);
+    call.result.expectOk().expectUint(480);
 
     // Change price
-    result = oracleManager.updatePrice("STX", 400);
-    result.expectOk().expectUint(400);
+    result = oracleManager.updatePrice("STX", 800);
+    result.expectOk().expectUint(800);
 
     // Price doubled
     call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
-    call.result.expectOk().expectUint(480);
+    call.result.expectOk().expectUint(961);
   }
 });
 
@@ -452,8 +452,8 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 200);
-    result.expectOk().expectUint(200);
+    let result = oracleManager.updatePrice("STX", 300);
+    result.expectOk().expectUint(300);
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
     result.expectOk().expectUint(300000000);
@@ -605,8 +605,8 @@ Clarinet.test({
     let vaultManager = new VaultManager(chain, deployer);
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 77);
-    result.expectOk().expectUint(77);
+    let result = oracleManager.updatePrice("STX", 100);
+    result.expectOk().expectUint(100);
 
     result = vaultManager.createVault(deployer, "STX-A", 5, 1);
     result.expectOk().expectUint(1000000);
