@@ -1,5 +1,3 @@
-(impl-trait .arkadiko-stacker-trait-v1.stacker-trait)
-
 ;; Stacker can initiate stacking for the STX reserve
 ;; The amount to stack is kept as a data var in the stx reserve
 ;; Stacks the STX tokens in POX
@@ -16,7 +14,6 @@
 ;; 0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac
 ;; 0x00
 
-(define-constant ERR-NOT-AUTHORIZED u19401)
 (define-constant ERR-CANNOT-STACK u191)
 (define-constant ERR-FAILED-STACK-STX u192)
 (define-constant ERR-BURN-HEIGHT-NOT-REACHED u193)
@@ -62,16 +59,12 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
-
     (ok (var-set stacking-stx-received stx-received))
   )
 )
 
 (define-public (toggle-stacker-shutdown)
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
-
     (ok (var-set stacker-shutdown-activated (not (var-get stacker-shutdown-activated))))
   )
 )
@@ -86,7 +79,6 @@
     (can-stack (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox can-stack-stx pox-addr tokens-to-stack start-burn-ht lock-period)))
     (stx-balance (unwrap-panic (get-stx-balance)))
   )
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
     (asserts! (>= burn-block-height (var-get stacking-unlock-burn-height)) (err ERR-ALREADY-STACKING))
     (asserts!
       (and
@@ -100,17 +92,16 @@
     (if (unwrap! can-stack (err ERR-CANNOT-STACK))
       (begin
         (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-stack (- tokens-to-stack stx-balance)))
-        (let (
-          (result
-            (unwrap!
-              (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox stack-stx tokens-to-stack pox-addr start-burn-ht lock-period))
-              (err ERR-FAILED-STACK-STX)
-            )
+        (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox stack-stx tokens-to-stack pox-addr start-burn-ht lock-period))
+          result (begin
+            (var-set stacking-unlock-burn-height (get unlock-burn-height result))
+            (var-set stacking-stx-stacked (get lock-amount result))
+            (ok (get lock-amount result))
           )
-        )
-          (var-set stacking-unlock-burn-height (get unlock-burn-height result))
-          (var-set stacking-stx-stacked (get lock-amount result))
-          (ok (get lock-amount result))
+          error (begin
+            (print error)
+            (ok u200)
+          )
         )
       )
       (err ERR-CANNOT-STACK)

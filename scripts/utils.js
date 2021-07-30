@@ -7,21 +7,21 @@ async function processing(broadcastedResult, tx, count) {
   const url = `${resolveUrl()}/extended/v1/tx/${tx}`;
   var result = await fetch(url);
   var value = await result.json();
-  // console.log(count);
+  console.log(count);
   if (value.tx_status === "success") {
-    // console.log(`transaction ${tx} processed`);
-    // console.log(value);
+    console.log(`transaction ${tx} processed`);
+    console.log(value);
     return true;
   }
   if (value.tx_status === "pending") {
-    // console.log(value);
+    console.log(value);
   } else if (count === 3) {
     console.log(value, broadcastedResult);
   }
 
   if (count > 20) {
-    // console.log("failed after 10 tries");
-    // console.log(value);
+    console.log("failed after 10 tries");
+    console.log(value);
     return false;
   }
 
@@ -38,7 +38,7 @@ async function getNonce(address) {
 
 function resolveUrl() {
   if (env === 'mocknet') {
-    return 'http://localhost:3999';
+    return 'http://localhost:20080';
   } else if (env === 'testnet') {
     return 'https://stacks-node-api.testnet.stacks.co';
   } else if (env === 'regtest') {
