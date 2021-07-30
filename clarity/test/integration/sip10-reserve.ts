@@ -34,7 +34,6 @@ describe("freddie test suite", () => {
       await deployContract('arkadiko-oracle-trait-v1');
       await deployContract('arkadiko-auction-engine-trait-v1');
       await deployContract('arkadiko-collateral-types-trait-v1');
-      await deployContract('arkadiko-stacker-trait-v1');
       await deployContract('arkadiko-stake-pool-trait-v1');
 
       await deployContract('arkadiko-collateral-types-v1-1');

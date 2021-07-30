@@ -16,9 +16,9 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Add funds to DIKO pool first (100 DIKO)
   let block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1'),
-      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token'),
+      types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
+      types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1'),
+      types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token'),
       types.uint(100000000)
     ], wallet_1.address)
   ]);
@@ -33,8 +33,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
       types.list([
         types.tuple({
           name: types.ascii("diko-slash"),
-          'address': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7"),
-          'qualified-name': types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-slash-v1-1"),
+          'address': types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"),
+          'qualified-name': types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-slash-v1-1"),
           'can-mint': types.bool(false),
           'can-burn': types.bool(false)
         })
@@ -46,7 +46,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Vote for wallet_1
   block = chain.mineBlock([
   Tx.contractCall("arkadiko-governance-v1-1", "vote-for", [
-      types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token"),
+      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token"),
       types.uint(1),
       types.uint(10000000)
   ], wallet_1.address)
@@ -72,7 +72,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Check total DIKO pool balance (as rewards have auto compounded)
   call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [
-    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1')
+    types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1')
   ], wallet_1.address);
   call.result.expectOk().expectUint(162639906);
 
@@ -92,7 +92,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Check total DIKO pool balance
   // 70% of 162 DIKO = ~113
   call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [
-    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1')
+    types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1')
   ], wallet_1.address);
   call.result.expectOk().expectUint(113847935);
 

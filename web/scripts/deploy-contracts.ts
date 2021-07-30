@@ -26,7 +26,6 @@ const contracts: Contract[] = [
   { name: 'arkadiko-oracle-trait-v1' },
   { name: 'arkadiko-auction-engine-trait-v1' },
   { name: 'arkadiko-collateral-types-trait-v1' },
-  { name: 'arkadiko-stacker-trait-v1' },
   { name: 'arkadiko-stake-registry-trait-v1' },
   { name: 'arkadiko-stake-pool-trait-v1' },
   { name: 'arkadiko-swap-trait-v1' },
@@ -67,7 +66,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-mock-stacker-v1-1' }
 ];
 
-const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');
+const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:20080');
 const privateKey = process.env.CONTRACT_PRIVATE_KEY;
 if (!privateKey) {
   console.error('Provide a private key with `process.env.CONTRACT_PRIVATE_KEY`');

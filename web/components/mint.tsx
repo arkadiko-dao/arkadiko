@@ -149,7 +149,7 @@ export const Mint = () => {
   }, []);
 
   const addMocknetStx = async () => {
-    const key = '26f235698d02803955b7418842affbee600fc308936a7ca48bf5778d1ceef9df01';
+    const key = '753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601';
     const senderKey = createStacksPrivateKey(key);
     console.log('Adding STX from mocknet address to', address, 'on network', network);
 
@@ -168,10 +168,9 @@ export const Mint = () => {
     const transaction = await makeContractCall({
       network,
       contractAddress,
-      contractName: 'arkadiko-freddie-v1-1',
+      contractName: 'arkadiko-stacker-v1-1',
       functionName: 'enable-vault-withdrawals',
       functionArgs: [
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-stacker-v1-1'),
         uintCV(1)
       ],
       senderKey: privateKeyToString(senderKey)

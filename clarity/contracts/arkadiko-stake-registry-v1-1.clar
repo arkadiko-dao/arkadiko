@@ -11,7 +11,6 @@
 (impl-trait .arkadiko-stake-registry-trait-v1.stake-registry-trait)
 
 ;; Errors
-(define-constant ERR-NOT-AUTHORIZED (err u19401))
 (define-constant ERR-INVALID-POOL (err u19001))
 (define-constant ERR-POOL-EXIST (err u19002))
 (define-constant ERR-POOL-INACTIVE (err u19003))
@@ -132,7 +131,7 @@
 (begin
   ;; DIKO pool
   (map-set pools-data-map
-    { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1 }
+    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1 }
     {
       name: "DIKO",
       deactivated-block: u0,
@@ -142,7 +141,7 @@
   )
   ;; DIKO-USDA LP
   (map-set pools-data-map
-    { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-usda-v1-1 }
+    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-1 }
     {
       name: "DIKO-USDA LP",
       deactivated-block: u0,
@@ -152,7 +151,7 @@
   )
   ;; wSTX-USDA LP
   (map-set pools-data-map
-    { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-usda-v1-1 }
+    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-usda-v1-1 }
     {
       name: "wSTX-USDA LP",
       deactivated-block: u0,
@@ -162,7 +161,7 @@
   )
   ;; wSTX-DIKO LP
   (map-set pools-data-map
-    { pool: 'STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-wstx-diko-v1-1 }
+    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-diko-v1-1 }
     {
       name: "wSTX-DIKO LP",
       deactivated-block: u0,
