@@ -206,22 +206,22 @@ export const Stake = () => {
       if (totalDikoStaked === 0) { totalDikoStaked = 10 };
       const dikoPoolRewards = totalStakingRewardsYear1 * 0.1;
       const dikoApr = dikoPoolRewards / totalDikoStaked;
-      setApy(Number((100 * dikoApr / 100000).toFixed(2)));
+      setApy(Number((100 * dikoApr).toFixed(2)));
 
       if (totalDikoUsdaStaked === 0) { totalDikoUsdaStaked = 10 };
       const dikoUsdaPoolRewards = totalStakingRewardsYear1 * 0.2;
       const dikoUsdaApr = dikoUsdaPoolRewards / totalDikoUsdaStaked;
-      setDikoUsdaLpApy(Number((100 * dikoUsdaApr / 100000).toFixed(2)));
+      setDikoUsdaLpApy(Number((100 * dikoUsdaApr).toFixed(2)));
 
       if (totalStxUsdaStaked === 0) { totalStxUsdaStaked = 10 };
       const stxUsdaPoolRewards = totalStakingRewardsYear1 * 0.5;
       const stxUsdaApr = stxUsdaPoolRewards / totalStxUsdaStaked;
-      setStxUsdaLpApy(Number((100 * stxUsdaApr / 100000).toFixed(2)));
+      setStxUsdaLpApy(Number((100 * stxUsdaApr).toFixed(2)));
 
       if (totalStxDikoStaked === 0) { totalStxDikoStaked = 10 };
       const stxDikoPoolRewards = totalStakingRewardsYear1 * 0.2;
       const stxDikoApr = stxDikoPoolRewards / totalStxDikoStaked;
-      setStxDikoLpApy(Number((100 * stxDikoApr / 100000).toFixed(2)));
+      setStxDikoLpApy(Number((100 * stxDikoApr).toFixed(2)));
 
       setLoadingData(false);
     };
