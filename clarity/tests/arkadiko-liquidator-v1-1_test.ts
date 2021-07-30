@@ -13,10 +13,10 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
     let block = chain.mineBlock([
-      // Initialize price of STX to $2 in the oracle
+      // Initialize price of STX to $3 in the oracle
       Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("STX"),
-        types.uint(200),
+        types.uint(300),
       ], deployer.address),
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(150000000), // 150 STX
