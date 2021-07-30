@@ -61,7 +61,7 @@
     (asserts! (is-eq wallet tx-sender) ERR-NOT-AUTHORIZED)
     (asserts! (>= pending-tokens amount) ERR-TOO-MANY-TOKENS-CLAIMED)
     (var-set foundation-tokens-claimed (+ claimed-tokens amount))
-    (contract-call? .arkadiko-token transfer amount .arkadiko-diko-init wallet none)
+    (as-contract (contract-call? .arkadiko-token transfer amount .arkadiko-diko-init wallet none))
   )
 )
 
@@ -118,7 +118,7 @@
     (asserts! (is-eq wallet tx-sender) ERR-NOT-AUTHORIZED)
     (asserts! (>= pending-tokens amount) ERR-TOO-MANY-TOKENS-CLAIMED)
     (var-set founders-tokens-claimed (+ claimed-tokens amount))
-    (contract-call? .arkadiko-token transfer amount .arkadiko-diko-init wallet none)
+    (as-contract (contract-call? .arkadiko-token transfer amount .arkadiko-diko-init wallet none))
   )
 )
 

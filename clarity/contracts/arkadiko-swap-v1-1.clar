@@ -255,6 +255,7 @@
       (shares (unwrap-panic (contract-call? swap-token-trait get-balance tx-sender)))
       (shares-total (get shares-total pair))
       (contract-address (as-contract tx-sender))
+      (sender tx-sender)
       (withdrawal (/ (* shares percent) u100))
       (withdrawal-x (/ (* withdrawal balance-x) shares-total))
       (withdrawal-y (/ (* withdrawal balance-y) shares-total))
@@ -270,8 +271,8 @@
     )
 
     (asserts! (<= percent u100) (err u5))
-    (asserts! (is-ok (contract-call? token-x-trait transfer withdrawal-x contract-address tx-sender none)) transfer-x-failed-err)
-    (asserts! (is-ok (contract-call? token-y-trait transfer withdrawal-y contract-address tx-sender none)) transfer-y-failed-err)
+    (asserts! (is-ok (as-contract (contract-call? token-x-trait transfer withdrawal-x contract-address sender none))) transfer-x-failed-err)
+    (asserts! (is-ok (as-contract (contract-call? token-y-trait transfer withdrawal-y contract-address sender none))) transfer-y-failed-err)
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-updated)
     (try! (contract-call? swap-token-trait burn tx-sender withdrawal))
@@ -315,7 +316,7 @@
     )
 
     (asserts! (is-ok (contract-call? token-x-trait transfer dx tx-sender (as-contract tx-sender) none)) transfer-x-failed-err)
-    (try! (contract-call? token-y-trait transfer dy (as-contract tx-sender) tx-sender none))
+    (try! (as-contract (contract-call? token-y-trait transfer dy (as-contract tx-sender) sender none)))
 
     ;; if token Y is wrapped STX, need to burn it
     (if (is-eq (unwrap-panic (contract-call? token-y-trait get-symbol)) "wSTX")
@@ -361,7 +362,7 @@
       false
     )
 
-    (asserts! (is-ok (contract-call? token-x-trait transfer dx (as-contract tx-sender) tx-sender none)) transfer-x-failed-err)
+    (asserts! (is-ok (as-contract (contract-call? token-x-trait transfer dx (as-contract tx-sender) sender none))) transfer-x-failed-err)
     (asserts! (is-ok (contract-call? token-y-trait transfer dy tx-sender (as-contract tx-sender) none)) transfer-y-failed-err)
 
     ;; if token X is wrapped STX, need to burn it

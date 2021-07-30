@@ -5,12 +5,16 @@
 (define-constant ERR-NOT-AUTHORIZED u21401)
 
 (define-public (transfer (amount uint) (sender principal) (recipient principal) (memo (optional (buff 34))))
-  (match (ft-transfer? wstx-diko amount sender recipient)
-    response (begin
-      (print memo)
-      (ok response)
+  (begin
+    (asserts! (is-eq tx-sender sender) (err ERR-NOT-AUTHORIZED))
+
+    (match (ft-transfer? wstx-diko amount sender recipient)
+      response (begin
+        (print memo)
+        (ok response)
+      )
+      error (err error)
     )
-    error (err error)
   )
 )
 

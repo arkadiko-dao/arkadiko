@@ -45,6 +45,7 @@ export const ManageVault = ({ match }) => {
   const [isVaultOwner, setIsVaultOwner] = useState(false);
   const [stabilityFee, setStabilityFee] = useState(0);
   const [pendingVaultRewards, setPendingVaultRewards] = useState(0);
+  const [closingVault, setClosingVault] = useState(false);
 
   useEffect(() => {
     const fetchVault = async () => {
@@ -216,7 +217,11 @@ export const ManageVault = ({ match }) => {
 
   useEffect(() => {
     if (state.currentTxStatus === 'success') {
-      window.location.reload();
+      if (closingVault) {
+        window.location.href = '/vaults';
+      } else {
+        window.location.reload();
+      }
     }
   }, [state.currentTxStatus]);
 
@@ -237,8 +242,8 @@ export const ManageVault = ({ match }) => {
       ],
       postConditionMode: 0x01,
       finished: data => {
-        console.log('finished closing vault!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setClosingVault(true);
         setShowBurnModal(false);
       },
     });

@@ -60,18 +60,24 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
     fetchPrice();
   }, []);
 
+  const setCollateralValues = (value:string) => {
+    setCollateralAmount(value);
+    const error = ['You cannot collateralize more than your balance'];
+    if (parseFloat(value) < 0 || parseFloat(value) >= state.balance[tokenKey] / 1000000) {
+      if (!errors.includes(error[0])) {
+        setErrors(errors.concat(error));
+      }
+    } else {
+      const filteredAry = errors.filter(e => e !== error[0]);
+      setErrors(filteredAry);
+      maximumCoinsToMint(value);
+    }
+  }
+
   const setCollateral = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const { value } = event.target;
-      setCollateralAmount(value);
-      const error = ['You cannot collateralize more than your balance'];
-      if (parseFloat(value) >= state.balance[tokenKey] / 1000000) {
-        setErrors(errors.concat(error));
-      } else {
-        const filteredAry = errors.filter(e => e !== error[0]);
-        setErrors(filteredAry);
-        maximumCoinsToMint(value);
-      }
+      setCollateralValues(value);
     },
     [state, tokenKey, errors]
   );
@@ -98,8 +104,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
       balance -= fee;
     }
     const balanceString = balance.toString();
-    setCollateralAmount(balanceString);
-    maximumCoinsToMint(balanceString);
+    setCollateralValues(balanceString);
   }, [state, tokenKey, price]);
 
   const setMaxCoins = useCallback(() => {

@@ -131,7 +131,7 @@
       (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
 
       ;; Transfer LP token back from this contract to the user
-      (try! (contract-call? .arkadiko-swap-token-diko-usda transfer amount (as-contract tx-sender) staker none))
+      (try! (as-contract (contract-call? .arkadiko-swap-token-diko-usda transfer amount (as-contract tx-sender) staker none)))
 
       ;; Update sender stake info
       (map-set stakes { staker: staker } { uamount: new-stake-amount, cumm-reward-per-stake: (var-get cumm-reward-per-stake) })
@@ -143,7 +143,9 @@
 
 ;; Sender can unstake all tokens without claiming rewards
 (define-public (emergency-withdraw (registry-trait <stake-registry-trait>))
-  (begin
+  (let (
+    (sender tx-sender)
+  )
     ;; Check given registry
     (asserts! (is-eq (contract-of registry-trait) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-WRONG-REGISTRY)
 
@@ -161,7 +163,7 @@
       (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
 
       ;; Transfer LP token back from this contract to the user
-      (try! (contract-call? .arkadiko-swap-token-diko-usda transfer stake-amount (as-contract tx-sender) tx-sender none))
+      (try! (as-contract (contract-call? .arkadiko-swap-token-diko-usda transfer stake-amount (as-contract tx-sender) sender none)))
 
       ;; Update sender stake info
       (map-set stakes { staker: tx-sender } { uamount: new-stake-amount, cumm-reward-per-stake: (var-get cumm-reward-per-stake) })

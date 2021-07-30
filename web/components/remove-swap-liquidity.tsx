@@ -29,7 +29,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   const [inverseDirection, setInverseDirection] = useState(false);
   const [foundPair, setFoundPair] = useState(false);
   const [balance, setBalance] = useState(0.0);
-  const [percentageToRemove, setPercentageToRemove] = useState(50);
+  const [percentageToRemove, setPercentageToRemove] = useState(100);
   const [balanceX, setBalanceX] = useState(0.0);
   const [balanceY, setBalanceY] = useState(0.0);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';

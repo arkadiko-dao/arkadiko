@@ -457,7 +457,7 @@
       (err ERR-MAXIMUM-DEBT-REACHED)
     )
 
-    (try! (pay-stability-fee vault-id coll-type))
+    (try! (accrue-stability-fee vault-id coll-type))
     (try! (contract-call? reserve mint
         (get collateral-token vault)
         (get owner vault)
@@ -788,12 +788,12 @@
 
     (if (and (> usda-amount u0) (> diko-amount u0))
       (begin
-        (try! (contract-call? .arkadiko-token transfer diko-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none))
-        (contract-call? .usda-token transfer usda-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none)
+        (try! (as-contract (contract-call? .arkadiko-token transfer diko-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none)))
+        (as-contract (contract-call? .usda-token transfer usda-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none))
       )
       (if (> usda-amount u0)
-        (contract-call? .usda-token transfer usda-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none)
-        (contract-call? .arkadiko-token transfer diko-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none)
+        (as-contract (contract-call? .usda-token transfer usda-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none))
+        (as-contract (contract-call? .arkadiko-token transfer diko-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none))
       )
     )
   )

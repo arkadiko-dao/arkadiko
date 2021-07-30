@@ -44,7 +44,6 @@
   )
 )
 
-;; (match (print (ft-transfer? token ucollateral-amount sender (as-contract tx-sender)))
 (define-public (collateralize-and-mint (token <ft-trait>) (token-string (string-ascii 12)) (ucollateral-amount uint) (debt uint) (sender principal) (stack-pox bool))
   (let (
     (token-symbol (unwrap-panic (contract-call? token get-symbol)))

@@ -1512,18 +1512,18 @@ Clarinet.test({
       switch (index)
       {
         // pool gets 20% of total rewards
-        case 53: callLp3.result.expectOk().expectUint(5055139190750); break;
-        case 106: callLp3.result.expectOk().expectUint(7488449565000); break;
-        case 371: callLp3.result.expectOk().expectUint(10203553136800); break;
+        case 53: callLp3.result.expectOk().expectUint(5055136830000); break;
+        case 106: callLp3.result.expectOk().expectUint(7488443461200); break;
+        case 371: callLp3.result.expectOk().expectUint(10203536393850); break;
         default: break;
       }
 
       switch (index)
       {
         // pool gets 50% of total rewards
-        case 53: callLp2.result.expectOk().expectUint(12637848022300); break;
-        case 106: callLp2.result.expectOk().expectUint(18721123996450); break;
-        case 371: callLp2.result.expectOk().expectUint(25508883024250); break;
+        case 53: callLp2.result.expectOk().expectUint(12637842120700); break;
+        case 106: callLp2.result.expectOk().expectUint(18721108736900); break;
+        case 371: callLp2.result.expectOk().expectUint(25508841171250); break;
         default: break;
       }
 
