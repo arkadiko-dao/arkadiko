@@ -114,7 +114,26 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // New ratio =  413199530 / 100000000
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "diko-stdiko-ratio", [], wallet_1.address);
   call.result.expectUint(4131995);   
-  
+
+  // Unstake funds fails because cooldown not started
+  block = chain.mineBlock([
+    Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-v1-1'),
+      types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token'),
+      types.uint(100000000)
+    ], wallet_1.address)
+  ]);
+  block.receipts[0].result.expectErr().expectUint(18003);
+
+  // Start cooldown period
+  block = chain.mineBlock([
+    Tx.contractCall("arkadiko-stake-pool-diko-v1-1", "start-cooldown", [], wallet_1.address)
+  ]);
+  block.receipts[0].result.expectOk().expectUint(1447);
+
+  chain.mineEmptyBlock(1450);
+
   // Unstake funds
   block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
@@ -124,11 +143,11 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
       types.uint(100000000)
     ], wallet_1.address)
   ]);
-  block.receipts[0].result.expectOk().expectUint(475839436);
+  block.receipts[0].result.expectOk().expectUint(91428982948);
 
   // Check DIKO after unstaking
   call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-  call.result.expectOk().expectUint(150375839436);  
+  call.result.expectOk().expectUint(241328982948);  
 
   call = chain.callReadOnlyFn("stdiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(0);   
@@ -205,9 +224,24 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   call = chain.callReadOnlyFn("stdiko-token", "get-total-supply", [], wallet_1.address);
   call.result.expectOk().expectUint(188778487);   
 
-  // Unstake funds
   // Total DIKO = 300 + (62*3) = ~486
   // Wallet_1 should get 53% of ~486 = ~258
+  call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "diko-for-stdiko", [
+    types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
+    types.uint(100000000),
+    types.uint(188778487),
+  ], wallet_1.address);
+  call.result.expectOk().expectUint(258461320);   
+
+  // Start cooldown period
+  block = chain.mineBlock([
+    Tx.contractCall("arkadiko-stake-pool-diko-v1-1", "start-cooldown", [], wallet_1.address)
+  ]);
+  block.receipts[0].result.expectOk().expectUint(1443);
+
+  chain.mineEmptyBlock(1450);
+
+  // Unstake funds
   block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
         types.principal('STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-registry-v1-1'),
@@ -216,8 +250,61 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
         types.uint(100000000)
     ], wallet_1.address)
   ]);
-  block.receipts[0].result.expectOk().expectUint(258461320);
+  block.receipts[0].result.expectOk().expectUint(48405069781);
 }
+});
+
+Clarinet.test({
+  name: "stake-registry: cooldown redeem period",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+  
+    // Cooldown not started yet
+    let call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "wallet-can-redeem", [
+      types.principal(wallet_1.address)
+    ], wallet_1.address);
+    call.result.expectBool(false);  
+  
+    // Start cooldown
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-diko-v1-1", "start-cooldown", [], wallet_1.address)
+    ]);
+    block.receipts[0].result.expectOk().expectUint(1441); 
+
+    chain.mineEmptyBlock(1439);
+  
+    // Cooldown started, not ended yet
+    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "wallet-can-redeem", [
+      types.principal(wallet_1.address)
+    ], wallet_1.address);
+    call.result.expectBool(false);  
+
+    chain.mineEmptyBlock(1);
+  
+    // Cooldown ended, can redeem
+    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "wallet-can-redeem", [
+      types.principal(wallet_1.address)
+    ], wallet_1.address);
+    call.result.expectBool(true);  
+
+    chain.mineEmptyBlock(286);
+  
+    // Redeem period almost ended
+    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "wallet-can-redeem", [
+      types.principal(wallet_1.address)
+    ], wallet_1.address);
+    call.result.expectBool(true);  
+
+    chain.mineEmptyBlock(1);
+  
+    // Redeem period ended
+    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "wallet-can-redeem", [
+      types.principal(wallet_1.address)
+    ], wallet_1.address);
+    call.result.expectBool(false);  
+  
+  }
 });
 
 Clarinet.test({
@@ -443,6 +530,14 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectErr().expectUint(19004);
 
+    // Start cooldown period
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-diko-v1-1", "start-cooldown", [], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectUint(4457);
+
+    chain.mineEmptyBlock(1450);
+
     // Unstake funds with old registry should fail
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-tv1-1", "unstake", [
@@ -572,6 +667,14 @@ Clarinet.test({
     call.result.expectBool(true)
     call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-burn-by-qualified-name", [types.principal("STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-stake-pool-diko-tv1-1")], deployer.address);
     call.result.expectBool(true)
+
+    // Start cooldown period
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-diko-v1-1", "start-cooldown", [], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectUint(2955);
+
+    chain.mineEmptyBlock(1450);
 
     // Unstake funds still works for this pool
     block = chain.mineBlock([
