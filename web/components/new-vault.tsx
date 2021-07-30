@@ -9,7 +9,9 @@ export const NewVault = () => {
   const [coinAmounts, setCoinAmounts] = useState({
     amounts: { stx: 0, usda: 0 },
     'collateral-to-debt-ratio': 0,
-    'liquidation-price': 0
+    'liquidation-price': 0,
+    'stack-pox': true,
+    'auto-payoff': true
   });
 
   return (
@@ -18,7 +20,7 @@ export const NewVault = () => {
         {step === 0 ? (
           <CreateVaultStepOne setStep={setStep} setCoinAmounts={setCoinAmounts} />
         ) : step === 1 ? (
-          <CreateVaultConfirm setStep={setStep} coinAmounts={coinAmounts} />
+          <CreateVaultConfirm setStep={setStep} coinAmounts={coinAmounts} setCoinAmounts={setCoinAmounts} />
         ) : (
           <CreateVaultTransact coinAmounts={coinAmounts} />
         )}

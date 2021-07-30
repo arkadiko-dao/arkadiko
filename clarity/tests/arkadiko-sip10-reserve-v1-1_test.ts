@@ -40,10 +40,10 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //         types.uint(5000000),
 //         types.ascii("DIKO-A"),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
 //         ),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
 //         ),
 //       ], deployer.address),
 //     ]);
@@ -62,7 +62,7 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //       .expectPrincipal(deployer.address);
 //     dikoTransferEvent.ft_transfer_event.recipient
 //       .expectPrincipal(
-//         "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
+//         "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
 //       );
 //     dikoTransferEvent.ft_transfer_event.amount
 //       .expectInt(20000000);
@@ -122,10 +122,10 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //         types.uint(5000000),
 //         types.ascii("DIKO-A"),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
 //         ),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
 //         ),
 //       ], deployer.address),
 //     ]);
@@ -149,10 +149,10 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //         types.uint(vauldId),
 //         types.uint(20000000),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
 //         ),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
 //         ),
 //       ], deployer.address),
 //     ]);
@@ -163,7 +163,7 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //       .expectPrincipal(deployer.address);
 //     dikoTransferEvent.ft_transfer_event.recipient
 //       .expectPrincipal(
-//         "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
+//         "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
 //       );
 //     dikoTransferEvent.ft_transfer_event.amount
 //       .expectInt(20000000);
@@ -199,10 +199,10 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //         types.uint(5000000),
 //         types.ascii("DIKO-A"),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
 //         ),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
 //         ),
 //       ], deployer.address),
 //     ]);
@@ -226,10 +226,10 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //         types.uint(vauldId),
 //         types.uint(20000000),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
 //         ),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
 //         ),
 //       ], deployer.address),
 //     ]);
@@ -243,10 +243,10 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //         types.uint(vauldId),
 //         types.uint(5000000),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
 //         ),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
 //         ),
 //       ], deployer.address),
 //     ]);
@@ -255,7 +255,7 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //     // Ensure that 20_000_000 units from .arkadiko-token::diko where successfully transfered from wallet_1 to .arkadiko-sip10-reserve-v1-1
 //     dikoTransferEvent.ft_transfer_event.sender
 //       .expectPrincipal(
-//         "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
+//         "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
 //       );
 //     dikoTransferEvent.ft_transfer_event.recipient
 //       .expectPrincipal(
@@ -287,10 +287,10 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //         types.uint(5000000),
 //         types.ascii("DIKO-A"),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
 //         ),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
 //         ),
 //       ], deployer.address),
 //     ]);
@@ -319,7 +319,7 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //         types.uint(vauldId),
 //         types.uint(1000000),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
 //         ),
 //       ], deployer.address),
 //     ]);
@@ -361,10 +361,10 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //         types.uint(5000000),
 //         types.ascii("DIKO-A"),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
 //         ),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
 //         ),
 //       ], deployer.address),
 //     ]);
@@ -388,20 +388,20 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //         types.uint(vauldId),
 //         types.uint(20000000),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
 //         ),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
 //         ),
 //       ], deployer.address),
 //       Tx.contractCall("arkadiko-freddie-v1-1", "withdraw", [
 //         types.uint(vauldId),
 //         types.uint(5000000),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
 //         ),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
 //         ),
 //       ], deployer.address),
 //     ]);
@@ -418,7 +418,7 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //         types.uint(vauldId),
 //         types.uint(1000000),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
 //         ),
 //       ], deployer.address),
 //     ]);
@@ -449,10 +449,10 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //         types.uint(vauldId),
 //         types.uint(6000000),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
 //         ),
 //         types.principal(
-//           "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-token",
+//           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
 //         ),
 //       ], deployer.address),
 //     ]);
@@ -472,7 +472,7 @@ import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 //     // Ensure that 35_000_000 units from .arkadiko-token::diko where successfully transfered from .arkadiko-sip10-reserve-v1-1 to wallet_1
 //     dikoTransferEvent.ft_transfer_event.sender
 //       .expectPrincipal(
-//         "STSTW15D618BSZQB85R058DS46THH86YQQY6XCB7.arkadiko-sip10-reserve-v1-1",
+//         "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
 //       );
 //     dikoTransferEvent.ft_transfer_event.recipient
 //       .expectPrincipal(deployer.address);

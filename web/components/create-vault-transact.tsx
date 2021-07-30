@@ -6,6 +6,9 @@ import {
   contractPrincipalCV,
   uintCV,
   stringAsciiCV,
+  trueCV,
+  falseCV,
+  tupleCV,
   makeStandardSTXPostCondition,
   FungibleConditionCode
 } from '@stacks/transactions';
@@ -26,6 +29,10 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
     const args = [
       amount,
       uintCV(parseInt(coinAmounts['amounts']['usda'], 10) * 1000000),
+      tupleCV({
+        'stack-pox': (coinAmounts['stack-pox'] ? trueCV() : falseCV()),
+        'auto-payoff': (coinAmounts['auto-payoff'] ? trueCV() : falseCV())
+      }),
       stringAsciiCV(coinAmounts['token-type'].toUpperCase()),
       contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', resolveReserveName(coinAmounts['token-name'].toUpperCase())),
       contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),

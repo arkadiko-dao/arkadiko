@@ -2,7 +2,33 @@ import React from 'react';
 import { QuestionMarkCircleIcon, ExternalLinkIcon } from '@heroicons/react/solid';
 
 
-export const CreateVaultConfirm = ({ setStep, coinAmounts }) => {
+export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => {
+  const togglePox = () => {
+    const newState = !coinAmounts['stack-pox'];
+    let autoPayoff = coinAmounts['auto-payoff'];
+    if (!newState) {
+      autoPayoff = false;
+    }
+    setCoinAmounts(prevState => ({
+      ...prevState,
+      'stack-pox': newState,
+      'auto-payoff': autoPayoff
+    }));
+  };
+
+  const toggleAutoPayoff = () => {
+    const newState = !coinAmounts['auto-payoff'];
+    let stackPox = coinAmounts['stack-pox'];
+    if (newState) {
+      stackPox = true;
+    }
+    setCoinAmounts(prevState => ({
+      ...prevState,
+      'stack-pox': stackPox,
+      'auto-payoff': newState
+    }));
+  };
+
   return (
     <>
       <section>
@@ -116,6 +142,25 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts }) => {
                 </div>
               </div>
               <div className="pt-5">
+                <label className="flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    className="form-tick appearance-none h-6 w-6 border border-gray-300 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none"
+                    checked={coinAmounts['stack-pox']}
+                    onClick={() => togglePox()}
+                  />
+                  <span className="text-gray-900">I want my STX tokens stacked to earn yield</span>
+                </label>
+                <label className="pt-3 flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    className="form-tick appearance-none h-6 w-6 border border-gray-300 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none"
+                    checked={coinAmounts['auto-payoff']}
+                    onClick={() => toggleAutoPayoff()}
+                  />
+                  <span className="text-gray-900">I want my vault loan to be paid off automatically through the earned yield</span>
+                </label>
+
                 <div className="flex justify-end">
                   <button type="button" onClick={() => setStep(0)} className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md bg-white-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Back

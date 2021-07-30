@@ -10,7 +10,7 @@
     (get-collateral-type-for-vault (uint) (response (string-ascii 12) bool))
     (calculate-current-collateral-to-debt-ratio (uint <collateral-types-trait> <oracle-trait>) (response uint uint))
 
-    (pay-stability-fee (uint <collateral-types-trait>) (response bool uint))
+    (pay-stability-fee (uint <collateral-types-trait>) (response uint uint))
     (accrue-stability-fee (uint <collateral-types-trait>) (response bool uint))
 
     (liquidate (uint <collateral-types-trait>) (response (tuple (ustx-amount uint) (extra-debt uint) (vault-debt uint) (discount uint)) uint))
