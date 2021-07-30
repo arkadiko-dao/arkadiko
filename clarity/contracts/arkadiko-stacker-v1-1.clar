@@ -302,7 +302,7 @@
     (try! (contract-call? .arkadiko-freddie-v1-1 pay-stability-fee vault-id coll-type))
     (asserts! (> leftover-usda u0) (ok true))
 
-    (if (> (get debt vault) leftover-usda)
+    (if (>= (get debt vault) leftover-usda)
       (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id leftover-usda reserve ft coll-type))
       (begin
         ;; this is the last payment - after this we paid off all debt
