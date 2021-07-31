@@ -387,4 +387,19 @@
       can-burn: true
     }
   )
+
+  (map-set contracts
+    { name: "liquidator" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-liquidator-v1-1
+    }
+  )
+  (map-set contracts-data
+    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-liquidator-v1-1 }
+    {
+      can-mint: false,
+      can-burn: false
+    }
+  )
 )
