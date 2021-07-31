@@ -239,7 +239,7 @@
       liquidation-ratio: u150,
       collateral-to-debt-ratio: u300, ;; ~33% LTV
       maximum-debt: u500000000000000, ;; 500M
-      liquidation-penalty: u1000,
+      liquidation-penalty: u1300, ;; 13% in basis points
       stability-fee: u1331811263, ;; 7% / 365 days / (24*6) blocks = 0.0001331811263 fee per block
       stability-fee-decimals: u15,
       stability-fee-apy: u700 ;; 700 basis points
