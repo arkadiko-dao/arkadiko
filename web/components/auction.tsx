@@ -20,8 +20,6 @@ export const Auction: React.FC<AuctionProps> = (
 ) => {
   const [minimumCollateralAmount, setMinimumCollateralAmount] = useState(0);
   const [currentBid, setCurrentBid] = useState(0);
-  const [isClosed, setIsClosed] = useState(false);
-  const [acceptedCollateral, setAcceptedCollateral] = useState(0);
   const [debtToRaise, setDebtToRaise] = useState(0);
   const [discountedPrice, setDiscountedPrice] = useState(0.0);
   const [price, setPrice] = useState(0.0);
@@ -84,8 +82,6 @@ export const Auction: React.FC<AuctionProps> = (
         setMinimumCollateralAmount(json.value['collateral-amount'].value);
         setDebtToRaise(Math.min(debtMax, json.value['collateral-amount'].value * discountedPrice / 100));
       }
-      setAcceptedCollateral(json.value['collateral-amount'].value);
-      setIsClosed(false);// TODO: json.value['is-accepted'].value);
     };
 
     if (mounted && price !== 0 && discountedPrice !== 0) {
@@ -102,16 +98,8 @@ export const Auction: React.FC<AuctionProps> = (
     setShowBidModal(true);
   };
 
-  const rowBg = () => {
-    if (isClosed) {
-      return 'bg-green-100';
-    }
-
-    return 'bg-white';
-  };
-
   return (
-    <tr className={`${rowBg()}`}>
+    <tr className="bg-white">
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         <span className="text-gray-900 font-medium">
           {id}.{lotId + 1}
@@ -119,11 +107,7 @@ export const Auction: React.FC<AuctionProps> = (
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         <span className="text-gray-900 font-medium">
-          {isClosed ? (
-            <span>{acceptedCollateral / 1000000} {collateralToken.toUpperCase()}</span>
-          ) : (
-            <span>{minimumCollateralAmount / 1000000} {collateralToken.toUpperCase()}</span>
-          )}
+          <span>{minimumCollateralAmount / 1000000} {collateralToken.toUpperCase()}</span>
         </span>
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
@@ -140,15 +124,9 @@ export const Auction: React.FC<AuctionProps> = (
       </td>
       <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
         <span className="text-gray-900 font-medium">
-          {isClosed ? (
-            <p>Bidding Closed</p>
-          ) : (
-            <div>
-              <button type="button" onClick={() => setBidParams()} className="mr-2 px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Bid
-              </button>
-            </div>
-          )}
+          <button type="button" onClick={() => setBidParams()} className="mr-2 px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Bid
+          </button>
         </span>
       </td>
     </tr>
