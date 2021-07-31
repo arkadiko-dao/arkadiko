@@ -16,7 +16,7 @@ import { tokenList } from '@components/token-swap-list';
 import { useConnect } from '@stacks/connect-react';
 import { StakeActions } from './stake-actions';
 import { Menu } from '@headlessui/react';
-import { ArrowCircleDownIcon, ArrowCircleUpIcon, CashIcon, PlusIcon } from '@heroicons/react/solid';
+import { ArrowCircleDownIcon, ArrowCircleUpIcon, CashIcon, PlusIcon, ClockIcon } from '@heroicons/react/solid';
 import { PlaceHolder } from './placeholder';
 
 export const Stake = () => {
@@ -41,6 +41,7 @@ export const Stake = () => {
   const [lpDikoUsdaPendingRewards, setLpDikoUsdaPendingRewards] = useState(0);
   const [lpStxUsdaPendingRewards, setLpStxUsdaPendingRewards] = useState(0);
   const [lpStxDikoPendingRewards, setLpStxDikoPendingRewards] = useState(0);
+  const [dikoCooldown, setDikoCooldown] = useState(0);
   const [loadingData, setLoadingData] = useState(true);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -223,6 +224,51 @@ export const Stake = () => {
       const stxDikoApr = stxDikoPoolRewards / totalStxDikoStaked;
       setStxDikoLpApy(Number((100 * stxDikoApr).toFixed(2)));
 
+
+      const dikoCooldownInfo = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-stake-pool-diko-v1-1",
+        functionName: "get-cooldown-info-of",
+        functionArgs: [
+          standardPrincipalCV(stxAddress || '')
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      let cooldownInfo = cvToJSON(dikoCooldownInfo).value;
+      let redeemStartBlock = cooldownInfo["redeem-period-start-block"]["value"];
+      let redeemEndBlock = cooldownInfo["redeem-period-end-block"]["value"];
+
+      // TODO
+      let currentBlock = 1464;
+
+      // Helper to create countdown text
+      function blockDiffToTimeLeft(blockDiff) {
+        let minDiff = (blockDiff * 10);
+        let days = Math.floor(minDiff / (60 * 24));
+        let hours = Math.floor((minDiff % (60 * 24)) / 60);
+        let minutes = Math.floor(minDiff % (60));
+        var text = "";
+        if (days != 0) { text += days + "d "; }
+        if (hours != 0) { text += hours + "h "; }
+        if (minutes != 0) { text += minutes + "m "; }
+        return text;
+      }
+  
+      if (redeemEndBlock == 0 || redeemEndBlock < currentBlock) {
+        setDikoCooldown("Not started");
+      } else if (redeemStartBlock < currentBlock) {
+        let blockDiff = redeemEndBlock - currentBlock;
+        var text = blockDiffToTimeLeft(blockDiff);
+        text += " left to withdraw"
+        setDikoCooldown(text);
+      } else {
+        let blockDiff = redeemStartBlock - currentBlock;
+        var text = blockDiffToTimeLeft(blockDiff);
+        text += " left"
+        setDikoCooldown(text);
+      }
+
       setLoadingData(false);
     };
     if (mounted) {
@@ -231,6 +277,21 @@ export const Stake = () => {
 
     return () => { mounted = false; }
   }, [state.balance]);
+
+  const startDikoCooldown = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-pool-diko-v1-1',
+      functionName: 'start-cooldown',
+      functionArgs: [],
+      postConditionMode: 0x01,
+      finished: data => {
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+      },
+    });
+  };
 
   const claimDikoUsdaLpPendingRewards = async () => {
     await doContractCall({
@@ -443,6 +504,12 @@ export const Stake = () => {
                               scope="col"
                               className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                             >
+                              Cooldown
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
                               Current APY
                             </th>
                             <th
@@ -470,6 +537,13 @@ export const Stake = () => {
                                   {microToReadable(stakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
                                 </div>
                               </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              {loadingData ? (
+                                <PlaceHolder size={2} color="indigo" />
+                              ) : (
+                                `${dikoCooldown}`
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
                               {loadingData ? (
@@ -501,6 +575,26 @@ export const Stake = () => {
                                         </button>
                                       )}
                                     </Menu.Item>
+                                    
+                                  ) : null }
+                                  {state.balance['diko'] > 0 ? (
+                                    <Menu.Item>
+                                      {({ active }) => (
+                                        <button
+                                          className={`${
+                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                          onClick={() => startDikoCooldown()}
+                                        >
+                                          <ClockIcon
+                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            aria-hidden="true"
+                                          />
+                                          Start cooldown
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                    
                                   ) : null }
                                   {stakedAmount ? (
                                     <Menu.Item>
@@ -535,6 +629,9 @@ export const Stake = () => {
                                   {microToReadable(lpDikoUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ARKV1DIKOUSDA
                                 </div>
                               </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              N/A
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
                               {loadingData ? (
@@ -637,6 +734,9 @@ export const Stake = () => {
                                 </div>
                               </div>
                             </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              N/A
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
                               {loadingData ? (
                                 <PlaceHolder size={2} color="indigo" />
@@ -737,6 +837,9 @@ export const Stake = () => {
                                   {microToReadable(lpStxDikoStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ARKV1WSTXDIKO
                                 </div>
                               </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              N/A
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
                               {loadingData ? (
