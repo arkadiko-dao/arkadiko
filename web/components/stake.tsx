@@ -2,7 +2,8 @@ import React, { useEffect, useContext, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, getRPCClient } from '@common/utils';
+
 import {
   callReadOnlyFunction, contractPrincipalCV, uintCV, cvToJSON, standardPrincipalCV
 } from '@stacks/transactions';
@@ -239,8 +240,11 @@ export const Stake = () => {
       let redeemStartBlock = cooldownInfo["redeem-period-start-block"]["value"];
       let redeemEndBlock = cooldownInfo["redeem-period-end-block"]["value"];
 
-      // TODO
-      let currentBlock = 1464;
+      // Get current block height
+      const client = getRPCClient();
+      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
+      const data = await response.json();
+      let currentBlock = data['stacks_tip_height'];
 
       // Helper to create countdown text
       function blockDiffToTimeLeft(blockDiff) {
