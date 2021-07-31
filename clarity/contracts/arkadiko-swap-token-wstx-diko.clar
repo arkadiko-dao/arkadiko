@@ -67,7 +67,6 @@
     (print "arkadiko-token-swap.mint")
     (print contract-caller)
     (print amount)
-    (print contract-caller)
 
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "swap"))) (err ERR-NOT-AUTHORIZED))
     (ft-mint? wstx-diko amount recipient)
