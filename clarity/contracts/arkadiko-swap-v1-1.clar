@@ -349,7 +349,7 @@
     (pair-updated (merge pair {
       balance-x: (- balance-x dx),
       balance-y: (+ balance-y dy),
-      fee-balance-y: (+ fee balance-y)
+      fee-balance-y: (+ fee (get fee-balance-y pair))
     }))
   )
     (asserts! (< min-dx dx) too-much-slippage-err)
