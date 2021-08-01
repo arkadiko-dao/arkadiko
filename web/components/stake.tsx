@@ -42,7 +42,9 @@ export const Stake = () => {
   const [lpDikoUsdaPendingRewards, setLpDikoUsdaPendingRewards] = useState(0);
   const [lpStxUsdaPendingRewards, setLpStxUsdaPendingRewards] = useState(0);
   const [lpStxDikoPendingRewards, setLpStxDikoPendingRewards] = useState(0);
-  const [dikoCooldown, setDikoCooldown] = useState(0);
+  const [dikoCooldown, setDikoCooldown] = useState('');
+  const [canUnstake, setCanUnstake] = useState(false);
+  const [cooldownRunning, setCooldownRunning] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -247,7 +249,7 @@ export const Stake = () => {
       let currentBlock = data['stacks_tip_height'];
 
       // Helper to create countdown text
-      function blockDiffToTimeLeft(blockDiff) {
+      function blockDiffToTimeLeft(blockDiff:number) {
         let minDiff = (blockDiff * 10);
         let days = Math.floor(minDiff / (60 * 24));
         let hours = Math.floor((minDiff % (60 * 24)) / 60);
@@ -260,17 +262,19 @@ export const Stake = () => {
       }
   
       if (redeemEndBlock == 0 || redeemEndBlock < currentBlock) {
-        setDikoCooldown("Not started");
+        setDikoCooldown('Not started');
       } else if (redeemStartBlock < currentBlock) {
         let blockDiff = redeemEndBlock - currentBlock;
         var text = blockDiffToTimeLeft(blockDiff);
-        text += " left to withdraw"
+        text += " left to withdraw";
         setDikoCooldown(text);
+        setCanUnstake(true);
       } else {
         let blockDiff = redeemStartBlock - currentBlock;
         var text = blockDiffToTimeLeft(blockDiff);
-        text += " left"
+        text += " left";
         setDikoCooldown(text);
+        setCooldownRunning(true);
       }
 
       setLoadingData(false);
@@ -560,7 +564,7 @@ export const Stake = () => {
                               auto-compounding
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
-                              {state.balance['diko'] > 0 || stakedAmount ? (
+                              {state.balance['diko'] > 0 || (stakedAmount && canUnstake) ? (
                                 <StakeActions>
                                   {state.balance['diko'] > 0 ? (
                                     <Menu.Item>
@@ -581,7 +585,7 @@ export const Stake = () => {
                                     </Menu.Item>
                                     
                                   ) : null }
-                                  {state.balance['diko'] > 0 ? (
+                                  {state.balance['stdiko'] > 0 && !cooldownRunning ? (
                                     <Menu.Item>
                                       {({ active }) => (
                                         <button
@@ -600,7 +604,7 @@ export const Stake = () => {
                                     </Menu.Item>
                                     
                                   ) : null }
-                                  {stakedAmount ? (
+                                  {stakedAmount && canUnstake ? (
                                     <Menu.Item>
                                       {({ active }) => (
                                         <button
