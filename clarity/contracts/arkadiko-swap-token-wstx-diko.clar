@@ -67,8 +67,8 @@
     (print "arkadiko-token-swap.mint")
     (print contract-caller)
     (print amount)
-    ;; TODO - make dynamic
-    (asserts! (is-eq contract-caller .arkadiko-swap-v1-1) (err ERR-NOT-AUTHORIZED))
+
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "swap"))) (err ERR-NOT-AUTHORIZED))
     (ft-mint? wstx-diko amount recipient)
   )
 )
@@ -81,8 +81,8 @@
     (print "arkadiko-token-swap.burn")
     (print contract-caller)
     (print amount)
-    ;; TODO - make dynamic
-    (asserts! (is-eq contract-caller .arkadiko-swap-v1-1) (err ERR-NOT-AUTHORIZED))
+
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "swap"))) (err ERR-NOT-AUTHORIZED))
     (ft-burn? wstx-diko amount recipient)
   )
 )

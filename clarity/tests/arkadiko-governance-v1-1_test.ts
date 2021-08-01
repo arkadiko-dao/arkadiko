@@ -13,7 +13,6 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     // Get current proposals at start
-    // TODO: start with empty list?
     let call:any = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-proposal-ids", [], wallet_1.address);
     call.result.expectOk().expectList()[0].expectUint(0);
     call = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-proposal-by-id", [types.uint(0)], wallet_1.address);
