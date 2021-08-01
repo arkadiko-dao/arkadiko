@@ -192,7 +192,7 @@ module.exports = {
       template: path.join(sourceRootPath, '../', 'public', 'html', 'index.html'),
       inject: 'body',
       filename: 'index.html',
-      title: 'Arkadiko',
+      title: 'Arkadiko Finance',
       chunks: ['main', 'common'],
       ...hmtlProdOpts,
     }),

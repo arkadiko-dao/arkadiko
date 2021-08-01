@@ -211,8 +211,8 @@ Clarinet.test({
 
     // Swap
     result = swap.swapXForY(deployer, dikoTokenAddress, usdaTokenAddress, 200, 38);
-    result.expectOk().expectList()[0].expectUint(200000000); 
-    result.expectOk().expectList()[1].expectUint(38350578); 
+    result.expectOk().expectList()[0].expectUint(200000000);
+    result.expectOk().expectList()[1].expectUint(38350578);
 
     // Protocol fees
     // 200 DIKO * 0.05% = 0.1 DIKO
@@ -229,6 +229,6 @@ Clarinet.test({
     // // 40 USDA * 0.05% = 0.02 USDA
     call = await swap.getFees(dikoTokenAddress, usdaTokenAddress);
     call.result.expectOk().expectList()[0].expectUint(100000);
-    // TODO: this fails? call.result.expectOk().expectList()[1].expectUint(20000);
+    call.result.expectOk().expectList()[1].expectUint(20000);
   },
 });
