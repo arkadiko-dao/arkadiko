@@ -14,6 +14,7 @@
 (define-constant ERR-NOT-AUTHORIZED (err u18401))
 (define-constant ERR-REWARDS-CALC (err u18001))
 (define-constant ERR-WRONG-TOKEN (err u18002))
+(define-constant ERR-COOLDOWN-NOT-ENDED (err u18003))
 (define-constant ERR-WRONG-REGISTRY (err u18004))
 
 ;; Constants
@@ -23,9 +24,59 @@
 (define-data-var last-reward-add-block uint u0)
 
 ;; ---------------------------------------------------------
-;; Stake Functions
+;; Cooldown
 ;; ---------------------------------------------------------
 
+;; Cooldown map
+(define-map wallet-cooldown 
+   { wallet: principal } 
+   {
+      redeem-period-start-block: uint,
+      redeem-period-end-block: uint
+   }
+)
+
+;; Get cooldown info for wallet
+(define-read-only (get-cooldown-info-of (wallet principal))
+  (default-to
+    { redeem-period-start-block: u0, redeem-period-end-block: u0 }
+    (map-get? wallet-cooldown { wallet: wallet })
+  )
+)
+
+;; Start cooldown
+(define-public (start-cooldown)
+  (let (
+    (redeem-period-start-block (+ block-height u1440)) ;; 1440 blocks = ~10 days
+    (redeem-period-end-block (+ redeem-period-start-block u288)) ;; 288 blocks = ~2 days
+  )
+    (map-set wallet-cooldown { wallet: tx-sender } { 
+      redeem-period-start-block: redeem-period-start-block,
+      redeem-period-end-block: redeem-period-end-block 
+    })
+    (ok redeem-period-start-block)
+  )
+)
+
+
+;; Check if cooldown ended
+(define-read-only (wallet-can-redeem (wallet principal))
+  (let (
+    (wallet-cooldown-info (get-cooldown-info-of wallet))
+    (redeem-period-start (get redeem-period-start-block wallet-cooldown-info))
+    (redeem-period-end (get redeem-period-end-block wallet-cooldown-info))
+  )
+    (if (and (> block-height redeem-period-start) (< block-height redeem-period-end) (not (is-eq redeem-period-start u0)))
+      true
+      false
+    )
+  )
+)
+
+
+;; ---------------------------------------------------------
+;; Stake Functions
+;; ---------------------------------------------------------
 
 ;; Get variable last-reward-add-block
 (define-read-only (get-last-reward-add-block)
@@ -121,6 +172,7 @@
   (begin
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-NOT-AUTHORIZED)
     (asserts! (is-eq POOL-TOKEN (contract-of token)) ERR-WRONG-TOKEN)
+    (asserts! (is-eq (wallet-can-redeem staker) true) ERR-COOLDOWN-NOT-ENDED)
 
     ;; Add pending rewards to pool
     (try! (add-rewards-to-pool registry-trait))
@@ -133,11 +185,10 @@
       (try! (contract-call? .arkadiko-dao burn-token .stdiko-token amount staker))
 
       ;; Transfer DIKO back from this contract to the user
-      (try! (contract-call? .arkadiko-token transfer diko-to-receive (as-contract tx-sender) staker none))
+      (try! (as-contract (contract-call? .arkadiko-token transfer diko-to-receive (as-contract tx-sender) staker none)))
 
       (ok diko-to-receive)
     )
-
   )
 )
 
