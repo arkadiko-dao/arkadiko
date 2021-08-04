@@ -646,8 +646,8 @@
       (liquidation-penalty (unwrap-panic (contract-call? coll-type get-liquidation-penalty (get collateral-type vault))))
       (fee (unwrap-panic (get-stability-fee-for-vault vault-id coll-type)))
       (penalty (/ (* liquidation-penalty (+ fee (get debt vault))) u10000))
-      (extra-debt (/ (* u60 penalty) u100)) ;; 60% of the penalty is extra debt.
-      (discount (/ (* u40 liquidation-penalty) u10000)) ;; 40% of liquidation penalty is discount % for liquidator
+      (extra-debt (/ (* u40 penalty) u100)) ;; 40% of the penalty is extra debt.
+      (discount (/ (* u60 liquidation-penalty) u10000)) ;; 60% of liquidation penalty is discount % for liquidator
     )
       (if
         (and
