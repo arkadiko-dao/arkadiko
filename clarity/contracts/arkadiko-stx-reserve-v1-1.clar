@@ -80,7 +80,7 @@
 )
 
 ;; get STX to auto payoff vault
-(define-public (request-stx-to-auto-payoff (name (string-ascii 256)) (requested-ustx uint))
+(define-public (request-stx-to-auto-payoff (requested-ustx uint))
   (begin
     (asserts!
       (or
@@ -93,7 +93,7 @@
     )
 
     (as-contract
-      (stx-transfer? requested-ustx (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name name)))
+      (stx-transfer? requested-ustx (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-payer")))
     )
   )
 )

@@ -4,8 +4,14 @@
 
 (define-constant ERR-NOT-AUTHORIZED u22401)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u221)
+(define-constant ERR-BURN-HEIGHT-NOT-REACHED u222)
+(define-constant ERR-WRONG-COLLATERAL-TOKEN u223)
+(define-constant ERR-VAULT-LIQUIDATED u227)
+(define-constant ERR-STILL-STACKING u194)
 
+(define-data-var stacking-stx-stacked uint u0) ;; how many stx did we stack in this cycle
 (define-data-var stacking-stx-received uint u0) ;; how many btc did we convert into STX tokens to add to vault collateral
+(define-data-var stacking-unlock-burn-height uint u0) ;; when is this cycle over
 (define-data-var payout-vault-id uint u0)
 (define-data-var stacker-payer-shutdown-activated bool false)
 
@@ -14,6 +20,30 @@
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
     (ok (var-set stacker-payer-shutdown-activated (not (var-get stacker-payer-shutdown-activated))))
+  )
+)
+
+(define-read-only (get-stacking-stx-stacked)
+  (ok (var-get stacking-stx-stacked))
+)
+
+(define-public (set-stacking-stx-stacked (amount uint))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set stacking-stx-stacked amount))
+  )
+)
+
+(define-read-only (get-stacking-unlock-burn-height)
+  (ok (var-get stacking-unlock-burn-height))
+)
+
+(define-public (set-stacking-unlock-burn-height (height uint))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set stacking-unlock-burn-height height))
   )
 )
 
@@ -179,7 +209,7 @@
             (try! (as-contract (request-stx-for-withdrawal new-collateral-amount)))
           )
           (begin
-            (try! (contract-call? .arkadiko-stx-reserve-v1-1 add-tokens-to-stack earned-amount))
+            (try! (contract-call? .arkadiko-stx-reserve-v1-1 add-tokens-to-stack (get stacker-name vault) earned-amount))
             (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
               updated-at-block-height: block-height,
               stacked-tokens: new-collateral-amount,
@@ -263,7 +293,7 @@
     )
     (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-WRONG-COLLATERAL-TOKEN))
     (asserts! (is-eq false (get is-liquidated vault)) (err ERR-VAULT-LIQUIDATED))
-    (asserts! (is-eq true (get revoked-stacking vault)) (err ERR-ALREADY-STACKING))
+    (asserts! (is-eq true (get revoked-stacking vault)) (err ERR-STILL-STACKING))
     (asserts!
       (or
         (is-eq u0 (var-get stacking-stx-stacked))

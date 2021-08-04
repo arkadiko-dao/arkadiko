@@ -15,11 +15,8 @@
 ;; 0x00
 
 (define-constant ERR-NOT-AUTHORIZED u19401)
-(define-constant ERR-BURN-HEIGHT-NOT-REACHED u193)
 (define-constant ERR-ALREADY-STACKING u194)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u195)
-(define-constant ERR-WRONG-COLLATERAL-TOKEN u196)
-(define-constant ERR-VAULT-LIQUIDATED u197)
 
 (define-data-var stacking-unlock-burn-height uint u0) ;; when is this cycle over
 (define-data-var stacking-stx-stacked uint u0) ;; how many stx did we stack in this cycle

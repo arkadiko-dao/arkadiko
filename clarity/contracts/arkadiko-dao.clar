@@ -334,6 +334,14 @@
   )
 
   (map-set contracts
+    { name: "stacker-payer" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stacker-payer-v1-1
+    }
+  )
+
+  (map-set contracts
     { name: "stx-reserve" }
     {
       address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
