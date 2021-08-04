@@ -44,7 +44,15 @@
   )
 )
 
-(define-public (collateralize-and-mint (token <ft-trait>) (token-string (string-ascii 12)) (ucollateral-amount uint) (debt uint) (sender principal) (stack-pox bool))
+(define-public (collateralize-and-mint
+  (token <ft-trait>)
+  (token-string (string-ascii 12))
+  (ucollateral-amount uint)
+  (debt uint)
+  (sender principal)
+  (stacker-name (string-ascii 256))
+  (stack-pox bool)
+)
   (let (
     (token-symbol (unwrap-panic (contract-call? token get-symbol)))
   )
@@ -60,7 +68,7 @@
   )
 )
 
-(define-public (deposit (token <ft-trait>) (token-string (string-ascii 12)) (additional-ucollateral-amount uint))
+(define-public (deposit (token <ft-trait>) (token-string (string-ascii 12)) (additional-ucollateral-amount uint) (stacker-name (string-ascii 256)))
   (let (
     (token-symbol (unwrap-panic (contract-call? token get-symbol)))
   )
@@ -160,15 +168,6 @@
 ;; ---------------------------------------------------------
 ;; Admin Functions
 ;; ---------------------------------------------------------
-
-(define-public (set-tokens-to-stack (new-tokens-to-stack uint))
-  (begin
-    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
-
-    ;; NOOP
-    (ok true)
-  )
-)
 
 ;; this should be called when upgrading contracts
 ;; SIP10 reserves can contain all SIP10 collateral types

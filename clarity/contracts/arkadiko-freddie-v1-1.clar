@@ -35,7 +35,12 @@
 (define-data-var stx-redeemable uint u0) ;; how much STX is available to trade for xSTX
 (define-data-var block-height-last-paid uint u0) ;; when the foundation was last paid
 (define-data-var maximum-debt-surplus uint u10000000000000) ;; 10 million default - above that we sell the USDA on the DIKO/USDA pair to burn DIKO
-(define-data-var stacking-unlock-burn-height uint u0)
+(define-map stacking-unlock-burn-height
+  { stacker-name: (string-ascii 256) }
+  {
+    height: uint
+  }
+)
 (define-data-var freddie-shutdown-activated bool false)
 
 ;; getters
@@ -64,11 +69,23 @@
   )
 )
 
-(define-public (set-stacking-unlock-burn-height (burn-height uint))
-  (begin
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker"))) (err ERR-NOT-AUTHORIZED))
+(define-read-only (get-stacking-unlock-burn-height (name (string-ascii 256)))
+  (ok (get height (unwrap-panic (map-get? stacking-unlock-burn-height { stacker-name: name }))))
+)
 
-    (ok (var-set stacking-unlock-burn-height burn-height))
+(define-public (set-stacking-unlock-burn-height (name (string-ascii 256)) (burn-height uint))
+  (begin
+    (asserts! 
+      (or
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-2")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-3")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-4")))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
+
+    (ok (map-set stacking-unlock-burn-height { stacker-name: name } { height: burn-height }))
   )
 )
 
@@ -139,7 +156,7 @@
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-WRONG-COLLATERAL-TOKEN))
     (asserts! (is-eq false (get is-liquidated vault)) (err ERR-VAULT-LIQUIDATED))
-    (try! (contract-call? .arkadiko-stx-reserve-v1-1 toggle-stacking (not (get revoked-stacking vault)) (get collateral vault)))
+    (try! (contract-call? .arkadiko-stx-reserve-v1-1 toggle-stacking (get stacker-name vault) (not (get revoked-stacking vault)) (get collateral vault)))
 
     (try!
       (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
@@ -167,7 +184,7 @@
     (asserts! (is-eq false (get is-liquidated vault)) (err ERR-VAULT-LIQUIDATED))
     (asserts! (is-eq u0 (get stacked-tokens vault)) (err ERR-STACKING-IN-PROGRESS))
 
-    (try! (contract-call? .arkadiko-stx-reserve-v1-1 add-tokens-to-stack (get collateral vault)))
+    (try! (contract-call? .arkadiko-stx-reserve-v1-1 add-tokens-to-stack (get stacker-name vault) (get collateral vault)))
     (try!
       (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
         stacked-tokens: (get collateral vault),
@@ -193,7 +210,13 @@
     (asserts! (is-eq "xSTX" (get collateral-token vault)) (err ERR-WRONG-COLLATERAL-TOKEN))
     (asserts! (is-eq true (get is-liquidated vault)) (err ERR-VAULT-LIQUIDATED))
     (asserts! (> (get stacked-tokens vault) u0) (err ERR-STACKING-IN-PROGRESS))
-    (asserts! (>= burn-block-height (var-get stacking-unlock-burn-height)) (err ERR-BURN-HEIGHT-NOT-REACHED))
+    (asserts!
+      (>=
+        burn-block-height
+        (get height (unwrap-panic (map-get? stacking-unlock-burn-height { stacker-name: (get stacker-name vault) })))
+      )
+      (err ERR-BURN-HEIGHT-NOT-REACHED)
+    )
 
     (try! (add-stx-redeemable (get stacked-tokens vault)))
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
@@ -250,6 +273,7 @@
     (collateral-type-object (unwrap-panic (contract-call? coll-type get-collateral-type-by-name collateral-type)))
     (collateral-token (get token collateral-type-object))
     (ratio (unwrap! (contract-call? reserve calculate-current-collateral-to-debt-ratio collateral-token debt collateral-amount oracle) (err ERR-WRONG-DEBT)))
+    (stacker-name (contract-call? .arkadiko-dao get-current-stacker-name))
   )
     (asserts!
       (and
@@ -276,7 +300,7 @@
       (err ERR-WRONG-COLLATERAL-TOKEN)
     )
 
-    (try! (contract-call? reserve collateralize-and-mint ft collateral-token collateral-amount debt sender (get stack-pox pox-settings)))
+    (try! (contract-call? reserve collateralize-and-mint ft collateral-token collateral-amount debt sender stacker-name (get stack-pox pox-settings)))
     (try! (as-contract (contract-call? .arkadiko-dao mint-token .usda-token debt sender)))
     (let (
       (vault-id (+ (contract-call? .arkadiko-vault-data-v1-1 get-last-vault-id) u1))
@@ -287,6 +311,7 @@
         collateral-type: collateral-type,
         collateral-token: collateral-token,
         stacked-tokens: (resolve-stacking-amount collateral-amount collateral-token (get stack-pox pox-settings)),
+        stacker-name: stacker-name,
         revoked-stacking: (not (get stack-pox pox-settings)),
         auto-payoff: (get auto-payoff pox-settings),
         debt: debt,
@@ -343,7 +368,7 @@
       (err ERR-WRONG-COLLATERAL-TOKEN)
     )
 
-    (unwrap! (contract-call? reserve deposit ft collateral-token uamount) (err ERR-DEPOSIT-FAILED))
+    (unwrap! (contract-call? reserve deposit ft collateral-token uamount (get stacker-name vault)) (err ERR-DEPOSIT-FAILED))
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id updated-vault))
     (try! (contract-call? .arkadiko-vault-rewards-v1-1 add-collateral uamount (get owner vault)))
     (print { type: "vault", action: "deposit", data: updated-vault })

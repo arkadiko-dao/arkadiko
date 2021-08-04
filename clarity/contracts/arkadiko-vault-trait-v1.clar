@@ -11,10 +11,10 @@
     (calculate-current-collateral-to-debt-ratio ((string-ascii 12) uint uint <oracle-trait>) (response uint uint))
 
     ;; collateralize tokens and mint stablecoin according to collateral-to-debt ratio
-    (collateralize-and-mint (<ft-trait> (string-ascii 12) uint uint principal bool) (response uint uint))
+    (collateralize-and-mint (<ft-trait> (string-ascii 12) uint uint principal (string-ascii 256) bool) (response uint uint))
 
     ;; deposit extra collateral
-    (deposit (<ft-trait> (string-ascii 12) uint) (response bool uint))
+    (deposit (<ft-trait> (string-ascii 12) uint (string-ascii 256)) (response bool uint))
 
     ;; withdraw excess collateral
     (withdraw (<ft-trait> (string-ascii 12) principal uint) (response bool uint))
@@ -31,6 +31,6 @@
     ;; redeem collateral after an auction ran
     (redeem-collateral (<ft-trait> (string-ascii 12) uint principal) (response bool uint))
 
-    (set-tokens-to-stack (uint) (response bool uint))
+    ;; TODO (set-tokens-to-stack (uint) (response bool uint))
   )
 )

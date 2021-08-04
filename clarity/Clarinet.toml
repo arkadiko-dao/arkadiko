@@ -85,10 +85,19 @@ depends_on = [
   "arkadiko-vault-data-v1-1",
   "arkadiko-stx-reserve-v1-1",
   "arkadiko-vault-rewards-v1-1",
+  "arkadiko-freddie-v1-1"
+]
+path = "contracts/arkadiko-stacker-v1-1.clar"
+
+[contracts.arkadiko-stacker-payer-v1-1]
+depends_on = [
+  "arkadiko-vault-data-v1-1",
+  "arkadiko-stx-reserve-v1-1",
+  "arkadiko-vault-rewards-v1-1",
   "arkadiko-freddie-v1-1",
   "arkadiko-swap-v1-1"
 ]
-path = "contracts/arkadiko-stacker-v1-1.clar"
+path = "contracts/arkadiko-stacker-payer-v1-1.clar"
 
 [contracts.arkadiko-mock-stacker-v1-1]
 depends_on = ["arkadiko-vault-data-v1-1", "arkadiko-stx-reserve-v1-1", "arkadiko-vault-rewards-v1-1"]

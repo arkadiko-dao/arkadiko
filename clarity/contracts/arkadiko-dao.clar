@@ -31,6 +31,7 @@
 (define-data-var dao-owner principal tx-sender)
 (define-data-var payout-address principal (var-get dao-owner)) ;; to which address the foundation is paid
 (define-data-var guardian principal (var-get dao-owner)) ;; guardian that can be set
+(define-data-var current-stacker-name (string-ascii 256) "stacker")
 
 (define-read-only (get-dao-owner)
   (var-get dao-owner)
@@ -65,6 +66,18 @@
     (asserts! (is-eq tx-sender (var-get guardian)) (err ERR-NOT-AUTHORIZED))
 
     (ok (var-set guardian address))
+  )
+)
+
+(define-read-only (get-current-stacker-name)
+  (var-get current-stacker-name)
+)
+
+(define-public (set-current-stacker-name (stacker-name (string-ascii 256)))
+  (begin
+    (asserts! (is-eq tx-sender (var-get dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set current-stacker-name stacker-name))
   )
 )
 
@@ -298,6 +311,28 @@
       qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stacker-v1-1
     }
   )
+  (map-set contracts
+    { name: "stacker-2" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stacker-2-v1-1
+    }
+  )
+  (map-set contracts
+    { name: "stacker-3" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stacker-3-v1-1
+    }
+  )
+  (map-set contracts
+    { name: "stacker-4" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stacker-4-v1-1
+    }
+  )
+
   (map-set contracts
     { name: "stx-reserve" }
     {
