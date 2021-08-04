@@ -259,15 +259,15 @@
 
 
 (define-public (collateralize-and-mint
-    (collateral-amount uint)
-    (debt uint)
-    (pox-settings (tuple (stack-pox bool) (auto-payoff bool)))
-    (collateral-type (string-ascii 12))
-    (reserve <vault-trait>)
-    (ft <ft-trait>)
-    (coll-type <collateral-types-trait>)
-    (oracle <oracle-trait>)
-  )
+  (collateral-amount uint)
+  (debt uint)
+  (pox-settings (tuple (stack-pox bool) (auto-payoff bool)))
+  (collateral-type (string-ascii 12))
+  (reserve <vault-trait>)
+  (ft <ft-trait>)
+  (coll-type <collateral-types-trait>)
+  (oracle <oracle-trait>)
+)
   (let (
     (sender tx-sender)
     (collateral-type-object (unwrap-panic (contract-call? coll-type get-collateral-type-by-name collateral-type)))

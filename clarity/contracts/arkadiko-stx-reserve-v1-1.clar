@@ -299,3 +299,10 @@
     (ok true)
   )
 )
+
+
+;; initialization
+(map-set tokens-to-stack { stacker-name: "stacker" } { amount: u0 })
+(map-set tokens-to-stack { stacker-name: "stacker-2" } { amount: u0 })
+(map-set tokens-to-stack { stacker-name: "stacker-3" } { amount: u0 })
+(map-set tokens-to-stack { stacker-name: "stacker-4" } { amount: u0 })

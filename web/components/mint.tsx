@@ -168,7 +168,7 @@ export const Mint = () => {
     const transaction = await makeContractCall({
       network,
       contractAddress,
-      contractName: 'arkadiko-stacker-v1-1',
+      contractName: 'arkadiko-stacker-payer-v1-1',
       functionName: 'enable-vault-withdrawals',
       functionArgs: [
         uintCV(1)

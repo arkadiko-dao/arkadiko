@@ -9,7 +9,7 @@ const vaultId = process.argv.slice(2)[0];
 async function unlockVault(vaultId) {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-freddie-v1-1",
+    contractName: "arkadiko-stacker-payer-v1-1",
     functionName: "enable-vault-withdrawals",
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stacker-v1-1'),
