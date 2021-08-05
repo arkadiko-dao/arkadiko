@@ -71,6 +71,7 @@
             (var-set stacking-unlock-burn-height (get unlock-burn-height result))
             (var-set stacking-stx-stacked (get lock-amount result))
             (try! (contract-call? .arkadiko-freddie-v1-1 set-stacking-unlock-burn-height (var-get stacker-name) (get unlock-burn-height result)))
+            (try! (contract-call? .arkadiko-stacker-payer-v1-1 set-stacking-unlock-burn-height (get unlock-burn-height result)))
             (ok (get lock-amount result))
           )
           error (begin
@@ -85,4 +86,21 @@
 
 (define-read-only (get-stx-balance)
   (stx-get-balance (as-contract tx-sender))
+)
+
+;; we probably won't need this method in production.. but used in tests
+(define-public (request-stx-for-payout (ustx-amount uint))
+  (begin
+    (asserts!
+      (or
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-payer")))
+        (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
+
+    (as-contract
+      (stx-transfer? ustx-amount (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-payer")))
+    )
+  )
 )
