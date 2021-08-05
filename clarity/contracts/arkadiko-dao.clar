@@ -8,7 +8,7 @@
 
 
 ;; Errors
-(define-constant ERR-NOT-AUTHORIZED (err u100401))
+(define-constant ERR-NOT-AUTHORIZED u100401)
 
 ;; Contract addresses
 (define-map contracts
@@ -31,7 +31,7 @@
 (define-data-var dao-owner principal tx-sender)
 (define-data-var payout-address principal (var-get dao-owner)) ;; to which address the foundation is paid
 (define-data-var guardian principal (var-get dao-owner)) ;; guardian that can be set
-(define-data-var current-stacker-name (string-ascii 256) "stacker")
+(define-data-var next-stacker-name (string-ascii 256) "stacker-2")
 
 (define-read-only (get-dao-owner)
   (var-get dao-owner)
@@ -69,15 +69,23 @@
   )
 )
 
-(define-read-only (get-current-stacker-name)
-  (var-get current-stacker-name)
+(define-read-only (get-next-stacker-name)
+  (var-get next-stacker-name)
 )
 
-(define-public (set-current-stacker-name (stacker-name (string-ascii 256)))
+(define-public (set-next-stacker-name (stacker-name (string-ascii 256)))
   (begin
-    (asserts! (is-eq tx-sender (var-get dao-owner)) (err ERR-NOT-AUTHORIZED))
-
-    (ok (var-set current-stacker-name stacker-name))
+    (if
+      (or
+        (is-eq tx-sender (var-get dao-owner))
+        (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker")))
+        (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-2")))
+        (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-3")))
+        (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-4")))
+      )
+      (ok (var-set next-stacker-name stacker-name))
+      (err ERR-NOT-AUTHORIZED)
+    )
   )
 )
 
@@ -125,7 +133,7 @@
     (current-contract (map-get? contracts { name: name }))
   )
     (begin
-      (asserts! (is-eq (unwrap-panic (get-qualified-name-by-name "governance")) contract-caller) ERR-NOT-AUTHORIZED)
+      (asserts! (is-eq (unwrap-panic (get-qualified-name-by-name "governance")) contract-caller) (err ERR-NOT-AUTHORIZED))
 
       (map-set contracts { name: name } { address: address, qualified-name: qualified-name })
       (if (is-some current-contract)
@@ -145,7 +153,7 @@
 ;; Mint protocol tokens
 (define-public (mint-token (token <dao-token-trait>) (amount uint) (recipient principal))
   (begin
-    (asserts! (is-eq (get-contract-can-mint-by-qualified-name contract-caller) true) ERR-NOT-AUTHORIZED)
+    (asserts! (is-eq (get-contract-can-mint-by-qualified-name contract-caller) true) (err ERR-NOT-AUTHORIZED))
     (contract-call? token mint-for-dao amount recipient)
   )
 )
@@ -153,7 +161,7 @@
 ;; Burn protocol tokens
 (define-public (burn-token (token <dao-token-trait>) (amount uint) (recipient principal))
   (begin
-    (asserts! (is-eq (get-contract-can-burn-by-qualified-name contract-caller) true) ERR-NOT-AUTHORIZED)
+    (asserts! (is-eq (get-contract-can-burn-by-qualified-name contract-caller) true) (err ERR-NOT-AUTHORIZED))
     (try! (contract-call? token burn-for-dao amount recipient))
     (ok true)
   )
@@ -164,7 +172,7 @@
 ;; As a result, additional DIKO will be minted to cover bad debt
 (define-public (request-diko-tokens (collateral-amount uint))
   (begin
-    (asserts! (is-eq (unwrap-panic (get-qualified-name-by-name "auction-engine")) contract-caller) ERR-NOT-AUTHORIZED)
+    (asserts! (is-eq (unwrap-panic (get-qualified-name-by-name "auction-engine")) contract-caller) (err ERR-NOT-AUTHORIZED))
 
     (contract-call? .arkadiko-token mint-for-dao collateral-amount (as-contract (unwrap-panic (get-qualified-name-by-name "sip10-reserve"))))
   )
