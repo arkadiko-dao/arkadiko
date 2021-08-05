@@ -7,7 +7,7 @@ const network = utils.resolveNetwork();
 async function setStacksReceived() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-stacker-v1-1",
+    contractName: "arkadiko-stacker-payer-v1-1",
     functionName: "set-stacking-stx-received",
     functionArgs: [
       tx.uintCV(500000000)
