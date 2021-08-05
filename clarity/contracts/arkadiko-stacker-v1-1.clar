@@ -72,6 +72,7 @@
             (var-set stacking-stx-stacked (get lock-amount result))
             (try! (contract-call? .arkadiko-freddie-v1-1 set-stacking-unlock-burn-height (var-get stacker-name) (get unlock-burn-height result)))
             (try! (contract-call? .arkadiko-stacker-payer-v1-1 set-stacking-unlock-burn-height (get unlock-burn-height result)))
+            (try! (contract-call? .arkadiko-stacker-payer-v1-1 set-stacking-stx-stacked (get lock-amount result)))
             (ok (get lock-amount result))
           )
           error (begin

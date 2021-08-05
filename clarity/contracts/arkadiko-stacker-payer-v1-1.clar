@@ -29,7 +29,16 @@
 
 (define-public (set-stacking-stx-stacked (amount uint))
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts!
+      (or
+        (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-2")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-3")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-4")))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
 
     (ok (var-set stacking-stx-stacked amount))
   )
