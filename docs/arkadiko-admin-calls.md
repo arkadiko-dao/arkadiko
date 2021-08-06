@@ -46,13 +46,14 @@ Regtest:
 
 Wait until `clarinet integrate` has ran completely.
 Run `stx send_tokens -t -H "http://localhost:20080" -I "http://localhost:20080" --address ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF --amount 430000000000 --fee 500 --nonce 42 --payment_key 753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601`
+Run `stx send_tokens -t -H "http://localhost:20080" -I "http://localhost:20080" --address STWKDKPZ3QDPQGDADWJ3EWPAP14CB1N1HCF7JZNN --amount 430000000000 --fee 500 --nonce 43 --payment_key 753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601`
 
 1. Set the Oracle price
 `node update-price.js`
 
 2. Create a vault with at least 400K STX
 
-3. Set Tokens to Stack
+3. Set Tokens to Stack on correct stacker (see arguments in script)
 `node set-tokens-to-stack.js`
 400000000000
 
@@ -61,9 +62,17 @@ Run `stx send_tokens -t -H "http://localhost:20080" -I "http://localhost:20080" 
 
 `stx call_read_only_contract_func -t -H "http://localhost:20080" -I "http://localhost:20080" --contract_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM --contract_name arkadiko-stacker-v1-1 --function_name get-stx-balance --sender_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM`
 
-5. Run stacking script
+5. Run stacking script on correct stacker (see arguments in script)
 `node initiate-stacking.js`
 
+6. Create a vault
+
+7. Set Tokens to Stack on correct stacker (see arguments in script)
+`node set-tokens-to-stack.js`
+400000000000
+
+8. Run stacking script for 2nd stacker
+`node initiate-stacking.js`
 
 ## HOWTO: After a PoX cycle ends
 

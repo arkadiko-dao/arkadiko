@@ -17,7 +17,7 @@ const shortAddress = (address: string | null) => {
     if (address.includes('.')) {
       return address;
     }
-    return `${address.substring(0, 5)}...${address.substring(address.length - 1, address.length - 6)}`;
+    return `${address.substring(0, 5)}...${address.substring(address.length, address.length - 5)}`;
   }
 
   return '';
