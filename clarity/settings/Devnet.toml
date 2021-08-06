@@ -120,3 +120,10 @@ duration = 12
 wallet = "wallet_3"
 slots = 1
 btc_address = "mvZtbibDAAA3WLpY7zXXFqRa3T4XSknBX7"
+
+[[devnet.pox_stacking_orders]]
+start_at_cycle = 3
+duration = 12
+wallet = "wallet_4"
+slots = 1
+btc_address = "mg1C76bNTutiCDV3t9nWhZs3Dc8LzUufj8"

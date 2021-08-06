@@ -85,7 +85,8 @@ depends_on = [
   "arkadiko-vault-data-v1-1",
   "arkadiko-stx-reserve-v1-1",
   "arkadiko-vault-rewards-v1-1",
-  "arkadiko-freddie-v1-1"
+  "arkadiko-freddie-v1-1",
+  "arkadiko-stacker-payer-v1-1"
 ]
 path = "contracts/arkadiko-stacker-v1-1.clar"
 
@@ -102,6 +103,36 @@ path = "contracts/arkadiko-stacker-payer-v1-1.clar"
 [contracts.arkadiko-mock-stacker-v1-1]
 depends_on = ["arkadiko-vault-data-v1-1", "arkadiko-stx-reserve-v1-1", "arkadiko-vault-rewards-v1-1"]
 path = "contracts/arkadiko-mock-stacker-v1-1.clar"
+
+[contracts.arkadiko-stacker-2-v1-1]
+depends_on = [
+  "arkadiko-vault-data-v1-1",
+  "arkadiko-stx-reserve-v1-1",
+  "arkadiko-vault-rewards-v1-1",
+  "arkadiko-freddie-v1-1",
+  "arkadiko-stacker-payer-v1-1"
+]
+path = "contracts/arkadiko-stacker-2-v1-1.clar"
+
+[contracts.arkadiko-stacker-3-v1-1]
+depends_on = [
+  "arkadiko-vault-data-v1-1",
+  "arkadiko-stx-reserve-v1-1",
+  "arkadiko-vault-rewards-v1-1",
+  "arkadiko-freddie-v1-1",
+  "arkadiko-stacker-payer-v1-1"
+]
+path = "contracts/arkadiko-stacker-3-v1-1.clar"
+
+[contracts.arkadiko-stacker-4-v1-1]
+depends_on = [
+  "arkadiko-vault-data-v1-1",
+  "arkadiko-stx-reserve-v1-1",
+  "arkadiko-vault-rewards-v1-1",
+  "arkadiko-freddie-v1-1",
+  "arkadiko-stacker-payer-v1-1"
+]
+path = "contracts/arkadiko-stacker-4-v1-1.clar"
 
 [contracts.arkadiko-stx-reserve-v1-1]
 depends_on = [
