@@ -50,18 +50,16 @@ Run `stx send_tokens -t -H "http://localhost:20080" -I "http://localhost:20080" 
 1. Set the Oracle price
 `node update-price.js`
 
-2. Check if tokens are set
+2. Create a vault with at least 400K STX
 
+3. Set Tokens to Stack
+`node set-tokens-to-stack.js`
+400000000000
+
+4. Check if variables are set
 `stx call_read_only_contract_func -t -H "http://localhost:20080" -I "http://localhost:20080" --contract_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM --contract_name arkadiko-stx-reserve-v1-1 --function_name get-tokens-to-stack --sender_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM`
 
 `stx call_read_only_contract_func -t -H "http://localhost:20080" -I "http://localhost:20080" --contract_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM --contract_name arkadiko-stacker-v1-1 --function_name get-stx-balance --sender_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM`
-
-3. Create a vault with at least 32M STX
-
-4. Set Tokens to Stack
-
-`stx call_contract_func -t -H "http://localhost:20080" -I "http://localhost:20080" --contract_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM --contract_name arkadiko-stx-reserve-v1-1 --function_name add-tokens-to-stack --fee 500 --nonce 1 --payment_key KEY`
-(32000000000000)
 
 5. Run stacking script
 `node initiate-stacking.js`

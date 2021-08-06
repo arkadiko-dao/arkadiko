@@ -273,6 +273,15 @@
   (stx-get-balance (as-contract tx-sender))
 )
 
+(define-public (set-tokens-to-stack (name (string-ascii 256)) (new-tokens-to-stack uint))
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (map-set tokens-to-stack { stacker-name: name } { amount: new-tokens-to-stack })
+    (ok true)
+  )
+)
+
 ;; this should be called when upgrading contracts
 ;; STX reserve should only contain STX
 (define-public (migrate-funds (new-vault <vault-trait>))
