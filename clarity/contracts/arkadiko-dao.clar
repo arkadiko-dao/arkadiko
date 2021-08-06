@@ -31,7 +31,7 @@
 (define-data-var dao-owner principal tx-sender)
 (define-data-var payout-address principal (var-get dao-owner)) ;; to which address the foundation is paid
 (define-data-var guardian principal (var-get dao-owner)) ;; guardian that can be set
-(define-data-var next-stacker-name (string-ascii 256) "stacker-2")
+(define-data-var next-stacker-name (string-ascii 256) "stacker")
 
 (define-read-only (get-dao-owner)
   (var-get dao-owner)
