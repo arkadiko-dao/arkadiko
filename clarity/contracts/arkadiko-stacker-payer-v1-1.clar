@@ -248,11 +248,11 @@
     )
   )
     (asserts! (>= usda-amount stability-fee) (ok true))
-    (try! (contract-call? .arkadiko-freddie-v1-1 pay-stability-fee vault-id coll-type))
+    (try! (as-contract (contract-call? .arkadiko-freddie-v1-1 pay-stability-fee vault-id coll-type)))
     (asserts! (> leftover-usda u0) (ok true))
 
     (if (>= (get debt vault) leftover-usda)
-      (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id leftover-usda reserve ft coll-type))
+      (try! (as-contract (contract-call? .arkadiko-freddie-v1-1 burn vault-id leftover-usda reserve ft coll-type)))
       (begin
         ;; this is the last payment - after this we paid off all debt
         ;; we leave the vault open and keep stacking in PoX for the user
@@ -263,7 +263,7 @@
         (let (
           (excess-usda (- leftover-usda (get debt vault)))
         )
-          (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id (get debt vault) reserve ft coll-type))
+          (try! (as-contract (contract-call? .arkadiko-freddie-v1-1 burn vault-id (get debt vault) reserve ft coll-type)))
           (try! (as-contract (contract-call? .usda-token transfer excess-usda (as-contract tx-sender) (get owner vault) none)))
         )
       )
