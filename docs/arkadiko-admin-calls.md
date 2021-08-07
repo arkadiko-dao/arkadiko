@@ -45,8 +45,8 @@ Regtest:
 0. In Development Only - Transfer tokens
 
 Wait until `clarinet integrate` has ran completely.
-Run `stx send_tokens -t -H "http://localhost:20080" -I "http://localhost:20080" --address ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF --amount 430000000000 --fee 500 --nonce 42 --payment_key 753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601`
-Run `stx send_tokens -t -H "http://localhost:20080" -I "http://localhost:20080" --address STWKDKPZ3QDPQGDADWJ3EWPAP14CB1N1HCF7JZNN --amount 430000000000 --fee 500 --nonce 43 --payment_key 753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601`
+Run `stx send_tokens -t -H "http://localhost:20080" -I "http://localhost:20080" --address ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF --amount 430000000000 --fee 500 --nonce 45 --payment_key 753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601`
+Run `stx send_tokens -t -H "http://localhost:20080" -I "http://localhost:20080" --address STWKDKPZ3QDPQGDADWJ3EWPAP14CB1N1HCF7JZNN --amount 430000000000 --fee 500 --nonce 46 --payment_key 753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601`
 
 1. Set the Oracle price
 `node update-price.js`
