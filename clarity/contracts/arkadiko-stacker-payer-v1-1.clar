@@ -82,28 +82,6 @@
   )
 )
 
-;; can be called by stackers to request STX tokens for withdrawal
-;; this can be called per vault that has set revoked stacking to true
-(define-public (request-stx-for-withdrawal (ustx-amount uint))
-  (begin
-    (asserts!
-      (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-payer")))
-      (err ERR-NOT-AUTHORIZED)
-    )
-    (asserts!
-      (and
-        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
-        (is-eq (var-get stacker-payer-shutdown-activated) false)
-      )
-      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
-    )
-
-    (as-contract
-      (stx-transfer? ustx-amount (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
-    )
-  )
-)
-
 ;; Pay all parties:
 ;; - Owner of vault
 ;; - DAO Reserve
@@ -330,5 +308,23 @@
       }))
     )
     (ok true)
+  )
+)
+
+;; can be called by contract to request STX tokens for withdrawal
+;; this can be called per vault that has set revoked stacking to true
+(define-private (request-stx-for-withdrawal (ustx-amount uint))
+  (begin
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get stacker-payer-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
+
+    (as-contract
+      (stx-transfer? ustx-amount (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
+    )
   )
 )
