@@ -31,7 +31,6 @@
 (define-data-var dao-owner principal tx-sender)
 (define-data-var payout-address principal (var-get dao-owner)) ;; to which address the foundation is paid
 (define-data-var guardian principal (var-get dao-owner)) ;; guardian that can be set
-(define-data-var next-stacker-name (string-ascii 256) "stacker")
 
 (define-read-only (get-dao-owner)
   (var-get dao-owner)
@@ -66,26 +65,6 @@
     (asserts! (is-eq tx-sender (var-get guardian)) (err ERR-NOT-AUTHORIZED))
 
     (ok (var-set guardian address))
-  )
-)
-
-(define-read-only (get-next-stacker-name)
-  (var-get next-stacker-name)
-)
-
-(define-public (set-next-stacker-name (stacker-name (string-ascii 256)))
-  (begin
-    (if
-      (or
-        (is-eq tx-sender (var-get dao-owner))
-        (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker")))
-        (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-2")))
-        (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-3")))
-        (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-4")))
-      )
-      (ok (var-set next-stacker-name stacker-name))
-      (err ERR-NOT-AUTHORIZED)
-    )
   )
 )
 

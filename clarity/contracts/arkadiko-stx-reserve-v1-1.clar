@@ -14,6 +14,7 @@
 (define-constant ERR-WRONG-TOKEN u118)
 (define-constant ERR-TOO-MUCH-DEBT u119)
 
+(define-data-var next-stacker-name (string-ascii 256) "stacker")
 (define-map tokens-to-stack
   { stacker-name: (string-ascii 256) }
   {
@@ -107,6 +108,26 @@
 
     (as-contract
       (stx-transfer? requested-ustx (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name name)))
+    )
+  )
+)
+
+(define-read-only (get-next-stacker-name)
+  (var-get next-stacker-name)
+)
+
+(define-public (set-next-stacker-name (stacker-name (string-ascii 256)))
+  (begin
+    (if
+      (or
+        (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-2")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-3")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-4")))
+      )
+      (ok (var-set next-stacker-name stacker-name))
+      (err ERR-NOT-AUTHORIZED)
     )
   )
 )

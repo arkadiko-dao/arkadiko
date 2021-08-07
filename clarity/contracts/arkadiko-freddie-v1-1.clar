@@ -273,7 +273,7 @@
     (collateral-type-object (unwrap-panic (contract-call? coll-type get-collateral-type-by-name collateral-type)))
     (collateral-token (get token collateral-type-object))
     (ratio (unwrap! (contract-call? reserve calculate-current-collateral-to-debt-ratio collateral-token debt collateral-amount oracle) (err ERR-WRONG-DEBT)))
-    (stacker-name (contract-call? .arkadiko-dao get-next-stacker-name))
+    (stacker-name (contract-call? .arkadiko-stx-reserve-v1-1 get-next-stacker-name))
   )
     (asserts!
       (and
