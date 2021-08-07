@@ -162,8 +162,7 @@
 (define-public (burn-token (token <dao-token-trait>) (amount uint) (recipient principal))
   (begin
     (asserts! (is-eq (get-contract-can-burn-by-qualified-name contract-caller) true) (err ERR-NOT-AUTHORIZED))
-    (try! (contract-call? token burn-for-dao amount recipient))
-    (ok true)
+    (contract-call? token burn-for-dao amount recipient)
   )
 )
 

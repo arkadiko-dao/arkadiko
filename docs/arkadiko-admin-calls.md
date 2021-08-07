@@ -57,21 +57,16 @@ Run `stx send_tokens -t -H "http://localhost:20080" -I "http://localhost:20080" 
 `node set-tokens-to-stack.js`
 400000000000
 
-4. Check if variables are set
-`stx call_read_only_contract_func -t -H "http://localhost:20080" -I "http://localhost:20080" --contract_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM --contract_name arkadiko-stx-reserve-v1-1 --function_name get-tokens-to-stack --sender_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM`
-
-`stx call_read_only_contract_func -t -H "http://localhost:20080" -I "http://localhost:20080" --contract_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM --contract_name arkadiko-stacker-v1-1 --function_name get-stx-balance --sender_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM`
-
-5. Run stacking script on correct stacker (see arguments in script)
+4. Run stacking script on correct stacker (see arguments in script)
 `node initiate-stacking.js`
 
-6. Create a vault
+5. Create a vault
 
-7. Set Tokens to Stack on correct stacker (see arguments in script)
+6. Set Tokens to Stack on correct stacker (see arguments in script)
 `node set-tokens-to-stack.js`
 400000000000
 
-8. Run stacking script for 2nd stacker
+7. Run stacking script for 2nd stacker
 `node initiate-stacking.js`
 
 ## HOWTO: After a PoX cycle ends
@@ -88,3 +83,5 @@ Run `stx send_tokens -t -H "http://localhost:20080" -I "http://localhost:20080" 
 5. For every vault that has been liquidated AND auction ended
   - Run release-stacked-stx
 6. When new cycle nears: call stacking contract with updated numbers. Check if stx reserve tokens to stack is correct
+
+`stx call_read_only_contract_func -t -H "http://localhost:20080" -I "http://localhost:20080" --contract_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM --contract_name arkadiko-stacker-payer-v1-1 --function_name calculate-vault-reward --sender_address ST1A0EP8AWV24G1BETM154DYWXGB4Q7MDB5WXXFTB`
