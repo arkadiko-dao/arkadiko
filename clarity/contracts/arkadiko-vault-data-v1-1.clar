@@ -16,6 +16,7 @@
   revoked-stacking: bool,
   auto-payoff: bool,
   debt: uint,
+  stacker-name: (string-ascii 256),
   created-at-block-height: uint,
   updated-at-block-height: uint,
   stability-fee-accrued: uint,
@@ -24,7 +25,7 @@
   auction-ended: bool,
   leftover-collateral: uint
 })
-(define-map vault-entries { user: principal } { ids: (list 1000 uint) })
+(define-map vault-entries { user: principal } { ids: (list 500 uint) })
 (define-map closing-vault
   { user: principal }
   { vault-id: uint }
@@ -58,6 +59,7 @@
       collateral-type: "",
       collateral-token: "",
       stacked-tokens: u0,
+      stacker-name: "",
       revoked-stacking: false,
       debt: u0,
       created-at-block-height: u0,
@@ -105,12 +107,12 @@
   )
 )
 
-(define-public (update-vault (vault-id uint) (data (tuple (id uint) (owner principal) (collateral uint) (collateral-type (string-ascii 12)) (collateral-token (string-ascii 12)) (stacked-tokens uint) (auto-payoff bool) (revoked-stacking bool) (debt uint) (created-at-block-height uint) (updated-at-block-height uint) (stability-fee-accrued uint) (stability-fee-last-accrued uint) (is-liquidated bool) (auction-ended bool) (leftover-collateral uint))))
+(define-public (update-vault (vault-id uint) (data (tuple (id uint) (owner principal) (collateral uint) (collateral-type (string-ascii 12)) (collateral-token (string-ascii 12)) (stacker-name (string-ascii 256)) (stacked-tokens uint) (auto-payoff bool) (revoked-stacking bool) (debt uint) (created-at-block-height uint) (updated-at-block-height uint) (stability-fee-accrued uint) (stability-fee-last-accrued uint) (is-liquidated bool) (auction-ended bool) (leftover-collateral uint))))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts!
       (or
         (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie")))
-        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-payer")))
       )
       (err ERR-NOT-AUTHORIZED)
     )
@@ -124,7 +126,7 @@
   (let ((entries (get ids (get-vault-entries user))))
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
 
-    (map-set vault-entries { user: user } { ids: (unwrap-panic (as-max-len? (append entries vault-id) u1000)) })
+    (map-set vault-entries { user: user } { ids: (unwrap-panic (as-max-len? (append entries vault-id) u500)) })
     (ok true)
   )
 )

@@ -33,7 +33,7 @@ async function getVaultById(vaultId) {
 async function unlockVault(vaultId) {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-freddie-v1-1",
+    contractName: "arkadiko-stacker-payer-v1-1",
     functionName: "enable-vault-withdrawals",
     functionArgs: [
       tx.uintCV(vaultId)

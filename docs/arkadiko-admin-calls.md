@@ -32,43 +32,42 @@ Regtest:
 
 `stx call_contract_func -t -H "https://stacks-node-api.regtest.stacks.co" -I "https://stacks-node-api.regtest.stacks.co" --contract_address ST1A0EP8AWV24G1BETM154DYWXGB4Q7MDB5WXXFTB --contract_name arkadiko-stacker-v1-1 --function_name enable-vault-withdrawals --fee 500 --nonce 122 --payment_key KEY`
 
+7. is pox active?
+
+`stx call_read_only_contract_func -t -H "http://localhost:3999" -I "http://localhost:3999" --contract_address ST000000000000000000002AMW42H --contract_name pox --function_name is-pox-active --sender_address ST3DSDDH2H2QFA6BHEVKTSK5NK54SJWSKB6MQKM8Z`
+
+8. get stacker info
+
+`stx call_read_only_contract_func -t -H "http://localhost:3999" -I "http://localhost:3999" --contract_address ST000000000000000000002AMW42H --contract_name pox --function_name get-stacker-info --sender_address ST3DSDDH2H2QFA6BHEVKTSK5NK54SJWSKB6MQKM8Z`
 
 ## HOWTO: Start Stacking in Arkadiko
 
 0. In Development Only - Transfer tokens
 
-with mocknet: `curl -s -X POST "http://localhost:3999/extended/v1/faucets/stx?address=ST3DSDDH2H2QFA6BHEVKTSK5NK54SJWSKB6MQKM8Z&stacking=true"`
+Wait until `clarinet integrate` has ran completely.
+Run `stx send_tokens -t -H "http://localhost:20080" -I "http://localhost:20080" --address ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF --amount 430000000000 --fee 500 --nonce 45 --payment_key 753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601`
+Run `stx send_tokens -t -H "http://localhost:20080" -I "http://localhost:20080" --address STWKDKPZ3QDPQGDADWJ3EWPAP14CB1N1HCF7JZNN --amount 430000000000 --fee 500 --nonce 46 --payment_key 753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601`
 
-with `clarinet integrate`: `stx send_tokens -t -H "http://localhost:20080" -I "http://localhost:20080" --address ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF --amount 430000000000 --fee 500 --nonce 0 --payment_key 753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601`
+1. Set the Oracle price
+`node update-price.js`
 
-Run `yarn deploy-contracts`
+2. Create a vault with at least 400K STX
 
-`stx send_tokens -t -H "http://localhost:20080" -I "http://localhost:20080" --address ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF --amount 56480000000000 --fee 500 --nonce 46 --payment_key PRIVATE_KEY`
+3. Set Tokens to Stack on correct stacker (see arguments in script)
+`node set-tokens-to-stack.js`
+400000000000
 
-1. Set Tokens to Stack
+4. Run stacking script on correct stacker (see arguments in script)
+`node initiate-stacking.js`
 
-`stx call_contract_func -t -H "http://localhost:20080" -I "http://localhost:20080" --contract_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM --contract_name arkadiko-stx-reserve-v1-1 --function_name set-tokens-to-stack --fee 500 --nonce 38 --payment_key KEY`
-(32000000000000)
+5. Create a vault
 
-2. Check if tokens are set
+6. Set Tokens to Stack on correct stacker (see arguments in script)
+`node set-tokens-to-stack.js`
+400000000000
 
-`stx call_read_only_contract_func -t -H "http://localhost:20080" -I "http://localhost:20080" --contract_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM --contract_name arkadiko-stx-reserve-v1-1 --function_name get-tokens-to-stack --sender_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM`
-
-`stx call_read_only_contract_func -t -H "http://localhost:20080" -I "http://localhost:20080" --contract_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM --contract_name arkadiko-stacker-v1-1 --function_name get-stx-balance --sender_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM`
-
-3. `node update-price.js`
-
-4. Create a vault
-
-5. `node initiate-stacking.js`
-
-is pox active?
-
-`stx call_read_only_contract_func -t -H "http://localhost:3999" -I "http://localhost:3999" --contract_address ST000000000000000000002AMW42H --contract_name pox --function_name is-pox-active --sender_address ST3DSDDH2H2QFA6BHEVKTSK5NK54SJWSKB6MQKM8Z`
-
-get stacker info
-
-`stx call_read_only_contract_func -t -H "http://localhost:3999" -I "http://localhost:3999" --contract_address ST000000000000000000002AMW42H --contract_name pox --function_name get-stacker-info --sender_address ST3DSDDH2H2QFA6BHEVKTSK5NK54SJWSKB6MQKM8Z`
+7. Run stacking script for 2nd stacker
+`node initiate-stacking.js`
 
 ## HOWTO: After a PoX cycle ends
 
@@ -84,3 +83,5 @@ get stacker info
 5. For every vault that has been liquidated AND auction ended
   - Run release-stacked-stx
 6. When new cycle nears: call stacking contract with updated numbers. Check if stx reserve tokens to stack is correct
+
+`stx call_read_only_contract_func -t -H "http://localhost:20080" -I "http://localhost:20080" --contract_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM --contract_name arkadiko-stacker-payer-v1-1 --function_name calculate-vault-reward --sender_address ST1A0EP8AWV24G1BETM154DYWXGB4Q7MDB5WXXFTB`

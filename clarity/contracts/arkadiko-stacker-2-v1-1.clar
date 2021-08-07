@@ -1,7 +1,3 @@
-(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
-(use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
-(use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
-
 ;; Stacker can initiate stacking for the STX reserve
 ;; The amount to stack is kept as a data var in the stx reserve
 ;; Stacks the STX tokens in POX
@@ -19,16 +15,13 @@
 ;; 0x00
 
 (define-constant ERR-NOT-AUTHORIZED u19401)
-(define-constant ERR-BURN-HEIGHT-NOT-REACHED u193)
 (define-constant ERR-ALREADY-STACKING u194)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u195)
-(define-constant ERR-WRONG-COLLATERAL-TOKEN u196)
-(define-constant ERR-VAULT-LIQUIDATED u197)
 
 (define-data-var stacking-unlock-burn-height uint u0) ;; when is this cycle over
 (define-data-var stacking-stx-stacked uint u0) ;; how many stx did we stack in this cycle
 (define-data-var stacker-shutdown-activated bool false)
-(define-data-var stacker-name (string-ascii 256) "stacker")
+(define-data-var stacker-name (string-ascii 256) "stacker-2")
 
 (define-read-only (get-stacking-unlock-burn-height)
   (ok (var-get stacking-unlock-burn-height))
@@ -78,6 +71,9 @@
             (var-set stacking-unlock-burn-height (get unlock-burn-height result))
             (var-set stacking-stx-stacked (get lock-amount result))
             (try! (contract-call? .arkadiko-freddie-v1-1 set-stacking-unlock-burn-height (var-get stacker-name) (get unlock-burn-height result)))
+            (try! (contract-call? .arkadiko-stacker-payer-v1-1 set-stacking-unlock-burn-height (get unlock-burn-height result)))
+            (try! (contract-call? .arkadiko-stacker-payer-v1-1 set-stacking-stx-stacked (get lock-amount result)))
+            (try! (contract-call? .arkadiko-stx-reserve-v1-1 set-next-stacker-name "stacker-3"))
             (ok (get lock-amount result))
           )
           error (begin
@@ -92,4 +88,33 @@
 
 (define-read-only (get-stx-balance)
   (stx-get-balance (as-contract tx-sender))
+)
+
+;; return STX to the STX reserve
+;; can be used when deprecating this stacker logic
+(define-public (return-stx (ustx-amount uint))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (as-contract
+      (stx-transfer? ustx-amount (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "arkadiko-stx-reserve-v1-1")))
+    )
+  )
+)
+
+;; we probably won't need this method in production.. but used in tests
+(define-public (request-stx-for-payout (ustx-amount uint))
+  (begin
+    (asserts!
+      (or
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-payer")))
+        (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
+
+    (as-contract
+      (stx-transfer? ustx-amount (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-payer")))
+    )
+  )
 )

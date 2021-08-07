@@ -3,17 +3,16 @@ const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
+const BN = require('bn.js');
 
-const vaultId = process.argv.slice(2)[0];
-
-async function unlockVault(vaultId) {
+async function initiateStacking() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-stacker-payer-v1-1",
-    functionName: "enable-vault-withdrawals",
+    contractName: "arkadiko-stx-reserve-v1-1",
+    functionName: "set-tokens-to-stack",
     functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stacker-v1-1'),
-      tx.uintCV(vaultId)
+      tx.stringAsciiCV('stacker'),
+      tx.uintCV(400000000000)
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
@@ -25,4 +24,4 @@ async function unlockVault(vaultId) {
   await utils.processing(result, transaction.txid(), 0);
 }
 
-unlockVault(vaultId);
+initiateStacking();

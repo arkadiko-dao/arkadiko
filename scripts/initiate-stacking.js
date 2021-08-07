@@ -9,6 +9,7 @@ const c32 = require('c32check');
 
 async function initiateStacking() {
   const btcAddr = c32.c32ToB58('ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF');
+  console.log(btcAddr);
   const { hashMode, data } = stacking.decodeBtcAddress(btcAddr);
   const hashbytes = tx.bufferCV(data);
   const txOptions = {
@@ -17,8 +18,8 @@ async function initiateStacking() {
     functionName: "initiate-stacking",
     functionArgs: [
       tx.tupleCV({ 'version': tx.bufferCV(new BN(hashMode, 10).toArrayLike(Buffer)), 'hashbytes': hashbytes }),
-      tx.uintCV(149), // prepare_phase_start_block_height
-      tx.uintCV(1) // number of cycles
+      tx.uintCV(124), // prepare_phase_start_block_height
+      tx.uintCV(3) // number of cycles
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,

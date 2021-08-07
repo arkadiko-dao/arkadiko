@@ -554,7 +554,7 @@ Clarinet.test({
     call = await chain.callReadOnlyFn(
       "arkadiko-stx-reserve-v1-1",
       "get-tokens-to-stack",
-      [],
+      [types.ascii("stacker")],
       deployer.address
     );
     call.result.expectOk().expectUint(0);
@@ -564,7 +564,7 @@ Clarinet.test({
     call = await chain.callReadOnlyFn(
       "arkadiko-stx-reserve-v1-1",
       "get-tokens-to-stack",
-      [],
+      [types.ascii("stacker")],
       deployer.address
     );
     call.result.expectOk().expectUint(1000000000);

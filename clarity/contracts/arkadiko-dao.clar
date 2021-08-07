@@ -8,7 +8,7 @@
 
 
 ;; Errors
-(define-constant ERR-NOT-AUTHORIZED (err u100401))
+(define-constant ERR-NOT-AUTHORIZED u100401)
 
 ;; Contract addresses
 (define-map contracts
@@ -112,7 +112,7 @@
     (current-contract (map-get? contracts { name: name }))
   )
     (begin
-      (asserts! (is-eq (unwrap-panic (get-qualified-name-by-name "governance")) contract-caller) ERR-NOT-AUTHORIZED)
+      (asserts! (is-eq (unwrap-panic (get-qualified-name-by-name "governance")) contract-caller) (err ERR-NOT-AUTHORIZED))
 
       (map-set contracts { name: name } { address: address, qualified-name: qualified-name })
       (if (is-some current-contract)
@@ -132,7 +132,7 @@
 ;; Mint protocol tokens
 (define-public (mint-token (token <dao-token-trait>) (amount uint) (recipient principal))
   (begin
-    (asserts! (is-eq (get-contract-can-mint-by-qualified-name contract-caller) true) ERR-NOT-AUTHORIZED)
+    (asserts! (is-eq (get-contract-can-mint-by-qualified-name contract-caller) true) (err ERR-NOT-AUTHORIZED))
     (contract-call? token mint-for-dao amount recipient)
   )
 )
@@ -140,9 +140,8 @@
 ;; Burn protocol tokens
 (define-public (burn-token (token <dao-token-trait>) (amount uint) (recipient principal))
   (begin
-    (asserts! (is-eq (get-contract-can-burn-by-qualified-name contract-caller) true) ERR-NOT-AUTHORIZED)
-    (try! (contract-call? token burn-for-dao amount recipient))
-    (ok true)
+    (asserts! (is-eq (get-contract-can-burn-by-qualified-name contract-caller) true) (err ERR-NOT-AUTHORIZED))
+    (contract-call? token burn-for-dao amount recipient)
   )
 )
 
@@ -151,7 +150,7 @@
 ;; As a result, additional DIKO will be minted to cover bad debt
 (define-public (request-diko-tokens (collateral-amount uint))
   (begin
-    (asserts! (is-eq (unwrap-panic (get-qualified-name-by-name "auction-engine")) contract-caller) ERR-NOT-AUTHORIZED)
+    (asserts! (is-eq (unwrap-panic (get-qualified-name-by-name "auction-engine")) contract-caller) (err ERR-NOT-AUTHORIZED))
 
     (contract-call? .arkadiko-token mint-for-dao collateral-amount (as-contract (unwrap-panic (get-qualified-name-by-name "sip10-reserve"))))
   )
@@ -298,6 +297,36 @@
       qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stacker-v1-1
     }
   )
+  (map-set contracts
+    { name: "stacker-2" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stacker-2-v1-1
+    }
+  )
+  (map-set contracts
+    { name: "stacker-3" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stacker-3-v1-1
+    }
+  )
+  (map-set contracts
+    { name: "stacker-4" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stacker-4-v1-1
+    }
+  )
+
+  (map-set contracts
+    { name: "stacker-payer" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stacker-payer-v1-1
+    }
+  )
+
   (map-set contracts
     { name: "stx-reserve" }
     {

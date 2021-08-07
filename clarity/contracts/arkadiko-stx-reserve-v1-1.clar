@@ -14,45 +14,68 @@
 (define-constant ERR-WRONG-TOKEN u118)
 (define-constant ERR-TOO-MUCH-DEBT u119)
 
-(define-data-var tokens-to-stack uint u0)
+(define-data-var next-stacker-name (string-ascii 256) "stacker")
+(define-map tokens-to-stack
+  { stacker-name: (string-ascii 256) }
+  {
+    amount: uint
+  }
+)
 
 ;; MAIN LOGIC
 
-(define-read-only (get-tokens-to-stack)
-  (ok (var-get tokens-to-stack))
+(define-read-only (get-tokens-to-stack (name (string-ascii 256)))
+  (ok (get amount (unwrap-panic (map-get? tokens-to-stack { stacker-name: name }))))
 )
 
-(define-public (add-tokens-to-stack (token-amount uint))
-  (begin
+(define-public (add-tokens-to-stack (name (string-ascii 256)) (token-amount uint))
+  (let (
+    (stacker (unwrap-panic (map-get? tokens-to-stack { stacker-name: name })))
+  )
     (asserts!
       (or
         (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie")))
         (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-2")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-3")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-4")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-payer")))
       )
       (err ERR-NOT-AUTHORIZED)
     )
 
-    (var-set tokens-to-stack (+ (var-get tokens-to-stack) token-amount))
+    (map-set tokens-to-stack { stacker-name: name } { amount: (+ (get amount stacker) token-amount) })
     (ok u200)
   )
 )
 
-(define-public (subtract-tokens-to-stack (token-amount uint))
-  (begin
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+(define-public (subtract-tokens-to-stack (name (string-ascii 256)) (token-amount uint))
+  (let (
+    (stacker (unwrap-panic (map-get? tokens-to-stack { stacker-name: name })))
+  )
+    (asserts!
+      (or
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-2")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-3")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-4")))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
 
-    (var-set tokens-to-stack (- (var-get tokens-to-stack) token-amount))
+    (map-set tokens-to-stack { stacker-name: name } { amount: (- (get amount stacker) token-amount) })
     (ok u200)
   )
 )
 
-(define-public (toggle-stacking (revoked-stacking bool) (ustx-collateral uint))
+(define-public (toggle-stacking (stacker-name (string-ascii 256)) (revoked-stacking bool) (ustx-collateral uint))
   (begin
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
 
     (if (is-eq true revoked-stacking)
-      (ok (try! (subtract-tokens-to-stack ustx-collateral)))
-      (ok (try! (add-tokens-to-stack ustx-collateral)))
+      (ok (try! (subtract-tokens-to-stack stacker-name ustx-collateral)))
+      (ok (try! (add-tokens-to-stack stacker-name ustx-collateral)))
     )
   )
 )
@@ -60,22 +83,51 @@
 ;; get STX to auto payoff vault
 (define-public (request-stx-to-auto-payoff (requested-ustx uint))
   (begin
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-payer"))) (err ERR-NOT-AUTHORIZED))
 
     (as-contract
-      (stx-transfer? requested-ustx (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker")))
+      (stx-transfer? requested-ustx (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-payer")))
     )
   )
 )
 
-;; transfers (var-get tokens-to-stack) tokens to the stacker contract
-(define-public (request-stx-to-stack (requested-ustx uint))
-  (begin
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker"))) (err ERR-NOT-AUTHORIZED))
-    (asserts! (<= requested-ustx (var-get tokens-to-stack)) (err ERR-NOT-AUTHORIZED))
+(define-public (request-stx-to-stack (name (string-ascii 256)) (requested-ustx uint))
+  (let (
+    (stacker (unwrap-panic (map-get? tokens-to-stack { stacker-name: name })))
+  )
+    (asserts!
+      (or
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-2")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-3")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-4")))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
+    (asserts! (<= requested-ustx (get amount stacker)) (err ERR-NOT-AUTHORIZED))
 
     (as-contract
-      (stx-transfer? requested-ustx (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker")))
+      (stx-transfer? requested-ustx (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name name)))
+    )
+  )
+)
+
+(define-read-only (get-next-stacker-name)
+  (var-get next-stacker-name)
+)
+
+(define-public (set-next-stacker-name (stacker-name (string-ascii 256)))
+  (begin
+    (if
+      (or
+        (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-2")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-3")))
+        (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-4")))
+      )
+      (ok (var-set next-stacker-name stacker-name))
+      (err ERR-NOT-AUTHORIZED)
     )
   )
 )
@@ -118,7 +170,15 @@
 ;; accept collateral in STX tokens
 ;; save STX in stx-reserve-address
 ;; calculate price and collateralisation ratio
-(define-public (collateralize-and-mint (token <ft-trait>) (token-string (string-ascii 12)) (ustx-amount uint) (debt uint) (sender principal) (stack-pox bool))
+(define-public (collateralize-and-mint
+  (token <ft-trait>)
+  (token-string (string-ascii 12))
+  (ustx-amount uint)
+  (debt uint)
+  (sender principal)
+  (stacker-name (string-ascii 256))
+  (stack-pox bool)
+)
   (begin
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq token-string "STX") (err ERR-WRONG-TOKEN))
@@ -126,7 +186,7 @@
     (match (print (stx-transfer? ustx-amount sender (as-contract tx-sender)))
       success (begin
         (if (is-eq stack-pox true)
-          (try! (add-tokens-to-stack ustx-amount))
+          (try! (add-tokens-to-stack stacker-name ustx-amount))
           u0
         )
         (ok debt)
@@ -137,14 +197,14 @@
 )
 
 ;; deposit extra collateral in vault
-(define-public (deposit (token <ft-trait>) (token-string (string-ascii 12)) (additional-ustx-amount uint))
+(define-public (deposit (token <ft-trait>) (token-string (string-ascii 12)) (additional-ustx-amount uint) (stacker-name (string-ascii 256)))
   (begin
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq token-string "STX") (err ERR-WRONG-TOKEN))
 
     (match (print (stx-transfer? additional-ustx-amount tx-sender (as-contract tx-sender)))
       success (begin
-        (try! (add-tokens-to-stack additional-ustx-amount))
+        (try! (add-tokens-to-stack stacker-name additional-ustx-amount))
         (ok true)
       )
       error (err ERR-DEPOSIT-FAILED)
@@ -233,6 +293,15 @@
   (stx-get-balance (as-contract tx-sender))
 )
 
+(define-public (set-tokens-to-stack (name (string-ascii 256)) (new-tokens-to-stack uint))
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (map-set tokens-to-stack { stacker-name: name } { amount: new-tokens-to-stack })
+    (ok true)
+  )
+)
+
 ;; this should be called when upgrading contracts
 ;; STX reserve should only contain STX
 (define-public (migrate-funds (new-vault <vault-trait>))
@@ -243,20 +312,19 @@
   )
 )
 
-(define-public (set-tokens-to-stack (new-tokens-to-stack uint))
-  (begin
-    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
-
-    (var-set tokens-to-stack new-tokens-to-stack)
-    (ok true)
-  )
-)
 
 (define-public (migrate-state (new-vault <vault-trait>))
   (begin
     (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
-    (try! (contract-call? new-vault set-tokens-to-stack (var-get tokens-to-stack)))
+    ;; (try! (contract-call? new-vault set-tokens-to-stack (var-get tokens-to-stack)))
     (ok true)
   )
 )
+
+
+;; initialization
+(map-set tokens-to-stack { stacker-name: "stacker" } { amount: u0 })
+(map-set tokens-to-stack { stacker-name: "stacker-2" } { amount: u0 })
+(map-set tokens-to-stack { stacker-name: "stacker-3" } { amount: u0 })
+(map-set tokens-to-stack { stacker-name: "stacker-4" } { amount: u0 })

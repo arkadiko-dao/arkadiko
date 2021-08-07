@@ -13,7 +13,6 @@ export const SmartContractBalance = ({ address }) => {
     let mounted = true;
 
     const getData = async () => {
-      console.log('wow');
       const client = getRPCClient();
       const url = `${client.url}/extended/v1/address/${address}/balances`;
       const response = await fetch(url, { credentials: 'omit' });
