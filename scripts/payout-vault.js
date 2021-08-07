@@ -7,7 +7,7 @@ const network = utils.resolveNetwork();
 async function payVault() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-stacker-v1-1",
+    contractName: "arkadiko-stacker-payer-v1-1",
     functionName: "payout",
     functionArgs: [
       tx.uintCV(1), // vault ID
