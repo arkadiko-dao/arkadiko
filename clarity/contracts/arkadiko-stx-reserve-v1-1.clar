@@ -72,7 +72,6 @@
   (begin
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
 
-    ;; TODO - figure out which stacker
     (if (is-eq true revoked-stacking)
       (ok (try! (subtract-tokens-to-stack stacker-name ustx-collateral)))
       (ok (try! (add-tokens-to-stack stacker-name ustx-collateral)))

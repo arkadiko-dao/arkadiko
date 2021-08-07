@@ -90,6 +90,18 @@
   (stx-get-balance (as-contract tx-sender))
 )
 
+;; return STX to the STX reserve
+;; can be used when deprecating this stacker logic
+(define-public (return-stx (ustx-amount uint))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (as-contract
+      (stx-transfer? ustx-amount (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "arkadiko-stx-reserve-v1-1")))
+    )
+  )
+)
+
 ;; we probably won't need this method in production.. but used in tests
 (define-public (request-stx-for-payout (ustx-amount uint))
   (begin
