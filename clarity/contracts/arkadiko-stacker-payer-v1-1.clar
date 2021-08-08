@@ -17,7 +17,7 @@
 
 (define-public (toggle-stacker-payer-shutdown)
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
 
     (ok (var-set stacker-payer-shutdown-activated (not (var-get stacker-payer-shutdown-activated))))
   )
