@@ -779,6 +779,12 @@
   )
 )
 
+;; @desc finalises the vault liquidation after the vault's collateral got auctioned off
+;; sets vault parameters such as leftover collateral
+;; @param vault-id; the ID of the vault to liquidate
+;; @param leftover-collateral; the micro-amount of collateral that is left after the auction ended
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @post bool; returns true if liquidation got finalised successfully
 (define-public (finalize-liquidation
   (vault-id uint)
   (leftover-collateral uint)
@@ -807,6 +813,14 @@
   )
 )
 
+;; @desc redeems a collateral amount for the bidder on a lot in an auction from the STX or SIP10 reserve
+;; the collateral that is redeemed is part of a liquidated vault
+;; @param ft; indicates the sip10 fungible token that is used as collateral
+;; @param token-string; the name of the token that will be redeemed
+;; @param reserve; indicates the reserve that keeps custody of the token (e.g. stx-reserve or sip10-reserve)
+;; @param collateral-amount; the micro-amount of collateral that should be redeemed
+;; @param sender; the sender, who is the owner of the winning lot, that wants to redeem the collateral
+;; @post bool; returns true if redeem was succesful
 (define-public (redeem-auction-collateral (ft <ft-trait>) (token-string (string-ascii 12)) (reserve <vault-trait>) (collateral-amount uint) (sender principal))
   (begin
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "auction-engine"))) (err ERR-NOT-AUTHORIZED))
