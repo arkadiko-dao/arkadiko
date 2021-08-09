@@ -1,13 +1,14 @@
+;; @contract Freddie - The Vault Manager
+;; Freddie is an abstraction layer that interacts with collateral type reserves
+;; Ideally, collateral reserves should never be called from outside. Only manager layers (such as this one) should be interacted with from clients
+;; @version 1
+
 (impl-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait vault-manager-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
 (use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
 (use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
-
-;; Freddie - The Vault Manager
-;; Freddie is an abstraction layer that interacts with collateral type reserves
-;; Ideally, collateral reserves should never be called from outside. Only manager layers should be interacted with from clients
 
 ;; errors
 (define-constant ERR-NOT-AUTHORIZED u4401)
@@ -73,6 +74,10 @@
   (ok (get height (unwrap-panic (map-get? stacking-unlock-burn-height { stacker-name: name }))))
 )
 
+;; @desc sets the block height at which STX tokens unlock from PoX
+;; @param name; name of the stacker contract that is stacking the STX tokens
+;; @param burn-height; the block height of the burnchain (i.e. Bitcoin) for when the tokens unlock
+;; @post boolean; returns a boolean indicating successfully set or not
 (define-public (set-stacking-unlock-burn-height (name (string-ascii 256)) (burn-height uint))
   (begin
     (asserts! 
@@ -257,7 +262,16 @@
 )
 
 
-
+;; @desc creates a vault with collateral and a certain debt level
+;; @param collateral-amount; the micro-amount (10^-6) of collateral (STX or sip10) that will be deposited in a vault
+;; @param debt; the micro-amount (10^-6) of debt that will be minted against the collateral
+;; @param pox-settings; if STX is the collateral, this indicates whether the collateral will be stacked and if the yield is used to pay off the debt automatically
+;; @param collateral-type; indicates the collateral type that is used in the vault (e.g. STX-A)
+;; @param reserve; indicates the reserve that will keep custody of the token (e.g. stx-reserve or sip10-reserve)
+;; @param ft; indicates the sip10 fungible token that is used as collateral
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @param oracle; contract that contains the on-chain price of the collateral
+;; @post vault; a new vault is created for the tx-sender
 (define-public (collateralize-and-mint
   (collateral-amount uint)
   (debt uint)
