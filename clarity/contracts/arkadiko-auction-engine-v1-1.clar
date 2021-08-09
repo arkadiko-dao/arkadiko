@@ -531,7 +531,7 @@
 ;; @desc redeem USDA to burn DIKO gov token from open market
 ;; taken from auctions, paid by liquidation penalty on vaults
 ;; @param usda-amount; the amount of USDA to be redeemed from the contract
-;; @post ft; all the tokens will have been transferred to DAO's payout address
+;; @post usda; all USDA tokens will have been transferred to DAO's payout address
 (define-public (redeem-usda (usda-amount uint))
   (begin
     (asserts!

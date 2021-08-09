@@ -1,6 +1,7 @@
-(impl-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
+;; @contract Smart Contract that keeps all collateral types accepted by the DAO
+;; @version 1
 
-;; Smart Contract that keeps all collateral types accepted by the DAO
+(impl-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
 
 (define-constant ERR-NOT-AUTHORIZED u17401)
 (define-constant OWNER tx-sender)
