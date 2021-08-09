@@ -356,6 +356,13 @@
   )
 )
 
+;; @desc deposit extra collateral in a vault
+;; @param vault-id; the ID of the vault to deposit additional collateral in
+;; @param uamount; the micro-amount (10^-6) of collateral that will be deposited
+;; @param reserve; indicates the reserve that will keep custody of the token (e.g. stx-reserve or sip10-reserve)
+;; @param ft; indicates the sip10 fungible token that is used as collateral
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @post true; returns true when additional collateral was added successfully
 (define-public (deposit
   (vault-id uint)
   (uamount uint)
@@ -397,6 +404,14 @@
   )
 )
 
+;; @desc withdraw collateral from a vault
+;; @param vault-id; the ID of the vault to withdraw collateral from
+;; @param uamount; the micro-amount (10^-6) of collateral that will be withdrawn
+;; @param reserve; indicates the reserve that keeps custody of your collateral (e.g. stx-reserve or sip10-reserve)
+;; @param ft; indicates the sip10 fungible token that is used as collateral
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @param oracle; the oracle implementation that provides the on-chain price
+;; @post true; returns true when collateral was withdrawn successfully
 (define-public (withdraw
   (vault-id uint)
   (uamount uint)
@@ -456,6 +471,13 @@
   )
 )
 
+;; @desc mint extra USDA in a vault
+;; @param vault-id; the ID of the vault to mint extra USDA for
+;; @param extra-debt; the micro-amount (10^-6) of extra USDA that will be minted
+;; @param reserve; indicates the reserve that keeps custody of your collateral (e.g. stx-reserve or sip10-reserve)
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @param oracle; the oracle implementation that provides the on-chain price
+;; @post true; returns true when extra USDA was minted successfully
 (define-public (mint
   (vault-id uint)
   (extra-debt uint)
@@ -521,6 +543,13 @@
   )
 )
 
+;; @desc burn USDA from a vault
+;; @param vault-id; the ID of the vault to burn USDA from
+;; @param debt; the micro-amount (10^-6) of USDA that will be burned
+;; @param reserve; indicates the reserve that keeps custody of your collateral (e.g. stx-reserve or sip10-reserve)
+;; @param ft; indicates the sip10 fungible token that is used as collateral
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @post true; returns true when USDA was burned successfully
 (define-public (burn
   (vault-id uint)
   (debt uint)
@@ -599,6 +628,10 @@
   )
 )
 
+;; @desc get the stability fee (interest to be paid) for a vault
+;; @param vault-id; the ID of the vault to return the stability fee for
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @post uint; returns uint, which is the stability fee
 (define-public (get-stability-fee-for-vault
   (vault-id uint)
   (coll-type <collateral-types-trait>)
@@ -628,6 +661,12 @@
   )
 )
 
+;; @desc accrue the stability fee up until now on a vault
+;; this method should be called when the stability fee on a collateral type is changed through governance
+;; meaning you want to lock in (accrue) all the stability fees for that stability fee percentage up until the block that it changes
+;; @param vault-id; the ID of the vault to accrue the stability fee for
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @post true; returns true when stability fee was accrued successfully
 (define-public (accrue-stability-fee
   (vault-id uint)
   (coll-type <collateral-types-trait>)
@@ -646,6 +685,10 @@
   )
 )
 
+;; @desc pay the stability fee up until now for a vault
+;; @param vault-id; the ID of the vault to pay the stability fee for
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @post uint; returns the amount paid when the stability fee was paid successfully
 (define-public (pay-stability-fee
   (vault-id uint)
   (coll-type <collateral-types-trait>)
@@ -671,6 +714,12 @@
   )
 )
 
+;; @desc liquidates a vault
+;; only callable by the liquidator smart contract
+;; the vault owner loses their potential (DIKO) vault rewards and collateral is sold off in an auction
+;; @param vault-id; the ID of the vault to liquidate
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @post tuple; returns a tuple with the amount in micro STX, extra debt (penalty) to be paid, the vault debt and a discount given to keepers in auctions
 (define-public (liquidate
   (vault-id uint)
   (coll-type <collateral-types-trait>)
