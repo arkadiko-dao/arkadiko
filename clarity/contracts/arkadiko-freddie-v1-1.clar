@@ -114,6 +114,11 @@
   )
 )
 
+;; @desc calculate the collateralization (in other words collateral to debt) ratio for a vault
+;; @param vault-id; the ID of the vault to calculate the current collateralization ratio for
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @param oracle; the oracle implementation that provides the on-chain price
+;; @post uint; returns the collateralization ratio
 (define-public (calculate-current-collateral-to-debt-ratio (vault-id uint) (coll-type <collateral-types-trait>) (oracle <oracle-trait>))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
@@ -147,8 +152,10 @@
   )
 )
 
-;; can be called by the vault owner on a non-liquidated STX vault
+;; @desc can be called by the vault owner on a non-liquidated STX vault
 ;; used to indicate willingness to stack/unstack the collateral in the PoX contract
+;; @param vault-id; the ID of the vault to toggle the stacking in PoX for
+;; @post bool; returns true if stacking was toggled
 (define-public (toggle-stacking (vault-id uint))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts!
@@ -758,6 +765,13 @@
   )
 )
 
+;; @desc withdraws collateral from a liquidated vault after an auction ended 
+;; @param vault-id; the ID of the vault to withdraw collateral from
+;; @param reserve; the reserve that stores the fungible tokens (collateral) that were sold off
+;; @param ft; the fungible token that was sold off (either a SIP10 token or STX)
+;; @param coll-type; the contract that implements the parameters of the collateral types compatible with Arkadiko vaults
+;; @post stx; will be transferred to contract
+;; @post tok; will be minted for new owner
 (define-public (withdraw-leftover-collateral
   (vault-id uint)
   (reserve <vault-trait>)
@@ -815,8 +829,12 @@
   (contract-call? .arkadiko-token get-balance (as-contract tx-sender))
 )
 
-;; redeem USDA and DIKO working capital for the foundation
+;; @desc redeem USDA and DIKO working capital for the foundation
 ;; taken from stability fees paid by vault owners
+;; @param usda-amount; the amount of USDA to withdraw from the contract
+;; @param diko-amount; the amount of DIKO to withdraw from the contract
+;; @post usda; usda-amount will be transferred from the contract to the DAO payout address
+;; @post diko; diko-amount will be transferred from the contract to the DAO payout address
 (define-public (redeem-tokens (usda-amount uint) (diko-amount uint))
   (begin
     (asserts! (> (- block-height (var-get block-height-last-paid)) (* BLOCKS-PER-DAY u31)) (err ERR-NOT-AUTHORIZED))
