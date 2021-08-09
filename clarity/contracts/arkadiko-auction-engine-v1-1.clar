@@ -1,3 +1,6 @@
+;; @contract Auction Engine - Sells off vault collateral to raise USDA
+;; @version 1
+
 (impl-trait .arkadiko-auction-engine-trait-v1.auction-engine-trait)
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
@@ -86,14 +89,19 @@
   )
 )
 
+;; @desc get all auctions that are currently open
 (define-read-only (get-auctions)
   (ok (map get-auction-by-id (var-get auction-ids)))
 )
 
+;; @desc get all auction IDs of auctions that are currently open
 (define-read-only (get-auction-ids)
   (ok (var-get auction-ids))
 )
 
+;; @desc get the last bid on certain a lot of an auction 
+;; @param aution-id; ID of the auction
+;; @param lot-index; index of the lot in the auction
 (define-read-only (get-last-bid (auction-id uint) (lot-index uint))
   (default-to
     {
@@ -107,6 +115,8 @@
   )
 )
 
+;; @desc get all winning lots for a principal
+;; @param owner; principal of the lot winner
 (define-read-only (get-winning-lots (owner principal))
   (default-to
     { ids: (list (tuple (auction-id u0) (lot-index u0))) }
@@ -114,7 +124,8 @@
   )
 )
 
-;; Check if auction open (not enough dept raised + end block height not reached)
+;; @desc check if auction open (not enough debt raised + end block height not reached)
+;; @param auction-id; ID of the auction to be checked
 (define-read-only (get-auction-open (auction-id uint))
   (let (
     (auction (get-auction-by-id auction-id))
@@ -130,6 +141,7 @@
   )
 )
 
+;; @desc toggles the killswitch of the auction engine
 (define-public (toggle-auction-engine-shutdown)
   (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
@@ -138,11 +150,18 @@
   )
 )
 
-;; 1. Create auction object in map per 100 USDA
+
+;; @desc ;; 1. Create auction object in map per 100 USDA
 ;; 2. Add auction ID to list (to show in UI)
-;; we wanna sell as little collateral as possible to cover the vault's debt
+;; we want to sell as little collateral as possible to cover the vault's debt
 ;; if we cannot cover the vault's debt with the collateral sale,
 ;; we will have to sell some governance or STX tokens from the reserve
+;; @param vault-id; ID of the vault that got liquidated for which an auction needs to be started
+;; @param uamount; the total amount of collateral that can be sold off in the auction
+;; @param extra-debt; the extra debt penalty that has to be raised on top of the vault debt
+;; @param vault-debt; the debt in the vault that is now considered bad debt since it is not sufficiently collateralised
+;; @param discount; the discount to be given in an auction on the collateral to keepers
+;; @post auction; a new auction will be created that runs for one day
 (define-public (start-auction (vault-id uint) (uamount uint) (extra-debt uint) (vault-debt uint) (discount uint))
   (let ((vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id)))
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "liquidator"))) (err ERR-NOT-AUTHORIZED))
@@ -183,9 +202,15 @@
 )
 
 
-;; start an auction to sell off DIKO gov tokens
+
+
+;; @desc start an auction to sell off DIKO governance tokens
 ;; this is a private function since it should only be called
-;; when a normal collateral liquidation auction can't raise enough debt
+;; when a normal collateral liquidation auction can't raise enough debt to cover the vault's debt
+;; @param vault-id; ID of the vault for which not enough USDA could be raised
+;; @param debt-to-raise; the amount of debt left to raise after running the initial collateral auction
+;; @param discount; the discount on the DIKO collateral to the keepers
+;; @post auction; a new auction will be created that runs for one day
 (define-private (start-debt-auction (vault-id uint) (debt-to-raise uint) (discount uint))
   (let ((vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id)))
     (asserts! (is-eq (get is-liquidated vault) true) (err ERR-AUCTION-NOT-ALLOWED))
@@ -218,8 +243,10 @@
   )
 )
 
+;; @desc calculate the discounted auction price on the (dollarcent) price of the collateral
+;; @param price-in-cents; the current on-chain price in cents
+;; @param auction-id; the ID of the auction in which the collateral will be sold
 (define-read-only (discounted-auction-price (price-in-cents uint) (auction-id uint))
-  ;; price * 3% = price * 3 / 100
   (let (
     (auction (get-auction-by-id auction-id))
     (discount (* price-in-cents (get discount auction)))
@@ -228,23 +255,11 @@
   )
 )
 
-(define-read-only (collateral-token (token (string-ascii 12)))
-  (if (is-eq token "xSTX")
-    "STX"
-    token
-  )
-)
-
-(define-private (min-of (i1 uint) (i2 uint))
-  (if (< i1 i2)
-    i1
-    i2
-  )
-)
-
-;; calculates the minimum collateral amount to sell
+;; @desc calculates the minimum collateral amount to sell
 ;; e.g. if we need to cover 10 USDA debt, and we have 20 STX at $1/STX,
-;; we only need to auction off 10 STX with a discount
+;; we only need to auction off 10 STX excluding an additional discount
+;; @param oracle; the oracle implementation that provides the on-chain price
+;; @param auction-id; the ID of the auction for which the collateral amount should be calculated
 (define-public (get-minimum-collateral-amount (oracle <oracle-trait>) (auction-id uint))
   (let (
     (auction (get-auction-by-id auction-id))
@@ -293,6 +308,16 @@
   )
 )
 
+;; @desc bid a certain USDA amount on a lot in an auction
+;; @param vault-manager; the contract that manages the vault for which the collateral is sold off
+;; @param oracle; the oracle that provides on-chain prices for the collateral that is sold off
+;; @param coll-type; the contract that implements the parameters of the collateral types compatible with Arkadiko vaults
+;; @param auction-id; the ID of the auction that is bid on
+;; @param lot-index; the ID of the lot that is bid on in the auction
+;; @param usda; the amount of USDA that is bid. If an amount equal to the lot size (usually 1000 USDA) is bid, the lot is automatically won
+;; @post usda; the usda amount will be transferred from the tx-sender to this contract
+;; @post bid; the lot will be assigned to the current bidder
+;; @post stacker-payout; if the STX are being stacked, the yield will go to the keeper pro-rata to the amount of USDA the keeper bought
 (define-public (bid
   (vault-manager <vault-manager-trait>)
   (oracle <oracle-trait>)
@@ -319,84 +344,14 @@
   )
 )
 
-(define-private (register-bid
-  (vault-manager <vault-manager-trait>)
-  (oracle <oracle-trait>)
-  (coll-type <collateral-types-trait>)
-  (auction-id uint)
-  (lot-index uint)
-  (usda uint)
-)
-  (let (
-    (auction (get-auction-by-id auction-id))
-    (last-bid (get-last-bid auction-id lot-index))
-    (collateral-amount (unwrap-panic (get-minimum-collateral-amount oracle auction-id)))
-    (lot-got-sold (if (>= usda (var-get lot-size))
-        (ok u1)
-        (ok u0)
-      )
-    )
-    (lots (get-winning-lots tx-sender))
-  )
-    ;; Lot is sold once bid is > lot-size
-    (asserts! (< (get usda last-bid) (var-get lot-size)) (err ERR-LOT-SOLD))
-    ;; Need a better bid than previously already accepted
-    (asserts! (> usda (get usda last-bid)) (err ERR-POOR-BID)) 
-
-    ;; Return USDA of last bid to (now lost) bidder
-    (if (> (get usda last-bid) u0)
-      (try! (return-usda (get owner last-bid) (get usda last-bid) auction-id lot-index))
-      true
-    )
-    ;; Transfer USDA from liquidator to this contract
-    (try! (contract-call? .usda-token transfer usda tx-sender (as-contract tx-sender) none))
-
-    ;; Update auctions
-    (map-set auctions
-      { id: auction-id }
-      (merge auction {
-        lots-sold: (+ (unwrap-panic lot-got-sold) (get lots-sold auction)),
-        total-collateral-sold: (- (+ collateral-amount (get total-collateral-sold auction)) (get collateral-amount last-bid)),
-        total-debt-raised: (- (+ usda (get total-debt-raised auction)) (get usda last-bid))
-      })
-    )
-    ;; Update bids
-    (map-set bids
-      { auction-id: auction-id, lot-index: lot-index }
-      {
-        usda: usda,
-        collateral-amount: collateral-amount,
-        collateral-token: (get collateral-token auction),
-        owner: tx-sender,
-        redeemed: false
-      }
-    )
-    (map-set winning-lots
-      { user: tx-sender }
-      {
-        ids: (unwrap-panic (as-max-len? (append (get ids lots) (tuple (auction-id auction-id) (lot-index lot-index))) u100))
-      }
-    )
-
-    ;; Set stacker payout
-    (try! (contract-call? .arkadiko-vault-data-v1-1 set-stacker-payout (get vault-id auction) lot-index collateral-amount tx-sender))
-    (print { type: "bid", action: "registered", data: { auction-id: auction-id, lot-index: lot-index, usda: usda } })
-
-    ;; End auction if needed
-    (if
-      (or
-        (>= block-height (get ends-at auction))
-        (>= (- (+ usda (get total-debt-raised auction)) (get usda last-bid)) (get debt-to-raise auction))
-      )
-      ;; auction is over - close all bids
-      ;; send collateral to winning bidders
-      (close-auction vault-manager coll-type auction-id)
-      (ok true)
-    )
-
-  )
-)
-
+;; @desc allows lot bidders to redeem the collateral they won after an auction has closed
+;; @param vault-manager; the contract that manages the vault for which the collateral is sold off
+;; @param ft; the fungible token that was sold off (either a SIP10 token or STX)
+;; @param reserve; the reserve that stores the fungible tokens (collateral) that were sold off
+;; @param coll-type; the contract that implements the parameters of the collateral types compatible with Arkadiko vaults
+;; @param auction-id; the ID of the auction that from which the collateral will be redeemed
+;; @param lot-index; the ID of the lot that was won and will now be redeemed
+;; @post stx/sip10; will be transferred to the tx-sender if they won the lot
 (define-public (redeem-lot-collateral
   (vault-manager <vault-manager-trait>)
   (ft <ft-trait>)
@@ -465,36 +420,16 @@
   )
 )
 
-(define-private (remove-winning-lot (lot (tuple (auction-id uint) (lot-index uint))))
-  (let ((current-lot (unwrap-panic (map-get? redeeming-lot { user: tx-sender }))))
-    (if 
-      (and
-        (is-eq (get auction-id lot) (get auction-id current-lot))
-        (is-eq (get lot-index lot) (get lot-index current-lot))
-      )
-      false
-      true
-    )
-  )
-)
-
-(define-private (return-usda (owner principal) (usda uint) (auction-id uint) (lot-index uint))
-  (if (> usda u0)
-    (let ((lots (get-winning-lots tx-sender)))
-      (map-set redeeming-lot { user: tx-sender } { auction-id: auction-id, lot-index: lot-index})
-      (map-set winning-lots { user: tx-sender } { ids: (filter remove-winning-lot (get ids lots)) })
-      (as-contract (contract-call? .usda-token transfer usda (as-contract tx-sender) owner none))
-    )
-    (err u0) ;; don't really care if this fails.
-  )
-)
-
-;; DONE     1. flag auction on map as closed
-;; DONE     2. allow person to collect collateral from reserve manually
-;; DONE     3. check if vault debt is covered (sum of USDA in lots >= debt-to-raise)
-;; DONE     4. update vault to allow vault owner to withdraw leftover collateral (if any)
-;; DONE     5. if not all vault debt is covered: auction off collateral again (if any left)
-;; DONE     6. if not all vault debt is covered and no collateral is left: cover USDA with gov token
+;; @desc closes an auction
+;; 1. flag auction on map as closed
+;; 2. allow person to collect collateral from reserve manually
+;; 3. check if vault debt is covered (sum of USDA in lots >= debt-to-raise)
+;; 4. update vault to allow vault owner to withdraw leftover collateral (if any)
+;; 5. if not all vault debt is covered: auction off collateral again (if any left)
+;; 6. if not all vault debt is covered and no collateral is left: cover USDA with gov token
+;; @param vault-manager; the contract that manages the vault for which the collateral was sold off
+;; @param coll-type; the contract that implements the parameters of the collateral types compatible with Arkadiko vaults
+;; @param auction-id: the ID of the auction that should be closed
 (define-public (close-auction
   (vault-manager <vault-manager-trait>)
   (coll-type <collateral-types-trait>)
@@ -576,6 +511,161 @@
   )
 )
 
+;; @desc called when upgrading contracts
+;; auction engine should only contain USDA from bids
+;; @param auction-engine; the contract of the new auction engine
+;; @param token; the token contract that specifies the FT to transfer, usually will be usda-token
+;; @post ft; all the tokens will have been transferred to the new contract
+(define-public (migrate-funds (auction-engine <auction-engine-trait>) (token <ft-trait>))
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (let (
+      (balance (unwrap-panic (contract-call? token get-balance (as-contract tx-sender))))
+    )
+      (contract-call? token transfer balance (as-contract tx-sender) (contract-of auction-engine) none)
+    )
+  )
+)
+
+;; @desc redeem USDA to burn DIKO gov token from open market
+;; taken from auctions, paid by liquidation penalty on vaults
+;; @param usda-amount; the amount of USDA to be redeemed from the contract
+;; @post ft; all the tokens will have been transferred to DAO's payout address
+(define-public (redeem-usda (usda-amount uint))
+  (begin
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get auction-engine-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
+
+    (as-contract (contract-call? .usda-token transfer usda-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none))
+  )
+)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;
+;; private functions ;;
+;;;;;;;;;;;;;;;;;;;;;;;
+
+(define-private (collateral-token (token (string-ascii 12)))
+  (if (is-eq token "xSTX")
+    "STX"
+    token
+  )
+)
+
+(define-private (min-of (i1 uint) (i2 uint))
+  (if (< i1 i2)
+    i1
+    i2
+  )
+)
+
+(define-private (register-bid
+  (vault-manager <vault-manager-trait>)
+  (oracle <oracle-trait>)
+  (coll-type <collateral-types-trait>)
+  (auction-id uint)
+  (lot-index uint)
+  (usda uint)
+)
+  (let (
+    (auction (get-auction-by-id auction-id))
+    (last-bid (get-last-bid auction-id lot-index))
+    (collateral-amount (unwrap-panic (get-minimum-collateral-amount oracle auction-id)))
+    (lot-got-sold (if (>= usda (var-get lot-size))
+        (ok u1)
+        (ok u0)
+      )
+    )
+    (lots (get-winning-lots tx-sender))
+  )
+    ;; Lot is sold once bid is > lot-size
+    (asserts! (< (get usda last-bid) (var-get lot-size)) (err ERR-LOT-SOLD))
+    ;; Need a better bid than previously already accepted
+    (asserts! (> usda (get usda last-bid)) (err ERR-POOR-BID)) 
+
+    ;; Return USDA of last bid to (now lost) bidder
+    (if (> (get usda last-bid) u0)
+      (try! (return-usda (get owner last-bid) (get usda last-bid) auction-id lot-index))
+      true
+    )
+    ;; Transfer USDA from liquidator to this contract
+    (try! (contract-call? .usda-token transfer usda tx-sender (as-contract tx-sender) none))
+
+    ;; Update auctions
+    (map-set auctions
+      { id: auction-id }
+      (merge auction {
+        lots-sold: (+ (unwrap-panic lot-got-sold) (get lots-sold auction)),
+        total-collateral-sold: (- (+ collateral-amount (get total-collateral-sold auction)) (get collateral-amount last-bid)),
+        total-debt-raised: (- (+ usda (get total-debt-raised auction)) (get usda last-bid))
+      })
+    )
+    ;; Update bids
+    (map-set bids
+      { auction-id: auction-id, lot-index: lot-index }
+      {
+        usda: usda,
+        collateral-amount: collateral-amount,
+        collateral-token: (get collateral-token auction),
+        owner: tx-sender,
+        redeemed: false
+      }
+    )
+    (map-set winning-lots
+      { user: tx-sender }
+      {
+        ids: (unwrap-panic (as-max-len? (append (get ids lots) (tuple (auction-id auction-id) (lot-index lot-index))) u100))
+      }
+    )
+
+    ;; Set stacker payout
+    (try! (contract-call? .arkadiko-vault-data-v1-1 set-stacker-payout (get vault-id auction) lot-index collateral-amount tx-sender))
+    (print { type: "bid", action: "registered", data: { auction-id: auction-id, lot-index: lot-index, usda: usda } })
+
+    ;; End auction if needed
+    (if
+      (or
+        (>= block-height (get ends-at auction))
+        (>= (- (+ usda (get total-debt-raised auction)) (get usda last-bid)) (get debt-to-raise auction))
+      )
+      ;; auction is over - close all bids
+      ;; send collateral to winning bidders
+      (close-auction vault-manager coll-type auction-id)
+      (ok true)
+    )
+  )
+)
+
+(define-private (remove-winning-lot (lot (tuple (auction-id uint) (lot-index uint))))
+  (let ((current-lot (unwrap-panic (map-get? redeeming-lot { user: tx-sender }))))
+    (if 
+      (and
+        (is-eq (get auction-id lot) (get auction-id current-lot))
+        (is-eq (get lot-index lot) (get lot-index current-lot))
+      )
+      false
+      true
+    )
+  )
+)
+
+(define-private (return-usda (owner principal) (usda uint) (auction-id uint) (lot-index uint))
+  (if (> usda u0)
+    (let ((lots (get-winning-lots tx-sender)))
+      (map-set redeeming-lot { user: tx-sender } { auction-id: auction-id, lot-index: lot-index})
+      (map-set winning-lots { user: tx-sender } { ids: (filter remove-winning-lot (get ids lots)) })
+      (as-contract (contract-call? .usda-token transfer usda (as-contract tx-sender) owner none))
+    )
+    (err u0) ;; don't really care if this fails.
+  )
+)
+
 (define-private (extend-auction (auction-id uint))
   (let ((auction (get-auction-by-id auction-id)))
     (map-set auctions
@@ -604,35 +694,5 @@
   (if (is-eq auction-id (var-get removing-auction-id))
     false
     true
-  )
-)
-
-;; this should be called when upgrading contracts
-;; auction engine should only contain USDA from bids
-(define-public (migrate-funds (auction-engine <auction-engine-trait>) (token <ft-trait>))
-  (begin
-    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
-
-    (let (
-      (balance (unwrap-panic (contract-call? token get-balance (as-contract tx-sender))))
-    )
-      (contract-call? token transfer balance (as-contract tx-sender) (contract-of auction-engine) none)
-    )
-  )
-)
-
-;; redeem USDA to burn DIKO gov token from open market
-;; taken from auctions, paid by liquidation penalty on vaults
-(define-public (redeem-usda (usda-amount uint))
-  (begin
-    (asserts!
-      (and
-        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
-        (is-eq (var-get auction-engine-shutdown-activated) false)
-      )
-      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
-    )
-
-    (as-contract (contract-call? .usda-token transfer usda-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none))
   )
 )
