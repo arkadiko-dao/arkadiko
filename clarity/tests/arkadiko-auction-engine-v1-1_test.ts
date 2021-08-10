@@ -55,7 +55,7 @@ Clarinet.test({
     // Check auction parameters
     let auction:any = auctions[1];
     auction['collateral-amount'].expectUint(1500000000);
-    auction['debt-to-raise'].expectUint(1060000091); // 6% (from the 10% liquidation penalty) of 1000 USDA extra = 1060 USDA + stability fee
+    auction['debt-to-raise'].expectUint(1030000045); // 30% (from the 10% liquidation penalty) of 1000 USDA extra = 1030 USDA + stability fee
 
     // Bid on first 1000 USDA
     result = vaultAuction.bid(deployer, 1000);
@@ -71,7 +71,7 @@ Clarinet.test({
     lastBid['usda'].expectUint(1000000000);
 
     result = vaultManager.fetchMinimumCollateralAmount(1, wallet_1);
-    result.expectOk().expectUint(62500094);
+    result.expectOk().expectUint(32258112);
 
     // New bid 
     result = vaultAuction.bid(deployer, 61, 1, 1) // (discounted price of STX) * minimum collateral
@@ -89,7 +89,7 @@ Clarinet.test({
     // Auction info
     call = await vaultManager.getVaultById(1, wallet_1);
     let vault:any = call.result.expectTuple();
-    vault['leftover-collateral'].expectUint(395833240);
+    vault['leftover-collateral'].expectUint(392473071);
     vault['is-liquidated'].expectBool(true);
     vault['auction-ended'].expectBool(true);
 
@@ -116,7 +116,7 @@ Clarinet.test({
     result.expectErr().expectUint(211);
 
     call = await xstxManager.balanceOf(deployer.address);
-    call.result.expectOk().expectUint(1041666666);
+    call.result.expectOk().expectUint(1075268817);
 
     // At this point, no STX are redeemable yet
     call = await vaultManager.getStxRedeemable();
@@ -144,7 +144,7 @@ Clarinet.test({
 
     // Balance
     call = await xstxManager.balanceOf(deployer.address);
-    call.result.expectOk().expectUint(666666); // just 0.666666 left over
+    call.result.expectOk().expectUint(34268817); // just 0.34268817 left over
 
     // Withdraw leftover collateral
     result = vaultManager.withdrawLeftoverCollateral(deployer);
@@ -204,7 +204,7 @@ Clarinet.test({
     call.result.expectOk().expectBool(false);
 
     const debtRaised = auction['total-debt-raised'].expectUint(1000000000); // 1000 USDA raised
-    const debtToRaise = auction['debt-to-raise'].expectUint(1060000091); // 1060 USDA
+    const debtToRaise = auction['debt-to-raise'].expectUint(1030000045); // 1030 USDA
 
     call = await vaultAuction.getAuctionById(2, wallet_1);
     let dikoAuction:any = call.result.expectTuple();
@@ -786,7 +786,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     call = await xstxManager.balanceOf(deployer.address);
-    call.result.expectOk().expectUint(1041666666);
+    call.result.expectOk().expectUint(1075268817);
 
     // try to exchange xSTX for STX while vault still stacking
     result = vaultManager.redeemStx(deployer, 1041);
