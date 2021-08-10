@@ -833,8 +833,7 @@
 ;; @param reserve; the reserve that stores the fungible tokens (collateral) that were sold off
 ;; @param ft; the fungible token that was sold off (either a SIP10 token or STX)
 ;; @param coll-type; the contract that implements the parameters of the collateral types compatible with Arkadiko vaults
-;; @post stx; will be transferred to contract
-;; @post tok; will be minted for new owner
+;; @post bool; returns true if withdrawing leftover collateral was successful
 (define-public (withdraw-leftover-collateral
   (vault-id uint)
   (reserve <vault-trait>)
@@ -917,8 +916,12 @@
   )
 )
 
-;; this should be called when upgrading contracts
+;; @desc should be called when upgrading contracts
 ;; freddie should only contain USDA
+;; @param new-vault-manager; the new vault contract to migrate funds to
+;; @param token; indicates the fungible token that the contract should be migrate funds of
+;; @post token; all token amounts will be transferred to the new contract
+;; @post bool; returns true if transfer was successful
 (define-public (migrate-funds (new-vault-manager <vault-manager-trait>) (token <ft-trait>))
   (begin
     (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
@@ -931,6 +934,10 @@
   )
 )
 
+;; TODO - is this needed?
+;; @desc sets the amount of STX that is redeemable for xSTX (the derivative that is sold off in an auction)
+;; @param new-stx-redeemable; the micro-amount of xSTX redeemable for STX
+;; @post bool; returns true if setting the variable was successful
 (define-public (set-stx-redeemable (new-stx-redeemable uint))
   (begin
     (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
