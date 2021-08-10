@@ -7,7 +7,6 @@
 (define-constant ERR-NO-FEE-TO-ADDRESS u203)
 
 (define-constant no-liquidity-err (err u61))
-;; (define-constant transfer-failed-err (err u62))
 (define-constant not-owner-err (err u63))
 (define-constant no-such-position-err (err u66))
 (define-constant balance-too-low-err (err u67))
@@ -82,7 +81,10 @@
   )
 )
 
-;; get the total number of shares in the pool
+;; @desc get the total number of shares in the pool
+;; @param token-x; address of token X in the pool
+;; @param token-y; address of token Y in the pool
+;; @post uint; returns total number of shares
 (define-read-only (get-shares (token-x principal) (token-y principal))
   (ok (get shares-total (unwrap! (map-get? pairs-data-map { token-x: token-x, token-y: token-y }) (err INVALID-PAIR-ERR))))
 )
