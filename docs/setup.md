@@ -3,7 +3,7 @@
 This is high-level. Will be more granular as Arkadiko matures.
 
 1. Set up a local mocknet through docker compose (see https://github.com/blockstack/stacks-local-dev)
-2. Change the default Stacks amount of the local mocknet addresses in the toml files (stacks-node-miner/Config.toml.template and stacks-node-follower/Config.toml.template)
+2. Change the default Stacks amount of the local mocknet addresses in the toml files (stacks-local-dev/configurations/mocknet/Config.toml and stacks-local-dev/configurations/mocknet/Config.toml.sample)
   This is optional but helpful if you wanna create vaults with higher STX collateral
 3. Run the contract deployment script to deploy all smart contracts (`yarn deploy-contracts` in the `web` folder)
 4. Run `yarn install` or `npm install` (in the `web` folder)
