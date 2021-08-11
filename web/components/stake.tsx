@@ -3,9 +3,9 @@ import { AppContext } from '@common/context';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import { stacksNetwork as network, getRPCClient } from '@common/utils';
-
 import {
-  callReadOnlyFunction, contractPrincipalCV, uintCV, cvToJSON, standardPrincipalCV
+  AnchorMode, callReadOnlyFunction, contractPrincipalCV,
+  uintCV, cvToJSON, standardPrincipalCV
 } from '@stacks/transactions';
 import { StakeDikoModal } from './stake-diko-modal';
 import { UnstakeDikoModal } from './unstake-diko-modal';
@@ -298,6 +298,7 @@ export const Stake = () => {
       finished: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
+      anchorMode: AnchorMode.Any
     });
   };
 
@@ -316,6 +317,7 @@ export const Stake = () => {
       finished: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
+      anchorMode: AnchorMode.Any
     });
   };
 
@@ -334,6 +336,7 @@ export const Stake = () => {
       finished: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
+      anchorMode: AnchorMode.Any
     });
   };
 
@@ -352,6 +355,7 @@ export const Stake = () => {
       finished: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
+      anchorMode: AnchorMode.Any
     });
   };
 
@@ -372,6 +376,7 @@ export const Stake = () => {
       finished: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
+      anchorMode: AnchorMode.Any
     });
   };
 
@@ -392,6 +397,7 @@ export const Stake = () => {
       finished: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
+      anchorMode: AnchorMode.Any
     });
   };
 
@@ -412,6 +418,7 @@ export const Stake = () => {
       finished: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
+      anchorMode: AnchorMode.Any
     });
   };
 

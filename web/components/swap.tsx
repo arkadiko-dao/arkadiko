@@ -1,14 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Container } from './home';
-import { SwitchVerticalIcon, InformationCircleIcon, PlusCircleIcon, MinusCircleIcon } from '@heroicons/react/solid';
+import { SwitchVerticalIcon, InformationCircleIcon } from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom'
-
-
 import { microToReadable } from '@common/vault-utils';
 import {
-  callReadOnlyFunction, cvToJSON,
+  AnchorMode, callReadOnlyFunction, cvToJSON,
   contractPrincipalCV, uintCV,
   createAssetInfo, FungibleConditionCode,
   makeStandardFungiblePostCondition,
@@ -269,6 +267,7 @@ export const Swap: React.FC = () => {
           currentTxStatus: 'pending'
         }));
       },
+      anchorMode: AnchorMode.Any
     });
   };
 

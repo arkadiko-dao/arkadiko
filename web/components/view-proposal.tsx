@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Modal } from '@blockstack/ui';
 import { Container } from './home';
-import { callReadOnlyFunction, contractPrincipalCV, uintCV, cvToJSON } from '@stacks/transactions';
+import { AnchorMode, callReadOnlyFunction, contractPrincipalCV, uintCV, cvToJSON } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
@@ -87,6 +87,7 @@ export const ViewProposal = ({ match }) => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowVoteModal(false);
       },
+      anchorMode: AnchorMode.Any
     });
   };
 
@@ -106,6 +107,7 @@ export const ViewProposal = ({ match }) => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowVoteModal(false);
       },
+      anchorMode: AnchorMode.Any
     });
   };
 
