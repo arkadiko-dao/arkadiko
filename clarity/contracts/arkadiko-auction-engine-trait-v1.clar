@@ -1,3 +1,6 @@
+;; @contract Auction Engine trait 
+;; @version 1
+
 (use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
 (use-trait vault-manager-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
 
