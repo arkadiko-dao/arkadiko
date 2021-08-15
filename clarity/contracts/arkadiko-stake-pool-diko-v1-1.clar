@@ -1,10 +1,11 @@
-;; Stake Pool - Stake DIKO to get sDIKO
-;; 
+;; @contract DIKO Stake Pool - Stake DIKO to get sDIKO
 ;; A fixed amount of rewards per block will be distributed across all stakers, according to their size in the pool
 ;; Rewards will be automatically staked before staking or unstaking. 
-;; 
 ;; The cumm reward per stake represents the rewards over time, taking into account total staking volume over time
 ;; When total stake changes, the cumm reward per stake is increased accordingly.
+;; The cooldown mechanism makes sure there is a period of 10 days before the user can unstake. 
+;; Unstaking must happen within 2 days after the 10 days cooldown period.
+;; @version 1.1
 
 (impl-trait .arkadiko-stake-pool-trait-v1.stake-pool-trait)
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
@@ -44,7 +45,8 @@
   )
 )
 
-;; Start cooldown
+;; @desc start cooldown period of 10 days
+;; @post uint; returns block number when redeem period of 2 days starts
 (define-public (start-cooldown)
   (let (
     (redeem-period-start-block (+ block-height u1440)) ;; 1440 blocks = ~10 days
@@ -99,7 +101,11 @@
   )
 )
 
-;; Amount of DIKO to receive for given stDIKO
+;; @desc get amount of DIKO to receive for given stDIKO
+;; @param registry-trait; current stake registry
+;; @param amount; amount of stDIKO tokens
+;; @param stdiko-supply; total stDIKO supply
+;; @post uint; returns amount of DIKO tokens
 (define-public (diko-for-stdiko (registry-trait <stake-registry-trait>) (amount uint) (stdiko-supply uint))
   (let (
     ;; DIKO already in pool
@@ -121,7 +127,11 @@
   )
 )
 
-;; Get total amount of DIKO in pool for staker
+;; @desc get total amount of DIKO in pool for staker, based on stDIKO in wallet
+;; @param registry-trait; current stake registry
+;; @param staker; user for which we want to get total stake
+;; @param stdiko-supply; total stDIKO supply
+;; @post uint; returns amount of DIKO tokens the user would get when unstaking
 (define-public (get-stake-of (registry-trait <stake-registry-trait>) (staker principal) (stdiko-supply uint))
   (let (
     ;; Sender stDIKO balance
@@ -140,7 +150,12 @@
   (unwrap-panic (contract-call? .arkadiko-token get-balance (as-contract tx-sender)))
 )
 
-;; Stake tokens (provide amount of DIKO)
+;; @desc stake tokens in the pool, used by stake-registry
+;; @param registry-trait; current stake registry
+;; @param token; token to stake
+;; @param staker; user who wants to stake
+;; @param amount; amount of tokens to stake
+;; @post uint; returns amount of tokens staked
 (define-public (stake (registry-trait <stake-registry-trait>) (token <ft-trait>) (staker principal) (amount uint))
   (begin
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-NOT-AUTHORIZED)
@@ -167,7 +182,12 @@
   )
 )
 
-;; Unstake tokens (provide amount of stDIKO)
+;; @desc unstake tokens in the pool, used by stake-registry
+;; @param registry-trait; current stake registry
+;; @param token; token to unstake
+;; @param staker; user who wants to unstake
+;; @param amount; amount of tokens to unstake
+;; @post uint; returns amount of tokens unstaked
 (define-public (unstake (registry-trait <stake-registry-trait>) (token <ft-trait>) (staker principal) (amount uint))
   (begin
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-NOT-AUTHORIZED)
@@ -192,7 +212,9 @@
   )
 )
 
-;; Add DIKO rewards to pool
+;; @desc add pending diko rewards to the pool
+;; @param registry-trait; current stake registry
+;; @post uint; returns amount of rewards added
 (define-public (add-rewards-to-pool (registry-trait <stake-registry-trait>))
   (let (
     (rewards-to-add (calculate-pending-rewards-for-pool registry-trait))
@@ -243,7 +265,9 @@
   )
 )
 
-;; Execute slash with given percentage
+;; @desc execute slash with given percentage
+;; @param percentage; percentage to slash
+;; @post uint; returns total tokens removed from pool
 (define-public (execute-slash (percentage uint))
   (let (
     (diko-supply (unwrap-panic (contract-call? .arkadiko-token get-balance (as-contract tx-sender))))
