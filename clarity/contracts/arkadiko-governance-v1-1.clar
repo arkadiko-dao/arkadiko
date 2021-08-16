@@ -88,7 +88,7 @@
 (define-read-only (is-token-accepted (token <ft-trait>))
   (let (
     (is-diko (is-eq (contract-of token) .arkadiko-token))
-    (is-stdiko (is-eq (contract-of token) .stake-pool-diko))
+    (is-stdiko (is-eq (contract-of token) .stdiko-token))
   )
     (or is-diko is-stdiko)
   )
