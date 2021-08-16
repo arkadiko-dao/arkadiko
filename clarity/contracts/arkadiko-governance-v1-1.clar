@@ -1,8 +1,9 @@
-(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 ;; @contract Arkadiko governance
 ;; Can see, vote and submit a new proposal
 ;; A proposal will just update the DAO with new contracts.
 ;; @version 1.1
+
+(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 
 ;; Errors
 (define-constant ERR-NOT-ENOUGH-BALANCE u31)
