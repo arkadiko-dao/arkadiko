@@ -484,24 +484,24 @@ export const ManageVault = ({ match }) => {
       {auctionEnded && <Redirect to="/vaults" />}
 
       <Modal isOpen={showDepositModal}>
-        <div className="flex pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-          <div className="inline-block align-bottom bg-white rounded-lg px-2 pt-5 pb-4 text-left overflow-hidden sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
-            <div className="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
+        <div className="flex px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+          <div className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+            <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
               <button
                 type="button"
-                className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 onClick={() => setShowDepositModal(false)}
               >
                 <span className="sr-only">Close</span>
-                <XIcon className="h-6 w-6" aria-hidden="true" />
+                <XIcon className="w-6 h-6" aria-hidden="true" />
               </button>
             </div>
-            <div className="mx-auto flex items-center justify-center rounded-full">
-              <img className="h-10 w-10 rounded-full" src={tokenList[2].logo} alt="" />
+            <div className="flex items-center justify-center mx-auto rounded-full">
+              <img className="w-10 h-10 rounded-full" src={tokenList[2].logo} alt="" />
             </div>
             <div>
               <div className="mt-3 text-center sm:mt-5">
-                <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
+                <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings" id="modal-headline">
                   Deposit Extra Collateral
                 </h3>
                 <div className="mt-2">
@@ -531,14 +531,14 @@ export const ManageVault = ({ match }) => {
             <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
               <button
                 type="button"
-                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+                className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
                 onClick={() => addDeposit()}
               >
                 Add deposit
               </button>
               <button
                 type="button"
-                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
                 onClick={() => setShowDepositModal(false)}
               >
                 Cancel
@@ -549,24 +549,24 @@ export const ManageVault = ({ match }) => {
       </Modal>
 
       <Modal isOpen={showWithdrawModal}>
-        <div className="flex pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-          <div className="inline-block align-bottom bg-white rounded-lg px-2 pt-5 pb-4 text-left overflow-hidden sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
-            <div className="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
+        <div className="flex px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+          <div className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+            <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
               <button
                 type="button"
-                className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 onClick={() => setShowWithdrawModal(false)}
               >
                 <span className="sr-only">Close</span>
-                <XIcon className="h-6 w-6" aria-hidden="true" />
+                <XIcon className="w-6 h-6" aria-hidden="true" />
               </button>
             </div>
-            <div className="mx-auto flex items-center justify-center rounded-full">
-              <img className="h-10 w-10 rounded-full" src={tokenList[1].logo} alt="" />
+            <div className="flex items-center justify-center mx-auto rounded-full">
+              <img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />
             </div>
             <div>
               <div className="mt-3 text-center sm:mt-5">
-                <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
+                <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings" id="modal-headline">
                   Withdraw Collateral
                 </h3>
                 <div className="mt-2">
@@ -597,14 +597,14 @@ export const ManageVault = ({ match }) => {
             <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
               <button
                 type="button"
-                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+                className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
                 onClick={() => callWithdraw()}
               >
                 Withdraw
               </button>
               <button
                 type="button"
-                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
                 onClick={() => setShowWithdrawModal(false)}
               >
                 Cancel
@@ -615,24 +615,24 @@ export const ManageVault = ({ match }) => {
       </Modal>
 
       <Modal isOpen={showMintModal}>
-        <div className="flex pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-          <div className="inline-block align-bottom bg-white rounded-lg px-2 pt-5 pb-4 text-left overflow-hidden sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
-            <div className="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
+        <div className="flex px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+          <div className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+            <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
               <button
                 type="button"
-                className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 onClick={() => setShowMintModal(false)}
               >
                 <span className="sr-only">Close</span>
-                <XIcon className="h-6 w-6" aria-hidden="true" />
+                <XIcon className="w-6 h-6" aria-hidden="true" />
               </button>
             </div>
-            <div className="mx-auto flex items-center justify-center rounded-full">
-              <img className="h-10 w-10 rounded-full" src={tokenList[0].logo} alt="" />
+            <div className="flex items-center justify-center mx-auto rounded-full">
+              <img className="w-10 h-10 rounded-full" src={tokenList[0].logo} alt="" />
             </div>
             <div>
               <div className="mt-3 text-center sm:mt-5">
-                <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
+                <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings" id="modal-headline">
                   Mint extra USDA
                 </h3>
                 <div className="mt-2">
@@ -659,14 +659,14 @@ export const ManageVault = ({ match }) => {
             <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
               <button
                 type="button"
-                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+                className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
                 onClick={() => callMint()}
               >
                 Mint
               </button>
               <button
                 type="button"
-                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
                 onClick={() => setShowMintModal(false)}
               >
                 Cancel
@@ -677,24 +677,24 @@ export const ManageVault = ({ match }) => {
       </Modal>
 
       <Modal isOpen={showBurnModal}>
-        <div className="flex pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-          <div className="inline-block align-bottom bg-white rounded-lg px-2 pt-5 pb-4 text-left overflow-hidden sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
-            <div className="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
+        <div className="flex px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+          <div className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+            <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
               <button
                 type="button"
-                className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 onClick={() => setShowBurnModal(false)}
               >
                 <span className="sr-only">Close</span>
-                <XIcon className="h-6 w-6" aria-hidden="true" />
+                <XIcon className="w-6 h-6" aria-hidden="true" />
               </button>
             </div>
-            <div className="mx-auto flex items-center justify-center rounded-full">
-              <img className="h-10 w-10 rounded-full" src={tokenList[0].logo} alt="" />
+            <div className="flex items-center justify-center mx-auto rounded-full">
+              <img className="w-10 h-10 rounded-full" src={tokenList[0].logo} alt="" />
             </div>
             <div>
               <div className="mt-3 text-center sm:mt-5">
-                <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
+                <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings" id="modal-headline">
                   Burn USDA
                 </h3>
                 <div className="mt-2">
@@ -721,14 +721,14 @@ export const ManageVault = ({ match }) => {
             <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
               <button
                 type="button"
-                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+                className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
                 onClick={() => callBurn()}
               >
                 Burn
               </button>
               <button
                 type="button"
-                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
                 onClick={() => setShowBurnModal(false)}
               >
                 Cancel
@@ -739,22 +739,22 @@ export const ManageVault = ({ match }) => {
       </Modal>
 
       <Box py={6}>
-        <main className="flex-1 relative pb-8 z-0 overflow-y-auto">
+        <main className="relative z-0 flex-1 pb-8 overflow-y-auto">
           <div className="mt-8">
-            <h1 className="text-2xl leading-6 font-medium text-gray-900 mb-4">
+            <h1 className="mb-4 text-2xl font-medium leading-6 text-gray-900 font-headings">
               {vault?.collateralToken.toUpperCase()}/USDA Vault #{match.params.id}
             </h1>
           </div>
 
           <ul className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4">
-            <li className="relative col-span-2 flex shadow-sm rounded-md">
-              <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8 mb-4">
+            <li className="relative flex col-span-2 rounded-md shadow-sm">
+              <h2 className="mt-8 mb-4 text-lg font-medium leading-6 text-gray-900 font-headings">
                 Liquidation Price
               </h2>
             </li>
 
-            <li className="relative col-span-2 flex shadow-sm rounded-md">
-              <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8 mb-4">
+            <li className="relative flex col-span-2 rounded-md shadow-sm">
+              <h2 className="mt-8 mb-4 text-lg font-medium leading-6 text-gray-900 font-headings">
                 Collateral to Debt Ratio
               </h2>
               <Link onClick={() => callNotifyRisky()} color="blue" display="inline-block" mt={8} ml={5}>
@@ -764,10 +764,10 @@ export const ManageVault = ({ match }) => {
           </ul>
 
           <ul className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4">
-            <li className="relative col-span-2 flex shadow-sm rounded-md">
-              <div className="bg-white shadow sm:rounded-lg w-full">
+            <li className="relative flex col-span-2 rounded-md shadow-sm">
+              <div className="w-full bg-white shadow sm:rounded-lg">
                 <div className="px-4 py-5 sm:p-6">
-                  <h2 className="text-lg leading-6 font-medium text-gray-900">
+                  <h2 className="text-lg font-medium leading-6 text-gray-900 font-headings">
                     ${liquidationPrice()} USD ({vault?.collateralToken.toUpperCase()}/USD)
                   </h2>
                   <div className="mt-2 sm:flex sm:items-start sm:justify-between">
@@ -802,8 +802,8 @@ export const ManageVault = ({ match }) => {
               </div>
             </li>
 
-            <li className="relative col-span-2 flex shadow-sm rounded-md">
-              <div className="bg-white shadow sm:rounded-lg w-full">
+            <li className="relative flex col-span-2 rounded-md shadow-sm">
+              <div className="w-full bg-white shadow sm:rounded-lg">
                 <div className="px-4 py-5 sm:p-6">
                   <h2 className={`text-lg leading-6 font-medium ${debtClass(collateralType?.liquidationRatio, debtRatio)}`}>
                     {debtRatio}%
@@ -847,9 +847,9 @@ export const ManageVault = ({ match }) => {
 
           {isLiquidated ? auctionEnded ? (
             <>
-              <ul className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-1 xl:grid-cols-1 mt-8">
-                <li className="relative col-span-1 flex shadow-sm rounded-md">
-                  <h2 className="text-lg text-center leading-6 font-medium text-gray-900 mt-8 mb-4">
+              <ul className="grid grid-cols-1 gap-4 mt-8 sm:gap-6 sm:grid-cols-1 xl:grid-cols-1">
+                <li className="relative flex col-span-1 rounded-md shadow-sm">
+                  <h2 className="mt-8 mb-4 text-lg font-medium leading-6 text-center text-gray-900 font-headings">
                     Your vault got liquidated. An auction ran and there is some leftover collateral
                   </h2>
 
@@ -869,9 +869,9 @@ export const ManageVault = ({ match }) => {
             </>
           ) : (
             <>
-              <ul className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4 mt-8">
-                <li className="relative col-span-2 flex shadow-sm rounded-md">
-                  <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8 mb-4">
+              <ul className="grid grid-cols-1 gap-4 mt-8 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4">
+                <li className="relative flex col-span-2 rounded-md shadow-sm">
+                  <h2 className="mt-8 mb-4 text-lg font-medium leading-6 text-gray-900 font-headings">
                     Vault got liquidated. Running auction...
                   </h2>
                 </li>
@@ -879,25 +879,25 @@ export const ManageVault = ({ match }) => {
             </>
           ) : (
             <>
-            <ul className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4 mt-8">
-              <li className="relative col-span-2 flex shadow-sm rounded-md">
-                <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8 mb-4">
+            <ul className="grid grid-cols-1 gap-4 mt-8 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4">
+              <li className="relative flex col-span-2 rounded-md shadow-sm">
+                <h2 className="mt-8 mb-4 text-lg font-medium leading-6 text-gray-900 font-headings">
                   {vault?.collateralToken.toUpperCase()} Locked
                 </h2>
               </li>
 
-              <li className="relative col-span-2 flex shadow-sm rounded-md">
-                <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8 mb-4">
+              <li className="relative flex col-span-2 rounded-md shadow-sm">
+                <h2 className="mt-8 mb-4 text-lg font-medium leading-6 text-gray-900 font-headings">
                   Outstanding USDA debt
                 </h2>
               </li>
             </ul>
 
             <ul className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4">
-              <li className="relative col-span-2 flex shadow-sm rounded-md">
-                <div className="bg-white shadow sm:rounded-lg w-full">
+              <li className="relative flex col-span-2 rounded-md shadow-sm">
+                <div className="w-full bg-white shadow sm:rounded-lg">
                   <div className="px-4 py-5 sm:p-6">
-                    <div className="mt-2 sm:flex sm:items-start sm:justify-between mb-10">
+                    <div className="mt-2 mb-10 sm:flex sm:items-start sm:justify-between">
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
                         {vault?.collateralToken.toUpperCase()} Locked
@@ -1019,10 +1019,10 @@ export const ManageVault = ({ match }) => {
                 </div>
               </li>
 
-              <li className="relative col-span-2 flex shadow-sm rounded-md">
-                <div className="bg-white shadow sm:rounded-lg w-full">
+              <li className="relative flex col-span-2 rounded-md shadow-sm">
+                <div className="w-full bg-white shadow sm:rounded-lg">
                   <div className="px-4 py-5 sm:p-6">
-                    <div className="mt-2 sm:flex sm:items-start sm:justify-between mb-5">
+                    <div className="mt-2 mb-5 sm:flex sm:items-start sm:justify-between">
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
                           Outstanding USDA debt
@@ -1049,7 +1049,7 @@ export const ManageVault = ({ match }) => {
                     </div>
                     <hr/>
 
-                    <div className="mt-5 sm:flex sm:items-start sm:justify-between mb-5">
+                    <div className="mt-5 mb-5 sm:flex sm:items-start sm:justify-between">
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
                           Outstanding Stability Fees
@@ -1076,7 +1076,7 @@ export const ManageVault = ({ match }) => {
                     </div>
                     <hr/>
 
-                    <div className="mt-5 sm:flex sm:items-start sm:justify-between mb-5">
+                    <div className="mt-5 mb-5 sm:flex sm:items-start sm:justify-between">
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
                           Total Outstanding Debt
@@ -1103,7 +1103,7 @@ export const ManageVault = ({ match }) => {
                     </div>
                     <hr/>
 
-                    <div className="mt-5 sm:flex sm:items-start sm:justify-between mb-5">
+                    <div className="mt-5 mb-5 sm:flex sm:items-start sm:justify-between">
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
                           Available to mint
@@ -1134,20 +1134,20 @@ export const ManageVault = ({ match }) => {
               </li>
             </ul>
 
-            <ul className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4 mt-8">
-              <li className="relative col-span-2 flex shadow-sm rounded-md">
-                <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8 mb-4">
+            <ul className="grid grid-cols-1 gap-4 mt-8 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4">
+              <li className="relative flex col-span-2 rounded-md shadow-sm">
+                <h2 className="mt-8 mb-4 text-lg font-medium leading-6 text-gray-900 font-headings">
                   DIKO Vault Rewards
                 </h2>
               </li>
             </ul>
 
             <ul className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4">
-              <li className="relative col-span-2 flex shadow-sm rounded-md">
-                <div className="bg-white shadow sm:rounded-lg w-full">
+              <li className="relative flex col-span-2 rounded-md shadow-sm">
+                <div className="w-full bg-white shadow sm:rounded-lg">
                   <div className="px-4 py-5 sm:p-6">
                       
-                    <div className="mt-5 sm:flex sm:items-start sm:justify-between mb-5">
+                    <div className="mt-5 mb-5 sm:flex sm:items-start sm:justify-between">
                       <div className="max-w-xl text-sm text-gray-500">
                         <p>
                           Unclaimed DIKO rewards

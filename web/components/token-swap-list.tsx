@@ -20,7 +20,7 @@ export const tokenList = [
   }
 ];
 
-function classNames(...classes) {
+function classNames(...classes: Array<string | undefined>) {
   return classes.filter(Boolean).join(' ')
 }
 

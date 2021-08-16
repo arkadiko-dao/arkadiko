@@ -14,7 +14,7 @@ import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { microToReadable } from '@common/vault-utils';
 
-function classNames(...classes) {
+function classNames(...classes: Array<string | undefined>) {
   return classes.filter(Boolean).sort().join(' ')
 }
 
@@ -152,26 +152,26 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
     <>
       {state.userData ? (
         <Container>
-          <main className="flex-1 relative pb-8 flex flex-col items-center justify-center py-12">
-            <div className="w-full max-w-lg bg-white shadow rounded-lg relative z-10">
+          <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
+            <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow">
               <div className="flex flex-col p-4">
                 <div className="flex justify-between mb-4">
                   <div>
-                    <h2 className="text-lg leading-6 font-medium text-gray-900">
+                    <h2 className="text-lg font-medium leading-6 text-gray-900 font-headings">
                       Liquidity
                     </h2>
-                    <p className="mt-1 text-sm text-gray-600 inline-flex items-center">
+                    <p className="inline-flex items-center mt-1 text-sm text-gray-600">
                       Remove liquidity to burn LP tokens and take out your rewards
                       <Tooltip className="z-10" shouldWrapChildren={true} label={`By removing liquidity, you take out assets your provided and will stop earning on each trade.`}>
-                        <InformationCircleIcon className="ml-2 block h-5 w-5 text-gray-400" aria-hidden="true" />
+                        <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
                       </Tooltip>
                     </p>
                   </div>
                 </div>
                 <div className="group p-0.5 rounded-lg flex w-full bg-gray-50 hover:bg-gray-100">
-                  <RouterLink className="flex items-center justify-center flex-1 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 rounded-md focus:outline-none focus-visible:ring-offset-gray-100" to={`/swap/add/${match.params.currencyIdA}/${match.params.currencyIdB}`} exact>
+                  <RouterLink className="flex items-center justify-center flex-1 rounded-md focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus:outline-none focus-visible:ring-offset-gray-100" to={`/swap/add/${match.params.currencyIdA}/${match.params.currencyIdB}`} exact>
                     <span className="p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md inline-flex items-center text-sm font-medium">
-                      <PlusCircleIcon className="mr-2 text-gray-500 group-hover:text-gray-900 h-4 w-4" aria-hidden="true" />
+                      <PlusCircleIcon className="w-4 h-4 mr-2 text-gray-500 group-hover:text-gray-900" aria-hidden="true" />
                       <span className="text-gray-600 group-hover:text-gray-900">
                         Add
                       </span>
@@ -179,41 +179,41 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                   </RouterLink>
 
                   <button type="button" className="ml-0.5 p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md flex items-center justify-center flex-1 text-sm text-gray-600 font-medium focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus:outline-none focus-visible:ring-offset-gray-100 bg-white ring-1 ring-black ring-opacity-5">
-                    <MinusCircleIcon className="h-4 w-4 mr-2 text-indigo-500" aria-hidden="true" />
+                    <MinusCircleIcon className="w-4 h-4 mr-2 text-indigo-500" aria-hidden="true" />
                     <span className="text-gray-900">
                       Remove
                     </span>
                   </button>
                 </div>
 
-                <div className="mt-4 p-4 w-full bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
-                  <h4 className="uppercase font-semibold text-xs text-indigo-700">Your position</h4>
+                <div className="w-full p-4 mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
+                  <h4 className="text-xs font-normal text-indigo-700 uppercase font-headings">Your position</h4>
                   <dl className="mt-2 space-y-1">
                     <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                      <dt className="text-base font-medium text-indigo-500 inline-flex items-center">
-                        <div className="flex -space-x-2 overflow-hidden mr-2">
-                          <img className="inline-block h-6 w-6 rounded-full ring-2 ring-white" src={tokenX.logo} alt="" />
-                          <img className="inline-block h-6 w-6 rounded-full ring-2 ring-white" src={tokenY.logo} alt="" />
+                      <dt className="inline-flex items-center text-base font-medium text-indigo-500">
+                        <div className="flex mr-2 -space-x-2 overflow-hidden">
+                          <img className="inline-block w-6 h-6 rounded-full ring-2 ring-white" src={tokenX.logo} alt="" />
+                          <img className="inline-block w-6 h-6 rounded-full ring-2 ring-white" src={tokenY.logo} alt="" />
                         </div>
                         {tokenX.name}/{tokenY.name}
                       </dt>
-                      <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-lg sm:text-right">
+                      <dd className="mt-1 text-lg font-semibold text-indigo-900 sm:mt-0 sm:text-right">
                         {microToReadable(balance)}
                       </dd>
                     </div>
                     <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                      <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
+                      <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                         {tokenX.name}
                       </dt>
-                      <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">
+                      <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
                         {microToReadable(balanceX)}
                       </dd>
                     </div>
                     <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                      <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
+                      <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                         {tokenY.name}
                       </dt>
-                      <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:text-right">
+                      <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
                         {microToReadable(balanceY)}
                       </dd>
                     </div>
@@ -221,12 +221,12 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                 </div>
 
                 <form className="mt-4">
-                  <div className="rounded-md shadow-sm bg-gray-50 border border-gray-200 hover:border-gray-300 focus-within:border-indigo-200">
+                  <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
                     <div className="flex items-center p-4">
                       <div className="lg:flex lg:items-start lg:flex-1 lg:justify-between">
-                        <label htmlFor="removeLiquidityAmount" className="flex-shrink-0 mr-4 block text-base text-gray-700">Amount to remove</label>
+                        <label htmlFor="removeLiquidityAmount" className="flex-shrink-0 block mr-4 text-base text-gray-700">Amount to remove</label>
                         <div className="flex flex-col">
-                          <div className="rounded-md relative">
+                          <div className="relative rounded-md">
                             <input
                               type="number"
                               inputMode="decimal" 
@@ -239,39 +239,39 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                               placeholder="0.0"
                               value={percentageToRemove}
                               onChange={onInputChange}
-                              className="font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 truncate p-0 m-0 text-right block w-52 pr-4 text-3xl"
+                              className="block p-0 pr-4 m-0 text-3xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50 w-52"
                               style={{appearance: 'textfield'}}
                             />
-                            <div className="absolute inset-y-0 right-0 pb-1 flex items-end pointer-events-none">
+                            <div className="absolute inset-y-0 right-0 flex items-end pb-1 pointer-events-none">
                               %
                             </div>
                           </div>
 
-                          <div className="mt-4 flex items-center justify-between">
+                          <div className="flex items-center justify-between mt-4">
                             <button
                               type="button"
-                              className="rounded-md font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-1 text-xs focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                              className="p-1 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
                               onClick={() => { removePercentage(25); }}
                             >
                               25%
                             </button>
                             <button
                               type="button"
-                              className="rounded-md font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-1 text-xs focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                              className="p-1 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
                               onClick={() => { removePercentage(50); }}
                             >
                               50%
                             </button>
                             <button
                               type="button"
-                              className="rounded-md font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-1 text-xs focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                              className="p-1 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
                               onClick={() => { removePercentage(75); }}
                             >
                               75%
                             </button>
                             <button
                               type="button"
-                              className="rounded-md font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-1 text-xs focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                              className="p-1 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
                               onClick={() => { removePercentage(100); }}
                             >
                               Max.
@@ -282,11 +282,11 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                     </div>
                   </div>
                 
-                  <div className="my-3 flex items-center justify-center">
-                    <ArrowDownIcon className="text-gray-500 h-6 w-6" aria-hidden="true" />
+                  <div className="flex items-center justify-center my-3">
+                    <ArrowDownIcon className="w-6 h-6 text-gray-500" aria-hidden="true" />
                   </div>
 
-                  <div className="rounded-md shadow-sm bg-gray-50 border border-gray-200 hover:border-gray-300 focus-within:border-indigo-200">
+                  <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
                     <div className="p-4">
                       <p className="text-base text-gray-700">You will receive</p>
                       
@@ -294,30 +294,30 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                         <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                           <dt className="text-lg font-medium">
                             <div className="flex items-center">
-                              <div className="flex-shrink-0 h-8 w-8">
-                                <img className="h-8 w-8 rounded-full" src={tokenX.logo} alt="" />
+                              <div className="flex-shrink-0 w-8 h-8">
+                                <img className="w-8 h-8 rounded-full" src={tokenX.logo} alt="" />
                               </div>
                               <div className="ml-4">
                                 <div className="text-base text-gray-900">{tokenX.name}</div>
                               </div>
                             </div>                          
                           </dt>
-                          <dd className="font-semibold mt-1 sm:mt-0 text-lg sm:justify-end sm:inline-flex">
+                          <dd className="mt-1 text-lg font-semibold sm:mt-0 sm:justify-end sm:inline-flex">
                             {microToReadable(tokenXToReceive)}
                           </dd>
                         </div>
                         <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                           <dt className="text-lg font-medium">
                             <div className="flex items-center">
-                              <div className="flex-shrink-0 h-8 w-8">
-                                <img className="h-8 w-8 rounded-full" src={tokenY.logo} alt="" />
+                              <div className="flex-shrink-0 w-8 h-8">
+                                <img className="w-8 h-8 rounded-full" src={tokenY.logo} alt="" />
                               </div>
                               <div className="ml-4">
                                 <div className="text-base text-gray-900">{tokenY.name}</div>
                               </div>
                             </div>                          
                           </dt>
-                          <dd className="font-semibold mt-1 sm:mt-0 text-lg sm:justify-end sm:inline-flex">
+                          <dd className="mt-1 text-lg font-semibold sm:mt-0 sm:justify-end sm:inline-flex">
                             {microToReadable(tokenYToReceive)}
                           </dd>
                         </div>
@@ -326,7 +326,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                   </div>
 
                   <div className="mt-4 lg:flex lg:items-start lg:justify-between">
-                    <h4 className="uppercase font-semibold text-xs text-gray-700 ">Price</h4>
+                    <h4 className="text-xs font-normal text-gray-700 uppercase font-headings">Price</h4>
                     <div className="mt-3 sm:mt-0 space-y-0.5 lg:text-right text-sm text-gray-500">
                       <p>
                         1 {tokenX.name} = {tokenXPrice} {tokenY.name}

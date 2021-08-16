@@ -22,7 +22,7 @@ export const ContractTransaction: React.FC<ComponentProps> = ({ transaction, sta
         )}
         <div className="flex-1 space-y-1">
           <div className="flex items-center justify-between">
-            <h3 className="text-medium font-medium">
+            <h3 className="font-medium text-medium font-headings">
               <a href={url} target="_blank">{transaction.contract_call.function_name}</a>
             </h3>
           </div>

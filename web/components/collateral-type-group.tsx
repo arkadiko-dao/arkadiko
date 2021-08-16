@@ -35,40 +35,40 @@ export const CollateralTypeGroup: React.FC<CollateralTypeGroupProps> = ({ types 
     <table className="min-w-full divide-y divide-gray-200">
       <thead>
         <tr>
-          <th scope="col" className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
             Collateral
           </th>
-          <th scope="col" className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
             <div className="flex items-center">
               Stability Fee
               <Tooltip className="ml-2" shouldWrapChildren={true} label={`The interest in percentage to borrow USDA`}>
-                <InformationCircleIcon className="ml-2 block h-5 w-5 text-gray-400" aria-hidden="true" />
+                <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
               </Tooltip>
             </div>
           </th>
-          <th scope="col" className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
             <div className="flex items-center">
               Liq. Ratio
               <Tooltip className="ml-2" shouldWrapChildren={true} label={`The collateral-to-debt ratio when your vault gets liquidated`}>
-                <InformationCircleIcon className="ml-2 block h-5 w-5 text-gray-400" aria-hidden="true" />
+                <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
               </Tooltip>
             </div>
           </th>
-          <th scope="col" className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
             <div className="flex items-center">
               Liq. Penalty
               <Tooltip className="ml-2" shouldWrapChildren={true} label={`The penalty you pay when your vault gets liquidated`}>
-                <InformationCircleIcon className="ml-2 block h-5 w-5 text-gray-400" aria-hidden="true" />
+                <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
               </Tooltip>
             </div>
           </th>
-          <th scope="col" className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
             Max Debt
           </th>
-          <th scope="col" className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
             Current Debt
           </th>
-          <th scope="col" className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
             <span className="sr-only">New Vault</span>
           </th>
         </tr>

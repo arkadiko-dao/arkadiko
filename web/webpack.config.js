@@ -169,6 +169,10 @@ module.exports = {
           "css-loader", "postcss-loader",
           ],
       },
+			{
+				test: /\.(woff|ttf|otf|eot|woff2|svg)$/i,
+				loader: "file-loader"
+			}
     ],
   },
   devServer: {

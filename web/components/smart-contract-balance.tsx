@@ -56,22 +56,22 @@ export const SmartContractBalance = ({ address }) => {
 
   return (
     <tr className="bg-white">
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         {address}
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         {stxBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} STX
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         {dikoBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         {usdaBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         {wStxBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} wSTX
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         {xStxBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xSTX
       </td>
     </tr>

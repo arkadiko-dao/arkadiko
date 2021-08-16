@@ -32,13 +32,13 @@ export const Balances = () => {
 
   return (
     <Box>
-      <main className="flex-1 relative pb-8 z-0 overflow-y-auto">
+      <main className="relative z-0 flex-1 pb-8 overflow-y-auto">
         <div className="mt-8">
-          <div className="mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="px-4 mx-auto sm:px-6 lg:px-8">
 
             <div className="bg-indigo-700">
-              <div className="max-w-2xl mx-auto text-center py-5 px-4 sm:py-5 sm:px-6 lg:px-8">
-                <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
+              <div className="max-w-2xl px-4 py-5 mx-auto text-center sm:py-5 sm:px-6 lg:px-8">
+                <h2 className="text-3xl font-bold text-white sm:text-4xl font-headings">
                   <span className="block">Arkadiko Balances</span>
                 </h2>
                 <p className="mt-4 text-lg leading-6 text-indigo-200">
@@ -51,22 +51,22 @@ export const Balances = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead>
                   <tr>
-                    <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
                       Contract Name
                     </th>
-                    <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
                       STX Balance
                     </th>
-                    <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
                       DIKO Balance
                     </th>
-                    <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
                       USDA Balance
                     </th>
-                    <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
                       wSTX Balance
                     </th>
-                    <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
                       xSTX Balance
                     </th>
                   </tr>

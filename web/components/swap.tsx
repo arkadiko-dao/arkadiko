@@ -22,7 +22,7 @@ import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { SwapSettings } from '@components/swap-settings';
 import { getBalance } from '@components/app';
 
-function classNames(...classes) {
+function classNames(...classes: Array<string | undefined>) {
   return classes.filter(Boolean).sort().join(' ')
 }
 
@@ -274,11 +274,11 @@ export const Swap: React.FC = () => {
 
   return (
     <Container>
-      <main className="flex-1 relative pb-8 flex flex-col items-center justify-center py-12">
-        <div className="w-full max-w-lg bg-white shadow rounded-lg relative z-10">
+      <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
+        <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow">
           <div className="flex flex-col p-4">
             <div className="flex justify-between mb-4">
-              <h2 className="text-lg leading-6 font-medium text-gray-900">
+              <h2 className="text-lg font-medium leading-6 text-gray-900 font-headings">
                 Swap Tokens
               </h2>
               <SwapSettings
@@ -289,7 +289,7 @@ export const Swap: React.FC = () => {
             </div>
 
             <form>
-              <div className="rounded-md shadow-sm bg-gray-50 border border-gray-200 hover:border-gray-300 focus-within:border-indigo-200">
+              <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
                 <div className="flex items-center p-4 pb-2">
 
                   <TokenSwapList
@@ -310,11 +310,11 @@ export const Swap: React.FC = () => {
                     placeholder="0.0"
                     value={tokenXAmount || ''}
                     onChange={onInputChange}
-                    className="ml-4 font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1"
+                    className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
                     style={{appearance: 'textfield'}} />
                 </div>
 
-                <div className="flex items-center text-sm p-4 pt-0 justify-end">
+                <div className="flex items-center justify-end p-4 pt-0 text-sm">
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center justify-start">
                       <p className="text-gray-500">Balance: {balanceSelectedTokenX.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenX.name}</p>
@@ -322,7 +322,7 @@ export const Swap: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setMaximum()}
-                          className="ml-2 rounded-md font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-100 p-1 text-xs focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                          className="p-1 ml-2 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
                         >
                           Max.
                         </button>
@@ -335,12 +335,12 @@ export const Swap: React.FC = () => {
               <button
                 type="button"
                 onClick={switchTokens}
-                className="-mb-4 -ml-4 -mt-4 bg-white border border-gray-300 flex h-8 bg-white  items-center justify-center left-1/2 relative rounded-md text-gray-400 transform w-8 z-10 hover:text-indigo-700 focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-indigo-500"
+                className="relative z-10 flex items-center justify-center w-8 h-8 -mt-4 -mb-4 -ml-4 text-gray-400 transform bg-white border border-gray-300 rounded-md left-1/2 hover:text-indigo-700 focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-indigo-500"
               >
-                <SwitchVerticalIcon className="h-5 w-5" aria-hidden="true" />
+                <SwitchVerticalIcon className="w-5 h-5" aria-hidden="true" />
               </button>
 
-              <div className="rounded-md shadow-sm bg-gray-50 border border-gray-200 hover:border-gray-300 focus-within:border-indigo-200 mt-1">
+              <div className="mt-1 border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
                 <div className="flex items-center p-4 pb-2">
 
                   <TokenSwapList
@@ -361,10 +361,10 @@ export const Swap: React.FC = () => {
                     value={tokenYAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
                     onChange={onInputChange}
                     disabled={true}
-                    className="ml-4 font-semibold focus:outline-none focus:ring-0 border-0 bg-gray-50 text-xl truncate p-0 m-0 text-right flex-1 text-gray-600" />
+                    className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right text-gray-600 truncate border-0 focus:outline-none focus:ring-0 bg-gray-50" />
                 </div>
 
-                <div className="flex items-center text-sm p-4 pt-0 justify-end">
+                <div className="flex items-center justify-end p-4 pt-0 text-sm">
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center justify-start">
                       <p className="text-gray-500">Balance: {balanceSelectedTokenY.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenY.name}</p>
@@ -373,7 +373,7 @@ export const Swap: React.FC = () => {
                 </div>
               </div>
 
-              <p className="text-sm mt-2 font-semibold text-right text-gray-400">1 {tokenY.name} = ≈{currentPrice} {tokenX.name}</p>
+              <p className="mt-2 text-sm font-semibold text-right text-gray-400">1 {tokenY.name} = ≈{currentPrice} {tokenX.name}</p>
 
               {state.userData ? (
                 <button
@@ -394,62 +394,62 @@ export const Swap: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => doOpenAuth()}
-                  className="w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="inline-flex items-center justify-center w-full px-4 py-3 mt-4 text-xl font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   Connect Wallet
                 </button>
               )}
             </form>
             { foundPair ? (
-              <div className="mt-3 w-full text-center">
-                <RouterLink className="text-sm font-medium text-indigo-700 hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-sm" to={`swap/add/${tokenX.name}/${tokenY.name}`}>
+              <div className="w-full mt-3 text-center">
+                <RouterLink className="text-sm font-medium text-indigo-700 rounded-sm hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" to={`swap/add/${tokenX.name}/${tokenY.name}`}>
                   Add/remove liquidity on {tokenX.name}-{tokenY.name}
                 </RouterLink>
               </div>
             ) : null }
           </div>
         </div>
-        <div className="-mt-4 p-4 pt-8 w-full max-w-md bg-indigo-50 border border-indigo-200 shadow-sm rounded-lg">
+        <div className="w-full max-w-md p-4 pt-8 -mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
           <dl className="space-y-1">
             <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-              <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
+              <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                 Minimum Received
                 <div className="ml-2">
                   <Tooltip className="z-10" shouldWrapChildren={true} label={`Your transaction will revert if there is a large, unfavorable price movement before it is confirmed`}>
-                    <InformationCircleIcon className="block h-4 w-4 text-indigo-400" aria-hidden="true" />
+                    <InformationCircleIcon className="block w-4 h-4 text-indigo-400" aria-hidden="true" />
                   </Tooltip>
                 </div>
               </dt>
-              <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:justify-end sm:inline-flex">
-                <div className="truncate mr-1">{minimumReceived.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</div>
+              <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
+                <div className="mr-1 truncate">{minimumReceived.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</div>
                 {tokenY.name}
               </dd>
             </div>
             <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-              <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
+              <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                 Price Impact
                 <div className="ml-2">
                   <Tooltip className="z-10" shouldWrapChildren={true} label={`The difference between the market price and estimated price due to trade size`}>
-                    <InformationCircleIcon className="block h-4 w-4 text-indigo-400" aria-hidden="true" />
+                    <InformationCircleIcon className="block w-4 h-4 text-indigo-400" aria-hidden="true" />
                   </Tooltip>
                 </div>
               </dt>
-              <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:justify-end sm:inline-flex">
-                ≈<div className="truncate mr-1">{priceImpact}</div>
+              <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
+                ≈<div className="mr-1 truncate">{priceImpact}</div>
                 %
               </dd>
             </div>
             <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-              <dt className="text-sm font-medium text-indigo-500 inline-flex items-center">
+              <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                 Liquidity Provider fee
                 <div className="ml-2">
                   <Tooltip className="z-10" shouldWrapChildren={true} label={`A portion of each trade goes to liquidity providers as a protocol incentive`}>
-                    <InformationCircleIcon className="block h-4 w-4 text-indigo-400" aria-hidden="true" />
+                    <InformationCircleIcon className="block w-4 h-4 text-indigo-400" aria-hidden="true" />
                   </Tooltip>
                 </div>
               </dt>
-              <dd className="font-semibold mt-1 sm:mt-0 text-indigo-900 text-sm sm:justify-end sm:inline-flex">
-                <div className="truncate mr-1">{lpFee}</div>
+              <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
+                <div className="mr-1 truncate">{lpFee}</div>
                 {tokenX.name}
               </dd>
             </div>

@@ -8,10 +8,10 @@ interface StakeActionsProps {
 
 export const StakeActions: React.FC<StakeActionsProps> = ({ children }) => {
   return (
-    <Menu as="div" className="relative flex justify-end items-center">
+    <Menu as="div" className="relative flex items-center justify-end">
       {({ open }) => (
         <>
-          <Menu.Button className="w-8 h-8 bg-white inline-flex items-center justify-center text-gray-400 rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          <Menu.Button className="inline-flex items-center justify-center w-8 h-8 text-gray-400 bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
             <span className="sr-only">Open options</span>
             <DotsVerticalIcon className="w-5 h-5" aria-hidden="true" />
           </Menu.Button>
@@ -27,7 +27,7 @@ export const StakeActions: React.FC<StakeActionsProps> = ({ children }) => {
           >
             <Menu.Items
               static
-              className="mx-3 origin-top-right absolute right-7 top-0 w-48 mt-1 rounded-md shadow-lg z-10 bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-200 focus:outline-none"
+              className="absolute top-0 z-10 w-48 mx-3 mt-1 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg right-7 ring-1 ring-black ring-opacity-5 focus:outline-none"
             >
               <div className="px-1 py-1">
                 {children}

@@ -59,12 +59,12 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
 
   return (
     <Modal isOpen={showUnstakeModal}>
-      <div className="flex items-end justify-center pt-6 px-4 pb-6 text-center sm:block sm:p-0">
+      <div className="flex items-end justify-center px-4 pt-6 pb-6 text-center sm:block sm:p-0">
         {errors.length > 0 ? (
-          <div className="bg-red-50 border-l-4 border-red-400 p-4 mt-4">
+          <div className="p-4 mt-4 border-l-4 border-red-400 bg-red-50">
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <svg className="w-5 h-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
               </div>
@@ -75,23 +75,23 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
           </div>
         ) : `` }
 
-        <div className="inline-block align-bottom bg-white rounded-lg px-2 text-left overflow-hidden sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
-          <div className="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
+        <div className="inline-block px-2 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+          <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
             <button
               type="button"
-              className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               onClick={() => setShowUnstakeModal(false)}
             >
               <span className="sr-only">Close</span>
-              <XIcon className="h-6 w-6" aria-hidden="true" />
+              <XIcon className="w-6 h-6" aria-hidden="true" />
             </button>
           </div>
-          <div className="mx-auto flex items-center justify-center rounded-full">
-            <img className="h-10 w-10 rounded-full" src={tokenList[1].logo} alt="" />
+          <div className="flex items-center justify-center mx-auto rounded-full">
+            <img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />
           </div>
           <div>
             <div className="mt-3 text-center sm:mt-5">
-              <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
+              <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings" id="modal-headline">
                 Unstake DIKO
               </h3>
               <p className="mt-3 text-sm text-gray-500">
@@ -114,14 +114,14 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
           <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
             <button
               type="button"
-              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+              className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
               onClick={() => unstakeDiko()}
             >
               Unstake
             </button>
             <button
               type="button"
-              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+              className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
               onClick={() => setShowUnstakeModal(false)}
             >
               Cancel

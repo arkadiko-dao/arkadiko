@@ -51,25 +51,25 @@ export const TxSidebar = ({ setShowSidebar }) => {
   }, []);
 
   return (
-    <div className="fixed inset-0 overflow-hidden z-50" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+    <div className="fixed inset-0 z-50 overflow-hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute inset-0" aria-hidden="true"></div>
 
-        <div className="fixed inset-y-0 right-0 pl-10 max-w-full flex">
+        <div className="fixed inset-y-0 right-0 flex max-w-full pl-10">
           <div className="w-screen max-w-md">
-            <div className="h-full flex flex-col bg-white shadow-xl overflow-y-scroll">
-              <div className="py-6 px-4 bg-indigo-700 sm:px-6">
+            <div className="flex flex-col h-full overflow-y-scroll bg-white shadow-xl">
+              <div className="px-4 py-6 bg-indigo-700 sm:px-6">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium text-white">
+                  <h2 className="text-lg font-medium text-white font-headings">
                     Transaction History
                   </h2>
-                  <div className="ml-3 h-7 flex items-center">
+                  <div className="flex items-center ml-3 h-7">
                     <button
                       onClick={() => { setShowSidebar(false); }}
-                      className="bg-indigo-700 rounded-md text-indigo-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
+                      className="text-indigo-200 bg-indigo-700 rounded-md hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
                     >
                       <span className="sr-only">Close</span>
-                      <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                      <svg className="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </button>
@@ -81,8 +81,8 @@ export const TxSidebar = ({ setShowSidebar }) => {
                   </p>
                 </div>
               </div>
-              <div className="relative flex-1 py-6 px-4 sm:px-6">
-                <div className="absolute inset-0 py-6 px-4 sm:px-6">
+              <div className="relative flex-1 px-4 py-6 sm:px-6">
+                <div className="absolute inset-0 px-4 py-6 sm:px-6">
                   <div className="h-full" aria-hidden="true">
                     <ul className="divide-y divide-gray-200">
                       {pendingTransactions}

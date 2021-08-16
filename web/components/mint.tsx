@@ -232,7 +232,7 @@ export const Mint = () => {
         <section>
           <div className="relative">
             <div className="absolute w-full h-full" style={{backgroundImage: 'url(/assets/stacks-pattern.png)', backgroundSize: '20%'}}></div>
-            <div className="absolute bottom-0 right-0 p-2 rounded-full mb-2 mr-2 bg-indigo-600 z-10">
+            <div className="absolute bottom-0 right-0 z-10 p-2 mb-2 mr-2 bg-indigo-600 rounded-full">
               <a href="https://stacking.club/" target="_blank" rel="noopener noreferrer">
                 <svg className="w-4 h-4" viewBox="0 0 120 121" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <path d="M108.897 120.001L83.4366 81.4259H120V66.872H0V81.4428H36.5512L11.1027 120.001H30.0887L60.0001 74.6811L89.9113 120.001H108.897ZM120 52.7468V38.0464H84.1795L109.29 0H90.3043L59.9997 45.9149L29.6957 0H10.7099L35.8527 38.0805H0V52.7468H120Z" fill="white"/>
@@ -241,10 +241,10 @@ export const Mint = () => {
             </div>
 
 
-            <dl className="grid grid-cols-1 border border-indigo-200 bg-indigo-100 bg-opacity-50 shadow-sm rounded-lg overflow-hidden divide-y divide-indigo-200 md:grid-cols-4 md:divide-y-0 md:divide-x relative">
+            <dl className="relative grid grid-cols-1 overflow-hidden bg-indigo-100 bg-opacity-50 border border-indigo-200 divide-y divide-indigo-200 rounded-lg shadow-sm md:grid-cols-4 md:divide-y-0 md:divide-x">
               <div className="px-4 py-5 sm:p-6">
-                <dt className="uppercase font-semibold text-xs text-indigo-800">Stacking Cycle #</dt>
-                <dd className="mt-1 flex justify-between items-baseline md:block lg:flex">
+                <dt className="text-xs font-semibold text-indigo-800 uppercase">Stacking Cycle #</dt>
+                <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
                     <PlaceHolder size={2} color="indigo" />
                   ) : (
@@ -255,8 +255,8 @@ export const Mint = () => {
                 </dd>
               </div>
               <div className="px-4 py-5 sm:p-6">
-                <dt className="uppercase font-semibold text-xs text-indigo-800">End date</dt>
-                <dd className="mt-1 flex justify-between items-baseline md:block lg:flex">
+                <dt className="text-xs font-semibold text-indigo-800 uppercase">End date</dt>
+                <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
                     <PlaceHolder size={2} color="indigo" />
                   ) : (
@@ -267,8 +267,8 @@ export const Mint = () => {
                 </dd>
               </div>
               <div className="px-4 py-5 sm:p-6">
-                <dt className="uppercase font-semibold text-xs text-indigo-800">Days in cycle</dt>
-                <dd className="mt-1 flex justify-between items-baseline md:block lg:flex">
+                <dt className="text-xs font-semibold text-indigo-800 uppercase">Days in cycle</dt>
+                <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
                     <PlaceHolder size={2} color="indigo" />
                   ) : (
@@ -279,8 +279,8 @@ export const Mint = () => {
                 </dd>
               </div>
               <div className="px-4 py-5 sm:p-6">
-                <dt className="uppercase font-semibold text-xs text-indigo-800">Days left</dt>
-                <dd className="mt-1 flex justify-between items-baseline md:block lg:flex">
+                <dt className="text-xs font-semibold text-indigo-800 uppercase">Days left</dt>
+                <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
                     <PlaceHolder size={2} color="indigo" />
                   ) : (
@@ -296,27 +296,27 @@ export const Mint = () => {
 
         <section className="mt-8">
           <header className="pb-5 border-b border-gray-200 sm:flex sm:items-center sm:justify-between">
-            <h3 className="text-lg leading-6 font-medium text-gray-900">Overview</h3>
-            <div className="mt-3 flex sm:mt-0 sm:ml-4">
+            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">Overview</h3>
+            <div className="flex mt-3 sm:mt-0 sm:ml-4">
               {env == 'mocknet' ? (
                 <div className="flex items-center justify-end">
-                  <span className="text-gray-800 text-xs py-1 px-2">Mocknet actions:</span> 
-                  <Link onClick={() => addMocknetStx()} className="ml-1 inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  <span className="px-2 py-1 text-xs text-gray-800">Mocknet actions:</span> 
+                  <Link onClick={() => addMocknetStx()} className="inline-flex items-center px-4 py-2 ml-1 text-sm font-medium text-indigo-600 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Get 5000 STX tokens from mocknet
                   </Link>
 
-                  <Link onClick={() => requestDikoTokens()} className="ml-1 inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  <Link onClick={() => requestDikoTokens()} className="inline-flex items-center px-4 py-2 ml-1 text-sm font-medium text-indigo-600 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Test Request DIKO
                   </Link>
 
-                  <Link onClick={() => redeemStabilityFees()} className="ml-1 inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  <Link onClick={() => redeemStabilityFees()} className="inline-flex items-center px-4 py-2 ml-1 text-sm font-medium text-indigo-600 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Redeem Stability Fees
                   </Link>
                 </div>
               ) : (
                 <div className="flex items-center justify-end mb-4">
-                  <span className="text-gray-800 text-xs py-1 px-2">{env.replace(/^\w/, (c) => c.toUpperCase())} actions:</span>
-                  <Link onClick={() => addTestnetStx()} className="ml-1 inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  <span className="px-2 py-1 text-xs text-gray-800">{env.replace(/^\w/, (c) => c.toUpperCase())} actions:</span>
+                  <Link onClick={() => addTestnetStx()} className="inline-flex items-center px-4 py-2 ml-1 text-sm font-medium text-indigo-600 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Get STX from {env}
                   </Link>
                 </div>
@@ -326,26 +326,26 @@ export const Mint = () => {
 
           <div className="flex flex-col mt-4">
             <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-              <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                <div className="shadow overflow-hidden sm:rounded-lg">
+              <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                <div className="overflow-hidden shadow sm:rounded-lg">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                         >
                           Asset
                         </th>
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                         >
                           Balance
                         </th>
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                         >
                           Last Oracle Price
                         </th>
@@ -353,58 +353,58 @@ export const Mint = () => {
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       <tr className="bg-white">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                           <div className="flex items-center">
-                            <div className="flex-shrink-0 h-10 w-10">
-                              <img className="h-10 w-10 rounded-full" src={tokenList[2].logo} alt="" />
+                            <div className="flex-shrink-0 w-10 h-10">
+                              <img className="w-10 h-10 rounded-full" src={tokenList[2].logo} alt="" />
                             </div>
                             <div className="ml-4">
                               <div className="text-sm font-medium text-gray-900">STX</div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <td className="px-6 py-4 text-sm whitespace-nowrap">
                           {microToReadable(state.balance['stx']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} STX
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <td className="px-6 py-4 text-sm whitespace-nowrap">
                           ${stxPrice / 100}
                         </td>
                       </tr>
 
                       <tr className="bg-white">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                           <div className="flex items-center">
-                            <div className="flex-shrink-0 h-10 w-10">
-                              <img className="h-10 w-10 rounded-full" src={tokenList[1].logo} alt="" />
+                            <div className="flex-shrink-0 w-10 h-10">
+                              <img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />
                             </div>
                             <div className="ml-4">
                               <div className="text-sm font-medium text-gray-900">DIKO</div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <td className="px-6 py-4 text-sm whitespace-nowrap">
                           {microToReadable(state.balance['diko']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <td className="px-6 py-4 text-sm whitespace-nowrap">
                           ${dikoPrice}
                         </td>
                       </tr>
 
                       <tr className="bg-white">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                           <div className="flex items-center">
-                            <div className="flex-shrink-0 h-10 w-10">
-                              <img className="h-10 w-10 rounded-full" src={tokenList[0].logo} alt="" />
+                            <div className="flex-shrink-0 w-10 h-10">
+                              <img className="w-10 h-10 rounded-full" src={tokenList[0].logo} alt="" />
                             </div>
                             <div className="ml-4">
                               <div className="text-sm font-medium text-gray-900">USDA</div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <td className="px-6 py-4 text-sm whitespace-nowrap">
                           {microToReadable(state.balance['usda']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <td className="px-6 py-4 text-sm whitespace-nowrap">
                           $1
                         </td>
                       </tr>
@@ -418,11 +418,11 @@ export const Mint = () => {
 
         <section className="mt-8">
           <header className="pb-5 border-b border-gray-200">
-            <h3 className="text-lg leading-6 font-medium text-gray-900">Collateral Types</h3>
+            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">Collateral Types</h3>
           </header>
 
           <div className="flex flex-col mt-4">
-            <div className="align-middle min-w-full overflow-x-auto shadow overflow-hidden sm:rounded-lg">
+            <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
               {Object.keys(collateralTypes).length > 0 ? (
                 <CollateralTypeGroup types={collateralTypes} />
               ): `` }
@@ -432,7 +432,7 @@ export const Mint = () => {
 
         <section className="mt-8">
           <header className="pb-5 border-b border-gray-200">
-            <h3 className="text-lg leading-6 font-medium text-gray-900">Vaults</h3>
+            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">Vaults</h3>
           </header>
 
           <div className="mt-4">

@@ -479,12 +479,12 @@ export const Stake = () => {
 
       {state.userData ? (
         <Container>
-          <main className="flex-1 relative py-12">
+          <main className="relative flex-1 py-12">
             <section>
               <header>
                 <div className="bg-indigo-700 rounded-md">
-                  <div className="max-w-2xl mx-auto text-center py-5 px-4 sm:py-5 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
+                  <div className="max-w-2xl px-4 py-5 mx-auto text-center sm:py-5 sm:px-6 lg:px-8">
+                    <h2 className="text-3xl font-bold text-white font-headings sm:text-4xl">
                       <span className="block">Arkadiko Staking</span>
                     </h2>
                     <p className="mt-4 text-lg leading-6 text-indigo-200">
@@ -497,38 +497,38 @@ export const Stake = () => {
 
               <div className="flex flex-col mt-8">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                  <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                    <div className="overflow-hidden sm:rounded-lg pb-24">
-                      <table className="sm:rounded-lg min-w-full divide-y divide-gray-200 border border-gray-200 shadow-sm">
+                  <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                    <div className="pb-24 overflow-hidden sm:rounded-lg">
+                      <table className="min-w-full border border-gray-200 divide-y divide-gray-200 shadow-sm sm:rounded-lg">
                         <thead className="bg-gray-50">
                           <tr>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                             >
                               Staked Value
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                             >
                               Cooldown
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                             >
                               Current APY
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                             >
                               Pending rewards
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                             >
                               <span className="sr-only">Actions</span>
                             </th>
@@ -536,34 +536,34 @@ export const Stake = () => {
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                           <tr className="bg-white">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <td className="px-6 py-4 text-sm whitespace-nowrap">
                               <div className="flex items-center">
-                                <div className="flex-shrink-0 h-10 w-10">
-                                  <img className="h-10 w-10 rounded-full" src={tokenList[1].logo} alt="" />
+                                <div className="flex-shrink-0 w-10 h-10">
+                                  <img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />
                                 </div>
                                 <div className="ml-4">
                                   {microToReadable(stakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
                                 </div>
                               </div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <td className="px-6 py-4 text-sm whitespace-nowrap">
                               {loadingData ? (
                                 <PlaceHolder size={2} color="indigo" />
                               ) : (
                                 `${dikoCooldown}`
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
+                            <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
                               {loadingData ? (
                                 <PlaceHolder size={2} color="indigo" />
                               ) : (
                                 `${apy}%`
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <td className="px-6 py-4 text-sm whitespace-nowrap">
                               auto-compounding
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                            <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
                               {state.balance['diko'] > 0 || (stakedAmount && canUnstake) ? (
                                 <StakeActions>
                                   {state.balance['diko'] > 0 ? (
@@ -576,7 +576,7 @@ export const Stake = () => {
                                           onClick={() => setShowStakeModal(true)}
                                         >
                                           <ArrowCircleDownIcon
-                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
                                             aria-hidden="true"
                                           />
                                           Stake
@@ -595,7 +595,7 @@ export const Stake = () => {
                                           onClick={() => startDikoCooldown()}
                                         >
                                           <ClockIcon
-                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
                                             aria-hidden="true"
                                           />
                                           Start cooldown
@@ -614,7 +614,7 @@ export const Stake = () => {
                                           onClick={() => setShowUnstakeModal(true)}
                                         >
                                           <ArrowCircleUpIcon
-                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
                                             aria-hidden="true"
                                           />
                                           Unstake
@@ -628,30 +628,30 @@ export const Stake = () => {
                           </tr>
 
                           <tr className="bg-white">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <td className="px-6 py-4 text-sm whitespace-nowrap">
                               <div className="flex items-center">
-                                <div className="flex-shrink-0 h-10 w-10">
-                                  <img className="h-10 w-10 rounded-full" src={tokenList[1].logo} alt="" />
+                                <div className="flex-shrink-0 w-10 h-10">
+                                  <img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />
                                 </div>
                                 <div className="ml-4">
                                   {microToReadable(lpDikoUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ARKV1DIKOUSDA
                                 </div>
                               </div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <td className="px-6 py-4 text-sm whitespace-nowrap">
                               N/A
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
+                            <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
                               {loadingData ? (
                                 <PlaceHolder size={2} color="indigo" />
                               ) : (
                                 `${dikoUsdaLpApy}%`
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <td className="px-6 py-4 text-sm whitespace-nowrap">
                               {microToReadable(lpDikoUsdaPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                            <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
                               {state.balance['dikousda'] > 0 || lpDikoUsdaStakedAmount || lpDikoUsdaPendingRewards ? (
                                 <StakeActions>
                                   {state.balance['dikousda'] > 0 ? (
@@ -664,7 +664,7 @@ export const Stake = () => {
                                           onClick={() => setShowStakeLp1Modal(true)}
                                         >
                                           <ArrowCircleDownIcon
-                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
                                             aria-hidden="true"
                                           />
                                           Stake
@@ -682,7 +682,7 @@ export const Stake = () => {
                                           onClick={() => setShowUnstakeLp1Modal(true)}
                                         >
                                           <ArrowCircleUpIcon
-                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
                                             aria-hidden="true"
                                           />
                                           Unstake
@@ -700,7 +700,7 @@ export const Stake = () => {
                                           onClick={() => claimDikoUsdaLpPendingRewards()}
                                         >
                                           <CashIcon
-                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
                                             aria-hidden="true"
                                           />
                                           Claim Rewards
@@ -718,7 +718,7 @@ export const Stake = () => {
                                           onClick={() => stakeDikoUsdaLpPendingRewards()}
                                         >
                                           <PlusIcon
-                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
                                             aria-hidden="true"
                                           />
                                           Stake Rewards
@@ -732,30 +732,30 @@ export const Stake = () => {
                           </tr>
 
                           <tr className="bg-white">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <td className="px-6 py-4 text-sm whitespace-nowrap">
                               <div className="flex items-center">
-                                <div className="flex-shrink-0 h-10 w-10">
-                                  <img className="h-10 w-10 rounded-full" src={tokenList[1].logo} alt="" />
+                                <div className="flex-shrink-0 w-10 h-10">
+                                  <img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />
                                 </div>
                                 <div className="ml-4">
                                   {microToReadable(lpStxUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ARKV1WSTXUSDA
                                 </div>
                               </div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <td className="px-6 py-4 text-sm whitespace-nowrap">
                               N/A
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
+                            <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
                               {loadingData ? (
                                 <PlaceHolder size={2} color="indigo" />
                               ) : (
                                 `${stxUsdaLpApy}%`
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <td className="px-6 py-4 text-sm whitespace-nowrap">
                               {microToReadable(lpStxUsdaPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                            <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
                               {state.balance['wstxusda'] > 0 || lpStxUsdaStakedAmount || lpStxUsdaPendingRewards ? (
                                 <StakeActions>
                                   {state.balance['wstxusda'] > 0 ? (
@@ -768,7 +768,7 @@ export const Stake = () => {
                                           onClick={() => setShowStakeLp2Modal(true)}
                                         >
                                           <ArrowCircleDownIcon
-                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
                                             aria-hidden="true"
                                           />
                                           Stake
@@ -786,7 +786,7 @@ export const Stake = () => {
                                           onClick={() => setShowUnstakeLp2Modal(true)}
                                         >
                                           <ArrowCircleUpIcon
-                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
                                             aria-hidden="true"
                                           />
                                           Unstake
@@ -804,7 +804,7 @@ export const Stake = () => {
                                           onClick={() => claimStxUsdaLpPendingRewards()}
                                         >
                                           <CashIcon
-                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
                                             aria-hidden="true"
                                           />
                                           Claim Rewards
@@ -822,7 +822,7 @@ export const Stake = () => {
                                           onClick={() => stakeStxUsdaLpPendingRewards()}
                                         >
                                           <PlusIcon
-                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
                                             aria-hidden="true"
                                           />
                                           Stake Rewards
@@ -836,30 +836,30 @@ export const Stake = () => {
                           </tr>
 
                           <tr className="bg-white">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <td className="px-6 py-4 text-sm whitespace-nowrap">
                               <div className="flex items-center">
-                                <div className="flex-shrink-0 h-10 w-10">
-                                  <img className="h-10 w-10 rounded-full" src={tokenList[1].logo} alt="" />
+                                <div className="flex-shrink-0 w-10 h-10">
+                                  <img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />
                                 </div>
                                 <div className="ml-4">
                                   {microToReadable(lpStxDikoStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ARKV1WSTXDIKO
                                 </div>
                               </div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <td className="px-6 py-4 text-sm whitespace-nowrap">
                               N/A
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-600 font-medium">
+                            <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
                               {loadingData ? (
                                 <PlaceHolder size={2} color="indigo" />
                               ) : (
                                 `${stxDikoLpApy}%`
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <td className="px-6 py-4 text-sm whitespace-nowrap">
                               {microToReadable(lpStxDikoPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                            <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
                               {state.balance['wstxdiko'] > 0 || lpStxDikoStakedAmount || lpStxDikoPendingRewards ? (
                                 <StakeActions>
                                   {state.balance['wstxdiko'] > 0 ? (
@@ -872,7 +872,7 @@ export const Stake = () => {
                                           onClick={() => setShowStakeLp3Modal(true)}
                                         >
                                           <ArrowCircleDownIcon
-                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
                                             aria-hidden="true"
                                           />
                                           Stake
@@ -890,7 +890,7 @@ export const Stake = () => {
                                           onClick={() => setShowUnstakeLp3Modal(true)}
                                         >
                                           <ArrowCircleUpIcon
-                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
                                             aria-hidden="true"
                                           />
                                           Unstake
@@ -908,7 +908,7 @@ export const Stake = () => {
                                           onClick={() => claimStxDikoLpPendingRewards()}
                                         >
                                           <CashIcon
-                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
                                             aria-hidden="true"
                                           />
                                           Claim Rewards
@@ -926,7 +926,7 @@ export const Stake = () => {
                                           onClick={() => stakeStxDikoLpPendingRewards()}
                                         >
                                           <PlusIcon
-                                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
                                             aria-hidden="true"
                                           />
                                           Stake Rewards
