@@ -1,4 +1,3 @@
-;; implements a trait that allows collateral of any token (e.g. stx, bitcoin)
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait stake-registry-trait .arkadiko-stake-registry-trait-v1.stake-registry-trait)
 

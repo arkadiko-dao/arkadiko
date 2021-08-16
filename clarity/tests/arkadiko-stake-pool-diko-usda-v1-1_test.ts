@@ -1025,6 +1025,7 @@ Clarinet.test({
     // Vote for wallet_1
     block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "vote-for", [
+        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token"),
         types.uint(1),
         types.uint(10000000)
@@ -1203,6 +1204,7 @@ Clarinet.test({
     // Vote for wallet_1
     block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "vote-for", [
+        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token"),
         types.uint(1),
         types.uint(10000000)
