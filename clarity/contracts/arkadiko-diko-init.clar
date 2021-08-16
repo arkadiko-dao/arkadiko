@@ -1,6 +1,3 @@
-;; DIKO Init - Foundation and founders
-;;
-
 ;; @contract DIKO Init - Tokens to be claimed by foundation and team
 ;; @version 1
 
