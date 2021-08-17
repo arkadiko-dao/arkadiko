@@ -6,7 +6,7 @@ import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
 import {
-  uintCV, stringAsciiCV, contractPrincipalCV, cvToJSON,
+  AnchorMode, uintCV, stringAsciiCV, contractPrincipalCV, cvToJSON,
   standardPrincipalCV, callReadOnlyFunction, makeStandardFungiblePostCondition,
   createAssetInfo, FungibleConditionCode, makeStandardSTXPostCondition } from '@stacks/transactions';
 import { AppContext, CollateralTypeProps } from '@common/context';
@@ -183,6 +183,7 @@ export const ManageVault = ({ match }) => {
         console.log('finished paying stability fee!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
+      anchorMode: AnchorMode.Any
     });
   };
 
@@ -208,6 +209,7 @@ export const ManageVault = ({ match }) => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowBurnModal(false);
       },
+      anchorMode: AnchorMode.Any
     });
   };
   let debtRatio = 0;
@@ -246,6 +248,7 @@ export const ManageVault = ({ match }) => {
         setClosingVault(true);
         setShowBurnModal(false);
       },
+      anchorMode: AnchorMode.Any
     });
   };
 
@@ -261,6 +264,7 @@ export const ManageVault = ({ match }) => {
       finished: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
+      anchorMode: AnchorMode.Any
     });
   };
 
@@ -314,6 +318,7 @@ export const ManageVault = ({ match }) => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowDepositModal(false);
       },
+      anchorMode: AnchorMode.Any
     });
   };
 
@@ -375,6 +380,7 @@ export const ManageVault = ({ match }) => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowMintModal(false);
       },
+      anchorMode: AnchorMode.Any
     });
   };
 
@@ -391,6 +397,7 @@ export const ManageVault = ({ match }) => {
         console.log('finished toggling stacking!', data, data.txId);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
+      anchorMode: AnchorMode.Any
     });
   };
 
@@ -407,6 +414,7 @@ export const ManageVault = ({ match }) => {
         console.log('finished stacking!', data, data.txId);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
+      anchorMode: AnchorMode.Any
     });
   };
 
@@ -435,6 +443,7 @@ export const ManageVault = ({ match }) => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowWithdrawModal(false);
       },
+      anchorMode: AnchorMode.Any
     });
   };
 
@@ -457,6 +466,7 @@ export const ManageVault = ({ match }) => {
         console.log('finished notify risky reserve!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
+      anchorMode: AnchorMode.Any
     });
   };
 

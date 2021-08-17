@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Auction } from './auction';
 import { Modal } from '@blockstack/ui';
-import { contractPrincipalCV, uintCV } from '@stacks/transactions';
+import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { AppContext } from '@common/context';
@@ -80,6 +80,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeig
         setShowBidModal(false);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
+      anchorMode: AnchorMode.Any
     });
   };
 
