@@ -144,7 +144,7 @@
 ;; @desc toggles the killswitch of the auction engine
 (define-public (toggle-auction-engine-shutdown)
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
 
     (ok (var-set auction-engine-shutdown-activated (not (var-get auction-engine-shutdown-activated))))
   )

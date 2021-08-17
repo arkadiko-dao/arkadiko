@@ -8,6 +8,7 @@
 ;; @version 1.1
 
 (impl-trait .arkadiko-stake-pool-trait-v1.stake-pool-trait)
+(impl-trait .arkadiko-stake-pool-diko-trait-v1.stake-pool-diko-trait)
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait stake-registry-trait .arkadiko-stake-registry-trait-v1.stake-registry-trait)
 
@@ -95,8 +96,8 @@
     (diko-supply (unwrap-panic (contract-call? .arkadiko-token get-balance (as-contract tx-sender))))
   )
     (if (is-eq stdiko-supply u0)
-      u1000000
-      (/ (* diko-supply u1000000) stdiko-supply)
+      (ok u1000000)
+      (ok (/ (* diko-supply u1000000) stdiko-supply))
     )
   )
 )
@@ -166,7 +167,7 @@
 
     (let (
       ;; DIKO/stDIKO 
-      (diko-stdiko (diko-stdiko-ratio))
+      (diko-stdiko (unwrap-panic (diko-stdiko-ratio)))
 
       ;; Calculate amount of stDIKO to receive
       (stdiko-to-receive (/ (* amount u1000000) diko-stdiko))

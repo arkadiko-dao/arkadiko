@@ -4,6 +4,7 @@
 ;; @version 1.1
 
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
+(use-trait stake-pool-diko-trait .arkadiko-stake-pool-diko-trait-v1.stake-pool-diko-trait)
 
 ;; Errors
 (define-constant ERR-NOT-ENOUGH-BALANCE u31)
@@ -88,7 +89,7 @@
 (define-read-only (is-token-accepted (token <ft-trait>))
   (let (
     (is-diko (is-eq (contract-of token) .arkadiko-token))
-    (is-stdiko (is-eq (contract-of token) .stake-pool-diko))
+    (is-stdiko (is-eq (contract-of token) .stdiko-token))
   )
     (or is-diko is-stdiko)
   )
@@ -96,7 +97,7 @@
 
 (define-public (toggle-governance-shutdown)
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
 
     (ok (var-set governance-shutdown-activated (not (var-get governance-shutdown-activated))))
   )
@@ -152,16 +153,37 @@
   )
 )
 
+;; @desc translate tokens to amount of votes - stDIKO to DIKO to votes
+;; @param stake-pool-diko; DIKO stake pool to get DIKO/stDIKO ratio from
+;; @param token; proposal to vote for
+;; @param amount; amount of tokens
+;; @post uint; amount of votes
+(define-public (token-amount-to-votes (stake-pool-diko <stake-pool-diko-trait>) (token <ft-trait>) (amount uint))
+  (begin
+    (asserts! (is-eq (contract-of stake-pool-diko) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-pool-diko"))) (err ERR-NOT-AUTHORIZED))
+    (if (is-eq (contract-of token) .arkadiko-token)
+      (ok amount)
+      (let (
+        (diko-stdiko (unwrap-panic (contract-call? stake-pool-diko diko-stdiko-ratio)))
+      )
+        (ok (/ (* amount diko-stdiko) u1000000))
+      )
+    )
+  )
+)
+
 ;; @desc vote for a proposal
+;; @param stake-pool-diko; DIKO stake pool to get DIKO/stDIKO ratio from
 ;; @param token; token used to vote (DIKO or stDIKO)
 ;; @param proposal-id; proposal to vote for
 ;; @param amount; amount of votes (tokens)
 ;; @post uint; returns 3200 when votes accepted
-(define-public (vote-for (token <ft-trait>) (proposal-id uint) (amount uint))
+(define-public (vote-for (stake-pool-diko <stake-pool-diko-trait>) (token <ft-trait>) (proposal-id uint) (amount uint))
   (let (
     (proposal (get-proposal-by-id proposal-id))
     (vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender)))
     (token-count (get amount (get-tokens-by-member-by-id proposal-id tx-sender token)))
+    (add-vote-count (unwrap-panic (token-amount-to-votes stake-pool-diko token amount)))
   )
     (asserts!
       (and
@@ -182,10 +204,10 @@
     ;; Mutate
     (map-set proposals
       { id: proposal-id }
-      (merge proposal { yes-votes: (+ amount (get yes-votes proposal)) }))
+      (merge proposal { yes-votes: (+ add-vote-count (get yes-votes proposal)) }))
     (map-set votes-by-member 
       { proposal-id: proposal-id, member: tx-sender }
-      { vote-count: (+ vote-count amount) })
+      { vote-count: (+ vote-count add-vote-count) })
     (map-set tokens-by-member
       { proposal-id: proposal-id, member: tx-sender, token: (contract-of token) }
       { amount: (+ token-count amount) })
@@ -195,15 +217,17 @@
 )
 
 ;; @desc vote against a proposal
+;; @param stake-pool-diko; DIKO stake pool to get DIKO/stDIKO ratio from
 ;; @param token; token used to vote (DIKO or stDIKO)
 ;; @param proposal-id; proposal to vote against
 ;; @param amount; amount of votes (tokens)
 ;; @post uint; returns 3200 when votes accepted
-(define-public (vote-against (token <ft-trait>) (proposal-id uint) (amount uint))
+(define-public (vote-against (stake-pool-diko <stake-pool-diko-trait>) (token <ft-trait>) (proposal-id uint) (amount uint))
   (let (
     (proposal (get-proposal-by-id proposal-id))
     (vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender)))
     (token-count (get amount (get-tokens-by-member-by-id proposal-id tx-sender token)))
+    (add-vote-count (unwrap-panic (token-amount-to-votes stake-pool-diko token amount)))
   )
     (asserts!
       (and
@@ -224,10 +248,10 @@
     ;; Mutate
     (map-set proposals
       { id: proposal-id }
-      (merge proposal { no-votes: (+ amount (get no-votes proposal)) }))
+      (merge proposal { no-votes: (+ add-vote-count (get no-votes proposal)) }))
     (map-set votes-by-member 
       { proposal-id: proposal-id, member: tx-sender }
-      { vote-count: (+ vote-count amount) })
+      { vote-count: (+ vote-count add-vote-count) })
     (map-set tokens-by-member
       { proposal-id: proposal-id, member: tx-sender, token: (contract-of token) }
       { amount: (+ token-count amount) })
