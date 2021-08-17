@@ -1,5 +1,5 @@
-;; DIKO Guardian - Protecting DIKO staking and pool rewards
-;;
+;; @contract DIKO Guardian - Get total staking and vault rewards per block
+;; @version 1.1
 
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED (err u22401))

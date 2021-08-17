@@ -1,4 +1,5 @@
-;; Contains all state for freddie the vault manager
+;; @contract Vault Rewards - Claim DIKO vault rewards
+;; @version 1.1
 
 ;; ---------------------------------------------------------
 ;; Variables
@@ -112,7 +113,8 @@
   )
 )
 
-;; Claim rewards as user
+;; @desc claim pending vault rewards
+;; @post uint; amount of rewards claimed
 (define-public (claim-pending-rewards)
   (begin
     (claim-pending-rewards-for tx-sender)
@@ -176,7 +178,8 @@
   )
 )
 
-;; Increase cumm reward per collateral and save
+;; @desc increase cumm reward per collateral and save
+;; @post uint; returns new cummulative rewards per collateral
 (define-public (increase-cumm-reward-per-collateral)
   (let (
     ;; Calculate new cumm reward per collateral
