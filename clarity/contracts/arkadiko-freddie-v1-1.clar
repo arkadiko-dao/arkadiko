@@ -118,6 +118,7 @@
 ;; @param vault-id; the ID of the vault to calculate the current collateralization ratio for
 ;; @param coll-type; contract that contains the collateral types that can be used for a vault
 ;; @param oracle; the oracle implementation that provides the on-chain price
+;; @param include-stability-fees; boolean to indicate whether to include stability fees as part of debt calculation
 ;; @post uint; returns the collateralization ratio
 (define-public (calculate-current-collateral-to-debt-ratio
   (vault-id uint)
