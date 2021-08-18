@@ -79,6 +79,7 @@ export const ViewProposal = ({ match }) => {
       contractName: 'arkadiko-governance-v1-1',
       functionName: 'vote-for',
       functionArgs: [
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-stake-pool-diko-v1-1'),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
         uintCV(match.params.id), uintCV(amountOfVotes * 1000000)
       ],
@@ -99,6 +100,7 @@ export const ViewProposal = ({ match }) => {
       contractName: 'arkadiko-governance-v1-1',
       functionName: 'vote-against',
       functionArgs: [
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-stake-pool-diko-v1-1'),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
         uintCV(match.params.id), uintCV(amountOfVotes * 1000000)
       ],

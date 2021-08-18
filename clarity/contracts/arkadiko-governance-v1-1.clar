@@ -111,12 +111,12 @@
 ;; @param contract-changes; contracts to update in DAO
 ;; @post boolean; returns true if propsal was created
 (define-public (propose
-    (stake-pool-diko <stake-pool-diko-trait>) 
-    (start-block-height uint)
-    (title (string-utf8 256))
-    (url (string-utf8 256))
-    (contract-changes (list 10 (tuple (name (string-ascii 256)) (address principal) (qualified-name principal) (can-mint bool) (can-burn bool))))
-  )
+  (stake-pool-diko <stake-pool-diko-trait>)
+  (start-block-height uint)
+  (title (string-utf8 256))
+  (url (string-utf8 256))
+  (contract-changes (list 10 (tuple (name (string-ascii 256)) (address principal) (qualified-name principal) (can-mint bool) (can-burn bool))))
+)
   (let (
     (proposer-diko-balance (unwrap-panic (contract-call? .arkadiko-token get-balance tx-sender)))
     (proposer-stdiko-balance (unwrap-panic (contract-call? .stdiko-token get-balance tx-sender)))
@@ -135,6 +135,13 @@
         (is-eq (var-get governance-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
+    (asserts!
+      (is-eq
+        (contract-of stake-pool-diko)
+        (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-pool-diko"))
+      )
+      (err ERR-NOT-AUTHORIZED)
     )
 
     ;; Requires 1% of the supply 
@@ -200,6 +207,13 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
+    (asserts!
+      (is-eq
+        (contract-of stake-pool-diko)
+        (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-pool-diko"))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
 
     ;; Can vote with DIKO and stDIKO
     (asserts! (is-eq (is-token-accepted token) true) (err ERR-WRONG-TOKEN))
@@ -243,6 +257,13 @@
         (is-eq (var-get governance-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
+    (asserts!
+      (is-eq
+        (contract-of stake-pool-diko)
+        (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-pool-diko"))
+      )
+      (err ERR-NOT-AUTHORIZED)
     )
 
     ;; Can vote with DIKO and stDIKO
