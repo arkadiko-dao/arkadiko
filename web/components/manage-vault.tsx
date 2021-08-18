@@ -1018,7 +1018,7 @@ export const ManageVault = ({ match }) => {
                             <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
                           </div>
                           <div className="flex-1 ml-3 md:flex md:justify-between">
-                            <p className="text-sm text-blue-700">The current STX price is <span className="font-semibold text-blue-900">${liquidationPrice()} USD</span>. You will be liquidated if the STX price drops below <span className="font-semibold text-blue-900">${price / 100} USD</span>. Pay back the outstanding debt or deposit extra collateral to keep your vault healthy.</p>
+                            <p className="text-sm text-blue-700">The current STX price is <span className="font-semibold text-blue-900">${price / 100} USD</span>. You will be liquidated if the STX price drops below <span className="font-semibold text-blue-900">${liquidationPrice()} USD</span>. Pay back the outstanding debt or deposit extra collateral to keep your vault healthy.</p>
                           </div>
                         </div>
                       </div>
