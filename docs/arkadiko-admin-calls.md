@@ -76,7 +76,7 @@ Run `stx send_tokens -t -H "http://localhost:20080" -I "http://localhost:20080" 
   node send-pox-stx-to-reserve.js
   node set-stacking-stx-received.js
 3. For every vault that has stacked-tokens > 0
-  - Run payout method in stacker
+  - Run `payout` method in stacker-payer
   node payout-vault.js
 4. For every vault that has revoked stacking
   - Run enable-vault-withdrawals in stacker

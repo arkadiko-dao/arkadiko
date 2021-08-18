@@ -18,7 +18,7 @@
 )
   (let (
     (collateral-type (unwrap-panic (contract-call? vault-manager get-collateral-type-for-vault vault-id)))
-    (collateral-to-debt-ratio (unwrap-panic (contract-call? vault-manager calculate-current-collateral-to-debt-ratio vault-id coll-type oracle)))
+    (collateral-to-debt-ratio (unwrap-panic (contract-call? vault-manager calculate-current-collateral-to-debt-ratio vault-id coll-type oracle true)))
     (liquidation-ratio (unwrap-panic (contract-call? coll-type get-liquidation-ratio collateral-type)))
   )
     (asserts! (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
