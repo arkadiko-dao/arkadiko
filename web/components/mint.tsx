@@ -248,7 +248,7 @@ export const Mint = () => {
                 <dt className="text-xs font-semibold text-indigo-800 uppercase">Stacking Cycle #</dt>
                 <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
-                    <PlaceHolder size={2} color="indigo" />
+                    <PlaceHolder />
                   ) : (
                     <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
                       {state.cycleNumber}
@@ -260,7 +260,7 @@ export const Mint = () => {
                 <dt className="text-xs font-semibold text-indigo-800 uppercase">End date</dt>
                 <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
-                    <PlaceHolder size={2} color="indigo" />
+                    <PlaceHolder />
                   ) : (
                     <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
                       {state.endDate}
@@ -272,7 +272,7 @@ export const Mint = () => {
                 <dt className="text-xs font-semibold text-indigo-800 uppercase">Days in cycle</dt>
                 <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
-                    <PlaceHolder size={2} color="indigo" />
+                    <PlaceHolder />
                   ) : (
                     <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
                       {state.daysPassed}
@@ -284,7 +284,7 @@ export const Mint = () => {
                 <dt className="text-xs font-semibold text-indigo-800 uppercase">Days left</dt>
                 <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
-                    <PlaceHolder size={2} color="indigo" />
+                    <PlaceHolder />
                   ) : (
                     <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
                       {state.daysLeft}
@@ -434,7 +434,7 @@ export const Mint = () => {
               <VaultGroup vaults={vaults} />
             ) : loadingVaults === true ? (
               <div>
-                <PlaceHolder size={2} color="indigo" />
+                <PlaceHolder />
               </div>
             ) : (
               <EmptyState
