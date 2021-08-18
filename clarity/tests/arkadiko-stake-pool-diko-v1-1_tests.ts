@@ -46,7 +46,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // At start the ratio is 1
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "diko-stdiko-ratio", [], wallet_1.address);
-  call.result.expectUint(1000000);   
+  call.result.expectOk().expectUint(1000000);   
   
   // Staked total
   call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [
@@ -113,7 +113,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // New ratio =  413199530 / 100000000
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "diko-stdiko-ratio", [], wallet_1.address);
-  call.result.expectUint(4131995);   
+  call.result.expectOk().expectUint(4131995);   
 
   // Unstake funds fails because cooldown not started
   block = chain.mineBlock([
@@ -196,7 +196,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // 162/100 = 1.62
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "diko-stdiko-ratio", [], wallet_1.address);
-  call.result.expectUint(1626399);  
+  call.result.expectOk().expectUint(1626399);  
 
   // Stake - Wallet 2
   // New ratio in next block will be (162 + 62)/100 = 2.24

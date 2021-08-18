@@ -5,7 +5,7 @@ import { Redirect } from 'react-router-dom';
 import { Container } from './home'
 import { useConnect } from '@stacks/connect-react';
 import { stacksNetwork as network } from '@common/utils';
-import { callReadOnlyFunction, cvToJSON, tupleCV, uintCV, standardPrincipalCV } from '@stacks/transactions';
+import { AnchorMode, callReadOnlyFunction, cvToJSON, tupleCV, uintCV, standardPrincipalCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { AuctionProps, AuctionGroup } from '@components/auction-group';
 import { LotGroup } from '@components/lot-group';
@@ -168,6 +168,7 @@ export const Auctions: React.FC = () => {
         console.log('finished redeeming stx!', data);
         // setTxId(data.txId);
       },
+      anchorMode: AnchorMode.Any
     });
   };
 

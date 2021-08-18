@@ -1,13 +1,14 @@
+;; @contract Freddie - The Vault Manager
+;; Freddie is an abstraction layer that interacts with collateral type reserves
+;; Ideally, collateral reserves should never be called from outside. Only manager layers (such as this one) should be interacted with from clients
+;; @version 1
+
 (impl-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait vault-manager-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
 (use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
 (use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
-
-;; Freddie - The Vault Manager
-;; Freddie is an abstraction layer that interacts with collateral type reserves
-;; Ideally, collateral reserves should never be called from outside. Only manager layers should be interacted with from clients
 
 ;; errors
 (define-constant ERR-NOT-AUTHORIZED u4401)
@@ -73,6 +74,10 @@
   (ok (get height (unwrap-panic (map-get? stacking-unlock-burn-height { stacker-name: name }))))
 )
 
+;; @desc sets the block height at which STX tokens unlock from PoX
+;; @param name; name of the stacker contract that is stacking the STX tokens
+;; @param burn-height; the block height of the burnchain (i.e. Bitcoin) for when the tokens unlock
+;; @post boolean; returns a boolean indicating successfully set or not
 (define-public (set-stacking-unlock-burn-height (name (string-ascii 256)) (burn-height uint))
   (begin
     (asserts! 
@@ -109,6 +114,11 @@
   )
 )
 
+;; @desc calculate the collateralization (in other words collateral to debt) ratio for a vault
+;; @param vault-id; the ID of the vault to calculate the current collateralization ratio for
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @param oracle; the oracle implementation that provides the on-chain price
+;; @post uint; returns the collateralization ratio
 (define-public (calculate-current-collateral-to-debt-ratio (vault-id uint) (coll-type <collateral-types-trait>) (oracle <oracle-trait>))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
@@ -142,8 +152,10 @@
   )
 )
 
-;; can be called by the vault owner on a non-liquidated STX vault
+;; @desc can be called by the vault owner on a non-liquidated STX vault
 ;; used to indicate willingness to stack/unstack the collateral in the PoX contract
+;; @param vault-id; the ID of the vault to toggle the stacking in PoX for
+;; @post bool; returns true if stacking was toggled
 (define-public (toggle-stacking (vault-id uint))
   (let ((vault (get-vault-by-id vault-id)))
     (asserts!
@@ -250,14 +262,23 @@
 
 (define-public (toggle-freddie-shutdown)
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
 
     (ok (var-set freddie-shutdown-activated (not (var-get freddie-shutdown-activated))))
   )
 )
 
 
-
+;; @desc creates a vault with collateral and a certain debt level
+;; @param collateral-amount; the micro-amount (10^-6) of collateral (STX or sip10) that will be deposited in a vault
+;; @param debt; the micro-amount (10^-6) of debt that will be minted against the collateral
+;; @param pox-settings; if STX is the collateral, this indicates whether the collateral will be stacked and if the yield is used to pay off the debt automatically
+;; @param collateral-type; indicates the collateral type that is used in the vault (e.g. STX-A)
+;; @param reserve; indicates the reserve that will keep custody of the token (e.g. stx-reserve or sip10-reserve)
+;; @param ft; indicates the sip10 fungible token that is used as collateral
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @param oracle; contract that contains the on-chain price of the collateral
+;; @post vault; a new vault is created for the tx-sender
 (define-public (collateralize-and-mint
   (collateral-amount uint)
   (debt uint)
@@ -335,6 +356,13 @@
   )
 )
 
+;; @desc deposit extra collateral in a vault
+;; @param vault-id; the ID of the vault to deposit additional collateral in
+;; @param uamount; the micro-amount (10^-6) of collateral that will be deposited
+;; @param reserve; indicates the reserve that will keep custody of the token (e.g. stx-reserve or sip10-reserve)
+;; @param ft; indicates the sip10 fungible token that is used as collateral
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @post true; returns true when additional collateral was added successfully
 (define-public (deposit
   (vault-id uint)
   (uamount uint)
@@ -376,6 +404,14 @@
   )
 )
 
+;; @desc withdraw collateral from a vault
+;; @param vault-id; the ID of the vault to withdraw collateral from
+;; @param uamount; the micro-amount (10^-6) of collateral that will be withdrawn
+;; @param reserve; indicates the reserve that keeps custody of your collateral (e.g. stx-reserve or sip10-reserve)
+;; @param ft; indicates the sip10 fungible token that is used as collateral
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @param oracle; the oracle implementation that provides the on-chain price
+;; @post true; returns true when collateral was withdrawn successfully
 (define-public (withdraw
   (vault-id uint)
   (uamount uint)
@@ -435,6 +471,13 @@
   )
 )
 
+;; @desc mint extra USDA in a vault
+;; @param vault-id; the ID of the vault to mint extra USDA for
+;; @param extra-debt; the micro-amount (10^-6) of extra USDA that will be minted
+;; @param reserve; indicates the reserve that keeps custody of your collateral (e.g. stx-reserve or sip10-reserve)
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @param oracle; the oracle implementation that provides the on-chain price
+;; @post true; returns true when extra USDA was minted successfully
 (define-public (mint
   (vault-id uint)
   (extra-debt uint)
@@ -500,6 +543,13 @@
   )
 )
 
+;; @desc burn USDA from a vault
+;; @param vault-id; the ID of the vault to burn USDA from
+;; @param debt; the micro-amount (10^-6) of USDA that will be burned
+;; @param reserve; indicates the reserve that keeps custody of your collateral (e.g. stx-reserve or sip10-reserve)
+;; @param ft; indicates the sip10 fungible token that is used as collateral
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @post true; returns true when USDA was burned successfully
 (define-public (burn
   (vault-id uint)
   (debt uint)
@@ -578,6 +628,10 @@
   )
 )
 
+;; @desc get the stability fee (interest to be paid) for a vault
+;; @param vault-id; the ID of the vault to return the stability fee for
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @post uint; returns uint, which is the stability fee
 (define-public (get-stability-fee-for-vault
   (vault-id uint)
   (coll-type <collateral-types-trait>)
@@ -607,6 +661,12 @@
   )
 )
 
+;; @desc accrue the stability fee up until now on a vault
+;; this method should be called when the stability fee on a collateral type is changed through governance
+;; meaning you want to lock in (accrue) all the stability fees for that stability fee percentage up until the block that it changes
+;; @param vault-id; the ID of the vault to accrue the stability fee for
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @post true; returns true when stability fee was accrued successfully
 (define-public (accrue-stability-fee
   (vault-id uint)
   (coll-type <collateral-types-trait>)
@@ -625,6 +685,10 @@
   )
 )
 
+;; @desc pay the stability fee up until now for a vault
+;; @param vault-id; the ID of the vault to pay the stability fee for
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @post uint; returns the amount paid when the stability fee was paid successfully
 (define-public (pay-stability-fee
   (vault-id uint)
   (coll-type <collateral-types-trait>)
@@ -650,6 +714,12 @@
   )
 )
 
+;; @desc liquidates a vault
+;; only callable by the liquidator smart contract
+;; the vault owner loses their potential (DIKO) vault rewards and collateral is sold off in an auction
+;; @param vault-id; the ID of the vault to liquidate
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @post tuple; returns a tuple with the amount in micro STX, extra debt (penalty) to be paid, the vault debt and a discount given to keepers in auctions
 (define-public (liquidate
   (vault-id uint)
   (coll-type <collateral-types-trait>)
@@ -709,6 +779,12 @@
   )
 )
 
+;; @desc finalises the vault liquidation after the vault's collateral got auctioned off
+;; sets vault parameters such as leftover collateral
+;; @param vault-id; the ID of the vault to liquidate
+;; @param leftover-collateral; the micro-amount of collateral that is left after the auction ended
+;; @param coll-type; contract that contains the collateral types that can be used for a vault
+;; @post bool; returns true if liquidation got finalised successfully
 (define-public (finalize-liquidation
   (vault-id uint)
   (leftover-collateral uint)
@@ -737,6 +813,14 @@
   )
 )
 
+;; @desc redeems a collateral amount for the bidder on a lot in an auction from the STX or SIP10 reserve
+;; the collateral that is redeemed is part of a liquidated vault
+;; @param ft; indicates the sip10 fungible token that is used as collateral
+;; @param token-string; the name of the token that will be redeemed
+;; @param reserve; indicates the reserve that keeps custody of the token (e.g. stx-reserve or sip10-reserve)
+;; @param collateral-amount; the micro-amount of collateral that should be redeemed
+;; @param sender; the sender, who is the owner of the winning lot, that wants to redeem the collateral
+;; @post bool; returns true if redeem was succesful
 (define-public (redeem-auction-collateral (ft <ft-trait>) (token-string (string-ascii 12)) (reserve <vault-trait>) (collateral-amount uint) (sender principal))
   (begin
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "auction-engine"))) (err ERR-NOT-AUTHORIZED))
@@ -744,6 +828,12 @@
   )
 )
 
+;; @desc withdraws collateral from a liquidated vault after an auction ended 
+;; @param vault-id; the ID of the vault to withdraw collateral from
+;; @param reserve; the reserve that stores the fungible tokens (collateral) that were sold off
+;; @param ft; the fungible token that was sold off (either a SIP10 token or STX)
+;; @param coll-type; the contract that implements the parameters of the collateral types compatible with Arkadiko vaults
+;; @post bool; returns true if withdrawing leftover collateral was successful
 (define-public (withdraw-leftover-collateral
   (vault-id uint)
   (reserve <vault-trait>)
@@ -801,8 +891,12 @@
   (contract-call? .arkadiko-token get-balance (as-contract tx-sender))
 )
 
-;; redeem USDA and DIKO working capital for the foundation
+;; @desc redeem USDA and DIKO working capital for the foundation
 ;; taken from stability fees paid by vault owners
+;; @param usda-amount; the amount of USDA to withdraw from the contract
+;; @param diko-amount; the amount of DIKO to withdraw from the contract
+;; @post usda; usda-amount will be transferred from the contract to the DAO payout address
+;; @post diko; diko-amount will be transferred from the contract to the DAO payout address
 (define-public (redeem-tokens (usda-amount uint) (diko-amount uint))
   (begin
     (asserts! (> (- block-height (var-get block-height-last-paid)) (* BLOCKS-PER-DAY u31)) (err ERR-NOT-AUTHORIZED))
@@ -822,8 +916,12 @@
   )
 )
 
-;; this should be called when upgrading contracts
+;; @desc should be called when upgrading contracts
 ;; freddie should only contain USDA
+;; @param new-vault-manager; the new vault contract to migrate funds to
+;; @param token; indicates the fungible token that the contract should be migrate funds of
+;; @post token; all token amounts will be transferred to the new contract
+;; @post bool; returns true if transfer was successful
 (define-public (migrate-funds (new-vault-manager <vault-manager-trait>) (token <ft-trait>))
   (begin
     (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
@@ -836,6 +934,10 @@
   )
 )
 
+;; TODO - is this needed?
+;; @desc sets the amount of STX that is redeemable for xSTX (the derivative that is sold off in an auction)
+;; @param new-stx-redeemable; the micro-amount of xSTX redeemable for STX
+;; @post bool; returns true if setting the variable was successful
 (define-public (set-stx-redeemable (new-stx-redeemable uint))
   (begin
     (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))

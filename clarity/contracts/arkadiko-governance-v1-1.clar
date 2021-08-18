@@ -1,9 +1,10 @@
-(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
-
-;; Arkadiko governance
-;; 
+;; @contract Arkadiko governance
 ;; Can see, vote and submit a new proposal
 ;; A proposal will just update the DAO with new contracts.
+;; @version 1.1
+
+(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
+(use-trait stake-pool-diko-trait .arkadiko-stake-pool-diko-trait-v1.stake-pool-diko-trait)
 
 ;; Errors
 (define-constant ERR-NOT-ENOUGH-BALANCE u31)
@@ -88,7 +89,7 @@
 (define-read-only (is-token-accepted (token <ft-trait>))
   (let (
     (is-diko (is-eq (contract-of token) .arkadiko-token))
-    (is-stdiko (is-eq (contract-of token) .stake-pool-diko))
+    (is-stdiko (is-eq (contract-of token) .stdiko-token))
   )
     (or is-diko is-stdiko)
   )
@@ -96,15 +97,18 @@
 
 (define-public (toggle-governance-shutdown)
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
 
     (ok (var-set governance-shutdown-activated (not (var-get governance-shutdown-activated))))
   )
 )
 
-;; Start a proposal
-;; Requires 1% of the supply in your wallet
-;; Default voting period is 10 days (144 * 10 blocks)
+;; @desc Start a proposal. Requires 1% of the supply in your wallet. Voting period is ~10 days.
+;; @param start-block-height; block at which voting starts
+;; @param title; title for the proposal
+;; @param url; link to poposal details
+;; @param contract-changes; contracts to update in DAO
+;; @post boolean; returns true if propsal was created
 (define-public (propose
     (start-block-height uint)
     (title (string-utf8 256))
@@ -149,11 +153,37 @@
   )
 )
 
-(define-public (vote-for (token <ft-trait>) (proposal-id uint) (amount uint))
+;; @desc translate tokens to amount of votes - stDIKO to DIKO to votes
+;; @param stake-pool-diko; DIKO stake pool to get DIKO/stDIKO ratio from
+;; @param token; proposal to vote for
+;; @param amount; amount of tokens
+;; @post uint; amount of votes
+(define-public (token-amount-to-votes (stake-pool-diko <stake-pool-diko-trait>) (token <ft-trait>) (amount uint))
+  (begin
+    (asserts! (is-eq (contract-of stake-pool-diko) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-pool-diko"))) (err ERR-NOT-AUTHORIZED))
+    (if (is-eq (contract-of token) .arkadiko-token)
+      (ok amount)
+      (let (
+        (diko-stdiko (unwrap-panic (contract-call? stake-pool-diko diko-stdiko-ratio)))
+      )
+        (ok (/ (* amount diko-stdiko) u1000000))
+      )
+    )
+  )
+)
+
+;; @desc vote for a proposal
+;; @param stake-pool-diko; DIKO stake pool to get DIKO/stDIKO ratio from
+;; @param token; token used to vote (DIKO or stDIKO)
+;; @param proposal-id; proposal to vote for
+;; @param amount; amount of votes (tokens)
+;; @post uint; returns 3200 when votes accepted
+(define-public (vote-for (stake-pool-diko <stake-pool-diko-trait>) (token <ft-trait>) (proposal-id uint) (amount uint))
   (let (
     (proposal (get-proposal-by-id proposal-id))
     (vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender)))
     (token-count (get amount (get-tokens-by-member-by-id proposal-id tx-sender token)))
+    (add-vote-count (unwrap-panic (token-amount-to-votes stake-pool-diko token amount)))
   )
     (asserts!
       (and
@@ -174,10 +204,10 @@
     ;; Mutate
     (map-set proposals
       { id: proposal-id }
-      (merge proposal { yes-votes: (+ amount (get yes-votes proposal)) }))
+      (merge proposal { yes-votes: (+ add-vote-count (get yes-votes proposal)) }))
     (map-set votes-by-member 
       { proposal-id: proposal-id, member: tx-sender }
-      { vote-count: (+ vote-count amount) })
+      { vote-count: (+ vote-count add-vote-count) })
     (map-set tokens-by-member
       { proposal-id: proposal-id, member: tx-sender, token: (contract-of token) }
       { amount: (+ token-count amount) })
@@ -186,11 +216,18 @@
   )
 )
 
-(define-public (vote-against (token <ft-trait>) (proposal-id uint) (amount uint))
+;; @desc vote against a proposal
+;; @param stake-pool-diko; DIKO stake pool to get DIKO/stDIKO ratio from
+;; @param token; token used to vote (DIKO or stDIKO)
+;; @param proposal-id; proposal to vote against
+;; @param amount; amount of votes (tokens)
+;; @post uint; returns 3200 when votes accepted
+(define-public (vote-against (stake-pool-diko <stake-pool-diko-trait>) (token <ft-trait>) (proposal-id uint) (amount uint))
   (let (
     (proposal (get-proposal-by-id proposal-id))
     (vote-count (get vote-count (get-votes-by-member-by-id proposal-id tx-sender)))
     (token-count (get amount (get-tokens-by-member-by-id proposal-id tx-sender token)))
+    (add-vote-count (unwrap-panic (token-amount-to-votes stake-pool-diko token amount)))
   )
     (asserts!
       (and
@@ -211,10 +248,10 @@
     ;; Mutate
     (map-set proposals
       { id: proposal-id }
-      (merge proposal { no-votes: (+ amount (get no-votes proposal)) }))
+      (merge proposal { no-votes: (+ add-vote-count (get no-votes proposal)) }))
     (map-set votes-by-member 
       { proposal-id: proposal-id, member: tx-sender }
-      { vote-count: (+ vote-count amount) })
+      { vote-count: (+ vote-count add-vote-count) })
     (map-set tokens-by-member
       { proposal-id: proposal-id, member: tx-sender, token: (contract-of token) }
       { amount: (+ token-count amount) })
@@ -222,6 +259,9 @@
   )
 )
 
+;; @desc end a proposal and execute the changes
+;; @param proposal-id; proposal to execute
+;; @post uint; returns 3200 when executed
 (define-public (end-proposal (proposal-id uint))
   (let ((proposal (get-proposal-by-id proposal-id)))
     (asserts!
@@ -246,7 +286,11 @@
   )
 )
 
-;; Return votes to voter
+;; @desc  Return votes (DIKO or stDIKO tokens) to voter
+;; @param token; token to return (DIKO or stDIKO)
+;; @param proposal-id; proposal for which to return tokens
+;; @param member; voter to return tokens to
+;; @post uint; returns result of token transfer from governance to voter
 (define-public (return-votes-to-member (token <ft-trait>) (proposal-id uint) (member principal))
   (let (
     (token-count (get amount (get-tokens-by-member-by-id proposal-id member token)))
@@ -263,7 +307,7 @@
     (asserts! (is-eq (get is-open proposal) false) (err ERR-NOT-AUTHORIZED))
     (asserts! (>= block-height (get end-block-height proposal)) (err ERR-NOT-AUTHORIZED))
 
-    ;; Return DIKO
+    ;; Return DIKO or stDIKO
     (as-contract (contract-call? token transfer token-count (as-contract tx-sender) member none))
   )
 )
@@ -303,7 +347,13 @@
   )
 )
 
-;; adds a new contract, only new ones allowed
+;; @desc  adds a new contract to the protocol, only new ones allowed
+;; @param name; name for the new contract
+;; @param address; address of the contract to add tot he DAO
+;; @param qualified-name; qualified name for the new contract
+;; @param can-mint; indication if new contract should be able to mint protocol tokens
+;; @param can-burn; indication if new contract should be able to burn protocol tokens
+;; @post boolean; returns true if contract added or false when contract already exists
 (define-public (add-contract-address (name (string-ascii 256)) (address principal) (qualified-name principal) (can-mint bool) (can-burn bool))
   (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))

@@ -93,6 +93,7 @@ Clarinet.test({
     // Vote for wallet_1
     block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "vote-for", [
+        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token"),
         types.uint(1),
         types.uint(10000000)
@@ -114,6 +115,7 @@ Clarinet.test({
     // Vote for wallet_2
     block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "vote-for", [
+        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token"),
         types.uint(1),
         types.uint(20000000)
@@ -124,6 +126,7 @@ Clarinet.test({
     // Vote against wallet_2
     block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "vote-against", [
+        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token"),
         types.uint(1),
         types.uint(1000000)
@@ -188,6 +191,7 @@ Clarinet.test({
     // Vote for wallet_1
     block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "vote-for", [
+        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token"),
         types.uint(1),
         types.uint(10000000)
@@ -255,6 +259,7 @@ Clarinet.test({
     // Vote for wallet_1
     block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "vote-against", [
+        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token"),
         types.uint(1),
         types.uint(10000000)
@@ -288,11 +293,45 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "governance: end proposal + return DIKO to voters",
+  name: "governance: end proposal + return DIKO and stDIKO to voters",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
     let wallet_2 = accounts.get("wallet_2")!;
+
+    // Stake DIKO to get stDIKO 
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token'),
+        types.uint(100000000)
+      ], wallet_1.address)
+    ]);
+    block.receipts[0].result.expectOk().expectUint(100000000); 
+
+    // Advance 3 block, so that DIKO/stDIKO ratio is not 1 anymore
+    chain.mineEmptyBlock(3);
+
+    // Stake DIKO to get stDIKO again, at different rate
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token'),
+        types.uint(100000000) // 100
+      ], wallet_1.address)
+    ]);
+    block.receipts[0].result.expectOk().expectUint(24201384); // 24 with 6 decimals
+
+    // Total stDIKO balance for user is now ~124
+    let call:any = chain.callReadOnlyFn("stdiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+    call.result.expectOk().expectUint(124201384);   
+
+    // Total DIKO balance is 
+    call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+    call.result.expectOk().expectUint(149800000000);  
+
 
     // Empty contract change used to fill list
     let emptyContractChangeTuple = types.tuple({
@@ -302,7 +341,7 @@ Clarinet.test({
     });
     
     // Create proposal to start at block 1
-    let block = chain.mineBlock([
+    block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "propose", [
         types.uint(1),
         types.utf8("Test Title"),
@@ -314,13 +353,6 @@ Clarinet.test({
             'qualified-name': types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.new-oracle"),
             'can-mint': types.bool(true),
             'can-burn': types.bool(true)
-          }),
-          types.tuple({
-            name: types.ascii("freddie"),
-            'address': types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"),
-            'qualified-name': types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.new-freddie"),
-            'can-mint': types.bool(true),
-            'can-burn': types.bool(true)
           })
         ])
 
@@ -328,15 +360,45 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    // Vote for wallet_1
+    // Vote with DIKO
     block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "vote-for", [
+        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token"),
         types.uint(1),
-        types.uint(10000000)
+        types.uint(10000000) // 10 DIKO
     ], wallet_1.address)
     ]);
     block.receipts[0].result.expectOk().expectUint(3200);
+
+    // DIKO/stDIKO ratio
+    call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "diko-stdiko-ratio", [], wallet_1.address);
+    call.result.expectOk().expectUint(4131995); // ~4
+
+    // Vote with stDIKO
+    block = chain.mineBlock([
+    Tx.contractCall("arkadiko-governance-v1-1", "vote-for", [
+        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1"),
+        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.stdiko-token"),
+        types.uint(1),
+        types.uint(10000000) // 10 stDIKO = ~40 DIKO
+    ], wallet_1.address)
+    ]);
+    block.receipts[0].result.expectOk().expectUint(3200);
+
+    // Total votes from wallet: 10 DIKO + 10 stDIKO
+    // Where the 10 stDIKO = ~40 DIKO
+    // So total is ~50 votes
+    call = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-votes-by-member-by-id", [types.uint(1), types.principal(wallet_1.address)], wallet_1.address);
+    call.result.expectTuple()["vote-count"].expectUint(51319950);
+
+    // stDIKO balance
+    call = chain.callReadOnlyFn("stdiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+    call.result.expectOk().expectUint(114201384);   
+
+    // DIKO balance has decreased by 10
+    call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+    call.result.expectOk().expectUint(149790000000);  
 
     // Advance
     for (let index = 0; index < 1500; index++) {
@@ -361,9 +423,22 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk();
 
+    // Return stDIKO to members
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-governance-v1-1", "return-votes-to-member", [
+          types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.stdiko-token"),
+          types.uint(1),
+          types.principal(wallet_1.address)
+      ], wallet_1.address)
+      ]);
+      block.receipts[0].result.expectOk();
+
     // Should have initial amount back
-    let call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-    call.result.expectOk().expectUint(150000000000);  
+    call = chain.callReadOnlyFn("stdiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+    call.result.expectOk().expectUint(124201384);   
+
+    call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+    call.result.expectOk().expectUint(149800000000);  
 
   }
 });
@@ -445,6 +520,7 @@ Clarinet.test({
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-governance-v1-1", "toggle-governance-shutdown", [], deployer.address),
       Tx.contractCall("arkadiko-governance-v1-1", "vote-for", [
+        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1"),
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token"),
         types.uint(1),
         types.uint(10000000)

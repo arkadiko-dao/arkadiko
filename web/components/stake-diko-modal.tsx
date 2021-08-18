@@ -6,7 +6,7 @@ import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { microToReadable } from '@common/vault-utils';
 import {
-  contractPrincipalCV, uintCV,
+  AnchorMode, contractPrincipalCV, uintCV,
   createAssetInfo, FungibleConditionCode,
   makeStandardFungiblePostCondition
 } from '@stacks/transactions';
@@ -72,6 +72,7 @@ export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowStakeModal(false);
       },
+      anchorMode: AnchorMode.Any
     });
   };
 
