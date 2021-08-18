@@ -164,7 +164,7 @@ export const App: React.FC = () => {
     <Connect authOptions={authOptions}>
       <ThemeProvider theme={theme}>
         <AppContext.Provider value={[state, setState]}>
-          <div className="flex flex-col bg-white min-height-screen">
+          <div className="flex flex-col font-sans bg-white min-height-screen">
             <Header signOut={signOut} setShowSidebar={setShowSidebar} />
             {state.userData ? (
               <SubHeader />

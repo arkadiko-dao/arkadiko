@@ -32,7 +32,7 @@ export const ProposalGroup: React.FC<ProposalProps[]> = ({ proposals }) => {
   );
 
   return (
-    <div className="bg-white shadow overflow-hidden mt-5 sm:rounded-md">
+    <div className="mt-5 overflow-hidden bg-white shadow sm:rounded-md">
       <ul className="divide-y divide-gray-200">
         {proposalItems}
       </ul>

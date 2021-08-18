@@ -100,30 +100,30 @@ export const Auction: React.FC<AuctionProps> = (
 
   return (
     <tr className="bg-white">
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+        <span className="font-medium text-gray-900">
           {id}.{lotId + 1}
         </span>
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+        <span className="font-medium text-gray-900">
           <span>{minimumCollateralAmount / 1000000} {collateralToken.toUpperCase()}</span>
         </span>
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">${(discountedPrice / 100).toFixed(2)}</span>
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+        <span className="font-medium text-gray-900">${(discountedPrice / 100).toFixed(2)}</span>
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">${(debtToRaise / 1000000).toFixed(4)}</span>
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+        <span className="font-medium text-gray-900">${(debtToRaise / 1000000).toFixed(4)}</span>
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">${currentBid / 1000000}</span>
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+        <span className="font-medium text-gray-900">${currentBid / 1000000}</span>
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">{endsAt} (~{((Number(endsAt) - stacksTipHeight) * 10 / 60).toFixed(2)} hours)</span>
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+        <span className="font-medium text-gray-900">{endsAt} (~{((Number(endsAt) - stacksTipHeight) * 10 / 60).toFixed(2)} hours)</span>
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900 font-medium">
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+        <span className="font-medium text-gray-900">
           <button type="button" onClick={() => setBidParams()} className="mr-2 px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
             Bid
           </button>

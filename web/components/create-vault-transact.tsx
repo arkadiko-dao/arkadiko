@@ -84,7 +84,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
 
   return (
     <Box>
-      <h2 className="text-2xl font-bold text-gray-900 text-center">
+      <h2 className="text-2xl font-bold text-center text-gray-900 font-headings">
         {state.currentTxId ? (
           <span>Your vault is being created.</span>
         ) : (
@@ -93,9 +93,9 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       </h2>
 
       {state.currentTxId ? (
-        <div className="bg-white shadow sm:rounded-lg mt-5 w-full">
+        <div className="w-full mt-5 bg-white shadow sm:rounded-lg">
           <div className="px-4 py-5 sm:p-6">
-            <div className="sm:flex sm:justify-between sm:items-baseline mt-4 mb-4">
+            <div className="mt-4 mb-4 sm:flex sm:justify-between sm:items-baseline">
               <div className="mt-1 text-sm text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
                 {state.currentTxId && (
                   <Text textStyle="body.large" display="block" my={space('base')}>

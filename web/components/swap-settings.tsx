@@ -15,12 +15,12 @@ export const SwapSettings: React.FC = ({ slippageTolerance, setDefaultSlippage, 
         {() => (
           <>
             <Popover.Button
-              className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-full"
+              className="rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               id="open-transaction-settings"
             >
               <span className="sr-only">Swap transation settings</span>
               <CogIcon
-                className="h-6 w-6 hover:text-gray-500 transition ease-in-out duration-150"
+                className="w-6 h-6 transition duration-150 ease-in-out hover:text-gray-500"
                 aria-hidden="true"
               />
             </Popover.Button>
@@ -33,16 +33,16 @@ export const SwapSettings: React.FC = ({ slippageTolerance, setDefaultSlippage, 
               leaveFrom="opacity-100 translate-y-0"
               leaveTo="opacity-0 translate-y-1"
             >
-              <Popover.Panel className="absolute max-w-sm mt-3 px-4 right-0 sm:px-0 w-screen z-20">
+              <Popover.Panel className="absolute right-0 z-20 w-screen max-w-sm px-4 mt-3 sm:px-0">
                 <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-                  <div className="relative bg-white p-4">
+                  <div className="relative p-4 bg-white">
                     <div className="inline-flex items-center">
-                      <h4 className="text-base leading-6 font-medium text-gray-900">
+                      <h4 className="text-base font-medium leading-6 text-gray-900 font-headings">
                         Slippage Tolerance
                       </h4>
                       <div className="ml-2">
                         <Tooltip className="z-10" shouldWrapChildren={true} label={`Your transaction will revert if the price changes unfavorably by more of this percentage`}>
-                          <InformationCircleIcon className="block h-5 w-5 text-gray-400" aria-hidden="true" />
+                          <InformationCircleIcon className="block w-5 h-5 text-gray-400" aria-hidden="true" />
                         </Tooltip>
                       </div>
                     </div>
@@ -52,7 +52,7 @@ export const SwapSettings: React.FC = ({ slippageTolerance, setDefaultSlippage, 
                         <button
                           type="button"
                           onClick={setDefaultSlippage}
-                          className="text-grey inline-flex items-right px-4 py-2 border border-transparent shadow-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm focus:ring-indigo-500"
+                          className="inline-flex px-4 py-2 font-medium border border-transparent rounded-md shadow-sm text-grey items-right focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm focus:ring-indigo-500"
                         >
                           Auto
                         </button>
@@ -60,13 +60,13 @@ export const SwapSettings: React.FC = ({ slippageTolerance, setDefaultSlippage, 
                         <button
                           type="button"
                           onClick={setDefaultSlippage}
-                          className="text-white bg-indigo-600 inline-flex items-right px-4 py-2 border border-transparent shadow-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm focus:ring-indigo-500"
+                          className="inline-flex px-4 py-2 font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm items-right hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm focus:ring-indigo-500"
                         >
                           Auto
                         </button>
                       )}
                     
-                      <div className="relative rounded-md shadow-sm flex-1 ml-2">
+                      <div className="relative flex-1 ml-2 rounded-md shadow-sm">
                         <input 
                           type="number" 
                           inputMode="decimal" 
@@ -78,8 +78,8 @@ export const SwapSettings: React.FC = ({ slippageTolerance, setDefaultSlippage, 
                           placeholder="0.10"
                           value={slippageTolerance}
                           onChange={onInputChange}
-                          className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pr-8 sm:text-sm border-gray-300 rounded-md text-right" />
-                        <div className="absolute inset-y-0 right-0 w-8 flex items-center justify-center pointer-events-none">
+                          className="block w-full pr-8 text-right border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                        <div className="absolute inset-y-0 right-0 flex items-center justify-center w-8 pointer-events-none">
                           <span className="text-gray-500 sm:text-sm">
                             %
                           </span>

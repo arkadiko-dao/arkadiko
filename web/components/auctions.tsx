@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
-import { Box } from '@blockstack/ui';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home'
 import { useConnect } from '@stacks/connect-react';
@@ -173,70 +172,68 @@ export const Auctions: React.FC = () => {
   };
 
   return (
-    <Box>
+    <>
       {state.userData ? (
         <Container>
-          <Box py={6}>
-            <main className="flex-1 relative pb-8 z-0 overflow-y-auto">
-              <div className="mt-8">
+          <main className="relative z-0 flex-1 pb-8 overflow-y-auto">
+            <div className="mt-8">
 
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8">Trade xSTX for STX</h2>
+              <div className="max-w-6xl px-4 mx-auto sm:px-6 lg:px-8">
+                <h2 className="mt-8 text-lg font-medium leading-6 text-gray-900 font-headings">Trade xSTX for STX</h2>
 
-                  {state.balance['xstx'] > 0 ? (
-                    <p className="mt-2">
-                      There are {redeemableStx / 1000000} STX redeemable in the Arkadiko pool. <br/>
-                      You have {state.balance['xstx'] / 1000000} xSTX. <br/>
+                {state.balance['xstx'] > 0 ? (
+                  <p className="mt-2">
+                    There are {redeemableStx / 1000000} STX redeemable in the Arkadiko pool. <br/>
+                    You have {state.balance['xstx'] / 1000000} xSTX. <br/>
 
-                      <button type="button" onClick={() => redeemStx()} className="mt-2 px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Redeem
-                      </button>
-                    </p>
-                  ) : (
-                    <EmptyState
-                      Icon={CashIcon}
-                      title="You have no xSTX you can trade."
-                    />
-                  )}
-                </div>
-
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8">Your Winning Lots</h2>
-
-                  {lots.length > 0 ? (
-                    <LotGroup lots={lots} />
-                  ) : (
-                    <EmptyState
-                      Icon={GiftIcon}
-                      title="You have no winning lots you can redeem."
-                      description="Winning lots can be redeemed when the parent auction closes."
-                    />
-                  )}
-                </div>
-
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <h2 className="text-lg leading-6 font-medium text-gray-900 mt-8">Auctions</h2>
-
-                  <p>Current Block Height: {stacksTipHeight}</p>
-                  {auctions.length > 0 ? (
-                    <AuctionGroup auctions={auctions} stacksTipHeight={stacksTipHeight} />
-                  ) : loadingAuctions ? (
-                    <p>Loading auctions...</p>
-                  ) : (
-                    <EmptyState
-                      Icon={DocumentSearchIcon}
-                      title="There are currently no open auctions."
-                    />
-                  )}
-                </div>
-
+                    <button type="button" onClick={() => redeemStx()} className="mt-2 px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                      Redeem
+                    </button>
+                  </p>
+                ) : (
+                  <EmptyState
+                    Icon={CashIcon}
+                    title="You have no xSTX you can trade."
+                  />
+                )}
               </div>
-            </main>
-          </Box>
+
+              <div className="max-w-6xl px-4 mx-auto sm:px-6 lg:px-8">
+                <h2 className="mt-8 text-lg font-medium leading-6 text-gray-900 font-headings">Your Winning Lots</h2>
+
+                {lots.length > 0 ? (
+                  <LotGroup lots={lots} />
+                ) : (
+                  <EmptyState
+                    Icon={GiftIcon}
+                    title="You have no winning lots you can redeem."
+                    description="Winning lots can be redeemed when the parent auction closes."
+                  />
+                )}
+              </div>
+
+              <div className="max-w-6xl px-4 mx-auto sm:px-6 lg:px-8">
+                <h2 className="mt-8 text-lg font-medium leading-6 text-gray-900 font-headings">Auctions</h2>
+
+                <p>Current Block Height: {stacksTipHeight}</p>
+                {auctions.length > 0 ? (
+                  <AuctionGroup auctions={auctions} stacksTipHeight={stacksTipHeight} />
+                ) : loadingAuctions ? (
+                  <p>Loading auctions...</p>
+                ) : (
+                  <EmptyState
+                    Icon={DocumentSearchIcon}
+                    title="There are currently no open auctions."
+                  />
+                )}
+              </div>
+
+            </div>
+          </main>
         </Container>
       ) : (
         <Redirect to={{ pathname: '/' }} />
       )}
-    </Box>  
+    </>  
   );
 };

@@ -82,8 +82,8 @@ export const Governance = () => {
             <section>
               <header>
                 <div className="bg-indigo-700 rounded-md">
-                  <div className="max-w-2xl mx-auto text-center py-5 px-4 sm:py-5 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
+                  <div className="max-w-2xl px-4 py-5 mx-auto text-center sm:py-5 sm:px-6 lg:px-8">
+                    <h2 className="text-3xl font-extrabold text-white font-headings sm:text-4xl">
                       <span className="block">Arkadiko Governance</span>
                     </h2>
                     <p className="mt-4 text-lg leading-6 text-indigo-200">
@@ -96,7 +96,7 @@ export const Governance = () => {
 
               <div className="mt-8">
                 <header className="pb-5 border-b border-gray-200">
-                  <h2 className="text-lg leading-6 font-medium text-gray-900">Recent Proposals</h2>
+                  <h2 className="text-lg font-medium leading-6 text-gray-900 font-headings">Recent Proposals</h2>
                 </header>
 
                 {proposals.length > 0 ? (
