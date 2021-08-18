@@ -27,6 +27,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Create proposal
   block = chain.mineBlock([
   Tx.contractCall("arkadiko-governance-v1-1", "propose", [
+      types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1'),
       types.uint(1),
       types.utf8("Black swan event slash"),
       types.utf8("https://discuss.arkadiko.finance/blackswan1"),
