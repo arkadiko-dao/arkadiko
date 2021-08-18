@@ -112,6 +112,7 @@
   )
 )
 
+;; TODO - this is not in use
 (define-public (add-collateral-type (token (string-ascii 12))
                                     (name (string-ascii 12))
                                     (url (string-ascii 256))

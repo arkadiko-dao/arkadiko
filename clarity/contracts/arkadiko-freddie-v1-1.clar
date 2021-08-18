@@ -118,8 +118,14 @@
 ;; @param vault-id; the ID of the vault to calculate the current collateralization ratio for
 ;; @param coll-type; contract that contains the collateral types that can be used for a vault
 ;; @param oracle; the oracle implementation that provides the on-chain price
+;; @param include-stability-fees; boolean to indicate whether to include stability fees as part of debt calculation
 ;; @post uint; returns the collateralization ratio
-(define-public (calculate-current-collateral-to-debt-ratio (vault-id uint) (coll-type <collateral-types-trait>) (oracle <oracle-trait>))
+(define-public (calculate-current-collateral-to-debt-ratio
+  (vault-id uint)
+  (coll-type <collateral-types-trait>)
+  (oracle <oracle-trait>)
+  (include-stability-fees bool)
+)
   (let ((vault (get-vault-by-id vault-id)))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
 
@@ -133,7 +139,10 @@
                 (* (get collateral vault) (get last-price-in-cents stx-price-in-cents))
                 (+
                   (get debt vault)
-                  (unwrap-panic (stability-fee-helper (get stability-fee-last-accrued vault) (get debt vault) (get collateral-type vault) coll-type))
+                  (if include-stability-fees
+                    (unwrap-panic (stability-fee-helper (get stability-fee-last-accrued vault) (get debt vault) (get collateral-type vault) coll-type))
+                    u0
+                  )
                 )
               )
             )
@@ -741,8 +750,8 @@
       (liquidation-penalty (unwrap-panic (contract-call? coll-type get-liquidation-penalty (get collateral-type vault))))
       (fee (unwrap-panic (get-stability-fee-for-vault vault-id coll-type)))
       (penalty (/ (* liquidation-penalty (+ fee (get debt vault))) u10000))
-      (extra-debt (/ (* u60 penalty) u100)) ;; 60% of the penalty is extra debt.
-      (discount (/ (* u40 liquidation-penalty) u10000)) ;; 40% of liquidation penalty is discount % for liquidator
+      (extra-debt (/ (* u30 penalty) u100)) ;; 30% of the penalty is extra debt.
+      (discount (/ (* u70 liquidation-penalty) u10000)) ;; 70% of liquidation penalty is discount % for liquidator
     )
       (if
         (and

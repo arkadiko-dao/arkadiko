@@ -8,7 +8,7 @@
     (get-stx-redeemable () (response uint bool))
 
     (get-collateral-type-for-vault (uint) (response (string-ascii 12) bool))
-    (calculate-current-collateral-to-debt-ratio (uint <collateral-types-trait> <oracle-trait>) (response uint uint))
+    (calculate-current-collateral-to-debt-ratio (uint <collateral-types-trait> <oracle-trait> bool) (response uint uint))
 
     (pay-stability-fee (uint <collateral-types-trait>) (response uint uint))
     (accrue-stability-fee (uint <collateral-types-trait>) (response bool uint))
