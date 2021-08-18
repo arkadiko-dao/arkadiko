@@ -992,6 +992,7 @@ Clarinet.test({
     // Create proposal
     block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "propose", [
+      types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1'),
       types.uint(10),
       types.utf8("Change Reward Distribution"),
       types.utf8("https://discuss.arkadiko.finance"),
@@ -1164,6 +1165,7 @@ Clarinet.test({
     // Create proposal
     block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "propose", [
+      types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1'),
       types.uint(10),
       types.utf8("Change Reward Distribution"),
       types.utf8("https://discuss.arkadiko.finance"),

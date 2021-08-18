@@ -21,6 +21,7 @@ async function transact() {
     contractName: 'arkadiko-governance-v1-1',
     functionName: 'propose',
     functionArgs: [
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-1'),
       tx.uintCV(200),
       tx.stringUtf8CV('Change Arkadiko Stacker Contract'),
       tx.stringUtf8CV('https://discuss.arkadiko.finance/123456/thread/a/very/long/path'),

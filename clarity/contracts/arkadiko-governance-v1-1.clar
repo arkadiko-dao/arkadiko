@@ -104,19 +104,27 @@
 )
 
 ;; @desc Start a proposal. Requires 1% of the supply in your wallet. Voting period is ~10 days.
+;; @param stake-pool-diko; DIKO pool to get stDIKO/DIKO ratio from
 ;; @param start-block-height; block at which voting starts
 ;; @param title; title for the proposal
 ;; @param url; link to poposal details
 ;; @param contract-changes; contracts to update in DAO
 ;; @post boolean; returns true if propsal was created
 (define-public (propose
-    (start-block-height uint)
-    (title (string-utf8 256))
-    (url (string-utf8 256))
-    (contract-changes (list 10 (tuple (name (string-ascii 256)) (address principal) (qualified-name principal) (can-mint bool) (can-burn bool))))
-  )
+  (stake-pool-diko <stake-pool-diko-trait>)
+  (start-block-height uint)
+  (title (string-utf8 256))
+  (url (string-utf8 256))
+  (contract-changes (list 10 (tuple (name (string-ascii 256)) (address principal) (qualified-name principal) (can-mint bool) (can-burn bool))))
+)
   (let (
-    (proposer-balance (unwrap-panic (contract-call? .arkadiko-token get-balance tx-sender)))
+    (proposer-diko-balance (unwrap-panic (contract-call? .arkadiko-token get-balance tx-sender)))
+    (proposer-stdiko-balance (unwrap-panic (contract-call? .stdiko-token get-balance tx-sender)))
+    
+    (proposer-diko-votes (unwrap-panic (token-amount-to-votes stake-pool-diko .arkadiko-token proposer-diko-balance)))
+    (proposer-stdiko-votes (unwrap-panic (token-amount-to-votes stake-pool-diko .stdiko-token proposer-stdiko-balance)))
+    (proposer-total-balance (+ proposer-diko-votes proposer-stdiko-votes))
+
     (diko-init-balance (unwrap-panic (contract-call? .arkadiko-token get-balance .arkadiko-diko-init)))
     (supply (- (unwrap-panic (contract-call? .arkadiko-token get-total-supply)) diko-init-balance))
     (proposal-id (+ u1 (var-get proposal-count)))
@@ -128,9 +136,16 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
+    (asserts!
+      (is-eq
+        (contract-of stake-pool-diko)
+        (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-pool-diko"))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
 
     ;; Requires 1% of the supply 
-    (asserts! (>= (* proposer-balance u100) supply) (err ERR-NOT-ENOUGH-BALANCE))
+    (asserts! (>= (* proposer-total-balance u100) supply) (err ERR-NOT-ENOUGH-BALANCE))
     ;; Mutate
     (map-set proposals
       { id: proposal-id }
@@ -192,6 +207,13 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
+    (asserts!
+      (is-eq
+        (contract-of stake-pool-diko)
+        (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-pool-diko"))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
 
     ;; Can vote with DIKO and stDIKO
     (asserts! (is-eq (is-token-accepted token) true) (err ERR-WRONG-TOKEN))
@@ -235,6 +257,13 @@
         (is-eq (var-get governance-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
+    (asserts!
+      (is-eq
+        (contract-of stake-pool-diko)
+        (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-pool-diko"))
+      )
+      (err ERR-NOT-AUTHORIZED)
     )
 
     ;; Can vote with DIKO and stDIKO

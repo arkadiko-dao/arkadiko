@@ -21,6 +21,7 @@ Clarinet.test({
     // Create proposal
     let block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "propose", [
+        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1"),
         types.uint(10),
         types.utf8("Test Title"),
         types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),        
@@ -56,6 +57,56 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "governance: add proposal with stDIKO balance",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    // Stake all DIKO from wallet
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1'),
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token'),
+        types.uint(150000000000)
+      ], wallet_1.address)
+    ]);
+    block.receipts[0].result.expectOk().expectUint(150000000000);
+
+    // No DIKO left
+    let call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+    call.result.expectOk().expectUint(0);  
+
+    // Got stDIKO
+    call = chain.callReadOnlyFn("stdiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+    call.result.expectOk().expectUint(150000000000);  
+ 
+    // Should be able to create poposal
+    // No DIKO in wallet, but enough stDIKO
+    block = chain.mineBlock([
+    Tx.contractCall("arkadiko-governance-v1-1", "propose", [
+      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1"),
+      types.uint(10),
+      types.utf8("Test Title"),
+      types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),        
+      types.list([
+        types.tuple({
+          name: types.ascii("oracle"),
+          'address': types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"),
+          'qualified-name': types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.oracle"),
+          'can-mint': types.bool(true),
+          'can-burn': types.bool(true)
+        })
+      ])
+
+    ], wallet_1.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+  }
+});
+
+Clarinet.test({
   name: "governance: vote on proposal",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -65,6 +116,7 @@ Clarinet.test({
     // Create proposal to start at block 1
     let block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "propose", [
+        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1"),
         types.uint(1),
         types.utf8("Test Title"),
         types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),
@@ -164,6 +216,7 @@ Clarinet.test({
     // Create proposal to start at block 1
     let block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "propose", [
+        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1"),
         types.uint(1),
         types.utf8("Test Title"),
         types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),
@@ -239,6 +292,7 @@ Clarinet.test({
     // Create proposal to start at block 1
     let block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "propose", [
+        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1"),
         types.uint(1),
         types.utf8("Test Title"),
         types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),
@@ -343,6 +397,7 @@ Clarinet.test({
     // Create proposal to start at block 1
     block = chain.mineBlock([
     Tx.contractCall("arkadiko-governance-v1-1", "propose", [
+        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1"),
         types.uint(1),
         types.utf8("Test Title"),
         types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),        
@@ -456,6 +511,7 @@ Clarinet.test({
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-governance-v1-1", "propose",
         [
+          types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1"),
           types.uint(1),
           types.utf8("Test Title"),
           types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),
@@ -492,6 +548,7 @@ Clarinet.test({
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-governance-v1-1", "propose",
         [
+          types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1"),
           types.uint(1),
           types.utf8("Test Title"),
           types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),
