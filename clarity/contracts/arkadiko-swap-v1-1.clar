@@ -7,11 +7,10 @@
 (define-constant ERR-NOT-AUTHORIZED u20401)
 (define-constant INVALID-PAIR-ERR (err u201))
 (define-constant ERR-INVALID-LIQUIDITY u202)
+(define-constant ERR-NO-FEE-TO-ADDRESS u203)
 
 (define-constant no-liquidity-err (err u61))
-;; (define-constant transfer-failed-err (err u62))
 (define-constant not-owner-err (err u63))
-(define-constant no-fee-to-address-err (err u64))
 (define-constant no-such-position-err (err u66))
 (define-constant balance-too-low-err (err u67))
 (define-constant too-many-pairs-err (err u68))
@@ -43,7 +42,7 @@
     balance-y: uint,
     fee-balance-x: uint,
     fee-balance-y: uint,
-    fee-to-address: principal,
+    fee-to-address: (optional principal),
     swap-token: principal,
     name: (string-ascii 32),
   }
@@ -89,7 +88,10 @@
   )
 )
 
-;; get the total number of shares in the pool
+;; @desc get the total number of shares in the pool
+;; @param token-x; address of token X in the pool
+;; @param token-y; address of token Y in the pool
+;; @post uint; returns total number of shares
 (define-read-only (get-shares (token-x principal) (token-y principal))
   (ok (get shares-total (unwrap! (map-get? pairs-data-map { token-x: token-x, token-y: token-y }) (err INVALID-PAIR-ERR))))
 )
@@ -232,7 +234,7 @@
         balance-y: u0,
         fee-balance-x: u0,
         fee-balance-y: u0,
-        fee-to-address: (contract-call? .arkadiko-dao get-payout-address),
+        fee-to-address: (some (contract-call? .arkadiko-dao get-payout-address)),
         swap-token: (contract-of swap-token-trait),
         name: pair-name,
       })
@@ -339,7 +341,10 @@
         {
           balance-x: (+ balance-x dx),
           balance-y: (- balance-y dy),
-          fee-balance-x: (+ fee (get fee-balance-x pair))
+          fee-balance-x: (if (is-some (get fee-to-address pair))
+            (+ fee (get fee-balance-x pair))
+            (get fee-balance-x pair)
+          )
         }
       )
     )
@@ -392,7 +397,10 @@
     (pair-updated (merge pair {
       balance-x: (- balance-x dx),
       balance-y: (+ balance-y dy),
-      fee-balance-y: (+ fee (get fee-balance-y pair))
+      fee-balance-y: (if (is-some (get fee-to-address pair))
+        (+ fee (get fee-balance-y pair))
+        (get fee-balance-y pair)
+      )
     }))
   )
     (asserts! (< min-dx dx) too-much-slippage-err)
@@ -428,11 +436,11 @@
   (let (
     (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
   )
-    (asserts! (is-eq tx-sender .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
     (map-set pairs-data-map
       { token-x: token-x, token-y: token-y }
-      (merge pair { fee-to-address: address })
+      (merge pair { fee-to-address: (some address) })
     )
     (ok true)
   )
@@ -462,7 +470,7 @@
       (token-x (contract-of token-x-trait))
       (token-y (contract-of token-y-trait))
       (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
-      (address (get fee-to-address pair))
+      (address (unwrap! (get fee-to-address pair) (err ERR-NO-FEE-TO-ADDRESS)))
       (fee-x (get fee-balance-x pair))
       (fee-y (get fee-balance-y pair))
     )

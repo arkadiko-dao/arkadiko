@@ -209,6 +209,14 @@ Clarinet.test({
     let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
     result.expectOk().expectBool(true);
 
+    chain.mineBlock([
+      Tx.contractCall("arkadiko-swap-v1-1", "set-fee-to-address", [
+        types.principal(dikoTokenAddress),
+        types.principal(usdaTokenAddress),
+        types.principal(deployer.address)
+      ], deployer.address)
+    ]);
+
     // Swap
     result = swap.swapXForY(deployer, dikoTokenAddress, usdaTokenAddress, 200, 38);
     result.expectOk().expectList()[0].expectUint(200000000);
