@@ -375,7 +375,7 @@ Clarinet.test({
       wallet_1.address
     );
     let vault = call.result.expectTuple();
-    vault['leftover-collateral'].expectUint(543055516);
+    vault['leftover-collateral'].expectUint(536690628);
     vault['is-liquidated'].expectBool(true);
     vault['auction-ended'].expectBool(true);
 
@@ -409,13 +409,11 @@ Clarinet.test({
     let [stxTransferEvent1, stxTransferEvent2] = block.receipts[3].events;
     stxTransferEvent1.stx_transfer_event.sender.expectPrincipal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stacker-payer-v1-1");
     stxTransferEvent1.stx_transfer_event.recipient.expectPrincipal(deployer.address);
-
-    // 312498000-(312498000/3) = 208332000
-    stxTransferEvent1.stx_transfer_event.amount.expectInt(208332000);
+    stxTransferEvent1.stx_transfer_event.amount.expectInt(215824500);
 
     stxTransferEvent2.stx_transfer_event.sender.expectPrincipal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stacker-payer-v1-1");
     stxTransferEvent2.stx_transfer_event.recipient.expectPrincipal(deployer.address);
-    stxTransferEvent2.stx_transfer_event.amount.expectInt(78748200);
+    stxTransferEvent2.stx_transfer_event.amount.expectInt(73163250);
   }
 });
 
