@@ -5,7 +5,7 @@ import { Text } from '@blockstack/ui';
 import { AppContext } from '@common/context';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
-import { uintCV, contractPrincipalCV, callReadOnlyFunction, cvToJSON } from '@stacks/transactions';
+import { AnchorMode, uintCV, contractPrincipalCV, callReadOnlyFunction, cvToJSON } from '@stacks/transactions';
 import { resolveReserveName } from '@common/vault-utils';
 import { tokenTraits } from '@common/vault-utils';
 import { useSTXAddress } from '@common/use-stx-address';
@@ -104,6 +104,7 @@ export const Vault: React.FC<VaultProps> = ({
         console.log('finished withdraw!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
+      anchorMode: AnchorMode.Any
     });
   };
 

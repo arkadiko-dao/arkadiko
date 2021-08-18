@@ -1,5 +1,5 @@
-;; DIKO Init - Foundation and founders
-;;
+;; @contract DIKO Init - Tokens to be claimed by foundation and team
+;; @version 1
 
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED (err u22401))
@@ -26,7 +26,9 @@
 ;; Foundation
 ;; ---------------------------------------------------------
 
-;; Set foundation wallet to new address
+;; @desc set foundation wallet to given address
+;; @param address; new foundation wallet
+;; @post boolean; returns a boolean indicating successfully set or not
 (define-public (set-foundation-wallet (address principal))
   (let (
     (wallet (var-get foundation-wallet))
@@ -51,7 +53,9 @@
   )
 )
 
-;; Claim tokens for foundation
+;; @desc claim tokens for foundation
+;; @param amount; amount of tokens to claim
+;; @post uint; returns amount of claimed tokens
 (define-public (foundation-claim-tokens (amount uint))
   (let (
     (claimed-tokens (var-get foundation-tokens-claimed))
@@ -69,7 +73,9 @@
 ;; Founders
 ;; ---------------------------------------------------------
 
-;; Set founders wallet to new address
+;; @desc set founders (=team) wallet to given address
+;; @param address; new founders(=team) wallet
+;; @post boolean; returns a boolean indicating successfully set or not
 (define-public (set-founders-wallet (address principal))
   (let (
     (wallet (var-get founders-wallet))
@@ -108,7 +114,9 @@
   )
 )
 
-;; Claim tokens for founders
+;; @desc claim tokens for team
+;; @param amount; amount of tokens to claim
+;; @post uint; returns amount of claimed tokens
 (define-public (founders-claim-tokens (amount uint))
   (let (
     (pending-tokens (unwrap! (get-pending-founders-tokens) ERR-NOT-AUTHORIZED))

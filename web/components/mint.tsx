@@ -3,6 +3,7 @@ import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import BN from 'bn.js';
 import {
+  AnchorMode,
   broadcastTransaction,
   callReadOnlyFunction,
   cvToJSON,
@@ -193,6 +194,7 @@ export const Mint = () => {
       finished: data => {
         console.log('finished redeeming diko!', data.txId);
       },
+      anchorMode: AnchorMode.Any
     });
   };
 
@@ -210,6 +212,7 @@ export const Mint = () => {
       finished: data => {
         console.log('finished redeeming USDA!', data.txId);
       },
+      anchorMode: AnchorMode.Any
     });
   };
 

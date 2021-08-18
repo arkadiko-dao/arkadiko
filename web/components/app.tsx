@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ThemeProvider, theme, Flex, CSSReset, Tooltip } from '@blockstack/ui';
+import { ThemeProvider, theme, Tooltip } from '@blockstack/ui';
 import { Connect } from '@stacks/connect-react';
 import { AuthOptions } from '@stacks/connect';
 import { UserSession, AppConfig } from '@stacks/auth';
@@ -16,7 +16,7 @@ import { TxSidebar } from '@components/tx-sidebar';
 import { useLocation } from 'react-router-dom';
 import { TestnetModal } from './testnet-modal';
 import { initiateConnection } from '@common/websocket-tx-updater';
-import ScrollToTop from 'react-router-scroll-top'
+import ScrollToTop from '@components/scroll-to-top';
 
 export const getBalance = async (address: string) => {
   const client = getRPCClient();
@@ -164,7 +164,6 @@ export const App: React.FC = () => {
     <Connect authOptions={authOptions}>
       <ThemeProvider theme={theme}>
         <AppContext.Provider value={[state, setState]}>
-          <CSSReset />
           <div className="flex flex-col font-sans bg-white min-height-screen">
             <Header signOut={signOut} setShowSidebar={setShowSidebar} />
             {state.userData ? (
@@ -191,12 +190,11 @@ export const App: React.FC = () => {
                 </div>
               </Tooltip>
             </div>
-
             <Routes />
           </div>
         </AppContext.Provider>
       </ThemeProvider>
-      <ScrollToTop/>
+      <ScrollToTop />
     </Connect>
   );
 };

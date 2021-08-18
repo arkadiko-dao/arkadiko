@@ -3,7 +3,7 @@ import { AppContext } from '@common/context';
 import { Landing } from './landing';
 import { Container } from './home'
 import { microToReadable } from '@common/vault-utils';
-import { callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV } from '@stacks/transactions';
+import { AnchorMode, callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
@@ -191,6 +191,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         console.log('finished collateralizing!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
+      anchorMode: AnchorMode.Any
     });
   };
 

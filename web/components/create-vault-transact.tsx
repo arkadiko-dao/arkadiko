@@ -10,7 +10,8 @@ import {
   falseCV,
   tupleCV,
   makeStandardSTXPostCondition,
-  FungibleConditionCode
+  FungibleConditionCode,
+  AnchorMode
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ExplorerLink } from './explorer-link';
@@ -66,7 +67,8 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       },
       onCancel: () => {
         window.location.href = '/';
-      }
+      },
+      anchorMode: AnchorMode.Any
     });
   };
 

@@ -262,7 +262,7 @@
 
 (define-public (toggle-freddie-shutdown)
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
 
     (ok (var-set freddie-shutdown-activated (not (var-get freddie-shutdown-activated))))
   )

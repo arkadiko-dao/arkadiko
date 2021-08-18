@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { LotProps } from './lot-group';
-import { contractPrincipalCV, uintCV } from '@stacks/transactions';
+import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useConnect } from '@stacks/connect-react';
 import { stacksNetwork as network } from '@common/utils';
 import { resolveReserveName, tokenTraits } from '@common/vault-utils';
@@ -35,6 +35,7 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collatera
         console.log('finished redeeming lot!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
+      anchorMode: AnchorMode.Any
     });
   };
 
