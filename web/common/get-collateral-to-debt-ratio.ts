@@ -2,7 +2,7 @@ import { useContext, useState, useEffect } from 'react';
 import { AppContext } from '@common/context';
 import { useSTXAddress } from './use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
-import { callReadOnlyFunction, contractPrincipalCV, cvToJSON, uintCV, falseCV} from '@stacks/transactions';
+import { callReadOnlyFunction, contractPrincipalCV, cvToJSON, uintCV, falseCV } from '@stacks/transactions';
 
 export const getCollateralToDebtRatio = (vaultId: string) => {
   const stxAddress = useSTXAddress();
