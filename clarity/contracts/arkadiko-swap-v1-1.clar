@@ -203,7 +203,7 @@
         balance-y: u0,
         fee-balance-x: u0,
         fee-balance-y: u0,
-        fee-to-address: (contract-call? .arkadiko-dao get-payout-address),
+        fee-to-address: (some (contract-call? .arkadiko-dao get-payout-address)),
         swap-token: (contract-of swap-token-trait),
         name: pair-name,
       })
