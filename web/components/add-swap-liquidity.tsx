@@ -13,10 +13,7 @@ import { CashIcon, PlusIcon } from '@heroicons/react/outline';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
-
-function classNames(...classes: Array<string | undefined>) {
-  return classes.filter(Boolean).sort().join(' ')
-}
+import { classNames } from '@common/class-names';
 
 export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [state, setState] = useContext(AppContext);

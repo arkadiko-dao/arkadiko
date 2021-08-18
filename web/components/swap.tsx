@@ -19,10 +19,7 @@ import { tokenTraits } from '@common/vault-utils';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { SwapSettings } from '@components/swap-settings';
 import { getBalance } from '@components/app';
-
-function classNames(...classes: Array<string | undefined>) {
-  return classes.filter(Boolean).sort().join(' ')
-}
+import { classNames } from '@common/class-names';
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
