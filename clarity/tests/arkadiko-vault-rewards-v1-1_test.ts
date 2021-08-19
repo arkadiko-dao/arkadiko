@@ -305,7 +305,7 @@ Clarinet.test({
         types.uint(1)
       ], deployer.address),
       // now vault 1 has revoked stacking, enable vault withdrawals
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "enable-vault-withdrawals", [
+      Tx.contractCall("arkadiko-stacker-v1-1", "enable-vault-withdrawals", [
         types.uint(1)
       ], deployer.address)
     ]);

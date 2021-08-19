@@ -555,14 +555,14 @@ export const Stake = () => {
                             </td>
                             <td className="px-6 py-4 text-sm whitespace-nowrap">
                               {loadingData ? (
-                                <PlaceHolder size={2} color="indigo" />
+                                <PlaceHolder />
                               ) : (
                                 `${dikoCooldown}`
                               )}
                             </td>
                             <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
                               {loadingData ? (
-                                <PlaceHolder size={2} color="indigo" />
+                                <PlaceHolder />
                               ) : (
                                 `${apy}%`
                               )}
@@ -650,7 +650,7 @@ export const Stake = () => {
                             </td>
                             <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
                               {loadingData ? (
-                                <PlaceHolder size={2} color="indigo" />
+                                <PlaceHolder />
                               ) : (
                                 `${dikoUsdaLpApy}%`
                               )}
@@ -754,7 +754,7 @@ export const Stake = () => {
                             </td>
                             <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
                               {loadingData ? (
-                                <PlaceHolder size={2} color="indigo" />
+                                <PlaceHolder />
                               ) : (
                                 `${stxUsdaLpApy}%`
                               )}
@@ -858,7 +858,7 @@ export const Stake = () => {
                             </td>
                             <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
                               {loadingData ? (
-                                <PlaceHolder size={2} color="indigo" />
+                                <PlaceHolder />
                               ) : (
                                 `${stxDikoLpApy}%`
                               )}

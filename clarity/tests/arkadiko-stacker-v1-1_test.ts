@@ -89,7 +89,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-stacker-v1-1", "request-stx-for-payout", [
         types.uint(1000000000)
       ], deployer.address), // need this method to get some STX on the stacker-payer contract
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "enable-vault-withdrawals", [
+      Tx.contractCall("arkadiko-stacker-v1-1", "enable-vault-withdrawals", [
         types.uint(1)
       ], deployer.address)
     ]);

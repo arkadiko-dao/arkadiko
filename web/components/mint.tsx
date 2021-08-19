@@ -17,7 +17,6 @@ import {
 } from '@stacks/transactions';
 import { VaultGroup } from './vault-group';
 import { getPrice, getDikoAmmPrice } from '@common/get-price';
-import { Link } from '@components/link';
 import { AppContext } from '@common/context';
 import { useConnect } from '@stacks/connect-react';
 import { CollateralTypeGroup } from '@components/collateral-type-group';
@@ -112,40 +111,6 @@ export const Mint = () => {
       setLoadingVaults(false);
     };
 
-    let metaInfoUrl = `https://api.stacking.club/api/meta-info`;
-    setLoadingStackingData(true)
-    fetch(metaInfoUrl)
-      .then((res) => res.json())
-      .then((response) => {
-        let cycleNumber = response[0]["pox"]["current_cycle"]["id"];
-
-        let cycleInfoUrl = `https://api.stacking.club/api/cycle-info?cycle=` + cycleNumber;
-        fetch(cycleInfoUrl)
-          .then((res) => res.json())
-          .then((response) => {
-            
-            let startTimestamp = response["startDate"];
-            let endTimestamp = response["endDate"];
-            let currentTimestamp = Date.now();
-
-            let daysPassed = Math.round((currentTimestamp - startTimestamp) / (1000*60*60*24));
-            let daysLeft = Math.round((endTimestamp - currentTimestamp) / (1000*60*60*24));
-
-            let startDate = new Date(startTimestamp).toDateString();
-            let endDate = new Date(endTimestamp).toDateString().split(' ').slice(1).join(' ');
-
-            setState(prevState => ({
-              ...prevState,
-              cycleNumber: cycleNumber,
-              startDate: startDate,
-              endDate: endDate,
-              daysPassed: daysPassed,
-              daysLeft: daysLeft
-            }));
-            setLoadingStackingData(false);
-          });
-      });
-
     fetchVaults();
   }, []);
 
@@ -161,59 +126,6 @@ export const Mint = () => {
       network: network
     });
     await broadcastTransaction(transaction, network);
-  };
-
-  const unlockVault = async () => {
-    const key = '';
-    const senderKey = createStacksPrivateKey(key);
-    const transaction = await makeContractCall({
-      network,
-      contractAddress,
-      contractName: 'arkadiko-stacker-payer-v1-1',
-      functionName: 'enable-vault-withdrawals',
-      functionArgs: [
-        uintCV(1)
-      ],
-      senderKey: privateKeyToString(senderKey)
-    });
-    await broadcastTransaction(transaction, network);
-  };
-
-  const requestDikoTokens = async () => {
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: address,
-      contractName: 'arkadiko-dao',
-      functionName: 'request-diko-tokens',
-      functionArgs: [
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
-        uintCV(50000000),
-      ],
-      postConditionMode: 0x01,
-      finished: data => {
-        console.log('finished redeeming diko!', data.txId);
-      },
-      anchorMode: AnchorMode.Any
-    });
-  };
-
-  const redeemStabilityFees = async () => {
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: address,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'redeem-usda',
-      functionArgs: [
-        uintCV(1502707),
-      ],
-      postConditionMode: 0x01,
-      finished: data => {
-        console.log('finished redeeming USDA!', data.txId);
-      },
-      anchorMode: AnchorMode.Any
-    });
   };
 
   const addTestnetStx = async () => {
@@ -249,7 +161,7 @@ export const Mint = () => {
                 <dt className="text-xs font-semibold text-indigo-800 uppercase">Stacking Cycle #</dt>
                 <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
-                    <PlaceHolder size={2} color="indigo" />
+                    <PlaceHolder />
                   ) : (
                     <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
                       {state.cycleNumber}
@@ -261,7 +173,7 @@ export const Mint = () => {
                 <dt className="text-xs font-semibold text-indigo-800 uppercase">End date</dt>
                 <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
-                    <PlaceHolder size={2} color="indigo" />
+                    <PlaceHolder />
                   ) : (
                     <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
                       {state.endDate}
@@ -273,7 +185,7 @@ export const Mint = () => {
                 <dt className="text-xs font-semibold text-indigo-800 uppercase">Days in cycle</dt>
                 <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
-                    <PlaceHolder size={2} color="indigo" />
+                    <PlaceHolder />
                   ) : (
                     <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
                       {state.daysPassed}
@@ -285,7 +197,7 @@ export const Mint = () => {
                 <dt className="text-xs font-semibold text-indigo-800 uppercase">Days left</dt>
                 <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
-                    <PlaceHolder size={2} color="indigo" />
+                    <PlaceHolder />
                   ) : (
                     <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
                       {state.daysLeft}
@@ -304,24 +216,16 @@ export const Mint = () => {
               {env == 'mocknet' ? (
                 <div className="flex items-center justify-end">
                   <span className="px-2 py-1 text-xs text-gray-800">Mocknet actions:</span> 
-                  <Link onClick={() => addMocknetStx()} className="inline-flex items-center px-4 py-2 ml-1 text-sm font-medium text-indigo-600 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Get 5000 STX tokens from mocknet
-                  </Link>
-
-                  <Link onClick={() => requestDikoTokens()} className="inline-flex items-center px-4 py-2 ml-1 text-sm font-medium text-indigo-600 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Test Request DIKO
-                  </Link>
-
-                  <Link onClick={() => redeemStabilityFees()} className="inline-flex items-center px-4 py-2 ml-1 text-sm font-medium text-indigo-600 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Redeem Stability Fees
-                  </Link>
+                  <button type="button" onClick={() => addMocknetStx()} className="inline-flex items-center px-3 py-2 text-sm font-normal leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Get 5000 STX from mocknet
+                  </button>
                 </div>
               ) : (
                 <div className="flex items-center justify-end mb-4">
                   <span className="px-2 py-1 text-xs text-gray-800">{env.replace(/^\w/, (c) => c.toUpperCase())} actions:</span>
-                  <Link onClick={() => addTestnetStx()} className="inline-flex items-center px-4 py-2 ml-1 text-sm font-medium text-indigo-600 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  <button type="button" onClick={() => addTestnetStx()} className="inline-flex items-center px-3 py-2 text-sm font-normal leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Get STX from {env}
-                  </Link>
+                  </button>
                 </div>
               )}
             </div>
@@ -443,7 +347,7 @@ export const Mint = () => {
               <VaultGroup vaults={vaults} />
             ) : loadingVaults === true ? (
               <div>
-                <p className="text-sm">Loading your vaults...</p>
+                <PlaceHolder />
               </div>
             ) : (
               <EmptyState
