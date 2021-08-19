@@ -5,9 +5,6 @@
 (define-constant ERR-NOT-AUTHORIZED u22401)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u221)
 (define-constant ERR-BURN-HEIGHT-NOT-REACHED u222)
-(define-constant ERR-WRONG-COLLATERAL-TOKEN u223)
-(define-constant ERR-VAULT-LIQUIDATED u227)
-(define-constant ERR-STILL-STACKING u194)
 
 (define-data-var stacking-stx-stacked uint u0) ;; how many stx did we stack in this cycle
 (define-data-var stacking-stx-received uint u0) ;; how many btc did we convert into STX tokens to add to vault collateral
@@ -267,45 +264,6 @@
           (try! (as-contract (contract-call? .usda-token transfer excess-usda (as-contract tx-sender) (get owner vault) none)))
         )
       )
-    )
-    (ok true)
-  )
-)
-
-;; This method should be ran by anyone
-;; after a stacking cycle ends to allow withdrawal of STX collateral
-;; Only mark vaults that have revoked stacking and not been liquidated
-;; must be called before a new initiate-stacking method call (stacking cycle)
-(define-public (enable-vault-withdrawals (vault-id uint))
-  (let (
-    (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
-  )
-    (asserts!
-      (and
-        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
-        (is-eq (var-get stacker-payer-shutdown-activated) false)
-      )
-      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
-    )
-    (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-WRONG-COLLATERAL-TOKEN))
-    (asserts! (is-eq false (get is-liquidated vault)) (err ERR-VAULT-LIQUIDATED))
-    (asserts! (is-eq true (get revoked-stacking vault)) (err ERR-STILL-STACKING))
-    (asserts!
-      (or
-        (is-eq u0 (var-get stacking-stx-stacked))
-        (>= burn-block-height (var-get stacking-unlock-burn-height))
-      )
-      (err ERR-BURN-HEIGHT-NOT-REACHED)
-    )
-
-    (if (> (var-get stacking-stx-stacked) u0)
-      (try! (as-contract (request-stx-for-withdrawal (get collateral vault))))
-      false
-    )
-    (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
-        stacked-tokens: u0,
-        updated-at-block-height: block-height
-      }))
     )
     (ok true)
   )

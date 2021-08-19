@@ -20,7 +20,7 @@ import { resolveReserveName, tokenTraits } from '@common/vault-utils';
 import BN from 'bn.js';
 import { tokenList } from '@components/token-swap-list';
 import { InputAmount } from './input-amount';
-
+import { getRPCClient } from '@common/utils';
 
 export const ManageVault = ({ match }) => {
   const { doContractCall } = useConnect();
@@ -46,8 +46,12 @@ export const ManageVault = ({ match }) => {
   const [isVaultOwner, setIsVaultOwner] = useState(false);
   const [stabilityFee, setStabilityFee] = useState(0);
   const [pendingVaultRewards, setPendingVaultRewards] = useState(0);
+  const [unlockBurnHeight, setUnlockBurnHeight] = useState(0);
   const [closingVault, setClosingVault] = useState(false);
-  const [enabledStacking, setEnabledStacking] = useState(true)
+  const [enabledStacking, setEnabledStacking] = useState(true);
+  const [startedStacking, setStartedStacking] = useState(true);
+  const [canWithdrawCollateral, setCanWithdrawCollateral] = useState(false);
+  const [canUnlockCollateral, setCanUnlockCollateral] = useState(false);
 
   useEffect(() => {
     const fetchVault = async () => {
@@ -73,6 +77,7 @@ export const ManageVault = ({ match }) => {
           leftoverCollateral: data['leftover-collateral'].value,
           debt: data['debt'].value,
           stackedTokens: data['stacked-tokens'].value,
+          stackerName: data['stacker-name'].value,
           revokedStacking: data['revoked-stacking'].value,
           collateralData: {},
         });
@@ -140,8 +145,50 @@ export const ManageVault = ({ match }) => {
       setPendingVaultRewards(reward.value.value / 1000000);
     };
 
+    const fetchStackerHeight = async () => {
+      const name = vault?.stackerName;
+      let contractName = 'arkadiko-stacker-v1-1';
+      if (name === 'stacker-2') {
+        contractName = 'arkadiko-stacker-2-v1-1';
+      } else if (name === 'stacker-3') {
+        contractName = 'arkadiko-stacker-3-v1-1';
+      } else if (name === 'stacker-4') {
+        contractName = 'arkadiko-stacker-4-v1-1';
+      }
+
+      const call = await callReadOnlyFunction({
+        contractAddress,
+        contractName,
+        functionName: "get-stacking-unlock-burn-height",
+        functionArgs: [],
+        senderAddress: contractAddress || '',
+        network: network
+      });
+      const unlockBurnHeight = cvToJSON(call).value.value;
+      setUnlockBurnHeight(unlockBurnHeight);
+      if (unlockBurnHeight === 0) {
+        setStartedStacking(false);
+        if (vault?.stackedTokens === 0) {
+          setCanWithdrawCollateral(true);
+        }
+        if (vault?.revokedStacking) {
+          setCanUnlockCollateral(true);
+        }
+        return;
+      }
+
+      const client = getRPCClient();
+      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
+      const data = await response.json();
+      const currentBurnHeight = data['stable_burn_block_height'];
+      if (unlockBurnHeight > currentBurnHeight) {
+        setCanWithdrawCollateral(true);
+      }
+    };
+
     if (vault?.id) {
       fetchFees();
+      fetchStackerHeight();
     }
   }, [vault]);
 
@@ -414,6 +461,22 @@ export const ManageVault = ({ match }) => {
       postConditionMode: 0x01,
       finished: data => {
         console.log('finished stacking!', data, data.txId);
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+      },
+      anchorMode: AnchorMode.Any
+    });
+  };
+
+  const unlockCollateral = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress: senderAddress,
+      contractName: "arkadiko-stacker-payer-v1-1",
+      functionName: 'enable-vault-withdrawals',
+      functionArgs: [uintCV(match.params.id)],
+      postConditionMode: 0x01,
+      finished: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
       anchorMode: AnchorMode.Any
@@ -788,26 +851,37 @@ export const ManageVault = ({ match }) => {
                           <p className="text-base font-normal leading-6 text-gray-500">Able to withdraw</p>
                         </div>
 
-                        {/* We should hide the button if it's not possible to withdraw */}
-                        {/* {isVaultOwner ? (
+                        {isVaultOwner && canWithdrawCollateral ? (
                           <button 
                             type="button" 
                             className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             onClick={() => setShowWithdrawModal(true)}>
                             Withdraw
                           </button>
-                        ) : null } */}
+                        ) : null }
+                        {isVaultOwner && canUnlockCollateral ? (
+                          <button 
+                          type="button" 
+                          className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          onClick={() => unlockCollateral()}>
+                            Unlock Collateral
+                        </button>
+                        ) : null }
                       </div>
                       
-                      {isVaultOwner && vault?.stackedTokens > 0 && !vault?.revokedStacking ? (
+                      {isVaultOwner && vault?.stackedTokens > 0 && !vault?.revokedStacking && !canWithdrawCollateral ? (
+                        // user has indicated they want to stack their STX tokens
                         <div className="p-4 mt-4 rounded-md bg-blue-50">
                           <div className="flex">
                             <div className="flex-shrink-0">
                               <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
                             </div>
                             <div className="flex-1 ml-3 md:flex md:justify-between">
-                              <p className="text-sm text-blue-700">You cannot withdraw your collateral since it is stacked until this 2-week cycle ends. Unstack your collateral to unlock it for withdrawal.</p>
-                                {isVaultOwner ? (
+                              {startedStacking ? (
+                                <>
+                                <p className="text-sm text-blue-700">
+                                  You cannot withdraw your collateral since it is stacked until this 2-week cycle ends. Unstack your collateral to unlock it for withdrawal.
+                                </p>
                                 <p className="mt-3 text-sm md:mt-0 md:ml-6">
                                   <button 
                                     type="button" 
@@ -816,7 +890,22 @@ export const ManageVault = ({ match }) => {
                                     Unstack <span aria-hidden="true">&rarr;</span>
                                   </button>
                                 </p>
-                              ) : null }
+                                </>
+                              ) : (
+                                <>
+                                <p className="text-sm text-blue-700">
+                                  The next stacking cycle has not started yet. You can still choose to opt-out of stacking your STX tokens. If you do so, you will not earn a yield on your vault.
+                                </p>
+                                <p className="mt-3 text-sm md:mt-0 md:ml-6">
+                                  <button 
+                                    type="button" 
+                                    className="font-medium text-blue-700 whitespace-nowrap hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                    onClick={() => callToggleStacking()}>
+                                    Do not stack <span aria-hidden="true">&rarr;</span>
+                                  </button>
+                                </p>
+                                </>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -827,8 +916,8 @@ export const ManageVault = ({ match }) => {
                               <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
                             </div>
                             <div className="flex-1 ml-3 md:flex md:justify-between">
-                              <p className="text-sm text-blue-700">You cannot withdraw your collateral since it is stacked until this 2-week cycle ends. You have unstacked your collateral, so it will be unlocked for withdrawal soon.</p>
-                                {isVaultOwner ? (
+                              <p className="text-sm text-blue-700">You have unstacked your collateral, you can choose to stack again.</p>
+                              {isVaultOwner ? (
                                 <p className="mt-3 text-sm md:mt-0 md:ml-6">
                                   <button 
                                     type="button" 
@@ -855,7 +944,7 @@ export const ManageVault = ({ match }) => {
                                     type="button" 
                                     className="font-medium text-blue-700 whitespace-nowrap hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                     onClick={() => stackCollateral()}>
-                                    Unstack <span aria-hidden="true">&rarr;</span>
+                                    Stack <span aria-hidden="true">&rarr;</span>
                                   </button>
                                 </p>
                               ) : null }
@@ -978,404 +1067,6 @@ export const ManageVault = ({ match }) => {
           </div>
         </section>
       </main>
-
-
-
-
-      {/* <main className="relative z-0 flex-1 pb-8 overflow-y-auto">
-        <div className="mt-8">
-          <h1 className="mb-4 text-2xl font-medium leading-6 text-gray-900">
-            {vault?.collateralToken.toUpperCase()}/USDA Vault #{match.params.id}
-          </h1>
-        </div>
-        <ul className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4">
-          <li className="relative flex col-span-2 rounded-md shadow-sm">
-            <h2 className="mt-8 mb-4 text-lg font-medium leading-6 text-gray-900">
-              Liquidation Price
-            </h2>
-          </li>
-          <li className="relative flex col-span-2 rounded-md shadow-sm">
-            <h2 className="mt-8 mb-4 text-lg font-medium leading-6 text-gray-900">
-              Collateral to Debt Ratio
-            </h2>
-            <Link onClick={() => callNotifyRisky()} color="blue" display="inline-block" mt={8} ml={5}>
-              (Notify Vault as Risky)
-            </Link>
-          </li>
-        </ul>
-        <ul className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4">
-          <li className="relative flex col-span-2 rounded-md shadow-sm">
-            <div className="w-full bg-white shadow sm:rounded-lg">
-              <div className="px-4 py-5 sm:p-6">
-                <h2 className="text-lg font-medium leading-6 text-gray-900">
-                  ${liquidationPrice()} USD ({vault?.collateralToken.toUpperCase()}/USD)
-                </h2>
-                <div className="mt-2 sm:flex sm:items-start sm:justify-between">
-                  <div className="max-w-xl text-sm text-gray-500">
-                    <p>
-                      Current Price Information
-                    </p>
-                  </div>
-                  <div className="max-w-xl text-sm text-gray-500">
-                    <p>
-                      ${price / 100} USD
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-2 sm:flex sm:items-start sm:justify-between">
-                  <div className="max-w-xl text-sm text-gray-500">
-                    <p>
-                      Liquidation Penalty
-                    </p>
-                  </div>
-                  <div className="max-w-xl text-sm text-gray-500">
-                    <p>
-                      {collateralType?.liquidationPenalty}%
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li className="relative flex col-span-2 rounded-md shadow-sm">
-            <div className="w-full bg-white shadow sm:rounded-lg">
-              <div className="px-4 py-5 sm:p-6">
-                <h2 className={`text-lg leading-6 font-medium ${debtClass(collateralType?.liquidationRatio, debtRatio)}`}>
-                  {debtRatio}%
-                </h2>
-                <div className="mt-2 sm:flex sm:items-start sm:justify-between">
-                  <div className="max-w-xl text-sm text-gray-500">
-                    <p>
-                      Minimum Ratio (before liquidation)
-                    </p>
-                  </div>
-                  <div className="max-w-xl text-sm text-gray-500">
-                    <p>
-                    {collateralType?.liquidationRatio}%
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-2 sm:flex sm:items-start sm:justify-between">
-                  <div className="max-w-xl text-sm text-gray-500">
-                    <p>
-                      Stability Fee
-                    </p>
-                  </div>
-                  <div className="max-w-xl text-sm text-gray-500">
-                    <p>
-                      {collateralType?.stabilityFeeApy / 100}%
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-        {isLiquidated ? auctionEnded ? (
-          <>
-            <ul className="grid grid-cols-1 gap-4 mt-8 sm:gap-6 sm:grid-cols-1 xl:grid-cols-1">
-              <li className="relative flex col-span-1 rounded-md shadow-sm">
-                <h2 className="mt-8 mb-4 text-lg font-medium leading-6 text-center text-gray-900">
-                  Your vault got liquidated. An auction ran and there is some leftover collateral
-                </h2>
-                <div className="max-w-xl text-sm text-gray-500">
-                  {isVaultOwner ? (
-                    <p>
-                      <Text onClick={() => callWithdraw()}
-                            _hover={{ cursor: 'pointer'}}
-                            className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Withdraw Leftover Collateral
-                      </Text>
-                    </p>
-                  ): null }
-                </div>
-              </li>
-            </ul>
-          </>
-        ) : (
-          <>
-            <ul className="grid grid-cols-1 gap-4 mt-8 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4">
-              <li className="relative flex col-span-2 rounded-md shadow-sm">
-                <h2 className="mt-8 mb-4 text-lg font-medium leading-6 text-gray-900">
-                  Vault got liquidated. Running auction...
-                </h2>
-              </li>
-            </ul>
-          </>
-        ) : (
-          <>
-          <ul className="grid grid-cols-1 gap-4 mt-8 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4">
-            <li className="relative flex col-span-2 rounded-md shadow-sm">
-              <h2 className="mt-8 mb-4 text-lg font-medium leading-6 text-gray-900">
-                {vault?.collateralToken.toUpperCase()} Locked
-              </h2>
-            </li>
-            <li className="relative flex col-span-2 rounded-md shadow-sm">
-              <h2 className="mt-8 mb-4 text-lg font-medium leading-6 text-gray-900">
-                Outstanding USDA debt
-              </h2>
-            </li>
-          </ul>
-          <ul className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4">
-            <li className="relative flex col-span-2 rounded-md shadow-sm">
-              <div className="w-full bg-white shadow sm:rounded-lg">
-                <div className="px-4 py-5 sm:p-6">
-                  <div className="mt-2 mb-10 sm:flex sm:items-start sm:justify-between">
-                    <div className="max-w-xl text-sm text-gray-500">
-                      <p>
-                      {vault?.collateralToken.toUpperCase()} Locked
-                      </p>
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      <p>
-                        {collateralLocked()} {vault?.collateralToken.toUpperCase()}
-                      </p>
-                    </div>
-                    {isVaultOwner ? (
-                      <div className="max-w-xl text-sm text-gray-500">
-                        <p>
-                          <Text onClick={() => setShowDepositModal(true)}
-                                _hover={{ cursor: 'pointer'}}
-                                className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Deposit
-                          </Text>
-                        </p>
-                      </div>
-                    ) : null }
-                  </div>
-                  <hr/>
-                  <div className="mt-8 sm:flex sm:items-start sm:justify-between">
-                    <div className="max-w-xl text-sm text-gray-500">
-                      <p>
-                        Able to withdraw
-                      </p>
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      <p>
-                        {maximumCollateralToWithdraw} {vault?.collateralToken.toUpperCase()}
-                      </p>
-                    </div>
-                    {isVaultOwner ? (
-                      <div className="max-w-xl text-sm text-gray-500">
-                        <p>
-                          {maximumCollateralToWithdraw > 0 ? (
-                            <Text onClick={() => setShowWithdrawModal(true)}
-                                  _hover={{ cursor: 'pointer'}}
-                                  className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                              Withdraw
-                            </Text>
-                          ) : null}
-                        </p>
-                      </div>
-                    ) : null }
-                  </div>
-                  {isVaultOwner && vault?.stackedTokens > 0 && !vault?.revokedStacking ? (
-                    <div className="mt-8 sm:flex sm:items-start sm:justify-between">
-                      <div className="max-w-xl text-sm text-gray-500">
-                        <p>
-                          You cannot withdraw your collateral since it is stacked until this 2-week cycle ends. <br/>
-                          Unstack your collateral to unlock it for withdrawal.
-                        </p>
-                      </div>
-                      <div className="max-w-xl text-sm text-gray-500">
-                        {isVaultOwner ? (
-                          <p>
-                            <Text onClick={() => callToggleStacking()}
-                                  _hover={{ cursor: 'pointer'}}
-                                  className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                              Unstack
-                            </Text>
-                          </p>
-                          ) : null }
-                      </div>
-                    </div>
-                  ) : isVaultOwner && vault?.stackedTokens > 0 && vault?.revokedStacking ? (
-                    <div className="mt-8 sm:flex sm:items-start sm:justify-between">
-                      <div className="max-w-xl text-sm text-gray-500">
-                        <p>
-                          You cannot withdraw your collateral since it is stacked until this 2-week cycle ends. <br/>
-                          You have unstacked your collateral, so it will be unlocked for withdrawal soon.
-                        </p>
-                      </div>
-                      <div className="max-w-xl text-sm text-gray-500">
-                        {isVaultOwner ? (
-                          <p>
-                            <Text onClick={() => callToggleStacking()}
-                                  _hover={{ cursor: 'pointer'}}
-                                  className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                              Restack
-                            </Text>
-                          </p>
-                        ) : null }
-                      </div>
-                    </div>
-                  ) : isVaultOwner ? (
-                    <div className="mt-8 sm:flex sm:items-start sm:justify-between">
-                      <div className="max-w-xl text-sm text-gray-500">
-                        <p>
-                          You are not stacking your collateral.
-                        </p>
-                      </div>
-                      <div className="max-w-xl text-sm text-gray-500">
-                        {isVaultOwner ? (
-                          <p>
-                            <Text onClick={() => stackCollateral()}
-                                  _hover={{ cursor: 'pointer'}}
-                                  className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                              Stack
-                            </Text>
-                          </p>
-                        ) : null }
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-            </li>
-            <li className="relative flex col-span-2 rounded-md shadow-sm">
-              <div className="w-full bg-white shadow sm:rounded-lg">
-                <div className="px-4 py-5 sm:p-6">
-                  <div className="mt-2 mb-5 sm:flex sm:items-start sm:justify-between">
-                    <div className="max-w-xl text-sm text-gray-500">
-                      <p>
-                        Outstanding USDA debt
-                      </p>
-                    </div>
-                    <div className="max-w-xl text-sm text-gray-500">
-                      <p>
-                        {outstandingDebt().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA
-                      </p>
-                    </div>
-                    {isVaultOwner ? (
-                      <div className="max-w-xl text-sm text-gray-500">
-                        <p>
-                          <Text onClick={() => setShowBurnModal(true)}
-                                _hover={{ cursor: 'pointer'}}
-                                className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Pay back
-                          </Text>
-                        </p>
-                      </div>
-                    ) : null }
-                  </div>
-                  <hr/>
-                  <div className="mt-5 mb-5 sm:flex sm:items-start sm:justify-between">
-                    <div className="max-w-xl text-sm text-gray-500">
-                      <p>
-                        Outstanding Stability Fees
-                      </p>
-                    </div>
-                    <div className="max-w-xl text-sm text-gray-500">
-                      <p>
-                      ${(stabilityFee / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA
-                      </p>
-                    </div>
-                    {isVaultOwner ? (
-                      <div className="max-w-xl text-sm text-gray-500">
-                        <p>
-                          <Text onClick={() => payStabilityFee()}
-                                _hover={{ cursor: 'pointer'}}
-                                className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Pay back
-                          </Text>
-                        </p>
-                      </div>
-                    ) : null }
-                  </div>
-                  <hr/>
-                  <div className="mt-5 mb-5 sm:flex sm:items-start sm:justify-between">
-                    <div className="max-w-xl text-sm text-gray-500">
-                      <p>
-                        Total Outstanding Debt
-                      </p>
-                    </div>
-                    <div className="max-w-xl text-sm text-gray-500">
-                      <p>
-                        ${(outstandingDebt() + stabilityFee / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA
-                      </p>
-                    </div>
-                    {isVaultOwner ? (
-                      <div className="max-w-xl text-sm text-gray-500">
-                        <p>
-                          <Text onClick={() => closeVault()}
-                                _hover={{ cursor: 'pointer'}}
-                                className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Close Vault
-                          </Text>
-                        </p>
-                      </div>
-                    ) : null }
-                  </div>
-                  <hr/>
-                  <div className="mt-5 mb-5 sm:flex sm:items-start sm:justify-between">
-                    <div className="max-w-xl text-sm text-gray-500">
-                      <p>
-                        Available to mint
-                      </p>
-                    </div>
-                    <div className="max-w-xl text-sm text-gray-500">
-                      <p>
-                        {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA
-                      </p>
-                    </div>
-                    {isVaultOwner ? (
-                      <div className="max-w-xl text-sm text-gray-500">
-                        <p>
-                          <Text onClick={() => setShowMintModal(true)}
-                                _hover={{ cursor: 'pointer'}}
-                                className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Mint
-                          </Text>
-                        </p>
-                      </div>
-                    ) : null }
-                  </div>
-                </div>
-              </div>
-            </li>
-          </ul>
-          <ul className="grid grid-cols-1 gap-4 mt-8 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4">
-            <li className="relative flex col-span-2 rounded-md shadow-sm">
-              <h2 className="mt-8 mb-4 text-lg font-medium leading-6 text-gray-900">
-                DIKO Vault Rewards
-              </h2>
-            </li>
-          </ul>
-          <ul className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 xl:grid-cols-4">
-            <li className="relative flex col-span-2 rounded-md shadow-sm">
-              <div className="w-full bg-white shadow sm:rounded-lg">
-                <div className="px-4 py-5 sm:p-6">
-                    
-                  <div className="mt-5 mb-5 sm:flex sm:items-start sm:justify-between">
-                    <div className="max-w-xl text-sm text-gray-500">
-                      <p>
-                        Unclaimed DIKO rewards
-                      </p>
-                    </div>
-                    <div className="max-w-xl text-sm text-gray-500">
-                      <p>
-                        {pendingVaultRewards.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
-                      </p>
-                    </div>
-                    {isVaultOwner ? (
-                      <div className="max-w-xl text-sm text-gray-500">
-                        <p>
-                          <Text onClick={() => claimPendingRewards()}
-                                _hover={{ cursor: 'pointer'}}
-                                className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Claim
-                          </Text>
-                        </p>
-                      </div>
-                    ) : null }
-                  </div>
-                </div>
-              </div>
-            </li>
-          </ul>
-          </>
-        )}
-      </main> */}
     </Container>
   )
 };
