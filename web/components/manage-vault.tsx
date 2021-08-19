@@ -503,7 +503,8 @@ export const ManageVault = ({ match }) => {
         uintCV(parseFloat(collateralToWithdraw) * 1000000),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1'),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1')
       ],
       postConditionMode: 0x01,
       finished: data => {
