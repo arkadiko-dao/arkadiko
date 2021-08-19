@@ -46,7 +46,7 @@ export const ManageVault = ({ match }) => {
   const [collateralType, setCollateralType] = useState<CollateralTypeProps>();
   const [isVaultOwner, setIsVaultOwner] = useState(false);
   const [stabilityFee, setStabilityFee] = useState(0);
-  const [pendingVaultRewards, setPendingVaultRewards] = useState(0);
+  const [totalDebt, setTotalDebt] = useState(0);
   const [unlockBurnHeight, setUnlockBurnHeight] = useState(0);
   const [closingVault, setClosingVault] = useState(false);
   const [enabledStacking, setEnabledStacking] = useState(true);
@@ -133,17 +133,7 @@ export const ManageVault = ({ match }) => {
       });
       const fee = cvToJSON(feeCall);
       setStabilityFee(fee.value.value);
-
-      const rewardCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-vault-rewards-v1-1",
-        functionName: "get-pending-rewards",
-        functionArgs: [standardPrincipalCV(senderAddress || '')],
-        senderAddress: contractAddress || '',
-        network: network
-      });
-      const reward = cvToJSON(rewardCall);
-      setPendingVaultRewards(reward.value.value / 1000000);
+      setTotalDebt(outstandingDebt() + (fee.value.value / 1000000));
     };
 
     const fetchStackerHeight = async () => {
@@ -1021,7 +1011,7 @@ export const ManageVault = ({ match }) => {
                       <div className="mt-4">
                         <div className="flex items-start justify-between">
                           <div>
-                            <p className="text-xl font-semibold leading-none">{outstandingDebt().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} <span className="text-sm font-normal">USDA</span></p>
+                            <p className="text-xl font-semibold leading-none">{totalDebt.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} <span className="text-sm font-normal">USDA</span></p>
                             <p className="flex items-center text-base font-normal leading-6 text-gray-500">
                               Outstanding USDA debt 
                               <Tooltip className="ml-2" shouldWrapChildren={true} label={`Includes a ${collateralType?.stabilityFeeApy / 100}% yearly stability fee.`}>
