@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Modal, Tooltip, useControllableState } from '@blockstack/ui';
+import { Modal, Tooltip } from '@blockstack/ui';
 import { XIcon } from '@heroicons/react/outline';
 import { InformationCircleIcon } from '@heroicons/react/solid';
 import { Container } from './home';
@@ -8,7 +8,7 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
 import {
   AnchorMode, uintCV, stringAsciiCV, contractPrincipalCV, cvToJSON,
-  standardPrincipalCV, callReadOnlyFunction, makeStandardFungiblePostCondition,
+  callReadOnlyFunction, makeStandardFungiblePostCondition,
   createAssetInfo, FungibleConditionCode, makeStandardSTXPostCondition } from '@stacks/transactions';
 import { AppContext, CollateralTypeProps } from '@common/context';
 import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
@@ -34,7 +34,6 @@ export const ManageVault = ({ match }) => {
   const [showMintModal, setShowMintModal] = useState(false);
   const [showBurnModal, setShowBurnModal] = useState(false);
   const [extraCollateralDeposit, setExtraCollateralDeposit] = useState('');
-  const [isLiquidated, setIsLiquidated] = useState(false);
   const [auctionEnded, setAuctionEnded] = useState(false);
   const [collateralToWithdraw, setCollateralToWithdraw] = useState('');
   const [maximumCollateralToWithdraw, setMaximumCollateralToWithdraw] = useState(0);
@@ -83,7 +82,6 @@ export const ManageVault = ({ match }) => {
           collateralData: {},
         });
         setReserveName(resolveReserveName(data['collateral-token'].value));
-        setIsLiquidated(data['is-liquidated'].value);
         setAuctionEnded(data['auction-ended'].value);
         setIsVaultOwner(data['owner'].value === senderAddress);
 
