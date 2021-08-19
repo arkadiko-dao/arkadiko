@@ -294,22 +294,6 @@ export const ManageVault = ({ match }) => {
     });
   };
 
-  const claimPendingRewards = async () => {
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: "arkadiko-vault-rewards-v1-1",
-      functionName: "claim-pending-rewards",
-      functionArgs: [],
-      postConditionMode: 0x01,
-      finished: data => {
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
-      },
-      anchorMode: AnchorMode.Any
-    });
-  };
-
   const addDeposit = async () => {
     if (!extraCollateralDeposit) {
       return;
