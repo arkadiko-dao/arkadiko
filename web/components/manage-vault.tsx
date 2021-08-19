@@ -468,11 +468,21 @@ export const ManageVault = ({ match }) => {
   };
 
   const unlockCollateral = async () => {
+    const name = vault?.stackerName;
+    let contractName = 'arkadiko-stacker-v1-1';
+    if (name === 'stacker-2') {
+      contractName = 'arkadiko-stacker-2-v1-1';
+    } else if (name === 'stacker-3') {
+      contractName = 'arkadiko-stacker-3-v1-1';
+    } else if (name === 'stacker-4') {
+      contractName = 'arkadiko-stacker-4-v1-1';
+    }
+
     await doContractCall({
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: "arkadiko-stacker-payer-v1-1",
+      contractName,
       functionName: 'enable-vault-withdrawals',
       functionArgs: [uintCV(match.params.id)],
       postConditionMode: 0x01,
