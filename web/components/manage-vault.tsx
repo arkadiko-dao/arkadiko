@@ -895,7 +895,7 @@ export const ManageVault = ({ match }) => {
                               {startedStacking ? (
                                 <>
                                 <p className="text-sm text-blue-700">
-                                  You cannot withdraw your collateral since it is stacked until this 2-week cycle ends. Unstack your collateral to unlock it for withdrawal.
+                                  You cannot withdraw your collateral since it is stacked until Bitcoin block {unlockBurnHeight}. Unstack your collateral to unlock it for withdrawal.
                                 </p>
                                 <p className="mt-3 text-sm md:mt-0 md:ml-6">
                                   <button 
