@@ -979,7 +979,7 @@ export const ManageVault = ({ match }) => {
                           </div>
                           <div>
                             <p className="text-xl font-semibold leading-none">20/07/2021<span className="text-sm font-normal"> (5 days)</span></p>
-                            <p className="text-base font-normal leading-6 text-gray-500">End of cycle</p>
+                            <p className="text-base font-normal leading-6 text-gray-500">End of current cycle</p>
                           </div>
                         </div>
                       </div>
@@ -1015,7 +1015,7 @@ export const ManageVault = ({ match }) => {
                             <p className="text-xl font-semibold leading-none">{outstandingDebt().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} <span className="text-sm font-normal">USDA</span></p>
                             <p className="flex items-center text-base font-normal leading-6 text-gray-500">
                               Outstanding USDA debt 
-                              <Tooltip className="ml-2" shouldWrapChildren={true} label={`Includes a 4% yearly stability fee.`}>
+                              <Tooltip className="ml-2" shouldWrapChildren={true} label={`Includes a ${collateralType?.stabilityFeeApy / 100}% yearly stability fee.`}>
                                 <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
                               </Tooltip>
                             </p>
