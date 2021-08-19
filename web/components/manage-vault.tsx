@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Modal, Tooltip } from '@blockstack/ui';
+import { Modal, Tooltip, useControllableState } from '@blockstack/ui';
 import { XIcon } from '@heroicons/react/outline';
 import { InformationCircleIcon } from '@heroicons/react/solid';
 import { Container } from './home';
@@ -21,6 +21,7 @@ import BN from 'bn.js';
 import { tokenList } from '@components/token-swap-list';
 import { InputAmount } from './input-amount';
 import { getRPCClient } from '@common/utils';
+import { microToReadable } from '@common/vault-utils';
 
 export const ManageVault = ({ match }) => {
   const { doContractCall } = useConnect();
@@ -146,6 +147,10 @@ export const ManageVault = ({ match }) => {
     };
 
     const fetchStackerHeight = async () => {
+      if (vault?.stackedTokens === 0 && vault?.revokedStacking) {
+        setEnabledStacking(false);
+      }
+
       const name = vault?.stackerName;
       let contractName = 'arkadiko-stacker-v1-1';
       if (name === 'stacker-2') {
@@ -968,17 +973,21 @@ export const ManageVault = ({ match }) => {
                       <div>
                         <div className="flex items-start justify-between">
                           <p className="text-xl font-semibold leading-none">Stacking</p>
-                          <p className="text-base font-normal leading-6 text-green-500">Enabled</p>
+                          {enabledStacking ? (
+                            <p className="text-base font-normal leading-6 text-green-500">Enabled</p>
+                          ) : (
+                            <p className="text-base font-normal leading-6 text-red-500">Disabled</p>
+                          )}
                         </div>
                       </div>
                       <div className="mt-4">
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                           <div>
-                            <p className="text-xl font-semibold leading-none">{collateralLocked()} <span className="text-sm font-normal">{vault?.collateralToken.toUpperCase()}</span></p>
+                            <p className="text-xl font-semibold leading-none">{microToReadable(vault?.stackedTokens)} <span className="text-sm font-normal">{vault?.collateralToken.toUpperCase()}</span></p>
                             <p className="text-base font-normal leading-6 text-gray-500">Currently stacking</p>
                           </div>
                           <div>
-                            <p className="text-xl font-semibold leading-none">20/07/2021<span className="text-sm font-normal"> (5 days)</span></p>
+                            <p className="text-xl font-semibold leading-none">{state.endDate}</p>
                             <p className="text-base font-normal leading-6 text-gray-500">End of current cycle</p>
                           </div>
                         </div>

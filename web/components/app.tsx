@@ -23,7 +23,6 @@ export const getBalance = async (address: string) => {
   const url = `${client.url}/extended/v1/address/${address}/balances`;
   const response = await fetch(url, { credentials: 'omit' });
   const data = await response.json();
-  // console.log(data);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
   const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
   const usdaBalance = data.fungible_tokens[`${contractAddress}.usda-token::usda`];
@@ -113,6 +112,40 @@ export const App: React.FC = () => {
     });
   };
 
+  const fetchStackingCycle = async () => {
+    const metaInfoUrl = `https://api.stacking.club/api/meta-info`;
+    fetch(metaInfoUrl)
+      .then((res) => res.json())
+      .then((response) => {
+        let cycleNumber = response[0]["pox"]["current_cycle"]["id"];
+
+        let cycleInfoUrl = `https://api.stacking.club/api/cycle-info?cycle=` + cycleNumber;
+        fetch(cycleInfoUrl)
+          .then((res) => res.json())
+          .then((response) => {
+            
+            let startTimestamp = response["startDate"];
+            let endTimestamp = response["endDate"];
+            let currentTimestamp = Date.now();
+
+            let daysPassed = Math.round((currentTimestamp - startTimestamp) / (1000*60*60*24));
+            let daysLeft = Math.round((endTimestamp - currentTimestamp) / (1000*60*60*24));
+
+            let startDate = new Date(startTimestamp).toDateString();
+            let endDate = new Date(endTimestamp).toDateString().split(' ').slice(1).join(' ');
+
+            setState(prevState => ({
+              ...prevState,
+              cycleNumber: cycleNumber,
+              startDate: startDate,
+              endDate: endDate,
+              daysPassed: daysPassed,
+              daysLeft: daysLeft
+            }));
+          });
+      });
+  };
+
   useEffect(() => {
     if (userSession.isUserSignedIn()) {
       const userData = userSession.loadUserData();
@@ -123,6 +156,7 @@ export const App: React.FC = () => {
           initiateConnection(address, setState);
           fetchBalance(address);
           fetchCollateralTypes(address);
+          fetchStackingCycle();
         } catch (error) {
           console.error(error);
         }
@@ -136,6 +170,7 @@ export const App: React.FC = () => {
       const userData = await userSession.handlePendingSignIn();
       fetchBalance(resolveSTXAddress(userData));
       fetchCollateralTypes(resolveSTXAddress(userData));
+      fetchStackingCycle();
       setState(prevState => ({ ...prevState, userData }));
     }
   };
@@ -152,6 +187,7 @@ export const App: React.FC = () => {
       const userData = userSession.loadUserData();
       fetchBalance(resolveSTXAddress(userData));
       fetchCollateralTypes(resolveSTXAddress(userData));
+      fetchStackingCycle();
       setState(prevState => ({ ...prevState, userData }));
     },
     appDetails: {

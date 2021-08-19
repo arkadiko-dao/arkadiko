@@ -111,40 +111,6 @@ export const Mint = () => {
       setLoadingVaults(false);
     };
 
-    let metaInfoUrl = `https://api.stacking.club/api/meta-info`;
-    setLoadingStackingData(true)
-    fetch(metaInfoUrl)
-      .then((res) => res.json())
-      .then((response) => {
-        let cycleNumber = response[0]["pox"]["current_cycle"]["id"];
-
-        let cycleInfoUrl = `https://api.stacking.club/api/cycle-info?cycle=` + cycleNumber;
-        fetch(cycleInfoUrl)
-          .then((res) => res.json())
-          .then((response) => {
-            
-            let startTimestamp = response["startDate"];
-            let endTimestamp = response["endDate"];
-            let currentTimestamp = Date.now();
-
-            let daysPassed = Math.round((currentTimestamp - startTimestamp) / (1000*60*60*24));
-            let daysLeft = Math.round((endTimestamp - currentTimestamp) / (1000*60*60*24));
-
-            let startDate = new Date(startTimestamp).toDateString();
-            let endDate = new Date(endTimestamp).toDateString().split(' ').slice(1).join(' ');
-
-            setState(prevState => ({
-              ...prevState,
-              cycleNumber: cycleNumber,
-              startDate: startDate,
-              endDate: endDate,
-              daysPassed: daysPassed,
-              daysLeft: daysLeft
-            }));
-            setLoadingStackingData(false);
-          });
-      });
-
     fetchVaults();
   }, []);
 
@@ -160,59 +126,6 @@ export const Mint = () => {
       network: network
     });
     await broadcastTransaction(transaction, network);
-  };
-
-  const unlockVault = async () => {
-    const key = '';
-    const senderKey = createStacksPrivateKey(key);
-    const transaction = await makeContractCall({
-      network,
-      contractAddress,
-      contractName: 'arkadiko-stacker-payer-v1-1',
-      functionName: 'enable-vault-withdrawals',
-      functionArgs: [
-        uintCV(1)
-      ],
-      senderKey: privateKeyToString(senderKey)
-    });
-    await broadcastTransaction(transaction, network);
-  };
-
-  const requestDikoTokens = async () => {
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: address,
-      contractName: 'arkadiko-dao',
-      functionName: 'request-diko-tokens',
-      functionArgs: [
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
-        uintCV(50000000),
-      ],
-      postConditionMode: 0x01,
-      finished: data => {
-        console.log('finished redeeming diko!', data.txId);
-      },
-      anchorMode: AnchorMode.Any
-    });
-  };
-
-  const redeemStabilityFees = async () => {
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: address,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'redeem-usda',
-      functionArgs: [
-        uintCV(1502707),
-      ],
-      postConditionMode: 0x01,
-      finished: data => {
-        console.log('finished redeeming USDA!', data.txId);
-      },
-      anchorMode: AnchorMode.Any
-    });
   };
 
   const addTestnetStx = async () => {
