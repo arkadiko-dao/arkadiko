@@ -48,10 +48,18 @@ export const Mint = () => {
 
       let dikoPrice = await getDikoAmmPrice();
       setDikoPrice(dikoPrice);
+      setLoadingStackingData(false);
     };
 
+    setLoadingStackingData(true);
     fetchPrices();
   }, []);
+
+  useEffect(() => {
+    if (state.currentTxStatus === 'success') {
+      window.location.reload();
+    }
+  }, [state.currentTxStatus]);
 
   useEffect(() => {
     const fetchVault = async (vaultId:number) => {
