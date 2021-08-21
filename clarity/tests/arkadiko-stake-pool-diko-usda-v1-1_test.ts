@@ -85,12 +85,12 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Advanced 3 blocks for user plus one in calculation
   // At start there are ~626 rewards per block. 4*626=2504 (if 100% of rewards go to this pool)
-  // But this pool only gets 20% of total rewards
+  // But this pool only gets 25% of total rewards
   call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-1')
   ], wallet_1.address);
-  call.result.expectOk().expectUint(501119155);   
+  call.result.expectOk().expectUint(626398888);   
 
   // Unstake funds
   block = chain.mineBlock([
@@ -107,7 +107,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(223606797);   
   call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-  call.result.expectOk().expectUint(150001119155);   
+  call.result.expectOk().expectUint(150126398888);   
 
   // Staked total
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-amount-of", [types.principal(wallet_1.address)], wallet_1.address);
@@ -180,11 +180,11 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Started at 0. Calculation takes into account 1 extra block.
   // First block has 626 rewards. 1 * (626 / 223) = 2.807 - if 100% of rewards go to this pool
-  // But pool only gets 20% of total staking rewards
+  // But pool only gets 25% of total staking rewards
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "calculate-cumm-reward-per-stake", [
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
   ], wallet_1.address);
-  call.result.expectOk().expectUint(560268);
+  call.result.expectOk().expectUint(700335);
 
   // Wallet 1 starts at 20
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-cumm-reward-per-stake-of", [types.principal(wallet_1.address)], wallet_1.address);
@@ -192,12 +192,12 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Advanced 0 blocks for user. 
   // Pending rewards takes into account 1 block extra, 626 at start - if 100% of rewards go to this pool
-  // But pool only gets 20% of total staking rewards
+  // But pool only gets 25% of total staking rewards
   call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-1')
   ], wallet_1.address);
-  call.result.expectOk().expectUint(125279732);
+  call.result.expectOk().expectUint(156599666);
 
 
   // Advance 3 blocks
@@ -210,20 +210,20 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Advanced 3 blocks. Calculate function takes into account current rewards, so adds 1 block
   // First block has 626 rewards. Start cumm reward: 1 * (626 / 223) = 2.807
   // 4 blocks later: 4 * 2.807 = 11.22
-  // But we only get 20% of total rewards in this pool
+  // But we only get 25% of total rewards in this pool
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "calculate-cumm-reward-per-stake", [
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
   ], wallet_1.address);
-  call.result.expectOk().expectUint(2241073);
+  call.result.expectOk().expectUint(2801341);
 
   // Advanced 3 blocks for user plus one in calculation
   // 4 blocks * ~626 rewards = 2504
-  // But we only get 20% of total rewards in this pool
+  // But we only get 25% of total rewards in this pool
   call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-1')
   ], wallet_1.address);
-  call.result.expectOk().expectUint(501119155);   
+  call.result.expectOk().expectUint(626398888);   
   
 
   // Stake - Wallet 2
@@ -243,35 +243,35 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // First blocks have 626 rewards. Start cumm reward: 626 / 223 = 2.807
   // 4 blocks later: 4 * 2.807 = 11.228
-  // But only 20% of staking rewards are for this pool
+  // But only 25% of staking rewards are for this pool
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-cumm-reward-per-stake-of", [types.principal(wallet_2.address)], wallet_2.address);
-  call.result.expectUint(2241073);
+  call.result.expectUint(2801341);
 
   // Should be same as previous check (get-stake-cumm-reward-per-stake-of)
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-cumm-reward-per-stake", [], wallet_1.address);
-  call.result.expectUint(2241073);
+  call.result.expectUint(2801341);
 
   // We had 11.228. Now wallet 2 staked. 
   // 626 block rewards / 423 staking amount = 1.4799
   // 11.228 + 1.4799 = 12.70
-  // But only 20% of staking rewards are for this pool
+  // But only 25% of staking rewards are for this pool
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "calculate-cumm-reward-per-stake", [
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
   ], wallet_1.address);
-  call.result.expectOk().expectUint(2536818);
+  call.result.expectOk().expectUint(3171022);
 
   // User just staked, so only advanced 1 block. 
   call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-1')
   ], wallet_2.address);
-  call.result.expectOk().expectUint(59149000);  
+  call.result.expectOk().expectUint(73936200);  
 
   call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-1')
   ], wallet_1.address);
-  call.result.expectOk().expectUint(567249747);   
+  call.result.expectOk().expectUint(709062072);   
 
 
   // Unstake funds
@@ -287,13 +287,13 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // New cumm reward for wallet
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-cumm-reward-per-stake", [], wallet_1.address);
-  call.result.expectUint(2536818);
+  call.result.expectUint(3171022);
 
   // New cumm reward per stake
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "calculate-cumm-reward-per-stake", [
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
   ], wallet_1.address);
-  call.result.expectOk().expectUint(2923953);
+  call.result.expectOk().expectUint(3654941);
 }
 });
 
@@ -340,12 +340,12 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Advanced 3 blocks for user plus one in calculation  
   // 626 pool rewards * 4 blocks * 50% of pool = 1252
-  // But only 20% of staking rewards are for this pool
+  // But only 25% of staking rewards are for this pool
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-pending-rewards", [
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
     types.principal(wallet_1.address)
   ], wallet_1.address);
-  call.result.expectOk().expectUint(250559600);
+  call.result.expectOk().expectUint(313199500);
   
   // Claim
   block = chain.mineBlock([
@@ -354,18 +354,18 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
       types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-1'),
     ], wallet_1.address)
   ]);
-  block.receipts[0].result.expectOk().expectUint(250559600);
+  block.receipts[0].result.expectOk().expectUint(313199500);
 
   // Check if user got rewards (there is still some in swap)
   call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-  call.result.expectOk().expectUint(149750559600);
+  call.result.expectOk().expectUint(149813199500);
   
   // Just claimed rewards, so this is for 1 block only.
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-pending-rewards", [
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
     types.principal(wallet_1.address)
   ], wallet_1.address);
-  call.result.expectOk().expectUint(62639900);
+  call.result.expectOk().expectUint(78299800);
 }
 });
 
@@ -409,7 +409,7 @@ Clarinet.test({
       types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
       types.principal(wallet_1.address)
     ], wallet_1.address);
-    call.result.expectOk().expectUint(2630876000);
+    call.result.expectOk().expectUint(3288595000);
 
     // Stake of user in DIKO pool
     block = chain.mineBlock([
@@ -434,11 +434,11 @@ Clarinet.test({
         types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token'),
       ], wallet_1.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(2756155800);
+    block.receipts[0].result.expectOk().expectUint(3445194800);
 
     // Total stDIKO supply
     call = chain.callReadOnlyFn("stdiko-token", "get-total-supply", [], wallet_1.address);
-    call.result.expectOk().expectUint(2756155800);   
+    call.result.expectOk().expectUint(3445194800);   
 
     // Stake of user in DIKO pool
     block = chain.mineBlock([
@@ -448,7 +448,7 @@ Clarinet.test({
           types.uint(4134233700)
       ], wallet_1.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(2923192647);
+    block.receipts[0].result.expectOk().expectUint(4228191938);
 
   }
 });
@@ -526,7 +526,7 @@ Clarinet.test({
         types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token'),
       ], wallet_1.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(2881435600);
+    block.receipts[0].result.expectOk().expectUint(3601794500);
 
     // Claim + stake in DIKO pool should fail
     block = chain.mineBlock([
@@ -862,7 +862,7 @@ Clarinet.test({
       types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
       types.principal(deployer.address)
     ], deployer.address);
-    call.result.expectOk().expectUint(501119200);   
+    call.result.expectOk().expectUint(626399000);   
   
     // Unstake funds
     block = chain.mineBlock([
@@ -881,7 +881,7 @@ Clarinet.test({
 
     // Rewards are claimed
     call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(890001119200);   
+    call.result.expectOk().expectUint(890126399000);   
   
     // Staked total
     call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-amount-of", [types.principal(deployer.address)], deployer.address);
@@ -1337,14 +1337,14 @@ Clarinet.test({
       // Check pending rewards after each year
       switch (index)
       {
-        // Pool only gets 20% from total rewards
-        case 53: call.result.expectOk().expectUint(5055139186880); break; // 50 mio total rewards
-        case 106: call.result.expectOk().expectUint(7488449557808); break; // 50 + (50/2) = 75 mio total rewards
-        case 159: call.result.expectOk().expectUint(8689303506352); break; 
-        case 212: call.result.expectOk().expectUint(9282134169325); break; 
-        case 265: call.result.expectOk().expectUint(9604610718043); break; 
-        case 318: call.result.expectOk().expectUint(9904081917037); break; 
-        case 371: call.result.expectOk().expectUint(10203553116031); break; 
+        // Pool only gets 25% from total rewards
+        case 53: call.result.expectOk().expectUint(6318923989693); break; // 50 mio total rewards
+        case 106: call.result.expectOk().expectUint(9360561965205); break; // 50 + (50/2) = 75 mio total rewards
+        case 159: call.result.expectOk().expectUint(10861629411059); break; 
+        case 212: call.result.expectOk().expectUint(11602667746931); break; 
+        case 265: call.result.expectOk().expectUint(12005763432101); break; 
+        case 318: call.result.expectOk().expectUint(12380102427880); break; 
+        case 371: call.result.expectOk().expectUint(12754441423660); break; 
         default: break;
       }
     }
@@ -1506,19 +1506,19 @@ Clarinet.test({
 
       switch (index)
       {
-        // pool gets 20% of total rewards
-        case 53: callLp1.result.expectOk().expectUint(5055139190750); break;
-        case 106: callLp1.result.expectOk().expectUint(7488449565000); break;
-        case 371: callLp1.result.expectOk().expectUint(10203553136800); break;
+        // pool gets 25% of total rewards
+        case 53: callLp1.result.expectOk().expectUint(6318923994350); break;
+        case 106: callLp1.result.expectOk().expectUint(9360561974200); break;
+        case 371: callLp1.result.expectOk().expectUint(12754441455150); break;
         default: break;
       }
 
       switch (index)
       {
-        // pool gets 20% of total rewards
-        case 53: callLp3.result.expectOk().expectUint(5055136830000); break;
-        case 106: callLp3.result.expectOk().expectUint(7488443461200); break;
-        case 371: callLp3.result.expectOk().expectUint(10203536393850); break;
+        // pool gets 15% of total rewards
+        case 53: callLp3.result.expectOk().expectUint(3791352612600); break;
+        case 106: callLp3.result.expectOk().expectUint(5616332576000); break;
+        case 371: callLp3.result.expectOk().expectUint(7652652252350); break;
         default: break;
       }
 
