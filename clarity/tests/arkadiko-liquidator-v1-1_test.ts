@@ -6,45 +6,33 @@ import {
   types,
 } from "https://deno.land/x/clarinet@v0.13.0/index.ts";
 
+import { 
+  OracleManager
+} from './models/arkadiko-tests-tokens.ts';
+
+import { 
+  VaultManager,
+  VaultLiquidator,
+  VaultAuction 
+} from './models/arkadiko-tests-vaults.ts';
+
 Clarinet.test({
   name:
     "liquidator: liquidating a healthy vault fails",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
-    let block = chain.mineBlock([
-      // Initialize price of STX to $3 in the oracle
-      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
-        types.ascii("STX"),
-        types.uint(300),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(150000000), // 150 STX
-        types.uint(100000000), // mint 130 USDA
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], deployer.address)
-    ]);
-    block.receipts[1].result
-      .expectOk()
-      .expectUint(100000000);
-    
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidator-v1-1", "notify-risky-vault", [
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-auction-engine-v1-1'),
-        types.uint(1),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(52);
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultLiquidator = new VaultLiquidator(chain, deployer);
+
+    let result = oracleManager.updatePrice("STX", 300);
+    result.expectOk().expectUint(300);
+
+    result = vaultManager.createVault(deployer, "STX-A", 150, 100);
+    result.expectOk().expectUint(100000000);
+
+    result = vaultLiquidator.notifyRiskyVault(deployer, 1);
+    result.expectErr().expectUint(52);
   }
 });
