@@ -201,8 +201,10 @@ export const App: React.FC = () => {
       <ThemeProvider theme={theme}>
         <AppContext.Provider value={[state, setState]}>
           <div className="flex flex-col font-sans bg-white min-height-screen">
-            <Header signOut={signOut} setShowSidebar={setShowSidebar} />
-            {state.userData ? (
+            {location.pathname !== '/onboarding' ? (
+              <Header signOut={signOut} setShowSidebar={setShowSidebar} />
+            ) : null }
+            {state.userData && location.pathname !== '/onboarding' ? (
               <SubHeader />
             ) : null}
             <TxStatus />

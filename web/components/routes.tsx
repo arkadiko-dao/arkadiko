@@ -12,6 +12,7 @@ import { ManageVault } from './manage-vault';
 import { ViewProposal } from './view-proposal';
 import { Stake } from './stake';
 import { Balances } from './balances';
+import { Onboarding } from './onboarding';
 
 export const routerConfig = [
   {
@@ -24,6 +25,7 @@ export function Routes() {
   return (
     <Switch>
       <Route exact path="/" component={Swap} />
+      <Route exact path="/onboarding" component={Onboarding} />
       <Route exact path="/vaults" component={Home} />
       <Route exact path="/swap" component={Swap} />
       <Route exact path="/swap/add/:currencyIdA/:currencyIdB" component={AddSwapLiquidity} />
