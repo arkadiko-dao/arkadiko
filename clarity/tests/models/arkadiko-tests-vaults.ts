@@ -54,7 +54,7 @@ class VaultManager {
     ], caller.address);
   }
 
-  createVault(user: Account, collateralType: string, amount: number, usda: number) {
+  createVault(user: Account, collateralType: string, amount: number, usda: number, stack: boolean = true, autoPayoff: boolean = true) {
     // Get reserve based on collateralType
     var reserve = types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1");
     if (collateralType.lastIndexOf("STX-", 0) === 0) {
@@ -220,6 +220,57 @@ class VaultManager {
     ]);
     return block.receipts[0].result;
   }
+
+  accrueStabilityFee(vaultId: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "accrue-stability-fee", [
+        types.uint(vaultId),
+        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1")
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  changeRiskParameters(collateralType: string, stabilityFee: number, stabilityFeeApy: number, stabilityFeeDecimals: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-collateral-types-v1-1", "change-risk-parameters", [
+        types.ascii(collateralType),
+        types.list([
+          types.tuple({
+            'key': types.ascii("stability-fee"),
+            'new-value': types.uint(stabilityFee)
+          }),
+          types.tuple({
+            'key': types.ascii("stability-fee-apy"),
+            'new-value': types.uint(stabilityFeeApy)
+          }),
+          types.tuple({
+            'key': types.ascii("stability-fee-decimals"),
+            'new-value': types.uint(stabilityFeeDecimals)
+          }),
+        ])
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  redeemTokens(amountUsda: number, amountDiko: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "redeem-tokens", [
+        types.uint(amountUsda), 
+        types.uint(amountDiko)
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  emergencyShutdown() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "toggle-freddie-shutdown", [], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
 }
 export { VaultManager };
 
@@ -302,6 +353,13 @@ class VaultAuction {
     );
   }
 
+  emergencyShutdown() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "toggle-auction-engine-shutdown", [], this.deployer.address),
+    ]);
+    return block.receipts[0].result;
+  }
+
   bid(user: Account, bid: number, vaultId: number = 1, lot: number = 0) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
@@ -316,7 +374,8 @@ class VaultAuction {
     return block.receipts[0].result;
   }
   
-  redeemLotCollateral(user: Account, vaultId: number = 1, lot: number = 0) {
+  // Redeem xSTX
+  redeemLotCollateralXstx(user: Account, vaultId: number = 1, lot: number = 0) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v1-1", "redeem-lot-collateral", [
         types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1'),
@@ -336,12 +395,13 @@ class VaultAuction {
     return block.receipts[0].result;
   }
 
+  // Redeem STX
   redeemLotCollateralStx(user: Account, vaultId: number = 1, lot: number = 0) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v1-1", "redeem-lot-collateral", [
         types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1'),
         types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
+          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.xstx-token", // Not used in SC
         ),
         types.principal(
           "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1",

@@ -175,10 +175,8 @@ Clarinet.test({
     call.result.expectOk().expectUint(balance - fee);
 
     // withdraw the USDA from freddie to the deployer's (contract owner) address
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "redeem-tokens", [types.uint(fee), types.uint(0)], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
+    result = vaultManager.redeemTokens(fee, 0);
+    result.expectOk().expectBool(true);
 
     call = await usdaManager.balanceOf('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1')
     call.result.expectOk().expectUint(0);
@@ -207,29 +205,8 @@ Clarinet.test({
     let call = vaultManager.getStabilityFee(1, deployer);
     call.result.expectOk().expectUint(19973180); // ~20 = 500 USDA * 4%
 
-    chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "accrue-stability-fee", [
-        types.uint(1),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1")
-      ], deployer.address),
-      Tx.contractCall("arkadiko-collateral-types-v1-1", "change-risk-parameters", [
-        types.ascii("STX-A"),
-        types.list([
-          types.tuple({
-            'key': types.ascii("stability-fee"),
-            'new-value': types.uint(191816250)
-          }),
-          types.tuple({
-            'key': types.ascii("stability-fee-apy"),
-            'new-value': types.uint(100)
-          }),
-          types.tuple({
-            'key': types.ascii("stability-fee-decimals"),
-            'new-value': types.uint(14)
-          }),
-        ])
-      ], deployer.address)
-    ]);
+    vaultManager.accrueStabilityFee(1);
+    vaultManager.changeRiskParameters("STX-A", 191816250, 100, 14);
 
     call = await vaultManager.getVaultById(1, deployer);
     let vault:any = call.result.expectTuple();
@@ -238,7 +215,7 @@ Clarinet.test({
     chain.mineEmptyBlock(365*144);
     call = vaultManager.getStabilityFee(1, deployer);
 
-    call.result.expectOk().expectUint(50405999); // 10% APY of 500 USDA => 50 USDA
+    call.result.expectOk().expectUint(50406958); // 10% APY of 500 USDA => 50 USDA
 
     result = vaultManager.payStabilityFee(deployer, 1);
  
@@ -585,9 +562,7 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 200);
     result.expectOk().expectUint(200);
 
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "toggle-freddie-shutdown", [], deployer.address),
-    ]);
+    vaultManager.emergencyShutdown();
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 30);
     result.expectErr().expectUint(411);
@@ -645,10 +620,8 @@ Clarinet.test({
     chain.mineEmptyBlock(144*30);
 
     // Redeem DIKO
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "redeem-tokens", [types.uint(0), types.uint(947068138000)], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
+    result = vaultManager.redeemTokens(0, 947068138000);
+    result.expectOk().expectBool(true);
 
     // Payout address balance
     call = await dikoManager.balanceOf(deployer.address)

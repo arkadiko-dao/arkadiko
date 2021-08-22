@@ -104,15 +104,15 @@ Clarinet.test({
     call.result.expectOk().expectUint(0);
 
     // now try withdrawing the xSTX tokens that are not mine
-    result = vaultAuction.redeemLotCollateral(wallet_1);
+    result = vaultAuction.redeemLotCollateralXstx(wallet_1);
     result.expectErr().expectUint(2403);
 
     // now try withdrawing the xSTX tokens that are mine
-    result = vaultAuction.redeemLotCollateral(deployer);
+    result = vaultAuction.redeemLotCollateralXstx(deployer);
     result.expectOk().expectBool(true);
 
     // now try withdrawing the xSTX tokens again
-    result = vaultAuction.redeemLotCollateral(deployer);
+    result = vaultAuction.redeemLotCollateralXstx(deployer);
     result.expectErr().expectUint(211);
 
     call = await xstxManager.balanceOf(deployer.address);
@@ -401,6 +401,7 @@ Clarinet.test({name: "auction engine: cannot start auction when emergency shutdo
 
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
+    let auctionManager = new VaultAuction(chain, deployer);
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
 
     // Create vault and liquidate
@@ -411,22 +412,11 @@ Clarinet.test({name: "auction engine: cannot start auction when emergency shutdo
 
     // Now the liquidation started and an auction should have been created!
     // Make a bid on the first 1000 USDA
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-auction-engine-v1-1", "toggle-auction-engine-shutdown", [], deployer.address),
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
+    result = auctionManager.emergencyShutdown();
+    result.expectOk().expectBool(true);
 
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1'),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.uint(1),
-        types.uint(0),
-        types.uint(1000 * 1000000)
-      ], wallet_1.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(213);
+    result = auctionManager.bid(wallet_1, 1000);
+    result.expectErr().expectUint(213);
   }
 });
 
@@ -512,7 +502,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Try withdraw, but auction not ended yet
-    result = vaultAuction.redeemLotCollateral(wallet_2);
+    result = vaultAuction.redeemLotCollateralXstx(wallet_2);
     result.expectErr().expectUint(210);
 
     // Bid on second lot USDA
@@ -521,7 +511,7 @@ Clarinet.test({
 
     // Try withdraw, but auction not ended yet.
     // Liquidator has only covered the USDA minted, not the fees yet
-    result = vaultAuction.redeemLotCollateral(wallet_2);
+    result = vaultAuction.redeemLotCollateralXstx(wallet_2);
     result.expectErr().expectUint(210);
 
     // Bid on second lot again, take into account fees
@@ -529,7 +519,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Withdrawing the xSTX tokens
-    result = vaultAuction.redeemLotCollateral(wallet_2);
+    result = vaultAuction.redeemLotCollateralXstx(wallet_2);
     result.expectOk().expectBool(true);
   }
 });
@@ -782,7 +772,7 @@ Clarinet.test({
     vault['stacked-tokens'].expectUint(1500000000);
 
     // Redeem xSTX
-    result = vaultAuction.redeemLotCollateral(deployer);
+    result = vaultAuction.redeemLotCollateralXstx(deployer);
     result.expectOk().expectBool(true);
 
     call = await xstxManager.balanceOf(deployer.address);
@@ -911,7 +901,7 @@ Clarinet.test({
     chain.mineEmptyBlock(144);
 
     // Won the bid for 450 USDA - redeem
-    result = vaultAuction.redeemLotCollateral(deployer, 1, 0);
+    result = vaultAuction.redeemLotCollateralXstx(deployer, 1, 0);
     result.expectOk().expectBool(true);
 
     // Auction should be extended since not all bad debt was raised yet
@@ -923,17 +913,17 @@ Clarinet.test({
 
     chain.mineEmptyBlock(144);
 
-    result = vaultAuction.redeemLotCollateral(deployer, 1, 1);
+    result = vaultAuction.redeemLotCollateralXstx(deployer, 1, 1);
     result.expectOk().expectBool(true);
 
-    result = vaultAuction.redeemLotCollateral(deployer, 1, 2);
+    result = vaultAuction.redeemLotCollateralXstx(deployer, 1, 2);
     result.expectOk().expectBool(true);
 
     result = vaultAuction.bid(deployer, 60, 1, 3);
     result.expectOk().expectBool(true);
 
     chain.mineEmptyBlock(144);
-    result = vaultAuction.redeemLotCollateral(deployer, 1, 3);
+    result = vaultAuction.redeemLotCollateralXstx(deployer, 1, 3);
     result.expectOk().expectBool(true);
   }
 });
@@ -966,7 +956,7 @@ Clarinet.test({
     chain.mineEmptyBlock(144);
 
     // Won the bid for 450 USDA - redeem
-    result = vaultAuction.redeemLotCollateral(deployer, 1, 0);
+    result = vaultAuction.redeemLotCollateralXstx(deployer, 1, 0);
     result.expectOk().expectBool(true);
 
     // Auction should be extended since not all bad debt was raised yet
@@ -978,7 +968,7 @@ Clarinet.test({
 
     chain.mineEmptyBlock(144);
 
-    result = vaultAuction.redeemLotCollateral(deployer, 1, 2);
+    result = vaultAuction.redeemLotCollateralXstx(deployer, 1, 2);
     result.expectOk().expectBool(true);
 
     let call = await vaultManager.getVaultById(1, deployer);
@@ -990,7 +980,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     chain.mineEmptyBlock(144);
-    result = vaultAuction.redeemLotCollateral(deployer, 1, 3);
+    result = vaultAuction.redeemLotCollateralXstx(deployer, 1, 3);
     result.expectOk().expectBool(true);
 
     call = await vaultManager.getVaultById(1, deployer);
