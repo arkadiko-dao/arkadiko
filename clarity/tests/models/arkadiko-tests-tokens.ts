@@ -58,6 +58,31 @@ class DikoManager {
 }
 export { DikoManager };
 
+// ---------------------------------------------------------
+// stDIKO
+// ---------------------------------------------------------
+
+class StDikoManager {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  balanceOf(wallet: string) {
+    return this.chain.callReadOnlyFn("stdiko-token", "get-balance", [
+      types.principal(wallet),
+    ], this.deployer.address);
+  }
+  
+  totalSupply() {
+    return this.chain.callReadOnlyFn("stdiko-token", "get-total-supply", [], this.deployer.address);
+  }
+}
+export { StDikoManager };
+
 
 // ---------------------------------------------------------
 // USDA
