@@ -29,6 +29,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   let call:any = stakeRegistry.getPoolData(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
   call.result.expectTuple()['name'].expectAscii('DIKO');
+
 }
 });
 
@@ -45,14 +46,14 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Check DIKO and stDIKO balance before staking
   let call = dikoToken.balanceOf(wallet_1.address);
-  call.result.expectOk().expectUint(150000000000);   
+  call.result.expectOk().expectUintWithDecimals(150000);
 
   call = stDikoToken.balanceOf(wallet_1.address);
   call.result.expectOk().expectUint(0);   
 
   // At start the ratio is 1
   call = stakePoolDiko.getDikoStdikoRatio();
-  call.result.expectOk().expectUint(1000000);
+  call.result.expectOk().expectUintWithDecimals(1);
   
   // Staked total
   call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
@@ -65,47 +66,47 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
     Utils.qualifiedName('arkadiko-token'),
     100
   );
-  result.expectOk().expectUint(100000000); // 10 with 6 decimals
+  result.expectOk().expectUintWithDecimals(100);
 
   // Check DIKO and stDIKO balance after staking
   call = dikoToken.balanceOf(wallet_1.address);
-  call.result.expectOk().expectUint(149900000000);
+  call.result.expectOk().expectUintWithDecimals(149900);
   call = stDikoToken.balanceOf(wallet_1.address);
-  call.result.expectOk().expectUint(100000000);   
+  call.result.expectOk().expectUintWithDecimals(100);   
 
   // Total in pool (staked 100 + rewards for 1 block 62.639906)
   call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
-  call.result.expectOk().expectUint(162639906);
+  call.result.expectOk().expectUintWithDecimals(162.639906);
 
   // Advance 3 block
   chain.mineEmptyBlock(3);
 
   // Total in pool (staked 100 + rewards for 1 block 62.639906)
   call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
-  call.result.expectOk().expectUint(162639906);
+  call.result.expectOk().expectUintWithDecimals(162.639906);
 
   // Add rewards to pool manually
   // Reward per block = 62.639906
   // Times 4 = ~250
   result = stakePoolDiko.addRewardsToPool();
-  result.expectOk().expectUint(250559624);
+  result.expectOk().expectUintWithDecimals(250.559624);
 
   // Check total tokens
   // 100 DIKO staked + (5 blocks * 62.639906) = ~313 rewards
   call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
-  call.result.expectOk().expectUint(413199530);
+  call.result.expectOk().expectUintWithDecimals(413.199530);
 
   // Amount of DIKO staked for wallet_1 (initial stake + auto-compounded rewards)
   call = stakePoolDiko.getTotalStaked();
-  call.result.expectUint(413199530);   
+  call.result.expectUintWithDecimals(413.199530);   
   
   // Still only 100 stDIKO for 1 staker
   call = stDikoToken.totalSupply();
-  call.result.expectOk().expectUint(100000000);   
+  call.result.expectOk().expectUintWithDecimals(100);   
 
-  // New ratio =  413199530 / 100000000
+  // New ratio =  413.199530 / 100
   call = stakePoolDiko.getDikoStdikoRatio();
-  call.result.expectOk().expectUint(4131995);   
+  call.result.expectOk().expectUintWithDecimals(4.131995);   
 
   // Unstake funds fails because cooldown not started
   result = stakeRegistry.unstake(
@@ -129,11 +130,11 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
     Utils.qualifiedName('arkadiko-token'),
     100
   );
-  result.expectOk().expectUint(91428982948);
+  result.expectOk().expectUintWithDecimals(91428.982948);
 
   // Check DIKO after unstaking
   call = dikoToken.balanceOf(wallet_1.address);
-  call.result.expectOk().expectUint(241328982948);  
+  call.result.expectOk().expectUintWithDecimals(241328.982948);  
 
   call = stDikoToken.balanceOf(wallet_1.address);
   call.result.expectOk().expectUint(0);   
@@ -167,19 +168,19 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
     Utils.qualifiedName('arkadiko-token'),
     100
   );
-  result.expectOk().expectUint(100000000);
+  result.expectOk().expectUintWithDecimals(100);
 
   // Initial stake + 62 rewards for 1 block
   call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
-  call.result.expectOk().expectUint(162639906);
+  call.result.expectOk().expectUintWithDecimals(162.639906);
   
   // Still only 100 stDIKO for 1 staker
   call = stDikoToken.totalSupply();
-  call.result.expectOk().expectUint(100000000);   
+  call.result.expectOk().expectUintWithDecimals(100);   
 
   // 162/100 = 1.62
   call = stakePoolDiko.getDikoStdikoRatio();
-  call.result.expectOk().expectUint(1626399);  
+  call.result.expectOk().expectUintWithDecimals(1.626399);  
 
   // Stake - Wallet 2
   // New ratio in next block will be (162 + 62)/100 = 2.24
@@ -190,23 +191,23 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
     Utils.qualifiedName('arkadiko-token'),
     200
   );
-  result.expectOk().expectUint(88778487);
+  result.expectOk().expectUintWithDecimals(88.778487);
 
   // Total staked 100 + 200 = 300
   // Plus 2 blocks rewards at 62 rewards per block
   // 300 + (62*2) = ~425
   call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
-  call.result.expectOk().expectUint(425279812);
+  call.result.expectOk().expectUintWithDecimals(425.279812);
 
   // Total stDIKO supply is ~188
   // So wallet_1 has 53% of stDIKO supply, so should receive 53% of DIKO in pool when unstaking
   call = stDikoToken.totalSupply();
-  call.result.expectOk().expectUint(188778487);   
+  call.result.expectOk().expectUintWithDecimals(188.778487);   
 
   // Total DIKO = 300 + (62*3) = ~486
   // Wallet_1 should get 53% of ~486 = ~258
   call = stakePoolDiko.getDikoForStDiko(100, 188.778487);
-  call.result.expectOk().expectUint(258461320);   
+  call.result.expectOk().expectUintWithDecimals(258.461320);   
 
   // Start cooldown period
   result = stakePoolDiko.startCooldown(wallet_1);
@@ -221,7 +222,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
     Utils.qualifiedName('arkadiko-token'),
     100
   );
-  result.expectOk().expectUint(48405069781);
+  result.expectOk().expectUintWithDecimals(48405.069781);
 }
 });
 
@@ -289,26 +290,26 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Initial stake + 2 blocks of ~62 rewards = ~225
   result = stakePoolDiko.getStakeOf(wallet_1, 100);
-  result.expectOk().expectUint(225279812);
+  result.expectOk().expectUintWithDecimals(225.279812);
 
   // Advance 2 blocks
   chain.mineEmptyBlock(2);
 
   // 225 + 3 blocks of ~62 rewards = ~413
   result = stakePoolDiko.getStakeOf(wallet_1, 100);
-  result.expectOk().expectUint(413199530);
+  result.expectOk().expectUintWithDecimals(413.199530);
 
   // Advance 200 blocks
   chain.mineEmptyBlock(200);
 
   result = stakePoolDiko.getStakeOf(wallet_1, 100);
-  result.expectOk().expectUint(13003820636);
+  result.expectOk().expectUintWithDecimals(13003.820636);
 
   // Advance 2000 blocks
   chain.mineEmptyBlock(2000);
 
   result = stakePoolDiko.getStakeOf(wallet_1, 100);
-  result.expectOk().expectUint(135688894058);
+  result.expectOk().expectUintWithDecimals(135688.894058);
 }
 });
 
@@ -339,8 +340,8 @@ Clarinet.test({
       ], wallet_2.address),
 
     ]);
-    block.receipts[0].result.expectOk().expectUint(100000000);
-    block.receipts[1].result.expectOk().expectUint(122971054);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(100);
+    block.receipts[1].result.expectOk().expectUintWithDecimals(122.971054);
 
   }
 });
@@ -361,7 +362,7 @@ Clarinet.test({
       Utils.qualifiedName('arkadiko-token'),
       100
     );
-    result.expectOk().expectUint(100000000); // 10 with 6 decimals
+    result.expectOk().expectUintWithDecimals(100);
 
     // Create proposal
     let block = chain.mineBlock([
@@ -498,7 +499,7 @@ Clarinet.test({
         types.uint(100000000)
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(162639906)
+    block.receipts[0].result.expectOk().expectUintWithDecimals(162.639906)
 
   }
 });
@@ -519,7 +520,7 @@ Clarinet.test({
       Utils.qualifiedName('arkadiko-token'),
       100
     );
-    result.expectOk().expectUint(100000000); // 10 with 6 decimals
+    result.expectOk().expectUintWithDecimals(100);
 
     // Create proposal
     let block = chain.mineBlock([
@@ -626,7 +627,7 @@ Clarinet.test({
         types.uint(100000000)
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(162639906)
+    block.receipts[0].result.expectOk().expectUintWithDecimals(162.639906)
 
   }
 });
@@ -669,13 +670,13 @@ Clarinet.test({
       switch (index)
       {
         // Pool only gets 10% from total rewards
-        case 53: call.result.expectOk().expectUint(2527601505187); break; // 25 mio total rewards
-        case 106: call.result.expectOk().expectUint(3744272038717); break; // 25 + 12.5 = 37.5 mio total rewards
-        case 159: call.result.expectOk().expectUint(4344706832455); break; // 37.5 + 6.25 = 43.75 mio
-        case 212: call.result.expectOk().expectUint(4641125918445); break; // 43.75 + 3.125 = 46.875 mio
-        case 265: call.result.expectOk().expectUint(4802365153679); break; // 46.875 + 1.5625 = 48.4375 mio
-        case 318: call.result.expectOk().expectUint(4952100753679); break; // 48.4375 + 1.5 = 49.9375 mio
-        case 371: call.result.expectOk().expectUint(5101836353679); break; // 49.9375 + 1.5 = 51.4375 mio
+        case 53: call.result.expectOk().expectUintWithDecimals(2527601.505187); break; // 25 mio total rewards
+        case 106: call.result.expectOk().expectUintWithDecimals(3744272.038717); break; // 25 + 12.5 = 37.5 mio total rewards
+        case 159: call.result.expectOk().expectUintWithDecimals(4344706.832455); break; // 37.5 + 6.25 = 43.75 mio
+        case 212: call.result.expectOk().expectUintWithDecimals(4641125.918445); break; // 43.75 + 3.125 = 46.875 mio
+        case 265: call.result.expectOk().expectUintWithDecimals(4802365.153679); break; // 46.875 + 1.5625 = 48.4375 mio
+        case 318: call.result.expectOk().expectUintWithDecimals(4952100.753679); break; // 48.4375 + 1.5 = 49.9375 mio
+        case 371: call.result.expectOk().expectUintWithDecimals(5101836.353679); break; // 49.9375 + 1.5 = 51.4375 mio
         default: break;
       }
     }
