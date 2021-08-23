@@ -6,6 +6,8 @@ import {
   types,
 } from "https://deno.land/x/clarinet@v0.13.0/index.ts";
 
+import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
+
 
 Clarinet.test({
   name: "diko-init: change founder address",
@@ -65,13 +67,13 @@ Clarinet.test({
 
     // we already have 890K DIKO to start with
     let call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(890000000000);
+    call.result.expectOk().expectUintWithDecimals(890000);
 
     // 6 months, 30 days, 144 block per day
     chain.mineEmptyBlock(6*30*144);
 
     call = chain.callReadOnlyFn("arkadiko-diko-init", "get-pending-founders-tokens", [], deployer.address);
-    call.result.expectOk().expectUint(2625000000000);
+    call.result.expectOk().expectUintWithDecimals(2625000);
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-diko-init", "founders-claim-tokens", [
@@ -104,28 +106,28 @@ Clarinet.test({
 
     // Get tokens (6 * 437.500) = 2.625m
     call = chain.callReadOnlyFn("arkadiko-diko-init", "get-pending-founders-tokens", [], wallet_1.address);
-    call.result.expectOk().expectUint(2625000000000)
+    call.result.expectOk().expectUintWithDecimals(2625000)
 
     // 1 year later
     chain.mineEmptyBlock(6*30*144);
 
     // Get tokens (2.625m * 2) = 5.250m
     call = chain.callReadOnlyFn("arkadiko-diko-init", "get-pending-founders-tokens", [], wallet_1.address);
-    call.result.expectOk().expectUint(5250000000000)
+    call.result.expectOk().expectUintWithDecimals(5250000)
 
     // 3 year later - max
     chain.mineEmptyBlock(3*12*30*144);
 
     // Get tokens
     call = chain.callReadOnlyFn("arkadiko-diko-init", "get-pending-founders-tokens", [], wallet_1.address);
-    call.result.expectOk().expectUint(21000000000000)
+    call.result.expectOk().expectUintWithDecimals(21000000)
 
     // 1 year later - still at max
     chain.mineEmptyBlock(12*30*144);
 
     // Get tokens
     call = chain.callReadOnlyFn("arkadiko-diko-init", "get-pending-founders-tokens", [], wallet_1.address);
-    call.result.expectOk().expectUint(21000000000000)
+    call.result.expectOk().expectUintWithDecimals(21000000)
   }
 });
     
@@ -137,14 +139,14 @@ Clarinet.test({
   
     // Start balance
     let call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(890000000000);
+    call.result.expectOk().expectUintWithDecimals(890000);
   
     // 12 months, 30 days, 144 block per day 
     chain.mineEmptyBlock(12*30*144);
   
     // Get tokens at start
     call = chain.callReadOnlyFn("arkadiko-diko-init", "get-pending-founders-tokens", [], wallet_1.address);
-    call.result.expectOk().expectUint(5250000000000)
+    call.result.expectOk().expectUintWithDecimals(5250000)
   
     // Claim tokens
     let block = chain.mineBlock([
@@ -156,11 +158,11 @@ Clarinet.test({
   
     // New balance (0.89+5.25)
     call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(6140000000000);
+    call.result.expectOk().expectUintWithDecimals(6140000);
   
     // Number of tokens claimed already
     call = chain.callReadOnlyFn("arkadiko-diko-init", "get-claimed-founders-tokens", [], deployer.address);
-    call.result.expectUint(5250000000000);
+    call.result.expectUintWithDecimals(5250000);
   
     // Get tokens at start
     call = chain.callReadOnlyFn("arkadiko-diko-init", "get-pending-founders-tokens", [], deployer.address);
@@ -171,7 +173,7 @@ Clarinet.test({
   
     // Get tokens (max minus claimed)
     call = chain.callReadOnlyFn("arkadiko-diko-init", "get-pending-founders-tokens", [], deployer.address);
-    call.result.expectOk().expectUint(15750000000000)
+    call.result.expectOk().expectUintWithDecimals(15750000)
   }
 });
 
@@ -226,13 +228,13 @@ Clarinet.test({
 
     // Get tokens at start
     let call = chain.callReadOnlyFn("arkadiko-diko-init", "get-pending-foundation-tokens", [], wallet_1.address);
-    call.result.expectOk().expectUint(29000000000000)
+    call.result.expectOk().expectUintWithDecimals(29000000)
 
     // 1 month, 30 days, 144 block per day 
     chain.mineEmptyBlock(30*144);
 
     call = chain.callReadOnlyFn("arkadiko-diko-init", "get-pending-foundation-tokens", [], wallet_1.address);
-    call.result.expectOk().expectUint(29000000000000)
+    call.result.expectOk().expectUintWithDecimals(29000000)
   }
 });
     
@@ -244,14 +246,14 @@ Clarinet.test({
   
     // Start balance
     let call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(890000000000);
+    call.result.expectOk().expectUintWithDecimals(890000);
   
     // 12 months, 30 days, 144 block per day 
     chain.mineEmptyBlock(12*30*144);
   
     // Get tokens
     call = chain.callReadOnlyFn("arkadiko-diko-init", "get-pending-foundation-tokens", [], wallet_1.address);
-    call.result.expectOk().expectUint(29000000000000)
+    call.result.expectOk().expectUintWithDecimals(29000000)
   
     // Claim tokens
     let block = chain.mineBlock([
@@ -263,15 +265,15 @@ Clarinet.test({
   
     // New balance 
     call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(13890000000000);
+    call.result.expectOk().expectUintWithDecimals(13890000);
   
     // Number of tokens claimed already
     call = chain.callReadOnlyFn("arkadiko-diko-init", "get-claimed-foundation-tokens", [], deployer.address);
-    call.result.expectUint(13000000000000);
+    call.result.expectUintWithDecimals(13000000);
   
     // Get tokens at start
     call = chain.callReadOnlyFn("arkadiko-diko-init", "get-pending-foundation-tokens", [], deployer.address);
-    call.result.expectOk().expectUint(16000000000000);
+    call.result.expectOk().expectUintWithDecimals(16000000);
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-diko-init", "foundation-claim-tokens", [

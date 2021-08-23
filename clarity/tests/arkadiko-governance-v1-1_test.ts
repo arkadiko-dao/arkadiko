@@ -6,6 +6,9 @@ import {
   types,
 } from "https://deno.land/x/clarinet@v0.13.0/index.ts";
 
+import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
+
+
 Clarinet.test({
   name: "governance: add proposal and test proposal data",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -71,7 +74,7 @@ Clarinet.test({
         types.uint(150000000000)
       ], wallet_1.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(150000000000);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(150000);
 
     // No DIKO left
     let call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
@@ -79,7 +82,7 @@ Clarinet.test({
 
     // Got stDIKO
     call = chain.callReadOnlyFn("stdiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-    call.result.expectOk().expectUint(150000000000);  
+    call.result.expectOk().expectUintWithDecimals(150000);  
  
     // Should be able to create poposal
     // No DIKO in wallet, but enough stDIKO
@@ -155,11 +158,11 @@ Clarinet.test({
 
     // Check votes
     call = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-proposal-by-id", [types.uint(1)], wallet_1.address);
-    call.result.expectTuple()["yes-votes"].expectUint(10000000);
+    call.result.expectTuple()["yes-votes"].expectUintWithDecimals(10);
     call.result.expectTuple()["no-votes"].expectUint(0);
 
     call = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-votes-by-member-by-id", [types.uint(1), types.principal(wallet_1.address)], wallet_1.address);
-    call.result.expectTuple()["vote-count"].expectUint(10000000);
+    call.result.expectTuple()["vote-count"].expectUintWithDecimals(10);
 
     call = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-votes-by-member-by-id", [types.uint(1), types.principal(wallet_2.address)], wallet_2.address);
     call.result.expectTuple()["vote-count"].expectUint(0);
@@ -188,14 +191,14 @@ Clarinet.test({
 
     // Check votes
     call = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-proposal-by-id", [types.uint(1)], wallet_2.address);
-    call.result.expectTuple()["yes-votes"].expectUint(30000000);
-    call.result.expectTuple()["no-votes"].expectUint(1000000);
+    call.result.expectTuple()["yes-votes"].expectUintWithDecimals(30);
+    call.result.expectTuple()["no-votes"].expectUintWithDecimals(1);
 
     call = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-votes-by-member-by-id", [types.uint(1), types.principal(wallet_1.address)], wallet_1.address);
-    call.result.expectTuple()["vote-count"].expectUint(10000000);
+    call.result.expectTuple()["vote-count"].expectUintWithDecimals(10);
 
     call = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-votes-by-member-by-id", [types.uint(1), types.principal(wallet_2.address)], wallet_2.address);
-    call.result.expectTuple()["vote-count"].expectUint(21000000);
+    call.result.expectTuple()["vote-count"].expectUintWithDecimals(21);
   }
 });
 
@@ -362,7 +365,7 @@ Clarinet.test({
         types.uint(100000000)
       ], wallet_1.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(100000000); 
+    block.receipts[0].result.expectOk().expectUintWithDecimals(100); 
 
     // Advance 3 block, so that DIKO/stDIKO ratio is not 1 anymore
     chain.mineEmptyBlock(3);
@@ -376,15 +379,15 @@ Clarinet.test({
         types.uint(100000000) // 100
       ], wallet_1.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(24201384); // 24 with 6 decimals
+    block.receipts[0].result.expectOk().expectUintWithDecimals(24.201384); // 24
 
     // Total stDIKO balance for user is now ~124
     let call:any = chain.callReadOnlyFn("stdiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-    call.result.expectOk().expectUint(124201384);   
+    call.result.expectOk().expectUintWithDecimals(124.201384);   
 
     // Total DIKO balance is 
     call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-    call.result.expectOk().expectUint(149800000000);  
+    call.result.expectOk().expectUintWithDecimals(149800);  
 
 
     // Empty contract change used to fill list
@@ -428,7 +431,7 @@ Clarinet.test({
 
     // DIKO/stDIKO ratio
     call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "diko-stdiko-ratio", [], wallet_1.address);
-    call.result.expectOk().expectUint(4131995); // ~4
+    call.result.expectOk().expectUintWithDecimals(4.131995); // ~4
 
     // Vote with stDIKO
     block = chain.mineBlock([
@@ -445,15 +448,15 @@ Clarinet.test({
     // Where the 10 stDIKO = ~40 DIKO
     // So total is ~50 votes
     call = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-votes-by-member-by-id", [types.uint(1), types.principal(wallet_1.address)], wallet_1.address);
-    call.result.expectTuple()["vote-count"].expectUint(51319950);
+    call.result.expectTuple()["vote-count"].expectUintWithDecimals(51.319950);
 
     // stDIKO balance
     call = chain.callReadOnlyFn("stdiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-    call.result.expectOk().expectUint(114201384);   
+    call.result.expectOk().expectUintWithDecimals(114.201384);   
 
     // DIKO balance has decreased by 10
     call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-    call.result.expectOk().expectUint(149790000000);  
+    call.result.expectOk().expectUintWithDecimals(149790);  
 
     // Advance
     for (let index = 0; index < 1500; index++) {
@@ -490,10 +493,10 @@ Clarinet.test({
 
     // Should have initial amount back
     call = chain.callReadOnlyFn("stdiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-    call.result.expectOk().expectUint(124201384);   
+    call.result.expectOk().expectUintWithDecimals(124.201384);   
 
     call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-    call.result.expectOk().expectUint(149800000000);  
+    call.result.expectOk().expectUintWithDecimals(149800);  
 
   }
 });

@@ -18,6 +18,13 @@ import {
   VaultManager
 } from './models/arkadiko-tests-vaults.ts';
 
+import { 
+  StakeRegistry
+} from './models/arkadiko-tests-stake.ts';
+
+import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
+
+
 Clarinet.test({
   name: "stake-registry: add pool and get pool info",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -49,7 +56,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Check DIKO and stDIKO balance before staking
   let call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-  call.result.expectOk().expectUint(223606797);   
+  call.result.expectOk().expectUintWithDecimals(223.606797);   
   call = chain.callReadOnlyFn("stdiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
   call.result.expectOk().expectUint(0);   
 
@@ -68,7 +75,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
       types.uint(223606797)
     ], wallet_1.address)
   ]);
-  block.receipts[0].result.expectOk().expectUint(223606797); // 22 with 6 decimals
+  block.receipts[0].result.expectOk().expectUintWithDecimals(223.606797); // 223
 
   // Check LP tokens after staking
   call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
@@ -76,9 +83,9 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Staked total
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-amount-of", [types.principal(wallet_1.address)], wallet_1.address);
-  call.result.expectUint(223606797);
+  call.result.expectUintWithDecimals(223.606797);
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-total-staked", [], wallet_1.address);
-  call.result.expectUint(223606797);
+  call.result.expectUintWithDecimals(223.606797);
 
   // Advance 3 block
   chain.mineEmptyBlock(3);
@@ -90,7 +97,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-1')
   ], wallet_1.address);
-  call.result.expectOk().expectUint(626398888);   
+  call.result.expectOk().expectUintWithDecimals(626.398888);   
 
   // Unstake funds
   block = chain.mineBlock([
@@ -101,13 +108,13 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
       types.uint(223606797)
     ], wallet_1.address)
   ]);
-  block.receipts[0].result.expectOk().expectUint(223606797);
+  block.receipts[0].result.expectOk().expectUintWithDecimals(223.606797);
 
   // Check DIKO and LP token balance after unstake
   call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-  call.result.expectOk().expectUint(223606797);   
+  call.result.expectOk().expectUintWithDecimals(223.606797);   
   call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-  call.result.expectOk().expectUint(150126398888);   
+  call.result.expectOk().expectUintWithDecimals(150126.398888);   
 
   // Staked total
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-amount-of", [types.principal(wallet_1.address)], wallet_1.address);
@@ -166,13 +173,13 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
         types.uint(223606797)
     ], wallet_1.address)
   ]);
-  block.receipts[0].result.expectOk().expectUint(223606797);
+  block.receipts[0].result.expectOk().expectUintWithDecimals(223.606797);
 
   // New stake amounts = 223
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-amount-of", [types.principal(wallet_1.address)], wallet_1.address);
-  call.result.expectUint(223606797);
+  call.result.expectUintWithDecimals(223.606797);
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-total-staked", [], wallet_1.address);
-  call.result.expectUint(223606797);
+  call.result.expectUintWithDecimals(223.606797);
 
   // Not advanced blocks yet.  
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-cumm-reward-per-stake", [], wallet_1.address);
@@ -184,7 +191,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "calculate-cumm-reward-per-stake", [
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
   ], wallet_1.address);
-  call.result.expectOk().expectUint(700335);
+  call.result.expectOk().expectUintWithDecimals(0.700335);
 
   // Wallet 1 starts at 20
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-cumm-reward-per-stake-of", [types.principal(wallet_1.address)], wallet_1.address);
@@ -197,7 +204,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-1')
   ], wallet_1.address);
-  call.result.expectOk().expectUint(156599666);
+  call.result.expectOk().expectUintWithDecimals(156.599666);
 
 
   // Advance 3 blocks
@@ -214,7 +221,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "calculate-cumm-reward-per-stake", [
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
   ], wallet_1.address);
-  call.result.expectOk().expectUint(2801341);
+  call.result.expectOk().expectUintWithDecimals(2.801341);
 
   // Advanced 3 blocks for user plus one in calculation
   // 4 blocks * ~626 rewards = 2504
@@ -223,7 +230,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-1')
   ], wallet_1.address);
-  call.result.expectOk().expectUint(626398888);   
+  call.result.expectOk().expectUintWithDecimals(626.398888);   
   
 
   // Stake - Wallet 2
@@ -235,21 +242,21 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
         types.uint(200000000)
     ], wallet_2.address)
   ]);
-  block.receipts[0].result.expectOk().expectUint(200000000);
+  block.receipts[0].result.expectOk().expectUintWithDecimals(200);
 
   // Total staked
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-total-staked", [], wallet_1.address);
-  call.result.expectUint(423606797);
+  call.result.expectUintWithDecimals(423.606797);
 
   // First blocks have 626 rewards. Start cumm reward: 626 / 223 = 2.807
   // 4 blocks later: 4 * 2.807 = 11.228
   // But only 25% of staking rewards are for this pool
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-cumm-reward-per-stake-of", [types.principal(wallet_2.address)], wallet_2.address);
-  call.result.expectUint(2801341);
+  call.result.expectUintWithDecimals(2.801341);
 
   // Should be same as previous check (get-stake-cumm-reward-per-stake-of)
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-cumm-reward-per-stake", [], wallet_1.address);
-  call.result.expectUint(2801341);
+  call.result.expectUintWithDecimals(2.801341);
 
   // We had 11.228. Now wallet 2 staked. 
   // 626 block rewards / 423 staking amount = 1.4799
@@ -258,20 +265,20 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "calculate-cumm-reward-per-stake", [
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
   ], wallet_1.address);
-  call.result.expectOk().expectUint(3171022);
+  call.result.expectOk().expectUintWithDecimals(3.171022);
 
   // User just staked, so only advanced 1 block. 
   call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-1')
   ], wallet_2.address);
-  call.result.expectOk().expectUint(73936200);  
+  call.result.expectOk().expectUintWithDecimals(73.936200);  
 
   call = chain.callReadOnlyFn("arkadiko-stake-registry-v1-1", "get-pending-rewards", [
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-1')
   ], wallet_1.address);
-  call.result.expectOk().expectUint(709062072);   
+  call.result.expectOk().expectUintWithDecimals(709.062072);   
 
 
   // Unstake funds
@@ -283,17 +290,17 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
         types.uint(100000000)
     ], wallet_1.address)
   ]);
-  block.receipts[0].result.expectOk().expectUint(100000000);
+  block.receipts[0].result.expectOk().expectUintWithDecimals(100);
 
   // New cumm reward for wallet
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-cumm-reward-per-stake", [], wallet_1.address);
-  call.result.expectUint(3171022);
+  call.result.expectUintWithDecimals(3.171022);
 
   // New cumm reward per stake
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "calculate-cumm-reward-per-stake", [
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
   ], wallet_1.address);
-  call.result.expectOk().expectUint(3654941);
+  call.result.expectOk().expectUintWithDecimals(3.654941);
 }
 });
 
@@ -316,7 +323,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Check initial user balance
   let call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-  call.result.expectOk().expectUint(223606797);   
+  call.result.expectOk().expectUintWithDecimals(223.606797);   
 
   // Stake
   let block = chain.mineBlock([
@@ -333,7 +340,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
       types.uint(100000000)
     ], deployer.address)
   ]);
-  block.receipts[0].result.expectOk().expectUint(100000000);
+  block.receipts[0].result.expectOk().expectUintWithDecimals(100);
 
   // Advance 3 blocks
   chain.mineEmptyBlock(3);
@@ -345,7 +352,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
     types.principal(wallet_1.address)
   ], wallet_1.address);
-  call.result.expectOk().expectUint(313199500);
+  call.result.expectOk().expectUintWithDecimals(313.199500);
   
   // Claim
   block = chain.mineBlock([
@@ -354,18 +361,18 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
       types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-1'),
     ], wallet_1.address)
   ]);
-  block.receipts[0].result.expectOk().expectUint(313199500);
+  block.receipts[0].result.expectOk().expectUintWithDecimals(313.199500);
 
   // Check if user got rewards (there is still some in swap)
   call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-  call.result.expectOk().expectUint(149813199500);
+  call.result.expectOk().expectUintWithDecimals(149813.1995);
   
   // Just claimed rewards, so this is for 1 block only.
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-pending-rewards", [
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
     types.principal(wallet_1.address)
   ], wallet_1.address);
-  call.result.expectOk().expectUint(78299800);
+  call.result.expectOk().expectUintWithDecimals(78.2998);
 }
 });
 
@@ -388,7 +395,7 @@ Clarinet.test({
   
     // Check initial user balance
     let call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-    call.result.expectOk().expectUint(223606797);   
+    call.result.expectOk().expectUintWithDecimals(223.606797);   
   
     // Stake
     let block = chain.mineBlock([
@@ -399,7 +406,7 @@ Clarinet.test({
         types.uint(100000000)
       ], wallet_1.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(100000000);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(100);
   
     // Advance 3 blocks
     chain.mineEmptyBlock(20);
@@ -409,7 +416,7 @@ Clarinet.test({
       types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
       types.principal(wallet_1.address)
     ], wallet_1.address);
-    call.result.expectOk().expectUint(3288595000);
+    call.result.expectOk().expectUintWithDecimals(3288.595);
 
     // Stake of user in DIKO pool
     block = chain.mineBlock([
@@ -434,11 +441,11 @@ Clarinet.test({
         types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token'),
       ], wallet_1.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(3445194800);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(3445.1948);
 
     // Total stDIKO supply
     call = chain.callReadOnlyFn("stdiko-token", "get-total-supply", [], wallet_1.address);
-    call.result.expectOk().expectUint(3445194800);   
+    call.result.expectOk().expectUintWithDecimals(3445.1948);   
 
     // Stake of user in DIKO pool
     block = chain.mineBlock([
@@ -448,7 +455,7 @@ Clarinet.test({
           types.uint(4134233700)
       ], wallet_1.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(4228191938);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(4228.191938);
 
   }
 });
@@ -490,7 +497,7 @@ Clarinet.test({
         types.uint(100000000)
       ], wallet_1.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(100000000);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(100);
   
     // Advance 3 blocks
     chain.mineEmptyBlock(20);
@@ -526,7 +533,7 @@ Clarinet.test({
         types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token'),
       ], wallet_1.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(3601794500);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(3601.7945);
 
     // Claim + stake in DIKO pool should fail
     block = chain.mineBlock([
@@ -610,7 +617,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Check LP before staking
   let call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-  call.result.expectOk().expectUint(223606797);   
+  call.result.expectOk().expectUintWithDecimals(223.606797);   
 
   // Staked total
   call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-amount-of", [types.principal(wallet_1.address)], wallet_1.address);
@@ -627,7 +634,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
         types.uint(223606797)
     ], wallet_1.address)
   ]);
-  block.receipts[0].result.expectOk().expectUint(223606797); // 10 with 6 decimals
+  block.receipts[0].result.expectOk().expectUintWithDecimals(223.606797);
 
   // Check LP after staking
   call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
@@ -646,7 +653,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Check LPs after withdraw
   call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-  call.result.expectOk().expectUint(223606797);   
+  call.result.expectOk().expectUintWithDecimals(223.606797);   
 }
 });
 
@@ -658,7 +665,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let wallet_2 = accounts.get("wallet_2")!;
 
   let call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-  call.result.expectOk().expectUint(150000000000);   
+  call.result.expectOk().expectUintWithDecimals(150000);   
 
   // Stake
   let block = chain.mineBlock([
@@ -711,7 +718,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   result.expectOk().expectBool(true);
 
   let call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
-  call.result.expectOk().expectUint(223606797);   
+  call.result.expectOk().expectUintWithDecimals(223.606797);   
 
   // Stake
   let block = chain.mineBlock([
@@ -722,7 +729,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
       types.uint(223606797)
     ], wallet_1.address)
   ]);
-  block.receipts[0].result.expectOk().expectUint(223606797);
+  block.receipts[0].result.expectOk().expectUintWithDecimals(223.606797);
 
   // Unstake funds
   block = chain.mineBlock([
@@ -799,7 +806,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
     ], wallet_1.address)
   ]);
   // Should have staked, but no rewards yet as not advanced
-  block.receipts[0].result.expectOk().expectUint(223606797);
+  block.receipts[0].result.expectOk().expectUintWithDecimals(223.606797);
   block.receipts[1].result.expectOk().expectUint(0);
  
 }
@@ -827,11 +834,11 @@ Clarinet.test({
   
     // LP at start
     call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(223606797);  
+    call.result.expectOk().expectUintWithDecimals(223.606797);  
 
     // DIKO at start
     call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(889500000000);   
+    call.result.expectOk().expectUintWithDecimals(889500);   
 
     // Stake funds
     let block = chain.mineBlock([
@@ -842,7 +849,7 @@ Clarinet.test({
           types.uint(100000000)
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(100000000); // 10 with 6 decimals
+    block.receipts[0].result.expectOk().expectUintWithDecimals(100); // 10 with 6 decimals
 
     // Staked total
     call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-amount-of", [types.principal(deployer.address)], deployer.address);
@@ -852,7 +859,7 @@ Clarinet.test({
 
     // LPs left in wallet
     call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(123606797);  
+    call.result.expectOk().expectUintWithDecimals(123.606797);  
   
     // Advance 3 block
     chain.mineEmptyBlock(3);
@@ -862,7 +869,7 @@ Clarinet.test({
       types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
       types.principal(deployer.address)
     ], deployer.address);
-    call.result.expectOk().expectUint(626399000);   
+    call.result.expectOk().expectUintWithDecimals(626.399);   
   
     // Unstake funds
     block = chain.mineBlock([
@@ -873,15 +880,15 @@ Clarinet.test({
           types.uint(100000000)
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(100000000);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(100);
   
     // Check if we got LP back
     call = chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(223606797);  
+    call.result.expectOk().expectUintWithDecimals(223.606797);  
 
     // Rewards are claimed
     call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(890126399000);   
+    call.result.expectOk().expectUintWithDecimals(890126.399);   
   
     // Staked total
     call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-amount-of", [types.principal(deployer.address)], deployer.address);
@@ -925,7 +932,7 @@ Clarinet.test({
           types.uint(100000000)
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(100000000); 
+    block.receipts[0].result.expectOk().expectUintWithDecimals(100); 
 
     // Unstake funds - fails with wrong registry
     block = chain.mineBlock([
@@ -987,7 +994,7 @@ Clarinet.test({
         types.uint(100000000)
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(100000000); // 10 with 6 decimals
+    block.receipts[0].result.expectOk().expectUintWithDecimals(100); 
 
     // Create proposal
     block = chain.mineBlock([
@@ -1077,7 +1084,7 @@ Clarinet.test({
       types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-tv1-1'),
       types.principal(deployer.address)
     ], deployer.address);
-    call.result.expectOk().expectUint(375463596500)
+    call.result.expectOk().expectUintWithDecimals(375463.5965)
 
     // Advance
     chain.mineEmptyBlock(1500);
@@ -1087,7 +1094,7 @@ Clarinet.test({
       types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-tv1-1'),
       types.principal(deployer.address)
     ], deployer.address);
-    call.result.expectOk().expectUint(375463596500)
+    call.result.expectOk().expectUintWithDecimals(375463.5965)
 
     // Stake funds fails as pool is not active anymore
     block = chain.mineBlock([
@@ -1131,7 +1138,7 @@ Clarinet.test({
         types.uint(100000000)
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(100000000)
+    block.receipts[0].result.expectOk().expectUintWithDecimals(100)
 
   }
 });
@@ -1160,7 +1167,7 @@ Clarinet.test({
           types.uint(100000000)
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(100000000); // 10 with 6 decimals
+    block.receipts[0].result.expectOk().expectUintWithDecimals(100);
 
     // Create proposal
     block = chain.mineBlock([
@@ -1338,13 +1345,13 @@ Clarinet.test({
       switch (index)
       {
         // Pool only gets 25% from total rewards
-        case 53: call.result.expectOk().expectUint(6318923989693); break; // 50 mio total rewards
-        case 106: call.result.expectOk().expectUint(9360561965205); break; // 50 + (50/2) = 75 mio total rewards
-        case 159: call.result.expectOk().expectUint(10861629411059); break; 
-        case 212: call.result.expectOk().expectUint(11602667746931); break; 
-        case 265: call.result.expectOk().expectUint(12005763432101); break; 
-        case 318: call.result.expectOk().expectUint(12380102427880); break; 
-        case 371: call.result.expectOk().expectUint(12754441423660); break; 
+        case 53: call.result.expectOk().expectUintWithDecimals(6318923.989693); break; // 50 mio total rewards
+        case 106: call.result.expectOk().expectUintWithDecimals(9360561.965205); break; // 50 + (50/2) = 75 mio total rewards
+        case 159: call.result.expectOk().expectUintWithDecimals(10861629.411059); break; 
+        case 212: call.result.expectOk().expectUintWithDecimals(11602667.746931); break; 
+        case 265: call.result.expectOk().expectUintWithDecimals(12005763.432101); break; 
+        case 318: call.result.expectOk().expectUintWithDecimals(12380102.427880); break; 
+        case 371: call.result.expectOk().expectUintWithDecimals(12754441.423660); break; 
         default: break;
       }
     }

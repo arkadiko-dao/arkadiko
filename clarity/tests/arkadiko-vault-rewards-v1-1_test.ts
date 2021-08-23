@@ -6,6 +6,8 @@ import {
   types,
 } from "https://deno.land/x/clarinet@v0.13.0/index.ts";
 
+import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
+
 Clarinet.test({
   name: "vault-rewards: vault DIKO rewards",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -36,15 +38,15 @@ Clarinet.test({
 
     // Check rewards
     let call:any = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(320000000)
+    call.result.expectOk().expectUintWithDecimals(320)
     
     chain.mineEmptyBlock(1);
 
     call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(640000000)
+    call.result.expectOk().expectUintWithDecimals(640)
 
     call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "calculate-cumm-reward-per-collateral", [], deployer.address);
-    call.result.expectUint(128000000)
+    call.result.expectUintWithDecimals(128)
 
     chain.mineEmptyBlock((6*7*144)-5);
 
@@ -68,11 +70,11 @@ Clarinet.test({
     ]);
     
     call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "calculate-cumm-reward-per-collateral", [], deployer.address);
-    call.result.expectUint(240334197063)
+    call.result.expectUintWithDecimals(240334.197063)
 
     // Almost all rewards - 1.2m
     call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(1201670985315)
+    call.result.expectOk().expectUintWithDecimals(1201670.985315)
   },
 });
 
@@ -106,16 +108,16 @@ Clarinet.test({
     chain.mineEmptyBlock(30);
 
     let call:any = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(890000000000);   
+    call.result.expectOk().expectUintWithDecimals(890000);   
 
     call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(9920000000)
+    call.result.expectOk().expectUintWithDecimals(9920)
 
     call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "claim-pending-rewards", [], deployer.address);
-    call.result.expectOk().expectUint(9920000000)
+    call.result.expectOk().expectUintWithDecimals(9920)
 
     call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(899920000000);  
+    call.result.expectOk().expectUintWithDecimals(899920);  
 
   },
 });
@@ -150,13 +152,13 @@ Clarinet.test({
 
     // Check rewards
     let call:any = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(320000000)
+    call.result.expectOk().expectUintWithDecimals(320)
 
     chain.mineEmptyBlock(5);
 
     // 6 * 320 = 1920
     call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(1920000000)
+    call.result.expectOk().expectUintWithDecimals(1920)
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
@@ -178,11 +180,11 @@ Clarinet.test({
 
     // Only half of block rewars (320 / 2) = 160
     call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(wallet_1.address)], wallet_1.address);
-    call.result.expectOk().expectUint(160000000)
+    call.result.expectOk().expectUintWithDecimals(160)
 
     // Already had 1920. 1920 + 160 = 2080
     call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(2080000000)
+    call.result.expectOk().expectUintWithDecimals(2080)
 
   },
 });
@@ -216,16 +218,16 @@ Clarinet.test({
 
     // Check rewards
     let call:any = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(320000000)
+    call.result.expectOk().expectUintWithDecimals(320)
 
     chain.mineEmptyBlock(5);
 
     // 6 * 320 = 1920
     call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(1920000000)
+    call.result.expectOk().expectUintWithDecimals(1920)
 
     call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(890000000000);   
+    call.result.expectOk().expectUintWithDecimals(890000);   
 
     // Deposit extra
     block = chain.mineBlock([
@@ -241,11 +243,11 @@ Clarinet.test({
     // Deposit will auto harvest
     // So one block later we are at 320 again
     call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(319999815)
+    call.result.expectOk().expectUintWithDecimals(319.999815)
 
     // Rewards have been added to wallet
     call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(891920000000);  
+    call.result.expectOk().expectUintWithDecimals(891920);  
 
   },
 });
@@ -279,7 +281,7 @@ Clarinet.test({
 
     // Collateral in vault rewards contract
     let call:any = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-collateral-of", [types.principal(deployer.address)], deployer.address);
-    call.result.expectTuple()["collateral"].expectUint(5000000);
+    call.result.expectTuple()["collateral"].expectUintWithDecimals(5);
     call.result.expectTuple()["cumm-reward-per-collateral"].expectUint(0);
 
     // Deposit extra
@@ -296,8 +298,8 @@ Clarinet.test({
 
     // Collateral in vault rewards contract
     call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-collateral-of", [types.principal(deployer.address)], deployer.address);
-    call.result.expectTuple()["collateral"].expectUint(7000000);
-    call.result.expectTuple()["cumm-reward-per-collateral"].expectUint(64000000);
+    call.result.expectTuple()["collateral"].expectUintWithDecimals(7);
+    call.result.expectTuple()["cumm-reward-per-collateral"].expectUintWithDecimals(64);
 
     // Toggle stacking
     block = chain.mineBlock([
@@ -326,8 +328,8 @@ Clarinet.test({
 
     // Collateral in vault rewards contract
     call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-collateral-of", [types.principal(deployer.address)], deployer.address);
-    call.result.expectTuple()["collateral"].expectUint(6000000);
-    call.result.expectTuple()["cumm-reward-per-collateral"].expectUint(155428571);
+    call.result.expectTuple()["collateral"].expectUintWithDecimals(6);
+    call.result.expectTuple()["cumm-reward-per-collateral"].expectUintWithDecimals(155.428571);
 
     // Liquidate
     block = chain.mineBlock([
@@ -380,11 +382,11 @@ Clarinet.test({
         types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
       ], deployer.address),
     ]);
-    block.receipts[1].result.expectOk().expectUint(1000000000);
+    block.receipts[1].result.expectOk().expectUintWithDecimals(1000);
 
     // Check rewards at start
     let call:any = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(320000000)
+    call.result.expectOk().expectUintWithDecimals(320)
     
     // Rewards for 6 weeks = 42 days
     for (let index = 0; index < 50; index++) {
@@ -420,14 +422,14 @@ Clarinet.test({
 
       switch (index)
       {
-        case 7: call.result.expectOk().expectUint(363052000000); break; // 363k
-        case 14: call.result.expectOk().expectUint(650622485000); break; // 650k
-        case 21: call.result.expectOk().expectUint(912099195000); break; // 912k
-        case 28: call.result.expectOk().expectUint(1150063590000); break; // 1.15 mio
-        case 35: call.result.expectOk().expectUint(1366573100000); break; // 1.36 mio
-        case 42: call.result.expectOk().expectUint(1510462730000); break; // 1.51 mio
-        case 49: call.result.expectOk().expectUint(1510462730000); break; // 1.51 mio
-        case 56: call.result.expectOk().expectUint(1510462730000); break; // 1.51 mio
+        case 7: call.result.expectOk().expectUintWithDecimals(363052); break; // 363k
+        case 14: call.result.expectOk().expectUintWithDecimals(650622.485); break; // 650k
+        case 21: call.result.expectOk().expectUintWithDecimals(912099.195); break; // 912k
+        case 28: call.result.expectOk().expectUintWithDecimals(1150063.59); break; // 1.15 mio
+        case 35: call.result.expectOk().expectUintWithDecimals(1366573.1); break; // 1.36 mio
+        case 42: call.result.expectOk().expectUintWithDecimals(1510462.73); break; // 1.51 mio
+        case 49: call.result.expectOk().expectUintWithDecimals(1510462.73); break; // 1.51 mio
+        case 56: call.result.expectOk().expectUintWithDecimals(1510462.73); break; // 1.51 mio
         default: break;
       }
     }

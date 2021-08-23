@@ -6,6 +6,9 @@ import {
   types,
 } from "https://deno.land/x/clarinet@v0.13.0/index.ts";
 
+import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
+
+
 Clarinet.test({
 name: "diko-slash: execute slash through governance",
 async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -22,7 +25,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
       types.uint(100000000)
     ], wallet_1.address)
   ]);
-  block.receipts[0].result.expectOk().expectUint(100000000);
+  block.receipts[0].result.expectOk().expectUintWithDecimals(100);
 
   // Create proposal
   block = chain.mineBlock([
@@ -76,27 +79,27 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1')
   ], wallet_1.address);
-  call.result.expectOk().expectUint(162639906);
+  call.result.expectOk().expectUintWithDecimals(162.639906);
 
   // Now that the contract is active in the DAO, we can execute it
   // 30% of 162 DIKO = ~48
   block = chain.mineBlock([
   Tx.contractCall("arkadiko-stake-pool-diko-slash-v1-1", "execute", [], wallet_1.address)
   ]);
-  block.receipts[0].result.expectOk().expectUint(48791971);
+  block.receipts[0].result.expectOk().expectUintWithDecimals(48.791971);
 
   // Foundation (still deployer in this case) should have received the funds
   call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [
     types.principal(deployer.address)
   ], wallet_1.address);
-  call.result.expectOk().expectUint(890048791971);
+  call.result.expectOk().expectUintWithDecimals(890048.791971);
 
   // Check total DIKO pool balance
   // 70% of 162 DIKO = ~113
   call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [
     types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1')
   ], wallet_1.address);
-  call.result.expectOk().expectUint(113847935);
+  call.result.expectOk().expectUintWithDecimals(113.847935);
 
   // Can not execute slash again
   block = chain.mineBlock([

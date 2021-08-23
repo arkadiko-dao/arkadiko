@@ -16,6 +16,9 @@ import {
   VaultAuction 
 } from './models/arkadiko-tests-vaults.ts';
 
+import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
+
+
 Clarinet.test({
   name:
     "liquidator: liquidating a healthy vault fails",
@@ -30,7 +33,7 @@ Clarinet.test({
     result.expectOk().expectUint(300);
 
     result = vaultManager.createVault(deployer, "STX-A", 150, 100);
-    result.expectOk().expectUint(100000000);
+    result.expectOk().expectUintWithDecimals(100);
 
     result = vaultLiquidator.notifyRiskyVault(deployer, 1);
     result.expectErr().expectUint(52);

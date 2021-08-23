@@ -7,8 +7,8 @@ import {
 } from "https://deno.land/x/clarinet@v0.13.0/index.ts";
 
 import { 
-  DikoManager,
-  StDikoManager
+  DikoToken,
+  StDikoToken
 } from './models/arkadiko-tests-tokens.ts';
 
 import { 
@@ -16,7 +16,7 @@ import {
   StakePoolDiko
 } from './models/arkadiko-tests-stake.ts';
 
-import * as Utils from './models/arkadiko-tests-utils.ts';
+import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 
 Clarinet.test({
@@ -41,8 +41,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   let stakeRegistry = new StakeRegistry(chain, deployer);
   let stakePoolDiko = new StakePoolDiko(chain, deployer);
-  let dikoToken = new DikoManager(chain, deployer);
-  let stDikoToken = new StDikoManager(chain, deployer);
+  let dikoToken = new DikoToken(chain, deployer);
+  let stDikoToken = new StDikoToken(chain, deployer);
 
   // Check DIKO and stDIKO balance before staking
   let call = dikoToken.balanceOf(wallet_1.address);
@@ -152,8 +152,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let wallet_1 = accounts.get("wallet_1")!;
   let wallet_2 = accounts.get("wallet_2")!;
 
-  let dikoToken = new DikoManager(chain, deployer);
-  let stDikoToken = new StDikoManager(chain, deployer);
+  let dikoToken = new DikoToken(chain, deployer);
+  let stDikoToken = new StDikoToken(chain, deployer);
   let stakeRegistry = new StakeRegistry(chain, deployer);
   let stakePoolDiko = new StakePoolDiko(chain, deployer);
 
@@ -640,7 +640,7 @@ Clarinet.test({
 
     let stakeRegistry = new StakeRegistry(chain, deployer);
     let stakePoolDiko = new StakePoolDiko(chain, deployer);
-    let dikoToken = new DikoManager(chain, deployer);
+    let dikoToken = new DikoToken(chain, deployer);
 
     // Stake DIKO as wallet_1
     // Only 1, so total pool balance is mostly rewards

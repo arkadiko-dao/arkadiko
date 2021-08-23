@@ -10,6 +10,8 @@ import {
   Swap,
 } from './models/arkadiko-tests-swap.ts';
 
+import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
+
 Clarinet.test({
   name: "stacker: initiate stacking in PoX contract with enough STX tokens",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -53,7 +55,7 @@ Clarinet.test({
     ]);
 
     let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii("stacker")], deployer.address);
-    call.result.expectOk().expectUint(1500000000); // 1500 STX
+    call.result.expectOk().expectUintWithDecimals(1500); // 1500 STX
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "toggle-stacking", [types.uint(2)], wallet_1.address),
@@ -63,11 +65,11 @@ Clarinet.test({
         types.uint(1) // 1 cycle lock period
       ], deployer.address)
     ]);
-    block.receipts[1].result.expectOk().expectUint(1000000000);
+    block.receipts[1].result.expectOk().expectUintWithDecimals(1000);
 
     // only 1000 STX stacked since wallet 1 revoked stacking on their vault before stacking initiated
     call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stx-balance", [], deployer.address);
-    call.result.expectUint(1000000000);
+    call.result.expectUintWithDecimals(1000);
 
     call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stacking-unlock-burn-height", [], deployer.address);
     call.result.expectOk().expectUint(300);
@@ -127,11 +129,11 @@ Clarinet.test({
     ]);
     let call:any = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
     let vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(1000000000);
-    vault['collateral'].expectUint(1000000000);
+    vault['stacked-tokens'].expectUintWithDecimals(1000);
+    vault['collateral'].expectUintWithDecimals(1000);
 
     call = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii("stacker")], deployer.address);
-    call.result.expectOk().expectUint(1000000000); // 1000 STX
+    call.result.expectOk().expectUintWithDecimals(1000); // 1000 STX
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
         types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
@@ -139,10 +141,10 @@ Clarinet.test({
         types.uint(1) // 1 cycle lock period
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(1000000000);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(1000);
 
     call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stx-balance", [], deployer.address);
-    call.result.expectUint(1000000000);
+    call.result.expectUintWithDecimals(1000);
 
     chain.mineEmptyBlock(300);
 
@@ -170,8 +172,8 @@ Clarinet.test({
 
     call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
     vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(2000000000);
-    vault['collateral'].expectUint(2000000000);
+    vault['stacked-tokens'].expectUintWithDecimals(2000);
+    vault['collateral'].expectUintWithDecimals(2000);
   }
 });
 
@@ -218,7 +220,7 @@ Clarinet.test({
     ]);
 
     let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii("stacker")], deployer.address);
-    call.result.expectOk().expectUint(1500000000); // 1500 STX
+    call.result.expectOk().expectUintWithDecimals(1500); // 1500 STX
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
         types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
@@ -226,10 +228,10 @@ Clarinet.test({
         types.uint(1) // 1 cycle lock period
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(1500000000);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(1500);
 
     call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stx-balance", [], deployer.address);
-    call.result.expectUint(1500000000);
+    call.result.expectUintWithDecimals(1500);
 
     // try stacking again, should fail
     block = chain.mineBlock([
@@ -277,13 +279,13 @@ Clarinet.test({
 
     call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
     let vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(1299970000);
-    vault['collateral'].expectUint(1299970000);
+    vault['stacked-tokens'].expectUintWithDecimals(1299.97);
+    vault['collateral'].expectUintWithDecimals(1299.97);
 
     call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(2)], deployer.address);
     vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(649985000);
-    vault['collateral'].expectUint(649985000);
+    vault['stacked-tokens'].expectUintWithDecimals(649.985);
+    vault['collateral'].expectUintWithDecimals(649.985);
   }
 });
 
@@ -375,7 +377,7 @@ Clarinet.test({
       wallet_1.address
     );
     let vault = call.result.expectTuple();
-    vault['leftover-collateral'].expectUint(536690628);
+    vault['leftover-collateral'].expectUintWithDecimals(536.690628);
     vault['is-liquidated'].expectBool(true);
     vault['auction-ended'].expectBool(true);
 
@@ -561,7 +563,7 @@ Clarinet.test({
     ]);
 
     let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii("stacker")], deployer.address);
-    call.result.expectOk().expectUint(1500000000); // 1500 STX
+    call.result.expectOk().expectUintWithDecimals(1500); // 1500 STX
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "toggle-stacking", [types.uint(2)], wallet_1.address),
@@ -571,7 +573,7 @@ Clarinet.test({
         types.uint(1) // 1 cycle lock period
       ], deployer.address)
     ]);
-    block.receipts[1].result.expectOk().expectUint(1000000000);
+    block.receipts[1].result.expectOk().expectUintWithDecimals(1000);
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
@@ -611,7 +613,7 @@ Clarinet.test({
     ]);
 
     let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii("stacker")], deployer.address);
-    call.result.expectOk().expectUint(1000000000); // 1000 STX
+    call.result.expectOk().expectUintWithDecimals(1000); // 1000 STX
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
@@ -623,10 +625,10 @@ Clarinet.test({
         types.uint(1000000000),
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(1000000000);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(1000);
 
     call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stx-balance", [], deployer.address);
-    call.result.expectUint(1000000000);
+    call.result.expectUintWithDecimals(1000);
 
     call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stacking-unlock-burn-height", [], deployer.address);
     call.result.expectOk().expectUint(300);
@@ -650,8 +652,8 @@ Clarinet.test({
 
     call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
     let vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(1000000000);
-    vault['collateral'].expectUint(1000000000);
+    vault['stacked-tokens'].expectUintWithDecimals(1000);
+    vault['collateral'].expectUintWithDecimals(1000);
   }
 });
 
@@ -682,7 +684,7 @@ Clarinet.test({
     ]);
 
     let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii("stacker")], deployer.address);
-    call.result.expectOk().expectUint(1000000000); 
+    call.result.expectOk().expectUintWithDecimals(1000); 
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
@@ -691,10 +693,10 @@ Clarinet.test({
         types.uint(1) // 1 cycle lock period
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(1000000000);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(1000);
 
     call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stx-balance", [], deployer.address);
-    call.result.expectUint(1000000000);
+    call.result.expectUintWithDecimals(1000);
 
     chain.mineEmptyBlock(300);
 
@@ -714,8 +716,8 @@ Clarinet.test({
     // Vault collateral has not changed
     call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
     let vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(1000000000);
-    vault['collateral'].expectUint(1000000000);
+    vault['stacked-tokens'].expectUintWithDecimals(1000);
+    vault['collateral'].expectUintWithDecimals(1000);
   }
 });
 
@@ -747,7 +749,7 @@ Clarinet.test({
     ]);
 
     let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii("stacker")], deployer.address);
-    call.result.expectOk().expectUint(1000000000); // 1000 STX
+    call.result.expectOk().expectUintWithDecimals(1000); // 1000 STX
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
         types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
@@ -755,30 +757,30 @@ Clarinet.test({
         types.uint(1) // 1 cycle lock period
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(1000000000);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(1000);
 
     call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stx-balance", [], deployer.address);
-    call.result.expectUint(1000000000);
+    call.result.expectUintWithDecimals(1000);
 
     // Rewards after 2 blocks
     call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(640000000)
+    call.result.expectOk().expectUintWithDecimals(640)
 
     chain.mineEmptyBlock(300);
 
     // Rewards after 302 blocks
     call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(96640000000)
+    call.result.expectOk().expectUintWithDecimals(96640)
 
     // Initial DIKO balance
     call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(890000000000);   
+    call.result.expectOk().expectUintWithDecimals(890000);   
 
     // Collateral info
     call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-collateral-of ", [types.principal(deployer.address)], deployer.address);
     let collateralInfo = call.result.expectTuple();
     collateralInfo['cumm-reward-per-collateral'].expectUint(0);
-    collateralInfo['collateral'].expectUint(1000000000);
+    collateralInfo['collateral'].expectUintWithDecimals(1000);
     
     // Payout should restart vault rewards
     block = chain.mineBlock([
@@ -799,23 +801,23 @@ Clarinet.test({
 
     // Auto harvested DIKO
     call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(986640000000);   
+    call.result.expectOk().expectUintWithDecimals(986640);   
 
     // Pending rewards only for 1 block
     call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(320000000);
+    call.result.expectOk().expectUintWithDecimals(320);
 
     // Reward info - cumm reward and collateral is now updated
     call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-collateral-of ", [types.principal(deployer.address)], deployer.address);
     collateralInfo = call.result.expectTuple();
-    collateralInfo['cumm-reward-per-collateral'].expectUint(96640000);
-    collateralInfo['collateral'].expectUint(2000000000);
+    collateralInfo['cumm-reward-per-collateral'].expectUintWithDecimals(96.64);
+    collateralInfo['collateral'].expectUintWithDecimals(2000);
 
     // Vault info is updated
     call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
     let vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(2000000000);
-    vault['collateral'].expectUint(2000000000);
+    vault['stacked-tokens'].expectUintWithDecimals(2000);
+    vault['collateral'].expectUintWithDecimals(2000);
   }
 });
 
@@ -882,14 +884,14 @@ Clarinet.test({
 
     // Only the STX from the first vault will be stacked
     let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii("stacker")], deployer.address);
-    call.result.expectOk().expectUint(1000000000); // 1000 STX
+    call.result.expectOk().expectUintWithDecimals(1000); // 1000 STX
 
     // Check initial vault data
     call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
     let vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(1000000000);
-    vault['collateral'].expectUint(1000000000);
-    vault['debt'].expectUint(1000000000);
+    vault['stacked-tokens'].expectUintWithDecimals(1000);
+    vault['collateral'].expectUintWithDecimals(1000);
+    vault['debt'].expectUintWithDecimals(1000);
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
@@ -898,10 +900,10 @@ Clarinet.test({
         types.uint(1) // 1 cycle lock period
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(1000000000);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(1000);
 
     call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stx-balance", [], deployer.address);
-    call.result.expectUint(1000000000);
+    call.result.expectUintWithDecimals(1000);
 
     chain.mineEmptyBlock(300);
 
@@ -926,12 +928,12 @@ Clarinet.test({
     // Check vault data
     call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
     vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(1000000000);
-    vault['collateral'].expectUint(1000000000);
+    vault['stacked-tokens'].expectUintWithDecimals(1000);
+    vault['collateral'].expectUintWithDecimals(1000);
 
     // Initial debt was 1000 USDA. We got 100 STX from PoX and swaped it to USDA.
     // 1000 - 100 = ~900 debt left (a bit more because of slippage on swap)
-    vault['debt'].expectUint(901514019);
+    vault['debt'].expectUintWithDecimals(901.514019);
   }
 });
 
@@ -1038,13 +1040,13 @@ Clarinet.test({
         types.uint(1) // 1 cycle lock period
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(1000000000);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(1000);
 
     chain.mineEmptyBlock(300);
 
     // Initial + 1
     let call:any = chain.callReadOnlyFn("usda-token", "get-balance", [types.principal(wallet_1.address)], deployer.address);
-    call.result.expectOk().expectUint(1000001000000);   
+    call.result.expectOk().expectUintWithDecimals(1000001);   
 
     // now imagine we receive 100 STX for stacking
     // and then payout vault 1 (which was the only stacker)
@@ -1070,14 +1072,14 @@ Clarinet.test({
     // Check vault data
     call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
     let vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(1000000000);
-    vault['collateral'].expectUint(1000000000);
+    vault['stacked-tokens'].expectUintWithDecimals(1000);
+    vault['collateral'].expectUintWithDecimals(1000);
     vault['debt'].expectUint(0); // PoX yield has paid back all dept
 
     // Excess yield has been transferred to the user's wallet
     // User got ~97 USDA extra
     call = chain.callReadOnlyFn("usda-token", "get-balance", [types.principal(wallet_1.address)], deployer.address);
-    call.result.expectOk().expectUint(1000098715803);   
+    call.result.expectOk().expectUintWithDecimals(1000098.715803);   
 
   }
 });
@@ -1145,14 +1147,14 @@ Clarinet.test({
 
     // STX from vault 1 and 2 stacked
     let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii("stacker")], deployer.address);
-    call.result.expectOk().expectUint(1000000000); 
+    call.result.expectOk().expectUintWithDecimals(1000); 
 
     // Check initial vault data
     call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
     let vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(1000000000);
-    vault['collateral'].expectUint(1000000000);
-    vault['debt'].expectUint(1000000000);
+    vault['stacked-tokens'].expectUintWithDecimals(1000);
+    vault['collateral'].expectUintWithDecimals(1000);
+    vault['debt'].expectUintWithDecimals(1000);
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
@@ -1161,10 +1163,10 @@ Clarinet.test({
         types.uint(1) // 1 cycle lock period
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUint(1000000000);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(1000);
 
     call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stx-balance", [], deployer.address);
-    call.result.expectUint(1000000000);
+    call.result.expectUintWithDecimals(1000);
 
     chain.mineEmptyBlock(300);
 
