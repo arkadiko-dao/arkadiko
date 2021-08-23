@@ -286,7 +286,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
     Utils.qualifiedName('arkadiko-token'),
     100
   );
-  result.expectOk().expectUint(100000000);
+  result.expectOk().expectUintWithDecimals(100);
 
   // Initial stake + 2 blocks of ~62 rewards = ~225
   result = stakePoolDiko.getStakeOf(wallet_1, 100);
