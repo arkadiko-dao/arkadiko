@@ -6,6 +6,18 @@ import {
   types,
 } from "https://deno.land/x/clarinet@v0.13.0/index.ts";
 
+import { 
+  StakeRegistry
+} from './models/arkadiko-tests-stake.ts';
+
+import { 
+  Governance
+} from "./models/arkadiko-tests-governance.ts";
+
+import { 
+  DikoToken
+} from './models/arkadiko-tests-tokens.ts';
+
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 
@@ -16,94 +28,68 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let wallet_1 = accounts.get("wallet_1")!;
   let wallet_2 = accounts.get("wallet_2")!;
 
+  let stakeRegistry = new StakeRegistry(chain, deployer);
+  let governance = new Governance(chain, deployer);
+  let dikoToken = new DikoToken(chain, deployer);
+
   // Add funds to DIKO pool first (100 DIKO)
-  let block = chain.mineBlock([
-    Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
-      types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-      types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
-      types.principal(Utils.qualifiedName('arkadiko-token')),
-      types.uint(100000000)
-    ], wallet_1.address)
-  ]);
-  block.receipts[0].result.expectOk().expectUintWithDecimals(100);
+  let result = stakeRegistry.stake(
+    wallet_1, 
+    Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'),
+    Utils.qualifiedName('arkadiko-token'),
+    100
+  );
+  result.expectOk().expectUintWithDecimals(100);
 
   // Create proposal
-  block = chain.mineBlock([
-  Tx.contractCall("arkadiko-governance-v1-1", "propose", [
-      types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
-      types.uint(1),
-      types.utf8("Black swan event slash"),
-      types.utf8("https://discuss.arkadiko.finance/blackswan1"),
-      types.list([
-        types.tuple({
-          name: types.ascii("diko-slash"),
-          'address': types.principal(deployer.address),
-          'qualified-name': types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-slash-v1-1')),
-          'can-mint': types.bool(false),
-          'can-burn': types.bool(false)
-        })
-      ])
-  ], wallet_1.address)
-  ]);
-  block.receipts[0].result.expectOk().expectBool(true);
+  let contractChange = Governance.contractChange("diko-slash", Utils.qualifiedName('arkadiko-stake-pool-diko-slash-v1-1'), true, true);
+  result = governance.createProposal(
+    wallet_1, 
+    1, 
+    "Black swan event slash",
+    "ttps://discuss.arkadiko.finance/blackswan1",
+    [contractChange]
+  );
+  result.expectOk().expectBool(true);
 
   // Vote for wallet_1
-  block = chain.mineBlock([
-  Tx.contractCall("arkadiko-governance-v1-1", "vote-for", [
-      types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
-      types.principal(Utils.qualifiedName('arkadiko-token')),
-      types.uint(1),
-      types.uint(10000000)
-  ], wallet_1.address)
-  ]);
-  block.receipts[0].result.expectOk().expectUint(3200);
+  result = governance.voteForProposal(wallet_1, 1, 10);
+  result.expectOk().expectUint(3200);
 
   // Advance
-  for (let index = 0; index < 1500; index++) {
-    chain.mineBlock([]);
-  }
+  chain.mineEmptyBlock(1500);
 
   // End proposal
-  block = chain.mineBlock([
-  Tx.contractCall("arkadiko-governance-v1-1", "end-proposal", [
-      types.uint(1)
-  ], wallet_2.address)
-  ]);
-  block.receipts[0].result.expectOk().expectUint(3200);
+  result = governance.endProposal(1);
+  result.expectOk().expectUint(3200);
 
   // Check if proposal updated
-  let call:any = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-proposal-by-id", [types.uint(1)], wallet_1.address);
+  let call:any = governance.getProposalByID(1);
   call.result.expectTuple()["is-open"].expectBool(false);
 
   // Check total DIKO pool balance (as rewards have auto compounded)
-  call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [
-    types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'))
-  ], wallet_1.address);
+  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
   call.result.expectOk().expectUintWithDecimals(162.639906);
 
   // Now that the contract is active in the DAO, we can execute it
   // 30% of 162 DIKO = ~48
-  block = chain.mineBlock([
-  Tx.contractCall("arkadiko-stake-pool-diko-slash-v1-1", "execute", [], wallet_1.address)
+  let block = chain.mineBlock([
+    Tx.contractCall("arkadiko-stake-pool-diko-slash-v1-1", "execute", [], wallet_1.address)
   ]);
   block.receipts[0].result.expectOk().expectUintWithDecimals(48.791971);
 
   // Foundation (still deployer in this case) should have received the funds
-  call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [
-    types.principal(deployer.address)
-  ], wallet_1.address);
+  call = dikoToken.balanceOf(deployer.address);
   call.result.expectOk().expectUintWithDecimals(890048.791971);
 
   // Check total DIKO pool balance
   // 70% of 162 DIKO = ~113
-  call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [
-    types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'))
-  ], wallet_1.address);
+  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
   call.result.expectOk().expectUintWithDecimals(113.847935);
 
   // Can not execute slash again
   block = chain.mineBlock([
-  Tx.contractCall("arkadiko-stake-pool-diko-slash-v1-1", "execute", [], wallet_1.address)
+    Tx.contractCall("arkadiko-stake-pool-diko-slash-v1-1", "execute", [], wallet_1.address)
   ]);
   block.receipts[0].result.expectErr().expectUint(404);
 }
