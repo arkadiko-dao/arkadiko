@@ -170,7 +170,7 @@ Clarinet.test({
     call.result.expectOk().expectUint(380); // approx 0 (380/10^6)
 
     // now check balance of freddie contract
-    call = await usdaToken.balanceOf('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1')
+    call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-freddie-v1-1'))
     call.result.expectOk().expectUint(fee);
 
     call = await usdaToken.balanceOf(deployer.address)
@@ -180,10 +180,10 @@ Clarinet.test({
     result = vaultManager.redeemTokens(fee, 0);
     result.expectOk().expectBool(true);
 
-    call = await usdaToken.balanceOf('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1')
+    call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-freddie-v1-1'))
     call.result.expectOk().expectUint(0);
 
-    call = await usdaToken.balanceOf('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM')
+    call = await usdaToken.balanceOf(deployer.address)
     call.result.expectOk().expectUintWithDecimals(1000500);
   }
 });
@@ -253,12 +253,10 @@ Clarinet.test({
           'auto-payoff': types.bool(true)
         }),
         types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(98); // wrong token error
@@ -272,12 +270,10 @@ Clarinet.test({
           'auto-payoff': types.bool(true)
         }),
         types.ascii("DIKO-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
+        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(410); // wrong collateral type
@@ -291,12 +287,10 @@ Clarinet.test({
           'auto-payoff': types.bool(true)
         }),
         types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(98); // wrong token error
@@ -310,12 +304,10 @@ Clarinet.test({
           'auto-payoff': types.bool(true)
         }),
         types.ascii("DIKO-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('usda-token')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(410); // wrong collateral type
@@ -329,12 +321,10 @@ Clarinet.test({
           'auto-payoff': types.bool(true)
         }),
         types.ascii("DIKO-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
+        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(410); // wrong collateral type
@@ -362,9 +352,9 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "deposit", [
         types.uint(1),
         types.uint(500000000), // 500 STX
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1")
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1'))
       ], deployer.address)
     ]);
     block.receipts[0].result
@@ -601,7 +591,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(947068.138);
 
     // Freddie should not have DIKO yet
-    call = await dikoToken.balanceOf('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1');
+    call = await dikoToken.balanceOf(Utils.qualifiedName('arkadiko-freddie-v1-1'));
     call.result.expectOk().expectUint(0);
 
     result = oracleManager.updatePrice("STX", 35);
@@ -611,7 +601,7 @@ Clarinet.test({
     result.expectOk().expectUint(5200);
 
     // Freddie should have received pending DIKO rewards
-    call = await dikoToken.balanceOf('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1');
+    call = await dikoToken.balanceOf(Utils.qualifiedName('arkadiko-freddie-v1-1'));
     call.result.expectOk().expectUintWithDecimals(947287.316);
 
     // Payout address balance

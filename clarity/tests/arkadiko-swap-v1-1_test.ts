@@ -18,9 +18,9 @@ import {
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 
-const dikoTokenAddress = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token"
-const usdaTokenAddress = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token"
-const dikoUsdaPoolAddress = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-swap-token-diko-usda"
+const dikoTokenAddress = Utils.qualifiedName('arkadiko-token')
+const usdaTokenAddress = Utils.qualifiedName('usda-token')
+const dikoUsdaPoolAddress = Utils.qualifiedName('arkadiko-swap-token-diko-usda')
 
 Clarinet.test({
   name: "swap: create pair, add and remove liquidity",
@@ -50,10 +50,10 @@ Clarinet.test({
 
     // Check if tracked balances is the same as tokens owned by contract
     call = await chain.callReadOnlyFn("arkadiko-token", "get-balance", [
-      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-swap-v1-1"),
+      types.principal(Utils.qualifiedName('arkadiko-swap-v1-1')),
     ], deployer.address);
     call.result.expectOk().expectUintWithDecimals(1000);
-    call = await usdaToken.balanceOf("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-swap-v1-1");
+    call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-swap-v1-1'));
     call.result.expectOk().expectUintWithDecimals(200);
 
     // Remove other 90% of liquidity

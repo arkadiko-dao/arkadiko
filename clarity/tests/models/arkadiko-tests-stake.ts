@@ -77,7 +77,7 @@ class StakePoolDiko {
 
   getDikoForStDiko(amount: number, stDikoSupply: number) {
     return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "diko-for-stdiko", [
-      types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
+      types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
       types.uint(amount * 1000000),
       types.uint(stDikoSupply * 1000000),
     ], this.deployer.address);
@@ -92,7 +92,7 @@ class StakePoolDiko {
   getStakeOf(user: Account, stDikoSupply: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-stake-pool-diko-v1-1", "get-stake-of", [
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-registry-v1-1'),
+        types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
         types.principal(user.address),
         types.uint(stDikoSupply * 1000000)
     ], user.address)

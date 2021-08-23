@@ -1,9 +1,7 @@
 import {
   Account,
   Chain,
-  Clarinet,
-  Tx,
-  types,
+  Clarinet
 } from "https://deno.land/x/clarinet@v0.13.0/index.ts";
 
 import { 
@@ -12,8 +10,7 @@ import {
 
 import { 
   VaultManager,
-  VaultLiquidator,
-  VaultAuction 
+  VaultLiquidator
 } from './models/arkadiko-tests-vaults.ts';
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;

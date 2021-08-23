@@ -99,7 +99,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(4000000.000010);
 
     // now check the wallet of contract - should have burned all required USDA, and have some left for burning gov tokens
-    call = await usdaToken.balanceOf('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-auction-engine-v1-1');
+    call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v1-1'));
     call.result.expectOk().expectUintWithDecimals(61); // 61 dollars left
 
     call = await xstxManager.balanceOf(deployer.address);
@@ -312,7 +312,7 @@ Clarinet.test({
     result = vaultAuction.bid(wallet_1, 60);
     result.expectOk().expectBool(true);
 
-    let call = await usdaToken.balanceOf('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-auction-engine-v1-1');
+    let call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v1-1'));
     call.result.expectOk().expectUintWithDecimals(60);
 
     call = await usdaToken.balanceOf(wallet_1.address);
@@ -450,7 +450,7 @@ Clarinet.test({
     result.expectErr().expectUint(23); // poor bid
 
     // USDA balance of auction engine
-    call = await usdaToken.balanceOf('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-auction-engine-v1-1')
+    call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v1-1'))
     call.result.expectOk().expectUint(0);
 
     // Advance, so auction is closed
@@ -599,16 +599,10 @@ Clarinet.test({
     // Wrong reserve 
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v1-1", "redeem-lot-collateral", [
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1'),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.xstx-token",
-        ),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1",
-        ),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1",
-        ),
+        types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
+        types.principal(Utils.qualifiedName('xstx-token')),
+        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
         types.uint(1),
         types.uint(0)
       ], deployer.address)
@@ -651,16 +645,10 @@ Clarinet.test({
     // Wrong token
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v1-1", "redeem-lot-collateral", [
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1'),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
-        ),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1",
-        ),
+        types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
         types.uint(1),
         types.uint(0)
       ], deployer.address)
@@ -715,16 +703,10 @@ Clarinet.test({
     // Withdrawing the xSTX tokens should fail
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v1-1", "redeem-lot-collateral", [
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1'),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.xstx-token",
-        ),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1",
-        ),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1",
-        ),
+        types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
+        types.principal(Utils.qualifiedName('xstx-token')),
+        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
         types.uint(1),
         types.uint(0)
       ], deployer.address)
@@ -853,16 +835,10 @@ Clarinet.test({
     // Can not redeem xSTX tokens from SIP10 reserve
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v1-1", "redeem-lot-collateral", [
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1'),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.xstx-token",
-        ),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1",
-        ),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1",
-        ),
+        types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
+        types.principal(Utils.qualifiedName('xstx-token')),
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
         types.uint(1),
         types.uint(0)
       ], deployer.address)
