@@ -340,11 +340,11 @@ Clarinet.test({
     call.result.expectTuple()["vote-count"].expectUintWithDecimals(51.319950);
 
     // stDIKO balance
-    call = chain.callReadOnlyFn("stdiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+    call = stDikoToken.balanceOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(114.201384);   
 
     // DIKO balance has decreased by 10
-    call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(wallet_1.address)], wallet_1.address);
+    call = dikoToken.balanceOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(149790);  
 
     // Advance

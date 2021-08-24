@@ -149,5 +149,13 @@ class Dao {
     return this.chain.callReadOnlyFn("arkadiko-dao", "get-qualified-name-by-name", [types.ascii(name)], this.deployer.address);
   }
 
+  getContractCanMint(qualifiedName: string) {
+    return this.chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-mint-by-qualified-name", [types.principal(Utils.qualifiedName(qualifiedName))], this.deployer.address);
+  }
+
+  getContractCanBurn(qualifiedName: string) {
+    return this.chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-burn-by-qualified-name", [types.principal(Utils.qualifiedName(qualifiedName))], this.deployer.address);
+  }
+
 }
 export { Dao };
