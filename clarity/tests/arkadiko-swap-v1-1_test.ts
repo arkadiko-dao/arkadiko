@@ -12,15 +12,16 @@ import {
 
 import { 
   UsdaToken,
+  DikoToken,
   DikoUsdaPoolToken
 } from './models/arkadiko-tests-tokens.ts';
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 
-const dikoTokenAddress = Utils.qualifiedName('arkadiko-token')
-const usdaTokenAddress = Utils.qualifiedName('usda-token')
-const dikoUsdaPoolAddress = Utils.qualifiedName('arkadiko-swap-token-diko-usda')
+const dikoTokenAddress = 'arkadiko-token'
+const usdaTokenAddress = 'usda-token'
+const dikoUsdaPoolAddress = 'arkadiko-swap-token-diko-usda'
 
 Clarinet.test({
   name: "swap: create pair, add and remove liquidity",
@@ -29,6 +30,7 @@ Clarinet.test({
 
     let swap = new Swap(chain, deployer);
     let usdaToken = new UsdaToken(chain, deployer);
+    let dikoToken = new DikoToken(chain, deployer);
 
     // Create pair
     let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
@@ -49,9 +51,7 @@ Clarinet.test({
     call.result.expectOk().expectList()[1].expectUintWithDecimals(200);
 
     // Check if tracked balances is the same as tokens owned by contract
-    call = await chain.callReadOnlyFn("arkadiko-token", "get-balance", [
-      types.principal(Utils.qualifiedName('arkadiko-swap-v1-1')),
-    ], deployer.address);
+    call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-swap-v1-1'));
     call.result.expectOk().expectUintWithDecimals(1000);
     call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-swap-v1-1'));
     call.result.expectOk().expectUintWithDecimals(200);
@@ -203,13 +203,8 @@ Clarinet.test({
     let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
     result.expectOk().expectBool(true);
 
-    chain.mineBlock([
-      Tx.contractCall("arkadiko-swap-v1-1", "set-fee-to-address", [
-        types.principal(dikoTokenAddress),
-        types.principal(usdaTokenAddress),
-        types.principal(deployer.address)
-      ], deployer.address)
-    ]);
+    // Set fee to address
+    swap.setFeeToAddress(dikoTokenAddress, usdaTokenAddress, deployer);
 
     // Swap
     result = swap.swapXForY(deployer, dikoTokenAddress, usdaTokenAddress, 200, 38);

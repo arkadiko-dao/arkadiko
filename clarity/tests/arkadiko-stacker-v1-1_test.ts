@@ -558,9 +558,9 @@ Clarinet.test({
     // We set 1 STX = 1 USDA
     let swap = new Swap(chain, deployer);
     let result = swap.createPair(deployer,
-      Utils.qualifiedName('wrapped-stx-token'),
-      Utils.qualifiedName('usda-token'),
-      Utils.qualifiedName('arkadiko-swap-token-wstx-usda'),
+      'wrapped-stx-token',
+      'usda-token',
+      'arkadiko-swap-token-wstx-usda',
       "wSTX-USDA", 
       10000, 
       10000);
@@ -644,9 +644,9 @@ Clarinet.test({
     // We set 1 STX = 1 USDA
     let swap = new Swap(chain, deployer);
     let result = swap.createPair(deployer,
-      Utils.qualifiedName('wrapped-stx-token'),
-      Utils.qualifiedName('usda-token'),
-      Utils.qualifiedName('arkadiko-swap-token-wstx-usda'),
+      'wrapped-stx-token',
+      'usda-token',
+      'arkadiko-swap-token-wstx-usda',
       "wSTX-USDA", 
       10000, 
       10000);
@@ -709,9 +709,9 @@ Clarinet.test({
     // We set 1 STX = 1 USDA
     let swap = new Swap(chain, deployer);
     let result = swap.createPair(deployer,
-      Utils.qualifiedName('wrapped-stx-token'),
-      Utils.qualifiedName('usda-token'),
-      Utils.qualifiedName('arkadiko-swap-token-wstx-usda'),
+      'wrapped-stx-token',
+      'usda-token',
+      'arkadiko-swap-token-wstx-usda',
       "wSTX-USDA", 
       10000, 
       10000);

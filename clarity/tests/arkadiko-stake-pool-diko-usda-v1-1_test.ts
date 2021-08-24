@@ -36,6 +36,12 @@ import {
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
+const dikoTokenAddress = 'arkadiko-token'
+const usdaTokenAddress = 'usda-token'
+const wstxTokenAddress = 'wrapped-stx-token'
+const dikoUsdaPoolAddress = 'arkadiko-swap-token-diko-usda'
+const wstxUsdaPoolAddress = 'arkadiko-swap-token-wstx-usda'
+const wstxDikoPoolAddress = 'arkadiko-swap-token-wstx-diko'
 
 Clarinet.test({
   name: "stake-registry: add pool and get pool info",
@@ -63,9 +69,6 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let dikoToken = new DikoToken(chain, deployer);
 
   // Create swap pair to get LP tokens
-  const dikoTokenAddress = Utils.qualifiedName('arkadiko-token')
-  const usdaTokenAddress = Utils.qualifiedName('usda-token')
-  const dikoUsdaPoolAddress = Utils.qualifiedName('arkadiko-swap-token-diko-usda')
   let result = swap.createPair(wallet_1, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
   result.expectOk().expectBool(true);
 
@@ -133,9 +136,6 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let stakeRegistry = new StakeRegistry(chain, deployer);
 
   // Create swap pair to get LP tokens
-  const dikoTokenAddress = Utils.qualifiedName('arkadiko-token')
-  const usdaTokenAddress = Utils.qualifiedName('usda-token')
-  const dikoUsdaPoolAddress = Utils.qualifiedName('arkadiko-swap-token-diko-usda')
   let result = swap.createPair(wallet_1, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
   result.expectOk().expectBool(true);
   result = swap.addToPosition(wallet_2, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 500, 100);
@@ -266,9 +266,6 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let stakeRegistry = new StakeRegistry(chain, deployer);
 
   // Create swap pair to get LP tokens
-  const dikoTokenAddress = Utils.qualifiedName('arkadiko-token')
-  const usdaTokenAddress = Utils.qualifiedName('usda-token')
-  const dikoUsdaPoolAddress = Utils.qualifiedName('arkadiko-swap-token-diko-usda')
   let result = swap.createPair(wallet_1, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
   result.expectOk().expectBool(true);
   result = swap.addToPosition(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 500, 100);
@@ -331,9 +328,6 @@ Clarinet.test({
     let stakePoolDiko = new StakePoolDiko(chain, deployer);
 
     // Create swap pair to get LP tokens
-    const dikoTokenAddress = Utils.qualifiedName('arkadiko-token')
-    const usdaTokenAddress = Utils.qualifiedName('usda-token')
-    const dikoUsdaPoolAddress = Utils.qualifiedName('arkadiko-swap-token-diko-usda')
     let result = swap.createPair(wallet_1, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
     result.expectOk().expectBool(true);
     result = swap.addToPosition(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 500, 100);
@@ -387,9 +381,6 @@ Clarinet.test({
     let stakeRegistry = new StakeRegistry(chain, deployer);
 
     // Create swap pair to get LP tokens
-    const dikoTokenAddress = Utils.qualifiedName('arkadiko-token')
-    const usdaTokenAddress = Utils.qualifiedName('usda-token')
-    const dikoUsdaPoolAddress = Utils.qualifiedName('arkadiko-swap-token-diko-usda')
     let result = swap.createPair(wallet_1, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
     result.expectOk().expectBool(true);
     result = swap.addToPosition(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 500, 100);
@@ -509,9 +500,6 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let stakeRegistry = new StakeRegistry(chain, deployer);
 
   // Create swap pair to get LP tokens
-  const dikoTokenAddress = Utils.qualifiedName('arkadiko-token')
-  const usdaTokenAddress = Utils.qualifiedName('usda-token')
-  const dikoUsdaPoolAddress = Utils.qualifiedName('arkadiko-swap-token-diko-usda')
   let result = swap.createPair(wallet_1, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
   result.expectOk().expectBool(true);
 
@@ -589,9 +577,6 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let stakeRegistry = new StakeRegistry(chain, deployer);
 
   // Create swap pair to get LP tokens
-  const dikoTokenAddress = Utils.qualifiedName('arkadiko-token')
-  const usdaTokenAddress = Utils.qualifiedName('usda-token')
-  const dikoUsdaPoolAddress = Utils.qualifiedName('arkadiko-swap-token-diko-usda')
   let result = swap.createPair(wallet_1, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
   result.expectOk().expectBool(true);
 
@@ -635,9 +620,6 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let swap = new Swap(chain, deployer);
 
   // Create swap pair to get LP tokens
-  const dikoTokenAddress = Utils.qualifiedName('arkadiko-token')
-  const usdaTokenAddress = Utils.qualifiedName('usda-token')
-  const dikoUsdaPoolAddress = Utils.qualifiedName('arkadiko-swap-token-diko-usda')
   let result = swap.createPair(wallet_1, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
   result.expectOk().expectBool(true);
 
@@ -673,9 +655,6 @@ Clarinet.test({
     let stakeRegistry = new StakeRegistry(chain, deployer);
 
     // Create swap pair to get LP tokens
-    const dikoTokenAddress = Utils.qualifiedName('arkadiko-token')
-    const usdaTokenAddress = Utils.qualifiedName('usda-token')
-    const dikoUsdaPoolAddress = Utils.qualifiedName('arkadiko-swap-token-diko-usda')
     let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
     result.expectOk().expectBool(true);
 
@@ -743,9 +722,6 @@ Clarinet.test({
     let poolDikoUsda = new StakePoolDikoUsda(chain, deployer);
 
     // Create swap pair to get LP tokens
-    const dikoTokenAddress = Utils.qualifiedName('arkadiko-token')
-    const usdaTokenAddress = Utils.qualifiedName('usda-token')
-    const dikoUsdaPoolAddress = Utils.qualifiedName('arkadiko-swap-token-diko-usda')
     let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
     result.expectOk().expectBool(true);
 
@@ -819,9 +795,6 @@ Clarinet.test({
     let stakeRegistry = new StakeRegistry(chain, deployer);
 
     // Create swap pair to get LP tokens
-    const dikoTokenAddress = Utils.qualifiedName('arkadiko-token')
-    const usdaTokenAddress = Utils.qualifiedName('usda-token')
-    const dikoUsdaPoolAddress = Utils.qualifiedName('arkadiko-swap-token-diko-usda')
     let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
     result.expectOk().expectBool(true);
 
@@ -962,9 +935,6 @@ Clarinet.test({
     let stakeRegistry = new StakeRegistry(chain, deployer);
 
     // Create swap pair to get LP tokens
-    const dikoTokenAddress = Utils.qualifiedName('arkadiko-token')
-    const usdaTokenAddress = Utils.qualifiedName('usda-token')
-    const dikoUsdaPoolAddress = Utils.qualifiedName('arkadiko-swap-token-diko-usda')
     let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
     result.expectOk().expectBool(true);
 
@@ -1063,9 +1033,6 @@ Clarinet.test({
     let stakePoolDikoUsda = new StakePoolDikoUsda(chain, deployer);
 
     // Create swap pair to get LP tokens
-    const dikoTokenAddress = Utils.qualifiedName('arkadiko-token')
-    const usdaTokenAddress = Utils.qualifiedName('usda-token')
-    const dikoUsdaPoolAddress = Utils.qualifiedName('arkadiko-swap-token-diko-usda')
     let result = swap.createPair(wallet_1, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
     result.expectOk().expectBool(true);
     result = swap.addToPosition(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 500, 100);
@@ -1126,13 +1093,6 @@ Clarinet.test({
     result = vaultManager.createVault(wallet_2, "STX-A", 1500, 1300);
 
     // Get LP tokens
-    const dikoTokenAddress = Utils.qualifiedName('arkadiko-token')
-    const usdaTokenAddress = Utils.qualifiedName('usda-token')
-    const wstxTokenAddress = Utils.qualifiedName('wrapped-stx-token')
-    const dikoUsdaPoolAddress = Utils.qualifiedName('arkadiko-swap-token-diko-usda')
-    const wstxUsdaPoolAddress = Utils.qualifiedName('arkadiko-swap-token-wstx-usda')
-    const wstxDikoPoolAddress = Utils.qualifiedName('arkadiko-swap-token-wstx-diko')
-
     result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
     result.expectOk().expectBool(true);
     result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
