@@ -13,7 +13,7 @@ import { ManageVault } from './manage-vault';
 import { ViewProposal } from './view-proposal';
 import { Stake } from './stake';
 import { Balances } from './balances';
-import { Onboarding } from './onboarding';
+import { Onboarding } from './onboarding/onboarding';
 
 export const routerConfig = [
   {
