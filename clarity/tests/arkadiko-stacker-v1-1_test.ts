@@ -19,7 +19,8 @@ import {
 import { 
   VaultManager,
   VaultLiquidator,
-  VaultAuction
+  VaultAuction,
+  VaultRewards
 } from './models/arkadiko-tests-vaults.ts';
 
 import { 
@@ -479,6 +480,7 @@ Clarinet.test({
     let stackerPayer = new StackerPayer(chain, deployer);
     let stxReserve = new StxReserve(chain, deployer);
     let dikoToken = new DikoToken(chain, deployer);
+    let vaultRewards = new VaultRewards(chain, deployer);
 
     // Set price, create vault
     oracleManager.updatePrice("STX", 400);
@@ -494,13 +496,13 @@ Clarinet.test({
     call.result.expectUintWithDecimals(1000);
 
     // Rewards after 2 blocks
-    call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
+    call = vaultRewards.getPendingRewards(deployer);
     call.result.expectOk().expectUintWithDecimals(640)
 
     chain.mineEmptyBlock(300);
 
     // Rewards after 302 blocks
-    call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
+    call = vaultRewards.getPendingRewards(deployer);
     call.result.expectOk().expectUintWithDecimals(96640)
 
     // Initial DIKO balance
@@ -508,7 +510,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(890000);   
 
     // Collateral info
-    call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-collateral-of ", [types.principal(deployer.address)], deployer.address);
+    call = vaultRewards.getCollateralOf(deployer);
     let collateralInfo = call.result.expectTuple();
     collateralInfo['cumm-reward-per-collateral'].expectUint(0);
     collateralInfo['collateral'].expectUintWithDecimals(1000);
@@ -524,11 +526,11 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(986960);   
 
     // Pending rewards only for 1 block
-    call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
+    call = vaultRewards.getPendingRewards(deployer);
     call.result.expectOk().expectUintWithDecimals(320);
 
     // Reward info - cumm reward and collateral is now updated
-    call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-collateral-of ", [types.principal(deployer.address)], deployer.address);
+    call = vaultRewards.getCollateralOf(deployer);
     collateralInfo = call.result.expectTuple();
     collateralInfo['cumm-reward-per-collateral'].expectUintWithDecimals(96.96);
     collateralInfo['collateral'].expectUintWithDecimals(2000);

@@ -429,3 +429,38 @@ class VaultAuction {
   }
 }
 export { VaultAuction };
+
+// ---------------------------------------------------------
+// Vault rewards
+// ---------------------------------------------------------
+
+class VaultRewards {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  getCollateralOf(user: Account) {
+    return this.chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-collateral-of", [types.principal(user.address)], user.address);
+
+  }
+  getPendingRewards(user: Account) {
+    return this.chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(user.address)], user.address)
+  }
+
+  calculateCummulativeRewardPerCollateral() {
+    return this.chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "calculate-cumm-reward-per-collateral", [], this.deployer.address);
+  }
+
+  claimPendingRewards(user: Account) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-vault-rewards-v1-1", "claim-pending-rewards", [], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+}
+export { VaultRewards };
