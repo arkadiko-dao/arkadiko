@@ -27,7 +27,6 @@ import { ArchiveIcon } from '@heroicons/react/outline';
 import { PlaceHolder } from './placeholder';
 import { InformationCircleIcon } from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
-import { classNames } from '@common/class-names';
 
 export const Mint = () => {
   const address = useSTXAddress();
@@ -388,15 +387,16 @@ export const Mint = () => {
                   {pendingVaultRewards.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
                 </p>
               </div>
-              <button 
-                type="button" 
-                className={classNames(pendingVaultRewards === 0 && 'hidden',
-                  'bg-indigo-600 hover:bg-indigo-700 inline-flex items-center px-3 py-2 ml-4 text-sm font-medium leading-4 text-white border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500')}
-                onClick={() => claimPendingRewards()}
-                disabled={pendingVaultRewards === 0}
-              >
-                Claim rewards
-              </button>
+              { pendingVaultRewards > 0 &&
+                <button 
+                  type="button" 
+                  className="bg-indigo-600 hover:bg-indigo-700 inline-flex items-center px-3 py-2 ml-4 text-sm font-medium leading-4 text-white border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  onClick={() => claimPendingRewards()}
+                  disabled={pendingVaultRewards === 0}
+                >
+                  Claim rewards
+                </button>
+              }
             </div>
           </header>
 
