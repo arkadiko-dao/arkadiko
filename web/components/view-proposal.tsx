@@ -1,7 +1,10 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Modal } from '@blockstack/ui';
 import { Container } from './home';
-import { AnchorMode, callReadOnlyFunction, contractPrincipalCV, uintCV, cvToJSON } from '@stacks/transactions';
+import { 
+  AnchorMode, callReadOnlyFunction, contractPrincipalCV, createAssetInfo,
+  uintCV, cvToJSON, FungibleConditionCode, makeStandardFungiblePostCondition 
+} from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
@@ -10,6 +13,7 @@ import { ThumbUpIcon, ThumbDownIcon } from '@heroicons/react/outline';
 import { ExternalLinkIcon } from '@heroicons/react/solid';
 import { getRPCClient } from '@common/utils';
 import { ProposalProps } from './proposal-group';
+import BN from 'bn.js';
 
 export const ViewProposal = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -74,6 +78,18 @@ export const ViewProposal = ({ match }) => {
   }, []);
 
   const addVoteDikoFor = async () => {
+    const postConditions = [
+      makeStandardFungiblePostCondition(
+        stxAddress || '',
+        FungibleConditionCode.Equal,
+        new BN(amountOfDikoVotes * 1000000),
+        createAssetInfo(
+          contractAddress,
+          "arkadiko-token",
+          "diko"
+        )
+      )
+    ];
     await doContractCall({
       network,
       contractAddress,
@@ -86,6 +102,7 @@ export const ViewProposal = ({ match }) => {
         uintCV(match.params.id), uintCV(amountOfDikoVotes * 1000000)
       ],
       postConditionMode: 0x01,
+      postConditions,
       finished: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowVoteDikoModal(false);
@@ -95,6 +112,18 @@ export const ViewProposal = ({ match }) => {
   };
 
   const addVoteDikoAgainst = async () => {
+    const postConditions = [
+      makeStandardFungiblePostCondition(
+        stxAddress || '',
+        FungibleConditionCode.Equal,
+        new BN(amountOfDikoVotes * 1000000),
+        createAssetInfo(
+          contractAddress,
+          "arkadiko-token",
+          "diko"
+        )
+      )
+    ];
     await doContractCall({
       network,
       contractAddress,
@@ -107,6 +136,7 @@ export const ViewProposal = ({ match }) => {
         uintCV(match.params.id), uintCV(amountOfDikoVotes * 1000000)
       ],
       postConditionMode: 0x01,
+      postConditions,
       finished: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowVoteDikoModal(false);
@@ -121,6 +151,18 @@ export const ViewProposal = ({ match }) => {
   };
 
   const addVoteStdikoFor = async () => {
+    const postConditions = [
+      makeStandardFungiblePostCondition(
+        stxAddress || '',
+        FungibleConditionCode.Equal,
+        new BN(amountOfStdikoVotes * 1000000),
+        createAssetInfo(
+          contractAddress,
+          "stdiko-token",
+          "stdiko"
+        )
+      )
+    ];
     await doContractCall({
       network,
       contractAddress,
@@ -133,6 +175,7 @@ export const ViewProposal = ({ match }) => {
         uintCV(match.params.id), uintCV(amountOfStdikoVotes * 1000000)
       ],
       postConditionMode: 0x01,
+      postConditions,
       finished: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowVoteStdikoModal(false);
@@ -142,6 +185,18 @@ export const ViewProposal = ({ match }) => {
   };
 
   const addVoteStdikoAgainst = async () => {
+    const postConditions = [
+      makeStandardFungiblePostCondition(
+        stxAddress || '',
+        FungibleConditionCode.Equal,
+        new BN(amountOfStdikoVotes * 1000000),
+        createAssetInfo(
+          contractAddress,
+          "stdiko-token",
+          "stdiko"
+        )
+      )
+    ];
     await doContractCall({
       network,
       contractAddress,
@@ -154,6 +209,7 @@ export const ViewProposal = ({ match }) => {
         uintCV(match.params.id), uintCV(amountOfStdikoVotes * 1000000)
       ],
       postConditionMode: 0x01,
+      postConditions,
       finished: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowVoteStdikoModal(false);
