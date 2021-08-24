@@ -12,7 +12,7 @@ export const ExplorerLink: React.FC<ExplorerLinkProps> = ({ txId, text, classNam
     id = `0x${id}`;
   }
   const url = location.origin.includes('localhost')
-    ? `http://localhost:20080/extended/v1/tx/${id}`
+    ? `http://localhost:3999/extended/v1/tx/${id}`
     : `https://explorer.stacks.co/txid/${id}?chain=testnet`;
   
   return (

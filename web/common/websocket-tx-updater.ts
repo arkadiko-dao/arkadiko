@@ -5,8 +5,8 @@ const env = process.env.REACT_APP_NETWORK_ENV || 'testnet';
 let websocketUrl = 'wss://stacks-node-api.mainnet.stacks.co';
 let coreApiUrl = 'https://stacks-node-api.mainnet.stacks.co';
 if (env.includes('mocknet')) {
-  websocketUrl = 'ws://localhost:20080';
-  coreApiUrl = 'http://localhost:20080';
+  websocketUrl = 'ws://localhost:3999';
+  coreApiUrl = 'http://localhost:3999';
   // coreApiUrl = 'https://dull-liger-41.loca.lt';
   // websocketUrl = 'wss://dull-liger-41.loca.lt';
 } else if (env.includes('testnet')) {
