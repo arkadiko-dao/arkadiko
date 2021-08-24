@@ -32,7 +32,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   let stakeRegistry = new StakeRegistry(chain, deployer);
 
-  let call:any = stakeRegistry.getPoolData(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
+  let call:any = stakeRegistry.getPoolData('arkadiko-stake-pool-diko-v1-1');
   call.result.expectTuple()['name'].expectAscii('DIKO');
 
 }
@@ -67,8 +67,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Stake funds (100 DIKO)
   let result = stakeRegistry.stake(
     wallet_1, 
-    Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'),
-    Utils.qualifiedName('arkadiko-token'),
+    'arkadiko-stake-pool-diko-v1-1',
+    'arkadiko-token',
     100
   );
   result.expectOk().expectUintWithDecimals(100);
@@ -116,8 +116,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Unstake funds fails because cooldown not started
   result = stakeRegistry.unstake(
     wallet_1, 
-    Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'),
-    Utils.qualifiedName('arkadiko-token'),
+    'arkadiko-stake-pool-diko-v1-1',
+    'arkadiko-token',
     100
   );
   result.expectErr().expectUint(18003);
@@ -131,8 +131,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Unstake funds
   result = stakeRegistry.unstake(
     wallet_1, 
-    Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'),
-    Utils.qualifiedName('arkadiko-token'),
+    'arkadiko-stake-pool-diko-v1-1',
+    'arkadiko-token',
     100
   );
   result.expectOk().expectUintWithDecimals(91428.982948);
@@ -169,8 +169,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Stake
   let result = stakeRegistry.stake(
     wallet_1, 
-    Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'),
-    Utils.qualifiedName('arkadiko-token'),
+    'arkadiko-stake-pool-diko-v1-1',
+    'arkadiko-token',
     100
   );
   result.expectOk().expectUintWithDecimals(100);
@@ -192,8 +192,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // 200 staked / 2.24 = ~89
   result = stakeRegistry.stake(
     wallet_1, 
-    Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'),
-    Utils.qualifiedName('arkadiko-token'),
+    'arkadiko-stake-pool-diko-v1-1',
+    'arkadiko-token',
     200
   );
   result.expectOk().expectUintWithDecimals(88.778487);
@@ -223,8 +223,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Unstake funds
   result = stakeRegistry.unstake(
     wallet_1, 
-    Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'),
-    Utils.qualifiedName('arkadiko-token'),
+    'arkadiko-stake-pool-diko-v1-1',
+    'arkadiko-token',
     100
   );
   result.expectOk().expectUintWithDecimals(48405.069781);
@@ -287,8 +287,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Stake
   let result = stakeRegistry.stake(
     wallet_1, 
-    Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'),
-    Utils.qualifiedName('arkadiko-token'),
+    'arkadiko-stake-pool-diko-v1-1',
+    'arkadiko-token',
     100
   );
   result.expectOk().expectUintWithDecimals(100);
@@ -365,8 +365,8 @@ Clarinet.test({
     // Stake funds
     let result = stakeRegistry.stake(
       deployer, 
-      Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'),
-      Utils.qualifiedName('arkadiko-token'),
+      'arkadiko-stake-pool-diko-v1-1',
+      'arkadiko-token',
       100
     );
     result.expectOk().expectUintWithDecimals(100);
@@ -497,8 +497,8 @@ Clarinet.test({
     // Stake funds
     let result = stakeRegistry.stake(
       deployer, 
-      Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'),
-      Utils.qualifiedName('arkadiko-token'),
+      'arkadiko-stake-pool-diko-v1-1',
+      'arkadiko-token',
       100
     );
     result.expectOk().expectUintWithDecimals(100);
@@ -594,8 +594,8 @@ Clarinet.test({
     // Only 1, so total pool balance is mostly rewards
     stakeRegistry.stake(
       wallet_1, 
-      Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'),
-      Utils.qualifiedName('arkadiko-token'),
+      'arkadiko-stake-pool-diko-v1-1',
+      'arkadiko-token',
       (1 / 1000000)
     );
 

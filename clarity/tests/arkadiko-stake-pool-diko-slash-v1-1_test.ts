@@ -35,8 +35,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Add funds to DIKO pool first (100 DIKO)
   let result = stakeRegistry.stake(
     wallet_1, 
-    Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'),
-    Utils.qualifiedName('arkadiko-token'),
+    'arkadiko-stake-pool-diko-v1-1',
+    'arkadiko-token',
     100
   );
   result.expectOk().expectUintWithDecimals(100);

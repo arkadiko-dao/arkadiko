@@ -81,8 +81,8 @@ Clarinet.test({
     // Stake
     let result = stakeRegistry.stake(
       wallet_1, 
-      Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'),
-      Utils.qualifiedName('arkadiko-token'),
+      'arkadiko-stake-pool-diko-v1-1',
+      'arkadiko-token',
       150000
     );
     result.expectOk().expectUintWithDecimals(150000);
@@ -284,8 +284,8 @@ Clarinet.test({
     // Stake DIKO to get stDIKO 
     let result = stakeRegistry.stake(
       wallet_1, 
-      Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'),
-      Utils.qualifiedName('arkadiko-token'),
+      'arkadiko-stake-pool-diko-v1-1',
+      'arkadiko-token',
       100
     );
     result.expectOk().expectUintWithDecimals(100);
@@ -296,8 +296,8 @@ Clarinet.test({
     // Stake DIKO to get stDIKO again, at different rate
     result = stakeRegistry.stake(
       wallet_1, 
-      Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'),
-      Utils.qualifiedName('arkadiko-token'),
+      'arkadiko-stake-pool-diko-v1-1',
+      'arkadiko-token',
       100
     );
     result.expectOk().expectUintWithDecimals(24.201384); // 24
