@@ -390,10 +390,8 @@ export const Mint = () => {
               </div>
               <button 
                 type="button" 
-                className={classNames((pendingVaultRewards === 0) ? 
-                  'bg-indigo-300 hover:bg-indigo-300 pointer-events-none' :
-                  'bg-indigo-600 hover:bg-indigo-700 cursor-pointer', 
-                  'inline-flex items-center px-3 py-2 ml-4 text-sm font-medium leading-4 text-white border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500')}
+                className={classNames(pendingVaultRewards === 0 && 'hidden',
+                  'bg-indigo-600 hover:bg-indigo-700 inline-flex items-center px-3 py-2 ml-4 text-sm font-medium leading-4 text-white border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500')}
                 onClick={() => claimPendingRewards()}
                 disabled={pendingVaultRewards === 0}
               >
