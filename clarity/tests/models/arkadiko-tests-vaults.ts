@@ -67,8 +67,8 @@ class VaultManager {
         types.uint(amount * 1000000), 
         types.uint(usda * 1000000),
         types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
+          'stack-pox': types.bool(stack),
+          'auto-payoff': types.bool(autoPayoff)
         }),
         types.ascii(collateralType),
         reserve,
