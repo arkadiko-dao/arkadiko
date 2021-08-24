@@ -22,9 +22,16 @@ import {
 } from './models/arkadiko-tests-vaults.ts';
 
 import { 
+  Governance,
+  Dao
+} from './models/arkadiko-tests-governance.ts';
+
+import { 
   StakeRegistry,
   StakePoolDiko,
-  StakePoolDikoUsda
+  StakePoolDikoUsda,
+  StakePoolStxUsda,
+  StakePoolStxDiko
 } from './models/arkadiko-tests-stake.ts';
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
@@ -807,6 +814,9 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let swap = new Swap(chain, deployer);
+    let governance = new Governance(chain, deployer);
+    let dao = new Dao(chain, deployer);
+    let stakeRegistry = new StakeRegistry(chain, deployer);
 
     // Create swap pair to get LP tokens
     const dikoTokenAddress = Utils.qualifiedName('arkadiko-token')
@@ -816,44 +826,22 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Stake funds
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-usda-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-swap-token-diko-usda')),
-        types.uint(100000000)
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectUintWithDecimals(100); 
+    result = stakeRegistry.stake(deployer, 'arkadiko-stake-pool-diko-usda-v1-1', 'arkadiko-swap-token-diko-usda', 100);
+    result.expectOk().expectUintWithDecimals(100); 
 
     // Create proposal
-    block = chain.mineBlock([
-    Tx.contractCall("arkadiko-governance-v1-1", "propose", [
-      types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
-      types.uint(10),
-      types.utf8("Change Reward Distribution"),
-      types.utf8("https://discuss.arkadiko.finance"),
-      types.list([
-        types.tuple({
-          'name': types.ascii("stake-registry"),
-          'address': types.principal(deployer.address),
-          'qualified-name': types.principal(Utils.qualifiedName('arkadiko-stake-registry-tv1-1')),
-          'can-mint': types.bool(true),
-          'can-burn': types.bool(true)
-        }),
-        types.tuple({
-          'name': types.ascii("stake-pool-diko-usda-2"),
-          'address': types.principal(deployer.address),
-          'qualified-name': types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-usda-tv1-1')),
-          'can-mint': types.bool(true),
-          'can-burn': types.bool(true)
-        })
-      ])
-    ], wallet_1.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
+    let contractChange1 = Governance.contractChange("stake-registry", Utils.qualifiedName('arkadiko-stake-registry-tv1-1'), true, true);
+    let contractChange2 = Governance.contractChange("stake-pool-diko-usda-2", Utils.qualifiedName('arkadiko-stake-pool-diko-usda-tv1-1'), true, true);
+    result = governance.createProposal(
+      wallet_1, 
+      10, 
+      "Change Reward Distribution",
+      "https://discuss.arkadiko.finance/prop",
+      [contractChange1, contractChange2]
+    );
+    result.expectOk().expectBool(true);
 
-    let call:any = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-proposal-by-id", [types.uint(1)], wallet_1.address);
+    let call:any = governance.getProposalByID(1);
     call.result.expectTuple()["is-open"].expectBool(true);
     call.result.expectTuple()["start-block-height"].expectUint(10);
     
@@ -861,52 +849,41 @@ Clarinet.test({
     chain.mineEmptyBlock(10);
 
     // Vote for wallet_1
-    block = chain.mineBlock([
-    Tx.contractCall("arkadiko-governance-v1-1", "vote-for", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-token')),
-        types.uint(1),
-        types.uint(10000000)
-    ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectUint(3200);
+    result = governance.voteForProposal(deployer, 1, 10);
+    result.expectOk().expectUint(3200);
 
     // Advance
     chain.mineEmptyBlock(1500);
 
     // End proposal
-    block = chain.mineBlock([
-    Tx.contractCall("arkadiko-governance-v1-1", "end-proposal", [
-        types.uint(1)
-    ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectUint(3200);
+    result = governance.endProposal(1);
+    result.expectOk().expectUint(3200);
 
     // Check if DAO updated
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-address-by-name", [types.ascii("stake-registry")], deployer.address);
+    call = dao.getContractAddressByName("stake-registry");
     call.result.expectSome().expectPrincipal(deployer.address);
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-qualified-name-by-name", [types.ascii("stake-registry")], deployer.address);
+    call = dao.getQualifiedNameByName("stake-registry");
     call.result.expectSome().expectPrincipal(Utils.qualifiedName('arkadiko-stake-registry-tv1-1'));
 
     // Check mint and burn authorisation
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-mint-by-qualified-name", [types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1'))], deployer.address);
+    call = dao.getContractCanMint("arkadiko-stake-registry-v1-1");
     call.result.expectBool(false)
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-burn-by-qualified-name", [types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1'))], deployer.address);
+    call = dao.getContractCanBurn("arkadiko-stake-registry-v1-1");
     call.result.expectBool(false)
       
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-mint-by-qualified-name", [types.principal(Utils.qualifiedName('arkadiko-stake-registry-tv1-1'))], deployer.address);
+    call = dao.getContractCanMint("arkadiko-stake-registry-tv1-1");
     call.result.expectBool(true)
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-burn-by-qualified-name", [types.principal(Utils.qualifiedName('arkadiko-stake-registry-tv1-1'))], deployer.address);
+    call = dao.getContractCanBurn("arkadiko-stake-registry-tv1-1");
     call.result.expectBool(true)
 
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-mint-by-qualified-name", [types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-usda-v1-1'))], deployer.address);
+    call = dao.getContractCanMint("arkadiko-stake-pool-diko-usda-v1-1");
     call.result.expectBool(true)
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-burn-by-qualified-name", [types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-usda-v1-1'))], deployer.address);
+    call = dao.getContractCanBurn("arkadiko-stake-pool-diko-usda-v1-1");
     call.result.expectBool(true)
       
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-mint-by-qualified-name", [types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-usda-tv1-1'))], deployer.address);
+    call = dao.getContractCanMint("arkadiko-stake-pool-diko-usda-tv1-1");
     call.result.expectBool(true)
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-burn-by-qualified-name", [types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-usda-tv1-1'))], deployer.address);
+    call = dao.getContractCanBurn("arkadiko-stake-pool-diko-usda-tv1-1");
     call.result.expectBool(true)
 
     // Pending rewards on old pool
@@ -927,7 +904,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(375463.5965)
 
     // Stake funds fails as pool is not active anymore
-    block = chain.mineBlock([
+    let block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-tv1-1", "stake", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-tv1-1')),
         types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-usda-v1-1')),
@@ -980,7 +957,9 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let swap = new Swap(chain, deployer);
-    let poolDikoUsda = new StakePoolDikoUsda(chain, deployer);
+    let governance = new Governance(chain, deployer);
+    let dao = new Dao(chain, deployer);
+    let stakeRegistry = new StakeRegistry(chain, deployer);
 
     // Create swap pair to get LP tokens
     const dikoTokenAddress = Utils.qualifiedName('arkadiko-token')
@@ -990,51 +969,23 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Stake funds
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
-          types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-          types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-usda-v1-1')),
-          types.principal(Utils.qualifiedName('arkadiko-swap-token-diko-usda')),
-          types.uint(100000000)
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectUintWithDecimals(100);
+    result = stakeRegistry.stake(deployer, 'arkadiko-stake-pool-diko-usda-v1-1', 'arkadiko-swap-token-diko-usda', 100);
+    result.expectOk().expectUintWithDecimals(100); 
 
     // Create proposal
-    block = chain.mineBlock([
-    Tx.contractCall("arkadiko-governance-v1-1", "propose", [
-      types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
-      types.uint(10),
-      types.utf8("Change Reward Distribution"),
-      types.utf8("https://discuss.arkadiko.finance"),
-      types.list([
-        types.tuple({
-          'name': types.ascii("stake-registry"),
-          'address': types.principal(deployer.address),
-          'qualified-name': types.principal(Utils.qualifiedName('arkadiko-stake-registry-tv1-1')),
-          'can-mint': types.bool(true),
-          'can-burn': types.bool(true)
-        }),
-        types.tuple({
-          'name': types.ascii("stake-pool-diko"),
-          'address': types.principal(deployer.address),
-          'qualified-name': types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-usda-v1-1')),
-          'can-mint': types.bool(false),
-          'can-burn': types.bool(true)
-        }),
-        types.tuple({
-          'name': types.ascii("stake-pool-diko-2"),
-          'address': types.principal(deployer.address),
-          'qualified-name': types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-tv1-1')),
-          'can-mint': types.bool(true),
-          'can-burn': types.bool(true)
-        })
-      ])
-    ], wallet_1.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
+    let contractChange1 = Governance.contractChange("stake-registry", Utils.qualifiedName('arkadiko-stake-registry-tv1-1'), true, true);
+    let contractChange2 = Governance.contractChange("stake-pool-diko-usda", Utils.qualifiedName('arkadiko-stake-pool-diko-usda-v1-1'), false, true);
+    let contractChange3 = Governance.contractChange("stake-pool-diko-usda-2", Utils.qualifiedName('arkadiko-stake-pool-diko-usda-tv1-1'), true, true);
+    result = governance.createProposal(
+      wallet_1, 
+      10, 
+      "Change Reward Distribution",
+      "https://discuss.arkadiko.finance/prop",
+      [contractChange1, contractChange2, contractChange3]
+    );
+    result.expectOk().expectBool(true);
 
-    let call:any = chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-proposal-by-id", [types.uint(1)], wallet_1.address);
+    let call:any = governance.getProposalByID(1);
     call.result.expectTuple()["is-open"].expectBool(true);
     call.result.expectTuple()["start-block-height"].expectUint(10);
     
@@ -1042,56 +993,45 @@ Clarinet.test({
     chain.mineEmptyBlock(10);
 
     // Vote for wallet_1
-    block = chain.mineBlock([
-    Tx.contractCall("arkadiko-governance-v1-1", "vote-for", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-token')),
-        types.uint(1),
-        types.uint(10000000)
-    ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectUint(3200);
+    result = governance.voteForProposal(deployer, 1, 10);
+    result.expectOk().expectUint(3200);
 
     // Advance
     chain.mineEmptyBlock(1500);
 
     // End proposal
-    block = chain.mineBlock([
-    Tx.contractCall("arkadiko-governance-v1-1", "end-proposal", [
-        types.uint(1)
-    ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectUint(3200);
+    result = governance.endProposal(1);
+    result.expectOk().expectUint(3200);
 
     // Check if DAO updated
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-address-by-name", [types.ascii("stake-registry")], deployer.address);
+    call = dao.getContractAddressByName("stake-registry");
     call.result.expectSome().expectPrincipal(deployer.address);
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-qualified-name-by-name", [types.ascii("stake-registry")], deployer.address);
+    call = dao.getQualifiedNameByName("stake-registry");
     call.result.expectSome().expectPrincipal(Utils.qualifiedName('arkadiko-stake-registry-tv1-1'));
 
     // Check mint and burn authorisation
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-mint-by-qualified-name", [types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1'))], deployer.address);
+    call = dao.getContractCanMint("arkadiko-stake-registry-v1-1");
     call.result.expectBool(false)
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-burn-by-qualified-name", [types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1'))], deployer.address);
+    call = dao.getContractCanBurn("arkadiko-stake-registry-v1-1");
     call.result.expectBool(false)
       
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-mint-by-qualified-name", [types.principal(Utils.qualifiedName('arkadiko-stake-registry-tv1-1'))], deployer.address);
+    call = dao.getContractCanMint("arkadiko-stake-registry-tv1-1");
     call.result.expectBool(true)
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-burn-by-qualified-name", [types.principal(Utils.qualifiedName('arkadiko-stake-registry-tv1-1'))], deployer.address);
+    call = dao.getContractCanBurn("arkadiko-stake-registry-tv1-1");
     call.result.expectBool(true)
 
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-mint-by-qualified-name", [types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-usda-v1-1'))], deployer.address);
+    call = dao.getContractCanMint("arkadiko-stake-pool-diko-usda-v1-1");
     call.result.expectBool(false)
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-burn-by-qualified-name", [types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-usda-v1-1'))], deployer.address);
+    call = dao.getContractCanBurn("arkadiko-stake-pool-diko-usda-v1-1");
     call.result.expectBool(true)
       
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-mint-by-qualified-name", [types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-tv1-1'))], deployer.address);
+    call = dao.getContractCanMint("arkadiko-stake-pool-diko-usda-tv1-1");
     call.result.expectBool(true)
-    call = chain.callReadOnlyFn("arkadiko-dao", "get-contract-can-burn-by-qualified-name", [types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-tv1-1'))], deployer.address);
+    call = dao.getContractCanBurn("arkadiko-stake-pool-diko-usda-tv1-1");
     call.result.expectBool(true)
 
     // Unstake funds should fail as pool is not able to mint
-    block = chain.mineBlock([
+    let block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-tv1-1", "unstake", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-tv1-1')),
         types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-usda-v1-1')),
@@ -1120,6 +1060,7 @@ Clarinet.test({
 
     let swap = new Swap(chain, deployer);
     let stakeRegistry = new StakeRegistry(chain, deployer);
+    let stakePoolDikoUsda = new StakePoolDikoUsda(chain, deployer);
 
     // Create swap pair to get LP tokens
     const dikoTokenAddress = Utils.qualifiedName('arkadiko-token')
@@ -1131,38 +1072,15 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Stake funds
-    let block = chain.mineBlock([
-
-      // Stake DIKO as wallet_1
-      Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-usda-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-swap-token-diko-usda')),
-        types.uint(223606797)
-      ], wallet_1.address)
-    ]);
+    stakeRegistry.stake(wallet_1, "arkadiko-stake-pool-diko-usda-v1-1", "arkadiko-swap-token-diko-usda", 223.606797)
 
     for (let index = 0; index < 390; index++) {
 
       // Advance 1 week
       chain.mineEmptyBlock(144 * 7);
 
-      // Stake LP as deployer, to trigger an update of cumm-reward-per-stake
-      // Immediately unstake as we don't want deployer to get rewards
-      let block = chain.mineBlock([
-        Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
-          types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-          types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-usda-v1-1')),
-          types.principal(Utils.qualifiedName('arkadiko-swap-token-diko-usda')),
-          types.uint(1)
-        ], deployer.address),
-        Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
-          types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-          types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-usda-v1-1')),
-          types.principal(Utils.qualifiedName('arkadiko-swap-token-diko-usda')),
-          types.uint(1)
-      ], deployer.address)
-      ]);
+      // Increase cumm reward per stake
+      stakePoolDikoUsda.increaseCumulativeRewardPerStake();
 
       // Check pending rewards
       let call = stakeRegistry.getPendingRewards(wallet_1, "arkadiko-stake-pool-diko-usda-v1-1");
@@ -1198,6 +1116,10 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let swap = new Swap(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
+    let stakeRegistry = new StakeRegistry(chain, deployer);
+    let stakePoolDikoUsda = new StakePoolDikoUsda(chain, deployer);
+    let stakePoolStxUsda = new StakePoolStxUsda(chain, deployer);
+    let stakePoolStxDiko = new StakePoolStxDiko(chain, deployer);
 
     // Mint USDA for wallet_2
     let result = oracleManager.updatePrice("STX", 200);
@@ -1226,144 +1148,52 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Stake funds
-    let block = chain.mineBlock([
-
-      // Stake DIKO/USDA LP from wallet_2
-      Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-usda-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-swap-token-diko-usda')),
-        types.uint(50000000)
-      ], wallet_2.address),
-
-      // Stake wSTX/USDA LP from wallet_2
-      Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-usda')),
-        types.uint(50000000)
-      ], wallet_2.address),
-
-      // Stake wSTX/USDA LP from wallet_2
-      Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-diko')),
-        types.uint(50000000)
-      ], wallet_2.address),
-    ]);
-    block.receipts[0].result.expectOk().expectUint(50000000);
-    block.receipts[1].result.expectOk().expectUint(50000000);
-    block.receipts[2].result.expectOk().expectUint(50000000);
+    result = stakeRegistry.stake(wallet_2, "arkadiko-stake-pool-diko-usda-v1-1", "arkadiko-swap-token-diko-usda", 50)
+    result.expectOk().expectUintWithDecimals(50)
+    result = stakeRegistry.stake(wallet_2, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 50)
+    result.expectOk().expectUintWithDecimals(50)
+    result = stakeRegistry.stake(wallet_2, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 50)
+    result.expectOk().expectUintWithDecimals(50)
 
     for (let index = 0; index < 390; index++) {
 
       // Advance 1 week
-      chain.mineEmptyBlock(144 * 7);
+      chain.mineEmptyBlock(142 * 7);
 
-      // Stake DIKO as deployer, to trigger an update of cumm-reward-per-stake
-      // Immediately unstake as we don't want deployer to get rewards
-      let block = chain.mineBlock([
-
-        // DIKO
-        Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
-            types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-            types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-usda-v1-1')),
-            types.principal(Utils.qualifiedName('arkadiko-swap-token-diko-usda')),
-            types.uint(1)
-        ], deployer.address),
-        Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
-          types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-          types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-usda-v1-1')),
-          types.principal(Utils.qualifiedName('arkadiko-swap-token-diko-usda')),
-          types.uint(1)
-        ], deployer.address),
-
-        // DIKO/USDA
-        Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
-          types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-          types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-usda-v1-1')),
-          types.principal(Utils.qualifiedName('arkadiko-swap-token-diko-usda')),
-          types.uint(1)
-        ], deployer.address),
-        Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
-          types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-          types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-usda-v1-1')),
-          types.principal(Utils.qualifiedName('arkadiko-swap-token-diko-usda')),
-          types.uint(1)
-        ], deployer.address),
-
-        // wSTX/USDA
-        Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
-          types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-          types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1')),
-          types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-usda')),
-          types.uint(1)
-        ], deployer.address),
-        Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
-          types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-          types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1')),
-          types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-usda')),
-          types.uint(1)
-        ], deployer.address),
-
-        // wSTX/DIKO
-        Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
-          types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-          types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-1')),
-          types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-diko')),
-          types.uint(1)
-        ], deployer.address),
-        Tx.contractCall("arkadiko-stake-registry-v1-1", "unstake", [
-          types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-          types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-1')),
-          types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-diko')),
-          types.uint(1)
-        ], deployer.address),
-      ]);
+      // Increase cumm reward per stake
+      stakePoolDikoUsda.increaseCumulativeRewardPerStake();
+      stakePoolStxUsda.increaseCumulativeRewardPerStake();
+      stakePoolStxDiko.increaseCumulativeRewardPerStake();
 
       // Check pending rewards
-      let call = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-pending-rewards", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-        types.principal(wallet_2.address)
-      ], wallet_2.address);
-      let callLp1 = chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-pending-rewards", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-        types.principal(wallet_2.address)
-      ], wallet_2.address);
-      let callLp2 = chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-pending-rewards", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-        types.principal(wallet_2.address)
-      ], wallet_2.address);
-      let callLp3 = chain.callReadOnlyFn("arkadiko-stake-pool-wstx-diko-v1-1", "get-pending-rewards", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-        types.principal(wallet_2.address)
-      ], wallet_2.address);
+      let callLp1 = stakeRegistry.getPendingRewards(wallet_2, "arkadiko-stake-pool-diko-usda-v1-1");
+      let callLp2 = stakeRegistry.getPendingRewards(wallet_2, "arkadiko-stake-pool-wstx-usda-v1-1");
+      let callLp3 = stakeRegistry.getPendingRewards(wallet_2, "arkadiko-stake-pool-wstx-diko-v1-1");
 
       switch (index)
       {
         // pool gets 25% of total rewards
-        case 53: callLp1.result.expectOk().expectUint(6318923994350); break;
-        case 106: callLp1.result.expectOk().expectUint(9360561974200); break;
-        case 371: callLp1.result.expectOk().expectUint(12754441455150); break;
+        case 53: callLp1.result.expectOk().expectUintWithDecimals(6323498.514900); break;
+        case 106: callLp1.result.expectOk().expectUintWithDecimals(9378424.136950); break;
+        case 371: callLp1.result.expectOk().expectUintWithDecimals(12802138.822650); break;
         default: break;
       }
 
       switch (index)
       {
         // pool gets 15% of total rewards
-        case 53: callLp3.result.expectOk().expectUint(3791352612600); break;
-        case 106: callLp3.result.expectOk().expectUint(5616332576000); break;
-        case 371: callLp3.result.expectOk().expectUint(7652652252350); break;
+        case 53: callLp3.result.expectOk().expectUintWithDecimals(3794005.135800); break;
+        case 106: callLp3.result.expectOk().expectUintWithDecimals(5627007.472150); break;
+        case 371: callLp3.result.expectOk().expectUintWithDecimals(7681274.830850); break;
         default: break;
       }
 
       switch (index)
       {
         // pool gets 50% of total rewards
-        case 53: callLp2.result.expectOk().expectUint(12637842120700); break;
-        case 106: callLp2.result.expectOk().expectUint(18721108736900); break;
-        case 371: callLp2.result.expectOk().expectUint(25508841171250); break;
+        case 53: callLp2.result.expectOk().expectUintWithDecimals(12646840.463200); break;
+        case 106: callLp2.result.expectOk().expectUintWithDecimals(18756770.019450); break;
+        case 371: callLp2.result.expectOk().expectUintWithDecimals(25604263.759200); break;
         default: break;
       }
 

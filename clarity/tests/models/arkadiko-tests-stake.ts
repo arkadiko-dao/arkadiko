@@ -201,5 +201,64 @@ class StakePoolDikoUsda {
     return block.receipts[0].result;
   }
 
+  increaseCumulativeRewardPerStake() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-diko-usda-v1-1", "increase-cumm-reward-per-stake", [
+        types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
 }
 export { StakePoolDikoUsda };
+
+// ---------------------------------------------------------
+// wSTX/USDA pool
+// ---------------------------------------------------------
+
+class StakePoolStxUsda {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  increaseCumulativeRewardPerStake() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-wstx-usda-v1-1", "increase-cumm-reward-per-stake", [
+        types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+}
+export { StakePoolStxUsda };
+
+// ---------------------------------------------------------
+// wSTX/DIKO pool
+// ---------------------------------------------------------
+
+class StakePoolStxDiko {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  increaseCumulativeRewardPerStake() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-wstx-diko-v1-1", "increase-cumm-reward-per-stake", [
+        types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+}
+export { StakePoolStxDiko };
