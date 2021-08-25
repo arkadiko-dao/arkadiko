@@ -543,7 +543,6 @@ export const ManageVault = ({ match }) => {
   };
 
   const withdrawMaxAmount = () => {
-    //availableCollateralToWithdraw(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio);
     return setCollateralToWithdraw(String(maximumCollateralToWithdraw));
   };
 
