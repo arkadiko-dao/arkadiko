@@ -9,8 +9,8 @@ async function transact() {
   const list = tx.listCV([
     tx.tupleCV({
       'name': tx.stringAsciiCV("stacker"),
-      'address': tx.standardPrincipalCV(deployer.address),
-      'qualified-name': tx.standardPrincipalCV(deployer.address, "arkadiko-mock-stacker-v1-1"),
+      'address': tx.standardPrincipalCV("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"),
+      'qualified-name': tx.standardPrincipalCV("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM", "arkadiko-mock-stacker-v1-1"),
       'can-mint': tx.falseCV(),
       'can-burn': tx.falseCV()
     })
