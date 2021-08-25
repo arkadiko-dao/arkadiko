@@ -102,6 +102,13 @@
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
     (asserts!
       (or
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "sip10-reserve")))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
+    (asserts!
+      (or
         (is-eq "xSTX" (get collateral-token vault))
         (is-eq "STX" (get collateral-token vault))
       )
