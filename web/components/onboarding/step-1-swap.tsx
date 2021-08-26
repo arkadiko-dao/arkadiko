@@ -7,7 +7,8 @@ import { Step } from './step';
 
 export const OnboardingStep1Swap = () => {
   const history = useHistory();
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(1);
+  const currentSection = 0;
 
   const goToNextStep = () => {
     if (currentStep !== 4) {
@@ -27,7 +28,7 @@ export const OnboardingStep1Swap = () => {
     {
       stepWrapperPosition: "top-0 left-0",
       stepPosition: "top-[112px] left-[20px]",
-      blockPosition: "left-[-340px] max-w-[285px]",
+      blockPosition: "top-[60px] left-[-340px] max-w-[285px]",
       arrowPosition: "top-[48px] left-[-48px] rotate-[123deg]",
       arrowSize: "w-20 h-20",
       stepTitle: "Choose tokens",
@@ -65,9 +66,7 @@ export const OnboardingStep1Swap = () => {
 
   return (
     <div className="w-full min-h-screen bg-gray-100">
-      <OnboardingNav 
-        currentSection={1} 
-      />
+      <OnboardingNav currentSection={currentSection} />
 
       <div className="px-6 mx-auto lg:px-8">
         <main className="py-12">
