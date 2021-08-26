@@ -45,4 +45,33 @@
 
 @tailwind base;
 @tailwind components;
+
+.draw-arrow {
+  stroke-width: 5;
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  animation-duration: 2s;
+  animation-fill-mode: forwards;
+  animation-name: draw;
+  animation-delay: 0.8s;
+}
+.draw-arrow.tail-1 {
+  animation-delay: 1.2s;
+}
+.draw-arrow.tail-2 {
+  animation-delay: 1.4s;
+}
+
+@-webkit-keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 @tailwind utilities;

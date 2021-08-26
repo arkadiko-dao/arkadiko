@@ -18,13 +18,13 @@ export const Onboarding = () => {
     >
       <div 
         className={classNames(
-          showButton ? 'opacity-100' : 'opacity-0',
+          showButton ? 'opacity-100 visible' : 'opacity-0 invisible',
           'absolute transform -translate-x-1/2 -translate-y-1/2 top-[85%] left-1/2 transition duration-[1600ms] ease-in-out'
           )
         }
       >
         <RouterLink 
-          to="/onboarding-step-1-swap" 
+          to="/onboarding/step-1-swap" 
           className="inline-flex items-center px-8 py-4 text-2xl font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
           Get started
         </RouterLink>
