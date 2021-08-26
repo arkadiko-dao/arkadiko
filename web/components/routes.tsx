@@ -1,6 +1,9 @@
 import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 
+import { Onboarding } from './onboarding/onboarding';
+import { OnboardingStep1Swap } from './onboarding/step-1-swap';
+import { OnboardingStep2Vaults } from './onboarding/step-2-vaults';
 import { Home } from './home';
 import { Swap } from './swap';
 import { AddSwapLiquidity } from './add-swap-liquidity';
@@ -12,7 +15,6 @@ import { ManageVault } from './manage-vault';
 import { ViewProposal } from './view-proposal';
 import { Stake } from './stake';
 import { Balances } from './balances';
-import { Onboarding } from './onboarding/onboarding';
 
 export const routerConfig = [
   {
@@ -26,6 +28,8 @@ export function Routes() {
     <Switch>
       <Route exact path="/" component={Swap} />
       <Route exact path="/onboarding" component={Onboarding} />
+      <Route exact path="/onboarding/step-1-swap" component={OnboardingStep1Swap} />
+      <Route exact path="/onboarding/step-2-vaults" component={OnboardingStep2Vaults} />
       <Route exact path="/vaults" component={Home} />
       <Route exact path="/swap" component={Swap} />
       <Route exact path="/swap/add/:currencyIdA/:currencyIdB" component={AddSwapLiquidity} />
