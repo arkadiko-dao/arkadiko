@@ -12,6 +12,7 @@
 (define-constant ERR-WRONG-TOKEN u33)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u34)
 (define-constant ERR-BLOCK-HEIGHT-NOT-REACHED u35)
+(define-constant ERR-BLOCK-HEIGHT-PASSED u36)
 (define-constant ERR-NOT-AUTHORIZED u3401)
 (define-constant STATUS-OK u3200)
 
@@ -143,6 +144,7 @@
       )
       (err ERR-NOT-AUTHORIZED)
     )
+    (asserts! (>= start-block-height block-height) (err ERR-BLOCK-HEIGHT-PASSED))
 
     ;; Requires 1% of the supply 
     (asserts! (>= (* proposer-total-balance u100) supply) (err ERR-NOT-ENOUGH-BALANCE))

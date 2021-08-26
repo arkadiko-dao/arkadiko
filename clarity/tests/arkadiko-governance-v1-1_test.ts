@@ -304,7 +304,7 @@ Clarinet.test({
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     result = governance.createProposal(
       wallet_1, 
-      1, 
+      6, 
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -408,7 +408,7 @@ Clarinet.test({
     contractChange = Governance.contractChange("oracle", Utils.qualifiedName('malicious-oracle'), false, false);
     result = governance.createProposal(
       wallet_1, 
-      1500, 
+      1504, 
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -431,7 +431,6 @@ Clarinet.test({
   }
 });
 
-// TODO: should not be possible to add a proposal in the past
 Clarinet.test({
   name: "governance: should not be able to add proposal in the past",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -453,21 +452,8 @@ Clarinet.test({
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
     );
-    result.expectOk().expectBool(true);
+    result.expectErr().expectUint(36);
 
-    // Vote for proposal
-    result = governance.voteForProposal(wallet_1, 1, 10);
-    result.expectOk().expectUint(3200);
-
-    // End proposal
-    result = governance.endProposal(1);
-    result.expectOk().expectUint(3200);
-
-    // Check if DAO updated
-    let call = dao.getContractAddressByName("oracle");
-    call.result.expectSome().expectPrincipal(deployer.address);
-    call = dao.getQualifiedNameByName("oracle");
-    call.result.expectSome().expectPrincipal(Utils.qualifiedName('malicious-oracle'));
   }
 });
 
