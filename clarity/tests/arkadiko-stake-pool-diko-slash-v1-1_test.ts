@@ -45,7 +45,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let contractChange = Governance.contractChange("diko-slash", Utils.qualifiedName('arkadiko-stake-pool-diko-slash-v1-1'), true, true);
   result = governance.createProposal(
     wallet_1, 
-    1, 
+    2, 
     "Black swan event slash",
     "ttps://discuss.arkadiko.finance/blackswan1",
     [contractChange]
