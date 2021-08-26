@@ -8,7 +8,9 @@ type ComponentProps = {
 
 export const ContractTransaction: React.FC<ComponentProps> = ({ transaction, status }) => {
   const contract_id = transaction.contract_call.contract_id.split('.')[1];
-  const url = `https://explorer.stacks.co/txid/${transaction.tx_id}?chain=testnet`;
+  const url = location.origin.includes('localhost')
+    ? `http://localhost:8000/txid/${transaction.tx_id}`
+    : `https://explorer.stacks.co/txid/${transaction.tx_id}?chain=testnet`;
 
   return (
     <li className="py-4">
