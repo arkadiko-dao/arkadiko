@@ -2,49 +2,55 @@
 import React from 'react';
 import { CheckIcon } from '@heroicons/react/solid';
 import { classNames } from '@common/class-names';
+import { NavLink as RouterLink } from 'react-router-dom';
 
-const currentSection = 0;
-
-const getSectionStatus = (currentSection, navSection) => {
-  if (currentSection > navSection) return "complete";
-  if (currentSection === navSection) return "current";
-  return "upcoming";
-};
-
-export const OnboardingNav = () => { 
+export const OnboardingNav = (props) => { 
   const onboardingSections = [
     { 
       id: '01',
       name: 'Swap',
       description: 'Exchange your favorite tokens easily.',
       href: '/onboarding/step-1-swap',
-      status: getSectionStatus(currentSection, 1),
+      status: 'current',
     },
     { 
       id: '02',
       name: 'Vaults',
       description: 'Deposit STX and generate USDA.',
       href: '/onboarding/step-2-vaults',
-      status: getSectionStatus(currentSection, 2),
+      status: 'upcoming',
     },
     { 
       id: '03',
       name: 'Staking',
       description: 'Stake your tokens to earn rewards.',
       href: '#',
-      status: getSectionStatus(currentSection, 3),
+      status: 'upcoming',
     },
     { 
       id: '04',
       name: 'Governance',
       description: 'Vote on proposals.',
       href: '#',
-      status: getSectionStatus(currentSection, 4),
+      status: 'upcoming',
     },
   ]
   
+  onboardingSections.forEach((section, index) => {
+    const currentSection = props.currentSection
+    if (index < currentSection) {
+      section.status = 'complete';
+    }
+    else if (index === currentSection) {
+      section.status = 'current';
+    }
+    else {
+      section.status = 'upcoming';
+    }
+  })
+
   return (
-    <div className="lg:border-t lg:border-b lg:border-gray-200">
+    <div className="relative sticky top-0 z-50 shadow-sm lg:border-t lg:border-b lg:border-gray-200">
       <nav className="bg-white" aria-label="Onboarding Progress">
         <ol
           role="list"
@@ -60,7 +66,7 @@ export const OnboardingNav = () => {
                 )}
               >
                 {section.status === 'complete' ? (
-                  <a href={section.href} className="group">
+                  <RouterLink to={section.href} className="group">
                     <span
                       className="absolute top-0 left-0 w-1 h-full bg-transparent group-hover:bg-gray-200 lg:w-full lg:h-1 lg:bottom-0 lg:top-auto"
                       aria-hidden="true"
@@ -81,9 +87,9 @@ export const OnboardingNav = () => {
                         <span className="text-sm font-medium text-gray-500">{section.description}</span>
                       </span>
                     </span>
-                  </a>
+                  </RouterLink>
                 ) : section.status === 'current' ? (
-                  <a href={section.href} aria-current="section">
+                  <RouterLink to={section.href} aria-current="step">
                     <span
                       className="absolute top-0 left-0 w-1 h-full bg-indigo-600 lg:w-full lg:h-1 lg:bottom-0 lg:top-auto"
                       aria-hidden="true"
@@ -106,9 +112,9 @@ export const OnboardingNav = () => {
                         <span className="text-sm font-medium text-gray-500">{section.description}</span>
                       </span>
                     </span>
-                  </a>
+                  </RouterLink>
                 ) : (
-                  <a href={section.href} className="group">
+                  <RouterLink to={section.href} className="group">
                     <span
                       className="absolute top-0 left-0 w-1 h-full bg-transparent group-hover:bg-gray-200 lg:w-full lg:h-1 lg:bottom-0 lg:top-auto"
                       aria-hidden="true"
@@ -129,7 +135,7 @@ export const OnboardingNav = () => {
                         <span className="text-sm font-medium text-gray-500">{section.description}</span>
                       </span>
                     </span>
-                  </a>
+                  </RouterLink>
                 )}
 
                 {sectionIdx !== 0 ? (

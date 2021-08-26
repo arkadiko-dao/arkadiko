@@ -8,6 +8,7 @@ import { Step } from './step';
 export const OnboardingStep2Vaults = () => {
   const history = useHistory();
   const [currentStep, setCurrentStep] = useState(1);
+  const currentSection = 1;
 
   const goToNextStep = () => {
     setCurrentStep(previousStep => previousStep + 1)
@@ -18,8 +19,6 @@ export const OnboardingStep2Vaults = () => {
       setCurrentStep(previousStep => previousStep - 1)
     }
   }
-
-  console.log(currentStep);
 
   const STEPS_LIST_A =  [
     {
@@ -75,7 +74,7 @@ export const OnboardingStep2Vaults = () => {
   return (
     <div className="w-full min-h-screen bg-gray-100">
       <OnboardingNav 
-        currentNavSection={2} 
+        currentSection={currentSection} 
       />
 
       <div className="px-6 mx-auto lg:px-8">
