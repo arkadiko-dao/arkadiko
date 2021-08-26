@@ -87,7 +87,7 @@ class Governance {
   endProposal(proposal: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-governance-v1-1", "end-proposal", [
-        types.uint(1)
+        types.uint(proposal)
       ], this.deployer.address)
     ]);
     return block.receipts[0].result;
@@ -104,7 +104,7 @@ class Governance {
     return block.receipts[0].result;
   }
 
-  shutdown() {
+  toggleShutdown() {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-governance-v1-1", "toggle-governance-shutdown", [], this.deployer.address)
     ]);
