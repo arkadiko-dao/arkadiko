@@ -338,6 +338,10 @@
     (asserts! (is-eq (get is-open proposal) false) (err ERR-NOT-AUTHORIZED))
     (asserts! (>= block-height (get end-block-height proposal)) (err ERR-NOT-AUTHORIZED))
 
+    (map-set tokens-by-member
+      { proposal-id: proposal-id, member: member, token: (contract-of token) }
+      { amount: u0 })
+
     ;; Return DIKO or stDIKO
     (as-contract (contract-call? token transfer token-count (as-contract tx-sender) member none))
   )
