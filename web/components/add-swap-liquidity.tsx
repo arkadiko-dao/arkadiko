@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Landing } from './landing';
-import { Container } from './home'
+import { Container } from './home';
 import { microToReadable } from '@common/vault-utils';
 import { AnchorMode, callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
