@@ -48,11 +48,12 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
       if (json3['success']) {
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
-        setPooledX(balanceX / 1000000);
-        setPooledY(balanceY / 1000000);
         setTokenPair(`${tokenX.name.toLowerCase()}${tokenY.name.toLowerCase()}`);
         const totalTokens = json3['value']['value']['value']['shares-total'].value;
-        const totalShare = Number(((state.balance[`${tokenX.name.toLowerCase()}${tokenY.name.toLowerCase()}`] / totalTokens) * 100).toFixed(2));
+        const totalShare = Number(((state.balance[`${tokenX.name.toLowerCase()}${tokenY.name.toLowerCase()}`] / totalTokens) * 100).toFixed(3));
+        setPooledX((balanceX / 1000000) * totalShare / 100);
+        setPooledY((balanceY / 1000000) * totalShare / 100);
+
         if (totalShare > 100) {
           setTotalShare(100);
         } else {
