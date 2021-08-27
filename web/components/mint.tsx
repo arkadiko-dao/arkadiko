@@ -304,7 +304,7 @@ export const Mint = () => {
 
         <section className="mt-8">
           <header className="pb-5 border-b border-gray-200 sm:flex sm:items-center sm:justify-between">
-            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">Prices</h3>
+            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">Assets</h3>
             <div className="flex mt-3 sm:mt-0 sm:ml-4">
               {env == 'mocknet' ? (
                 <div className="flex items-center justify-end">
