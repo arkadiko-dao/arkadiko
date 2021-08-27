@@ -52,7 +52,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
           </div>
         </header>
         
-        <div className="mt-4 shadow sm:rounded-md sm:overflow-hidden">
+        <div className="max-w-4xl mx-auto mt-4 shadow sm:rounded-md sm:overflow-hidden">
           <div className="px-4 py-5 space-y-6 bg-white sm:p-6">
             <div className="space-y-8 divide-y divide-gray-200">
               <div className="space-y-4 divide-y divide-gray-100">
@@ -140,27 +140,30 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                     {coinAmounts['stability-fee-apy'] / 100}%
                   </p>
                 </div>
-              </div>
-              <div className="pt-5">
-                <label className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-blue-600 checked:border-transparent focus:outline-none"
-                    checked={coinAmounts['stack-pox']}
-                    onClick={() => togglePox()}
-                  />
-                  <span className="text-gray-900">I want my STX tokens stacked to earn yield</span>
-                </label>
-                <label className="flex items-center pt-3 space-x-3">
-                  <input
-                    type="checkbox"
-                    className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-blue-600 checked:border-transparent focus:outline-none"
-                    checked={coinAmounts['auto-payoff']}
-                    onClick={() => toggleAutoPayoff()}
-                  />
-                  <span className="text-gray-900">I want my vault loan to be paid off automatically through the earned yield</span>
-                </label>
 
+                <div className="pt-4">
+                  <label className="flex items-center space-x-3">
+                    <input
+                      type="checkbox"
+                      className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-blue-600 checked:border-transparent focus:outline-none"
+                      defaultChecked={coinAmounts['stack-pox']}
+                      onClick={() => togglePox()}
+                    />
+                    <span className="text-gray-900">I want my STX tokens stacked to earn yield</span>
+                  </label>
+                  <label className="flex items-center pt-3 space-x-3">
+                    <input
+                      type="checkbox"
+                      className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-blue-600 checked:border-transparent focus:outline-none"
+                      defaultChecked={coinAmounts['auto-payoff']}
+                      onClick={() => toggleAutoPayoff()}
+                    />
+                    <span className="text-gray-900">I want my vault loan to be paid off automatically through the earned yield</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div className="pt-5">
                 <div className="flex justify-end">
                   <button type="button" onClick={() => setStep(0)} className="inline-flex justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-md shadow-sm bg-white-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Back

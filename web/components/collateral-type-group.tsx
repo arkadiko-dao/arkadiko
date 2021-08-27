@@ -3,6 +3,8 @@ import { CollateralTypeProps } from '@common/context';
 import { CollateralType } from './collateral-type';
 import { Tooltip } from '@blockstack/ui';
 import { InformationCircleIcon } from '@heroicons/react/solid';
+import { NavLink as RouterLink } from 'react-router-dom';
+import { classNames } from '@common/class-names';
 
 interface CollateralTypeGroupProps {
   types: CollateralTypeProps[]
@@ -32,50 +34,226 @@ export const CollateralTypeGroup: React.FC<CollateralTypeGroupProps> = ({ types 
   });
 
   return (
-    <table className="min-w-full divide-y divide-gray-200">
-      <thead>
-        <tr>
-          <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
-            Collateral
-          </th>
-          <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
-            <div className="flex items-center">
-              Stability Fee
-              <Tooltip className="ml-2" shouldWrapChildren={true} label={`The interest in percentage to borrow USDA`}>
-                <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
-              </Tooltip>
-            </div>
-          </th>
-          <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
-            <div className="flex items-center">
-              Liq. Ratio
-              <Tooltip className="ml-2" shouldWrapChildren={true} label={`The collateral-to-debt ratio when your vault gets liquidated`}>
-                <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
-              </Tooltip>
-            </div>
-          </th>
-          <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
-            <div className="flex items-center">
-              Liq. Penalty
-              <Tooltip className="ml-2" shouldWrapChildren={true} label={`The penalty you pay when your vault gets liquidated`}>
-                <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
-              </Tooltip>
-            </div>
-          </th>
-          <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
-            Max Debt
-          </th>
-          <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
-            Current Debt
-          </th>
-          <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
-            <span className="sr-only">New Vault</span>
-          </th>
-        </tr>
-      </thead>
-      <tbody className="bg-white divide-y divide-gray-200">
-        {collateralItems}
-      </tbody>
-    </table>
+    <div className="bg-white">
+      <div className="py-12 mx-auto bg-white sm:py-6 max-w-7xl">
+        
+        {/* xs to lg */}
+        <div className="max-w-2xl mx-auto space-y-16 lg:hidden">
+          {collateralItems.map((collateral, collateralIdx) => (
+            <section key={collateral.key}>
+              <div className="px-4 mb-8">
+                <h2 className="text-lg font-medium leading-6 text-gray-900">{collateral.props.tokenType} ({collateral.props.name})</h2>
+                <p className="mt-4">
+                  <span className="text-4xl font-extrabold text-gray-900">{collateral.props.liquidationRatio}</span>{' '}
+                  <span className="text-base font-medium text-gray-500">%</span>
+                </p>
+                <div className="flex items-center mt-4 text-sm text-gray-500">
+                  Liquidation Ratio
+                  <Tooltip className="ml-2" shouldWrapChildren={true} label={`The collateral-to-debt ratio when your vault gets liquidated`}>
+                    <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                  </Tooltip>
+                </div>
+              </div>
+
+              <table className="w-full">
+                <thead>
+                  <tr>
+                    <th className="sr-only" scope="col">
+                      Collateral
+                    </th>
+                    <th className="sr-only" scope="col">
+                      Data
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  <tr className="border-t border-gray-200">
+                    <th className="px-4 py-5 text-sm font-normal text-left text-gray-500" scope="row">
+                      <div className="flex items-center">
+                        Stability Fee
+                        <Tooltip className="ml-2" shouldWrapChildren={true} label={`The interest in percentage to borrow USDA`}>
+                          <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                        </Tooltip>
+                      </div>
+                    </th>
+                    <td className="py-5 pr-4">
+                      <span className="block text-sm text-right text-gray-700">{(collateral.props.stabilityFeeApy) / 100}%</span>
+                    </td>
+                  </tr>
+
+                  <tr className="border-t border-gray-200">
+                    <th className="px-4 py-5 text-sm font-normal text-left text-gray-500" scope="row">
+                      <div className="flex items-center">
+                        Liquidation Penalty
+                        <Tooltip className="ml-2" shouldWrapChildren={true} label={`The penalty you pay when your vault gets liquidated`}>
+                          <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                        </Tooltip>
+                      </div>
+                    </th>
+                    <td className="py-5 pr-4">
+                      <span className="block text-sm text-right text-gray-700">{collateral.props.liquidationPenalty}%</span>
+                    </td>
+                  </tr>
+
+                  <tr className="border-t border-gray-200">
+                    <th className="px-4 py-5 text-sm font-normal text-left text-gray-500" scope="row">
+                      Current Debt
+                    </th>
+                    <td className="py-5 pr-4">
+                      <span className="block text-sm text-right text-gray-700">${(collateral.props.totalDebt / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</span>
+                    </td>
+                  </tr>
+
+                  <tr className="border-t border-gray-200">
+                    <th className="px-4 py-5 text-sm font-normal text-left text-gray-500" scope="row">
+                      Maximum Debt
+                    </th>
+                    <td className="py-5 pr-4">
+                      <span className="block text-sm text-right text-gray-700">${(collateral.props.maximumDebt) / 1000000000000} million</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div
+                className={classNames(
+                  collateralIdx < collateralItems.length - 1 ? 'py-5 border-b' : 'pt-5',
+                  'border-t border-gray-200 px-4'
+                )}
+              >
+                <RouterLink to={`/vaults/new?type=${collateral.props.tokenType}&token=${collateral.props.token}`} exact className="block w-full px-4 py-2 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  Create Vault
+                </RouterLink>
+              </div>
+            </section>
+          ))}
+        </div>
+
+        {/* lg+ */}
+        <div className="hidden lg:block">
+          <table className="w-full h-px table-fixed">
+            <caption className="sr-only">Collateral Type Comparison</caption>
+            <thead>
+              <tr>
+                <th className="px-6 pb-4 text-sm font-medium text-left text-gray-900" scope="col">
+                  <span>Collateral types</span>
+                </th>
+                {collateralItems.map((collateral) => (
+                  <th
+                    key={collateral.key}
+                    className="w-1/4 px-6 pb-4 text-base font-normal leading-6 text-left text-gray-900"
+                    scope="col"
+                  >
+                    {collateral.props.tokenType} ({collateral.props.name})
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="border-t border-gray-200 divide-y divide-gray-200">
+              <tr>
+                <th className="p-6 text-sm font-normal text-left text-gray-500 align-center" scope="row">
+                  <div className="flex items-center">
+                    Liquidation Ratio
+                    <Tooltip className="ml-2" shouldWrapChildren={true} label={`The collateral-to-debt ratio when your vault gets liquidated`}>
+                      <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                    </Tooltip>
+                  </div>
+                </th>
+                {collateralItems.map((collateral) => (
+                  <td key={collateral.key} className="h-full p-6 align-center">
+                    <div className="relative table h-full">
+                      <p>
+                        <span className="text-2xl font-semibold text-gray-900">{collateral.props.liquidationRatio}</span>{' '}
+                        <span className="text-lg text-gray-700">%</span>
+                      </p>
+                    </div>
+                  </td>
+                ))}
+              </tr>
+              
+              <tr>
+                <th className="px-6 py-5 text-sm font-normal text-left text-gray-500" scope="row">
+                  <div className="flex items-center">
+                    Stability Fee
+                    <Tooltip className="ml-2" shouldWrapChildren={true} label={`The interest in percentage to borrow USDA`}>
+                      <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                    </Tooltip>
+                  </div>
+                </th>
+                {collateralItems.map((collateral) => (
+                  <td key={collateral.key} className="px-6 py-5">
+                    <span className="block text-sm text-gray-700">
+                      {(collateral.props.stabilityFeeApy) / 100}%
+                    </span>
+                  </td>
+                ))}
+              </tr>
+
+              <tr>
+                <th className="px-6 py-5 text-sm font-normal text-left text-gray-500" scope="row">
+                  <div className="flex items-center">
+                    Liquidation Penalty
+                    <Tooltip className="ml-2" shouldWrapChildren={true} label={`The penalty you pay when your vault gets liquidated`}>
+                      <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                    </Tooltip>
+                  </div>
+                </th>
+                {collateralItems.map((collateral) => (
+                  <td key={collateral.key} className="px-6 py-5">
+                    <span className="block text-sm text-gray-700">
+                      {collateral.props.liquidationPenalty}%
+                    </span>
+                  </td>
+                ))}
+              </tr>
+
+              <tr>
+                <th className="px-6 py-5 text-sm font-normal text-left text-gray-500" scope="row">
+                  <div className="flex items-center">
+                    Current Debt
+                  </div>
+                </th>
+                {collateralItems.map((collateral) => (
+                  <td key={collateral.key} className="px-6 py-5">
+                    <span className="block text-sm text-gray-700">
+                      ${(collateral.props.totalDebt / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                    </span>
+                  </td>
+                ))}
+              </tr>
+
+              <tr>
+                <th className="px-6 py-5 text-sm font-normal text-left text-gray-500" scope="row">
+                  <div className="flex items-center">
+                    Maximum Debt
+                  </div>
+                </th>
+                {collateralItems.map((collateral) => (
+                  <td key={collateral.key} className="px-6 py-5">
+                    <span className="block text-sm text-gray-700">
+                      ${(collateral.props.maximumDebt) / 1000000000000} million
+                    </span>
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr className="border-t border-gray-200">
+                <th className="sr-only" scope="row">
+                  Choose your collateral
+                </th>
+                {collateralItems.map((collateral) => (
+                  <td key={collateral.key} className="px-6 pt-5">
+                    <RouterLink to={`/vaults/new?type=${collateral.props.tokenType}&token=${collateral.props.token}`} exact className="px-4 py-2 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                      Create Vault
+                    </RouterLink>
+                  </td>
+                ))}
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 };

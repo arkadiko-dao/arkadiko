@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container } from './home';
 import { CreateVaultStepOne } from './create-vault-step-one';
 import { CreateVaultConfirm } from './create-vault-confirm';
@@ -13,6 +13,10 @@ export const NewVault = () => {
     'stack-pox': true,
     'auto-payoff': true
   });
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   return (
     <Container>
