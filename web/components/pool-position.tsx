@@ -44,7 +44,6 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
 
     const resolvePair = async () => {
       const json3 = await fetchPair(tokenXTrait, tokenYTrait);
-      console.log('Pair Details:', json3);
       if (json3['success']) {
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
