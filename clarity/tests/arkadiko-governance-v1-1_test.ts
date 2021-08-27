@@ -597,7 +597,7 @@ Clarinet.test({
 
     // Can not execute proposal again
     result = governance.endProposal(1);
-    result.expectOk().expectErr.expectUint(3401);
+    result.expectErr().expectUint(3401);
   }
 });
 
