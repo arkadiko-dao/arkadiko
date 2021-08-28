@@ -21,6 +21,10 @@ class Governance {
     this.deployer = deployer;
   }
 
+  getAllProposals() {
+    return this.chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-proposals", [], this.deployer.address);
+  }
+
   getAllProposalIDs() {
     return this.chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-proposal-ids", [], this.deployer.address);
   }
@@ -33,6 +37,14 @@ class Governance {
     return this.chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-votes-by-member-by-id", [
       types.uint(id), 
       types.principal(member.address)
+    ], this.deployer.address);
+  }
+
+  getMemberVoteTokens(id: number, member: Account, token: string = "arkadiko-token") {
+    return this.chain.callReadOnlyFn("arkadiko-governance-v1-1", "get-tokens-by-member-by-id", [
+      types.uint(id), 
+      types.principal(member.address),
+      types.principal(Utils.qualifiedName(token)),
     ], this.deployer.address);
   }
 
@@ -87,7 +99,7 @@ class Governance {
   endProposal(proposal: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-governance-v1-1", "end-proposal", [
-        types.uint(1)
+        types.uint(proposal)
       ], this.deployer.address)
     ]);
     return block.receipts[0].result;
@@ -104,7 +116,7 @@ class Governance {
     return block.receipts[0].result;
   }
 
-  shutdown() {
+  toggleShutdown() {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-governance-v1-1", "toggle-governance-shutdown", [], this.deployer.address)
     ]);
