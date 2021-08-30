@@ -17,7 +17,7 @@ import { VaultGroup } from './vault-group';
 import { getPrice, getDikoAmmPrice } from '@common/get-price';
 import { AppContext } from '@common/context';
 import { useConnect } from '@stacks/connect-react';
-import { CollateralTypeGroup } from '@components/collateral-type-group';
+import { CollateralType } from '@components/collateral-type';
 import { useEffect } from 'react';
 import { tokenList } from '@components/token-swap-list';
 import { VaultProps } from './vault';
@@ -296,7 +296,7 @@ export const Mint = () => {
           <div className="flex flex-col mt-4">
             <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
               {Object.keys(collateralTypes).length > 0 ? (
-                <CollateralTypeGroup types={collateralTypes} />
+                <CollateralType types={collateralTypes} />
               ): null }
             </div>
           </div>
