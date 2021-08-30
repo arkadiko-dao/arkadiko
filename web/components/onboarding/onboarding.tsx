@@ -30,7 +30,7 @@ export const Onboarding = () => {
         </RouterLink>
 
         <p className="mt-8 text-center">
-          <RouterLink to="/swap" className="inline-flex items-center text-xs font-medium text-gray-200 hover:text-gray-50">Skip the onboarding</RouterLink>
+          <RouterLink to="/" className="inline-flex items-center text-xs font-medium text-gray-200 hover:text-gray-50">Skip the onboarding</RouterLink>
         </p>
       </div>
     </div>

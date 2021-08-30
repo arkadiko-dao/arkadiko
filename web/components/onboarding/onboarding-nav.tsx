@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { CheckIcon } from '@heroicons/react/solid';
+import { CheckIcon, ArrowNarrowRightIcon } from '@heroicons/react/solid';
 import { classNames } from '@common/class-names';
 import { NavLink as RouterLink } from 'react-router-dom';
 
@@ -158,6 +158,11 @@ export const OnboardingNav = (props) => {
           ))}
         </ol>
       </nav>
+
+      <RouterLink to="/" className="inline-flex items-center p-4 text-base font-medium text-gray-700 sm:absolute sm:right-0 sm:mr-4 sm:p-0 sm:text-xs sm:top-24 hover:text-gray-800 hover:underline">
+        Skip the onboarding
+        <ArrowNarrowRightIcon className="w-4 h-4 ml-2 text-gray-800" aria-hidden="true" />
+      </RouterLink>
     </div>
   );
 };
