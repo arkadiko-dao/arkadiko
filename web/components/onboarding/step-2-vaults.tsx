@@ -10,6 +10,24 @@ export const OnboardingStep2Vaults = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const currentSection = 1;
 
+  if (currentStep === 1) {
+    setTimeout(() => {
+      window.scrollTo({
+        top: 500,
+        behavior: 'smooth'
+      })
+    }, 800);
+  }
+
+  if (currentStep === 5) {
+    setTimeout(() => {
+      window.scrollTo({
+        top: 500,
+        behavior: 'smooth'
+      })
+    }, 200);
+  }
+    
   const goToNextStep = () => {
     setCurrentStep(previousStep => previousStep + 1)
   }
@@ -19,6 +37,8 @@ export const OnboardingStep2Vaults = () => {
       setCurrentStep(previousStep => previousStep - 1)
     }
   }
+
+  console.log(currentStep)
 
   const STEPS_LIST_A =  [
     {
@@ -61,7 +81,28 @@ export const OnboardingStep2Vaults = () => {
       stepDescription: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
     }
   ];
-  
+
+  const STEPS_LIST_C =  [
+    {
+      stepWrapperPosition: "bottom-0 left-0",
+      stepPosition: "bottom-[105px] left-[118px]",
+      blockPosition: "bottom-[164px] left-0 w-[346px]",
+      arrowPosition: "bottom-[72px] left-[40px] rotate-[110deg] scale-x-[-1]",
+      arrowSize: "w-20 h-20", 
+      stepTitle: "Select stacking and Auto-payoff ",
+      stepDescription: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+    },
+    {
+      stepWrapperPosition: "bottom-0 right-0",
+      stepPosition: "bottom-[30px] left-[-254px]",
+      blockPosition: "bottom-[100px] left-[-300px] w-[346px]",
+      arrowPosition: "bottom-[24px] left-[-224px] rotate-[-116deg]",
+      arrowSize: "w-20 h-20", 
+      stepTitle: "Create Vault",
+      stepDescription: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+    },
+  ];
+
   return (
     <div className="w-full min-h-screen bg-gray-100">
       <OnboardingNav 
@@ -87,7 +128,7 @@ export const OnboardingStep2Vaults = () => {
               </>
             ) : null }
 
-            {(currentStep >= 2) ? (
+            {(currentStep >= 2 && currentStep < 5) ? (
               <>
                 <img className="mt-8 border border-gray-100 rounded-md shadow" src="/assets/onboarding/vaults-2.jpeg" alt="" />
                 {STEPS_LIST_B.map((stepProps, i) => (
@@ -97,6 +138,21 @@ export const OnboardingStep2Vaults = () => {
                     stepNumber={i + 1}
                     {...stepProps}
                     stepTotal={STEPS_LIST_B.length}
+                  />
+                ))}
+              </>
+            ) : null }
+
+            {(currentStep >= 5) ? (
+              <>
+                <img className="mt-8 border border-gray-100 rounded-md shadow" src="/assets/onboarding/vaults-3.png" alt="" />
+                {STEPS_LIST_C.map((stepProps, i) => (
+                  <Step
+                    key={i + 1}
+                    currentStep={currentStep - 4}
+                    stepNumber={i + 1}
+                    {...stepProps}
+                    stepTotal={STEPS_LIST_C.length}
                   />
                 ))}
               </>

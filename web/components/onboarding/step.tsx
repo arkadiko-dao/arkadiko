@@ -17,7 +17,6 @@ interface StepProps {
 
 export const Step: React.FC<StepProps> = ({ currentStep, stepWrapperPosition, stepPosition, blockPosition, arrowPosition, arrowSize, stepTitle, stepDescription, stepNumber, stepTotal }) => {
   
-  console.log(currentStep, stepNumber)
   return (
     <div className={classNames((currentStep >= stepNumber) ? 
       'visible opacity-100' :
