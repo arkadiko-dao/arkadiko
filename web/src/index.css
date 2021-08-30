@@ -50,16 +50,16 @@
   stroke-width: 5;
   stroke-dasharray: 400;
   stroke-dashoffset: 400;
-  animation-duration: 2s;
+  animation-duration: 1.6s;
   animation-fill-mode: forwards;
   animation-name: draw;
-  animation-delay: 0.8s;
+  animation-delay: 0.6s;
 }
 .draw-arrow.tail-1 {
-  animation-delay: 1.2s;
+  animation-delay: 1s;
 }
 .draw-arrow.tail-2 {
-  animation-delay: 1.4s;
+  animation-delay: 1.2s;
 }
 
 @-webkit-keyframes draw {

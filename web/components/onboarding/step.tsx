@@ -30,7 +30,11 @@ export const Step: React.FC<StepProps> = ({ currentStep, stepWrapperPosition, st
         </span>
       </div>
 
-      <div className={`absolute bg-gray-800 rounded-md ${blockPosition}`}>
+      <div className={classNames((currentStep >= stepNumber) ? 
+        'visible opacity-100' :
+        'invisible opacity-0', 
+        `absolute bg-gray-800 rounded-md ${blockPosition} transition duration-1000 ease-in-out delay-700`)}
+      >
         <div className="relative p-6 mx-auto">
           <div className="flex items-center">
             <span className="flex flex-shrink-0 w-6 h-6 mr-3">
