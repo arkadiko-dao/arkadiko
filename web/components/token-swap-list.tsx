@@ -7,16 +7,19 @@ export const tokenList = [
   {
     id: 1,
     name: 'USDA',
+    nameInPair: 'usda',
     logo: '/assets/tokens/usda.png',
   },
   {
     id: 2,
     name: 'DIKO',
+    nameInPair: 'diko',
     logo: '/assets/tokens/diko.png',
   },
   {
     id: 3,
     name: 'STX',
+    nameInPair: 'wstx',
     logo: '/assets/tokens/stx.png',
   }
 ];

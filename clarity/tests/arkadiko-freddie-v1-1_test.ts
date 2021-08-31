@@ -8,9 +8,8 @@ import {
 
 import { 
   OracleManager,
-  DikoManager,
-  UsdaManager,
-  XstxManager
+  DikoToken,
+  UsdaToken
 } from './models/arkadiko-tests-tokens.ts';
 
 import { 
@@ -18,6 +17,9 @@ import {
   VaultLiquidator,
   VaultAuction 
 } from './models/arkadiko-tests-vaults.ts';
+
+import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
+
 
 Clarinet.test({
   name: "freddie: basic flow",
@@ -40,7 +42,7 @@ Clarinet.test({
     // Provide a collateral of 5000000 STX, so 1000000 stx-a can be minted (5 * 0.77) / 2 = 1.925
     // Q: why do we need to provide sender in the arguments?
     result = vaultManager.createVault(deployer, "STX-A", 5, 1);
-    result.expectOk().expectUint(1000000);
+    result.expectOk().expectUintWithDecimals(1);
 
     // Let's say STX price crash to 35 cents
     result = oracleManager.updatePrice("STX", 35);
@@ -76,7 +78,7 @@ Clarinet.test({
     result.expectOk().expectUint(100);
 
     result = vaultManager.createVault(deployer, "STX-A", 5, 1)
-    result.expectOk().expectUint(1000000);
+    result.expectOk().expectUintWithDecimals(1);
 
     let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
     call.result.expectOk().expectUint(500);
@@ -95,7 +97,7 @@ Clarinet.test({
     result.expectOk().expectUint(400);
 
     result = vaultManager.createVault(deployer, "STX-B", 900, 700)
-    result.expectOk().expectUint(700000000);
+    result.expectOk().expectUintWithDecimals(700);
 
     let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
     call.result.expectOk().expectUint(514);
@@ -128,13 +130,13 @@ Clarinet.test({
     result.expectOk().expectUint(200);
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 500)
-    result.expectOk().expectUint(500000000);
+    result.expectOk().expectUintWithDecimals(500);
 
     // mine 1 year of blocks
     chain.mineEmptyBlock(365*144);
 
     let call = vaultManager.getStabilityFee(1, deployer);
-    call.result.expectOk().expectUint(19973180);
+    call.result.expectOk().expectUintWithDecimals(19.973180);
   }
 });
 
@@ -144,47 +146,45 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
 
     let oracleManager = new OracleManager(chain, deployer);
-    let usdaManager = new UsdaManager(chain, deployer);
+    let usdaToken = new UsdaToken(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
     let result = oracleManager.updatePrice("STX", 200);
     result.expectOk().expectUint(200);
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 500)
-    result.expectOk().expectUint(500000000);
+    result.expectOk().expectUintWithDecimals(500);
     
     // mine 1 year of blocks
     chain.mineEmptyBlock(365*144);
 
     let call = vaultManager.getStabilityFee(1, deployer);
-    const fee = call.result.expectOk().expectUint(19973180);
+    const fee = call.result.expectOk().expectUintWithDecimals(19.97318);
 
-    call = await usdaManager.balanceOf(deployer.address)
-    const balance = call.result.expectOk().expectUint(1000500000000);
+    call = await usdaToken.balanceOf(deployer.address)
+    const balance = call.result.expectOk().expectUintWithDecimals(1000500);
 
     result = vaultManager.payStabilityFee(deployer, 1);
-    result.expectOk().expectUint(19973180);
+    result.expectOk().expectUintWithDecimals(19.97318);
     call = vaultManager.getStabilityFee(1, deployer);
     call.result.expectOk().expectUint(380); // approx 0 (380/10^6)
 
     // now check balance of freddie contract
-    call = await usdaManager.balanceOf('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1')
+    call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-freddie-v1-1'))
     call.result.expectOk().expectUint(fee);
 
-    call = await usdaManager.balanceOf(deployer.address)
+    call = await usdaToken.balanceOf(deployer.address)
     call.result.expectOk().expectUint(balance - fee);
 
     // withdraw the USDA from freddie to the deployer's (contract owner) address
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "redeem-tokens", [types.uint(fee), types.uint(0)], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
+    result = vaultManager.redeemTokens(fee, 0);
+    result.expectOk().expectBool(true);
 
-    call = await usdaManager.balanceOf('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1')
+    call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-freddie-v1-1'))
     call.result.expectOk().expectUint(0);
 
-    call = await usdaManager.balanceOf('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM')
-    call.result.expectOk().expectUint(1000500000000);
+    call = await usdaToken.balanceOf(deployer.address)
+    call.result.expectOk().expectUintWithDecimals(1000500);
   }
 });
 
@@ -200,45 +200,24 @@ Clarinet.test({
     result.expectOk().expectUint(200);
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 500)
-    result.expectOk().expectUint(500000000);
+    result.expectOk().expectUintWithDecimals(500);
 
     // mine 1 year of blocks
     chain.mineEmptyBlock(365*144);
     let call = vaultManager.getStabilityFee(1, deployer);
-    call.result.expectOk().expectUint(19973180); // ~20 = 500 USDA * 4%
+    call.result.expectOk().expectUintWithDecimals(19.97318); // ~20 = 500 USDA * 4%
 
-    chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "accrue-stability-fee", [
-        types.uint(1),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1")
-      ], deployer.address),
-      Tx.contractCall("arkadiko-collateral-types-v1-1", "change-risk-parameters", [
-        types.ascii("STX-A"),
-        types.list([
-          types.tuple({
-            'key': types.ascii("stability-fee"),
-            'new-value': types.uint(191816250)
-          }),
-          types.tuple({
-            'key': types.ascii("stability-fee-apy"),
-            'new-value': types.uint(100)
-          }),
-          types.tuple({
-            'key': types.ascii("stability-fee-decimals"),
-            'new-value': types.uint(14)
-          }),
-        ])
-      ], deployer.address)
-    ]);
+    vaultManager.accrueStabilityFee(1);
+    vaultManager.changeRiskParameters("STX-A", 191816250, 100, 14);
 
     call = await vaultManager.getVaultById(1, deployer);
     let vault:any = call.result.expectTuple();
-    vault['stability-fee-accrued'].expectUint(19973180);
+    vault['stability-fee-accrued'].expectUintWithDecimals(19.97318);
 
     chain.mineEmptyBlock(365*144);
     call = vaultManager.getStabilityFee(1, deployer);
 
-    call.result.expectOk().expectUint(50405999); // 10% APY of 500 USDA => 50 USDA
+    call.result.expectOk().expectUintWithDecimals(50.406958); // 10% APY of 500 USDA => 50 USDA
 
     result = vaultManager.payStabilityFee(deployer, 1);
  
@@ -274,12 +253,10 @@ Clarinet.test({
           'auto-payoff': types.bool(true)
         }),
         types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(98); // wrong token error
@@ -293,12 +270,10 @@ Clarinet.test({
           'auto-payoff': types.bool(true)
         }),
         types.ascii("DIKO-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
+        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(410); // wrong collateral type
@@ -312,12 +287,10 @@ Clarinet.test({
           'auto-payoff': types.bool(true)
         }),
         types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(98); // wrong token error
@@ -331,12 +304,10 @@ Clarinet.test({
           'auto-payoff': types.bool(true)
         }),
         types.ascii("DIKO-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('usda-token')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(410); // wrong collateral type
@@ -350,12 +321,10 @@ Clarinet.test({
           'auto-payoff': types.bool(true)
         }),
         types.ascii("DIKO-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
+        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(410); // wrong collateral type
@@ -383,9 +352,9 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "deposit", [
         types.uint(1),
         types.uint(500000000), // 500 STX
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-sip10-reserve-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1")
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1'))
       ], deployer.address)
     ]);
     block.receipts[0].result
@@ -408,7 +377,7 @@ Clarinet.test({
     result.expectOk().expectUint(300);
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
-    result.expectOk().expectUint(300000000);
+    result.expectOk().expectUintWithDecimals(300);
 
     // Mint extra
     result = vaultManager.mint(deployer, 1, 100);
@@ -436,7 +405,7 @@ Clarinet.test({
       [],
       deployer.address
     );
-    call.result.expectUint(1000000000);
+    call.result.expectUintWithDecimals(1000);
 
     // Burn last 100 which should close the vault
     result = vaultManager.burn(deployer, 1, 100);
@@ -456,7 +425,7 @@ Clarinet.test({
     result.expectOk().expectUint(300);
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
-    result.expectOk().expectUint(300000000);
+    result.expectOk().expectUintWithDecimals(300);
     
     // Deposit extra
     result = vaultManager.deposit(deployer, 1, 500);
@@ -492,7 +461,7 @@ Clarinet.test({
     result.expectOk().expectUint(200);
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
-    result.expectOk().expectUint(300000000);
+    result.expectOk().expectUintWithDecimals(300);
 
     result = vaultManager.burn(deployer, 1, 300);
     result.expectOk().expectBool(true);
@@ -517,7 +486,7 @@ Clarinet.test({
     result.expectOk().expectUint(200);
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
-    result.expectOk().expectUint(300000000);
+    result.expectOk().expectUintWithDecimals(300);
 
     result = vaultManager.toggleStacking(deployer, 1);
     result = vaultManager.enableVaultWithdrawals(1);
@@ -539,7 +508,7 @@ Clarinet.test({
     result.expectOk().expectUint(200);
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
-    result.expectOk().expectUint(300000000);
+    result.expectOk().expectUintWithDecimals(300);
 
     result = vaultManager.toggleStacking(deployer, 1);
     result.expectOk().expectBool(true);
@@ -567,7 +536,7 @@ Clarinet.test({
       [types.ascii("stacker")],
       deployer.address
     );
-    call.result.expectOk().expectUint(1000000000);
+    call.result.expectOk().expectUintWithDecimals(1000);
 
     result = vaultManager.stackCollateral(deployer, 1);
     result.expectErr().expectUint(414);
@@ -585,9 +554,7 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 200);
     result.expectOk().expectUint(200);
 
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "toggle-freddie-shutdown", [], deployer.address),
-    ]);
+    vaultManager.emergencyShutdown();
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 30);
     result.expectErr().expectUint(411);
@@ -601,7 +568,7 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let oracleManager = new OracleManager(chain, deployer);
-    let dikoManager = new DikoManager(chain, deployer);
+    let dikoToken = new DikoToken(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
 
@@ -609,7 +576,7 @@ Clarinet.test({
     result.expectOk().expectUint(100);
 
     result = vaultManager.createVault(deployer, "STX-A", 5, 1);
-    result.expectOk().expectUint(1000000);
+    result.expectOk().expectUintWithDecimals(1);
 
     // Advance 30 blocks
     chain.mineEmptyBlock(144*30);
@@ -621,10 +588,10 @@ Clarinet.test({
       [types.principal(deployer.address)],
       wallet_1.address,
     );
-    call.result.expectOk().expectUint(947068138000);
+    call.result.expectOk().expectUintWithDecimals(947068.138);
 
     // Freddie should not have DIKO yet
-    call = await dikoManager.balanceOf('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1');
+    call = await dikoToken.balanceOf(Utils.qualifiedName('arkadiko-freddie-v1-1'));
     call.result.expectOk().expectUint(0);
 
     result = oracleManager.updatePrice("STX", 35);
@@ -634,25 +601,23 @@ Clarinet.test({
     result.expectOk().expectUint(5200);
 
     // Freddie should have received pending DIKO rewards
-    call = await dikoManager.balanceOf('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1');
-    call.result.expectOk().expectUint(947287316000);
+    call = await dikoToken.balanceOf(Utils.qualifiedName('arkadiko-freddie-v1-1'));
+    call.result.expectOk().expectUintWithDecimals(947287.316);
 
     // Payout address balance
-    call = await dikoManager.balanceOf(deployer.address)
-    call.result.expectOk().expectUint(890000000000);
+    call = await dikoToken.balanceOf(deployer.address)
+    call.result.expectOk().expectUintWithDecimals(890000);
 
     // Advance 30 blocks
     chain.mineEmptyBlock(144*30);
 
     // Redeem DIKO
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "redeem-tokens", [types.uint(0), types.uint(947068138000)], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
+    result = vaultManager.redeemTokens(0, 947068138000);
+    result.expectOk().expectBool(true);
 
     // Payout address balance
-    call = await dikoManager.balanceOf(deployer.address)
-    call.result.expectOk().expectUint(890000000000 + 947068138000);
+    call = await dikoToken.balanceOf(deployer.address)
+    call.result.expectOk().expectUintWithDecimals(890000 + 947068.138);
 
   },
 });
@@ -669,7 +634,7 @@ Clarinet.test({
     result.expectOk().expectUint(200);
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
-    result.expectOk().expectUint(300000000);
+    result.expectOk().expectUintWithDecimals(300);
 
     result = vaultManager.withdraw(deployer, 1, 200)
     result.expectErr().expectUint(414);

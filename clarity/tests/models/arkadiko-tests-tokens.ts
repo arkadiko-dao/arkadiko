@@ -37,7 +37,7 @@ export { OracleManager };
 // DIKO
 // ---------------------------------------------------------
 
-class DikoManager {
+class DikoToken {
   chain: Chain;
   deployer: Account;
 
@@ -56,14 +56,39 @@ class DikoManager {
     return this.chain.callReadOnlyFn("arkadiko-token", "get-total-supply", [], this.deployer.address);
   }
 }
-export { DikoManager };
+export { DikoToken };
+
+// ---------------------------------------------------------
+// stDIKO
+// ---------------------------------------------------------
+
+class StDikoToken {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  balanceOf(wallet: string) {
+    return this.chain.callReadOnlyFn("stdiko-token", "get-balance", [
+      types.principal(wallet),
+    ], this.deployer.address);
+  }
+  
+  totalSupply() {
+    return this.chain.callReadOnlyFn("stdiko-token", "get-total-supply", [], this.deployer.address);
+  }
+}
+export { StDikoToken };
 
 
 // ---------------------------------------------------------
 // USDA
 // ---------------------------------------------------------
 
-class UsdaManager {
+class UsdaToken {
   chain: Chain;
   deployer: Account;
 
@@ -82,7 +107,7 @@ class UsdaManager {
     return this.chain.callReadOnlyFn("usda-token", "get-total-supply", [], this.deployer.address);
   }
 }
-export { UsdaManager };
+export { UsdaToken };
 
 
 // ---------------------------------------------------------

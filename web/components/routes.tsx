@@ -6,6 +6,7 @@ import { OnboardingStep1Swap } from './onboarding/step-1-swap';
 import { OnboardingStep2Vaults } from './onboarding/step-2-vaults';
 import { Home } from './home';
 import { Swap } from './swap';
+import { Pool } from './pool';
 import { AddSwapLiquidity } from './add-swap-liquidity';
 import { RemoveSwapLiquidity } from './remove-swap-liquidity';
 import { Auctions } from './auctions';
@@ -32,6 +33,7 @@ export function Routes() {
       <Route exact path="/onboarding/step-2-vaults" component={OnboardingStep2Vaults} />
       <Route exact path="/vaults" component={Home} />
       <Route exact path="/swap" component={Swap} />
+      <Route exact path="/pool" component={Pool} />
       <Route exact path="/swap/add/:currencyIdA/:currencyIdB" component={AddSwapLiquidity} />
       <Route exact path="/swap/remove/:currencyIdA/:currencyIdB" component={RemoveSwapLiquidity} />
 

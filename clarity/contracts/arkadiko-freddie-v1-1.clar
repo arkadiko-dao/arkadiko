@@ -314,6 +314,14 @@
     )
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
+    (asserts!
+      (or
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "sip10-reserve")))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
+
     (asserts! (>= ratio (get collateral-to-debt-ratio collateral-type-object)) (err ERR-INSUFFICIENT-COLLATERAL))
     (asserts!
       (<=
@@ -395,6 +403,13 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
+    (asserts!
+      (or
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "sip10-reserve")))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
     (asserts!
@@ -439,6 +454,13 @@
         (is-eq (var-get freddie-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
+    (asserts!
+      (or
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "sip10-reserve")))
+      )
+      (err ERR-NOT-AUTHORIZED)
     )
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
@@ -521,6 +543,13 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
+    (asserts!
+      (or
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "sip10-reserve")))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
@@ -574,6 +603,13 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
+    (asserts!
+      (or
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "sip10-reserve")))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
     (asserts!
@@ -603,6 +639,13 @@
         })))
     (asserts! (is-eq u0 (get stacked-tokens vault)) (err ERR-STACKING-IN-PROGRESS))
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
+    (asserts!
+      (or
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "sip10-reserve")))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
 
     (if (is-eq (get debt vault) u0)
       true
@@ -832,6 +875,13 @@
 ;; @post bool; returns true if redeem was succesful
 (define-public (redeem-auction-collateral (ft <ft-trait>) (token-string (string-ascii 12)) (reserve <vault-trait>) (collateral-amount uint) (sender principal))
   (begin
+    (asserts!
+      (or
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "sip10-reserve")))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "auction-engine"))) (err ERR-NOT-AUTHORIZED))
     (contract-call? reserve redeem-collateral ft token-string collateral-amount sender)
   )
@@ -859,6 +909,13 @@
         (is-eq (var-get freddie-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
+    (asserts!
+      (or
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "sip10-reserve")))
+      )
+      (err ERR-NOT-AUTHORIZED)
     )
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq true (get is-liquidated vault)) (err ERR-VAULT-NOT-LIQUIDATED))
