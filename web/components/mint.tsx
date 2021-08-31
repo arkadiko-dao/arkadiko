@@ -17,9 +17,8 @@ import { VaultGroup } from './vault-group';
 import { getPrice, getDikoAmmPrice } from '@common/get-price';
 import { AppContext } from '@common/context';
 import { useConnect } from '@stacks/connect-react';
-import { CollateralTypeGroup } from '@components/collateral-type-group';
+import { CollateralType } from '@components/collateral-type';
 import { useEffect } from 'react';
-import { microToReadable } from '@common/vault-utils';
 import { tokenList } from '@components/token-swap-list';
 import { VaultProps } from './vault';
 import { EmptyState } from './empty-state';
@@ -243,10 +242,69 @@ export const Mint = () => {
             </dl>
           </div>
         </section>
+        
+        <section className="mt-12">
+          <header className="pb-5 border-b border-gray-200 sm:flex sm:items-center sm:justify-between">
+            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">Your vaults</h3>
+            <div className="flex items-center mt-3 sm:mt-0 sm:ml-4">
+              <div className="flex flex-col items-end text-sm">
+                <p className="flex items-center">
+                  Unclaimed rewards
+                  <Tooltip shouldWrapChildren={true} label={`Vaults will receive DIKO rewards pro rata the collateral deposited. First 6 weeks only!`}>
+                    <InformationCircleIcon className="w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                  </Tooltip>
+                </p>  
+                <p className="font-semibold">
+                  {pendingVaultRewards.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
+                </p>
+              </div>
+              {pendingVaultRewards > 0 ? (
+                <button 
+                  type="button" 
+                  className="inline-flex items-center px-3 py-2 ml-4 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  onClick={() => claimPendingRewards()}
+                  disabled={pendingVaultRewards === 0}
+                >
+                  Claim rewards
+                </button>
+              ) : null }
+            </div>
+          </header>
+
+          <div className="mt-4">
+            {vaults.length && Object.keys(collateralTypes).length === state.definedCollateralTypes.length ? (
+              <VaultGroup vaults={vaults} />
+            ) : loadingVaults === true ? (
+              <div>
+                <PlaceHolder />
+              </div>
+            ) : (
+              <EmptyState
+                Icon={ArchiveIcon}
+                title="You currently have no open vaults."
+                description="Start creating a new vault by choosing the appropriate collateral type below."
+              />
+            )}
+          </div> 
+        </section>
+
+        <section className="mt-8">
+          <header className="pb-5 border-b border-gray-200">
+            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">Create vault</h3>
+          </header>
+
+          <div className="flex flex-col mt-4">
+            <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
+              {Object.keys(collateralTypes).length > 0 ? (
+                <CollateralType types={collateralTypes} />
+              ): null }
+            </div>
+          </div>
+        </section>
 
         <section className="mt-8">
           <header className="pb-5 border-b border-gray-200 sm:flex sm:items-center sm:justify-between">
-            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">Overview</h3>
+            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">Assets</h3>
             <div className="flex mt-3 sm:mt-0 sm:ml-4">
               {env == 'mocknet' ? (
                 <div className="flex items-center justify-end">
@@ -283,12 +341,6 @@ export const Mint = () => {
                           scope="col"
                           className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                         >
-                          Balance
-                        </th>
-                        <th
-                          scope="col"
-                          className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
-                        >
                           Last Oracle Price
                         </th>
                       </tr>
@@ -304,9 +356,6 @@ export const Mint = () => {
                               <div className="text-sm font-medium text-gray-900">STX</div>
                             </div>
                           </div>
-                        </td>
-                        <td className="px-6 py-4 text-sm whitespace-nowrap">
-                          {microToReadable(state.balance['stx']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} STX
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
                           ${stxPrice / 100}
@@ -325,9 +374,6 @@ export const Mint = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
-                          {microToReadable(state.balance['diko']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
-                        </td>
-                        <td className="px-6 py-4 text-sm whitespace-nowrap">
                           ${dikoPrice}
                         </td>
                       </tr>
@@ -344,9 +390,6 @@ export const Mint = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
-                          {microToReadable(state.balance['usda']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA
-                        </td>
-                        <td className="px-6 py-4 text-sm whitespace-nowrap">
                           $1
                         </td>
                       </tr>
@@ -356,66 +399,6 @@ export const Mint = () => {
               </div>
             </div>
           </div>
-        </section>
-
-        <section className="mt-8">
-          <header className="pb-5 border-b border-gray-200">
-            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">Collateral Types</h3>
-          </header>
-
-          <div className="flex flex-col mt-4">
-            <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
-              {Object.keys(collateralTypes).length > 0 ? (
-                <CollateralTypeGroup types={collateralTypes} />
-              ): `` }
-            </div>
-          </div>
-        </section>
-
-        <section className="mt-8">
-          <header className="pb-5 border-b border-gray-200 sm:flex sm:items-center sm:justify-between">
-            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">Overview</h3>
-            <div className="flex items-center mt-3 sm:mt-0 sm:ml-4">
-              <div className="flex flex-col items-end text-sm">
-                <p className="flex items-center">
-                  Unclaimed rewards
-                  <Tooltip shouldWrapChildren={true} label={`Vaults will receive DIKO rewards pro rata the collateral deposited. First 6 weeks only!`}>
-                    <InformationCircleIcon className="w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
-                  </Tooltip>
-                </p>  
-                <p className="font-semibold">
-                  {pendingVaultRewards.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
-                </p>
-              </div>
-              {pendingVaultRewards > 0 ? (
-                <button 
-                  type="button" 
-                  className="bg-indigo-600 hover:bg-indigo-700 inline-flex items-center px-3 py-2 ml-4 text-sm font-medium leading-4 text-white border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  onClick={() => claimPendingRewards()}
-                  disabled={pendingVaultRewards === 0}
-                >
-                  Claim rewards
-                </button>
-              ) : null }
-            </div>
-          </header>
-
-          <div className="mt-4">
-            {vaults.length && Object.keys(collateralTypes).length === state.definedCollateralTypes.length ? (
-              <VaultGroup vaults={vaults} />
-            ) : loadingVaults === true ? (
-              <div>
-                <PlaceHolder />
-              </div>
-            ) : (
-              <EmptyState
-                Icon={ArchiveIcon}
-                title="You currently have no open vaults."
-                description="Create a new vault in the table above choosing the appropriate collateral type."
-              />
-            )}
-          </div>
-          
         </section>
       </main>
     </div>

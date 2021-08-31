@@ -201,7 +201,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                           How much {tokenName} do you want to collateralize?
                         </h3>
                         <p className="mt-2 text-sm text-gray-500">
-                          The amount of {tokenName} you deposit determines how much USDA you can generate
+                          The amount of {tokenName} you deposit determines how much USDA you can generate.
                         </p>
 
                         <div className="mt-4">
@@ -222,7 +222,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                           How much USDA would you like to mint?
                         </h3>
                         <p className="mt-2 text-sm text-gray-500">
-                          Mint an amount that is safely above the liquidation ratio
+                          Mint an amount that is safely above the liquidation ratio.
                         </p>
                         
                         <div className="mt-4">
