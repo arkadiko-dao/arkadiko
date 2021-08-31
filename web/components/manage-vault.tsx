@@ -542,6 +542,10 @@ export const ManageVault = ({ match }) => {
     setUsdToBurn(outstandingDebt());
   };
 
+  const withdrawMaxAmount = () => {
+    return setCollateralToWithdraw(String(maximumCollateralToWithdraw));
+  };
+
   return (
     <Container>
       {auctionEnded && <Redirect to="/vaults" />}
@@ -649,7 +653,7 @@ export const ManageVault = ({ match }) => {
                       inputValue={collateralToWithdraw}
                       inputLabel="Withdraw Collateral"
                       onInputChange={onInputChange}
-                      onClickMax={mintMaxAmount}
+                      onClickMax={withdrawMaxAmount}
                     />
                   </div>
 
