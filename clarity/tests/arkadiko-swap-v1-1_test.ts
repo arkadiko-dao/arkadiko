@@ -41,6 +41,11 @@ Clarinet.test({
     call.result.expectOk().expectList()[0].expectUintWithDecimals(500);
     call.result.expectOk().expectList()[1].expectUintWithDecimals(100);
 
+    // Check total supply
+    // Sqr(500 * 100) = 223
+    call = await swap.getTotalSupply(dikoTokenAddress, usdaTokenAddress);
+    call.result.expectOk().expectUintWithDecimals(223.606797);
+
     // Add extra lquidity
     result = swap.addToPosition(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 500, 0);
     result.expectOk().expectBool(true);
@@ -65,6 +70,10 @@ Clarinet.test({
     call = await swap.getBalances(dikoTokenAddress, usdaTokenAddress);
     call.result.expectOk().expectList()[0].expectUint(0);
     call.result.expectOk().expectList()[1].expectUint(0);
+
+    // Check total supply
+    call = await swap.getTotalSupply(dikoTokenAddress, usdaTokenAddress);
+    call.result.expectOk().expectUintWithDecimals(0);
   },
 });
 
@@ -96,6 +105,116 @@ Clarinet.test({
     result.expectOk().expectList()[1].expectUintWithDecimals(30); 
   },
 });
+
+Clarinet.test({
+  name: "swap: check pool balances after swap",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let swap = new Swap(chain, deployer);
+
+    // Create pair
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
+    result.expectOk().expectBool(true);
+
+    // Buy DIKO with 80 USDA
+    // dx = (500 * 80) / (100 + 80) = 222 without fees
+    result = swap.swapYForX(wallet_1, dikoTokenAddress, usdaTokenAddress, 80, 0);
+    result.expectOk().expectList()[0].expectUintWithDecimals(221.851357); 
+    result.expectOk().expectList()[1].expectUintWithDecimals(80); 
+
+    // Check initial balances
+    let call = await swap.getBalances(dikoTokenAddress, usdaTokenAddress);
+    call.result.expectOk().expectList()[0].expectUintWithDecimals(278.148643);
+    call.result.expectOk().expectList()[1].expectUintWithDecimals(180);
+  },
+});
+
+Clarinet.test({
+  name: "swap: test slippage and min amount to receive",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let swap = new Swap(chain, deployer);
+
+    // Create pair
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
+    result.expectOk().expectBool(true);
+
+    // Wallet_1 buys DIKO
+    // dx = (500 * 80) / (100 + 80) = 222 without fees
+    result = swap.swapYForX(wallet_1, dikoTokenAddress, usdaTokenAddress, 80, 221);
+    result.expectOk().expectList()[0].expectUintWithDecimals(221.851357); 
+    result.expectOk().expectList()[1].expectUintWithDecimals(80); 
+
+    // Wallet_2 buys DIKO with same minimum
+    // Should fail because wallet_1 bought first
+    result = swap.swapYForX(wallet_2, dikoTokenAddress, usdaTokenAddress, 80, 221);
+    result.expectErr().expectUint(71);
+  },
+});
+
+// ---------------------------------------------------------
+// Bad actor
+// ---------------------------------------------------------
+
+Clarinet.test({
+  name: "swap: try to swap with insufficient balance",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    
+    let swap = new Swap(chain, deployer);
+
+    // Create pair
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
+    result.expectOk().expectBool(true);
+
+    // Swap
+    result = swap.swapXForY(deployer, dikoTokenAddress, usdaTokenAddress, 2000000, 38);
+    result.expectErr().expectUint(72);
+
+  },
+});
+
+Clarinet.test({
+  name: "swap: try to add liquidity with insufficient balance",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    
+    let swap = new Swap(chain, deployer);
+
+    // Create pair
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000000, 1000);
+    result.expectErr().expectUint(72);
+
+  },
+});
+
+Clarinet.test({
+  name: "swap: try to remove liquidity without depositing first",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let swap = new Swap(chain, deployer);
+
+    // Create pair
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
+
+    // Remove liq
+    result = swap.reducePosition(wallet_1, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 100);
+    result.expectErr().expectUint(72);
+
+  },
+});
+
+
+// ---------------------------------------------------------
+// Fees
+// ---------------------------------------------------------
 
 Clarinet.test({
   name: "swap: LP holder fees",
