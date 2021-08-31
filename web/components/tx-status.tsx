@@ -28,8 +28,8 @@ export const TxStatus = () => {
 
   return (
     <>
-      <div aria-live="assertive" className="fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start z-50 mt-16">
-        <div className="w-full flex flex-col items-center space-y-4 sm:items-end">
+      <div aria-live="assertive" className="fixed inset-0 z-50 flex items-end px-4 py-6 mt-16 pointer-events-none sm:p-6 sm:items-start">
+        <div className="flex flex-col items-center w-full space-y-4 sm:items-end">
           {state.currentTxId || state.showTxModal ? (
             <Transition
               show={state.showTxModal || state.currentTxId !== undefined}
@@ -41,11 +41,11 @@ export const TxStatus = () => {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <div className="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden">
+              <div className="w-full max-w-sm overflow-hidden bg-white rounded-lg shadow-lg pointer-events-auto ring-1 ring-black ring-opacity-5">
                 <div className="p-4">
                   <div className="flex items-start">
                     <div className="flex-shrink-0">
-                      <CheckCircleIcon className="h-6 w-6 text-green-400" aria-hidden="true" />
+                      <CheckCircleIcon className="w-6 h-6 text-green-400" aria-hidden="true" />
                     </div>
                     <div className="ml-3 w-0 flex-1 pt-0.5">
                       <p className="text-sm font-medium text-gray-900">
@@ -56,7 +56,11 @@ export const TxStatus = () => {
                           Status: {state.currentTxStatus}
                         </p>
                       ) : null }
-                      <ExplorerLink txId={state.currentTxId} />
+
+                      <div className="my-4">
+                        <ExplorerLink txId={state.currentTxId} className="text-sm font-medium text-green-500 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-50 focus:ring-green-600" />
+                      </div>
+
                       {state.currentTxMessage ? (
                         <p className={`mt-1 text-sm ${statusClass()}`}>
                           {state.currentTxMessage}
@@ -67,12 +71,12 @@ export const TxStatus = () => {
                         </p>
                       )}
                     </div>
-                    <div className="ml-4 flex-shrink-0 flex">
+                    <div className="flex flex-shrink-0 ml-4">
                       <button
-                        className="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        className="inline-flex text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         onClick={() => {hidePopup()}}>
                         <span className="sr-only">Close</span>
-                        <XIcon className="h-5 w-5" aria-hidden="true" />
+                        <XIcon className="w-5 h-5" aria-hidden="true" />
                       </button>
                     </div>
                   </div>

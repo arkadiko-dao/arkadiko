@@ -5,6 +5,9 @@ import {
   types,
 } from "https://deno.land/x/clarinet@v0.13.0/index.ts";
 
+import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
+
+
 Clarinet.test({
   name: "usda-token: returns the correct name of the USDA Token",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -19,14 +22,14 @@ Clarinet.test({
     );
     call.result
       .expectOk()
-      .expectUint(4000000000010);
+      .expectUintWithDecimals(4000000.000010);
 
     call = await chain.callReadOnlyFn("usda-token", "get-balance", [
       types.principal(wallet_2.address),
     ], wallet_2.address);
     call.result
       .expectOk()
-      .expectUint(1000000000000);
+      .expectUintWithDecimals(1000000);
 
     call = await chain.callReadOnlyFn("usda-token", "get-balance", [
       types.principal(wallet_3.address),

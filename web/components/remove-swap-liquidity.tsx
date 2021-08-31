@@ -13,10 +13,7 @@ import { tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { microToReadable } from '@common/vault-utils';
-
-function classNames(...classes: Array<string | undefined>) {
-  return classes.filter(Boolean).sort().join(' ')
-}
+import { classNames } from '@common/class-names';
 
 export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -69,7 +66,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
         const basePrice = (balanceX / balanceY).toFixed(2);
-        const balance = state.balance[`${tokenX.name.toLowerCase()}${tokenY.name.toLowerCase()}`];
+        const balance = state.balance[`${tokenX.nameInPair.toLowerCase()}${tokenY.nameInPair.toLowerCase()}`];
         const totalShares = json3['value']['value']['value']['shares-total'].value;
         const poolPercentage = balance / totalShares;
         setFoundPair(true);
@@ -88,7 +85,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
           const balanceX = json4['value']['value']['value']['balance-x'].value;
           const balanceY = json4['value']['value']['value']['balance-y'].value;
           const basePrice = (balanceX / balanceY).toFixed(2);
-          const balance = state.balance[`${tokenY.name.toLowerCase()}${tokenX.name.toLowerCase()}`];
+          const balance = state.balance[`${tokenY.nameInPair.toLowerCase()}${tokenX.nameInPair.toLowerCase()}`];
           const totalShares = json4['value']['value']['value']['shares-total'].value;
           const poolPercentage = balance / totalShares;
           setFoundPair(true);

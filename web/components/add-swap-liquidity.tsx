@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Landing } from './landing';
-import { Container } from './home'
+import { Container } from './home';
 import { microToReadable } from '@common/vault-utils';
 import { AnchorMode, callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
@@ -13,10 +13,7 @@ import { CashIcon, PlusIcon } from '@heroicons/react/outline';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
-
-function classNames(...classes: Array<string | undefined>) {
-  return classes.filter(Boolean).sort().join(' ')
-}
+import { classNames } from '@common/class-names';
 
 export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -315,7 +312,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                   </div>
 
                   <div className="w-full p-4 mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
-                    <h4 className="text-xs font-semibold text-indigo-700 uppercase font-headings">Prices and pool share</h4>
+                    <h4 className="text-xs text-indigo-700 uppercase font-headings">Prices and pool share</h4>
                     <dl className="mt-2 space-y-1">
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                         <dt className="inline-flex items-center text-sm font-medium text-indigo-500">

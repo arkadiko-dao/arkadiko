@@ -66,7 +66,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-mock-stacker-v1-1' }
 ];
 
-const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:20080');
+const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');
 const privateKey = process.env.CONTRACT_PRIVATE_KEY;
 if (!privateKey) {
   console.error('Provide a private key with `process.env.CONTRACT_PRIVATE_KEY`');
@@ -104,7 +104,7 @@ const run = async () => {
 
     console.log(`Deploying ${contractId}`);
 
-    const source = await readFile(`../clarity/contracts/${contract.file || contract.name}.clar`);
+    const source = await readFile(`../../clarity/contracts/${contract.file || contract.name}.clar`);
     const tx = await makeContractDeploy({
       contractName: contract.name,
       codeBody: source.toString('utf8'),

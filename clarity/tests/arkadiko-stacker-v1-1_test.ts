@@ -10,91 +10,81 @@ import {
   Swap,
 } from './models/arkadiko-tests-swap.ts';
 
+import { 
+  OracleManager,
+  DikoToken,
+  UsdaToken
+} from './models/arkadiko-tests-tokens.ts';
+
+import { 
+  VaultManager,
+  VaultLiquidator,
+  VaultAuction,
+  VaultRewards
+} from './models/arkadiko-tests-vaults.ts';
+
+import { 
+  Stacker,
+  StackerPayer,
+  StxReserve
+} from './models/arkadiko-tests-stacker.ts';
+
+import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
+
 Clarinet.test({
   name: "stacker: initiate stacking in PoX contract with enough STX tokens",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
-        types.ascii("STX"),
-        types.uint(400),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1000000000),
-        types.uint(1000000000), // mint 1000 USDA
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], deployer.address),
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(500000000),
-        types.uint(400000000), // mint 400 USDA
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], wallet_1.address)
-    ]);
 
-    let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii("stacker")], deployer.address);
-    call.result.expectOk().expectUint(1500000000); // 1500 STX
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stxReserve = new StxReserve(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
 
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "toggle-stacking", [types.uint(2)], wallet_1.address),
-      Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
-        types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
-        types.uint(1), // start block height
-        types.uint(1) // 1 cycle lock period
-      ], deployer.address)
-    ]);
-    block.receipts[1].result.expectOk().expectUint(1000000000);
+    // Set price, create 2 vaults
+    oracleManager.updatePrice("STX", 400);
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000);
+    vaultManager.createVault(wallet_1, "STX-A", 500, 400);
+
+    // Total of 1500 STX to stack
+    let call:any = stxReserve.getTokensToStack("stacker");
+    call.result.expectOk().expectUintWithDecimals(1500); 
+
+    // Turn off stacking for vault 2
+    let result = vaultManager.toggleStacking(wallet_1, 2);
+    result.expectOk().expectBool(true);
+
+    // Initiate stacking
+    result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(1000);
 
     // only 1000 STX stacked since wallet 1 revoked stacking on their vault before stacking initiated
-    call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stx-balance", [], deployer.address);
-    call.result.expectUint(1000000000);
+    call = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(1000);
 
-    call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stacking-unlock-burn-height", [], deployer.address);
+    call = stacker.getStackingUnlockHeight();
     call.result.expectOk().expectUint(300);
 
     // now imagine the vault owner changes his mind and revokes stacking
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "toggle-stacking", [
-        types.uint(1)
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
-    call = await chain.callReadOnlyFn("arkadiko-freddie-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
+    result = vaultManager.toggleStacking(deployer, 1);
+    result.expectOk().expectBool(true);
+
+    call = vaultManager.getVaultById(1);
     let vault = call.result.expectTuple();
     vault['revoked-stacking'].expectBool(true);
 
     // now we wait until the burn-block-height (300 blocks) is mined
     chain.mineEmptyBlock(300);
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v1-1", "request-stx-for-payout", [
-        types.uint(1000000000)
-      ], deployer.address), // need this method to get some STX on the stacker-payer contract
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "enable-vault-withdrawals", [
-        types.uint(1)
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
-    call = await chain.callReadOnlyFn("arkadiko-freddie-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
+
+    result = stacker.requestStxForPayout(1000);
+    result.expectOk().expectBool(true);
+
+    result = stacker.enableVaultWithdrawals(1);
+    result.expectOk().expectBool(true);
+
+    // Check stacked tokens
+    call = vaultManager.getVaultById(1);
     vault = call.result.expectTuple();
     vault['stacked-tokens'].expectUint(0);
   }
@@ -104,74 +94,50 @@ Clarinet.test({
   name: "stacker: payout one vault",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
-        types.ascii("STX"),
-        types.uint(400),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1000000000),
-        types.uint(1000000000), // mint 1000 USDA
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(false)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], deployer.address)
-    ]);
-    let call:any = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stxReserve = new StxReserve(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+    let stackerPayer = new StackerPayer(chain, deployer);
+    
+    // Set price, create 2 vaults
+    oracleManager.updatePrice("STX", 400);
+
+    // Create vault without auto payoff
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000, true, false);
+    
+    // Vault info
+    let call:any = vaultManager.getVaultById(1);
     let vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(1000000000);
-    vault['collateral'].expectUint(1000000000);
+    vault['stacked-tokens'].expectUintWithDecimals(1000);
+    vault['collateral'].expectUintWithDecimals(1000);
 
-    call = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii("stacker")], deployer.address);
-    call.result.expectOk().expectUint(1000000000); // 1000 STX
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
-        types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
-        types.uint(1), // start block height
-        types.uint(1) // 1 cycle lock period
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectUint(1000000000);
+    call = stxReserve.getTokensToStack("stacker");
+    call.result.expectOk().expectUintWithDecimals(1000); // 1000 STX
 
-    call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stx-balance", [], deployer.address);
-    call.result.expectUint(1000000000);
+    let result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    call = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(1000);
 
     chain.mineEmptyBlock(300);
 
     // now imagine we receive 1000 STX for stacking
     // and then payout vault 1 (which was the only stacker)
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "set-stacking-stx-stacked", [
-        types.uint(1000000000),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "set-stacking-stx-received", [
-        types.uint(1000000000),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "payout", [
-        types.uint(1),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token')
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
-    block.receipts[1].result.expectOk().expectBool(true);
-    block.receipts[2].result.expectOk().expectBool(true);
+    result = stackerPayer.setStackingStxStacked(1000);
+    result.expectOk().expectBool(true);
+    result = stackerPayer.setStackingStxReceived(1000);
+    result.expectOk().expectBool(true);
+    result = stackerPayer.payout(1);
+    result.expectOk().expectBool(true);
 
-    call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
+    // Check new collateral (1000 STX initial + 1000 STX yield)
+    call = vaultManager.getVaultById(1);
     vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(2000000000);
-    vault['collateral'].expectUint(2000000000);
+    vault['stacked-tokens'].expectUintWithDecimals(2000);
+    vault['collateral'].expectUintWithDecimals(2000);
   }
 });
 
@@ -180,110 +146,59 @@ Clarinet.test({
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let wallet_1 = accounts.get("wallet_1")!;
     let deployer = accounts.get("deployer")!;
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
-        types.ascii("STX"),
-        types.uint(400),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1000000000),
-        types.uint(1000000000), // mint 1000 USDA
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(false)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], deployer.address),
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(500000000),
-        types.uint(400000000), // mint 400 USDA
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(false)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], wallet_1.address)
-    ]);
 
-    let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii("stacker")], deployer.address);
-    call.result.expectOk().expectUint(1500000000); // 1500 STX
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
-        types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
-        types.uint(1), // start block height
-        types.uint(1) // 1 cycle lock period
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectUint(1500000000);
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stxReserve = new StxReserve(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+    let stackerPayer = new StackerPayer(chain, deployer);
+    
+    // Set price
+    oracleManager.updatePrice("STX", 400);
 
-    call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stx-balance", [], deployer.address);
-    call.result.expectUint(1500000000);
+    // Create vault without auto payoff
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000, true, false);
+    vaultManager.createVault(wallet_1, "STX-A", 500, 400, true, false);
+
+    let call:any = stxReserve.getTokensToStack("stacker");
+    call.result.expectOk().expectUintWithDecimals(1500); // 1500 STX
+
+    let result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(1500);
+
+    call = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(1500);
 
     // try stacking again, should fail
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
-        types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
-        types.uint(1), // start block height
-        types.uint(1) // 1 cycle lock period
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(194);
+    result = stacker.initiateStacking(1, 1);
+    result.expectErr().expectUint(194);
 
     chain.mineEmptyBlock(300);
 
     // now imagine we receive 450 STX for stacking
     // and then payout vault 1 and 2
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "set-stacking-stx-stacked", [
-        types.uint(1500000000),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "set-stacking-stx-received", [
-        types.uint(450000000),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "payout", [
-        types.uint(1),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token')
-      ], deployer.address),
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "payout", [
-        types.uint(2),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token')
-      ], deployer.address),
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "set-stacking-stx-received", [types.uint(0)], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
-    block.receipts[1].result.expectOk().expectBool(true);
-    block.receipts[2].result.expectOk().expectBool(true);
-    block.receipts[3].result.expectOk().expectBool(true);
+    result = stackerPayer.setStackingStxStacked(1500);
+    result.expectOk().expectBool(true);
+    result = stackerPayer.setStackingStxReceived(450);
+    result.expectOk().expectBool(true);
+    result = stackerPayer.payout(1);
+    result.expectOk().expectBool(true);
+    result = stackerPayer.payout(2);
+    result.expectOk().expectBool(true);
 
-    call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
+    // Set back to 0
+    result = stackerPayer.setStackingStxReceived(0);
+    result.expectOk().expectBool(true);
+
+    call = vaultManager.getVaultById(1);
     let vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(1299970000);
-    vault['collateral'].expectUint(1299970000);
+    vault['stacked-tokens'].expectUintWithDecimals(1299.97);
+    vault['collateral'].expectUintWithDecimals(1299.97);
 
-    call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(2)], deployer.address);
+    call = vaultManager.getVaultById(2);
     vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(649985000);
-    vault['collateral'].expectUint(649985000);
+    vault['stacked-tokens'].expectUintWithDecimals(649.985);
+    vault['collateral'].expectUintWithDecimals(649.985);
   }
 });
 
@@ -292,126 +207,70 @@ Clarinet.test({
     "stacker: auction winners receive yield from PoX vault",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
-    let block = chain.mineBlock([
-      // Initialize price of STX to $2 in the oracle
-      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
-        types.ascii("STX"),
-        types.uint(400),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1500000000), // 1500 STX
-        types.uint(1300000000), // mint 1300 USDA
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], deployer.address),
-      Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
-        types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
-        types.uint(1), // start block height
-        types.uint(1) // 1 cycle lock period
-      ], deployer.address)
-    ]);
 
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
-        types.ascii("STX"),
-        types.uint(150),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-liquidator-v1-1", "notify-risky-vault", [
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-auction-engine-v1-1'),
-        types.uint(1),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], deployer.address),
-    ]);
-    block.receipts[1].result
-      .expectOk()
-      .expectUint(5200);
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultLiquidator = new VaultLiquidator(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+    let stackerPayer = new StackerPayer(chain, deployer);
+    
+    // Set price, create vault, initiate stacking
+    oracleManager.updatePrice("STX", 400);
+    vaultManager.createVault(deployer, "STX-A", 1500, 1300, true, true);
+    stacker.initiateStacking(1, 1);
 
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1'),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.uint(1),
-        types.uint(0),
-        types.uint(1000000000)
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
+    // Update price
+    oracleManager.updatePrice("STX", 150);
 
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-freddie-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1'),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.uint(1),
-        types.uint(1),
-        types.uint(432965517) // 1.46 (price of STX) * minimum collateral: 296551724 * 1.46
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
+    let result = vaultLiquidator.notifyRiskyVault(deployer, 1);
+    result.expectOk().expectUint(5200);
 
-    let call:any = await chain.callReadOnlyFn(
-      "arkadiko-auction-engine-v1-1",
-      "get-auction-open",
-      [types.uint(1)],
-      wallet_1.address,
-    );
+    result = vaultAuction.bid(deployer, 1000, 1, 0);
+    result.expectOk().expectBool(true);
+
+    // 1.46 (price of STX) * minimum collateral: 296551724 * 1.46
+    result = vaultAuction.bid(deployer, 432.965517, 1, 1);
+    result.expectOk().expectBool(true);
+
+    let call:any = vaultAuction.getAuctionOpen(1);
     call.result.expectOk().expectBool(false);
 
-    call = await chain.callReadOnlyFn(
-      "arkadiko-freddie-v1-1",
-      "get-vault-by-id",
-      [types.uint(1)],
-      wallet_1.address
-    );
+    call = vaultManager.getVaultById(1);
     let vault = call.result.expectTuple();
-    vault['leftover-collateral'].expectUint(536690628);
+    vault['leftover-collateral'].expectUintWithDecimals(536.690585);
     vault['is-liquidated'].expectBool(true);
     vault['auction-ended'].expectBool(true);
 
     chain.mineEmptyBlock(300);
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v1-1", "request-stx-for-payout", [
-        types.uint(1000000000)
-      ], deployer.address), // need this method to get some STX on the stacker-payer contract
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "set-stacking-stx-stacked", [
-        types.uint(1500000000),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "set-stacking-stx-received", [
-        types.uint(450000000),
-      ], deployer.address),
+
+    result = stacker.requestStxForPayout(1000);
+    result.expectOk().expectBool(true)
+    result = stackerPayer.setStackingStxStacked(1500);
+    result.expectOk().expectBool(true)
+    result = stackerPayer.setStackingStxReceived(450)
+    result.expectOk().expectBool(true)
+
+    let block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-payer-v1-1", "payout", [
         types.uint(1),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token')
+        types.principal(Utils.qualifiedName('wrapped-stx-token')),
+        types.principal(Utils.qualifiedName('usda-token')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-token'))
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
-    block.receipts[1].result.expectOk().expectBool(true);
-    block.receipts[2].result.expectOk().expectBool(true);
-    block.receipts[3].result.expectOk().expectBool(true);
 
     // Check if transfer of yields is approx 450 STX - 10% that we keep
     // part of it stays with the foundation since not all collateral is usually sold of
-    let [stxTransferEvent1, stxTransferEvent2] = block.receipts[3].events;
-    stxTransferEvent1.stx_transfer_event.sender.expectPrincipal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stacker-payer-v1-1");
+    let [stxTransferEvent1, stxTransferEvent2] = block.receipts[0].events;
+    stxTransferEvent1.stx_transfer_event.sender.expectPrincipal(Utils.qualifiedName('arkadiko-stacker-payer-v1-1'));
     stxTransferEvent1.stx_transfer_event.recipient.expectPrincipal(deployer.address);
     stxTransferEvent1.stx_transfer_event.amount.expectInt(215824500);
 
-    stxTransferEvent2.stx_transfer_event.sender.expectPrincipal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stacker-payer-v1-1");
+    stxTransferEvent2.stx_transfer_event.sender.expectPrincipal(Utils.qualifiedName('arkadiko-stacker-payer-v1-1'));
     stxTransferEvent2.stx_transfer_event.recipient.expectPrincipal(deployer.address);
     stxTransferEvent2.stx_transfer_event.amount.expectInt(73163250);
   }
@@ -422,33 +281,22 @@ Clarinet.test({
     "stacker: cannot initiate stacking when emergency switch is on",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
-        types.ascii("STX"),
-        types.uint(400),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1000000000), // 1000 STX
-        types.uint(1300000000), // mint 1300 USDA
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], deployer.address),
-      Tx.contractCall("arkadiko-stacker-v1-1", "toggle-stacker-shutdown", [], deployer.address),
-      Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
-        types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
-        types.uint(1), // start block height
-        types.uint(1) // 1 cycle lock period
-      ], deployer.address)
-    ]);
 
-    block.receipts[3].result.expectErr().expectUint(195);
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+    
+    // Set price, create vault, initiate stacking
+    oracleManager.updatePrice("STX", 400);
+    vaultManager.createVault(deployer, "STX-A", 1000, 1300, true, true);
+    stacker.initiateStacking(1, 1);
+
+    // Toggle shutdown
+    stacker.shutdown();
+
+    // Can not stack
+    let result = stacker.initiateStacking(1, 1);
+    result.expectErr().expectUint(195);
   }
 });
 
@@ -483,11 +331,11 @@ Clarinet.test({
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-payer-v1-1", "payout", [
         types.uint(1),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token')
+        types.principal(Utils.qualifiedName('wrapped-stx-token')),
+        types.principal(Utils.qualifiedName('usda-token')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-token'))
       ], wallet_1.address)
     ]);
     block.receipts[0].result.expectErr().expectUint(22401);
@@ -500,21 +348,17 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
 
-    let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii("stacker")], deployer.address);
-    call.result.expectOk().expectUint(0); 
+    let stxReserve = new StxReserve(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
 
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
-        types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
-        types.uint(1), // start block height
-        types.uint(1) // 1 cycle lock period
-      ], deployer.address)
-    ]);
+    let call:any = stxReserve.getTokensToStack("stacker");
+    call.result.expectOk().expectUint(0); 
 
     // have not reached minimum to stack
     // u18 is the PoX error ERR_STACKING_INVALID_AMOUNT
     // see https://explorer.stacks.co/txid/0x41356e380d164c5233dd9388799a5508aae929ee1a7e6ea0c18f5359ce7b8c33?chain=mainnet
-    block.receipts[0].result.expectErr().expectUint(18);
+    let result = stacker.initiateStacking(1, 1);
+    result.expectErr().expectUint(18);
   }
 });
 
@@ -523,64 +367,27 @@ Clarinet.test({
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
-        types.ascii("STX"),
-        types.uint(400),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1000000000),
-        types.uint(1000000000), // mint 1000 USDA
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], deployer.address),
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(500000000),
-        types.uint(400000000), // mint 400 USDA
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], wallet_1.address)
-    ]);
 
-    let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii("stacker")], deployer.address);
-    call.result.expectOk().expectUint(1500000000); // 1500 STX
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stxReserve = new StxReserve(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+    
+    // Set price, create vaults
+    oracleManager.updatePrice("STX", 400);
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000, true, true);
+    vaultManager.createVault(wallet_1, "STX-A", 500, 400, true, true);
 
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "toggle-stacking", [types.uint(2)], wallet_1.address),
-      Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
-        types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
-        types.uint(1), // start block height
-        types.uint(1) // 1 cycle lock period
-      ], deployer.address)
-    ]);
-    block.receipts[1].result.expectOk().expectUint(1000000000);
+    let call:any = stxReserve.getTokensToStack("stacker");
+    call.result.expectOk().expectUintWithDecimals(1500); // 1500 STX
 
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
-        types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
-        types.uint(1), // start block height
-        types.uint(1) // 1 cycle lock period
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(194);
+    vaultManager.toggleStacking(wallet_1, 2);
+
+    let result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    result = stacker.initiateStacking(1, 1);
+    result.expectErr().expectUint(194);
   }
 });
 
@@ -588,70 +395,39 @@ Clarinet.test({
   name: "stacker: payout vault while stacking in progress",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
-        types.ascii("STX"),
-        types.uint(400),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1000000000), // 1000 STX
-        types.uint(1000000000),
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], deployer.address)
-    ]);
 
-    let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii("stacker")], deployer.address);
-    call.result.expectOk().expectUint(1000000000); // 1000 STX
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+    let stackerPayer = new StackerPayer(chain, deployer);
 
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
-        types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
-        types.uint(1), // start block height
-        types.uint(1) // 1 cycle lock period
-      ], deployer.address),
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "set-stacking-stx-stacked", [
-        types.uint(1000000000),
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectUint(1000000000);
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 400);
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000, true, true);
 
-    call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stx-balance", [], deployer.address);
-    call.result.expectUint(1000000000);
+    let call:any = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(0);
 
-    call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stacking-unlock-burn-height", [], deployer.address);
+    let result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(1000)
+
+    call = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(1000);
+
+    call = stacker.getStackingUnlockHeight();
     call.result.expectOk().expectUint(300);
 
-    // Payout should fail as burn block height not reached yet
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "set-stacking-stx-received", [
-        types.uint(1000000000),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "payout", [
-        types.uint(1),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token')
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
-    block.receipts[1].result.expectErr().expectUint(222);
+    result = stackerPayer.setStackingStxReceived(1000);
+    result.expectOk().expectBool(true)
 
-    call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
+    // Payout should fail as burn block height not reached yet
+    result = stackerPayer.payout(1);
+    result.expectErr().expectUint(222)
+
+    call = vaultManager.getVaultById(1);
     let vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(1000000000);
-    vault['collateral'].expectUint(1000000000);
+    vault['stacked-tokens'].expectUintWithDecimals(1000);
+    vault['collateral'].expectUintWithDecimals(1000);
   }
 });
 
@@ -659,63 +435,37 @@ Clarinet.test({
   name: "stacker: payout without setting STX received",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
-        types.ascii("STX"),
-        types.uint(400),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1000000000),
-        types.uint(1000000000),
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(false)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], deployer.address)
-    ]);
 
-    let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii("stacker")], deployer.address);
-    call.result.expectOk().expectUint(1000000000); 
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+    let stackerPayer = new StackerPayer(chain, deployer);
+    let stxReserve = new StxReserve(chain, deployer);
 
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
-        types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
-        types.uint(1), // start block height
-        types.uint(1) // 1 cycle lock period
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectUint(1000000000);
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 400);
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000, true, false);
 
-    call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stx-balance", [], deployer.address);
-    call.result.expectUint(1000000000);
+    let call:any = stxReserve.getTokensToStack("stacker");
+    call.result.expectOk().expectUintWithDecimals(1000); 
+
+    let result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    call = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(1000);
 
     chain.mineEmptyBlock(300);
 
     // trigger payout - but there is 0 STX to pay out
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "payout", [
-        types.uint(1),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token')
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
+    result = stackerPayer.payout(1);
+    result.expectOk().expectBool(true);
 
     // Vault collateral has not changed
-    call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
+    call = vaultManager.getVaultById(1);
     let vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(1000000000);
-    vault['collateral'].expectUint(1000000000);
+    vault['stacked-tokens'].expectUintWithDecimals(1000);
+    vault['collateral'].expectUintWithDecimals(1000);
   }
 });
 
@@ -724,98 +474,72 @@ Clarinet.test({
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
-        types.ascii("STX"),
-        types.uint(400),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1000000000),
-        types.uint(1000000000), // mint 1000 USDA
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(false)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], deployer.address)
-    ]);
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+    let stackerPayer = new StackerPayer(chain, deployer);
+    let stxReserve = new StxReserve(chain, deployer);
+    let dikoToken = new DikoToken(chain, deployer);
+    let vaultRewards = new VaultRewards(chain, deployer);
 
-    let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii("stacker")], deployer.address);
-    call.result.expectOk().expectUint(1000000000); // 1000 STX
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
-        types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
-        types.uint(1), // start block height
-        types.uint(1) // 1 cycle lock period
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectUint(1000000000);
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 400);
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000, true, false);
 
-    call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stx-balance", [], deployer.address);
-    call.result.expectUint(1000000000);
+    let call:any = stxReserve.getTokensToStack("stacker");
+    call.result.expectOk().expectUintWithDecimals(1000); // 1000 STX
+
+    let result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(1000)
+  
+    call = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(1000);
 
     // Rewards after 2 blocks
-    call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(640000000)
+    call = vaultRewards.getPendingRewards(deployer);
+    call.result.expectOk().expectUintWithDecimals(640)
 
     chain.mineEmptyBlock(300);
 
     // Rewards after 302 blocks
-    call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(96640000000)
+    call = vaultRewards.getPendingRewards(deployer);
+    call.result.expectOk().expectUintWithDecimals(96640)
 
     // Initial DIKO balance
-    call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(890000000000);   
+    call = dikoToken.balanceOf(deployer.address);
+    call.result.expectOk().expectUintWithDecimals(890000);   
 
     // Collateral info
-    call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-collateral-of ", [types.principal(deployer.address)], deployer.address);
+    call = vaultRewards.getCollateralOf(deployer);
     let collateralInfo = call.result.expectTuple();
     collateralInfo['cumm-reward-per-collateral'].expectUint(0);
-    collateralInfo['collateral'].expectUint(1000000000);
+    collateralInfo['collateral'].expectUintWithDecimals(1000);
     
     // Payout should restart vault rewards
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "set-stacking-stx-received", [
-        types.uint(1000000000),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "payout", [
-        types.uint(1),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token')
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
-    block.receipts[1].result.expectOk().expectBool(true);
+    result = stackerPayer.setStackingStxReceived(1000);
+    result.expectOk().expectBool(true)
+    result = stackerPayer.payout(1);
+    result.expectOk().expectBool(true)
 
     // Auto harvested DIKO
-    call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(986640000000);   
+    call = dikoToken.balanceOf(deployer.address);
+    call.result.expectOk().expectUintWithDecimals(986960);   
 
     // Pending rewards only for 1 block
-    call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-pending-rewards", [types.principal(deployer.address)], deployer.address);
-    call.result.expectOk().expectUint(320000000);
+    call = vaultRewards.getPendingRewards(deployer);
+    call.result.expectOk().expectUintWithDecimals(320);
 
     // Reward info - cumm reward and collateral is now updated
-    call = chain.callReadOnlyFn("arkadiko-vault-rewards-v1-1", "get-collateral-of ", [types.principal(deployer.address)], deployer.address);
+    call = vaultRewards.getCollateralOf(deployer);
     collateralInfo = call.result.expectTuple();
-    collateralInfo['cumm-reward-per-collateral'].expectUint(96640000);
-    collateralInfo['collateral'].expectUint(2000000000);
+    collateralInfo['cumm-reward-per-collateral'].expectUintWithDecimals(96.96);
+    collateralInfo['collateral'].expectUintWithDecimals(2000);
 
     // Vault info is updated
-    call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
+    call = vaultManager.getVaultById(1);
     let vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(2000000000);
-    vault['collateral'].expectUint(2000000000);
+    vault['stacked-tokens'].expectUintWithDecimals(2000);
+    vault['collateral'].expectUintWithDecimals(2000);
   }
 });
 
@@ -823,115 +547,65 @@ Clarinet.test({
   name: "stacker: payout one vault on auto-payoff",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+    let stackerPayer = new StackerPayer(chain, deployer);
+    let stxReserve = new StxReserve(chain, deployer);
 
     // Need wSTX-USDA liquidity to swap STX yield to USDA to payoff debt
     // We set 1 STX = 1 USDA
     let swap = new Swap(chain, deployer);
     let result = swap.createPair(deployer,
-      "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token",
-      "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token",
-      "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-swap-token-wstx-usda",
+      'wrapped-stx-token',
+      'usda-token',
+      'arkadiko-swap-token-wstx-usda',
       "wSTX-USDA", 
       10000, 
       10000);
     result.expectOk().expectBool(true);
 
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
-        types.ascii("STX"),
-        types.uint(400),
-      ], deployer.address),
-
-      // User vault with auto-payoff enabled
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1000000000),
-        types.uint(1000000000), // mint 1000 USDA
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], deployer.address),
-
-      // We need to make sure there is enough STX in the reserve to perform the auto payoff
-      // On prod we will swap PoX yield to STX and transfer it to the reserve
-      // Here we just create a second vault to ahve additional STX available in the reserve
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1000000000),
-        types.uint(1000000000), // mint 1000 USDA
-        types.tuple({
-          'stack-pox': types.bool(false),
-          'auto-payoff': types.bool(false)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], deployer.address),
-    ]);
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 400);
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000, true, true);
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
 
     // Only the STX from the first vault will be stacked
-    let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii("stacker")], deployer.address);
-    call.result.expectOk().expectUint(1000000000); // 1000 STX
+    let call:any = stxReserve.getTokensToStack("stacker");
+    call.result.expectOk().expectUintWithDecimals(1000); // 1000 STX
 
     // Check initial vault data
-    call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
+    call = vaultManager.getVaultById(1);
     let vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(1000000000);
-    vault['collateral'].expectUint(1000000000);
-    vault['debt'].expectUint(1000000000);
+    vault['stacked-tokens'].expectUintWithDecimals(1000);
+    vault['collateral'].expectUintWithDecimals(1000);
+    vault['debt'].expectUintWithDecimals(1000);
 
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
-        types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
-        types.uint(1), // start block height
-        types.uint(1) // 1 cycle lock period
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectUint(1000000000);
+    result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(1000);
 
-    call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stx-balance", [], deployer.address);
-    call.result.expectUint(1000000000);
+    call = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(1000);
 
     chain.mineEmptyBlock(300);
 
     // now imagine we receive 100 STX for stacking
     // and then payout vault 1 (which was the only stacker)
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "set-stacking-stx-received", [
-        types.uint(100000000),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "payout", [
-        types.uint(1),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token')
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
-    block.receipts[1].result.expectOk().expectBool(true);
+    result = stackerPayer.setStackingStxReceived(100);
+    result.expectOk().expectBool(true)
+    result = stackerPayer.payout(1);
+    result.expectOk().expectBool(true)
 
     // Check vault data
-    call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
+    call = vaultManager.getVaultById(1);
     vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(1000000000);
-    vault['collateral'].expectUint(1000000000);
+    vault['stacked-tokens'].expectUintWithDecimals(1000);
+    vault['collateral'].expectUintWithDecimals(1000);
 
     // Initial debt was 1000 USDA. We got 100 STX from PoX and swaped it to USDA.
     // 1000 - 100 = ~900 debt left (a bit more because of slippage on swap)
-    vault['debt'].expectUint(901514019);
+    vault['debt'].expectUintWithDecimals(901.515541);
   }
 });
 
@@ -939,33 +613,17 @@ Clarinet.test({
   name: "stacker: create vault without pox",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
-        types.ascii("STX"),
-        types.uint(400),
-      ], deployer.address),
 
-      // Stacking disabled
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1000000000),
-        types.uint(1000000000), // mint 1000 USDA
-        types.tuple({
-          'stack-pox': types.bool(false),
-          'auto-payoff': types.bool(false)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], deployer.address)
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stxReserve = new StxReserve(chain, deployer);
 
-    ]);
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 400);
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
 
     // No tokens to stack as stack-pox option was not set
-    let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii("stacker")], deployer.address);
+    let call:any = stxReserve.getTokensToStack("stacker");
     call.result.expectOk().expectUint(0);
   }
 });
@@ -976,108 +634,61 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
 
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+    let stackerPayer = new StackerPayer(chain, deployer);
+    let usdaToken = new UsdaToken(chain, deployer);
+
     // Need wSTX-USDA liquidity to swap STX yield to USDA to payoff debt
     // We set 1 STX = 1 USDA
     let swap = new Swap(chain, deployer);
     let result = swap.createPair(deployer,
-      "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token",
-      "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token",
-      "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-swap-token-wstx-usda",
+      'wrapped-stx-token',
+      'usda-token',
+      'arkadiko-swap-token-wstx-usda',
       "wSTX-USDA", 
       10000, 
       10000);
     result.expectOk().expectBool(true);
 
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
-        types.ascii("STX"),
-        types.uint(400),
-      ], deployer.address),
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 400);
+    vaultManager.createVault(wallet_1, "STX-A", 1000, 1, true, true);
 
-      // User vault with auto-payoff enabled
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1000000000),
-        types.uint(1000000), // mint 1 USDA
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], wallet_1.address),
+    // We need to make sure there is enough STX in the reserve to perform the auto payoff
+    // On prod we will swap PoX yield to STX and transfer it to the reserve
+    // Here we just create a second vault to ahve additional STX available in the reserve
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
 
-      // We need to make sure there is enough STX in the reserve to perform the auto payoff
-      // On prod we will swap PoX yield to STX and transfer it to the reserve
-      // Here we just create a second vault to ahve additional STX available in the reserve
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1000000000),
-        types.uint(1000000000), // mint 1000 USDA
-        types.tuple({
-          'stack-pox': types.bool(false),
-          'auto-payoff': types.bool(false)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], deployer.address),
-    ]);
-
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
-        types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
-        types.uint(1), // start block height
-        types.uint(1) // 1 cycle lock period
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectUint(1000000000);
+    result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(1000);
 
     chain.mineEmptyBlock(300);
 
     // Initial + 1
-    let call:any = chain.callReadOnlyFn("usda-token", "get-balance", [types.principal(wallet_1.address)], deployer.address);
-    call.result.expectOk().expectUint(1000001000000);   
+    let call:any = usdaToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(1000001);   
 
     // now imagine we receive 100 STX for stacking
     // and then payout vault 1 (which was the only stacker)
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "set-stacking-stx-stacked", [
-        types.uint(1000000000),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "set-stacking-stx-received", [
-        types.uint(100000000),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "payout", [
-        types.uint(1),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token')
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
-    block.receipts[1].result.expectOk().expectBool(true);
+    result = stackerPayer.setStackingStxStacked(1000);
+    result.expectOk().expectBool(true)
+    result = stackerPayer.setStackingStxReceived(100)
+    result.expectOk().expectBool(true)
+    result = stackerPayer.payout(1);
 
     // Check vault data
-    call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
+    call = vaultManager.getVaultById(1);
     let vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(1000000000);
-    vault['collateral'].expectUint(1000000000);
+    vault['stacked-tokens'].expectUintWithDecimals(1000);
+    vault['collateral'].expectUintWithDecimals(1000);
     vault['debt'].expectUint(0); // PoX yield has paid back all dept
 
     // Excess yield has been transferred to the user's wallet
     // User got ~97 USDA extra
-    call = chain.callReadOnlyFn("usda-token", "get-balance", [types.principal(wallet_1.address)], deployer.address);
-    call.result.expectOk().expectUint(1000098715803);   
+    call = usdaToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(1000098.715803);   
 
   }
 });
@@ -1086,114 +697,67 @@ Clarinet.test({
   name: "stacker: toggle stacking for vault on auto-payoff",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+    let stackerPayer = new StackerPayer(chain, deployer);
+    let usdaToken = new UsdaToken(chain, deployer);
+    let stxReserve = new StxReserve(chain, deployer);
 
     // Need wSTX-USDA liquidity to swap STX yield to USDA to payoff debt
     // We set 1 STX = 1 USDA
     let swap = new Swap(chain, deployer);
     let result = swap.createPair(deployer,
-      "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token",
-      "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token",
-      "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-swap-token-wstx-usda",
+      'wrapped-stx-token',
+      'usda-token',
+      'arkadiko-swap-token-wstx-usda',
       "wSTX-USDA", 
       10000, 
       10000);
     result.expectOk().expectBool(true);
 
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
-        types.ascii("STX"),
-        types.uint(400),
-      ], deployer.address),
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 400);
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000, true, true);
 
-      // User vault with auto-payoff enabled
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1000000000),
-        types.uint(1000000000), // mint 1000 USDA
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], deployer.address),
-
-      // We need to make sure there is enough STX in the reserve to perform the auto payoff
-      // On prod we will swap PoX yield to STX and transfer it to the reserve
-      // Here we just create a second vault to ahve additional STX available in the reserve
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(1000000000),
-        types.uint(1000000000), // mint 1000 USDA
-        types.tuple({
-          'stack-pox': types.bool(false),
-          'auto-payoff': types.bool(false)
-        }),
-        types.ascii("STX-A"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1"),
-        types.principal(
-          "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token",
-        ),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1"),
-        types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-oracle-v1-1")
-      ], deployer.address),
-    ]);
+    // We need to make sure there is enough STX in the reserve to perform the auto payoff
+    // On prod we will swap PoX yield to STX and transfer it to the reserve
+    // Here we just create a second vault to ahve additional STX available in the reserve
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
 
     // STX from vault 1 and 2 stacked
-    let call:any = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii("stacker")], deployer.address);
-    call.result.expectOk().expectUint(1000000000); 
+    let call:any = stxReserve.getTokensToStack("stacker");
+    call.result.expectOk().expectUintWithDecimals(1000); 
 
     // Check initial vault data
-    call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
+    call = vaultManager.getVaultById(1);
     let vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUint(1000000000);
-    vault['collateral'].expectUint(1000000000);
-    vault['debt'].expectUint(1000000000);
+    vault['stacked-tokens'].expectUintWithDecimals(1000);
+    vault['collateral'].expectUintWithDecimals(1000);
+    vault['debt'].expectUintWithDecimals(1000);
 
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
-        types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
-        types.uint(1), // start block height
-        types.uint(1) // 1 cycle lock period
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectUint(1000000000);
+    result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(1000);
 
-    call = await chain.callReadOnlyFn("arkadiko-stacker-v1-1", "get-stx-balance", [], deployer.address);
-    call.result.expectUint(1000000000);
+    call = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(1000);
 
     chain.mineEmptyBlock(300);
 
     // Turn off stacking
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "toggle-stacking", [types.uint(1)], deployer.address),
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
+    result = vaultManager.toggleStacking(deployer, 1);
+    result.expectOk().expectBool(true);
 
     // now imagine we receive 100 STX for stacking
     // and then payout vault 1 (which was the only stacker)
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "set-stacking-stx-received", [
-        types.uint(100000000),
-      ], deployer.address),
-      Tx.contractCall("arkadiko-stacker-payer-v1-1", "payout", [
-        types.uint(1),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wrapped-stx-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.usda-token'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-collateral-types-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stx-reserve-v1-1'),
-        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token')
-      ], deployer.address),
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
-    block.receipts[1].result.expectOk().expectBool(true);
+    result = stackerPayer.setStackingStxReceived(100);
+    result.expectOk().expectBool(true);
+    result = stackerPayer.payout(1);
+    result.expectOk().expectBool(true);
 
     // Check vault data
-    call = await chain.callReadOnlyFn("arkadiko-vault-data-v1-1", "get-vault-by-id", [types.uint(1)], deployer.address);
+    call = vaultManager.getVaultById(1);
     vault = call.result.expectTuple();
     vault['stacked-tokens'].expectUint(0);
 
