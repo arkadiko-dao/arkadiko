@@ -72,11 +72,11 @@ export const OnboardingStep1Swap = () => {
           currentStep={currentStep}
           stepNumber={0}
           stepTitle={"Swap"}
-          stepDescription={"Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam."}
+          stepDescription={"A permissionless and decentralised way to swap your favorite tokens on the Arkadiko Decentralized Exchange, all on top of the Stacks blockchain."}
         />
       ) : null }
 
-      <div className="relative w-full min-h-screen bg-gray-100">
+      <div className="w-full min-h-screen overflow-hidden bg-gray-100">
         <OnboardingNav currentSection={currentSection} />
         <div className="px-6 mx-auto lg:px-8">
           <main className="py-12">

@@ -5,6 +5,7 @@ import { OnboardingNav } from './onboarding-nav';
 import { OnboardingNavFooter } from './onboarding-nav-footer';
 import { Step } from './step';
 import { StepIntroduction } from './step-introduction';
+import { classNames } from '@common/class-names';
 
 export const OnboardingStep2Vaults = () => {
   const history = useHistory();
@@ -113,11 +114,11 @@ export const OnboardingStep2Vaults = () => {
           currentStep={currentStep}
           stepNumber={0}
           stepTitle={"Vaults"}
-          stepDescription={"Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam."}
+          stepDescription={"Vaults introduction step - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam."}
         />
       ) : null }
       
-      <div className="w-full min-h-screen bg-gray-100">
+      <div className="w-full min-h-screen overflow-hidden bg-gray-100">
         <OnboardingNav 
           currentSection={currentSection} 
         />
@@ -126,9 +127,15 @@ export const OnboardingStep2Vaults = () => {
           <main className="py-12">
             <h2 className="text-3xl font-headings">02 — Vaults</h2>
             <div className="relative max-w-[1000px] mx-auto">
-              {(currentStep === 1) ? (
+              {(currentStep >= 0 && currentStep < 2) ? (
                 <>
-                  <img className="mt-8 border border-gray-100 rounded-md shadow" src="/assets/onboarding/vaults-1.png" alt="" />
+                  <img 
+                    className={
+                      classNames((currentStep === 0) ? 
+                        'filter blur transition duration-200 ease-in-out' : '', 
+                        'mt-8 border border-gray-100 rounded-md shadow'
+                      )}
+                    src="/assets/onboarding/vaults-1.png" alt="" />
                   {STEPS_LIST_A.map((stepProps, i) => (
                     <Step
                       key={i + 1}

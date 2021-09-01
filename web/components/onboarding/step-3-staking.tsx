@@ -4,6 +4,9 @@ import { useHistory } from 'react-router-dom';
 import { OnboardingNav } from './onboarding-nav';
 import { OnboardingNavFooter } from './onboarding-nav-footer';
 import { Step } from './step';
+import { StepIntroduction } from './step-introduction';
+import { classNames } from '@common/class-names';
+
 
 export const OnboardingStep3Staking = () => {
   // const history = useHistory();
@@ -44,7 +47,7 @@ export const OnboardingStep3Staking = () => {
         />
       ) : null }
     
-      <div className="w-full min-h-screen bg-gray-100">
+      <div className="w-full min-h-screen bg-gray-100 overflow-hidden">
         <OnboardingNav 
           currentSection={currentSection} 
         />
@@ -53,9 +56,15 @@ export const OnboardingStep3Staking = () => {
           <main className="py-12">
             <h2 className="text-3xl font-headings">03 — Staking</h2>
             <div className="relative max-w-[1000px] mx-auto">
-              {(currentStep === 1) ? (
+              {(currentStep >= 0 && currentStep < 2) ? (
                 <>
-                  <img className="mt-8 border border-gray-100 rounded-md shadow" src="/assets/onboarding/staking.jpeg" alt="" />
+                  <img 
+                    className={
+                      classNames((currentStep === 0) ? 
+                        'filter blur transition duration-200 ease-in-out' : '', 
+                        'mt-8 border border-gray-100 rounded-md shadow'
+                      )}
+                    src="/assets/onboarding/staking.jpeg" alt="" />
                   {STEPS_LIST.map((stepProps, i) => (
                     <Step
                       key={i + 1}
