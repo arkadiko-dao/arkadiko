@@ -24,14 +24,14 @@ export const OnboardingNav = (props) => {
       id: '03',
       name: 'Staking',
       description: 'Stake your tokens to earn rewards.',
-      href: '#',
+      href: '/onboarding/step-3-staking',
       status: 'upcoming',
     },
     { 
       id: '04',
       name: 'Governance',
       description: 'Vote on proposals.',
-      href: '#',
+      href: '/onboarding/step-4-governance',
       status: 'upcoming',
     },
   ]

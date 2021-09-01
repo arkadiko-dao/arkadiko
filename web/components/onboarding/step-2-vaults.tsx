@@ -4,10 +4,11 @@ import { useHistory } from 'react-router-dom';
 import { OnboardingNav } from './onboarding-nav';
 import { OnboardingNavFooter } from './onboarding-nav-footer';
 import { Step } from './step';
+import { StepIntroduction } from './step-introduction';
 
 export const OnboardingStep2Vaults = () => {
   const history = useHistory();
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0);
   const currentSection = 1;
 
   if (currentStep === 1) {
@@ -29,7 +30,11 @@ export const OnboardingStep2Vaults = () => {
   }
     
   const goToNextStep = () => {
-    setCurrentStep(previousStep => previousStep + 1)
+    if (currentStep !== 6) {
+      setCurrentStep(previousStep => previousStep + 1)
+    } else {
+      history.push("/onboarding/step-3-staking")
+    }
   }
   
   const goToPreviousStep = () => {
@@ -38,9 +43,7 @@ export const OnboardingStep2Vaults = () => {
     }
   }
 
-  console.log(currentStep)
-
-  const STEPS_LIST_A =  [
+  const STEPS_LIST_A = [
     {
       stepWrapperPosition: "bottom-0 left-0",
       stepPosition: "top-[-60px] left-[668px]",
@@ -52,7 +55,7 @@ export const OnboardingStep2Vaults = () => {
     },
   ];
 
-  const STEPS_LIST_B =  [
+  const STEPS_LIST_B = [
     {
       stepWrapperPosition: "top-0 left-0",
       stepPosition: "top-[280px] left-[24px]",
@@ -82,7 +85,7 @@ export const OnboardingStep2Vaults = () => {
     }
   ];
 
-  const STEPS_LIST_C =  [
+  const STEPS_LIST_C = [
     {
       stepWrapperPosition: "bottom-0 left-0",
       stepPosition: "bottom-[105px] left-[118px]",
@@ -104,68 +107,79 @@ export const OnboardingStep2Vaults = () => {
   ];
 
   return (
-    <div className="w-full min-h-screen bg-gray-100">
-      <OnboardingNav 
-        currentSection={currentSection} 
-      />
+    <>
+      {(currentStep === 0) ? (  
+        <StepIntroduction 
+          currentStep={currentStep}
+          stepNumber={0}
+          stepTitle={"Vaults"}
+          stepDescription={"Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam."}
+        />
+      ) : null }
+      
+      <div className="w-full min-h-screen bg-gray-100">
+        <OnboardingNav 
+          currentSection={currentSection} 
+        />
 
-      <div className="px-6 mx-auto lg:px-8">
-        <main className="py-12">
-          <h2 className="text-3xl font-headings">02 — Vaults</h2>
-          <div className="relative max-w-[1000px] mx-auto">
-            {(currentStep === 1) ? (
-              <>
-                <img className="mt-8 border border-gray-100 rounded-md shadow" src="/assets/onboarding/vaults-1.png" alt="" />
-                {STEPS_LIST_A.map((stepProps, i) => (
-                  <Step
-                    key={i + 1}
-                    currentStep={currentStep}
-                    stepNumber={i + 1}
-                    {...stepProps}
-                    stepTotal={STEPS_LIST_A.length}
-                  />
-                ))}
-              </>
-            ) : null }
+        <div className="px-6 mx-auto lg:px-8">
+          <main className="py-12">
+            <h2 className="text-3xl font-headings">02 — Vaults</h2>
+            <div className="relative max-w-[1000px] mx-auto">
+              {(currentStep === 1) ? (
+                <>
+                  <img className="mt-8 border border-gray-100 rounded-md shadow" src="/assets/onboarding/vaults-1.png" alt="" />
+                  {STEPS_LIST_A.map((stepProps, i) => (
+                    <Step
+                      key={i + 1}
+                      currentStep={currentStep}
+                      stepNumber={i + 1}
+                      {...stepProps}
+                      stepTotal={STEPS_LIST_A.length}
+                    />
+                  ))}
+                </>
+              ) : null }
 
-            {(currentStep >= 2 && currentStep < 5) ? (
-              <>
-                <img className="mt-8 border border-gray-100 rounded-md shadow" src="/assets/onboarding/vaults-2.jpeg" alt="" />
-                {STEPS_LIST_B.map((stepProps, i) => (
-                  <Step
-                    key={i + 1}
-                    currentStep={currentStep - 1}
-                    stepNumber={i + 1}
-                    {...stepProps}
-                    stepTotal={STEPS_LIST_B.length}
-                  />
-                ))}
-              </>
-            ) : null }
+              {(currentStep >= 2 && currentStep < 5) ? (
+                <>
+                  <img className="mt-8 border border-gray-100 rounded-md shadow" src="/assets/onboarding/vaults-2.jpeg" alt="" />
+                  {STEPS_LIST_B.map((stepProps, i) => (
+                    <Step
+                      key={i + 1}
+                      currentStep={currentStep - 1}
+                      stepNumber={i + 1}
+                      {...stepProps}
+                      stepTotal={STEPS_LIST_B.length}
+                    />
+                  ))}
+                </>
+              ) : null }
 
-            {(currentStep >= 5) ? (
-              <>
-                <img className="mt-8 border border-gray-100 rounded-md shadow" src="/assets/onboarding/vaults-3.png" alt="" />
-                {STEPS_LIST_C.map((stepProps, i) => (
-                  <Step
-                    key={i + 1}
-                    currentStep={currentStep - 4}
-                    stepNumber={i + 1}
-                    {...stepProps}
-                    stepTotal={STEPS_LIST_C.length}
-                  />
-                ))}
-              </>
-            ) : null }
-          </div>
-        </main>
+              {(currentStep >= 5) ? (
+                <>
+                  <img className="mt-8 border border-gray-100 rounded-md shadow" src="/assets/onboarding/vaults-3.png" alt="" />
+                  {STEPS_LIST_C.map((stepProps, i) => (
+                    <Step
+                      key={i + 1}
+                      currentStep={currentStep - 4}
+                      stepNumber={i + 1}
+                      {...stepProps}
+                      stepTotal={STEPS_LIST_C.length}
+                    />
+                  ))}
+                </>
+              ) : null }
+            </div>
+          </main>
+        </div>
+
+        <OnboardingNavFooter
+          currentStep={currentStep}
+          goToPreviousStep={goToPreviousStep}
+          goToNextStep={goToNextStep} 
+        />
       </div>
-
-      <OnboardingNavFooter
-        currentStep={currentStep}
-        goToPreviousStep={goToPreviousStep}
-        goToNextStep={goToNextStep} 
-      />
-    </div>
+    </>
   );
 };
