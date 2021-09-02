@@ -8,16 +8,16 @@ import { StepIntroduction } from './step-introduction';
 import { classNames } from '@common/class-names';
 
 
-export const OnboardingStep3Staking = () => {
+export const OnboardingStep4Governance = () => {
   const history = useHistory();
   const [currentStep, setCurrentStep] = useState(0);
-  const currentSection = 2;
+  const currentSection = 3;
     
   const goToNextStep = () => {
-    if (currentStep !== 4) {
+    if (currentStep !== 6) {
       setCurrentStep(previousStep => previousStep + 1)
     } else {
-      history.push("/onboarding/step-4-governance")
+      history.push("/")
     }
   }
   
@@ -34,7 +34,7 @@ export const OnboardingStep3Staking = () => {
       blockPosition: "top-0 left-[-88px] w-[400px]",
       arrowPosition: "top-[164px] left-[297px] rotate-[180deg]",
       arrowSize: "w-20 h-20",
-      stepTitle: "Cooldown",
+      stepTitle: "Governance 1",
       stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
     },
     {
@@ -43,28 +43,7 @@ export const OnboardingStep3Staking = () => {
       blockPosition: "top-[290px] left-[560px] w-[400px]",
       arrowPosition: "top-[275px] left-[470px] rotate-[-40deg]",
       arrowSize: "w-20 h-20",
-      stepTitle: "Current APR",
-      stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
-    }
-  ];
-
-  const STEPS_LIST_B = [
-    {
-      stepWrapperPosition: "top-0 left-0",
-      stepPosition: "top-[248px] left-[628px]",
-      blockPosition: "top-0 left-[196px] w-[400px]",
-      arrowPosition: "top-[164px] left-[590px] rotate-[180deg]",
-      arrowSize: "w-20 h-20",
-      stepTitle: "Pending rewards",
-      stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
-    },
-    {
-      stepWrapperPosition: "top-0 left-0",
-      stepPosition: "top-[290px] left-[916px]",
-      blockPosition: "top-[344px] left-[448px] w-[400px]",
-      arrowPosition: "top-[307px] left-[857px] rotate-[40deg] scale-x-[-1]",
-      arrowSize: "w-20 h-20",
-      stepTitle: "Actions dropdown",
+      stepTitle: "Governance 2",
       stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
     }
   ];
@@ -76,8 +55,8 @@ export const OnboardingStep3Staking = () => {
         <StepIntroduction 
           currentStep={currentStep}
           stepNumber={0}
-          stepTitle={"Staking"}
-          stepDescription={"Staking introduction step - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam."}
+          stepTitle={"Governance"}
+          stepDescription={"Governance introduction step - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam."}
         />
       ) : null }
     
@@ -88,7 +67,7 @@ export const OnboardingStep3Staking = () => {
 
         <div className="px-6 mx-auto lg:px-8">
           <main className="py-12">
-            <h2 className="text-3xl font-headings">0{currentSection + 1} — Staking</h2>
+            <h2 className="text-3xl font-headings">0{currentSection + 1} — Governance</h2>
             <div className="relative max-w-[1000px] mx-auto">
           
               {(currentStep >= 0) && (currentStep < 3) ? (
@@ -99,7 +78,7 @@ export const OnboardingStep3Staking = () => {
                         'filter blur transition duration-200 ease-in-out' : '', 
                         'mt-8 border border-gray-100 rounded-md shadow'
                       )}
-                    src="/assets/onboarding/staking-1.jpeg" alt="" />
+                    src="/assets/onboarding/governance-1.jpeg" alt="" />
                   
                   {STEPS_LIST_A.map((stepProps, i) => (
                     <Step
@@ -108,21 +87,6 @@ export const OnboardingStep3Staking = () => {
                       stepNumber={i + 1}
                       {...stepProps}
                       stepTotal={STEPS_LIST_A.length}
-                    />
-                  ))}
-                </>
-              ) : null }
-
-              {(currentStep >= 3) ? (
-                <>
-                  <img className="mt-8 border border-gray-100 rounded-md shadow" src="/assets/onboarding/staking-1.jpeg" alt="" />
-                  {STEPS_LIST_B.map((stepProps, i) => (
-                    <Step
-                      key={i + 1}
-                      currentStep={currentStep - 2}
-                      stepNumber={i + 1}
-                      {...stepProps}
-                      stepTotal={STEPS_LIST_B.length}
                     />
                   ))}
                 </>

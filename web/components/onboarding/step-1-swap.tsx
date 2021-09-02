@@ -80,7 +80,7 @@ export const OnboardingStep1Swap = () => {
         <OnboardingNav currentSection={currentSection} />
         <div className="px-6 mx-auto lg:px-8">
           <main className="py-12">
-            <h2 className="text-3xl font-headings">01 — Swap</h2>
+            <h2 className="text-3xl font-headings">0{currentSection + 1} — Swap</h2>
             <div className="relative max-w-[554px] mx-auto">
               <img className={(currentStep === 0) ? 'filter blur transition duration-200 ease-in-out' : ''} src="/assets/onboarding/swap.png" alt="" />
 

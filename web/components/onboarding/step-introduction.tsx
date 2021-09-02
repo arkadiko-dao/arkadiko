@@ -23,10 +23,10 @@ export const StepIntroduction: React.FC<StepIntroductionProps> = ({ currentStep,
         `absolute transform top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-800 min-w-[24rem] rounded-md transition duration-1000 ease-in-out delay-700`)}
       >
         <div className="relative p-6 mx-auto">
-          <h2 className="text-lg text-white font-headings">
+          <h1 className="text-2xl text-white font-headings">
             {stepTitle}
-          </h2>
-          <p className="mt-3 text-sm text-gray-300">
+          </h1>
+          <p className="mt-3 text-base text-gray-300">
             {stepDescription}
           </p>
         </div>

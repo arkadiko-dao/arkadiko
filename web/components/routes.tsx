@@ -5,6 +5,7 @@ import { Onboarding } from './onboarding/onboarding';
 import { OnboardingStep1Swap } from './onboarding/step-1-swap';
 import { OnboardingStep2Vaults } from './onboarding/step-2-vaults';
 import { OnboardingStep3Staking } from './onboarding/step-3-staking';
+import { OnboardingStep4Governance } from './onboarding/step-4-governance';
 import { Home } from './home';
 import { Swap } from './swap';
 import { Pool } from './pool';
@@ -33,6 +34,7 @@ export function Routes() {
       <Route exact path="/onboarding/step-1-swap" component={OnboardingStep1Swap} />
       <Route exact path="/onboarding/step-2-vaults" component={OnboardingStep2Vaults} />
       <Route exact path="/onboarding/step-3-staking" component={OnboardingStep3Staking} />
+      <Route exact path="/onboarding/step-4-governance" component={OnboardingStep4Governance} />
       <Route exact path="/vaults" component={Home} />
       <Route exact path="/swap" component={Swap} />
       <Route exact path="/pool" component={Pool} />
