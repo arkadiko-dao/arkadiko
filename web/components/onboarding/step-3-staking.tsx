@@ -86,8 +86,8 @@ export const OnboardingStep3Staking = () => {
           currentSection={currentSection} 
         />
 
-        <div className="px-6 mx-auto lg:px-8">
-          <main className="py-12">
+        <div className="px-6 mx-auto lg:px-8 sm:pb-12">
+          <main className="sm:pt-0 pt-12 pb-12">
             <h2 className="text-3xl font-headings">0{currentSection + 1} — Staking</h2>
             <div className="relative max-w-[1000px] mx-auto">
           

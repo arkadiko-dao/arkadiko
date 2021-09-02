@@ -14,7 +14,7 @@ export const OnboardingStep4Governance = () => {
   const currentSection = 3;
     
   const goToNextStep = () => {
-    if (currentStep !== 6) {
+    if (currentStep !== 8) {
       setCurrentStep(previousStep => previousStep + 1)
     } else {
       history.push("/")
@@ -30,22 +30,70 @@ export const OnboardingStep4Governance = () => {
   const STEPS_LIST_A = [
     {
       stepWrapperPosition: "top-0 left-0",
-      stepPosition: "top-[248px] left-[332px]",
-      blockPosition: "top-0 left-[-88px] w-[400px]",
-      arrowPosition: "top-[164px] left-[297px] rotate-[180deg]",
+      stepPosition: "top-[310px] left-[270px]",
+      blockPosition: "top-[60px] left-[-116px] w-[400px]",
+      arrowPosition: "top-[238px] left-[258px] rotate-[180deg]",
       arrowSize: "w-20 h-20",
-      stepTitle: "Governance 1",
+      stepTitle: "Proposal title",
       stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
     },
     {
       stepWrapperPosition: "top-0 left-0",
-      stepPosition: "top-[248px] left-[474px]",
-      blockPosition: "top-[290px] left-[560px] w-[400px]",
-      arrowPosition: "top-[275px] left-[470px] rotate-[-40deg]",
+      stepPosition: "top-[342px] left-[18px]",
+      blockPosition: "top-[368px] left-[82px] w-[400px]",
+      arrowPosition: "top-[360px] left-[16px] rotate-[-40deg]",
+      arrowSize: "w-16 h-16",
+      stepTitle: "Proposer's address",
+      stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+    },
+    {
+      stepWrapperPosition: "top-0 left-0",
+      stepPosition: "top-[310px] left-[947px]",
+      blockPosition: "top-[44px] left-[524px] w-[400px]",
+      arrowPosition: "top-[223px] left-[907px] rotate-[180deg]",
       arrowSize: "w-20 h-20",
-      stepTitle: "Governance 2",
+      stepTitle: "Proposal status",
+      stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+    },
+    {
+      stepWrapperPosition: "top-0 left-0",
+      stepPosition: "top-[336px] left-[737px]",
+      blockPosition: "top-[395px] left-[630px] w-[400px]",
+      arrowPosition: "top-[330px] left-[684px] rotate-[52deg]",
+      arrowSize: "w-16 h-16",
+      stepTitle: "Closing Block Height",
       stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
     }
+  ];
+
+  const STEPS_LIST_B = [
+    {
+      stepWrapperPosition: "top-0 left-0",
+      stepPosition: "top-[237px] left-[93px]",
+      blockPosition: "top-[-20px] left-[-116px] w-[400px]",
+      arrowPosition: "top-[164px] left-[78px] rotate-[180deg]",
+      arrowSize: "w-20 h-20",
+      stepTitle: "External link to discuss proposal",
+      stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+    },
+    {
+      stepWrapperPosition: "top-0 left-0",
+      stepPosition: "top-[395px] left-[474px]",
+      blockPosition: "top-[323px] left-[0px] w-[400px]",
+      arrowPosition: "top-[338px] left-[420px] rotate-[140deg]",
+      arrowSize: "w-16 h-16",
+      stepTitle: "Vote with DIKO or stDIKO",
+      stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+    },
+    {
+      stepWrapperPosition: "top-0 left-0",
+      stepPosition: "top-[310px] left-[947px]",
+      blockPosition: "top-[44px] left-[524px] w-[400px]",
+      arrowPosition: "top-[223px] left-[907px] rotate-[180deg]",
+      arrowSize: "w-20 h-20",
+      stepTitle: "Voting results",
+      stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+    },
   ];
 
 
@@ -65,12 +113,12 @@ export const OnboardingStep4Governance = () => {
           currentSection={currentSection} 
         />
 
-        <div className="px-6 mx-auto lg:px-8">
-          <main className="py-12">
+        <div className="px-6 mx-auto lg:px-8 sm:pb-12">
+          <main className="pt-12 pb-12 sm:pt-0">
             <h2 className="text-3xl font-headings">0{currentSection + 1} — Governance</h2>
             <div className="relative max-w-[1000px] mx-auto">
           
-              {(currentStep >= 0) && (currentStep < 3) ? (
+              {(currentStep >= 0) && (currentStep < 5) ? (
                 <>
                   <img 
                     className={
@@ -87,6 +135,21 @@ export const OnboardingStep4Governance = () => {
                       stepNumber={i + 1}
                       {...stepProps}
                       stepTotal={STEPS_LIST_A.length}
+                    />
+                  ))}
+                </>
+              ) : null }
+
+              {(currentStep >= 5) ? (
+                <>
+                  <img className="mt-8 border border-gray-100 rounded-md shadow" src="/assets/onboarding/governance-2.jpeg" alt="" />
+                  {STEPS_LIST_B.map((stepProps, i) => (
+                    <Step
+                      key={i + 1}
+                      currentStep={currentStep - 4}
+                      stepNumber={i + 1}
+                      {...stepProps}
+                      stepTotal={STEPS_LIST_B.length}
                     />
                   ))}
                 </>

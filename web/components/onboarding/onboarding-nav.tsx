@@ -161,10 +161,12 @@ export const OnboardingNav = (props) => {
         </nav>
       </div>
 
-      <RouterLink to="/" className="flex items-center justify-end p-4 text-base font-medium text-gray-700 sm:text-xs hover:text-gray-800 hover:underline">
-        Skip the onboarding
-        <ArrowNarrowRightIcon className="w-4 h-4 ml-2 text-gray-800" aria-hidden="true" />
-      </RouterLink>
+      <p className="text-right">
+        <RouterLink to="/" className="flex items-center justify-end p-4 text-base font-medium text-gray-700 sm:text-xs hover:text-gray-800 hover:underline">
+          Skip the onboarding
+          <ArrowNarrowRightIcon className="w-4 h-4 ml-2 text-gray-800" aria-hidden="true" />
+        </RouterLink>
+      </p>
     </>
   );
 };
