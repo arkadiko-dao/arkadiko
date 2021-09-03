@@ -147,6 +147,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                       type="checkbox"
                       className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-blue-600 checked:border-transparent focus:outline-none"
                       defaultChecked={coinAmounts['stack-pox']}
+                      checked={coinAmounts['stack-pox']}
                       onClick={() => togglePox()}
                     />
                     <span className="text-gray-900">I want my STX tokens stacked to earn yield</span>
@@ -156,6 +157,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                       type="checkbox"
                       className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-blue-600 checked:border-transparent focus:outline-none"
                       defaultChecked={coinAmounts['auto-payoff']}
+                      checked={coinAmounts['auto-payoff']}
                       onClick={() => toggleAutoPayoff()}
                     />
                     <span className="text-gray-900">I want my vault loan to be paid off automatically through the earned yield</span>
