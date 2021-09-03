@@ -52,7 +52,7 @@ export const OnboardingStep2Vaults = () => {
       arrowPosition: "top-[-138px] left-[650px] rotate-[180deg]",
       arrowSize: "w-20 h-20",
       stepTitle: "Choose new vault with collateral type",
-      stepDescription: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+      stepDescription: "Different collateral types have different risks, such as when you can get liquidated and how much interest (stability fees) you are paying on your minted amount.",
     },
   ];
 
@@ -60,11 +60,11 @@ export const OnboardingStep2Vaults = () => {
     {
       stepWrapperPosition: "top-0 left-0",
       stepPosition: "top-[280px] left-[24px]",
-      blockPosition: "top-[20px] left-[-200px] w-[346px]",
+      blockPosition: "top-0 left-[-200px] w-[346px]",
       arrowPosition: "top-[190px] left-[-8px] rotate-[168deg]",
       arrowSize: "w-20 h-20",
       stepTitle: "Choose STX collateral amount",
-      stepDescription: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+      stepDescription: "The more collateral you deposit, the more yield you will earn and the more USDA you will be able to borrow!",
     },
     {
       stepWrapperPosition: "top-0 left-0",
@@ -73,7 +73,7 @@ export const OnboardingStep2Vaults = () => {
       arrowPosition: "top-[430px] left-[12px] rotate-[-12deg]",
       arrowSize: "w-20 h-20",
       stepTitle: "Choose USDA to borrow against collateral",
-      stepDescription: "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
+      stepDescription: "The more you mint, the more you can ape! 😏",
     },
     {
       stepWrapperPosition: "bottom-0 right-0",
@@ -82,7 +82,7 @@ export const OnboardingStep2Vaults = () => {
       arrowPosition: "bottom-[312px] left-[-90px] rotate-[206deg]",
       arrowSize: "w-20 h-20",
       stepTitle: "Verify your collateralization ratio & liquidation price",
-      stepDescription: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+      stepDescription: "Make sure you are comfortable with the collateralization and liquidation prices. You can always return some USDA or deposit extra STX to make ratios healthier!",
     }
   ];
 
@@ -94,7 +94,7 @@ export const OnboardingStep2Vaults = () => {
       arrowPosition: "bottom-[72px] left-[40px] rotate-[110deg] scale-x-[-1]",
       arrowSize: "w-20 h-20", 
       stepTitle: "Select stacking and Auto-payoff ",
-      stepDescription: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+      stepDescription: "Indicate whether you would like your STX tokens to earn a yield and whether you want your yield to automatically pay off the USDA debt you are minting.",
     },
     {
       stepWrapperPosition: "bottom-0 right-0",
@@ -103,7 +103,7 @@ export const OnboardingStep2Vaults = () => {
       arrowPosition: "bottom-[24px] left-[-224px] rotate-[-116deg]",
       arrowSize: "w-20 h-20", 
       stepTitle: "Create Vault",
-      stepDescription: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+      stepDescription: "You're ready. Create that vault! 🚀",
     },
   ];
 
@@ -114,7 +114,7 @@ export const OnboardingStep2Vaults = () => {
           currentStep={currentStep}
           stepNumber={0}
           stepTitle={"Vaults"}
-          stepDescription={"Vaults introduction step - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam."}
+          stepDescription={"Vaults are the easiest way to mint some USDA, the Arkadiko stablecoin!"}
         />
       ) : null }
       
@@ -124,7 +124,7 @@ export const OnboardingStep2Vaults = () => {
         />
 
         <div className="px-6 mx-auto lg:px-8 sm:pb-12">
-          <main className="sm:pt-0 pt-12 pb-12">
+          <main className="pt-12 pb-12 sm:pt-0">
             <h2 className="text-3xl font-headings">0{currentSection + 1} — Vaults</h2>
             <div className="relative max-w-[1000px] mx-auto">
               {(currentStep >= 0 && currentStep < 2) ? (

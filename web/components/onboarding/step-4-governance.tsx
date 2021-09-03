@@ -35,7 +35,7 @@ export const OnboardingStep4Governance = () => {
       arrowPosition: "top-[238px] left-[258px] rotate-[180deg]",
       arrowSize: "w-20 h-20",
       stepTitle: "Proposal title",
-      stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+      stepDescription: "All running proposals will show up with their title clearly visible, indicating the change that a contributor wants to make.",
     },
     {
       stepWrapperPosition: "top-0 left-0",
@@ -44,16 +44,16 @@ export const OnboardingStep4Governance = () => {
       arrowPosition: "top-[360px] left-[16px] rotate-[-40deg]",
       arrowSize: "w-16 h-16",
       stepTitle: "Proposer's address",
-      stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+      stepDescription: "Indicates the on-chain STX address of the person or entity proposing a change",
     },
     {
       stepWrapperPosition: "top-0 left-0",
       stepPosition: "top-[310px] left-[947px]",
-      blockPosition: "top-[44px] left-[524px] w-[400px]",
+      blockPosition: "top-[60px] left-[524px] w-[400px]",
       arrowPosition: "top-[223px] left-[907px] rotate-[180deg]",
       arrowSize: "w-20 h-20",
       stepTitle: "Proposal status",
-      stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+      stepDescription: "Indicates whether the proposal is already open for voting or is still pending.",
     },
     {
       stepWrapperPosition: "top-0 left-0",
@@ -62,7 +62,7 @@ export const OnboardingStep4Governance = () => {
       arrowPosition: "top-[330px] left-[684px] rotate-[52deg]",
       arrowSize: "w-16 h-16",
       stepTitle: "Closing Block Height",
-      stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+      stepDescription: "Time on the Stacks blockchain runs in number of blocks. You will be able to vote on a proposal until the indicated block height is reached.",
     }
   ];
 
@@ -70,11 +70,11 @@ export const OnboardingStep4Governance = () => {
     {
       stepWrapperPosition: "top-0 left-0",
       stepPosition: "top-[237px] left-[93px]",
-      blockPosition: "top-[-20px] left-[-116px] w-[400px]",
+      blockPosition: "top-0 left-[-116px] w-[400px]",
       arrowPosition: "top-[164px] left-[78px] rotate-[180deg]",
       arrowSize: "w-20 h-20",
       stepTitle: "External link to discuss proposal",
-      stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+      stepDescription: "Follow in-depth discussion on this proposal on Discourse!",
     },
     {
       stepWrapperPosition: "top-0 left-0",
@@ -83,7 +83,7 @@ export const OnboardingStep4Governance = () => {
       arrowPosition: "top-[338px] left-[420px] rotate-[140deg]",
       arrowSize: "w-16 h-16",
       stepTitle: "Vote with DIKO or stDIKO",
-      stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+      stepDescription: "Use your tokens to show your support for proposals you believe in, or block proposals that might be detrimental!",
     },
     {
       stepWrapperPosition: "top-0 left-0",
@@ -92,7 +92,7 @@ export const OnboardingStep4Governance = () => {
       arrowPosition: "top-[223px] left-[907px] rotate-[180deg]",
       arrowSize: "w-20 h-20",
       stepTitle: "Voting results",
-      stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+      stepDescription: "This indicates whether or not a governance proposal will be adopted when the closing block height is reached",
     },
   ];
 
@@ -104,7 +104,7 @@ export const OnboardingStep4Governance = () => {
           currentStep={currentStep}
           stepNumber={0}
           stepTitle={"Governance"}
-          stepDescription={"Governance introduction step - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam."}
+          stepDescription={"Have your say in the future direction of your protocol by participating in Arkadiko Governance!"}
         />
       ) : null }
     

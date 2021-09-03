@@ -35,7 +35,7 @@ export const OnboardingStep3Staking = () => {
       arrowPosition: "top-[164px] left-[297px] rotate-[180deg]",
       arrowSize: "w-20 h-20",
       stepTitle: "Cooldown",
-      stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+      stepDescription: "A cooldown of 10 days applies when you are withdrawing your DIKO from the single-asset DIKO staking pool. This cooldown does not apply for LP token staking.",
     },
     {
       stepWrapperPosition: "top-0 left-0",
@@ -44,7 +44,7 @@ export const OnboardingStep3Staking = () => {
       arrowPosition: "top-[275px] left-[470px] rotate-[-40deg]",
       arrowSize: "w-20 h-20",
       stepTitle: "Current APR",
-      stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+      stepDescription: "The current APR indicates your returns on the amount you are currently staking.",
     }
   ];
 
@@ -56,7 +56,7 @@ export const OnboardingStep3Staking = () => {
       arrowPosition: "top-[164px] left-[590px] rotate-[180deg]",
       arrowSize: "w-20 h-20",
       stepTitle: "Pending rewards",
-      stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+      stepDescription: "The amount of tokens that will be sent to your wallet once you claim them or you withdraw from staking. The single-asset DIKO staking pool automatically compounds your rewards. The LP token pools require manual claims & compounding. ",
     },
     {
       stepWrapperPosition: "top-0 left-0",
@@ -65,7 +65,7 @@ export const OnboardingStep3Staking = () => {
       arrowPosition: "top-[307px] left-[857px] rotate-[40deg] scale-x-[-1]",
       arrowSize: "w-20 h-20",
       stepTitle: "Actions dropdown",
-      stepDescription: "Step description - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam.",
+      stepDescription: "Staking, unstaking and claiming rewards happens here!",
     }
   ];
 
@@ -77,7 +77,7 @@ export const OnboardingStep3Staking = () => {
           currentStep={currentStep}
           stepNumber={0}
           stepTitle={"Staking"}
-          stepDescription={"Staking introduction step - Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam sunt facilis aperiam."}
+          stepDescription={"Staking is the perfect way to earn extra DIKO and participate in liquidity mining!"}
         />
       ) : null }
     
@@ -87,7 +87,7 @@ export const OnboardingStep3Staking = () => {
         />
 
         <div className="px-6 mx-auto lg:px-8 sm:pb-12">
-          <main className="sm:pt-0 pt-12 pb-12">
+          <main className="pt-12 pb-12 sm:pt-0">
             <h2 className="text-3xl font-headings">0{currentSection + 1} — Staking</h2>
             <div className="relative max-w-[1000px] mx-auto">
           
