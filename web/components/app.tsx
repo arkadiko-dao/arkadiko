@@ -17,6 +17,7 @@ import { useLocation } from 'react-router-dom';
 import { TestnetModal } from './testnet-modal';
 import { initiateConnection } from '@common/websocket-tx-updater';
 import ScrollToTop from '@components/scroll-to-top';
+import { Redirect } from 'react-router-dom';
 
 export const getBalance = async (address: string) => {
   const client = getRPCClient();
@@ -50,6 +51,7 @@ export const App: React.FC = () => {
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const location = useLocation();
   const [showSidebar, setShowSidebar] = useState(false);
+  const [finishedOnboarding, setFinishedOnboarding] = useState(true);
 
   const appConfig = new AppConfig(['store_write', 'publish_data'], document.location.href);
   const userSession = new UserSession({ appConfig });
@@ -152,6 +154,9 @@ export const App: React.FC = () => {
 
       const getData = async () => {
         try {
+          const doneOnboarding = localStorage.getItem('arkadiko-onboarding');
+          setFinishedOnboarding(doneOnboarding === 'true');
+
           const address = resolveSTXAddress(userData);
           initiateConnection(address, setState);
           fetchBalance(address);
@@ -230,6 +235,9 @@ export const App: React.FC = () => {
                 </Tooltip>
               </div>
             ) : null }
+            {!finishedOnboarding ? (
+              <Redirect to={{ pathname: '/onboarding' }} />
+            ) : null}
             <Routes />
           </div>
         </AppContext.Provider>

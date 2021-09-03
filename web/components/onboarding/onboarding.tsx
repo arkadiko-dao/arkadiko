@@ -6,6 +6,8 @@ export const Onboarding = () => {
   const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
+    localStorage.setItem('arkadiko-onboarding', 'true');
+
     setTimeout(() => {
       setShowButton(true);
     }, 3000);
