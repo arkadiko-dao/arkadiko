@@ -41,7 +41,7 @@ export const OnboardingStep1Swap = () => {
       blockPosition: "top-[198px] left-[-8px] w-[400px]",
       arrowPosition: "top-[160px] left-[-96px] rotate-[-40deg]",
       arrowSize: "w-20 h-20",
-      stepTitle: "Choose token X amount",
+      stepTitle: "Choose token amount",
       stepDescription: "Type the amount of tokens you would like to swap. The approximate amount of tokens you will receive will be filled in automatically based on the current market price.",
     },
     {

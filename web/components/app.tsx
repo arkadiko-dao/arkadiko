@@ -151,11 +151,11 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (userSession.isUserSignedIn()) {
       const userData = userSession.loadUserData();
+      const doneOnboarding = localStorage.getItem('arkadiko-onboarding');
+      setFinishedOnboarding(doneOnboarding === 'true');
 
       const getData = async () => {
         try {
-          const doneOnboarding = localStorage.getItem('arkadiko-onboarding');
-          setFinishedOnboarding(doneOnboarding === 'true');
 
           const address = resolveSTXAddress(userData);
           initiateConnection(address, setState);
@@ -176,6 +176,9 @@ export const App: React.FC = () => {
       fetchBalance(resolveSTXAddress(userData));
       fetchCollateralTypes(resolveSTXAddress(userData));
       fetchStackingCycle();
+
+      const doneOnboarding = localStorage.getItem('arkadiko-onboarding');
+      setFinishedOnboarding(doneOnboarding === 'true');
       setState(prevState => ({ ...prevState, userData }));
     }
   };
@@ -190,6 +193,9 @@ export const App: React.FC = () => {
     userSession,
     finished: ({ userSession }) => {
       const userData = userSession.loadUserData();
+      const doneOnboarding = localStorage.getItem('arkadiko-onboarding');
+      setFinishedOnboarding(doneOnboarding === 'true');
+
       fetchBalance(resolveSTXAddress(userData));
       fetchCollateralTypes(resolveSTXAddress(userData));
       fetchStackingCycle();

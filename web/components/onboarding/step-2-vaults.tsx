@@ -52,7 +52,7 @@ export const OnboardingStep2Vaults = () => {
       arrowPosition: "top-[-138px] left-[650px] rotate-[180deg]",
       arrowSize: "w-20 h-20",
       stepTitle: "Choose new vault with collateral type",
-      stepDescription: "Different collateral types have different risks, such as when you can get liquidated and how much interest (stability fees) you are paying on your minted amount.",
+      stepDescription: "Different collateral types have different risks, such as when you can get liquidated and how much interest (stability fees) you are paying on your minted USDA.",
     },
   ];
 
