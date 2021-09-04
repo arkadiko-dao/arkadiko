@@ -14,7 +14,7 @@ export const OnboardingStep4Governance = () => {
   const currentSection = 3;
     
   const goToNextStep = () => {
-    if (currentStep !== 8) {
+    if (currentStep !== 7) {
       setCurrentStep(previousStep => previousStep + 1)
     } else {
       history.push("/onboarding/end")
