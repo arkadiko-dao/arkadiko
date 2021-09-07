@@ -33,14 +33,10 @@ Clarinet.test({
     let vaultAuction = new VaultAuction(chain, deployer);
 
     // Initialize price of STX to 100 cents in the oracle
-    // Q: should prices be coded in cents, or fraction of cents?
-    // Q: can the oracle be updated multiple times per block?
-    // Q: should this function emit an event, that can be watched?
     let result = oracleManager.updatePrice("STX", 100);
     result.expectOk().expectUint(100);
 
     // Provide a collateral of 5000000 STX, so 1000000 stx-a can be minted (5 * 0.77) / 2 = 1.925
-    // Q: why do we need to provide sender in the arguments?
     result = vaultManager.createVault(deployer, "STX-A", 5, 1);
     result.expectOk().expectUintWithDecimals(1);
 
@@ -49,7 +45,6 @@ Clarinet.test({
     result.expectOk().expectUint(35);
 
     // Notify liquidator
-    // Q: How are we supposed to guess the vault-id?
     result = vaultLiquidator.notifyRiskyVault(deployer, 1);
     result.expectOk().expectUint(5200);
 
