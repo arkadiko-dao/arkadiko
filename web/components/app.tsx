@@ -17,6 +17,7 @@ import { useLocation } from 'react-router-dom';
 import { TestnetModal } from './testnet-modal';
 import { initiateConnection } from '@common/websocket-tx-updater';
 import ScrollToTop from '@components/scroll-to-top';
+import { Redirect } from 'react-router-dom';
 
 export const getBalance = async (address: string) => {
   const client = getRPCClient();
@@ -50,6 +51,7 @@ export const App: React.FC = () => {
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const location = useLocation();
   const [showSidebar, setShowSidebar] = useState(false);
+  const [finishedOnboarding, setFinishedOnboarding] = useState(true);
 
   const appConfig = new AppConfig(['store_write', 'publish_data'], document.location.href);
   const userSession = new UserSession({ appConfig });
@@ -149,9 +151,12 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (userSession.isUserSignedIn()) {
       const userData = userSession.loadUserData();
+      const doneOnboarding = localStorage.getItem('arkadiko-onboarding');
+      setFinishedOnboarding(doneOnboarding === 'true');
 
       const getData = async () => {
         try {
+
           const address = resolveSTXAddress(userData);
           initiateConnection(address, setState);
           fetchBalance(address);
@@ -171,6 +176,9 @@ export const App: React.FC = () => {
       fetchBalance(resolveSTXAddress(userData));
       fetchCollateralTypes(resolveSTXAddress(userData));
       fetchStackingCycle();
+
+      const doneOnboarding = localStorage.getItem('arkadiko-onboarding');
+      setFinishedOnboarding(doneOnboarding === 'true');
       setState(prevState => ({ ...prevState, userData }));
     }
   };
@@ -185,6 +193,9 @@ export const App: React.FC = () => {
     userSession,
     finished: ({ userSession }) => {
       const userData = userSession.loadUserData();
+      const doneOnboarding = localStorage.getItem('arkadiko-onboarding');
+      setFinishedOnboarding(doneOnboarding === 'true');
+
       fetchBalance(resolveSTXAddress(userData));
       fetchCollateralTypes(resolveSTXAddress(userData));
       fetchStackingCycle();
@@ -201,8 +212,10 @@ export const App: React.FC = () => {
       <ThemeProvider theme={theme}>
         <AppContext.Provider value={[state, setState]}>
           <div className="flex flex-col font-sans bg-white min-height-screen">
-            <Header signOut={signOut} setShowSidebar={setShowSidebar} />
-            {state.userData ? (
+            {(location.pathname.indexOf('/onboarding') != 0) ? (
+              <Header signOut={signOut} setShowSidebar={setShowSidebar} />
+            ) : null }
+            {state.userData && (location.pathname.indexOf('/onboarding') != 0 ) ? (
               <SubHeader />
             ) : null}
             <TxStatus />
@@ -211,21 +224,26 @@ export const App: React.FC = () => {
             ) : null}
             <TestnetModal />
 
-            <div className="fixed bottom-0 right-0 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end" style={{zIndex: 99999}}>
-              <Tooltip label={`Got feedback?`}>
-                <div className="w-full max-w-sm overflow-hidden pointer-events-auto">
-                  <div className="p-4">
-                    <div className="flex items-start">
-                      <a href="mailto:philip@arkadiko.finance?subject=Feedback on Arkadiko Testnet" className="inline-flex items-center p-2 text-white bg-indigo-600 border border-transparent rounded-full shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                        </svg>
-                      </a>
+            {(location.pathname.indexOf('/onboarding') != 0) ? (
+              <div className="fixed bottom-0 right-0 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end" style={{zIndex: 99999}}>
+                <Tooltip label={`Got feedback?`}>
+                  <div className="w-full max-w-sm overflow-hidden pointer-events-auto">
+                    <div className="p-4">
+                      <div className="flex items-start">
+                        <a href="mailto:philip@arkadiko.finance?subject=Feedback on Arkadiko Testnet" className="inline-flex items-center p-2 text-white bg-indigo-600 border border-transparent rounded-full shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                          </svg>
+                        </a>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Tooltip>
-            </div>
+                </Tooltip>
+              </div>
+            ) : null }
+            {!finishedOnboarding ? (
+              <Redirect to={{ pathname: '/onboarding' }} />
+            ) : null}
             <Routes />
           </div>
         </AppContext.Provider>
