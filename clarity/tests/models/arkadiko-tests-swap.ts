@@ -43,6 +43,13 @@ class Swap {
     ], this.deployer.address);
   }
 
+  getTotalSupply(tokenX: string, tokenY: string) {
+    return this.chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-total-supply", [
+      types.principal(Utils.qualifiedName(tokenX)),
+      types.principal(Utils.qualifiedName(tokenY)),
+    ], this.deployer.address);
+  }
+
   createPair(user: Account, tokenX: string, tokenY: string, pool: string, name: string, balanceX: number, balanceY: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-swap-v1-1", "create-pair", [
