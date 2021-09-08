@@ -3,7 +3,11 @@ import { AppContext } from '@common/context';
 import { Landing } from './landing';
 import { Container } from './home';
 import { microToReadable } from '@common/vault-utils';
-import { AnchorMode, callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV } from '@stacks/transactions';
+import {
+  AnchorMode, callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV,
+  makeStandardSTXPostCondition, FungibleConditionCode, makeStandardFungiblePostCondition,
+  createAssetInfo
+} from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
@@ -170,6 +174,75 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
       tokenXParam = tokenYTrait;
       tokenYParam = tokenXTrait;
     }
+    const postConditions = [];
+    if (tokenXParam == 'wrapped-stx-token') {
+      postConditions.push(
+        makeStandardSTXPostCondition(
+          stxAddress || '',
+          FungibleConditionCode.Equal,
+          uintCV(tokenXAmount * 1000000).value
+        )
+      );
+      postConditions.push(
+        makeStandardFungiblePostCondition(
+          stxAddress || '',
+          FungibleConditionCode.Equal,
+          uintCV(tokenXAmount * 1000000).value,
+          createAssetInfo(
+            contractAddress,
+            tokenXParam,
+            'wstx'
+          )
+        )
+      )
+    } else {
+      postConditions.push(
+        makeStandardFungiblePostCondition(
+          stxAddress || '',
+          FungibleConditionCode.Equal,
+          uintCV(tokenXAmount * 1000000).value,
+          createAssetInfo(
+            contractAddress,
+            tokenXParam,
+            tokenX['name'].toLowerCase()
+          )
+        )
+      );
+    }
+    if (tokenYParam == 'wrapped-stx-token') {
+      postConditions.push(
+        makeStandardSTXPostCondition(
+          stxAddress || '',
+          FungibleConditionCode.Equal,
+          uintCV(tokenYAmount * 1000000).value
+        )
+      );
+      postConditions.push(
+        makeStandardFungiblePostCondition(
+          stxAddress || '',
+          FungibleConditionCode.Equal,
+          uintCV(tokenYAmount * 1000000).value,
+          createAssetInfo(
+            contractAddress,
+            tokenYParam,
+            'wstx'
+          )
+        )
+      )
+    } else {
+      postConditions.push(
+        makeStandardFungiblePostCondition(
+          stxAddress || '',
+          FungibleConditionCode.Equal,
+          uintCV(tokenYAmount * 1000000).value,
+          createAssetInfo(
+            contractAddress,
+            tokenYParam,
+            tokenY['name'].toLowerCase()
+          )
+        )
+      );
+    }
     await doContractCall({
       network,
       contractAddress,
@@ -183,8 +256,8 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         uintCV(tokenXAmount * 1000000),
         uintCV(tokenYAmount * 1000000)
       ],
+      postConditions,
       onFinish: data => {
-        console.log('finished collateralizing!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
       anchorMode: AnchorMode.Any

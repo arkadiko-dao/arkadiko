@@ -195,39 +195,6 @@ export const ManageVault = ({ match }) => {
     }
   }, [collateralType?.collateralToDebtRatio, price]);
 
-  const payStabilityFee = async () => {
-    const postConditions = [
-      makeStandardFungiblePostCondition(
-        senderAddress || '',
-        FungibleConditionCode.GreaterEqual,
-        new BN(stabilityFee),
-        createAssetInfo(
-          contractAddress,
-          "usda-token",
-          "usda"
-        )
-      )
-    ];
-
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'pay-stability-fee',
-      functionArgs: [
-        uintCV(match.params.id),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
-      ],
-      postConditions,
-      onFinish: data => {
-        console.log('finished paying stability fee!', data);
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
-      },
-      anchorMode: AnchorMode.Any
-    });
-  };
-
   const callBurn = async () => {
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
 
