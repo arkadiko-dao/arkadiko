@@ -114,7 +114,7 @@ export const Auctions: React.FC = () => {
       await asyncForEach(jsonLots.value.ids.value, async (e: object) => {
         const lot = tupleCV(e);
         const data = lot.data.value;
-        if (data['auction-id'].value !== 0) {
+        if (Number(data['auction-id'].value) !== 0) {
           isAuctionOpen = await auctionOpen(data['auction-id'].value);
           const lastBid = await getLastBid(data['auction-id'].value, data['lot-index'].value);
 
