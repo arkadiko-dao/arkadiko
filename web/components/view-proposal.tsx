@@ -102,7 +102,7 @@ export const ViewProposal = ({ match }) => {
         uintCV(match.params.id), uintCV(amountOfDikoVotes * 1000000)
       ],
       postConditions,
-      finished: data => {
+      onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowVoteDikoModal(false);
       },
@@ -135,7 +135,7 @@ export const ViewProposal = ({ match }) => {
         uintCV(match.params.id), uintCV(amountOfDikoVotes * 1000000)
       ],
       postConditions,
-      finished: data => {
+      onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowVoteDikoModal(false);
       },
@@ -173,7 +173,7 @@ export const ViewProposal = ({ match }) => {
         uintCV(match.params.id), uintCV(amountOfStdikoVotes * 1000000)
       ],
       postConditions,
-      finished: data => {
+      onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowVoteStdikoModal(false);
       },
@@ -206,7 +206,7 @@ export const ViewProposal = ({ match }) => {
         uintCV(match.params.id), uintCV(amountOfStdikoVotes * 1000000)
       ],
       postConditions,
-      finished: data => {
+      onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowVoteStdikoModal(false);
       },

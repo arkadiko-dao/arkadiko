@@ -41,7 +41,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1')
     ];
 
-    let postConditions = [];
+    let postConditions:any[] = [];
     if (coinAmounts['token-name'].toLowerCase() === 'stx') {
       postConditions = [
         makeStandardSTXPostCondition(
@@ -60,7 +60,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       functionName: 'collateralize-and-mint',
       functionArgs: args,
       postConditions,
-      finished: data => {
+      onFinish: data => {
         console.log('finished collateralizing!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'creating vault...' }));
       },

@@ -66,7 +66,7 @@ export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
         amount
       ],
       postConditions,
-      finished: data => {
+      onFinish: data => {
         console.log('finished broadcasting staking tx!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowStakeModal(false);

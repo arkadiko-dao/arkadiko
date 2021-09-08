@@ -253,7 +253,7 @@ export const Swap: React.FC = () => {
         uintCV(parseFloat(minimumReceived) * 1000000)
       ],
       postConditions,
-      finished: data => {
+      onFinish: data => {
         console.log('finished swap!', data);
         setState(prevState => ({
           ...prevState,

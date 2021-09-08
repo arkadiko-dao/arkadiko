@@ -168,7 +168,7 @@ export const Mint = () => {
       contractName: "arkadiko-vault-rewards-v1-1",
       functionName: "claim-pending-rewards",
       functionArgs: [],
-      finished: data => {
+      onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
       anchorMode: AnchorMode.Any

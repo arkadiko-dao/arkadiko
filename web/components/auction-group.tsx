@@ -74,7 +74,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeig
         uintCV(bidLotId),
         uintCV(bidAmount * 1000000)
       ],
-      finished: data => {
+      onFinish: data => {
         console.log('finished bidding!', data);
         setShowBidModal(false);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
