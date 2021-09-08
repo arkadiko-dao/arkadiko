@@ -93,7 +93,7 @@ export const Mint = () => {
       let arr:Array<VaultProps> = [];
 
       await asyncForEach(json.value.ids.value, async (vaultId:any) => {
-        if (vaultId.value !== 0) {
+        if (Number(vaultId.value) !== 0) {
           const vault = await fetchVault(vaultId.value);
           const data = vault.value;
           arr.push({
