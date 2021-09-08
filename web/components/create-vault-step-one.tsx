@@ -101,7 +101,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   const setMaxBalance = useCallback(() => {
     let balance = state.balance[tokenKey] / 1000000;
     if (tokenKey === 'stx') {
-      const fee = 0.0004;
+      const fee = 2;
       balance -= fee;
     }
     const balanceString = balance.toString();
