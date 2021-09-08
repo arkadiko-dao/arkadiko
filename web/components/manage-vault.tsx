@@ -219,7 +219,6 @@ export const ManageVault = ({ match }) => {
         uintCV(match.params.id),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
       ],
-      postConditionMode: 0x01,
       postConditions,
       finished: data => {
         console.log('finished paying stability fee!', data);
@@ -245,7 +244,6 @@ export const ManageVault = ({ match }) => {
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
       ],
-      postConditionMode: 0x01,
       finished: data => {
         console.log('finished burn!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
@@ -284,7 +282,6 @@ export const ManageVault = ({ match }) => {
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
       ],
-      postConditionMode: 0x01,
       finished: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setClosingVault(true);
@@ -337,7 +334,6 @@ export const ManageVault = ({ match }) => {
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
       ],
-      postConditionMode: 0x01,
       postConditions,
       finished: data => {
         console.log('finished deposit!', data);
@@ -400,7 +396,6 @@ export const ManageVault = ({ match }) => {
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1'),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1')
       ],
-      postConditionMode: 0x01,
       finished: data => {
         console.log('finished mint!', data, data.txId);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
@@ -418,7 +413,6 @@ export const ManageVault = ({ match }) => {
       contractName: "arkadiko-freddie-v1-1",
       functionName: 'toggle-stacking',
       functionArgs: [uintCV(match.params.id)],
-      postConditionMode: 0x01,
       finished: data => {
         console.log('finished toggling stacking!', data, data.txId);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
@@ -435,7 +429,6 @@ export const ManageVault = ({ match }) => {
       contractName: "arkadiko-freddie-v1-1",
       functionName: 'stack-collateral',
       functionArgs: [uintCV(match.params.id)],
-      postConditionMode: 0x01,
       finished: data => {
         console.log('finished stacking!', data, data.txId);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
@@ -462,7 +455,6 @@ export const ManageVault = ({ match }) => {
       contractName,
       functionName: 'enable-vault-withdrawals',
       functionArgs: [uintCV(match.params.id)],
-      postConditionMode: 0x01,
       finished: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
@@ -490,7 +482,6 @@ export const ManageVault = ({ match }) => {
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1'),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1')
       ],
-      postConditionMode: 0x01,
       finished: data => {
         console.log('finished withdraw!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
@@ -514,7 +505,6 @@ export const ManageVault = ({ match }) => {
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1'),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1')
       ],
-      postConditionMode: 0x01,
       finished: data => {
         console.log('finished notify risky reserve!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));

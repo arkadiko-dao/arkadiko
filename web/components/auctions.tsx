@@ -162,7 +162,6 @@ export const Auctions: React.FC = () => {
       functionArgs: [
         uintCV(state.balance['xstx'])
       ],
-      postConditionMode: 0x01,
       finished: data => {
         console.log('finished redeeming stx!', data);
         // setTxId(data.txId);

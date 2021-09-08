@@ -183,7 +183,6 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         uintCV(tokenXAmount * 1000000),
         uintCV(tokenYAmount * 1000000)
       ],
-      postConditionMode: 0x01,
       finished: data => {
         console.log('finished collateralizing!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));

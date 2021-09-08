@@ -59,7 +59,6 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       contractName: 'arkadiko-freddie-v1-1',
       functionName: 'collateralize-and-mint',
       functionArgs: args,
-      postConditionMode: 0x01,
       postConditions,
       finished: data => {
         console.log('finished collateralizing!', data);

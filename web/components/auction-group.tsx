@@ -74,7 +74,6 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeig
         uintCV(bidLotId),
         uintCV(bidAmount * 1000000)
       ],
-      postConditionMode: 0x01,
       finished: data => {
         console.log('finished bidding!', data);
         setShowBidModal(false);

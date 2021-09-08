@@ -46,7 +46,6 @@ export const UnstakeLpModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAm
         contractPrincipalCV(contractAddress, tokenContract),
         uintCV(Number(stakeAmount) * 1000000)
       ],
-      postConditionMode: 0x01,
       finished: data => {
         console.log('finished broadcasting unstaking tx!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));

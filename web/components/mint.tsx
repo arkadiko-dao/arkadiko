@@ -168,7 +168,6 @@ export const Mint = () => {
       contractName: "arkadiko-vault-rewards-v1-1",
       functionName: "claim-pending-rewards",
       functionArgs: [],
-      postConditionMode: 0x01,
       finished: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
