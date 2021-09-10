@@ -17,6 +17,7 @@ The submitted issue needs to meet a minimum severity standard of Low as describe
 - Up to 500.000 DIKO
 
 ## Rules
+- The scope of the Bug Bounty program spans smart contracts utilized in the Arkadiko ecosystem – the Clarity smart contracts in the contracts folder of the master branch of the arkadiko repo, excluding any contracts used in a test-only capacity (including test-only deployments)
 - You must be the first to report a non-public vulnerability
 - You must provide sufficient information to enable our engineers to reproduce and fix the vulnerability
 - You must not engage in any unlawful conduct when disclosing the bug, including through threats, demands, or any other coercive tactics
