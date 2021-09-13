@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
-import { Landing } from './landing';
+import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import { microToReadable } from '@common/vault-utils';
 import {
@@ -460,7 +460,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
           </main>
         </Container>
       ) : (
-        <Landing />
+        <Redirect to={{ pathname: '/' }} />
       )}
     </>
   );

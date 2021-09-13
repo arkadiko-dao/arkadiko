@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { AppContext } from '@common/context';
-import { Landing } from './landing';
 import { Mint } from './mint';
+import { Redirect } from 'react-router-dom';
 
 export interface ContainerProps {
 }
@@ -26,7 +26,7 @@ export const Home: React.FC = () => {
           <Mint />
         </Container>
       ) : ( 
-        <Landing />
+        <Redirect to={{ pathname: '/' }} />
       )}
     </>  
   );

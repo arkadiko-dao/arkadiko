@@ -10,7 +10,8 @@ import {
   contractPrincipalCV, uintCV,
   createAssetInfo, FungibleConditionCode,
   makeStandardFungiblePostCondition,
-  makeStandardSTXPostCondition
+  makeStandardSTXPostCondition,
+  makeContractFungiblePostCondition
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
@@ -20,6 +21,7 @@ import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { SwapSettings } from '@components/swap-settings';
 import { getBalance } from '@components/app';
 import { classNames } from '@common/class-names';
+import BN from 'bn.js';
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
@@ -118,7 +120,7 @@ export const Swap: React.FC = () => {
         setCurrentPrice(basePrice);
         setInverseDirection(false);
         setFoundPair(true);
-      } else if (json3['value']['value']['value'] === 201) {
+      } else if (Number(json3['value']['value']['value']) === 201) {
         const json4 = await fetchPair(tokenYContract, tokenXContract);
         if (json4['success']) {
           console.log('found pair...', json4);
@@ -207,35 +209,44 @@ export const Swap: React.FC = () => {
     let contractName = 'swap-x-for-y';
     let tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
     let tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
-    let postConditionTrait = tokenXTrait;
-    let postConditionName = tokenX['name'].toLowerCase();
     if (inverseDirection) {
       contractName = 'swap-y-for-x';
       let tmpTrait = tokenXTrait;
       tokenXTrait = tokenYTrait;
       tokenYTrait = tmpTrait;
     }
-
+    console.log(tokenYAmount);
     const amount = uintCV(tokenXAmount * 1000000);
     let postConditions = [];
     if (tokenX.name === 'STX') {
       postConditions = [
         makeStandardSTXPostCondition(
           stxAddress || '',
-          FungibleConditionCode.Equal,
-          amount.value
+          FungibleConditionCode.LessEqual,
+          uintCV(tokenXAmount * 1000000).value
         )
       ];
     } else {
       postConditions = [
         makeStandardFungiblePostCondition(
           stxAddress || '',
-          FungibleConditionCode.Equal,
-          amount.value,
+          FungibleConditionCode.LessEqual,
+          uintCV(tokenXAmount * 1000000 * 2).value,
           createAssetInfo(
             contractAddress,
-            postConditionTrait,
-            postConditionName
+            tokenXTrait,
+            tokenX['name'].toLowerCase()
+          )
+        ),
+        makeContractFungiblePostCondition(
+          contractAddress,
+          'arkadiko-swap-v1-1',
+          FungibleConditionCode.LessEqual,
+          uintCV(parseFloat(tokenYAmount) * 1000000 * 2).value,
+          createAssetInfo(
+            contractAddress,
+            tokenYTrait,
+            tokenY['name'].toLowerCase()
           )
         )
       ];
