@@ -563,6 +563,7 @@
       (err ERR-MAXIMUM-DEBT-REACHED)
     )
 
+    ;; save how much stability fees the person owes up to that point
     (try! (accrue-stability-fee vault-id coll-type))
     (try! (contract-call? reserve mint
         (get collateral-token vault)

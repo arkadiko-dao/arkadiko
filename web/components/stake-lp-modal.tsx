@@ -78,9 +78,8 @@ export const StakeLpModal = ({ showStakeModal, setShowStakeModal, apy, balanceNa
         contractPrincipalCV(contractAddress, tokenContract),
         amount
       ],
-      postConditionMode: 0x01,
       postConditions,
-      finished: data => {
+      onFinish: data => {
         console.log('finished broadcasting staking tx!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowStakeModal(false);

@@ -191,7 +191,7 @@ export const App: React.FC = () => {
     manifestPath: '/static/manifest.json',
     redirectTo: '/',
     userSession,
-    finished: ({ userSession }) => {
+    onFinish: ({ userSession }) => {
       const userData = userSession.loadUserData();
       const doneOnboarding = localStorage.getItem('arkadiko-onboarding');
       setFinishedOnboarding(doneOnboarding === 'true');
