@@ -1,7 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Auction } from './auction';
 import { Modal } from '@blockstack/ui';
-import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
+import {
+  AnchorMode, contractPrincipalCV, uintCV, makeStandardFungiblePostCondition,
+  createAssetInfo, FungibleConditionCode
+} from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { AppContext } from '@common/context';
@@ -60,6 +63,19 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeig
     }
     console.log('Adding with bid amount', bidAmount);
 
+    const postConditions = [
+      makeStandardFungiblePostCondition(
+        stxAddress || '',
+        FungibleConditionCode.Equal,
+        uintCV(bidAmount * 1000000).value,
+        createAssetInfo(
+          contractAddress,
+          'usda-token',
+          'usda'
+        )
+      )
+    ];
+
     await doContractCall({
       network,
       contractAddress,
@@ -74,8 +90,8 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeig
         uintCV(bidLotId),
         uintCV(bidAmount * 1000000)
       ],
-      postConditionMode: 0x01,
-      finished: data => {
+      postConditions,
+      onFinish: data => {
         console.log('finished bidding!', data);
         setShowBidModal(false);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));

@@ -30,8 +30,7 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collatera
         uintCV(id),
         uintCV(lotId)
       ],
-      postConditionMode: 0x01,
-      finished: data => {
+      onFinish: data => {
         console.log('finished redeeming lot!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },

@@ -2,7 +2,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Landing } from './landing';
 import { Container } from './home'
-import { AnchorMode, callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV } from '@stacks/transactions';
+import {
+  AnchorMode, callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV,
+  makeStandardFungiblePostCondition, FungibleConditionCode, createAssetInfo
+} from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
@@ -118,14 +121,28 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   };
 
   const removeLiquidity = async () => {
-    let swapTrait = tokenTraits[`${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`]['name'];
+    const pairName = `${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`;
+    let swapTrait = tokenTraits[pairName]['name'];
     let tokenXParam = tokenXTrait;
     let tokenYParam = tokenYTrait;
     if (inverseDirection) {
-      swapTrait = tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['name'];
+      swapTrait = tokenTraits[pairName]['name'];
       tokenXParam = tokenYTrait;
       tokenYParam = tokenXTrait;
     }
+
+    const postConditions = [
+      makeStandardFungiblePostCondition(
+        stxAddress || '',
+        FungibleConditionCode.LessEqual,
+        uintCV(balance / 100 * (percentageToRemove + 2)).value,
+        createAssetInfo(
+          contractAddress,
+          swapTrait,
+          tokenTraits[pairName]['swap']
+        )
+      )
+    ];
     await doContractCall({
       network,
       contractAddress,
@@ -138,8 +155,8 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         contractPrincipalCV(contractAddress, swapTrait),
         uintCV(percentageToRemove)
       ],
-      postConditionMode: 0x01,
-      finished: data => {
+      postConditions,
+      onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
       anchorMode: AnchorMode.Any

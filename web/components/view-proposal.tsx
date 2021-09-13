@@ -101,9 +101,8 @@ export const ViewProposal = ({ match }) => {
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
         uintCV(match.params.id), uintCV(amountOfDikoVotes * 1000000)
       ],
-      postConditionMode: 0x01,
       postConditions,
-      finished: data => {
+      onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowVoteDikoModal(false);
       },
@@ -135,9 +134,8 @@ export const ViewProposal = ({ match }) => {
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
         uintCV(match.params.id), uintCV(amountOfDikoVotes * 1000000)
       ],
-      postConditionMode: 0x01,
       postConditions,
-      finished: data => {
+      onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowVoteDikoModal(false);
       },
@@ -174,9 +172,8 @@ export const ViewProposal = ({ match }) => {
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
         uintCV(match.params.id), uintCV(amountOfStdikoVotes * 1000000)
       ],
-      postConditionMode: 0x01,
       postConditions,
-      finished: data => {
+      onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowVoteStdikoModal(false);
       },
@@ -208,9 +205,8 @@ export const ViewProposal = ({ match }) => {
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
         uintCV(match.params.id), uintCV(amountOfStdikoVotes * 1000000)
       ],
-      postConditionMode: 0x01,
       postConditions,
-      finished: data => {
+      onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowVoteStdikoModal(false);
       },
