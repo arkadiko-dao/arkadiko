@@ -21,7 +21,6 @@ import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { SwapSettings } from '@components/swap-settings';
 import { getBalance } from '@components/app';
 import { classNames } from '@common/class-names';
-import BN from 'bn.js';
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
