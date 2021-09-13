@@ -224,6 +224,27 @@ export const Swap: React.FC = () => {
           stxAddress || '',
           FungibleConditionCode.LessEqual,
           uintCV(tokenXAmount * 1000000).value
+        ),
+        makeStandardFungiblePostCondition(
+          stxAddress || '',
+          FungibleConditionCode.LessEqual,
+          uintCV((parseFloat(tokenXAmount) * 1.2 * 1000000).toFixed(0)).value,
+          createAssetInfo(
+            contractAddress,
+            'wrapped-stx-token',
+            'wstx'
+          )
+        ),
+        makeContractFungiblePostCondition(
+          contractAddress,
+          'arkadiko-swap-v1-1',
+          FungibleConditionCode.LessEqual,
+          uintCV((parseFloat(tokenYAmount) * 1.2 * 1000000).toFixed(0)).value,
+          createAssetInfo(
+            contractAddress,
+            tokenYTrait,
+            tokenY['name'].toLowerCase()
+          )
         )
       ];
     } else {
