@@ -21,7 +21,7 @@ const createPair = async () => {
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-swap-token-diko-usda'),
       tx.stringAsciiCV('DIKO-USDA'),
       tx.uintCV(new BN(500000000000)), // 500K DIKO
-      tx.uintCV(new BN(125000000000)) // 125K USDA
+      tx.uintCV(new BN(250000000000)) // 125K USDA
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     nonce: new BN(nonce),

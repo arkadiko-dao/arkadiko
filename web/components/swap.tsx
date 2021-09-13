@@ -118,7 +118,7 @@ export const Swap: React.FC = () => {
         setCurrentPrice(basePrice);
         setInverseDirection(false);
         setFoundPair(true);
-      } else if (json3['value']['value']['value'] === 201) {
+      } else if (Number(json3['value']['value']['value']) === 201) {
         const json4 = await fetchPair(tokenYContract, tokenXContract);
         if (json4['success']) {
           console.log('found pair...', json4);
