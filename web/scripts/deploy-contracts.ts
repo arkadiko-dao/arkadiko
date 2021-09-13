@@ -20,12 +20,13 @@ interface Contract {
 
 const contracts: Contract[] = [
   { name: 'sip-010-trait-ft-standard' },
-  { name: 'arkadiko-vault-trait-v1' },
-  { name: 'arkadiko-vault-manager-trait-v1' },
   { name: 'arkadiko-dao-token-trait-v1' },
   { name: 'arkadiko-oracle-trait-v1' },
-  { name: 'arkadiko-auction-engine-trait-v1' },
   { name: 'arkadiko-collateral-types-trait-v1' },
+  { name: 'arkadiko-vault-trait-v1' },
+  { name: 'arkadiko-vault-manager-trait-v1' },
+  { name: 'arkadiko-auction-engine-trait-v1' },
+  { name: 'arkadiko-stake-pool-diko-trait-v1' },
   { name: 'arkadiko-stake-registry-trait-v1' },
   { name: 'arkadiko-stake-pool-trait-v1' },
   { name: 'arkadiko-swap-trait-v1' },
@@ -52,7 +53,11 @@ const contracts: Contract[] = [
   { name: 'arkadiko-stx-reserve-v1-1' },
   { name: 'arkadiko-sip10-reserve-v1-1' },
 
+  { name: 'arkadiko-stacker-payer-v1-1' },
   { name: 'arkadiko-stacker-v1-1' },
+  { name: 'arkadiko-stacker-2-v1-1' },
+  { name: 'arkadiko-stacker-3-v1-1' },
+  { name: 'arkadiko-stacker-4-v1-1' },
   { name: 'arkadiko-freddie-v1-1' },
   { name: 'arkadiko-stake-registry-v1-1' },
   { name: 'arkadiko-stake-pool-diko-v1-1' },
@@ -63,7 +68,8 @@ const contracts: Contract[] = [
   { name: 'arkadiko-auction-engine-v1-1' },
   { name: 'arkadiko-liquidator-v1-1' },
 
-  { name: 'arkadiko-mock-stacker-v1-1' }
+  { name: 'arkadiko-mock-stacker-v1-1' },
+  { name: 'arkadiko-stake-pool-diko-slash-v1-1' }
 ];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');
@@ -104,7 +110,7 @@ const run = async () => {
 
     console.log(`Deploying ${contractId}`);
 
-    const source = await readFile(`../../clarity/contracts/${contract.file || contract.name}.clar`);
+    const source = await readFile(`../clarity/contracts/${contract.file || contract.name}.clar`);
     const tx = await makeContractDeploy({
       contractName: contract.name,
       codeBody: source.toString('utf8'),
