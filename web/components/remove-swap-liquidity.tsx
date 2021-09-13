@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
-import { Landing } from './landing';
+import { Redirect } from 'react-router-dom';
 import { Container } from './home'
 import {
   AnchorMode, callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV,
@@ -375,7 +375,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
           </main>
         </Container>
       ) : (
-        <Landing />
+        <Redirect to={{ pathname: '/' }} />
       )}
     </>
   );
