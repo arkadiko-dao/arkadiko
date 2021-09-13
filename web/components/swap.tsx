@@ -215,7 +215,7 @@ export const Swap: React.FC = () => {
       tokenXTrait = tokenYTrait;
       tokenYTrait = tmpTrait;
     }
-    console.log(tokenYAmount);
+
     const amount = uintCV(tokenXAmount * 1000000);
     let postConditions = [];
     if (tokenX.name === 'STX') {
@@ -231,7 +231,7 @@ export const Swap: React.FC = () => {
         makeStandardFungiblePostCondition(
           stxAddress || '',
           FungibleConditionCode.LessEqual,
-          uintCV(tokenXAmount * 1000000).value,
+          uintCV(parseFloat(tokenXAmount * 1000000).toFixed(0)).value,
           createAssetInfo(
             contractAddress,
             tokenXTrait,
@@ -242,7 +242,7 @@ export const Swap: React.FC = () => {
           contractAddress,
           'arkadiko-swap-v1-1',
           FungibleConditionCode.LessEqual,
-          uintCV(parseFloat(tokenYAmount) * 1000000).value,
+          uintCV((parseFloat(tokenYAmount) * 1.2 * 1000000).toFixed(0)).value,
           createAssetInfo(
             contractAddress,
             tokenYTrait,
@@ -261,7 +261,7 @@ export const Swap: React.FC = () => {
         contractPrincipalCV(contractAddress, tokenXTrait),
         contractPrincipalCV(contractAddress, tokenYTrait),
         amount,
-        uintCV(parseFloat(minimumReceived) * 1000000)
+        uintCV((parseFloat(minimumReceived) * 1000000).toFixed(0))
       ],
       postConditions,
       onFinish: data => {
