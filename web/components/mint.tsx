@@ -36,6 +36,7 @@ export const Mint = () => {
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [stxPrice, setStxPrice] = useState(0.0);
   const [dikoPrice, setDikoPrice] = useState(0.0);
+  const [xbtcPrice, setXbtcPrice] = useState(0.0);
   const [loadingVaults, setLoadingVaults] = useState(true);
   const [loadingStackingData, setLoadingStackingData] = useState(false);
   const [pendingVaultRewards, setPendingVaultRewards] = useState(0);
@@ -44,6 +45,9 @@ export const Mint = () => {
     const fetchPrices = async () => {
       let stxPrice = await getPrice('STX');
       setStxPrice(stxPrice);
+
+      let xbtcPrice = await getPrice('xBTC');
+      setXbtcPrice(xbtcPrice);
 
       let dikoPrice = await getDikoAmmPrice();
       setDikoPrice(dikoPrice);
@@ -374,6 +378,22 @@ export const Mint = () => {
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
                           ${dikoPrice}
+                        </td>
+                      </tr>
+
+                      <tr className="bg-white">
+                        <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 w-10 h-10">
+                              <img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900">xBTC</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm whitespace-nowrap">
+                          ${xbtcPrice / 100}
                         </td>
                       </tr>
 

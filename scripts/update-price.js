@@ -52,6 +52,20 @@ const setPrice = async (price) => {
   const transaction2 = await tx.makeContractCall(xTxOptions);
   const result2 = tx.broadcastTransaction(transaction2, network);
   await utils.processing(result2, transaction2.txid(), 0);
+
+  const xBtcTxOptions = {
+    contractAddress: CONTRACT_ADDRESS,
+    contractName: CONTRACT_NAME,
+    functionName: FUNCTION_NAME,
+    functionArgs: [tx.stringAsciiCV('xBTC'), tx.uintCV(new BN(46000 * 100))],
+    senderKey: process.env.STACKS_PRIVATE_KEY,
+    nonce: new BN(nonce + 2),
+    postConditionMode: 1,
+    network
+  };
+  const transaction3 = await tx.makeContractCall(xBtcTxOptions);
+  const result3 = tx.broadcastTransaction(transaction3, network);
+  await utils.processing(result3, transaction3.txid(), 0);
 };
 
 rp(requestOptions).then(async (response) => {

@@ -210,3 +210,4 @@
     (ok true)))
 
 (try! (initialize "Wrapped Bitcoin" "xBTC" u8 tx-sender))
+(try! (ft-mint? tokensoft-token u100000000000 'ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF)) ;; 100K xBTC
