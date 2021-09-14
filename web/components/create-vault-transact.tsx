@@ -9,8 +9,10 @@ import {
   falseCV,
   tupleCV,
   makeStandardSTXPostCondition,
+  makeStandardFungiblePostCondition,
   FungibleConditionCode,
-  AnchorMode
+  AnchorMode,
+  createAssetInfo
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ExplorerLink } from './explorer-link';
@@ -26,7 +28,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
 
   const callCollateralizeAndMint = async () => {
     const token = tokenTraits[coinAmounts['token-name'].toLowerCase()]['name'];
-    const amount = uintCV(parseInt(coinAmounts['amounts']['collateral'], 10) * 1000000)
+    const amount = uintCV(parseInt(coinAmounts['amounts']['collateral'], 10) * 1000000);
     const args = [
       amount,
       uintCV(parseInt(coinAmounts['amounts']['usda'], 10) * 1000000),
@@ -48,6 +50,19 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
           address || '',
           FungibleConditionCode.Equal,
           amount.value
+        )
+      ];
+    } else {
+      postConditions = [
+        makeStandardFungiblePostCondition(
+          address || '',
+          FungibleConditionCode.LessEqual,
+          uintCV(parseInt(coinAmounts['amounts']['collateral'], 10) * 100000000).value,
+          createAssetInfo(
+            contractAddress,
+            'tokensoft-token',
+            'xbtc'
+          )
         )
       ];
     }
