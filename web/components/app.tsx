@@ -23,6 +23,7 @@ export const getBalance = async (address: string) => {
   const url = `${client.url}/extended/v1/address/${address}/balances`;
   const response = await fetch(url, { credentials: 'omit' });
   const data = await response.json();
+  console.log(data.fungible_tokens);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
   const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
   const usdaBalance = data.fungible_tokens[`${contractAddress}.usda-token::usda`];
@@ -31,9 +32,11 @@ export const getBalance = async (address: string) => {
   const lpDikoUsdaBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-diko-usda::diko-usda`];
   const lpStxUsdaBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-usda::wstx-usda`];
   const lpStxDikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-diko::wstx-diko`];
+  const xbtcBalance = data.fungible_tokens[`${contractAddress}.tokensoft-token::xbtc`];
 
   return {
     stx: data.stx.balance,
+    xbtc: xbtcBalance ? xbtcBalance.balance : 0,
     usda: usdaBalance ? usdaBalance.balance : 0,
     diko: dikoBalance ? dikoBalance.balance : 0,
     xstx: xStxBalance ? xStxBalance.balance : 0,
@@ -70,6 +73,7 @@ export const App: React.FC = () => {
       ...prevState,
       balance: {
         usda: account.usda.toString(),
+        xbtc: account.xbtc.toString(),
         diko: account.diko.toString(),
         stx: account.stx.toString(),
         xstx: account.xstx.toString(),

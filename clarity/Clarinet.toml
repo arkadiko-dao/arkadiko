@@ -248,3 +248,13 @@ path = "contracts/arkadiko-diko-init.clar"
 [contracts.sip-010-trait-ft-standard]
 depends_on = []
 path = "contracts/sip-010-trait-ft-standard.clar"
+
+
+# Tokensoft xBTC
+[contracts.restricted-token-trait]
+path = "contracts/xbtc/restricted-token-trait.clar"
+depends_on = []
+
+[contracts.tokensoft-token]
+path = "contracts/xbtc/tokensoft-token.clar"
+depends_on = ["sip-010-trait-ft-standard", "restricted-token-trait"]

@@ -4,6 +4,7 @@ import { VaultProps } from '@components/vault';
 
 interface UserBalance {
   stx: number;
+  xbtc: number;
   usda: number;
   xstx: number;
   diko: number;
@@ -41,7 +42,7 @@ export interface AppState {
 }
 
 export const defaultBalance = () => {
-  return { stx: 0, usda: 0, diko: 0, xstx: 0, stdiko: 0, dikousda: 0, stxusda: 0 };
+  return { stx: 0, xbtc: 0, usda: 0, diko: 0, xstx: 0, stdiko: 0, dikousda: 0, stxusda: 0 };
 };
 
 export const defaultState = (): AppState => {
