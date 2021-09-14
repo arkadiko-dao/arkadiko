@@ -18,6 +18,8 @@ import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { classNames } from '@common/class-names';
+import { makeContractFungiblePostCondition } from '@blockstack/stacks-transactions';
+import BN from 'bn.js';
 
 export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -92,7 +94,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
       if (json3['success']) {
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
-        const basePrice = (balanceX / balanceY).toFixed(2);
+        const basePrice = (balanceY / balanceX).toFixed(2);
         setPooledX(balanceX / 1000000);
         setPooledY(balanceY / 1000000);
         setInverseDirection(false);
@@ -107,7 +109,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
           setTotalShare(totalShare);
         }
         setFoundPair(true);
-      } else if (json3['value']['value']['value'] === 201) {
+      } else if (Number(json3['value']['value']['value']) === 201) {
         const json4 = await fetchPair(tokenYTrait, tokenXTrait);
         if (json4['success']) {
           const balanceX = json4['value']['value']['value']['balance-x'].value;
@@ -169,10 +171,12 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
     let swapTrait = tokenTraits[`${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`]['name'];
     let tokenXParam = tokenXTrait;
     let tokenYParam = tokenYTrait;
+    let swapTokenName = tokenTraits[`${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`]['swap'];
     if (inverseDirection) {
       swapTrait = tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['name'];
       tokenXParam = tokenYTrait;
       tokenYParam = tokenXTrait;
+      swapTokenName = tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['swap'];
     }
     const postConditions = [];
     if (tokenXParam == 'wrapped-stx-token') {
@@ -243,6 +247,19 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         )
       );
     }
+    postConditions.push(
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-swap-v1-1',
+        FungibleConditionCode.LessEqual,
+        new BN(newTokens * 1000000, 10),
+        createAssetInfo(
+          contractAddress,
+          swapTrait,
+          swapTokenName.toLowerCase()
+        )
+      )
+    );
     await doContractCall({
       network,
       contractAddress,
@@ -412,7 +429,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                         </dt>
                         <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
                           {state.balance[tokenPair] > 0 ? (
-                            `${totalShare + newShare}% (${newShare}% new)`
+                            `${(totalShare + newShare).toFixed(2)}% (${newShare.toFixed(2)}% new)`
                           ) : `${newShare}%` }
                         </dd>
                       </div>
