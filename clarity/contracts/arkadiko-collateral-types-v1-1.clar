@@ -247,4 +247,22 @@
       stability-fee-apy: u700 ;; 700 basis points
     }
   )
+  (map-set collateral-types
+    { name: "xBTC-A" }
+    {
+      name: "Wrapped Bitcoin",
+      token: "xBTC",
+      token-type: "xBTC-A",
+      token-address: OWNER, ;; TODO
+      url: "https://www.tokensoft.io/",
+      total-debt: u0,
+      liquidation-ratio: u150,
+      collateral-to-debt-ratio: u250, ;; ~50% LTV
+      maximum-debt: u500000000000000, ;; 500M
+      liquidation-penalty: u1000, ;; 13% in basis points
+      stability-fee: u7610350076, ;; 4% / 365 days / (24*6) blocks = 0.00007610350076 fee per block
+      stability-fee-decimals: u16,
+      stability-fee-apy: u400 ;; 400 basis points
+    }
+  )
 )
