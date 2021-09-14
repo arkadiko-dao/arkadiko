@@ -27,11 +27,12 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   const callCollateralizeAndMint = async () => {
+    const decimals = coinAmounts['token-type'].toLowerCase().includes('stx') ? 1000000 : 100000000
     const token = tokenTraits[coinAmounts['token-name'].toLowerCase()]['name'];
-    const amount = uintCV(parseInt(coinAmounts['amounts']['collateral'], 10) * 1000000);
+    const amount = uintCV(parseInt(coinAmounts['amounts']['collateral'], 10) * decimals);
     const args = [
       amount,
-      uintCV(parseInt(coinAmounts['amounts']['usda'], 10) * 1000000),
+      uintCV(parseInt(coinAmounts['amounts']['usda'], 10) * decimals),
       tupleCV({
         'stack-pox': ((coinAmounts['stack-pox'] && coinAmounts['token-type'].toLowerCase().includes('stx')) ? trueCV() : falseCV()),
         'auto-payoff': ((coinAmounts['auto-payoff'] && coinAmounts['token-type'].toLowerCase().includes('stx')) ? trueCV() : falseCV())
@@ -57,7 +58,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
         makeStandardFungiblePostCondition(
           address || '',
           FungibleConditionCode.LessEqual,
-          uintCV(parseInt(coinAmounts['amounts']['collateral'], 10) * 100000000).value,
+          amount.value,
           createAssetInfo(
             contractAddress,
             'tokensoft-token',
