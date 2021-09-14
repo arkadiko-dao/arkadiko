@@ -8,7 +8,7 @@ import { classNames } from '@common/class-names';
 
 export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
   const collateralItems: Array<CollateralTypeProps> = [];
-  ['STX-A', 'STX-B', 'xBTC-A'].forEach((tokenString: string) => {
+  ['STX-A', 'STX-B', 'XBTC-A'].forEach((tokenString: string) => {
     let coll = types?.[tokenString];
     if (coll) {
       collateralItems.push({

@@ -42,6 +42,10 @@ export const tokenTraits = {
     'name': 'usda-token',
     'swap': 'usda-token'
   },
+  'xbtc': {
+    'name': 'tokensoft-token',
+    'swap': 'tokensoft-token'
+  },
   'dikousda': {
     'name': 'arkadiko-swap-token-diko-usda',
     'swap': 'arkv1dikousda'

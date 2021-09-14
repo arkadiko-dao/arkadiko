@@ -21,6 +21,12 @@ export const tokenList = [
     name: 'STX',
     nameInPair: 'wstx',
     logo: '/assets/tokens/stx.png',
+  },
+  {
+    id: 4,
+    name: 'Wrapped Bitcoin',
+    nameInPair: 'xbtc',
+    logo: '/assets/tokens/xbtc.png'
   }
 ];
 

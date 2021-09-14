@@ -31,8 +31,8 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       amount,
       uintCV(parseInt(coinAmounts['amounts']['usda'], 10) * 1000000),
       tupleCV({
-        'stack-pox': (coinAmounts['stack-pox'] ? trueCV() : falseCV()),
-        'auto-payoff': (coinAmounts['auto-payoff'] ? trueCV() : falseCV())
+        'stack-pox': ((coinAmounts['stack-pox'] && coinAmounts['token-type'].toLowerCase().includes('stx')) ? trueCV() : falseCV()),
+        'auto-payoff': ((coinAmounts['auto-payoff'] && coinAmounts['token-type'].toLowerCase().includes('stx')) ? trueCV() : falseCV())
       }),
       stringAsciiCV(coinAmounts['token-type'].toUpperCase()),
       contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', resolveReserveName(coinAmounts['token-name'].toUpperCase())),

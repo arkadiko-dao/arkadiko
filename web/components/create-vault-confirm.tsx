@@ -1,8 +1,11 @@
 import React from 'react';
 import { QuestionMarkCircleIcon, ExternalLinkIcon } from '@heroicons/react/solid';
-
+import { useLocation } from 'react-router-dom';
 
 export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => {
+  const search = useLocation().search;
+  const tokenName = new URLSearchParams(search).get('token') || 'STX';
+
   const togglePox = () => {
     const newState = !coinAmounts['stack-pox'];
     let autoPayoff = coinAmounts['auto-payoff'];
@@ -141,28 +144,30 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                   </p>
                 </div>
 
-                <div className="pt-4">
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-blue-600 checked:border-transparent focus:outline-none"
-                      defaultChecked={coinAmounts['stack-pox']}
-                      checked={coinAmounts['stack-pox']}
-                      onClick={() => togglePox()}
-                    />
-                    <span className="text-gray-900">I want my STX tokens stacked to earn yield</span>
-                  </label>
-                  <label className="flex items-center pt-3 space-x-3">
-                    <input
-                      type="checkbox"
-                      className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-blue-600 checked:border-transparent focus:outline-none"
-                      defaultChecked={coinAmounts['auto-payoff']}
-                      checked={coinAmounts['auto-payoff']}
-                      onClick={() => toggleAutoPayoff()}
-                    />
-                    <span className="text-gray-900">I want my vault loan to be paid off automatically through the earned yield</span>
-                  </label>
-                </div>
+                {tokenName.includes('STX') ? (
+                  <div className="pt-4">
+                    <label className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-blue-600 checked:border-transparent focus:outline-none"
+                        defaultChecked={coinAmounts['stack-pox']}
+                        checked={coinAmounts['stack-pox']}
+                        onClick={() => togglePox()}
+                      />
+                      <span className="text-gray-900">I want my STX tokens stacked to earn yield</span>
+                    </label>
+                    <label className="flex items-center pt-3 space-x-3">
+                      <input
+                        type="checkbox"
+                        className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-blue-600 checked:border-transparent focus:outline-none"
+                        defaultChecked={coinAmounts['auto-payoff']}
+                        checked={coinAmounts['auto-payoff']}
+                        onClick={() => toggleAutoPayoff()}
+                      />
+                      <span className="text-gray-900">I want my vault loan to be paid off automatically through the earned yield</span>
+                    </label>
+                  </div>
+                ) : null}
               </div>
               
               <div className="pt-5">
