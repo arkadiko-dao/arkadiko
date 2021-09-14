@@ -44,7 +44,7 @@ export const getBalance = async (address: string) => {
   };
 };
 
-const icon = 'https://www.arkadiko.finance/assets/logo.png';
+const icon = 'https://testnet.arkadiko.finance/assets/logo.png';
 export const App: React.FC = () => {
   const [state, setState] = React.useState<AppState>(defaultState());
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
