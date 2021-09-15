@@ -87,6 +87,14 @@
   )
 )
 
+;; Burn external
+(define-public (burn (amount uint) (sender principal))
+  (begin
+    (asserts! (is-eq tx-sender sender) (err ERR-NOT-AUTHORIZED))
+    (ft-burn? diko amount sender)
+  )
+)
+
 
 ;; Test environments
 (begin
