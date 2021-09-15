@@ -1,9 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
-import { Landing } from './landing';
+import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import { microToReadable } from '@common/vault-utils';
-import { AnchorMode, callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV } from '@stacks/transactions';
+import {
+  AnchorMode, callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV,
+  makeStandardSTXPostCondition, FungibleConditionCode, makeStandardFungiblePostCondition,
+  createAssetInfo
+} from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
@@ -14,6 +18,8 @@ import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { classNames } from '@common/class-names';
+import { makeContractFungiblePostCondition } from '@blockstack/stacks-transactions';
+import BN from 'bn.js';
 
 export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -88,7 +94,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
       if (json3['success']) {
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
-        const basePrice = (balanceX / balanceY).toFixed(2);
+        const basePrice = (balanceY / balanceX).toFixed(2);
         setPooledX(balanceX / 1000000);
         setPooledY(balanceY / 1000000);
         setInverseDirection(false);
@@ -103,7 +109,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
           setTotalShare(totalShare);
         }
         setFoundPair(true);
-      } else if (json3['value']['value']['value'] === 201) {
+      } else if (Number(json3['value']['value']['value']) === 201) {
         const json4 = await fetchPair(tokenYTrait, tokenXTrait);
         if (json4['success']) {
           const balanceX = json4['value']['value']['value']['balance-x'].value;
@@ -165,11 +171,95 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
     let swapTrait = tokenTraits[`${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`]['name'];
     let tokenXParam = tokenXTrait;
     let tokenYParam = tokenYTrait;
+    let swapTokenName = tokenTraits[`${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`]['swap'];
     if (inverseDirection) {
       swapTrait = tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['name'];
       tokenXParam = tokenYTrait;
       tokenYParam = tokenXTrait;
+      swapTokenName = tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['swap'];
     }
+    const postConditions = [];
+    if (tokenXParam == 'wrapped-stx-token') {
+      postConditions.push(
+        makeStandardSTXPostCondition(
+          stxAddress || '',
+          FungibleConditionCode.Equal,
+          uintCV(tokenXAmount * 1000000).value
+        )
+      );
+      postConditions.push(
+        makeStandardFungiblePostCondition(
+          stxAddress || '',
+          FungibleConditionCode.Equal,
+          uintCV(tokenXAmount * 1000000).value,
+          createAssetInfo(
+            contractAddress,
+            tokenXParam,
+            'wstx'
+          )
+        )
+      )
+    } else {
+      postConditions.push(
+        makeStandardFungiblePostCondition(
+          stxAddress || '',
+          FungibleConditionCode.Equal,
+          uintCV(tokenXAmount * 1000000).value,
+          createAssetInfo(
+            contractAddress,
+            tokenXParam,
+            tokenX['name'].toLowerCase()
+          )
+        )
+      );
+    }
+    if (tokenYParam == 'wrapped-stx-token') {
+      postConditions.push(
+        makeStandardSTXPostCondition(
+          stxAddress || '',
+          FungibleConditionCode.Equal,
+          uintCV(tokenYAmount * 1000000).value
+        )
+      );
+      postConditions.push(
+        makeStandardFungiblePostCondition(
+          stxAddress || '',
+          FungibleConditionCode.Equal,
+          uintCV(tokenYAmount * 1000000).value,
+          createAssetInfo(
+            contractAddress,
+            tokenYParam,
+            'wstx'
+          )
+        )
+      )
+    } else {
+      postConditions.push(
+        makeStandardFungiblePostCondition(
+          stxAddress || '',
+          FungibleConditionCode.Equal,
+          uintCV(tokenYAmount * 1000000).value,
+          createAssetInfo(
+            contractAddress,
+            tokenYParam,
+            tokenY['name'].toLowerCase()
+          )
+        )
+      );
+    }
+    postConditions.push(
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-swap-v1-1',
+        FungibleConditionCode.LessEqual,
+        new BN(newTokens * 1000000, 10),
+        createAssetInfo(
+          contractAddress,
+          swapTrait,
+          swapTokenName.toLowerCase()
+        )
+      )
+    );
     await doContractCall({
       network,
       contractAddress,
@@ -183,9 +273,8 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         uintCV(tokenXAmount * 1000000),
         uintCV(tokenYAmount * 1000000)
       ],
-      postConditionMode: 0x01,
-      finished: data => {
-        console.log('finished collateralizing!', data);
+      postConditions,
+      onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
       anchorMode: AnchorMode.Any
@@ -340,7 +429,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                         </dt>
                         <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
                           {state.balance[tokenPair] > 0 ? (
-                            `${totalShare + newShare}% (${newShare}% new)`
+                            `${(totalShare + newShare).toFixed(2)}% (${newShare.toFixed(2)}% new)`
                           ) : `${newShare}%` }
                         </dd>
                       </div>
@@ -388,7 +477,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
           </main>
         </Container>
       ) : (
-        <Landing />
+        <Redirect to={{ pathname: '/' }} />
       )}
     </>
   );

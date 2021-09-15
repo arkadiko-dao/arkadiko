@@ -294,8 +294,7 @@ export const Stake = () => {
       contractName: 'arkadiko-stake-pool-diko-v1-1',
       functionName: 'start-cooldown',
       functionArgs: [],
-      postConditionMode: 0x01,
-      finished: data => {
+      onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
       anchorMode: AnchorMode.Any
@@ -313,8 +312,7 @@ export const Stake = () => {
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-usda-v1-1')
       ],
-      postConditionMode: 0x01,
-      finished: data => {
+      onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
       anchorMode: AnchorMode.Any
@@ -332,8 +330,7 @@ export const Stake = () => {
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-usda-v1-1')
       ],
-      postConditionMode: 0x01,
-      finished: data => {
+      onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
       anchorMode: AnchorMode.Any
@@ -351,8 +348,7 @@ export const Stake = () => {
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-diko-v1-1')
       ],
-      postConditionMode: 0x01,
-      finished: data => {
+      onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
       anchorMode: AnchorMode.Any
@@ -372,8 +368,7 @@ export const Stake = () => {
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token')
       ],
-      postConditionMode: 0x01,
-      finished: data => {
+      onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
       anchorMode: AnchorMode.Any
@@ -393,8 +388,7 @@ export const Stake = () => {
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token')
       ],
-      postConditionMode: 0x01,
-      finished: data => {
+      onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
       anchorMode: AnchorMode.Any
@@ -414,8 +408,7 @@ export const Stake = () => {
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token')
       ],
-      postConditionMode: 0x01,
-      finished: data => {
+      onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
       anchorMode: AnchorMode.Any
@@ -571,7 +564,7 @@ export const Stake = () => {
                               auto-compounding
                             </td>
                             <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
-                              {state.balance['diko'] > 0 || (stakedAmount && canUnstake) ? (
+                              {state.balance['diko'] > 0 || state.balance['stdiko'] > 0 || (stakedAmount && canUnstake) ? (
                                 <StakeActions>
                                   {state.balance['diko'] > 0 ? (
                                     <Menu.Item>

@@ -1,8 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
-import { Landing } from './landing';
+import { Redirect } from 'react-router-dom';
 import { Container } from './home'
-import { AnchorMode, callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV } from '@stacks/transactions';
+import {
+  AnchorMode, callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV,
+  makeStandardFungiblePostCondition, FungibleConditionCode, createAssetInfo,
+  makeContractFungiblePostCondition
+} from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
@@ -14,6 +18,7 @@ import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { microToReadable } from '@common/vault-utils';
 import { classNames } from '@common/class-names';
+import BN from 'bn.js';
 
 export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -78,7 +83,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         setBalanceY((balanceX * poolPercentage) / (balanceY / balanceX));
         setTokenXToReceive(balanceX * poolPercentage * percentageToRemove / 100);
         setTokenYToReceive(balanceY * poolPercentage * percentageToRemove / 100);
-      } else if (json3['value']['value']['value'] === 201) {
+      } else if (Number(json3['value']['value']['value']) === 201) {
         const json4 = await fetchPair(tokenYTrait, tokenXTrait);
         if (json4['success']) {
           console.log(json4);
@@ -107,7 +112,6 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   const onInputChange = (event: { target: { name: any; value: any; }; }) => {
     const value = event.target.value;
 
-    console.log(value);
     removePercentage(value);
   };
 
@@ -118,14 +122,50 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   };
 
   const removeLiquidity = async () => {
-    let swapTrait = tokenTraits[`${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`]['name'];
+    const pairName = `${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`;
+    let swapTrait = tokenTraits[pairName]['name'];
     let tokenXParam = tokenXTrait;
     let tokenYParam = tokenYTrait;
     if (inverseDirection) {
-      swapTrait = tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['name'];
+      swapTrait = tokenTraits[pairName]['name'];
       tokenXParam = tokenYTrait;
       tokenYParam = tokenXTrait;
     }
+
+    const postConditions = [
+      makeStandardFungiblePostCondition(
+        stxAddress || '',
+        FungibleConditionCode.LessEqual,
+        uintCV(balance / 100 * (percentageToRemove + 5)).value,
+        createAssetInfo(
+          contractAddress,
+          swapTrait,
+          tokenTraits[pairName]['swap'].toLowerCase()
+        )
+      ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-swap-v1-1',
+        FungibleConditionCode.LessEqual,
+        new BN(tokenXToReceive * 2, 10),
+        createAssetInfo(
+          contractAddress,
+          tokenXParam,
+          tokenX['nameInPair'].toLowerCase()
+        )
+      ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-swap-v1-1',
+        FungibleConditionCode.LessEqual,
+        new BN(tokenYToReceive * 2, 10),
+        createAssetInfo(
+          contractAddress,
+          tokenYParam,
+          tokenY['nameInPair'].toLowerCase()
+        )
+      )
+    ];
     await doContractCall({
       network,
       contractAddress,
@@ -139,7 +179,8 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         uintCV(percentageToRemove)
       ],
       postConditionMode: 0x01,
-      finished: data => {
+      postConditions,
+      onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
       anchorMode: AnchorMode.Any
@@ -358,7 +399,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
           </main>
         </Container>
       ) : (
-        <Landing />
+        <Redirect to={{ pathname: '/' }} />
       )}
     </>
   );

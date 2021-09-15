@@ -195,42 +195,20 @@ export const ManageVault = ({ match }) => {
     }
   }, [collateralType?.collateralToDebtRatio, price]);
 
-  const payStabilityFee = async () => {
+  const callBurn = async () => {
+    const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
     const postConditions = [
       makeStandardFungiblePostCondition(
         senderAddress || '',
-        FungibleConditionCode.GreaterEqual,
-        new BN(stabilityFee),
+        FungibleConditionCode.Equal,
+        uintCV(parseFloat(usdToBurn) * 1000000).value,
         createAssetInfo(
           contractAddress,
-          "usda-token",
-          "usda"
+          'usda-token',
+          'usda'
         )
       )
     ];
-
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'pay-stability-fee',
-      functionArgs: [
-        uintCV(match.params.id),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
-      ],
-      postConditionMode: 0x01,
-      postConditions,
-      finished: data => {
-        console.log('finished paying stability fee!', data);
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
-      },
-      anchorMode: AnchorMode.Any
-    });
-  };
-
-  const callBurn = async () => {
-    const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
 
     await doContractCall({
       network,
@@ -245,8 +223,8 @@ export const ManageVault = ({ match }) => {
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
       ],
-      postConditionMode: 0x01,
-      finished: data => {
+      postConditions,
+      onFinish: data => {
         console.log('finished burn!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowBurnModal(false);
@@ -269,38 +247,13 @@ export const ManageVault = ({ match }) => {
     }
   }, [state.currentTxStatus]);
 
-  const closeVault = async () => {
-    const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
-
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: "arkadiko-freddie-v1-1",
-      functionName: 'close-vault',
-      functionArgs: [
-        uintCV(match.params.id),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
-      ],
-      postConditionMode: 0x01,
-      finished: data => {
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
-        setClosingVault(true);
-        setShowBurnModal(false);
-      },
-      anchorMode: AnchorMode.Any
-    });
-  };
-
   const addDeposit = async () => {
     if (!extraCollateralDeposit) {
       return;
     }
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
 
-    let postConditions = [];
+    let postConditions:any[] = [];
     if (vault['collateralToken'].toLowerCase() === 'stx') {
       postConditions = [
         makeStandardSTXPostCondition(
@@ -337,9 +290,8 @@ export const ManageVault = ({ match }) => {
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
       ],
-      postConditionMode: 0x01,
       postConditions,
-      finished: data => {
+      onFinish: data => {
         console.log('finished deposit!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowDepositModal(false);
@@ -400,8 +352,7 @@ export const ManageVault = ({ match }) => {
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1'),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1')
       ],
-      postConditionMode: 0x01,
-      finished: data => {
+      onFinish: data => {
         console.log('finished mint!', data, data.txId);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowMintModal(false);
@@ -418,8 +369,7 @@ export const ManageVault = ({ match }) => {
       contractName: "arkadiko-freddie-v1-1",
       functionName: 'toggle-stacking',
       functionArgs: [uintCV(match.params.id)],
-      postConditionMode: 0x01,
-      finished: data => {
+      onFinish: data => {
         console.log('finished toggling stacking!', data, data.txId);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
@@ -435,8 +385,7 @@ export const ManageVault = ({ match }) => {
       contractName: "arkadiko-freddie-v1-1",
       functionName: 'stack-collateral',
       functionArgs: [uintCV(match.params.id)],
-      postConditionMode: 0x01,
-      finished: data => {
+      onFinish: data => {
         console.log('finished stacking!', data, data.txId);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
@@ -462,8 +411,7 @@ export const ManageVault = ({ match }) => {
       contractName,
       functionName: 'enable-vault-withdrawals',
       functionArgs: [uintCV(match.params.id)],
-      postConditionMode: 0x01,
-      finished: data => {
+      onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
       anchorMode: AnchorMode.Any
@@ -490,34 +438,10 @@ export const ManageVault = ({ match }) => {
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1'),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1')
       ],
-      postConditionMode: 0x01,
-      finished: data => {
+      onFinish: data => {
         console.log('finished withdraw!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowWithdrawModal(false);
-      },
-      anchorMode: AnchorMode.Any
-    });
-  };
-
-  const callNotifyRisky = async () => {
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: 'arkadiko-liquidator-v1-1',
-      functionName: 'notify-risky-vault',
-      functionArgs: [
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-freddie-v1-1'),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-auction-engine-v1-1'),
-        uintCV(match.params.id),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1'),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1')
-      ],
-      postConditionMode: 0x01,
-      finished: data => {
-        console.log('finished notify risky reserve!', data);
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
       anchorMode: AnchorMode.Any
     });

@@ -45,7 +45,7 @@ export const getBalance = async (address: string) => {
   };
 };
 
-const icon = 'https://www.arkadiko.finance/assets/logo.png';
+const icon = 'https://testnet.arkadiko.finance/assets/logo.png';
 export const App: React.FC = () => {
   const [state, setState] = React.useState<AppState>(defaultState());
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -191,7 +191,7 @@ export const App: React.FC = () => {
     manifestPath: '/static/manifest.json',
     redirectTo: '/',
     userSession,
-    finished: ({ userSession }) => {
+    onFinish: ({ userSession }) => {
       const userData = userSession.loadUserData();
       const doneOnboarding = localStorage.getItem('arkadiko-onboarding');
       setFinishedOnboarding(doneOnboarding === 'true');
