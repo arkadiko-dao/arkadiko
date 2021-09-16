@@ -197,7 +197,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                 <span className="p-1.5 rounded-md inline-flex items-center">
                   <ArrowLeftIcon className="w-4 h-4 mr-2 text-gray-500 group-hover:text-gray-900" aria-hidden="true" />
                   <span className="text-gray-600 hover:text-gray-900">
-                    Back to Pool
+                    Back to pool overview
                   </span>
                 </span>
               </RouterLink>
