@@ -54,8 +54,8 @@ export const Pool: React.FC = () => {
               </div>
             </div>
 
-            <div>
-              <h3 className="text-base font-medium leading-6 font-headings">Your liquidity positions</h3>
+            <div className="p-3">
+              <h3 className="text-xl leading-6 font-headings">Your liquidity positions</h3>
               <dl className="mt-6 space-y-6 divide-y divide-gray-200">
                 <PoolPosition
                   key="token1"
