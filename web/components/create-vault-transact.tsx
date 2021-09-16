@@ -45,6 +45,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
     ];
 
     let postConditions:any[] = [];
+    let postConditionMode = 0x00;
     if (coinAmounts['token-name'].toLowerCase() === 'stx') {
       postConditions = [
         makeStandardSTXPostCondition(
@@ -54,6 +55,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
         )
       ];
     } else {
+      postConditionMode = 0x01;
       postConditions = [
         makeStandardFungiblePostCondition(
           address || '',
@@ -75,6 +77,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       contractName: 'arkadiko-freddie-v1-1',
       functionName: 'collateralize-and-mint',
       functionArgs: args,
+      postConditionMode,
       postConditions,
       onFinish: data => {
         console.log('finished collateralizing!', data);
