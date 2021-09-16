@@ -797,6 +797,7 @@
       (extra-debt (/ (* u30 penalty) u100)) ;; 30% of the penalty is extra debt.
       (discount (/ (* u70 liquidation-penalty) u10000)) ;; 70% of liquidation penalty is discount % for liquidator
     )
+      (print { type: "vault", action: "liquidated", data: vault })
       (if
         (and
           (is-eq "STX" (get collateral-token vault))

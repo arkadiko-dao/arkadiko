@@ -40,7 +40,7 @@
             (get extra-debt amounts)
             (get vault-debt amounts)
             (get discount amounts)
-          ) 
+          )
         )
         (ok STATUS-OK)
     )
