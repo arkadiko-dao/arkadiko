@@ -75,3 +75,8 @@
     (ft-burn? stdiko amount sender)
   )
 )
+
+;; Burn external - Should never happen
+(define-public (burn (amount uint) (sender principal))
+  (err ERR-NOT-AUTHORIZED)
+)
