@@ -73,6 +73,12 @@
     )
       (asserts! (is-eq (as-contract tx-sender) (contract-of registry-trait)) ERR-WRONG-REGISTRY)
       (asserts! (is-eq (get deactivated-block pool-info) u0) ERR-POOL-INACTIVE)
+
+      (print {
+        type: "pool",
+        action: "stake",
+        data: { registry: registry-trait, pool: pool-trait, token: token-trait, amount: amount, owner: tx-sender }
+      })
       (contract-call? pool-trait stake registry-trait token-trait tx-sender amount)
     )
   )
@@ -91,6 +97,12 @@
       (pool-info (unwrap! (map-get? pools-data-map { pool: pool }) ERR-POOL-EXIST))
     )
       (asserts! (is-eq (as-contract tx-sender) (contract-of registry-trait)) ERR-WRONG-REGISTRY)
+
+      (print {
+        type: "pool",
+        action: "unstake",
+        data: { registry: registry-trait, pool: pool-trait, token: token-trait, amount: amount, owner: tx-sender }
+      })
       (contract-call? pool-trait unstake registry-trait token-trait tx-sender amount)
     )
   )
@@ -139,6 +151,12 @@
     (claimed-rewards (unwrap-panic (contract-call? pool-trait claim-pending-rewards registry-trait tx-sender)))
   )
     (asserts! (is-eq (as-contract tx-sender) (contract-of registry-trait)) ERR-WRONG-REGISTRY)
+
+    (print {
+      type: "pool",
+      action: "stake-pending-rewards",
+      data: { registry: registry-trait, pool: pool-trait, owner: tx-sender }
+    })
     (contract-call? diko-pool-trait stake registry-trait diko-token-trait tx-sender claimed-rewards)
   )
 )

@@ -129,6 +129,18 @@
     (diko-init-balance (unwrap-panic (contract-call? .arkadiko-token get-balance .arkadiko-diko-init)))
     (supply (- (unwrap-panic (contract-call? .arkadiko-token get-total-supply)) diko-init-balance))
     (proposal-id (+ u1 (var-get proposal-count)))
+    (proposal {
+      id: proposal-id,
+      proposer: tx-sender,
+      title: title,
+      url: url,
+      is-open: true,
+      start-block-height: start-block-height,
+      end-block-height: (+ start-block-height u1440),
+      yes-votes: u0,
+      no-votes: u0,
+      contract-changes: contract-changes
+    })
   )
     (asserts!
       (and
@@ -151,21 +163,11 @@
     ;; Mutate
     (map-set proposals
       { id: proposal-id }
-      {
-        id: proposal-id,
-        proposer: tx-sender,
-        title: title,
-        url: url,
-        is-open: true,
-        start-block-height: start-block-height,
-        end-block-height: (+ start-block-height u1440),
-        yes-votes: u0,
-        no-votes: u0,
-        contract-changes: contract-changes
-      }
+      proposal
     )
     (var-set proposal-count proposal-id)
     (var-set proposal-ids (unwrap-panic (as-max-len? (append (var-get proposal-ids) proposal-id) u100)))
+    (print { type: "proposal", action: "created", data: proposal })
     (ok true)
   )
 )
@@ -236,6 +238,7 @@
       { proposal-id: proposal-id, member: tx-sender, token: (contract-of token) }
       { amount: (+ token-count amount) })
 
+    (print { type: "proposal", action: "voted", data: proposal })
     (ok STATUS-OK)
   )
 )
@@ -286,6 +289,7 @@
     (map-set tokens-by-member
       { proposal-id: proposal-id, member: tx-sender, token: (contract-of token) }
       { amount: (+ token-count amount) })
+    (print { type: "proposal", action: "voted", data: proposal })
     (ok STATUS-OK)
   )
 )
@@ -313,6 +317,7 @@
       (try! (execute-proposal proposal-id))
       false
     )
+    (print { type: "proposal", action: "ended", data: proposal })
     (ok STATUS-OK)
   )
 )
@@ -356,6 +361,7 @@
     (if (> (len contract-changes) u0)
       (begin
         (map execute-proposal-change-contract contract-changes)
+        (print { type: "proposal", action: "executed", data: proposal })
         (ok true)
       )
       (err ERR-NO-CONTRACT-CHANGES)

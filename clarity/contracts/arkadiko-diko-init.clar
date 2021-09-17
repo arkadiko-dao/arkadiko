@@ -65,6 +65,7 @@
     (asserts! (is-eq wallet tx-sender) ERR-NOT-AUTHORIZED)
     (asserts! (>= pending-tokens amount) ERR-TOO-MANY-TOKENS-CLAIMED)
     (var-set foundation-tokens-claimed (+ claimed-tokens amount))
+    (print { type: "foundation-token", action: "claimed", data: { amount: amount, recipient: wallet } })
     (as-contract (contract-call? .arkadiko-token transfer amount .arkadiko-diko-init wallet none))
   )
 )
