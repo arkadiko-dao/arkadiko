@@ -221,6 +221,7 @@
     (rewards-to-add (calculate-pending-rewards-for-pool registry-trait))
     (deactivated-block (unwrap-panic (contract-call? registry-trait get-pool-deactivated-block .arkadiko-stake-pool-diko-v1-1)))
   )
+    (asserts! (is-eq (contract-of registry-trait) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-WRONG-REGISTRY)
     ;; Rewards to add can be 0 if called multiple times in same block
     ;; Do not mint if pool deactivated
     (if (or (is-eq rewards-to-add u0) (not (is-eq deactivated-block u0)))
