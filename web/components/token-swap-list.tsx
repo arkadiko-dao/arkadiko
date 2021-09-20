@@ -9,24 +9,28 @@ export const tokenList = [
     name: 'USDA',
     nameInPair: 'usda',
     logo: '/assets/tokens/usda.png',
+    listed: true
   },
   {
     id: 2,
     name: 'DIKO',
     nameInPair: 'diko',
     logo: '/assets/tokens/diko.png',
+    listed: true
   },
   {
     id: 3,
     name: 'STX',
     nameInPair: 'wstx',
     logo: '/assets/tokens/stx.png',
+    listed: true
   },
   {
     id: 4,
     name: 'Wrapped Bitcoin',
     nameInPair: 'xbtc',
-    logo: '/assets/tokens/xbtc.png'
+    logo: '/assets/tokens/xbtc.png',
+    listed: false
   }
 ];
 
@@ -57,7 +61,7 @@ export const TokenSwapList: React.FC = ({ selected, setSelected }) => {
                 static
                 className="absolute z-20 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-56 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
               >
-                {tokenList.map((token) => (
+                {tokenList.filter(token => token.listed).map((token) => (
                   <Listbox.Option
                     key={token.id}
                     className={({ active }) =>
