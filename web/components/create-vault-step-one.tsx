@@ -18,6 +18,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   const tokenType = new URLSearchParams(search).get('type') || 'STX-A';
   const tokenName = new URLSearchParams(search).get('token') || 'STX';
   const tokenKey = tokenName.toLowerCase() as UserBalanceKeys;
+  const decimals = tokenKey === 'stx' ? 1000000 : 100000000
 
   const continueVault = () => {
     setCoinAmounts({
@@ -66,8 +67,8 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
     const error = ['You cannot collateralize more than your balance'];
     if (
       parseFloat(value) < 0 ||
-      (tokenKey === 'stx' && parseFloat(value) >= state.balance[tokenKey] / 1000000) ||
-      (parseFloat(value) > state.balance[tokenKey] / 1000000)
+      (tokenKey === 'stx' && parseFloat(value) >= state.balance[tokenKey] / decimals) ||
+      (parseFloat(value) > state.balance[tokenKey] / decimals)
     ) {
       if (!errors.includes(error[0])) {
         setErrors(errors.concat(error));
@@ -103,7 +104,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   );
 
   const setMaxBalance = useCallback(() => {
-    let balance = state.balance[tokenKey] / 1000000;
+    let balance = state.balance[tokenKey] / decimals;
     if (tokenKey === 'stx') {
       const fee = 2;
       balance -= fee;
@@ -210,7 +211,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
 
                         <div className="mt-4">
                           <InputAmount
-                            balance={state.balance[tokenKey] / 1000000}
+                            balance={state.balance[tokenKey] / decimals}
                             token={tokenName}
                             inputName="collateral"
                             inputId="collateralAmount"
