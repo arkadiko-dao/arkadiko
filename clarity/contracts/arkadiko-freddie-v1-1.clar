@@ -325,7 +325,7 @@
     (asserts! (>= ratio (get collateral-to-debt-ratio collateral-type-object)) (err ERR-INSUFFICIENT-COLLATERAL))
     (asserts!
       (<=
-        (get total-debt collateral-type-object)
+        (+ debt (get total-debt collateral-type-object))
         (get maximum-debt collateral-type-object)
       )
       (err ERR-MAXIMUM-DEBT-REACHED)
@@ -556,8 +556,8 @@
     (asserts! (>= ratio (get collateral-to-debt-ratio collateral-type)) (err ERR-INSUFFICIENT-COLLATERAL))
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts!
-      (<
-        (get total-debt collateral-type)
+      (<=
+        (+ extra-debt (get total-debt collateral-type))
         (get maximum-debt collateral-type)
       )
       (err ERR-MAXIMUM-DEBT-REACHED)
