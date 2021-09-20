@@ -63,7 +63,7 @@
     ;; token should be a trait e.g. 'SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.arkadiko-token
     (match (contract-call? token transfer ucollateral-amount sender (as-contract tx-sender) none)
       success (ok debt)
-      error (err ERR-TRANSFER-FAILED)
+      error (err error)
     )
   )
 )
