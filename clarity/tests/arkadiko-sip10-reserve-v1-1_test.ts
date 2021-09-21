@@ -153,33 +153,149 @@ Clarinet.test({
     let vaultManager = new VaultManager(chain, deployer);
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
     let vaultAuction = new VaultAuction(chain, deployer);
-
-    // 40k
+    let governance = new Governance(chain, deployer);
+ 
+    // Update xBTC and STX price
     let result = oracleManager.updatePrice("xBTC", 4000000);
     result.expectOk().expectUint(4000000);
+    result = oracleManager.updatePrice("STX", 200);
+    result.expectOk().expectUint(200);
+    result = oracleManager.updatePrice("DIKO", 200);
+    result.expectOk().expectUint(200);
 
-    // Create vault
-    result = vaultManager.createVault(deployer, "XBTC-A", 1, 10000, false, false, 'arkadiko-sip10-reserve-v1-1', 'tokensoft-token');
-    result.expectOk().expectUintWithDecimals(10000);
+    // Add other collateral types through governance
+    let contractChange1 = Governance.contractChange("collateral-types", Utils.qualifiedName('arkadiko-collateral-types-tv1-1'), false, false);
+    result = governance.createProposal(
+      wallet_1, 
+      4, 
+      "New collateral types",
+      "https://discuss.arkadiko.finance/new-collateral-types",
+      [contractChange1]
+    );
+    result.expectOk().expectBool(true);
+
+    // Vote for wallet_1
+    result = governance.voteForProposal(wallet_1, 1, 10);
+    result.expectOk().expectUint(3200);
+
+    // Advance
+    chain.mineEmptyBlock(1500);
+
+    // End proposal
+    result = governance.endProposal(1);
+    result.expectOk().expectUint(3200);
+
+    // Create vault with xBTC
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
+        types.uint(0.1 * 1000000), 
+        types.uint(1000 * 1000000),
+        types.tuple({
+          'stack-pox': types.bool(false),
+          'auto-payoff': types.bool(false)
+        }),
+        types.ascii("XBTC-A"),
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('tokensoft-token')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(1000);
 
     // 10k
     result = oracleManager.updatePrice("xBTC", 1000000);
     result.expectOk().expectUint(1000000);
 
     // Notify liquidator
-    result = vaultLiquidator.notifyRiskyVault(deployer, 1);
-    result.expectOk().expectUint(5200);
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidator-v1-1", "notify-risky-vault", [
+        types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-auction-engine-v1-1')),
+        types.uint(1),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
+      ], deployer.address),
+    ]);
+    block.receipts[0].result.expectOk().expectUint(5200);
 
-    let call = await vaultAuction.getAuctions();
-    let auctions:any = call.result.expectOk().expectList().map((e: String) => e.expectTuple());
-    auctions[0]["vault-id"].expectUint(0);
-    auctions[1]["vault-id"].expectUint(1);
+    // Check if auction open
+    let call = await vaultAuction.getAuctionOpen(1, wallet_1);
+    call.result.expectOk().expectBool(true);
+ 
+    // Make bids to close auction
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
+        types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1')),
+        types.uint(1),
+        types.uint(0),
+        types.uint(1000 * 1000000)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
 
-    call = await vaultAuction.getAuctionOpen(0, wallet_1);
-    call.result.expectOk().expectBool(false);
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
+        types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1')),
+        types.uint(1),
+        types.uint(1),
+        types.uint(1000 * 1000000)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
 
     call = await vaultAuction.getAuctionOpen(1, wallet_1);
-    call.result.expectOk().expectBool(true);
+    call.result.expectOk().expectBool(false);
+
+    // Wrong token
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "withdraw-leftover-collateral", [
+        types.uint(1),
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1'))
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(415);
+
+    // Wrong collateral type
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "withdraw-leftover-collateral", [
+        types.uint(1),
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('tokensoft-token')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1'))
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(4401);
+
+    // TODO: this should work but it crashes
+    // block = chain.mineBlock([
+    //   Tx.contractCall("arkadiko-freddie-v1-1", "withdraw-leftover-collateral", [
+    //     types.uint(1),
+    //     types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+    //     types.principal(Utils.qualifiedName('tokensoft-token')),
+    //     types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1'))
+    //   ], deployer.address)
+    // ]);
+    // block.receipts[0].result.expectErr().expectUint(4401);
+  
+    // Wrong token
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "redeem-lot-collateral", [
+        types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1')),
+        types.uint(1),
+        types.uint(0)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(212);
   },
 });
 
@@ -252,10 +368,7 @@ Clarinet.test({
     
     let governance = new Governance(chain, deployer);
     let oracleManager = new OracleManager(chain, deployer);
-    let vaultManager = new VaultManager(chain, deployer);
-    let vaultLiquidator = new VaultLiquidator(chain, deployer);
-    let vaultAuction = new VaultAuction(chain, deployer);
-
+ 
     // Update xBTC and STX price
     let result = oracleManager.updatePrice("xBTC", 4000000);
     result.expectOk().expectUint(4000000);
@@ -302,7 +415,7 @@ Clarinet.test({
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectUintWithDecimals(1);;
+    block.receipts[0].result.expectOk().expectUintWithDecimals(1);
 
     // Create vault with DIKO
     block = chain.mineBlock([
