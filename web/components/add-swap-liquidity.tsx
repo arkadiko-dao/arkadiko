@@ -478,7 +478,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                       <CashIcon className="w-6 h-6 text-indigo-500" aria-hidden="true" />
                     </span>
                     <p className="ml-4 text-sm text-gray-500">
-                      By adding liquidity, you will earn 0.3% on trades for this pool, proportional to your share of liquidity. Earned fees are added back to the pool and claimable by removing liquidity.
+                      By adding liquidity, you will earn 0.25% on trades for this pool, proportional to your share of liquidity. Earned fees are added back to the pool and claimable by removing liquidity.
                     </p>
                   </div>
                 </form>
