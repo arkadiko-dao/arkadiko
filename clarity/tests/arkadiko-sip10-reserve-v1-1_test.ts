@@ -240,7 +240,7 @@ Clarinet.test({
     result.expectErr().expectUint(112);
 
     result = vaultManager.closeVault(deployer, 1, 'arkadiko-sip10-reserve-v1-1', 'arkadiko-token');
-    result.expectErr().expectUint(92);
+    result.expectErr().expectUint(415);
   },
 });
 
@@ -358,5 +358,25 @@ Clarinet.test({
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(415);
+
+    // close vault
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "close-vault", [
+        types.uint(1),
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1'))
+      ], deployer.address),
+    ]);
+    block.receipts[0].result.expectErr().expectUint(415);
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "close-vault", [
+        types.uint(1),
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('tokensoft-token')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1'))
+      ], deployer.address),
+    ]);
+    block.receipts[0].result.expectErr().expectUint(4401);
   },
 });
