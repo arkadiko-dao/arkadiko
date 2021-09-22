@@ -133,6 +133,7 @@
 (define-public (mint-token (token <dao-token-trait>) (amount uint) (recipient principal))
   (begin
     (asserts! (is-eq (get-contract-can-mint-by-qualified-name contract-caller) true) (err ERR-NOT-AUTHORIZED))
+    (print { type: "token", action: "minted", data: { amount: amount, recipient: recipient } })
     (contract-call? token mint-for-dao amount recipient)
   )
 )
@@ -141,6 +142,7 @@
 (define-public (burn-token (token <dao-token-trait>) (amount uint) (recipient principal))
   (begin
     (asserts! (is-eq (get-contract-can-burn-by-qualified-name contract-caller) true) (err ERR-NOT-AUTHORIZED))
+    (print { type: "token", action: "burned", data: { amount: amount, recipient: recipient } })
     (contract-call? token burn-for-dao amount recipient)
   )
 )

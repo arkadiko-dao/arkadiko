@@ -20,24 +20,26 @@ interface Contract {
 
 const contracts: Contract[] = [
   { name: 'sip-010-trait-ft-standard' },
-  { name: 'arkadiko-dao-token-trait-v1' },
   { name: 'arkadiko-oracle-trait-v1' },
-  { name: 'arkadiko-collateral-types-trait-v1' },
   { name: 'arkadiko-vault-trait-v1' },
+
+  { name: 'arkadiko-dao-token-trait-v1' },
+  { name: 'arkadiko-collateral-types-trait-v1' },
   { name: 'arkadiko-vault-manager-trait-v1' },
   { name: 'arkadiko-auction-engine-trait-v1' },
-  { name: 'arkadiko-stake-pool-diko-trait-v1' },
+
   { name: 'arkadiko-stake-registry-trait-v1' },
   { name: 'arkadiko-stake-pool-trait-v1' },
+  { name: 'arkadiko-stake-pool-diko-trait-v1' },
   { name: 'arkadiko-swap-trait-v1' },
 
-  { name: 'stdiko-token' },
   { name: 'arkadiko-collateral-types-v1-1' },
   { name: 'arkadiko-oracle-v1-1' },
   { name: 'arkadiko-token' },
-  { name: 'wrapped-stx-token' },
   { name: 'arkadiko-dao' },
-  { name: 'arkadiko-governance-v1-1' },
+
+  { name: 'wrapped-stx-token' },
+  { name: 'stdiko-token' },
   { name: 'arkadiko-diko-guardian-v1-1' },
   { name: 'arkadiko-swap-v1-1' },
   { name: 'arkadiko-diko-init' },
@@ -65,6 +67,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-stake-pool-wstx-usda-v1-1' },
   { name: 'arkadiko-stake-pool-wstx-diko-v1-1' },
 
+  { name: 'arkadiko-governance-v1-1' },
   { name: 'arkadiko-auction-engine-v1-1' },
   { name: 'arkadiko-liquidator-v1-1' },
 
@@ -120,9 +123,14 @@ const run = async () => {
     });
 
     const result = await rpcClient.broadcastTX(tx.serialize());
+
     if (result.ok) {
       index += 1;
-      txResults.push((await result.text()).replace(/"/g, ''));
+      
+      const txId = (await result.text()).replace(/"/g, '');
+      console.log(`${rpcClient.url}/extended/v1/tx/${txId}`);
+      
+      txResults.push(txId);
     } else {
       const errorMsg = await result.text();
       throw new Error(errorMsg);

@@ -11,7 +11,7 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { tokenTraits } from '@common/vault-utils';
-import { InformationCircleIcon, PlusCircleIcon, MinusCircleIcon } from '@heroicons/react/solid';
+import { InformationCircleIcon, PlusCircleIcon, MinusCircleIcon, ArrowLeftIcon } from '@heroicons/react/solid';
 import { ArrowDownIcon } from '@heroicons/react/outline';
 import { tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
@@ -192,11 +192,21 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
       {state.userData ? (
         <Container>
           <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
+            <p className="w-full max-w-lg">
+              <RouterLink className="" to={`/pool`} exact>
+                <span className="p-1.5 rounded-md inline-flex items-center">
+                  <ArrowLeftIcon className="w-4 h-4 mr-2 text-gray-500 group-hover:text-gray-900" aria-hidden="true" />
+                  <span className="text-gray-600 hover:text-gray-900">
+                    Back to pool overview
+                  </span>
+                </span>
+              </RouterLink>
+            </p>
             <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow">
               <div className="flex flex-col p-4">
                 <div className="flex justify-between mb-4">
                   <div>
-                    <h2 className="text-lg font-medium leading-6 text-gray-900 font-headings">
+                    <h2 className="text-xl font-medium leading-6 text-gray-900 font-headings">
                       Liquidity
                     </h2>
                     <p className="inline-flex items-center mt-1 text-sm text-gray-600">

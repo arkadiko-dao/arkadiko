@@ -38,7 +38,7 @@ async function getNonce(address) {
 
 function resolveUrl() {
   if (env === 'mocknet') {
-    return 'http://localhost:3999';
+    return `http://localhost:${process.env.LOCAL_STACKS_API_PORT}`;
   } else if (env === 'testnet') {
     return 'https://stacks-node-api.testnet.stacks.co';
   } else if (env === 'regtest') {
