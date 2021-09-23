@@ -117,12 +117,12 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
               </p>
               <div className="mt-6">
                 <InputAmount
-                  balance={microToReadable(state.balance['stdiko']).toLocaleString()}
-                  token="stDIKO"
+                  balance={microToReadable(stakedAmount).toLocaleString()}
+                  token="DIKO"
                   inputName="unstakeDiko"
                   inputId="unstakeAmount"
                   inputValue={stakeAmount}
-                  inputLabel="Unstack DIKO"
+                  inputLabel="Unstake DIKO"
                   onInputChange={onInputStakeChange}
                   onClickMax={unstakeMaxAmount}
                 />
