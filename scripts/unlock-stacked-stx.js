@@ -7,7 +7,7 @@ const network = utils.resolveNetwork();
 async function getLastVaultId() {
   const lastVaultTx = await tx.callReadOnlyFunction({
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "freddie",
+    contractName: "arkadiko-vault-data-v1-1",
     functionName: "get-last-vault-id",
     functionArgs: [],
     senderAddress: CONTRACT_ADDRESS,
@@ -20,7 +20,7 @@ async function getLastVaultId() {
 async function getVaultById(vaultId) {
   const vaultTx = await tx.callReadOnlyFunction({
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "freddie",
+    contractName: "arkadiko-vault-data-v1-1",
     functionName: "get-vault-by-id",
     functionArgs: [tx.uintCV(vaultId)],
     senderAddress: CONTRACT_ADDRESS,
@@ -33,7 +33,7 @@ async function getVaultById(vaultId) {
 async function unlockVault(vaultId) {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "freddie",
+    contractName: "arkadiko-freddie-v1-1",
     functionName: "release-stacked-stx",
     functionArgs: [tx.uintCV(vaultId)],
     senderKey: process.env.STACKS_PRIVATE_KEY,
