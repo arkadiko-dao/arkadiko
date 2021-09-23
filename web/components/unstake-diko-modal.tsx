@@ -59,7 +59,7 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
   };
 
   const unstakeMaxAmount = () => {
-    setStakeAmount(state.balance['stdiko'] / 1000000);
+    setStakeAmount(stakedAmount / 1000000);
   };
 
   const onInputStakeChange = (event:any) => {
