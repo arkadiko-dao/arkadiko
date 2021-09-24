@@ -174,7 +174,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
     let swapTokenName = tokenTraits[`${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`]['swap'];
     let tokenXName = tokenX['name'].toLowerCase();
     let tokenYName = tokenY['name'].toLowerCase();
-    console.log(tokenXParam, tokenYParam, swapTokenName);
+    console.log(contractAddress, tokenXParam, tokenYParam, swapTokenName);
     if (inverseDirection) {
       console.log('inverse baby');
       swapTrait = tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['name'];
