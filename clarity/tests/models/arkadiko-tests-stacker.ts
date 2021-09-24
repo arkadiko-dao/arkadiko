@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.16.0/index.ts";
+} from "https://deno.land/x/clarinet@v0.13.0/index.ts";
 
 import * as Utils from './arkadiko-tests-utils.ts';
 
@@ -32,7 +32,7 @@ class Stacker {
   initiateStacking(startBlock: number, lockPeriod: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
-        types.tuple({ 'version': '0x01', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
+        types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
         types.uint(startBlock), // start block height
         types.uint(lockPeriod) // cycle lock period
       ], this.deployer.address)
