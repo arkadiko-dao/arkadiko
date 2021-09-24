@@ -355,10 +355,10 @@ Clarinet.test({
     call.result.expectOk().expectUint(0); 
 
     // have not reached minimum to stack
-    // u18 is the PoX error ERR_STACKING_INVALID_AMOUNT
+    // u11 is the PoX error ERR_STACKING_THRESHOLD_NOT_MET
     // see https://explorer.stacks.co/txid/0x41356e380d164c5233dd9388799a5508aae929ee1a7e6ea0c18f5359ce7b8c33?chain=mainnet
     let result = stacker.initiateStacking(1, 1);
-    result.expectErr().expectUint(18);
+    result.expectErr().expectUint(11);
   }
 });
 
