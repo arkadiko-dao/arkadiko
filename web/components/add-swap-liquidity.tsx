@@ -211,8 +211,8 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
       postConditions.push(
         makeStandardFungiblePostCondition(
           stxAddress || '',
-          FungibleConditionCode.Equal,
-          uintCV(tokenXAmount * 1000000).value,
+          FungibleConditionCode.LessEqual,
+          uintCV(parseInt(tokenXAmount * 1.2 * 1000000, 10)).value,
           createAssetInfo(
             contractAddress,
             tokenXParam,
@@ -246,8 +246,8 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
       postConditions.push(
         makeStandardFungiblePostCondition(
           stxAddress || '',
-          FungibleConditionCode.Equal,
-          uintCV(tokenYAmount * 1000000).value,
+          FungibleConditionCode.LessEqual,
+          uintCV(parseInt(tokenYAmount * 1.2 * 1000000, 10)).value,
           createAssetInfo(
             contractAddress,
             tokenYParam,
