@@ -172,11 +172,18 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
     let tokenXParam = tokenXTrait;
     let tokenYParam = tokenYTrait;
     let swapTokenName = tokenTraits[`${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`]['swap'];
+    let tokenXName = tokenX['name'].toLowerCase();
+    let tokenYName = tokenY['name'].toLowerCase();
+    console.log(tokenXParam, tokenYParam, swapTokenName);
     if (inverseDirection) {
+      console.log('inverse baby');
       swapTrait = tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['name'];
       tokenXParam = tokenYTrait;
       tokenYParam = tokenXTrait;
       swapTokenName = tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['swap'];
+      tokenXName = tokenY['name'].toLowerCase();
+      tokenYName = tokenX['name'].toLowerCase();
+      console.log(tokenXParam, tokenYParam, swapTokenName, tokenXName, tokenYName);
     }
     const postConditions = [];
     if (tokenXParam == 'wrapped-stx-token') {
@@ -200,6 +207,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         )
       )
     } else {
+      console.log(tokenXParam, tokenXName);
       postConditions.push(
         makeStandardFungiblePostCondition(
           stxAddress || '',
@@ -208,7 +216,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
           createAssetInfo(
             contractAddress,
             tokenXParam,
-            tokenX['name'].toLowerCase()
+            tokenXName
           )
         )
       );
@@ -234,6 +242,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         )
       )
     } else {
+      console.log(tokenYParam, tokenYName);
       postConditions.push(
         makeStandardFungiblePostCondition(
           stxAddress || '',
@@ -242,24 +251,24 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
           createAssetInfo(
             contractAddress,
             tokenYParam,
-            tokenY['name'].toLowerCase()
+            tokenYName
           )
         )
       );
     }
-    postConditions.push(
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-swap-v1-1',
-        FungibleConditionCode.LessEqual,
-        new BN(newTokens * 1000000, 10),
-        createAssetInfo(
-          contractAddress,
-          swapTrait,
-          swapTokenName.toLowerCase()
-        )
-      )
-    );
+    // postConditions.push(
+    //   makeContractFungiblePostCondition(
+    //     contractAddress,
+    //     'arkadiko-swap-v1-1',
+    //     FungibleConditionCode.LessEqual,
+    //     new BN(newTokens * 1000000, 10),
+    //     createAssetInfo(
+    //       contractAddress,
+    //       swapTrait,
+    //       swapTokenName.toLowerCase()
+    //     )
+    //   )
+    // );
     await doContractCall({
       network,
       contractAddress,
