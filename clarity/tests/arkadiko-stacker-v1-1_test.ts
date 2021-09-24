@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.13.0/index.ts";
+} from "https://deno.land/x/clarinet@v0.16.0/index.ts";
 
 import { 
   Swap,
@@ -46,6 +46,11 @@ Clarinet.test({
     oracleManager.updatePrice("STX", 400);
     vaultManager.createVault(deployer, "STX-A", 1000000, 1000);
     vaultManager.createVault(wallet_1, "STX-A", 60000, 400);
+
+    
+
+    let test:any = chain.callReadOnlyFn("ST000000000000000000002AMW42H.pox", "get-stacking-minimum", [], deployer.address);
+    console.log("TEST: ", test);
 
     // Total STX to stack
     let call:any = stxReserve.getTokensToStack("stacker");
