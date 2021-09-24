@@ -44,7 +44,7 @@ Clarinet.test({
 
     // Set price, create 2 vaults
     oracleManager.updatePrice("STX", 400);
-    vaultManager.createVault(deployer, "STX-A", 1000000, 1000);
+    vaultManager.createVault(deployer, "STX-A", 21000000, 1000);
     vaultManager.createVault(wallet_1, "STX-A", 60000, 400);
 
     
@@ -54,7 +54,7 @@ Clarinet.test({
 
     // Total STX to stack
     let call:any = stxReserve.getTokensToStack("stacker");
-    call.result.expectOk().expectUintWithDecimals(1060000); 
+    call.result.expectOk().expectUintWithDecimals(21060000); 
 
     // Turn off stacking for vault 2
     let result = vaultManager.toggleStacking(wallet_1, 2);
@@ -62,11 +62,11 @@ Clarinet.test({
 
     // Initiate stacking
     result = stacker.initiateStacking(10, 1);
-    result.expectOk().expectUintWithDecimals(1000000);
+    result.expectOk().expectUintWithDecimals(21000000);
 
     // only 1M STX stacked since wallet 1 revoked stacking on their vault before stacking initiated
     call = stacker.getStxBalance();
-    call.result.expectUintWithDecimals(1000000);
+    call.result.expectUintWithDecimals(21000000);
 
     call = stacker.getStackingUnlockHeight();
     call.result.expectOk().expectUint(300);
