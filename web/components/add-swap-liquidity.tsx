@@ -18,8 +18,6 @@ import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { classNames } from '@common/class-names';
-import { makeContractFungiblePostCondition } from '@blockstack/stacks-transactions';
-import BN from 'bn.js';
 
 export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -174,16 +172,13 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
     let swapTokenName = tokenTraits[`${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`]['swap'];
     let tokenXName = tokenX['name'].toLowerCase();
     let tokenYName = tokenY['name'].toLowerCase();
-    console.log(contractAddress, tokenXParam, tokenYParam, swapTokenName);
     if (inverseDirection) {
-      console.log('inverse baby');
       swapTrait = tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['name'];
       tokenXParam = tokenYTrait;
       tokenYParam = tokenXTrait;
       swapTokenName = tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['swap'];
       tokenXName = tokenY['name'].toLowerCase();
       tokenYName = tokenX['name'].toLowerCase();
-      console.log(tokenXParam, tokenYParam, swapTokenName, tokenXName, tokenYName);
     }
     const postConditions = [];
     if (tokenXParam == 'wrapped-stx-token') {
@@ -207,7 +202,6 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         )
       )
     } else {
-      console.log(tokenXParam, tokenXName);
       postConditions.push(
         makeStandardFungiblePostCondition(
           stxAddress || '',
@@ -242,7 +236,6 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         )
       )
     } else {
-      console.log(tokenYParam, tokenYName);
       postConditions.push(
         makeStandardFungiblePostCondition(
           stxAddress || '',
@@ -256,6 +249,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         )
       );
     }
+    // TODO: do we need this PC?
     // postConditions.push(
     //   makeContractFungiblePostCondition(
     //     contractAddress,
