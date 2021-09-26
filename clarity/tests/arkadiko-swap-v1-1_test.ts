@@ -214,6 +214,32 @@ Clarinet.test({
   },
 });
 
+Clarinet.test({
+  name: "swap: try to change position with wrong swap token",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    
+    let swap = new Swap(chain, deployer);
+
+    // Create pair
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
+    result.expectOk().expectBool(true);
+
+    // Create pair
+    result = swap.createPair(deployer, "wrapped-stx-token", usdaTokenAddress, "arkadiko-swap-token-wstx-usda", "wSTX-USDA", 1, 1);
+    result.expectOk().expectBool(true);
+
+    // Add to position
+    result = swap.addToPosition(deployer, dikoTokenAddress, usdaTokenAddress, "arkadiko-swap-token-wstx-usda", 5, 1);
+    result.expectErr().expectUint(204);
+
+    // Remove from position
+    result = swap.reducePosition(deployer, dikoTokenAddress, usdaTokenAddress, "arkadiko-swap-token-wstx-usda", 100);
+    result.expectErr().expectUint(204);
+
+  },
+});
+
 
 // ---------------------------------------------------------
 // Fees

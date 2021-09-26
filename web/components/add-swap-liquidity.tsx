@@ -12,14 +12,12 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { tokenTraits } from '@common/vault-utils';
-import { InformationCircleIcon, PlusCircleIcon, MinusCircleIcon } from '@heroicons/react/solid';
+import { InformationCircleIcon, PlusCircleIcon, MinusCircleIcon, ArrowLeftIcon } from '@heroicons/react/solid';
 import { CashIcon, PlusIcon } from '@heroicons/react/outline';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { classNames } from '@common/class-names';
-import { makeContractFungiblePostCondition } from '@blockstack/stacks-transactions';
-import BN from 'bn.js';
 
 export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -172,11 +170,15 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
     let tokenXParam = tokenXTrait;
     let tokenYParam = tokenYTrait;
     let swapTokenName = tokenTraits[`${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`]['swap'];
+    let tokenXName = tokenX['name'].toLowerCase();
+    let tokenYName = tokenY['name'].toLowerCase();
     if (inverseDirection) {
       swapTrait = tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['name'];
       tokenXParam = tokenYTrait;
       tokenYParam = tokenXTrait;
       swapTokenName = tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['swap'];
+      tokenXName = tokenY['name'].toLowerCase();
+      tokenYName = tokenX['name'].toLowerCase();
     }
     const postConditions = [];
     if (tokenXParam == 'wrapped-stx-token') {
@@ -203,12 +205,12 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
       postConditions.push(
         makeStandardFungiblePostCondition(
           stxAddress || '',
-          FungibleConditionCode.Equal,
-          uintCV(tokenXAmount * 1000000).value,
+          FungibleConditionCode.LessEqual,
+          uintCV(parseInt(tokenXAmount * 1.2 * 1000000, 10)).value,
           createAssetInfo(
             contractAddress,
             tokenXParam,
-            tokenX['name'].toLowerCase()
+            tokenXName
           )
         )
       );
@@ -237,29 +239,30 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
       postConditions.push(
         makeStandardFungiblePostCondition(
           stxAddress || '',
-          FungibleConditionCode.Equal,
-          uintCV(tokenYAmount * 1000000).value,
+          FungibleConditionCode.LessEqual,
+          uintCV(parseInt(tokenYAmount * 1.2 * 1000000, 10)).value,
           createAssetInfo(
             contractAddress,
             tokenYParam,
-            tokenY['name'].toLowerCase()
+            tokenYName
           )
         )
       );
     }
-    postConditions.push(
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-swap-v1-1',
-        FungibleConditionCode.LessEqual,
-        new BN(newTokens * 1000000, 10),
-        createAssetInfo(
-          contractAddress,
-          swapTrait,
-          swapTokenName.toLowerCase()
-        )
-      )
-    );
+    // TODO: do we need this PC?
+    // postConditions.push(
+    //   makeContractFungiblePostCondition(
+    //     contractAddress,
+    //     'arkadiko-swap-v1-1',
+    //     FungibleConditionCode.LessEqual,
+    //     new BN(newTokens * 1000000, 10),
+    //     createAssetInfo(
+    //       contractAddress,
+    //       swapTrait,
+    //       swapTokenName.toLowerCase()
+    //     )
+    //   )
+    // );
     await doContractCall({
       network,
       contractAddress,
@@ -286,11 +289,21 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
       {state.userData ? (
         <Container>
           <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
+            <p className="w-full max-w-lg">
+              <RouterLink className="" to={`/pool`} exact>
+                <span className="p-1.5 rounded-md inline-flex items-center">
+                  <ArrowLeftIcon className="w-4 h-4 mr-2 text-gray-500 group-hover:text-gray-900" aria-hidden="true" />
+                  <span className="text-gray-600 hover:text-gray-900">
+                    Back to pool overview
+                  </span>
+                </span>
+              </RouterLink>
+            </p>
             <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow">
               <div className="flex flex-col p-4">
                 <div className="flex justify-between mb-4">
                   <div>
-                    <h2 className="text-lg font-medium leading-6 text-gray-900 font-headings">
+                    <h2 className="text-xl leading-6 text-gray-900 font-headings">
                       Liquidity
                     </h2>
                     <p className="inline-flex items-center mt-1 text-sm text-gray-600">
@@ -468,7 +481,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                       <CashIcon className="w-6 h-6 text-indigo-500" aria-hidden="true" />
                     </span>
                     <p className="ml-4 text-sm text-gray-500">
-                      By adding liquidity, you will earn 0.3% on trades for this pool, proportional to your share of liquidity. Earned fees are added back to the pool and claimable by removing liquidity.
+                      By adding liquidity, you will earn 0.25% on trades for this pool, proportional to your share of liquidity. Earned fees are added back to the pool and claimable by removing liquidity.
                     </p>
                   </div>
                 </form>

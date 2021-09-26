@@ -127,6 +127,7 @@
       (try! (payout-liquidated-vault vault-id))
       (try! (payout-vault vault-id wstx usda coll-type reserve ft))
     )
+    (print { type: "vault", action: "payout", data: vault })
     (ok true)
   )
 )

@@ -197,11 +197,12 @@ export const ManageVault = ({ match }) => {
 
   const callBurn = async () => {
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
+    const totalToBurn = Number(usdToBurn) + (2 * (stabilityFee / 1000000));
     const postConditions = [
       makeStandardFungiblePostCondition(
         senderAddress || '',
-        FungibleConditionCode.Equal,
-        uintCV(parseFloat(usdToBurn) * 1000000).value,
+        FungibleConditionCode.LessEqual,
+        uintCV(totalToBurn * 1000000).value,
         createAssetInfo(
           contractAddress,
           'usda-token',
