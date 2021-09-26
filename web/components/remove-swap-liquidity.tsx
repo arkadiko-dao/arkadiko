@@ -136,8 +136,6 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
       tokenYName = tokenX['nameInPair'].toLowerCase();
     }
 
-    console.log(tokenXParam, tokenXName);
-    console.log(tokenYParam, tokenYName);
     const postConditions = [
       makeStandardFungiblePostCondition(
         stxAddress || '',
