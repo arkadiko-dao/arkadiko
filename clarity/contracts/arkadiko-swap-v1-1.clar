@@ -8,6 +8,7 @@
 (define-constant INVALID-PAIR-ERR (err u201))
 (define-constant ERR-INVALID-LIQUIDITY u202)
 (define-constant ERR-NO-FEE-TO-ADDRESS u203)
+(define-constant ERR-WRONG-SWAP-TOKEN u204)
 
 (define-constant no-liquidity-err (err u61))
 (define-constant not-owner-err (err u63))
@@ -144,6 +145,7 @@
       (recipient-address tx-sender)
       (balance-x (get balance-x pair))
       (balance-y (get balance-y pair))
+      (swap-token (get swap-token pair))
       (new-shares
         (if (is-eq (get shares-total pair) u0)
           (sqrti (* x y))
@@ -163,6 +165,7 @@
       }))
     )
     (asserts! (and (> x u0) (> new-y u0)) (err ERR-INVALID-LIQUIDITY))
+    (asserts! (is-eq swap-token (contract-of swap-token-trait)) (err ERR-WRONG-SWAP-TOKEN))
 
     (if (is-eq (unwrap-panic (contract-call? token-x-trait get-symbol)) "wSTX")
       (begin
@@ -289,6 +292,7 @@
       (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
       (balance-x (get balance-x pair))
       (balance-y (get balance-y pair))
+      (swap-token (get swap-token pair))
       (shares (unwrap-panic (contract-call? swap-token-trait get-balance tx-sender)))
       (shares-total (get shares-total pair))
       (contract-address (as-contract tx-sender))
@@ -310,6 +314,7 @@
     (asserts! (<= percent u100) (err u5))
     (asserts! (is-ok (as-contract (contract-call? token-x-trait transfer withdrawal-x contract-address sender none))) transfer-x-failed-err)
     (asserts! (is-ok (as-contract (contract-call? token-y-trait transfer withdrawal-y contract-address sender none))) transfer-y-failed-err)
+    (asserts! (is-eq swap-token (contract-of swap-token-trait)) (err ERR-WRONG-SWAP-TOKEN))
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-updated)
     (try! (contract-call? swap-token-trait burn tx-sender withdrawal))
