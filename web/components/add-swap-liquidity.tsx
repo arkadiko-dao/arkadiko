@@ -169,14 +169,12 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
     let swapTrait = tokenTraits[`${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`]['name'];
     let tokenXParam = tokenXTrait;
     let tokenYParam = tokenYTrait;
-    let swapTokenName = tokenTraits[`${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`]['swap'];
     let tokenXName = tokenX['name'].toLowerCase();
     let tokenYName = tokenY['name'].toLowerCase();
     if (inverseDirection) {
       swapTrait = tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['name'];
       tokenXParam = tokenYTrait;
       tokenYParam = tokenXTrait;
-      swapTokenName = tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['swap'];
       tokenXName = tokenY['name'].toLowerCase();
       tokenYName = tokenX['name'].toLowerCase();
     }
@@ -206,7 +204,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         makeStandardFungiblePostCondition(
           stxAddress || '',
           FungibleConditionCode.LessEqual,
-          uintCV(parseInt(tokenXAmount * 1.2 * 1000000, 10)).value,
+          uintCV(parseInt(tokenXAmount * 1000000, 10)).value,
           createAssetInfo(
             contractAddress,
             tokenXParam,
@@ -240,7 +238,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         makeStandardFungiblePostCondition(
           stxAddress || '',
           FungibleConditionCode.LessEqual,
-          uintCV(parseInt(tokenYAmount * 1.2 * 1000000, 10)).value,
+          uintCV(parseInt(tokenYAmount * 1000000, 10)).value,
           createAssetInfo(
             contractAddress,
             tokenYParam,
@@ -249,20 +247,6 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         )
       );
     }
-    // TODO: do we need this PC?
-    // postConditions.push(
-    //   makeContractFungiblePostCondition(
-    //     contractAddress,
-    //     'arkadiko-swap-v1-1',
-    //     FungibleConditionCode.LessEqual,
-    //     new BN(newTokens * 1000000, 10),
-    //     createAssetInfo(
-    //       contractAddress,
-    //       swapTrait,
-    //       swapTokenName.toLowerCase()
-    //     )
-    //   )
-    // );
     await doContractCall({
       network,
       contractAddress,
