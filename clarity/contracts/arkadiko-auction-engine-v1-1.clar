@@ -374,6 +374,13 @@
       (err ERR-TOKEN-TYPE-MISMATCH)
     )
     (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+    (asserts!
+      (or
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "sip10-reserve")))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
     (asserts! (is-eq tx-sender (get owner last-bid)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (unwrap-panic (get-auction-open auction-id)) false) (err ERR-AUCTION-NOT-CLOSED))
     (asserts! (is-eq (get redeemed last-bid) false) (err ERR-LOT-ALREADY-REDEEMED))
