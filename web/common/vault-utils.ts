@@ -44,43 +44,43 @@ export const tokenTraits = {
   },
   'dikousda': {
     'name': 'arkadiko-swap-token-diko-usda',
-    'swap': 'arkv1dikousda'
+    'swap': 'diko-usda'
   },
   'usdadiko': {
     'name': 'arkadiko-swap-token-diko-usda',
-    'swap': 'arkv1dikousda'
+    'swap': 'diko-usda'
   },
   'wstxusda': {
     'name': 'arkadiko-swap-token-wstx-usda',
-    'swap': 'arkv1wstxusda'
+    'swap': 'wstx-usda'
   },
   'usdawstx': {
     'name': 'arkadiko-swap-token-wstx-usda',
-    'swap': 'arkv1wstxusda'
+    'swap': 'wstx-usda'
   },
   'usdastx': {
     'name': 'arkadiko-swap-token-wstx-usda',
-    'swap': 'arkv1wstxusda'
+    'swap': 'wstx-usda'
   },
   'stxusda': {
     'name': 'arkadiko-swap-token-wstx-usda',
-    'swap': 'arkv1wstxusda'
+    'swap': 'wstx-usda'
   },
   'wstxdiko': {
     'name': 'arkadiko-swap-token-wstx-diko',
-    'swap': 'arkv1wstxdiko'
+    'swap': 'wstx-diko'
   },
   'dikowstx': {
     'name': 'arkadiko-swap-token-wstx-diko',
-    'swap': 'arkv1wstxdiko'
+    'swap': 'wstx-diko'
   },
   'dikostx': {
     'name': 'arkadiko-swap-token-wstx-diko',
-    'swap': 'arkv1wstxdiko'
+    'swap': 'wstx-diko'
   },
   'stxdiko': {
     'name': 'arkadiko-swap-token-wstx-diko',
-    'swap': 'arkv1wstxdiko'
+    'swap': 'wstx-diko'
   }
 };
 

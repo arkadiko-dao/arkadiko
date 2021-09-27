@@ -523,7 +523,7 @@
     (let (
       (balance (unwrap-panic (contract-call? token get-balance (as-contract tx-sender))))
     )
-      (contract-call? token transfer balance (as-contract tx-sender) (contract-of auction-engine) none)
+      (as-contract (contract-call? token transfer balance (as-contract tx-sender) (contract-of auction-engine) none))
     )
   )
 )
