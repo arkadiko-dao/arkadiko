@@ -7,20 +7,14 @@ import {
 } from "https://deno.land/x/clarinet@v0.13.0/index.ts";
 
 import { 
-OracleManager,
 DikoToken,
 StDikoToken,
-DikoUsdaPoolToken,
 StxUsdaPoolToken
 } from './models/arkadiko-tests-tokens.ts';
 
 import { 
 Swap,
 } from './models/arkadiko-tests-swap.ts';
-
-import { 
-VaultManager
-} from './models/arkadiko-tests-vaults.ts';
 
 import { 
 Governance,
@@ -30,22 +24,17 @@ Dao
 import { 
 StakeRegistry,
 StakePoolDiko,
-StakePoolDikoUsda,
 StakePoolStxUsda,
-StakePoolStxDiko
 } from './models/arkadiko-tests-stake.ts';
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
-const dikoTokenAddress = 'arkadiko-token'
 const usdaTokenAddress = 'usda-token'
 const wstxTokenAddress = 'wrapped-stx-token'
-const dikoUsdaPoolAddress = 'arkadiko-swap-token-diko-usda'
 const wstxUsdaPoolAddress = 'arkadiko-swap-token-wstx-usda'
-const wstxDikoPoolAddress = 'arkadiko-swap-token-wstx-diko'
 
 Clarinet.test({
-  name: "stake-registry: stake and unstake",
+  name: "stake-pool-wstx-usda - stake and unstake",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -113,7 +102,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "staking - Stake and calculate rewards",
+  name: "stake-pool-wstx-usda - stake and calculate rewards",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -243,7 +232,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "staking - Stake and claim rewards",
+  name: "stake-pool-wstx-usda - stake and claim rewards",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -304,7 +293,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-name: "staking - Stake DIKO rewards",
+name: "stake-pool-wstx-usda - stake DIKO rewards",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -360,7 +349,7 @@ name: "staking - Stake DIKO rewards",
 });
 
 Clarinet.test({
-name: "staking - Stake DIKO rewards error handling",
+name: "stake-pool-wstx-usda - stake DIKO rewards error handling",
 async fn(chain: Chain, accounts: Map<string, Account>) {
   let deployer = accounts.get("deployer")!;
   let wallet_1 = accounts.get("wallet_1")!;
@@ -426,7 +415,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 });
 
 Clarinet.test({
-  name: "staking - Test authorisation",
+  name: "stake-pool-wstx-usda - test authorisation",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -477,7 +466,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "staking - Emergency withdraw",
+  name: "stake-pool-wstx-usda - emergency withdraw",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -523,7 +512,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "staking - try to stake more than balance",
+  name: "stake-pool-wstx-usda - try to stake more than balance",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -541,7 +530,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "staking - claim without staking",
+  name: "stake-pool-wstx-usda - claim without staking",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -555,7 +544,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "staking - try to stake more than balance",
+  name: "stake-pool-wstx-usda - try to stake more than balance",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -582,7 +571,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "staking - stake/unstake 0",
+  name: "stake-pool-wstx-usda - stake/unstake 0",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -600,7 +589,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "staking - stake and claim in same block",
+  name: "stake-pool-wstx-usda - stake and claim in same block",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -632,7 +621,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "staking - Stake and unstake LP tokens",
+  name: "stake-pool-wstx-usda - Stake and unstake LP tokens",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -698,7 +687,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "staking - Shut down pool because of critical bug",
+  name: "stake-pool-wstx-usda - Shut down pool because of critical bug",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -797,7 +786,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "staking - Reward distribution over time",
+  name: "stake-pool-wstx-usda - Reward distribution over time",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
