@@ -439,26 +439,26 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 2);
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
     result = oracleManager.updatePrice("STX", 1);
-    // result = vaultLiquidator.notifyRiskyVault(deployer);
+    result = vaultLiquidator.notifyRiskyVault(deployer);
 
-    // // USDA balance of deployer
-    // let call = await usdaToken.balanceOf(deployer.address)
-    // call.result.expectOk().expectUintWithDecimals(1001000);
+    // USDA balance of deployer
+    let call = await usdaToken.balanceOf(deployer.address)
+    call.result.expectOk().expectUintWithDecimals(1001000);
 
-    // // Test zero bid
-    // result = vaultAuction.bid(wallet_1, 0)
-    // result.expectErr().expectUint(23); // poor bid
+    // Test zero bid
+    result = vaultAuction.bid(wallet_1, 0)
+    result.expectErr().expectUint(23); // poor bid
 
-    // // USDA balance of auction engine
-    // call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v1-1'))
-    // call.result.expectOk().expectUint(0);
+    // USDA balance of auction engine
+    call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v1-1'))
+    call.result.expectOk().expectUint(0);
 
-    // // Advance, so auction is closed
-    // chain.mineEmptyBlock(150);
+    // Advance, so auction is closed
+    chain.mineEmptyBlock(150);
 
-    // // Auction not open
-    // result = vaultAuction.bid(wallet_1, 10)
-    // result.expectErr().expectUint(28); // auction not open
+    // Auction not open
+    result = vaultAuction.bid(wallet_1, 10)
+    result.expectErr().expectUint(28); // auction not open
 
   }
 });

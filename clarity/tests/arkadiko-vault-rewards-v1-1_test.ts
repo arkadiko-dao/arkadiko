@@ -218,7 +218,7 @@ Clarinet.test({
 
     // Liquidate
     result = oracleManager.updatePrice("STX", 0.2);
-    result.expectOk().expectUint(0.2);
+    result.expectOk().expectUintWithDecimals(0.2);
     result = vaultLiquidator.notifyRiskyVault(deployer, 1);
     result.expectOk().expectUint(5200);
 
