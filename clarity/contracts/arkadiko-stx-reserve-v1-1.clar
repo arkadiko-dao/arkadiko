@@ -161,7 +161,7 @@
 )
   (let ((stx-price-in-cents (unwrap-panic (contract-call? oracle fetch-price token))))
     (if (> debt u0)
-      (ok (/ (* ustx (get last-price-in-cents stx-price-in-cents)) debt))
+      (ok (/ (/ (* ustx (get last-price-in-cents stx-price-in-cents)) debt) u10000))
       (err u0)
     )
   )

@@ -38,7 +38,7 @@
 )
   (let ((price-in-cents (unwrap-panic (contract-call? oracle fetch-price token))))
     (if (> debt u0)
-      (ok (/ (* ucollateral (get last-price-in-cents price-in-cents)) debt))
+      (ok (/ (/ (* ucollateral (get last-price-in-cents price-in-cents)) debt) u10000))
       (err u0)
     )
   )
