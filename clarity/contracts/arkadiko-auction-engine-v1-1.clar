@@ -244,7 +244,7 @@
 )
 
 ;; @desc calculate the discounted auction price on the (dollarcent) price of the collateral
-;; @param price; the current on-chain price in cents
+;; @param price; the current on-chain price
 ;; @param auction-id; the ID of the auction in which the collateral will be sold
 (define-read-only (discounted-auction-price (price uint) (auction-id uint))
   (let (

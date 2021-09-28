@@ -32,7 +32,7 @@ Clarinet.test({
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
     let vaultAuction = new VaultAuction(chain, deployer);
 
-    // Initialize price of STX to 100 cents in the oracle
+    // Initialize price of STX to $1 in the oracle
     let result = oracleManager.updatePrice("STX", 1);
     result.expectOk().expectUintWithDecimals(1);
 

@@ -43,7 +43,7 @@ Clarinet.test({
     let stacker = new Stacker(chain, deployer);
 
     // Set price, create 2 vaults
-    oracleManager.updatePrice("STX", 400);
+    oracleManager.updatePrice("STX", 4);
     vaultManager.createVault(deployer, "STX-A", 21000000, 1000);
     vaultManager.createVault(wallet_1, "STX-A", 60000, 400);
 
@@ -102,7 +102,7 @@ Clarinet.test({
     let stackerPayer = new StackerPayer(chain, deployer);
     
     // Set price, create 2 vaults
-    oracleManager.updatePrice("STX", 400);
+    oracleManager.updatePrice("STX", 4);
 
     // Create vault without auto payoff
     vaultManager.createVault(deployer, "STX-A", 21000000, 1000, true, false);
@@ -154,7 +154,7 @@ Clarinet.test({
     let stackerPayer = new StackerPayer(chain, deployer);
     
     // Set price
-    oracleManager.updatePrice("STX", 400);
+    oracleManager.updatePrice("STX", 4);
 
     // Create vault without auto payoff
     vaultManager.createVault(deployer, "STX-A", 21000000, 1000, true, false);
@@ -216,13 +216,13 @@ Clarinet.test({
     let stackerPayer = new StackerPayer(chain, deployer);
     
     // Set price, create vault, initiate stacking
-    oracleManager.updatePrice("STX", 400);
+    oracleManager.updatePrice("STX", 4);
     vaultManager.createVault(deployer, "STX-A", 1500, 1300, true, true);
     vaultManager.createVault(deployer, "STX-A", 21000000, 1300, true, true);
     stacker.initiateStacking(1, 1);
 
     // Update price
-    oracleManager.updatePrice("STX", 150);
+    oracleManager.updatePrice("STX", 1.5);
 
     let result = vaultLiquidator.notifyRiskyVault(deployer, 1);
     result.expectOk().expectUint(5200);
@@ -288,7 +288,7 @@ Clarinet.test({
     let stacker = new Stacker(chain, deployer);
     
     // Set price, create vault, initiate stacking
-    oracleManager.updatePrice("STX", 400);
+    oracleManager.updatePrice("STX", 4);
     vaultManager.createVault(deployer, "STX-A", 21000000, 1300, true, true);
 
     // Toggle shutdown
@@ -374,7 +374,7 @@ Clarinet.test({
     let stacker = new Stacker(chain, deployer);
     
     // Set price, create vaults
-    oracleManager.updatePrice("STX", 400);
+    oracleManager.updatePrice("STX", 4);
     vaultManager.createVault(deployer, "STX-A", 21000000, 1000, true, true);
     vaultManager.createVault(wallet_1, "STX-A", 500, 400, true, true);
 
@@ -402,7 +402,7 @@ Clarinet.test({
     let stackerPayer = new StackerPayer(chain, deployer);
 
     // Set price, create vault
-    oracleManager.updatePrice("STX", 400);
+    oracleManager.updatePrice("STX", 4);
     vaultManager.createVault(deployer, "STX-A", 21000000, 1000, true, true);
 
     let call:any = stacker.getStxBalance();
@@ -443,7 +443,7 @@ Clarinet.test({
     let stxReserve = new StxReserve(chain, deployer);
 
     // Set price, create vault
-    oracleManager.updatePrice("STX", 400);
+    oracleManager.updatePrice("STX", 4);
     vaultManager.createVault(deployer, "STX-A", 21000000, 1000, true, false);
 
     let call:any = stxReserve.getTokensToStack("stacker");
@@ -483,7 +483,7 @@ Clarinet.test({
     let vaultRewards = new VaultRewards(chain, deployer);
 
     // Set price, create vault
-    oracleManager.updatePrice("STX", 400);
+    oracleManager.updatePrice("STX", 4);
     vaultManager.createVault(deployer, "STX-A", 21000000, 1000, true, false);
 
     let call:any = stxReserve.getTokensToStack("stacker");
@@ -567,7 +567,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Set price, create vault
-    oracleManager.updatePrice("STX", 400);
+    oracleManager.updatePrice("STX", 4);
     vaultManager.createVault(deployer, "STX-A", 21000000, 1000, true, true);
     vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
 
@@ -619,7 +619,7 @@ Clarinet.test({
     let stxReserve = new StxReserve(chain, deployer);
 
     // Set price, create vault
-    oracleManager.updatePrice("STX", 400);
+    oracleManager.updatePrice("STX", 4);
     vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
 
     // No tokens to stack as stack-pox option was not set
@@ -653,7 +653,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Set price, create vault
-    oracleManager.updatePrice("STX", 400);
+    oracleManager.updatePrice("STX", 4);
     vaultManager.createVault(wallet_1, "STX-A", 21000000, 1, true, true);
 
     // We need to make sure there is enough STX in the reserve to perform the auto payoff
@@ -718,7 +718,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Set price, create vault
-    oracleManager.updatePrice("STX", 400);
+    oracleManager.updatePrice("STX", 4);
     vaultManager.createVault(deployer, "STX-A", 21000000, 1000, true, true);
 
     // We need to make sure there is enough STX in the reserve to perform the auto payoff
