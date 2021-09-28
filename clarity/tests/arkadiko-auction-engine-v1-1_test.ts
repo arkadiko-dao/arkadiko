@@ -436,7 +436,7 @@ Clarinet.test({
     let vaultAuction = new VaultAuction(chain, deployer);
 
     // Create vault and liquidate
-    let result = oracleManager.updatePrice("STX", 2);
+    let result = oracleManager.updatePrice("STX", 3);
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
     result = oracleManager.updatePrice("STX", 1);
     result = vaultLiquidator.notifyRiskyVault(deployer);
