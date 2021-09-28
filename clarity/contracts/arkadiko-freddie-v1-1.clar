@@ -132,12 +132,12 @@
     (if (is-eq (get is-liquidated vault) true)
       (ok u0)
       (begin
-        (let ((stx-price-in-cents (unwrap-panic (contract-call? oracle fetch-price (get collateral-token vault)))))
+        (let ((stx-price (unwrap-panic (contract-call? oracle fetch-price (get collateral-token vault)))))
           (if (> (get debt vault) u0)
             (ok
               (/              
                 (/
-                  (* (get collateral vault) (get last-price-in-cents stx-price-in-cents))
+                  (* (get collateral vault) (get last-price stx-price))
                   (+
                     (get debt vault)
                     (if include-stability-fees

@@ -34,7 +34,7 @@ Clarinet.test({
     let vaultRewards = new VaultRewards(chain, deployer);
 
     // Set price, create vault
-    oracleManager.updatePrice("STX", 200);
+    oracleManager.updatePrice("STX", 2);
     vaultManager.createVault(deployer, "STX-A", 5, 1);
 
     // Check rewards
@@ -74,7 +74,7 @@ Clarinet.test({
     let dikoToken = new DikoToken(chain, deployer);
 
     // Set price, create vault
-    oracleManager.updatePrice("STX", 200);
+    oracleManager.updatePrice("STX", 2);
     vaultManager.createVault(deployer, "STX-A", 5, 1);
 
     chain.mineEmptyBlock(30);
@@ -105,7 +105,7 @@ Clarinet.test({
     let vaultRewards = new VaultRewards(chain, deployer);
 
     // Set price, create vault
-    oracleManager.updatePrice("STX", 200);
+    oracleManager.updatePrice("STX", 2);
     vaultManager.createVault(deployer, "STX-A", 5, 1);
 
     // Check rewards
@@ -142,7 +142,7 @@ Clarinet.test({
     let dikoToken = new DikoToken(chain, deployer);
 
     // Set price, create vault
-    oracleManager.updatePrice("STX", 200);
+    oracleManager.updatePrice("STX", 2);
     vaultManager.createVault(deployer, "STX-A", 50, 1);
 
     // Check rewards
@@ -185,7 +185,7 @@ Clarinet.test({
     let stacker = new Stacker(chain, deployer);
 
     // Set price, create vault
-    oracleManager.updatePrice("STX", 200);
+    oracleManager.updatePrice("STX", 2);
     vaultManager.createVault(deployer, "STX-A", 5, 1);
 
     // Collateral in vault rewards contract
@@ -217,8 +217,8 @@ Clarinet.test({
     call.result.expectTuple()["cumm-reward-per-collateral"].expectUintWithDecimals(201.142857);
 
     // Liquidate
-    result = oracleManager.updatePrice("STX", 20);
-    result.expectOk().expectUint(20);
+    result = oracleManager.updatePrice("STX", 0.2);
+    result.expectOk().expectUint(0.2);
     result = vaultLiquidator.notifyRiskyVault(deployer, 1);
     result.expectOk().expectUint(5200);
 
@@ -241,7 +241,7 @@ Clarinet.test({
     let stacker = new Stacker(chain, deployer);
 
     // Set price, create vault
-    oracleManager.updatePrice("STX", 200);
+    oracleManager.updatePrice("STX", 2);
     let result = vaultManager.createVault(deployer, "STX-A", 5000, 1000);
     result.expectOk().expectUintWithDecimals(1000);
 
