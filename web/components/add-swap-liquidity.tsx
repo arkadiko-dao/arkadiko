@@ -18,8 +18,6 @@ import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { classNames } from '@common/class-names';
-import { makeContractFungiblePostCondition } from '@blockstack/stacks-transactions';
-import BN from 'bn.js';
 
 export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -171,12 +169,14 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
     let swapTrait = tokenTraits[`${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`]['name'];
     let tokenXParam = tokenXTrait;
     let tokenYParam = tokenYTrait;
-    let swapTokenName = tokenTraits[`${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`]['swap'];
+    let tokenXName = tokenX['name'].toLowerCase();
+    let tokenYName = tokenY['name'].toLowerCase();
     if (inverseDirection) {
       swapTrait = tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['name'];
       tokenXParam = tokenYTrait;
       tokenYParam = tokenXTrait;
-      swapTokenName = tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['swap'];
+      tokenXName = tokenY['name'].toLowerCase();
+      tokenYName = tokenX['name'].toLowerCase();
     }
     const postConditions = [];
     if (tokenXParam == 'wrapped-stx-token') {
@@ -203,12 +203,12 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
       postConditions.push(
         makeStandardFungiblePostCondition(
           stxAddress || '',
-          FungibleConditionCode.Equal,
-          uintCV(tokenXAmount * 1000000).value,
+          FungibleConditionCode.LessEqual,
+          uintCV(parseInt(tokenXAmount * 1000000, 10)).value,
           createAssetInfo(
             contractAddress,
             tokenXParam,
-            tokenX['name'].toLowerCase()
+            tokenXName
           )
         )
       );
@@ -237,29 +237,16 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
       postConditions.push(
         makeStandardFungiblePostCondition(
           stxAddress || '',
-          FungibleConditionCode.Equal,
-          uintCV(tokenYAmount * 1000000).value,
+          FungibleConditionCode.LessEqual,
+          uintCV(parseInt(tokenYAmount * 1000000, 10)).value,
           createAssetInfo(
             contractAddress,
             tokenYParam,
-            tokenY['name'].toLowerCase()
+            tokenYName
           )
         )
       );
     }
-    postConditions.push(
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-swap-v1-1',
-        FungibleConditionCode.LessEqual,
-        new BN(newTokens * 1000000, 10),
-        createAssetInfo(
-          contractAddress,
-          swapTrait,
-          swapTokenName.toLowerCase()
-        )
-      )
-    );
     await doContractCall({
       network,
       contractAddress,

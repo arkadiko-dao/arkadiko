@@ -179,7 +179,7 @@
     (let (
       (balance (unwrap-panic (contract-call? token get-balance (as-contract tx-sender))))
     )
-      (contract-call? token transfer balance (as-contract tx-sender) (contract-of new-vault) none)
+      (as-contract (contract-call? token transfer balance (as-contract tx-sender) (contract-of new-vault) none))
     )
   )
 )

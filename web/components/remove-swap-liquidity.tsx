@@ -126,17 +126,21 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
     let swapTrait = tokenTraits[pairName]['name'];
     let tokenXParam = tokenXTrait;
     let tokenYParam = tokenYTrait;
+    let tokenXName = tokenX['nameInPair'].toLowerCase();
+    let tokenYName = tokenY['nameInPair'].toLowerCase();
     if (inverseDirection) {
       swapTrait = tokenTraits[pairName]['name'];
       tokenXParam = tokenYTrait;
       tokenYParam = tokenXTrait;
+      tokenXName = tokenY['nameInPair'].toLowerCase();
+      tokenYName = tokenX['nameInPair'].toLowerCase();
     }
 
     const postConditions = [
       makeStandardFungiblePostCondition(
         stxAddress || '',
         FungibleConditionCode.LessEqual,
-        uintCV(balance / 100 * (percentageToRemove + 5)).value,
+        uintCV(parseInt(balance / 100 * (percentageToRemove + 5), 10)).value,
         createAssetInfo(
           contractAddress,
           swapTrait,
@@ -147,22 +151,22 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         contractAddress,
         'arkadiko-swap-v1-1',
         FungibleConditionCode.LessEqual,
-        new BN(tokenXToReceive * 2, 10),
+        new BN(tokenXToReceive, 10),
         createAssetInfo(
           contractAddress,
           tokenXParam,
-          tokenX['nameInPair'].toLowerCase()
+          tokenXName
         )
       ),
       makeContractFungiblePostCondition(
         contractAddress,
         'arkadiko-swap-v1-1',
         FungibleConditionCode.LessEqual,
-        new BN(tokenYToReceive * 2, 10),
+        new BN(tokenYToReceive, 10),
         createAssetInfo(
           contractAddress,
           tokenYParam,
-          tokenY['nameInPair'].toLowerCase()
+          tokenYName
         )
       )
     ];
@@ -178,7 +182,6 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         contractPrincipalCV(contractAddress, swapTrait),
         uintCV(percentageToRemove)
       ],
-      postConditionMode: 0x01,
       postConditions,
       onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
