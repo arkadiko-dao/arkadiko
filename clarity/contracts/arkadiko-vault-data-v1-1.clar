@@ -25,7 +25,7 @@
   auction-ended: bool,
   leftover-collateral: uint
 })
-(define-map vault-entries { user: principal } { ids: (list 500 uint) })
+(define-map vault-entries { user: principal } { ids: (list 20 uint) })
 (define-map closing-vault
   { user: principal }
   { vault-id: uint }
@@ -130,7 +130,7 @@
   (let ((entries (get ids (get-vault-entries user))))
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
 
-    (map-set vault-entries { user: user } { ids: (unwrap-panic (as-max-len? (append entries vault-id) u500)) })
+    (map-set vault-entries { user: user } { ids: (unwrap-panic (as-max-len? (append entries vault-id) u20)) })
     (ok true)
   )
 )
@@ -177,7 +177,7 @@
       }
     )
     (if (is-none (index-of entries lot-index))
-      (map-set stacking-payout-lots { vault-id: vault-id } { ids: (unwrap-panic (as-max-len? (append entries lot-index) u500)) })
+      (map-set stacking-payout-lots { vault-id: vault-id } { ids: (unwrap-panic (as-max-len? (append entries lot-index) u20)) })
       true
     )
     (ok true)
