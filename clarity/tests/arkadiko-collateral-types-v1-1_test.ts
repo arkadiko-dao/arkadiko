@@ -51,8 +51,6 @@ Clarinet.test({
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
-    // let vaultManager = new VaultManager(chain, deployer);
-    // vaultManager.changeStabilityFeeParameters("STX-A", 191816250, 100, 14);
     let collateralTypeManager = new CollateralTypeManager(chain, deployer);
     let result = collateralTypeManager.getCollateralToDebtRatio('STX-A');
     result['result'].expectOk().expectUint(400);
@@ -63,5 +61,31 @@ Clarinet.test({
 
     result = collateralTypeManager.getCollateralToDebtRatio('STX-A');
     result['result'].expectOk().expectUint(1500);
+  }
+});
+
+Clarinet.test({
+  name: "collateral types: analyse total and maximum debt",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let collateralTypeManager = new CollateralTypeManager(chain, deployer);
+
+    let result = collateralTypeManager.getTotalDebt('STX-A');
+    result['result'].expectOk().expectUint(0);
+    result = collateralTypeManager.getMaximumDebt('STX-A');
+    result['result'].expectOk().expectUint(1000000000000000);
+
+    let oracleUpdate = oracleManager.updatePrice("STX", 100);
+    oracleUpdate.expectOk().expectUint(100);
+
+    // Provide a collateral of 5000000 STX, so 1000000 stx-a can be minted (5 * 0.77) / 2 = 1.925
+    let vaultCreation = vaultManager.createVault(deployer, "STX-A", 5, 1);
+    vaultCreation.expectOk().expectUintWithDecimals(1);
+
+    result = collateralTypeManager.getTotalDebt('STX-A');
+    result['result'].expectOk().expectUint(1000000);
   }
 });
