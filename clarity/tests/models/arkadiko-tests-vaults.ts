@@ -255,25 +255,6 @@ class VaultManager {
     return block.receipts[0].result;
   }
 
-  changeLiquidationParameters(collateralType: string, liquidationPenalty: number, liquidationRatio: number) {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-collateral-types-v1-1", "change-risk-parameters", [
-        types.ascii(collateralType),
-        types.list([
-          types.tuple({
-            'key': types.ascii("liquidation-penalty"),
-            'new-value': types.uint(liquidationPenalty)
-          }),
-          types.tuple({
-            'key': types.ascii("liquidation-ratio"),
-            'new-value': types.uint(liquidationRatio)
-          })
-        ])
-      ], this.deployer.address)
-    ]);
-    return block.receipts[0].result;
-  }
-
   redeemTokens(amountUsda: number, amountDiko: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "redeem-tokens", [
