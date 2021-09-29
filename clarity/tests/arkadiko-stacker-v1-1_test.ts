@@ -174,18 +174,20 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     chain.mineEmptyBlock(270);
+    result = stacker.requestStxForPayout(21000000);
+    result.expectOk().expectBool(true);
     result = stackerPayer.setStackingStxStacked(21000000);
     result.expectOk().expectBool(true);
-    result = stackerPayer.setStackingStxReceived(1000);
+    result = stackerPayer.setStackingStxReceived(0);
     result.expectOk().expectBool(true);
     result = stackerPayer.payout(1);
     result.expectOk().expectBool(true);
 
-    // Check new collateral (1000 STX initial + 1000 STX yield)
+    // Check new collateral (1000 STX initial + 0 STX yield)
     call = vaultManager.getVaultById(1);
     vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUintWithDecimals(21001000);
-    vault['collateral'].expectUintWithDecimals(21001000);
+    vault['stacked-tokens'].expectUintWithDecimals(0);
+    vault['collateral'].expectUintWithDecimals(21000000);
   }
 });
 
@@ -811,4 +813,3 @@ Clarinet.test({
 
   }
 });
-
