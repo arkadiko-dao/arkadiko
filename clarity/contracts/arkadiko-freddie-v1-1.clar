@@ -182,10 +182,6 @@
     (try!
       (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
         revoked-stacking: (not (get revoked-stacking vault)),
-        auto-payoff: (if (not (get revoked-stacking vault))
-          false
-          (get auto-payoff vault)
-        ),
         updated-at-block-height: block-height
       }))
     )

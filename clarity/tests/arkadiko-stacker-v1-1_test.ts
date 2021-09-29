@@ -801,9 +801,7 @@ Clarinet.test({
 
     // now imagine we receive 1 STX for stacking
     // and then payout vault 1 (which was the only stacker)
-    result = stacker.requestStxForPayout(21000000);
-    result.expectOk().expectBool(true);
-    result = stackerPayer.setStackingStxReceived(0);
+    result = stackerPayer.setStackingStxReceived(1);
     result.expectOk().expectBool(true);
     result = stackerPayer.payout(1);
     result.expectOk().expectBool(true);
