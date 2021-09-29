@@ -838,7 +838,7 @@ Clarinet.test({
 
     // Set price, create vault
     oracleManager.updatePrice("STX", 400);
-    vaultManager.createVault(wallet_1, "STX-A", 21000000, 1000, true, true);
+    vaultManager.createVault(wallet_1, "STX-A", 12100000, 10000, true, true);
 
     // We need to make sure there is enough STX in the reserve to perform the auto payoff
     // On prod we will swap PoX yield to STX and transfer it to the reserve
@@ -846,24 +846,24 @@ Clarinet.test({
     vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
 
     result = stacker.initiateStacking(1, 1);
-    result.expectOk().expectUintWithDecimals(21000000);
+    result.expectOk().expectUintWithDecimals(12100000);
 
     chain.mineEmptyBlock(300);
 
     // Initial + 1
     let call:any = usdaToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(1001000);   
+    call.result.expectOk().expectUintWithDecimals(1010000);
 
     // Check vault data
     call = vaultManager.getVaultById(1);
     let vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUintWithDecimals(21000000);
-    vault['collateral'].expectUintWithDecimals(21000000);
-    vault['debt'].expectUint(1000000000); // 1 USDA
+    vault['stacked-tokens'].expectUintWithDecimals(12100000);
+    vault['collateral'].expectUintWithDecimals(12100000);
+    vault['debt'].expectUint(10000000000); // 1000 USDA
     
     // now imagine we receive 1 STX for stacking
     // and then payout vault 1 (which was the only stacker)
-    result = stacker.requestStxForPayout(21000000);
+    result = stacker.requestStxForPayout(21000);
     result.expectOk().expectBool(true);
     result = stackerPayer.setStackingStxStacked(21000000);
     result.expectOk().expectBool(true)
@@ -875,8 +875,8 @@ Clarinet.test({
     // Check vault data
     call = vaultManager.getVaultById(1);
     vault = call.result.expectTuple();
-    vault['stacked-tokens'].expectUintWithDecimals(21000000);
-    vault['collateral'].expectUintWithDecimals(21000000);
-    vault['debt'].expectUint(999235966); // PoX yield has paid back almost nothing
+    vault['stacked-tokens'].expectUintWithDecimals(12100000);
+    vault['collateral'].expectUintWithDecimals(12100000);
+    vault['debt'].expectUint(10000000000); // PoX yield has paid back nothing
   }
 });
