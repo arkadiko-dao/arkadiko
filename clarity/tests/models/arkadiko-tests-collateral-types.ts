@@ -15,6 +15,42 @@ class CollateralTypeManager {
     this.deployer = deployer;
   }
 
+  getTokenAddress(collateralType: string) {
+    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v1-1", "get-token-address", [
+      types.ascii(collateralType),
+    ], this.deployer.address);
+  }
+
+  getTotalDebt(collateralType: string) {
+    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v1-1", "get-total-debt", [
+      types.ascii(collateralType),
+    ], this.deployer.address);
+  }
+
+  getMaximumDebt(collateralType: string) {
+    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v1-1", "get-maximum-debt", [
+      types.ascii(collateralType),
+    ], this.deployer.address);
+  }
+
+  getStabilityFee(collateralType: string) {
+    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v1-1", "get-stability-fee", [
+      types.ascii(collateralType),
+    ], this.deployer.address);
+  }
+
+  getStabilityFeeDecimals(collateralType: string) {
+    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v1-1", "get-stability-fee-decimals", [
+      types.ascii(collateralType),
+    ], this.deployer.address);
+  }
+
+  getStabilityFeeApy(collateralType: string) {
+    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v1-1", "get-stability-fee-apy", [
+      types.ascii(collateralType),
+    ], this.deployer.address);
+  }
+
   getLiquidationRatio(collateralType: string) {
     return this.chain.callReadOnlyFn("arkadiko-collateral-types-v1-1", "get-liquidation-ratio", [
       types.ascii(collateralType),
