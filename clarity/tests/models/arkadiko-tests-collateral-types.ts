@@ -33,6 +33,12 @@ class CollateralTypeManager {
     ], this.deployer.address);
   }
 
+  getCollateralToDebtRatio(collateralType: string) {
+    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v1-1", "get-collateral-to-debt-ratio", [
+      types.ascii(collateralType),
+    ], this.deployer.address);
+  }
+
   getStabilityFee(collateralType: string) {
     return this.chain.callReadOnlyFn("arkadiko-collateral-types-v1-1", "get-stability-fee", [
       types.ascii(collateralType),
@@ -75,6 +81,21 @@ class CollateralTypeManager {
           types.tuple({
             'key': types.ascii("liquidation-ratio"),
             'new-value': types.uint(liquidationRatio)
+          })
+        ])
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  changeCollateralToDebtRatio(collateralType: string, debtRatio: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-collateral-types-v1-1", "change-risk-parameters", [
+        types.ascii(collateralType),
+        types.list([
+          types.tuple({
+            'key': types.ascii("collateral-to-debt-ratio"),
+            'new-value': types.uint(debtRatio)
           })
         ])
       ], this.deployer.address)

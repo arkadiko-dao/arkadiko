@@ -45,3 +45,23 @@ Clarinet.test({
     result['result'].expectOk().expectUint(1500);
   }
 });
+
+Clarinet.test({
+  name: "collateral types: change collateral to debt ratio",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    // let vaultManager = new VaultManager(chain, deployer);
+    // vaultManager.changeStabilityFeeParameters("STX-A", 191816250, 100, 14);
+    let collateralTypeManager = new CollateralTypeManager(chain, deployer);
+    let result = collateralTypeManager.getCollateralToDebtRatio('STX-A');
+    result['result'].expectOk().expectUint(400);
+
+    // change collateral to debt ratio
+    let res = collateralTypeManager.changeCollateralToDebtRatio('STX-A', 1500);
+    res.expectOk();
+
+    result = collateralTypeManager.getCollateralToDebtRatio('STX-A');
+    result['result'].expectOk().expectUint(1500);
+  }
+});
