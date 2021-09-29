@@ -26,9 +26,6 @@ Clarinet.test({
   name: "collateral types: change liquidation risk parameters",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-
-    // let vaultManager = new VaultManager(chain, deployer);
-    // vaultManager.changeStabilityFeeParameters("STX-A", 191816250, 100, 14);
     let collateralTypeManager = new CollateralTypeManager(chain, deployer);
     let result = collateralTypeManager.getLiquidationRatio('STX-A');
     result['result'].expectOk().expectUint(175);
