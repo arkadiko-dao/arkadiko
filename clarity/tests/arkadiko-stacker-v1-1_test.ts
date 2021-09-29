@@ -142,6 +142,54 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "stacker: payout one vault that has revoked stacking",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stxReserve = new StxReserve(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+    let stackerPayer = new StackerPayer(chain, deployer);
+
+    oracleManager.updatePrice("STX", 400);
+    vaultManager.createVault(deployer, "STX-A", 21000000, 1000, true, false);
+
+    let call:any = vaultManager.getVaultById(1);
+    let vault = call.result.expectTuple();
+    vault['stacked-tokens'].expectUintWithDecimals(21000000);
+    vault['collateral'].expectUintWithDecimals(21000000);
+
+    call = stxReserve.getTokensToStack("stacker");
+    call.result.expectOk().expectUintWithDecimals(21000000);
+
+    let result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(21000000);
+
+    call = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(21000000);
+
+    chain.mineEmptyBlock(30);
+    result = vaultManager.toggleStacking(deployer, 1);
+    result.expectOk().expectBool(true);
+
+    chain.mineEmptyBlock(270);
+    result = stackerPayer.setStackingStxStacked(21000000);
+    result.expectOk().expectBool(true);
+    result = stackerPayer.setStackingStxReceived(1000);
+    result.expectOk().expectBool(true);
+    result = stackerPayer.payout(1);
+    result.expectOk().expectBool(true);
+
+    // Check new collateral (1000 STX initial + 1000 STX yield)
+    call = vaultManager.getVaultById(1);
+    vault = call.result.expectTuple();
+    vault['stacked-tokens'].expectUintWithDecimals(21001000);
+    vault['collateral'].expectUintWithDecimals(21001000);
+  }
+});
+
+Clarinet.test({
   name: "stacker: payout two vaults",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let wallet_1 = accounts.get("wallet_1")!;
