@@ -232,7 +232,7 @@ class VaultManager {
     return block.receipts[0].result;
   }
 
-  changeRiskParameters(collateralType: string, stabilityFee: number, stabilityFeeApy: number, stabilityFeeDecimals: number) {
+  changeStabilityFeeParameters(collateralType: string, stabilityFee: number, stabilityFeeApy: number, stabilityFeeDecimals: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-collateral-types-v1-1", "change-risk-parameters", [
         types.ascii(collateralType),
@@ -249,6 +249,25 @@ class VaultManager {
             'key': types.ascii("stability-fee-decimals"),
             'new-value': types.uint(stabilityFeeDecimals)
           }),
+        ])
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  changeLiquidationParameters(collateralType: string, liquidationPenalty: number, liquidationRatio: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-collateral-types-v1-1", "change-risk-parameters", [
+        types.ascii(collateralType),
+        types.list([
+          types.tuple({
+            'key': types.ascii("liquidation-penalty"),
+            'new-value': types.uint(liquidationPenalty)
+          }),
+          types.tuple({
+            'key': types.ascii("liquidation-ratio"),
+            'new-value': types.uint(liquidationRatio)
+          })
         ])
       ], this.deployer.address)
     ]);
