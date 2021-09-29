@@ -621,8 +621,12 @@
       (err ERR-WRONG-COLLATERAL-TOKEN)
     )
 
-    (try! (pay-stability-fee vault-id coll-type))
-    (burn-partial-debt vault-id (min-of debt (get debt vault)) reserve ft coll-type)
+    (let ((fee (unwrap-panic (pay-stability-fee vault-id coll-type))))
+      (if (> debt fee)
+        (burn-partial-debt vault-id (min-of (- debt fee) (- (get debt vault) fee)) reserve ft coll-type)
+        (ok true)
+      )
+    )
   )
 )
 

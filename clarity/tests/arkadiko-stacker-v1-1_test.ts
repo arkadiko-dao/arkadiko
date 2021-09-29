@@ -738,8 +738,7 @@ Clarinet.test({
     // Excess yield has been transferred to the user's wallet
     // User got ~97 USDA extra
     call = usdaToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(1000098.715803);   
-
+    call.result.expectOk().expectUintWithDecimals(1000098.715803);
   }
 });
 
@@ -810,5 +809,74 @@ Clarinet.test({
     call = vaultManager.getVaultById(1);
     vault = call.result.expectTuple();
     vault['stacked-tokens'].expectUint(0);
+  }
+});
+
+Clarinet.test({
+  name: "stacker: yield is not enough to pay off stability in USDA",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+    let stackerPayer = new StackerPayer(chain, deployer);
+    let usdaToken = new UsdaToken(chain, deployer);
+
+    // Need wSTX-USDA liquidity to swap STX yield to USDA to payoff debt
+    // We set 1 STX = 1 USDA
+    let swap = new Swap(chain, deployer);
+    let result = swap.createPair(deployer,
+      'wrapped-stx-token',
+      'usda-token',
+      'arkadiko-swap-token-wstx-usda',
+      "wSTX-USDA", 
+      10000, 
+      10000);
+    result.expectOk().expectBool(true);
+
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 400);
+    vaultManager.createVault(wallet_1, "STX-A", 21000000, 1000, true, true);
+
+    // We need to make sure there is enough STX in the reserve to perform the auto payoff
+    // On prod we will swap PoX yield to STX and transfer it to the reserve
+    // Here we just create a second vault to ahve additional STX available in the reserve
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
+
+    result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(21000000);
+
+    chain.mineEmptyBlock(300);
+
+    // Initial + 1
+    let call:any = usdaToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(1001000);   
+
+    // Check vault data
+    call = vaultManager.getVaultById(1);
+    let vault = call.result.expectTuple();
+    vault['stacked-tokens'].expectUintWithDecimals(21000000);
+    vault['collateral'].expectUintWithDecimals(21000000);
+    vault['debt'].expectUint(1000000000); // 1 USDA
+    
+    // now imagine we receive 1 STX for stacking
+    // and then payout vault 1 (which was the only stacker)
+    result = stacker.requestStxForPayout(21000000);
+    result.expectOk().expectBool(true);
+    result = stackerPayer.setStackingStxStacked(21000000);
+    result.expectOk().expectBool(true)
+    result = stackerPayer.setStackingStxReceived(1); // 1 STX token in yield (1 * 10^6)
+    result.expectOk().expectBool(true)
+    result = stackerPayer.payout(1);
+    result.expectOk().expectBool(true)
+
+    // Check vault data
+    call = vaultManager.getVaultById(1);
+    vault = call.result.expectTuple();
+    vault['stacked-tokens'].expectUintWithDecimals(21000000);
+    vault['collateral'].expectUintWithDecimals(21000000);
+    vault['debt'].expectUint(999235966); // PoX yield has paid back almost nothing
   }
 });
