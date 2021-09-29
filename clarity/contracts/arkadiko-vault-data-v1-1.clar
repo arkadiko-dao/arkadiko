@@ -177,7 +177,7 @@
       }
     )
     (if (is-none (index-of entries lot-index))
-      (map-set stacking-payout-lots { vault-id: vault-id } { ids: (unwrap-panic (as-max-len? (append entries lot-index) u20)) })
+      (map-set stacking-payout-lots { vault-id: vault-id } { ids: (unwrap-panic (as-max-len? (append entries lot-index) u500)) })
       true
     )
     (ok true)
