@@ -296,6 +296,19 @@ Clarinet.test({
       ], deployer.address)
     ]);
     block.receipts[0].result.expectErr().expectUint(212);
+
+    // Wrong reserve
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "redeem-lot-collateral", [
+        types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
+        types.principal(Utils.qualifiedName('tokensoft-token')),
+        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1')),
+        types.uint(1),
+        types.uint(0)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(118);
   },
 });
 
