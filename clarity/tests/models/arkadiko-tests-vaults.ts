@@ -462,5 +462,12 @@ class VaultRewards {
     return block.receipts[0].result;
   }
 
+  increaseCummulativeRewardPerCollateral() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-vault-rewards-v1-1", "increase-cumm-reward-per-collateral", [], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
 }
 export { VaultRewards };
