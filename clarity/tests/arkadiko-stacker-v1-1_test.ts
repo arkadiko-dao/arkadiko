@@ -880,3 +880,47 @@ Clarinet.test({
     vault['debt'].expectUint(10000000000); // PoX yield has paid back nothing
   }
 });
+
+Clarinet.test({
+  name: "stacker: return STX to the reserve when deprecating stacker contract",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+
+    // Need wSTX-USDA liquidity to swap STX yield to USDA to payoff debt
+    // We set 1 STX = 1 USDA
+    let swap = new Swap(chain, deployer);
+    let result = swap.createPair(deployer,
+      'wrapped-stx-token',
+      'usda-token',
+      'arkadiko-swap-token-wstx-usda',
+      "wSTX-USDA", 
+      10000, 
+      10000);
+    result.expectOk().expectBool(true);
+
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 400);
+    vaultManager.createVault(wallet_1, "STX-A", 12100000, 10000, true, true);
+
+    // We need to make sure there is enough STX in the reserve to perform the auto payoff
+    // On prod we will swap PoX yield to STX and transfer it to the reserve
+    // Here we just create a second vault to ahve additional STX available in the reserve
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
+
+    result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(12100000);
+
+    chain.mineEmptyBlock(300);
+
+    let call = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(12100000);
+    stacker.returnStx(12100000);
+    call = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(0);
+  }
+});
