@@ -102,5 +102,20 @@ class CollateralTypeManager {
     ]);
     return block.receipts[0].result;
   }
+
+  changeMaximumDebt(collateralType: string, maximumDebt: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-collateral-types-v1-1", "change-risk-parameters", [
+        types.ascii(collateralType),
+        types.list([
+          types.tuple({
+            'key': types.ascii("maximum-debt"),
+            'new-value': types.uint(maximumDebt)
+          })
+        ])
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
 }
 export { CollateralTypeManager };
