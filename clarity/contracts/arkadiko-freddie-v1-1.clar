@@ -622,6 +622,7 @@
     )
 
     (try! (pay-stability-fee vault-id coll-type))
+    (print { type: "vault", action: "burn", data: vault })
     (burn-partial-debt vault-id (min-of debt (get debt vault)) reserve ft coll-type)
   )
 )
@@ -656,7 +657,7 @@
     (try! (contract-call? coll-type subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault)))
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id updated-vault))
     (try! (contract-call? .arkadiko-vault-rewards-v1-1 remove-collateral (get collateral vault) (get owner vault)))
-    (print { type: "vault", action: "burn", data: updated-vault })
+    (print { type: "vault", action: "close", data: updated-vault })
     (try! (contract-call? .arkadiko-vault-data-v1-1 close-vault vault-id))
     (ok true)
   )
