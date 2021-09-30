@@ -206,7 +206,7 @@
       (try! (contract-call? .arkadiko-dao burn-token .stdiko-token amount staker))
 
       ;; Transfer DIKO back from this contract to the user
-      (try! (as-contract (contract-call? .arkadiko-token transfer diko-to-receive (as-contract tx-sender) staker none)))
+      (try! (as-contract (contract-call? .arkadiko-token transfer diko-to-receive tx-sender staker none)))
 
       (ok diko-to-receive)
     )
@@ -277,7 +277,7 @@
     (dao-owner (contract-call? .arkadiko-dao get-dao-owner))
   )
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "diko-slash"))) ERR-NOT-AUTHORIZED)
-    (try! (as-contract (contract-call? .arkadiko-token transfer slash-total (as-contract tx-sender) dao-owner none)))
+    (try! (as-contract (contract-call? .arkadiko-token transfer slash-total tx-sender dao-owner none)))
     (ok slash-total)
   )
 )

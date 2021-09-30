@@ -525,7 +525,7 @@
     (let (
       (balance (unwrap-panic (contract-call? token get-balance (as-contract tx-sender))))
     )
-      (as-contract (contract-call? token transfer balance (as-contract tx-sender) (contract-of auction-engine) none))
+      (as-contract (contract-call? token transfer balance tx-sender (contract-of auction-engine) none))
     )
   )
 )
@@ -544,7 +544,7 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
 
-    (as-contract (contract-call? .usda-token transfer usda-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none))
+    (as-contract (contract-call? .usda-token transfer usda-amount tx-sender (contract-call? .arkadiko-dao get-payout-address) none))
   )
 )
 

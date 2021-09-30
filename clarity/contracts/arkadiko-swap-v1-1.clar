@@ -366,13 +366,13 @@
     )
 
     (asserts! (is-ok (contract-call? token-x-trait transfer dx tx-sender (as-contract tx-sender) none)) transfer-x-failed-err)
-    (try! (as-contract (contract-call? token-y-trait transfer dy (as-contract tx-sender) sender none)))
+    (try! (as-contract (contract-call? token-y-trait transfer dy tx-sender sender none)))
 
     ;; if token Y is wrapped STX, need to burn it
     (if (is-eq (unwrap-panic (contract-call? token-y-trait get-symbol)) "wSTX")
       (begin
         (try! (contract-call? .arkadiko-dao burn-token .wrapped-stx-token dy tx-sender))
-        (try! (as-contract (stx-transfer? dy (as-contract tx-sender) sender)))
+        (try! (as-contract (stx-transfer? dy tx-sender sender)))
       )
       false
     )
@@ -419,14 +419,14 @@
       false
     )
 
-    (asserts! (is-ok (as-contract (contract-call? token-x-trait transfer dx (as-contract tx-sender) sender none))) transfer-x-failed-err)
+    (asserts! (is-ok (as-contract (contract-call? token-x-trait transfer dx tx-sender sender none))) transfer-x-failed-err)
     (asserts! (is-ok (contract-call? token-y-trait transfer dy tx-sender (as-contract tx-sender) none)) transfer-y-failed-err)
 
     ;; if token X is wrapped STX, need to burn it
     (if (is-eq (unwrap-panic (contract-call? token-x-trait get-symbol)) "wSTX")
       (begin
         (try! (contract-call? .arkadiko-dao burn-token .wrapped-stx-token dx tx-sender))
-        (try! (as-contract (stx-transfer? dx (as-contract tx-sender) sender)))
+        (try! (as-contract (stx-transfer? dx tx-sender sender)))
       )
       false
     )

@@ -86,7 +86,7 @@
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-payer"))) (err ERR-NOT-AUTHORIZED))
 
     (as-contract
-      (stx-transfer? requested-ustx (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-payer")))
+      (stx-transfer? requested-ustx tx-sender (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-payer")))
     )
   )
 )
@@ -107,7 +107,7 @@
     (asserts! (<= requested-ustx (get amount stacker)) (err ERR-NOT-AUTHORIZED))
 
     (as-contract
-      (stx-transfer? requested-ustx (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name name)))
+      (stx-transfer? requested-ustx tx-sender (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name name)))
     )
   )
 )
@@ -218,7 +218,7 @@
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq token-string "STX") (err ERR-WRONG-TOKEN))
 
-    (match (print (as-contract (stx-transfer? ustx-amount (as-contract tx-sender) vault-owner)))
+    (match (print (as-contract (stx-transfer? ustx-amount tx-sender vault-owner)))
       success (ok true)
       error (err ERR-WITHDRAW-FAILED)
     )
@@ -258,7 +258,7 @@
   (begin
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
 
-    (match (print (as-contract (stx-transfer? collateral-to-return (as-contract tx-sender) vault-owner)))
+    (match (print (as-contract (stx-transfer? collateral-to-return tx-sender vault-owner)))
       transferred (ok true)
       error (err ERR-TRANSFER-FAILED)
     )
@@ -270,7 +270,7 @@
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq token-string "STX") (err ERR-WRONG-TOKEN))
 
-    (as-contract (stx-transfer? stx-collateral (as-contract tx-sender) owner))
+    (as-contract (stx-transfer? stx-collateral tx-sender owner))
   )
 )
 
@@ -278,7 +278,7 @@
   (begin
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
 
-    (match (print (as-contract (stx-transfer? ustx-amount (as-contract tx-sender) sender)))
+    (match (print (as-contract (stx-transfer? ustx-amount tx-sender sender)))
       transferred (ok true)
       error (err ERR-TRANSFER-FAILED)
     )
@@ -308,7 +308,7 @@
   (begin
     (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
-    (as-contract (stx-transfer? (stx-get-balance (as-contract tx-sender)) (as-contract tx-sender) (contract-of new-vault)))
+    (as-contract (stx-transfer? (stx-get-balance tx-sender) tx-sender (contract-of new-vault)))
   )
 )
 

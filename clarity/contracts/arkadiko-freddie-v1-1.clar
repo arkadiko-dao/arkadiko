@@ -977,12 +977,12 @@
 
     (if (and (> usda-amount u0) (> diko-amount u0))
       (begin
-        (try! (as-contract (contract-call? .arkadiko-token transfer diko-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none)))
-        (as-contract (contract-call? .usda-token transfer usda-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none))
+        (try! (as-contract (contract-call? .arkadiko-token transfer diko-amount tx-sender (contract-call? .arkadiko-dao get-payout-address) none)))
+        (as-contract (contract-call? .usda-token transfer usda-amount tx-sender (contract-call? .arkadiko-dao get-payout-address) none))
       )
       (if (> usda-amount u0)
-        (as-contract (contract-call? .usda-token transfer usda-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none))
-        (as-contract (contract-call? .arkadiko-token transfer diko-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none))
+        (as-contract (contract-call? .usda-token transfer usda-amount tx-sender (contract-call? .arkadiko-dao get-payout-address) none))
+        (as-contract (contract-call? .arkadiko-token transfer diko-amount tx-sender (contract-call? .arkadiko-dao get-payout-address) none))
       )
     )
   )
@@ -1001,7 +1001,7 @@
     (let (
       (balance (unwrap-panic (contract-call? token get-balance (as-contract tx-sender))))
     )
-      (as-contract (contract-call? token transfer balance (as-contract tx-sender) (contract-of new-vault-manager) none))
+      (as-contract (contract-call? token transfer balance tx-sender (contract-of new-vault-manager) none))
     )
   )
 )

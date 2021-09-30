@@ -155,7 +155,7 @@
     )
 
     (as-contract
-      (stx-transfer? ustx-amount (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-payer")))
+      (stx-transfer? ustx-amount tx-sender (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stacker-payer")))
     )
   )
 )
