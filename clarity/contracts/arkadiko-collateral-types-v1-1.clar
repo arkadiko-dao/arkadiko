@@ -112,43 +112,6 @@
   )
 )
 
-;; TODO - this is not in use
-(define-public (add-collateral-type (token (string-ascii 12))
-                                    (name (string-ascii 12))
-                                    (url (string-ascii 256))
-                                    (collateral-type (string-ascii 12))
-                                    (token-address principal)
-                                    (liquidation-ratio uint)
-                                    (liquidation-penalty uint)
-                                    (stability-fee uint)
-                                    (stability-fee-decimals uint)
-                                    (stability-fee-apy uint)
-                                    (maximum-debt uint)
-                                    (collateral-to-debt-ratio uint))
-  (begin
-    (asserts! (is-eq contract-caller .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
-    (map-set collateral-types
-      { name: collateral-type }
-      {
-        name: name,
-        token: token,
-        token-type: collateral-type,
-        token-address: token-address,
-        url: url,
-        total-debt: u0,
-        liquidation-ratio: liquidation-ratio,
-        collateral-to-debt-ratio: collateral-to-debt-ratio,
-        maximum-debt: maximum-debt,
-        liquidation-penalty: liquidation-penalty,
-        stability-fee: stability-fee,
-        stability-fee-decimals: stability-fee-decimals,
-        stability-fee-apy: stability-fee-apy
-      }
-    )
-    (ok true)
-  )
-)
-
 (define-public (change-risk-parameters (collateral-type (string-ascii 12)) (changes (list 10 (tuple (key (string-ascii 256)) (new-value uint)))))
   (let (
     (type (unwrap-panic (get-collateral-type-by-name collateral-type)))

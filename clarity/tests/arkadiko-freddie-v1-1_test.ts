@@ -203,7 +203,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(19.97318); // ~20 = 500 USDA * 4%
 
     vaultManager.accrueStabilityFee(1);
-    vaultManager.changeRiskParameters("STX-A", 191816250, 100, 14);
+    vaultManager.changeStabilityFeeParameters("STX-A", 191816250, 100, 14);
 
     call = await vaultManager.getVaultById(1, deployer);
     let vault:any = call.result.expectTuple();

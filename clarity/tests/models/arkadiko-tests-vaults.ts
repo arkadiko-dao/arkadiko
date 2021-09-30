@@ -232,7 +232,7 @@ class VaultManager {
     return block.receipts[0].result;
   }
 
-  changeRiskParameters(collateralType: string, stabilityFee: number, stabilityFeeApy: number, stabilityFeeDecimals: number) {
+  changeStabilityFeeParameters(collateralType: string, stabilityFee: number, stabilityFeeApy: number, stabilityFeeDecimals: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-collateral-types-v1-1", "change-risk-parameters", [
         types.ascii(collateralType),
