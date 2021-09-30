@@ -623,7 +623,7 @@
 
     (try! (pay-stability-fee vault-id coll-type))
     (print { type: "vault", action: "burn", data: vault })
-    (burn-partial-debt vault-id (min-of debt (get debt vault)) reserve ft coll-type)
+    (burn-partial-debt vault-id (min-of debt (get debt vault)) ft coll-type)
   )
 )
 
@@ -666,7 +666,6 @@
 (define-private (burn-partial-debt
   (vault-id uint)
   (debt uint)
-  (reserve <vault-trait>)
   (ft <ft-trait>)
   (coll-type <collateral-types-trait>)
 )
