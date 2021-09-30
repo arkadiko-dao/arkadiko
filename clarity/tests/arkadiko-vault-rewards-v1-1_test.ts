@@ -255,9 +255,8 @@ Clarinet.test({
       // Advance 1 day
       chain.mineEmptyBlock(144);
 
-      // Need an action to update cumm reward, otherwise "get-pending-rewards" lacks behind
-      let result = vaultManager.createVault(wallet_1, "STX-A", 0.01, 0.000001);
-      result.expectOk().expectUint(1);
+      // Need to increase cumm rewards per collateral
+      vaultRewards.increaseCummulativeRewardPerCollateral();
 
       // Get pending rewards
       let call = vaultRewards.getPendingRewards(deployer);
@@ -267,14 +266,14 @@ Clarinet.test({
 
       switch (index)
       {
-        case 7: call.result.expectOk().expectUintWithDecimals(363052); break; // 363k
-        case 14: call.result.expectOk().expectUintWithDecimals(650622.485); break; // 650k
-        case 21: call.result.expectOk().expectUintWithDecimals(912099.195); break; // 912k
-        case 28: call.result.expectOk().expectUintWithDecimals(1150063.59); break; // 1.15 mio
-        case 35: call.result.expectOk().expectUintWithDecimals(1366573.1); break; // 1.36 mio
-        case 42: call.result.expectOk().expectUintWithDecimals(1510462.73); break; // 1.51 mio
-        case 49: call.result.expectOk().expectUintWithDecimals(1510462.73); break; // 1.51 mio
-        case 56: call.result.expectOk().expectUintWithDecimals(1510462.73); break; // 1.51 mio
+        case 7: call.result.expectOk().expectUintWithDecimals(363054.515); break; // 363k
+        case 14: call.result.expectOk().expectUintWithDecimals(650631.305); break; // 650k
+        case 21: call.result.expectOk().expectUintWithDecimals(912117.4); break; // 912k
+        case 28: call.result.expectOk().expectUintWithDecimals(1150093.67); break; // 1.15 mio
+        case 35: call.result.expectOk().expectUintWithDecimals(1366617.03); break; // 1.36 mio
+        case 42: call.result.expectOk().expectUintWithDecimals(1510517.6); break; // 1.51 mio
+        case 49: call.result.expectOk().expectUintWithDecimals(1510517.6); break; // 1.51 mio
+        case 56: call.result.expectOk().expectUintWithDecimals(1510517.6); break; // 1.51 mio
         default: break;
       }
     }

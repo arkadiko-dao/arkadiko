@@ -28,7 +28,7 @@
 (define-public (update-price (token (string-ascii 12)) (price uint))
   (if (is-eq tx-sender (var-get oracle-owner))
     (begin
-      (map-set prices { token: token } { last-price: price, last-block: u0 })
+      (map-set prices { token: token } { last-price: price, last-block: block-height })
       (ok price)
     )
     (err ERR-NOT-WHITELISTED)

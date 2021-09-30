@@ -232,7 +232,7 @@ class VaultManager {
     return block.receipts[0].result;
   }
 
-  changeRiskParameters(collateralType: string, stabilityFee: number, stabilityFeeApy: number, stabilityFeeDecimals: number) {
+  changeStabilityFeeParameters(collateralType: string, stabilityFee: number, stabilityFeeApy: number, stabilityFeeDecimals: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-collateral-types-v1-1", "change-risk-parameters", [
         types.ascii(collateralType),
@@ -479,6 +479,13 @@ class VaultRewards {
   claimPendingRewards(user: Account) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vault-rewards-v1-1", "claim-pending-rewards", [], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  increaseCummulativeRewardPerCollateral() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-vault-rewards-v1-1", "increase-cumm-reward-per-collateral", [], this.deployer.address)
     ]);
     return block.receipts[0].result;
   }
