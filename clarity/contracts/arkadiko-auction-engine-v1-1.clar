@@ -473,7 +473,7 @@
     (try!
       (if (>= (get total-debt-raised auction) (get debt-to-raise auction))
         (begin
-          (try! (remove-auction auction-id))
+          (unwrap-panic (remove-auction auction-id))
           (if (is-eq (get auction-type auction) "collateral")
             (contract-call?
               vault-manager
@@ -496,7 +496,7 @@
           (extend-auction auction-id)
           (begin
             ;; no collateral left. Need to sell governance token to raise more USDA
-            (try! (remove-auction auction-id))
+            (unwrap-panic (remove-auction auction-id))
             (start-debt-auction
               (get vault-id auction)
               (- (get debt-to-raise auction) (get total-debt-raised auction))
@@ -679,13 +679,10 @@
 )
 
 (define-private (remove-auction (auction-id uint))
-  (if true
-    (begin
-      (var-set removing-auction-id auction-id)
-      (var-set auction-ids (unwrap-panic (as-max-len? (filter remove-closed-auction (var-get auction-ids)) u1500)))
-      (ok true)
-    )
-    (err u0)
+  (begin
+    (var-set removing-auction-id auction-id)
+    (var-set auction-ids (unwrap-panic (as-max-len? (filter remove-closed-auction (var-get auction-ids)) u1500)))
+    (ok true)
   )
 )
 

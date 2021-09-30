@@ -64,10 +64,7 @@
 )
 
 (define-private (subtract-stx-redeemable (token-amount uint))
-  (if true
-    (ok (var-set stx-redeemable (- (var-get stx-redeemable) token-amount)))
-    (err u0)
-  )
+  (ok (var-set stx-redeemable (- (var-get stx-redeemable) token-amount)))
 )
 
 (define-read-only (get-stacking-unlock-burn-height (name (string-ascii 256)))
@@ -261,7 +258,7 @@
       (begin
         (try! (contract-call? .arkadiko-sip10-reserve-v1-1 burn-xstx (min-of stx ustx-amount) tx-sender))
         (try! (contract-call? .arkadiko-stx-reserve-v1-1 redeem-xstx (min-of stx ustx-amount) tx-sender))
-        (try! (subtract-stx-redeemable (min-of stx ustx-amount)))
+        (unwrap-panic (subtract-stx-redeemable (min-of stx ustx-amount)))
         (ok true)
       )
       (ok false)
