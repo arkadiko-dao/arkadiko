@@ -578,8 +578,8 @@
     (last-bid (get-last-bid auction-id lot-index))
     (collateral-amount (unwrap-panic (get-minimum-collateral-amount oracle auction-id)))
     (lot-got-sold (if (>= usda (var-get lot-size))
-        (ok u1)
-        (ok u0)
+        u1
+        u0
       )
     )
     (lots (get-winning-lots tx-sender))
@@ -601,7 +601,7 @@
     (map-set auctions
       { id: auction-id }
       (merge auction {
-        lots-sold: (+ (unwrap-panic lot-got-sold) (get lots-sold auction)),
+        lots-sold: (+ lot-got-sold (get lots-sold auction)),
         total-collateral-sold: (- (+ collateral-amount (get total-collateral-sold auction)) (get collateral-amount last-bid)),
         total-debt-raised: (- (+ usda (get total-debt-raised auction)) (get usda last-bid))
       })
@@ -671,7 +671,6 @@
     (map-set auctions
       { id: auction-id }
       (merge auction {
-        total-debt-burned: (get total-debt-raised auction),
         ends-at: (+ (get ends-at auction) blocks-per-day)
       })
     )
