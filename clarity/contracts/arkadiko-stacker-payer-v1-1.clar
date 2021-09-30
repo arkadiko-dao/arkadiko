@@ -207,7 +207,7 @@
               stacked-tokens: u0,
               collateral: new-collateral-amount 
             })))
-            (try! (as-contract (request-stx-for-withdrawal new-collateral-amount)))
+            (try! (return-stx-to-reserve new-collateral-amount))
           )
           (begin
             (try! (contract-call? .arkadiko-stx-reserve-v1-1 add-tokens-to-stack (get stacker-name vault) earned-amount))
@@ -242,7 +242,7 @@
 )
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
-    (swapped-amounts (unwrap-panic (as-contract (contract-call? .arkadiko-swap-v1-1 swap-x-for-y wstx usda earned-stx-amount u1))))
+    (swapped-amounts (unwrap-panic (as-contract (contract-call? .arkadiko-swap-v1-1 swap-x-for-y wstx usda earned-stx-amount u0))))
     (usda-amount (unwrap-panic (element-at swapped-amounts u1)))
     (stability-fee (unwrap-panic (contract-call? .arkadiko-freddie-v1-1 get-stability-fee-for-vault vault-id coll-type)))
     (leftover-usda
@@ -277,9 +277,9 @@
   )
 )
 
-;; can be called by contract to request STX tokens for withdrawal
-;; this can be called per vault that has set revoked stacking to true
-(define-private (request-stx-for-withdrawal (ustx-amount uint))
+;; can be called by contract to send STX tokens back to STX reserve
+;; this should be called per vault that has set revoked stacking to true
+(define-private (return-stx-to-reserve (ustx-amount uint))
   (begin
     (asserts!
       (and
@@ -289,8 +289,11 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
 
-    (as-contract
-      (stx-transfer? ustx-amount (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
+    (if (> ustx-amount u0)
+      (as-contract
+        (stx-transfer? ustx-amount (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
+      )
+      (ok true)
     )
   )
 )
