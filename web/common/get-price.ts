@@ -13,7 +13,7 @@ export const getPrice = async (symbol: string) => {
   });
   const json = cvToJSON(fetchedPrice);
 
-  return json.value['last-price-in-cents'].value;
+  return json.value['last-price'].value;
 };
 
 export const getDikoAmmPrice = async () => {

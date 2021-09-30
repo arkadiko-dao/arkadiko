@@ -49,13 +49,13 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
     const minColl = tokenType == 'STX-A' ? 400 : 300;
     const maxRatio = Math.max(minColl, parseInt(liquidationRatio, 10) + 30);
     const uCollateralAmount = parseInt(value, 10) * 1000000;
-    setMaximumToMint(Math.floor((uCollateralAmount * price) / maxRatio));
+    setMaximumToMint(Math.floor((uCollateralAmount * price * 100) / maxRatio));
   };
 
   useEffect(() => {
     const fetchPrice = async () => {
       const price = await getPrice(tokenName);
-      setPrice(price);
+      setPrice(price / 1000000);
     };
 
     fetchPrice();
@@ -122,7 +122,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
         )
       );
       setCollateralToDebt(
-        getCollateralToDebtRatio(price, parseInt(coinAmount, 10), parseInt(collateralAmount, 10))
+        getCollateralToDebtRatio(price * 100, parseInt(coinAmount, 10), parseInt(collateralAmount, 10))
       );
     }
   }, [price, collateralAmount, coinAmount]);
@@ -287,7 +287,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                               Current {tokenName} Price
                             </dt>
                             <dd className="mt-1 text-sm text-indigo-900 sm:mt-0 sm:ml-auto">
-                              ${price / 100}
+                              ${price}
                             </dd>
                           </div>
 

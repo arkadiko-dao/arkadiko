@@ -32,17 +32,17 @@ Clarinet.test({
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
     let vaultAuction = new VaultAuction(chain, deployer);
 
-    // Initialize price of STX to 100 cents in the oracle
-    let result = oracleManager.updatePrice("STX", 100);
-    result.expectOk().expectUint(100);
+    // Initialize price of STX to $1 in the oracle
+    let result = oracleManager.updatePrice("STX", 1);
+    result.expectOk().expectUintWithDecimals(1);
 
     // Provide a collateral of 5000000 STX, so 1000000 stx-a can be minted (5 * 0.77) / 2 = 1.925
     result = vaultManager.createVault(deployer, "STX-A", 5, 1);
     result.expectOk().expectUintWithDecimals(1);
 
     // Let's say STX price crash to 35 cents
-    result = oracleManager.updatePrice("STX", 35);
-    result.expectOk().expectUint(35);
+    result = oracleManager.updatePrice("STX", 0.35);
+    result.expectOk().expectUintWithDecimals(0.35);
 
     // Notify liquidator
     result = vaultLiquidator.notifyRiskyVault(deployer, 1);
@@ -69,8 +69,8 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 100);
-    result.expectOk().expectUint(100);
+    let result = oracleManager.updatePrice("STX", 1);
+    result.expectOk().expectUintWithDecimals(1);
 
     result = vaultManager.createVault(deployer, "STX-A", 5, 1)
     result.expectOk().expectUintWithDecimals(1);
@@ -88,8 +88,8 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 400);
-    result.expectOk().expectUint(400);
+    let result = oracleManager.updatePrice("STX", 4);
+    result.expectOk().expectUintWithDecimals(4);
 
     result = vaultManager.createVault(deployer, "STX-B", 900, 700)
     result.expectOk().expectUintWithDecimals(700);
@@ -104,8 +104,8 @@ Clarinet.test({
     call.result.expectOk().expectUint(480);
 
     // Change price
-    result = oracleManager.updatePrice("STX", 800);
-    result.expectOk().expectUint(800);
+    result = oracleManager.updatePrice("STX", 8);
+    result.expectOk().expectUintWithDecimals(8);
 
     // Price doubled
     call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
@@ -121,8 +121,8 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 200);
-    result.expectOk().expectUint(200);
+    let result = oracleManager.updatePrice("STX", 2);
+    result.expectOk().expectUintWithDecimals(2);
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 500)
     result.expectOk().expectUintWithDecimals(500);
@@ -144,8 +144,8 @@ Clarinet.test({
     let usdaToken = new UsdaToken(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 200);
-    result.expectOk().expectUint(200);
+    let result = oracleManager.updatePrice("STX", 2);
+    result.expectOk().expectUintWithDecimals(2);
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 500)
     result.expectOk().expectUintWithDecimals(500);
@@ -191,8 +191,8 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 200);
-    result.expectOk().expectUint(200);
+    let result = oracleManager.updatePrice("STX", 2);
+    result.expectOk().expectUintWithDecimals(2);
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 500)
     result.expectOk().expectUintWithDecimals(500);
@@ -233,11 +233,11 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 200);
-    result.expectOk().expectUint(200);
+    let result = oracleManager.updatePrice("STX", 2);
+    result.expectOk().expectUintWithDecimals(2);
 
-    result = oracleManager.updatePrice("DIKO", 200);
-    result.expectOk().expectUint(200);
+    result = oracleManager.updatePrice("DIKO", 2);
+    result.expectOk().expectUintWithDecimals(2);
 
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
@@ -336,8 +336,8 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 77);
-    result.expectOk().expectUint(77);
+    let result = oracleManager.updatePrice("STX", 0.77);
+    result.expectOk().expectUintWithDecimals(0.77);
 
     result = vaultManager.createVault(deployer, "STX-A", 5, 0.000001)
     result.expectOk().expectUint(1);
@@ -368,8 +368,8 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 300);
-    result.expectOk().expectUint(300);
+    let result = oracleManager.updatePrice("STX", 3);
+    result.expectOk().expectUintWithDecimals(3);
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
     result.expectOk().expectUintWithDecimals(300);
@@ -416,8 +416,8 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 300);
-    result.expectOk().expectUint(300);
+    let result = oracleManager.updatePrice("STX", 3);
+    result.expectOk().expectUintWithDecimals(3);
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
     result.expectOk().expectUintWithDecimals(300);
@@ -452,8 +452,8 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 200);
-    result.expectOk().expectUint(200);
+    let result = oracleManager.updatePrice("STX", 2);
+    result.expectOk().expectUintWithDecimals(2);
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
     result.expectOk().expectUintWithDecimals(300);
@@ -477,8 +477,8 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 200);
-    result.expectOk().expectUint(200);
+    let result = oracleManager.updatePrice("STX", 2);
+    result.expectOk().expectUintWithDecimals(2);
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
     result.expectOk().expectUintWithDecimals(300);
@@ -499,8 +499,8 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 200);
-    result.expectOk().expectUint(200);
+    let result = oracleManager.updatePrice("STX", 2);
+    result.expectOk().expectUintWithDecimals(2);
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
     result.expectOk().expectUintWithDecimals(300);
@@ -546,8 +546,8 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 200);
-    result.expectOk().expectUint(200);
+    let result = oracleManager.updatePrice("STX", 2);
+    result.expectOk().expectUintWithDecimals(2);
 
     vaultManager.emergencyShutdown();
 
@@ -567,8 +567,8 @@ Clarinet.test({
     let vaultManager = new VaultManager(chain, deployer);
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 100);
-    result.expectOk().expectUint(100);
+    let result = oracleManager.updatePrice("STX", 1);
+    result.expectOk().expectUintWithDecimals(1);
 
     result = vaultManager.createVault(deployer, "STX-A", 5, 1);
     result.expectOk().expectUintWithDecimals(1);
@@ -589,8 +589,8 @@ Clarinet.test({
     call = await dikoToken.balanceOf(Utils.qualifiedName('arkadiko-freddie-v1-1'));
     call.result.expectOk().expectUint(0);
 
-    result = oracleManager.updatePrice("STX", 35);
-    result.expectOk().expectUint(35);
+    result = oracleManager.updatePrice("STX", 0.35);
+    result.expectOk().expectUintWithDecimals(0.35);
 
     result = vaultLiquidator.notifyRiskyVault(deployer, 1);
     result.expectOk().expectUint(5200);
@@ -625,8 +625,8 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 200);
-    result.expectOk().expectUint(200);
+    let result = oracleManager.updatePrice("STX", 2);
+    result.expectOk().expectUintWithDecimals(2);
 
     result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
     result.expectOk().expectUintWithDecimals(300);
@@ -644,8 +644,8 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 77);
-    result.expectOk().expectUint(77);
+    let result = oracleManager.updatePrice("STX", 0.77);
+    result.expectOk().expectUintWithDecimals(0.77);
 
     result = vaultManager.createVault(deployer, "STX-A", 0, 0);
     result.expectErr().expectUint(417); // wrong debt (0)

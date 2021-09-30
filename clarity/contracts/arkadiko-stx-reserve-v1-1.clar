@@ -133,18 +133,18 @@
 )
 
 ;; calculate the amount of stablecoins to mint, based on posted STX amount
-;; ustx-amount * stx-price-in-cents == dollar-collateral-posted-in-cents
-;; (dollar-collateral-posted-in-cents / collateral-to-debt-ratio) == stablecoins to mint
+;; ustx-amount * stx-price == dollar-collateral-posted
+;; (dollar-collateral-posted / collateral-to-debt-ratio) == stablecoins to mint
 (define-public (calculate-usda-count
   (token (string-ascii 12))
   (ustx-amount uint)
   (collateralization-ratio uint)
   (oracle <oracle-trait>)
 )
-  (let ((stx-price-in-cents (unwrap-panic (contract-call? oracle fetch-price token))))
+  (let ((stx-price (unwrap-panic (contract-call? oracle fetch-price token))))
     (let ((amount
       (/
-        (* ustx-amount (get last-price-in-cents stx-price-in-cents))
+        (* ustx-amount (get last-price stx-price))
         collateralization-ratio
       ))
     )
@@ -159,9 +159,9 @@
   (ustx uint)
   (oracle <oracle-trait>)
 )
-  (let ((stx-price-in-cents (unwrap-panic (contract-call? oracle fetch-price token))))
+  (let ((stx-price (unwrap-panic (contract-call? oracle fetch-price token))))
     (if (> debt u0)
-      (ok (/ (* ustx (get last-price-in-cents stx-price-in-cents)) debt))
+      (ok (/ (/ (* ustx (get last-price stx-price)) debt) u10000))
       (err u0)
     )
   )
