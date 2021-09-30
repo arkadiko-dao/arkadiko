@@ -59,4 +59,4 @@ rp(requestOptions).then(async (response) => {
   let price = response['data']['4847']['quote']['USD']['price'];
   await setPrice(price);
 });
-// setPrice(0.5); // 2 USD
+// setPrice(0.5); // 0.5 USD

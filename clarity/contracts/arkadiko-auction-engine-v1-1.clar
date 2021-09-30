@@ -58,8 +58,8 @@
   { ids: (list 100 (tuple (auction-id uint) (lot-index uint))) }
 )
 (define-map redeeming-lot
-  { user: principal }
   { auction-id: uint, lot-index: uint }
+  { bidder: principal }
 )
 
 (define-data-var last-auction-id uint u0)
@@ -645,24 +645,19 @@
 )
 
 (define-private (remove-winning-lot (lot (tuple (auction-id uint) (lot-index uint))))
-  (let ((current-lot (unwrap-panic (map-get? redeeming-lot { user: tx-sender }))))
-    (if 
-      (and
-        (is-eq (get auction-id lot) (get auction-id current-lot))
-        (is-eq (get lot-index lot) (get lot-index current-lot))
-      )
-      false
-      true
-    )
+  (if (is-some (map-get? redeeming-lot { auction-id: (get auction-id lot), lot-index: (get lot-index lot) }))
+    false
+    true
   )
 )
 
 (define-private (return-usda (owner principal) (usda uint) (auction-id uint) (lot-index uint))
   (if (> usda u0)
-    (let ((lots (get-winning-lots tx-sender)))
-      (map-set redeeming-lot { user: tx-sender } { auction-id: auction-id, lot-index: lot-index})
-      (map-set winning-lots { user: tx-sender } { ids: (filter remove-winning-lot (get ids lots)) })
-      (as-contract (contract-call? .usda-token transfer usda (as-contract tx-sender) owner none))
+    (let ((lots (get-winning-lots owner)))
+      (map-set redeeming-lot { auction-id: auction-id, lot-index: lot-index } { bidder: owner })
+      (map-set winning-lots { user: owner } { ids: (filter remove-winning-lot (get ids lots)) })
+      (try! (as-contract (contract-call? .usda-token transfer usda (as-contract tx-sender) owner none)))
+      (ok (map-delete redeeming-lot { auction-id: auction-id, lot-index: lot-index }))
     )
     (err u0) ;; don't really care if this fails.
   )
