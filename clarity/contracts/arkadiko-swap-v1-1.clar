@@ -355,6 +355,7 @@
     )
   )
     (asserts! (< min-dy dy) too-much-slippage-err)
+
     ;; if token X is wrapped STX (i.e. the sender needs to exchange STX for wSTX)
     (if (is-eq (unwrap-panic (contract-call? token-x-trait get-symbol)) "wSTX")
       (begin

@@ -6,13 +6,13 @@
 (define-constant ERR-NOT-AUTHORIZED u8401)
 
 (define-data-var oracle-owner principal tx-sender)
-(define-data-var last-price-in-cents uint u0)
+(define-data-var last-price uint u0)
 (define-data-var last-block uint u0)
 
 (define-map prices
   { token: (string-ascii 12) }
   {
-    last-price-in-cents: uint,
+    last-price: uint,
     last-block: uint
   }
 )
@@ -28,7 +28,7 @@
 (define-public (update-price (token (string-ascii 12)) (price uint))
   (if (is-eq tx-sender (var-get oracle-owner))
     (begin
-      (map-set prices { token: token } { last-price-in-cents: price, last-block: block-height })
+      (map-set prices { token: token } { last-price: price, last-block: block-height })
       (ok price)
     )
     (err ERR-NOT-WHITELISTED)
@@ -36,7 +36,7 @@
 )
 
 (define-read-only (get-price (token (string-ascii 12)))
-  (unwrap! (map-get? prices {token: token }) { last-price-in-cents: u0, last-block: u0 })
+  (unwrap! (map-get? prices {token: token }) { last-price: u0, last-block: u0 })
 )
 
 (define-public (fetch-price (token (string-ascii 12)))

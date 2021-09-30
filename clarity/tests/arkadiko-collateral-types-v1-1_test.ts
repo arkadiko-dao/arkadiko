@@ -76,7 +76,7 @@ Clarinet.test({
     result['result'].expectOk().expectUint(1000000000000000);
 
     let oracleUpdate = oracleManager.updatePrice("STX", 100);
-    oracleUpdate.expectOk().expectUint(100);
+    oracleUpdate.expectOk().expectUintWithDecimals(100);
 
     // Provide a collateral of 5000000 STX, so 1000000 stx-a can be minted (5 * 0.77) / 2 = 1.925
     let vaultCreation = vaultManager.createVault(deployer, "STX-A", 5, 1);
@@ -104,7 +104,7 @@ Clarinet.test({
     result['result'].expectOk().expectUint(100000);
 
     let oracleUpdate = oracleManager.updatePrice("STX", 100);
-    oracleUpdate.expectOk().expectUint(100);
+    oracleUpdate.expectOk().expectUintWithDecimals(100);
 
     // Provide a collateral of 5000000 STX, so 1000000 stx-a can be minted (5 * 0.77) / 2 = 1.925
     let vaultCreation = vaultManager.createVault(deployer, "STX-A", 5, 1);

@@ -24,7 +24,7 @@ class OracleManager {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii(token),
-        types.uint(price),
+        types.uint(price * 1000000),
       ], this.deployer.address),
     ]);
     return block.receipts[0].result;
