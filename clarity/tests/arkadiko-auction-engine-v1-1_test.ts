@@ -9,7 +9,8 @@ import {
 import { 
   OracleManager,
   UsdaToken,
-  XstxManager
+  XstxManager,
+  DikoToken
 } from './models/arkadiko-tests-tokens.ts';
 
 import { 
@@ -166,6 +167,7 @@ Clarinet.test({
     let vaultManager = new VaultManager(chain, deployer);
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
     let vaultAuction = new VaultAuction(chain, deployer);
+    let dikoToken = new DikoToken(chain, deployer);
 
     // Initialize price of STX to $3 in the oracle
     let result = oracleManager.updatePrice("STX", 3);
@@ -179,6 +181,14 @@ Clarinet.test({
     result = vaultLiquidator.notifyRiskyVault(deployer);
     result.expectOk().expectUint(5200);
 
+    // Auction info
+    // No collateral sold yet, so no debt raised
+    let call:any = await vaultAuction.getAuctionById(1, wallet_1);
+    let auction:any = call.result.expectTuple();
+    auction['total-collateral-sold'].expectUintWithDecimals(0);
+    auction['total-debt-raised'].expectUintWithDecimals(0);
+    auction['debt-to-raise'].expectUintWithDecimals(1030.000045); // 1030 USDA (30% extra liquidation penalty + stability fees)
+
     // Now the liquidation started and an auction should have been created!
     // Make a bid on the first 1000 USDA
     result = vaultManager.fetchMinimumCollateralAmount(1, wallet_1);
@@ -189,9 +199,12 @@ Clarinet.test({
 
     // The auction sold off all of its collateral now, but not enough debt was raised
     // As a result, we will raise debt through a governance token auction
-    let call:any = await vaultAuction.getAuctionById(1, wallet_1);
-    let auction:any = call.result.expectTuple();
-    auction['total-collateral-sold'].expectUintWithDecimals(1500);
+    // Still need to raise 30.000045 USDA
+    call = await vaultAuction.getAuctionById(1, wallet_1);
+    auction = call.result.expectTuple();
+    auction['total-collateral-sold'].expectUintWithDecimals(1500); // All collateral sold
+    const debtRaised = auction['total-debt-raised'].expectUintWithDecimals(1000); // 1000 USDA raised
+    const debtToRaise = auction['debt-to-raise'].expectUintWithDecimals(1030.000045); // 1030 USDA
 
     chain.mineEmptyBlock(160);
 
@@ -205,18 +218,32 @@ Clarinet.test({
     call = await vaultAuction.getAuctionOpen(1, wallet_1);
     call.result.expectOk().expectBool(false);
 
-    const debtRaised = auction['total-debt-raised'].expectUintWithDecimals(1000); // 1000 USDA raised
-    const debtToRaise = auction['debt-to-raise'].expectUintWithDecimals(1030.000045); // 1030 USDA
+    call = dikoToken.balanceOf(deployer.address);
+    call.result.expectOk().expectUintWithDecimals(890000);
+    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-auction-engine-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(0);
 
+    // New auction opened with DIKO as collateral token
     call = await vaultAuction.getAuctionById(2, wallet_1);
     let dikoAuction:any = call.result.expectTuple();
     dikoAuction['collateral-token'].expectAscii('DIKO'); // auction off some gov token
     dikoAuction['debt-to-raise'].expectUint(debtToRaise - debtRaised); // raise the remainder of previous auction
 
+    // Set DIKO oracle price
     oracleManager.updatePrice("DIKO", 2);
 
-    result = vaultAuction.bid(deployer, 430, 2, 0);
+    // We need to raise 30.000045 USDA = 15.000022 DIKO
+    result = vaultManager.fetchMinimumCollateralAmount(2, wallet_1);
+    result.expectOk().expectUintWithDecimals(15.000022);
+
+    result = vaultAuction.bid(deployer, 31, 2, 0);
     result.expectOk().expectBool(true);
+
+    call = await vaultAuction.getLastBid(2, 0, deployer);
+    let bid:any = call.result.expectTuple();
+    bid['usda'].expectUintWithDecimals(31); 
+    bid['collateral-amount'].expectUintWithDecimals(15.000022); 
+    bid['collateral-token'].expectAscii("DIKO");
 
     call = await vaultAuction.getAuctionById(2, wallet_1);
     dikoAuction = call.result.expectTuple();
@@ -230,6 +257,31 @@ Clarinet.test({
     vault['leftover-collateral'].expectUint(0);
     vault['is-liquidated'].expectBool(true);
     vault['auction-ended'].expectBool(true);
+
+    // Auction info
+    call = await vaultAuction.getAuctionById(2, wallet_1);
+    auction = call.result.expectTuple();
+    auction['total-collateral-sold'].expectUintWithDecimals(15.000022);
+    auction['total-debt-raised'].expectUintWithDecimals(31.000000); 
+    auction['total-debt-burned'].expectUintWithDecimals(31.000000); 
+    auction['debt-to-raise'].expectUintWithDecimals(30.000045);
+
+    call = await vaultAuction.getAuctionOpen(2, deployer);
+    call.result.expectOk().expectBool(false);
+
+    // Bidder can redeem DIKO
+    result = vaultAuction.redeemLotCollateralDiko(deployer, 2, 0);
+    result.expectOk().expectBool(true);
+
+    // Check balances
+    call = dikoToken.balanceOf(deployer.address);
+    call.result.expectOk().expectUintWithDecimals(890015.000022);
+
+    // Auction engine and SIP10 shoudl not have any DIKO
+    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-auction-engine-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(0);
+    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-sip10-reserve-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(0);
   }
 });
 

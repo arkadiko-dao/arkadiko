@@ -327,29 +327,29 @@ class VaultAuction {
     );
   }
 
-  getAuctionById(vaultId: number = 1, caller: Account = this.deployer) {
+  getAuctionById(auctionId: number = 1, caller: Account = this.deployer) {
     return this.chain.callReadOnlyFn(
       "arkadiko-auction-engine-v1-1",
       "get-auction-by-id",
-      [types.uint(vaultId)],
+      [types.uint(auctionId)],
       caller.address,
     );
   }
 
-  getAuctionOpen(vaultId: number = 1, caller: Account = this.deployer, ) {
+  getAuctionOpen(auctionId: number = 1, caller: Account = this.deployer, ) {
     return this.chain.callReadOnlyFn(
       "arkadiko-auction-engine-v1-1",
       "get-auction-open",
-      [types.uint(vaultId)],
+      [types.uint(auctionId)],
       caller.address,
     );
   }
 
-  getLastBid(vaultId: number = 1, lot: number = 0, caller: Account) {
+  getLastBid(auctionId: number = 1, lot: number = 0, caller: Account) {
     return this.chain.callReadOnlyFn(
       "arkadiko-auction-engine-v1-1",
       "get-last-bid",
-      [types.uint(vaultId), types.uint(lot)],
+      [types.uint(auctionId), types.uint(lot)],
       caller.address
     );
   }
@@ -361,13 +361,13 @@ class VaultAuction {
     return block.receipts[0].result;
   }
 
-  bid(user: Account, bid: number, vaultId: number = 1, lot: number = 0) {
+  bid(user: Account, bid: number, auctionId: number = 1, lot: number = 0) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
-        types.uint(vaultId),
+        types.uint(auctionId),
         types.uint(lot),
         types.uint(bid * 1000000)
       ], user.address)
@@ -376,7 +376,7 @@ class VaultAuction {
   }
   
   // Redeem xSTX
-  redeemLotCollateralXstx(user: Account, vaultId: number = 1, lot: number = 0) {
+  redeemLotCollateralXstx(user: Account, auctionId: number = 1, lot: number = 0) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v1-1", "redeem-lot-collateral", [
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
@@ -389,7 +389,7 @@ class VaultAuction {
         types.principal(
           Utils.qualifiedName('arkadiko-collateral-types-v1-1'), 
         ),
-        types.uint(vaultId),
+        types.uint(auctionId),
         types.uint(lot)
       ], user.address)
     ]);
@@ -397,7 +397,7 @@ class VaultAuction {
   }
 
   // Redeem STX
-  redeemLotCollateralStx(user: Account, vaultId: number = 1, lot: number = 0) {
+  redeemLotCollateralStx(user: Account, auctionId: number = 1, lot: number = 0) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v1-1", "redeem-lot-collateral", [
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
@@ -410,7 +410,28 @@ class VaultAuction {
         types.principal(
           Utils.qualifiedName('arkadiko-collateral-types-v1-1'), 
         ),
-        types.uint(vaultId),
+        types.uint(auctionId),
+        types.uint(lot)
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  // Redeem DIKO
+  redeemLotCollateralDiko(user: Account, auctionId: number = 1, lot: number = 0) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "redeem-lot-collateral", [
+        types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
+        types.principal(
+          Utils.qualifiedName('arkadiko-token'),
+        ),
+        types.principal(
+          Utils.qualifiedName('arkadiko-sip10-reserve-v1-1'),
+        ),
+        types.principal(
+          Utils.qualifiedName('arkadiko-collateral-types-v1-1'), 
+        ),
+        types.uint(auctionId),
         types.uint(lot)
       ], user.address)
     ]);

@@ -217,11 +217,10 @@
 
     (let (
       (auction-id (+ (var-get last-auction-id) u1))
-      (price-in-cents u10)
       (auction {
         id: auction-id,
         auction-type: "debt",
-        collateral-amount: (/ (* u100 debt-to-raise) price-in-cents),
+        collateral-amount: (* debt-to-raise u1000000),
         collateral-token: "DIKO",
         debt-to-raise: debt-to-raise,
         discount: discount,
@@ -397,7 +396,7 @@
     (if (is-eq (get auction-type auction) "debt")
       ;; request "collateral-amount" gov tokens from the DAO
       (begin
-        (try! (contract-call? .arkadiko-dao request-diko-tokens (get collateral-amount auction)))
+        (try! (contract-call? .arkadiko-dao request-diko-tokens (get collateral-amount last-bid)))
         (try! (contract-call? vault-manager redeem-auction-collateral ft token-string reserve (get collateral-amount last-bid) tx-sender))
       )
       (try! (contract-call? vault-manager redeem-auction-collateral ft token-string reserve (get collateral-amount last-bid) tx-sender))
@@ -461,7 +460,10 @@
         (let (
           (amount-to-burn (min-of (- (get total-debt-raised auction) (get total-debt-burned auction)) (- (get debt vault) (get total-debt-burned auction))))
         )
-          (try! (contract-call? .arkadiko-dao burn-token .usda-token amount-to-burn (as-contract tx-sender)))
+          (if (> amount-to-burn u0)
+            (try! (contract-call? .arkadiko-dao burn-token .usda-token amount-to-burn (as-contract tx-sender)))
+            true
+          )
           (map-set auctions
             { id: auction-id }
             (merge auction { total-debt-burned: (+ (get total-debt-burned auction) amount-to-burn) })
