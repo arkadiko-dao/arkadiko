@@ -96,6 +96,7 @@ export const Auctions: React.FC = () => {
           network: network,
         });
         const bid = cvToJSON(lastBid).value;
+        console.log(bid);
         return bid;
       }
 
@@ -108,6 +109,7 @@ export const Auctions: React.FC = () => {
         network: network,
       });
       const jsonLots = cvToJSON(lots);
+      console.log(jsonLots);
       let isAuctionOpen;
 
       let serializedLots:Array<{ 'lot-id':string, 'auction-id': string, 'collateral-amount': number, 'collateral-token': string, 'usda': number }> = [];

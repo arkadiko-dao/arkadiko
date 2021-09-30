@@ -85,3 +85,5 @@ Run `stx send_tokens -t -H "http://localhost:20080" -I "http://localhost:20080" 
 6. When new cycle nears: call stacking contract with updated numbers. Check if stx reserve tokens to stack is correct
 
 `stx call_read_only_contract_func -t -H "http://localhost:20080" -I "http://localhost:20080" --contract_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM --contract_name arkadiko-stacker-payer-v1-1 --function_name calculate-vault-reward --sender_address ST1A0EP8AWV24G1BETM154DYWXGB4Q7MDB5WXXFTB`
+
+stx call_read_only_contract_func -t -H "http://localhost:20080" -I "http://localhost:20080" --contract_address ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM --contract_name arkadiko-auction-engine-v1-1 --function_name get-auction-by-id --sender_address ST1A0EP8AWV24G1BETM154DYWXGB4Q7MDB5WXXFTB
