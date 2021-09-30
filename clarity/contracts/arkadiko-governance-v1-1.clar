@@ -348,7 +348,7 @@
       { amount: u0 })
 
     ;; Return DIKO or stDIKO
-    (as-contract (contract-call? token transfer token-count (as-contract tx-sender) member none))
+    (as-contract (contract-call? token transfer token-count tx-sender member none))
   )
 )
 

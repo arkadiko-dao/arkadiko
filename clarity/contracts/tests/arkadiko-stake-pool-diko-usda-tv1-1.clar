@@ -161,7 +161,7 @@
       (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
 
       ;; Transfer LP token back from this contract to the user
-      (try! (as-contract (contract-call? .arkadiko-swap-token-diko-usda transfer stake-amount (as-contract tx-sender) tx-sender none)))
+      (try! (as-contract (contract-call? .arkadiko-swap-token-diko-usda transfer stake-amount tx-sender tx-sender none)))
 
       ;; Update sender stake info
       (map-set stakes { staker: tx-sender } { uamount: new-stake-amount, cumm-reward-per-stake: (var-get cumm-reward-per-stake) })

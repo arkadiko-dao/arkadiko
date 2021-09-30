@@ -523,7 +523,7 @@
     (let (
       (balance (unwrap-panic (contract-call? token get-balance (as-contract tx-sender))))
     )
-      (as-contract (contract-call? token transfer balance (as-contract tx-sender) (contract-of auction-engine) none))
+      (as-contract (contract-call? token transfer balance tx-sender (contract-of auction-engine) none))
     )
   )
 )
@@ -542,7 +542,7 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
 
-    (as-contract (contract-call? .usda-token transfer usda-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none))
+    (as-contract (contract-call? .usda-token transfer usda-amount tx-sender (contract-call? .arkadiko-dao get-payout-address) none))
   )
 )
 
@@ -660,7 +660,7 @@
     (let ((lots (get-winning-lots tx-sender)))
       (map-set redeeming-lot { user: tx-sender } { auction-id: auction-id, lot-index: lot-index})
       (map-set winning-lots { user: tx-sender } { ids: (filter remove-winning-lot (get ids lots)) })
-      (as-contract (contract-call? .usda-token transfer usda (as-contract tx-sender) owner none))
+      (as-contract (contract-call? .usda-token transfer usda tx-sender owner none))
     )
     (err u0) ;; don't really care if this fails.
   )

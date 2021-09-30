@@ -157,7 +157,7 @@
     (earned-amount-vault (/ (* (var-get stacking-stx-received) basis-points) u100000))
     (earned-amount-bidder (/ (* percentage earned-amount-vault) u100000))
   )
-    (try! (as-contract (stx-transfer? earned-amount-bidder (as-contract tx-sender) (get principal stacker-payout))))
+    (try! (as-contract (stx-transfer? earned-amount-bidder tx-sender (get principal stacker-payout))))
     (ok true)
   )
 )
@@ -269,7 +269,7 @@
           (excess-usda (- leftover-usda (get debt vault)))
         )
           (try! (as-contract (contract-call? .arkadiko-freddie-v1-1 burn vault-id (get debt vault) reserve ft coll-type)))
-          (try! (as-contract (contract-call? .usda-token transfer excess-usda (as-contract tx-sender) (get owner vault) none)))
+          (try! (as-contract (contract-call? .usda-token transfer excess-usda tx-sender (get owner vault) none)))
         )
       )
     )
@@ -290,7 +290,7 @@
     )
 
     (as-contract
-      (stx-transfer? ustx-amount (as-contract tx-sender) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
+      (stx-transfer? ustx-amount tx-sender (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
     )
   )
 )
