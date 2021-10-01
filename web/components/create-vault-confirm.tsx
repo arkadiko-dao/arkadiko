@@ -1,5 +1,5 @@
 import React from 'react';
-import { QuestionMarkCircleIcon, ExternalLinkIcon } from '@heroicons/react/solid';
+import { QuestionMarkCircleIcon, ExternalLinkIcon, ExclamationIcon } from '@heroicons/react/solid';
 
 
 export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => {
@@ -142,6 +142,25 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                 </div>
 
                 <div className="pt-4">
+                  <div className="p-4 mt-2 mb-6 border-l-4 border-yellow-400 rounded-sm bg-yellow-50">
+                    <div className="flex">
+                      <div className="flex-shrink-0">
+                        <ExclamationIcon className="w-5 h-5 text-yellow-400" aria-hidden="true" />
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-sm text-yellow-700">
+                          Attention: Choosing to stack your STX means that they will be locked and become illiquid immediately. They will remain this way until the end of the <a href="https://stacking.club/cycles/next" target="_blank" rel="noopener noreferrer" className="font-medium text-yellow-700 underline hover:text-yellow-600">next PoX cycle</a>.            
+                        </p>
+
+                        <p className="mt-2 text-sm">
+                          <a href="https://stacking.club/learn" target="_blank" rel="noopener noreferrer" className="font-medium text-yellow-700 underline hover:text-yellow-600">
+                            Learn more about the PoX cycle.
+                          </a>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
                   <label className="flex items-center space-x-3">
                     <input
                       type="checkbox"
