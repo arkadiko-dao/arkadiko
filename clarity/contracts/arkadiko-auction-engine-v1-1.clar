@@ -671,6 +671,7 @@
     (map-set auctions
       { id: auction-id }
       (merge auction {
+        total-debt-burned: (get total-debt-raised auction),
         ends-at: (+ (get ends-at auction) blocks-per-day)
       })
     )
