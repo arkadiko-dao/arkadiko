@@ -475,7 +475,7 @@
     (try!
       (if (>= (get total-debt-raised auction) (get debt-to-raise auction))
         (begin
-          (try! (remove-auction auction-id))
+          (unwrap-panic (remove-auction auction-id))
           (if (is-eq (get auction-type auction) "collateral")
             (contract-call?
               vault-manager
@@ -498,7 +498,7 @@
           (extend-auction auction-id)
           (begin
             ;; no collateral left. Need to sell governance token to raise more USDA
-            (try! (remove-auction auction-id))
+            (unwrap-panic (remove-auction auction-id))
             (start-debt-auction
               (get vault-id auction)
               (- (get debt-to-raise auction) (get total-debt-raised auction))
@@ -580,8 +580,8 @@
     (last-bid (get-last-bid auction-id lot-index))
     (collateral-amount (unwrap-panic (get-minimum-collateral-amount oracle auction-id)))
     (lot-got-sold (if (>= usda (var-get lot-size))
-        (ok u1)
-        (ok u0)
+        u1
+        u0
       )
     )
     (lots (get-winning-lots tx-sender))
@@ -603,7 +603,7 @@
     (map-set auctions
       { id: auction-id }
       (merge auction {
-        lots-sold: (+ (unwrap-panic lot-got-sold) (get lots-sold auction)),
+        lots-sold: (+ lot-got-sold (get lots-sold auction)),
         total-collateral-sold: (- (+ collateral-amount (get total-collateral-sold auction)) (get collateral-amount last-bid)),
         total-debt-raised: (- (+ usda (get total-debt-raised auction)) (get usda last-bid))
       })
@@ -677,13 +677,10 @@
 )
 
 (define-private (remove-auction (auction-id uint))
-  (if true
-    (begin
-      (var-set removing-auction-id auction-id)
-      (var-set auction-ids (unwrap-panic (as-max-len? (filter remove-closed-auction (var-get auction-ids)) u1500)))
-      (ok true)
-    )
-    (err u0)
+  (begin
+    (var-set removing-auction-id auction-id)
+    (var-set auction-ids (unwrap-panic (as-max-len? (filter remove-closed-auction (var-get auction-ids)) u1500)))
+    (ok true)
   )
 )
 
