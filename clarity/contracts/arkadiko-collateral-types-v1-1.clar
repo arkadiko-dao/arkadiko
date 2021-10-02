@@ -124,6 +124,17 @@
   )
 )
 
+(define-public (change-token-address (collateral-type (string-ascii 12)) (address principal))
+  (let (
+    (type (unwrap-panic (get-collateral-type-by-name collateral-type)))
+  )
+    (asserts! (is-eq tx-sender OWNER) (err ERR-NOT-AUTHORIZED))
+
+    (map-set collateral-types { name: collateral-type } (merge type { token-address: address }))
+    (ok true)
+  )
+)
+
 (define-private (change-risk-parameter (change (tuple (key (string-ascii 256)) (new-value uint)))
                                        (type (tuple (collateral-to-debt-ratio uint) (liquidation-penalty uint) (liquidation-ratio uint)
                                               (maximum-debt uint) (name (string-ascii 256)) (stability-fee uint) (stability-fee-apy uint) (stability-fee-decimals uint)

@@ -111,3 +111,20 @@ Clarinet.test({
     vaultCreation.expectErr().expectUint(410);
   }
 });
+
+Clarinet.test({
+  name: "collateral types: change token address",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let collateralTypeManager = new CollateralTypeManager(chain, deployer);
+    let result = collateralTypeManager.getTokenAddress('STX-A');
+    result['result'].expectOk().expectPrincipal(deployer.address);
+
+    let res = collateralTypeManager.changeTokenAddress('STX-A', wallet_1.address);
+    res.expectOk();
+    result = collateralTypeManager.getTokenAddress('STX-A');
+    result['result'].expectOk().expectPrincipal(wallet_1.address);
+  }
+});
