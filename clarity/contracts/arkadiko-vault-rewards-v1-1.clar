@@ -124,7 +124,6 @@
 ;; Claim rewards for user
 (define-private (claim-pending-rewards-for (user principal))
   (begin
-
     ;; Increase so we know new value for this user
     (unwrap-panic (increase-cumm-reward-per-collateral))
 
@@ -185,6 +184,8 @@
     ;; Calculate new cumm reward per collateral
     (new-cumm-reward-per-collateral (calculate-cumm-reward-per-collateral))
   )
+    (asserts! (> block-height (var-get last-reward-increase-block)) (ok u0))
+
     (var-set cumm-reward-per-collateral new-cumm-reward-per-collateral)
     (var-set last-reward-increase-block block-height)
     (ok new-cumm-reward-per-collateral)
@@ -196,12 +197,14 @@
   (let (
     (rewards-per-block (contract-call? .arkadiko-diko-guardian-v1-1 get-vault-rewards-per-block))
     (current-total-collateral (var-get total-collateral))
-    (block-diff (- block-height (var-get last-reward-increase-block)))
     (current-cumm-reward-per-collateral (var-get cumm-reward-per-collateral)) 
   )
-    (if (> current-total-collateral u0)
+    (if (and
+      (> current-total-collateral u0)
+      (> block-height (var-get last-reward-increase-block))
+    )
       (let (
-        (total-rewards-to-distribute (* rewards-per-block block-diff))
+        (total-rewards-to-distribute (* rewards-per-block (- block-height (var-get last-reward-increase-block))))
         (reward-added-per-token (/ (* total-rewards-to-distribute u1000000) current-total-collateral))
         (new-cumm-reward-per-collateral (+ current-cumm-reward-per-collateral reward-added-per-token))
       )
@@ -213,6 +216,7 @@
 )
 
 ;; Initialize the contract
+;; TODO: set custom block height here for mainnet
 (begin
   (var-set last-reward-increase-block block-height)
 )
