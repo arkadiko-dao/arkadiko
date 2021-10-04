@@ -12,7 +12,8 @@ import {
   makeStandardFungiblePostCondition,
   FungibleConditionCode,
   AnchorMode,
-  createAssetInfo
+  createAssetInfo,
+  makeContractFungiblePostCondition
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ExplorerLink } from './explorer-link';
@@ -32,7 +33,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
     const amount = uintCV(parseInt(coinAmounts['amounts']['collateral'], 10) * decimals);
     const args = [
       amount,
-      uintCV(parseInt(coinAmounts['amounts']['usda'], 10) * decimals),
+      uintCV(parseInt(coinAmounts['amounts']['usda'], 10) * 1000000),
       tupleCV({
         'stack-pox': ((coinAmounts['stack-pox'] && coinAmounts['token-type'].toLowerCase().includes('stx')) ? trueCV() : falseCV()),
         'auto-payoff': ((coinAmounts['auto-payoff'] && coinAmounts['token-type'].toLowerCase().includes('stx')) ? trueCV() : falseCV())
@@ -45,7 +46,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
     ];
 
     let postConditions:any[] = [];
-    let postConditionMode = 0x00;
+    let postConditionMode = 0x02;
     if (coinAmounts['token-name'].toLowerCase() === 'stx') {
       postConditions = [
         makeStandardSTXPostCondition(
@@ -60,7 +61,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
         makeStandardFungiblePostCondition(
           address || '',
           FungibleConditionCode.LessEqual,
-          amount.value,
+          200000000,
           createAssetInfo(
             contractAddress,
             'tokensoft-token',
@@ -77,8 +78,8 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       contractName: 'arkadiko-freddie-v1-1',
       functionName: 'collateralize-and-mint',
       functionArgs: args,
-      postConditionMode,
       postConditions,
+      postConditionMode,
       onFinish: data => {
         console.log('finished collateralizing!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'creating vault...' }));
