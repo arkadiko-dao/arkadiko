@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { AppContext } from '@common/context';
 import { QuestionMarkCircleIcon, ExternalLinkIcon, ExclamationIcon } from '@heroicons/react/solid';
 
 
 export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => {
+  const [state] = useContext(AppContext);
+
   const togglePox = () => {
     const newState = !coinAmounts['stack-pox'];
     let autoPayoff = coinAmounts['auto-payoff'];
@@ -149,7 +152,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                       </div>
                       <div className="ml-3">
                         <p className="text-sm text-yellow-700">
-                          Attention: Choosing to stack your STX means that they will be locked and become illiquid immediately. They will remain this way until the end of the <a href="https://stacking.club/cycles/next" target="_blank" rel="noopener noreferrer" className="font-medium text-yellow-700 underline hover:text-yellow-600">next PoX cycle</a>.            
+                          Attention: Choosing to stack your STX means that they will be locked and become illiquid immediately. They will remain this way until the end of the <a href="https://stacking.club/cycles/next" target="_blank" rel="noopener noreferrer" className="font-medium text-yellow-700 underline hover:text-yellow-600">next PoX cycle</a>  ({state.endDate} + 2-week cooldown period).         
                         </p>
 
                         <p className="mt-2 text-sm">
