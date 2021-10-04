@@ -53,6 +53,7 @@ export const ManageVault = ({ match }) => {
   const [canWithdrawCollateral, setCanWithdrawCollateral] = useState(false);
   const [canUnlockCollateral, setCanUnlockCollateral] = useState(false);
   const [canStackCollateral, setCanStackCollateral] = useState(false);
+  const [decimals, setDecimals] = useState(1000000);
 
   useEffect(() => {
     const fetchVault = async () => {
@@ -184,6 +185,7 @@ export const ManageVault = ({ match }) => {
       if (vault['collateralType'].toLowerCase().includes('stx')) {
         setCanStackCollateral(true);
       }
+      setDecimals(vault['collateralType'].toLowerCase().includes('stx') ? 1000000 : 100000000);
       fetchFees();
       fetchStackerHeight();
     }
@@ -508,7 +510,7 @@ export const ManageVault = ({ match }) => {
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Choose how much extra collateral you want to post. You have a balance of {state.balance['stx'] / 1000000} {vault?.collateralToken.toUpperCase()}.
+                    Choose how much extra collateral you want to post. You have a balance of {state.balance[vault?.collateralToken.toLowerCase()] / decimals} {vault?.collateralToken.toUpperCase()}.
                   </p>
                   <p className="text-sm text-gray-500">
                     We will automatically harvest any DIKO you are eligible for when depositing.
@@ -516,7 +518,7 @@ export const ManageVault = ({ match }) => {
 
                   <div className="mt-6">
                     <InputAmount
-                      balance={(state.balance['stx'] / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                      balance={(state.balance[vault?.collateralToken.toLowerCase()] / decimals).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
                       token={vault?.collateralToken.toUpperCase()}
                       inputName="depositCollateral"
                       inputId="depositExtraStxAmount"
