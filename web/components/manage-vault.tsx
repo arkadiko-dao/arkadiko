@@ -52,6 +52,7 @@ export const ManageVault = ({ match }) => {
   const [startedStacking, setStartedStacking] = useState(true);
   const [canWithdrawCollateral, setCanWithdrawCollateral] = useState(false);
   const [canUnlockCollateral, setCanUnlockCollateral] = useState(false);
+  const [canStackCollateral, setCanStackCollateral] = useState(false);
 
   useEffect(() => {
     const fetchVault = async () => {
@@ -180,6 +181,9 @@ export const ManageVault = ({ match }) => {
     };
 
     if (vault?.id) {
+      if (vault['collateralType'].toLowerCase().includes('stx')) {
+        setCanStackCollateral(true);
+      }
       fetchFees();
       fetchStackerHeight();
     }
@@ -770,30 +774,32 @@ export const ManageVault = ({ match }) => {
                     ) : null }
                   </div>
 
-                  <div className="pt-6">
-                    <div>
-                      <div className="flex items-center justify-between">
-                        <p className="text-lg font-semibold leading-none">Stacking</p>
-                        {enabledStacking ? (
-                          <p className="text-base font-normal leading-6 text-green-500">Enabled</p>
-                        ) : (
-                          <p className="text-base font-normal leading-6 text-red-500">Disabled</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="mt-4">
-                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <div>
-                          <p className="text-lg font-semibold leading-none">{microToReadable(vault?.stackedTokens)} <span className="text-sm font-normal">{vault?.collateralToken.toUpperCase()}</span></p>
-                          <p className="text-base font-normal leading-6 text-gray-500">Currently stacking</p>
-                        </div>
-                        <div>
-                          <p className="text-lg font-semibold leading-none">{state.endDate}</p>
-                          <p className="text-base font-normal leading-6 text-gray-500">End of current cycle</p>
+                  {canStackCollateral ? (
+                    <div className="pt-6">
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <p className="text-lg font-semibold leading-none">Stacking</p>
+                          {enabledStacking ? (
+                            <p className="text-base font-normal leading-6 text-green-500">Enabled</p>
+                          ) : (
+                            <p className="text-base font-normal leading-6 text-red-500">Disabled</p>
+                          )}
                         </div>
                       </div>
+                      <div className="mt-4">
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                          <div>
+                            <p className="text-lg font-semibold leading-none">{microToReadable(vault?.stackedTokens)} <span className="text-sm font-normal">{vault?.collateralToken.toUpperCase()}</span></p>
+                            <p className="text-base font-normal leading-6 text-gray-500">Currently stacking</p>
+                          </div>
+                          <div>
+                            <p className="text-lg font-semibold leading-none">{state.endDate}</p>
+                            <p className="text-base font-normal leading-6 text-gray-500">End of current cycle</p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ) : null }
                   
                   <div className="pt-6">
                     <div className="sm:flex sm:items-start sm:justify-between">
@@ -820,7 +826,7 @@ export const ManageVault = ({ match }) => {
                       ) : null }
                     </div>
                     
-                    {isVaultOwner && vault?.stackedTokens > 0 && !vault?.revokedStacking && !canWithdrawCollateral ? (
+                    {canStackCollateral && isVaultOwner && vault?.stackedTokens > 0 && !vault?.revokedStacking && !canWithdrawCollateral ? (
                       // user has indicated they want to stack their STX tokens
                       <div className="p-4 mt-4 rounded-md bg-blue-50">
                         <div className="flex">
@@ -860,7 +866,7 @@ export const ManageVault = ({ match }) => {
                           </div>
                         </div>
                       </div>
-                    ) : isVaultOwner && vault?.stackedTokens > 0 && vault?.revokedStacking ? (
+                    ) : canStackCollateral && isVaultOwner && vault?.stackedTokens > 0 && vault?.revokedStacking ? (
                       <div className="p-4 mt-4 rounded-md bg-blue-50">
                         <div className="flex">
                           <div className="flex-shrink-0">
@@ -881,7 +887,7 @@ export const ManageVault = ({ match }) => {
                           </div>
                         </div>
                       </div>
-                    ) : isVaultOwner ? (
+                    ) : canStackCollateral && isVaultOwner ? (
                       <div className="p-4 mt-4 rounded-md bg-blue-50">
                         <div className="flex">
                           <div className="flex-shrink-0">
