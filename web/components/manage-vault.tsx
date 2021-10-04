@@ -202,7 +202,7 @@ export const ManageVault = ({ match }) => {
       makeStandardFungiblePostCondition(
         senderAddress || '',
         FungibleConditionCode.LessEqual,
-        uintCV(totalToBurn * 1000000).value,
+        uintCV(parseInt(totalToBurn * 1000000, 10)).value,
         createAssetInfo(
           contractAddress,
           'usda-token',
