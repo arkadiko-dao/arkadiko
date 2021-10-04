@@ -58,7 +58,7 @@ const setPrice = async (price) => {
     contractAddress: CONTRACT_ADDRESS,
     contractName: CONTRACT_NAME,
     functionName: FUNCTION_NAME,
-    functionArgs: [tx.stringAsciiCV('xBTC'), tx.uintCV(new BN(46000 * 100))],
+    functionArgs: [tx.stringAsciiCV('xBTC'), tx.uintCV(new BN(46000 * 1000000))],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     nonce: new BN(nonce + 2),
     postConditionMode: 1,
