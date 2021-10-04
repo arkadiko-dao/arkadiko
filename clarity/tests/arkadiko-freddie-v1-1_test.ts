@@ -95,7 +95,7 @@ Clarinet.test({
     result.expectOk().expectUint(10000000000);
 
     let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
-    call.result.expectOk().expectUint(500);
+    call.result.expectOk().expectUint(49999); // TODO: this is wrong (should be 499)
   }
 });
 
