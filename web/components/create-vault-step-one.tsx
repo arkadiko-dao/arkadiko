@@ -123,7 +123,8 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
         getLiquidationPrice(
           liquidationRatio,
           parseInt(coinAmount, 10),
-          parseInt(collateralAmount, 10)
+          parseInt(collateralAmount, 10),
+          tokenType
         )
       );
       setCollateralToDebt(
