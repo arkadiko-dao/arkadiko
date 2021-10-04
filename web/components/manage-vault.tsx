@@ -317,7 +317,8 @@ export const ManageVault = ({ match }) => {
 
   const collateralLocked = () => {
     if (vault) {
-      return vault['collateral'] / 1000000;
+      const decimals = vault['collateralType'].toLowerCase().includes('stx') ? 1000000 : 100000000;
+      return vault['collateral'] / decimals;
     }
 
     return 0;
@@ -463,8 +464,8 @@ export const ManageVault = ({ match }) => {
         price,
         collateralLocked(),
         outstandingDebt(),
-        collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 }
-      )
+        collateralType?.collateralToDebtRatio
+      ).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })
     );
   };
   
