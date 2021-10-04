@@ -130,23 +130,20 @@
       (ok u0)
       (begin
         (let ((stx-price (unwrap-panic (contract-call? oracle fetch-price (get collateral-token vault)))))
-          (if (> (get debt vault) u0)
-            (ok
-              (/              
-                (/
-                  (* (get collateral vault) (get last-price stx-price))
-                  (+
-                    (get debt vault)
-                    (if include-stability-fees
-                      (unwrap-panic (stability-fee-helper (get stability-fee-last-accrued vault) (get debt vault) (get collateral-type vault) coll-type))
-                      u0
-                    )
+          (ok
+            (/
+              (/
+                (* (get collateral vault) (get last-price stx-price))
+                (+
+                  (get debt vault)
+                  (if include-stability-fees
+                    (unwrap-panic (stability-fee-helper (get stability-fee-last-accrued vault) (get debt vault) (get collateral-type vault) coll-type))
+                    u0
                   )
                 )
-                u10000
               )
+              u10000
             )
-            (err u0)
           )
         )
       )

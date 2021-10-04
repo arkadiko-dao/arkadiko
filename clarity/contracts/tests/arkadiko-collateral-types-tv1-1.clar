@@ -13,6 +13,7 @@
     token: (string-ascii 12),
     token-type: (string-ascii 12),
     token-address: principal,
+    token-decimals: uint,
     url: (string-ascii 256),
     total-debt: uint,
     liquidation-ratio: uint,
@@ -33,6 +34,7 @@
         token: "",
         token-type: "",
         token-address: OWNER,
+        token-decimals: u0,
         url: "",
         total-debt: u1,
         liquidation-ratio: u0,
@@ -112,43 +114,6 @@
   )
 )
 
-;; TODO - this is not in use
-(define-public (add-collateral-type (token (string-ascii 12))
-                                    (name (string-ascii 12))
-                                    (url (string-ascii 256))
-                                    (collateral-type (string-ascii 12))
-                                    (token-address principal)
-                                    (liquidation-ratio uint)
-                                    (liquidation-penalty uint)
-                                    (stability-fee uint)
-                                    (stability-fee-decimals uint)
-                                    (stability-fee-apy uint)
-                                    (maximum-debt uint)
-                                    (collateral-to-debt-ratio uint))
-  (begin
-    (asserts! (is-eq contract-caller .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
-    (map-set collateral-types
-      { name: collateral-type }
-      {
-        name: name,
-        token: token,
-        token-type: collateral-type,
-        token-address: token-address,
-        url: url,
-        total-debt: u0,
-        liquidation-ratio: liquidation-ratio,
-        collateral-to-debt-ratio: collateral-to-debt-ratio,
-        maximum-debt: maximum-debt,
-        liquidation-penalty: liquidation-penalty,
-        stability-fee: stability-fee,
-        stability-fee-decimals: stability-fee-decimals,
-        stability-fee-apy: stability-fee-apy
-      }
-    )
-    (ok true)
-  )
-)
-
 (define-public (change-risk-parameters (collateral-type (string-ascii 12)) (changes (list 10 (tuple (key (string-ascii 256)) (new-value uint)))))
   (let (
     (type (unwrap-panic (get-collateral-type-by-name collateral-type)))
@@ -164,7 +129,7 @@
 (define-private (change-risk-parameter (change (tuple (key (string-ascii 256)) (new-value uint)))
                                        (type (tuple (collateral-to-debt-ratio uint) (liquidation-penalty uint) (liquidation-ratio uint)
                                               (maximum-debt uint) (name (string-ascii 256)) (stability-fee uint) (stability-fee-apy uint) (stability-fee-decimals uint)
-                                              (token (string-ascii 12)) (token-address principal) (token-type (string-ascii 12)) (total-debt uint) (url (string-ascii 256)))
+                                              (token (string-ascii 12)) (token-address principal) (token-decimals uint) (token-type (string-ascii 12)) (total-debt uint) (url (string-ascii 256)))
                                        )
                 )
   (let ((key (get key change)))
@@ -218,6 +183,7 @@
       token: "STX",
       token-type: "STX-A",
       token-address: OWNER,
+      token-decimals: u6,
       url: "https://www.stacks.co/",
       total-debt: u0,
       liquidation-ratio: u175, ;;175
@@ -236,6 +202,7 @@
       token: "STX",
       token-type: "STX-B",
       token-address: OWNER,
+      token-decimals: u6,
       url: "https://www.stacks.co/",
       total-debt: u0,
       liquidation-ratio: u150,
@@ -254,6 +221,7 @@
       token: "xBTC",
       token-type: "xBTC-A",
       token-address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.tokensoft-token, ;; TODO
+      token-decimals: u8,
       url: "https://www.tokensoft.io/",
       total-debt: u0,
       liquidation-ratio: u150,
@@ -272,6 +240,7 @@
       token: "DIKO",
       token-type: "DIKO-A",
       token-address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token,
+      token-decimals: u6,
       url: "https://www.arkadiko.finance",
       total-debt: u0,
       liquidation-ratio: u150,
