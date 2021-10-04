@@ -117,5 +117,15 @@ class CollateralTypeManager {
     ]);
     return block.receipts[0].result;
   }
+
+  changeTokenAddress(collateralType: string, principal: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-collateral-types-v1-1", "change-token-address", [
+        types.ascii(collateralType),
+        types.principal(principal)
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
 }
 export { CollateralTypeManager };
