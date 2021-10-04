@@ -498,6 +498,10 @@ export const Stake = () => {
                   </a>
                 </div>
               </header>
+
+              <div className="mt-4 bg-white divide-y divide-gray-200 shadow sm:rounded-md sm:overflow-hidden">
+
+              </div>
             </section>
 
             <section className="mt-8">
@@ -507,10 +511,9 @@ export const Stake = () => {
                   Staking LP tokens allows you to earn further rewards. You might be more familiar with the term “farming”.
                 </p>
               </header>
-            </section>
             
-            <section className="mt-8">
-              <div className="flex flex-col mt-8">
+              <div className="mt-8">
+                
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                     <div className="pb-24 overflow-hidden sm:rounded-lg">
@@ -522,12 +525,6 @@ export const Stake = () => {
                               className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                             >
                               Staked Value
-                            </th>
-                            <th
-                              scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
-                            >
-                              Cooldown
                             </th>
                             <th
                               scope="col"
@@ -550,7 +547,10 @@ export const Stake = () => {
                           </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                          <tr className="bg-white">
+                          
+                          
+                          {/* DIKO */}
+                          {/* <tr className="bg-white">
                             <td className="px-6 py-4 text-sm whitespace-nowrap">
                               <div className="flex items-center">
                                 <div className="flex-shrink-0 w-10 h-10">
@@ -640,21 +640,27 @@ export const Stake = () => {
                                 </StakeActions>
                               ) : null }
                             </td>
-                          </tr>
+                          </tr> */}
 
                           <tr className="bg-white">
                             <td className="px-6 py-4 text-sm whitespace-nowrap">
                               <div className="flex items-center">
-                                <div className="flex-shrink-0 w-10 h-10">
-                                  <img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />
+                                <div className="flex -space-x-2 overflow-hidden">
+                                  <img
+                                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
+                                    src={tokenList[1].logo}
+                                    alt=""
+                                  />
+                                  <img
+                                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
+                                    src={tokenList[0].logo}
+                                    alt=""
+                                  />
                                 </div>
-                                <div className="ml-4">
-                                  {microToReadable(lpDikoUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ARKV1DIKOUSDA
-                                </div>
+                                <p className="ml-2">
+                                  {microToReadable(lpDikoUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ARKV1{tokenList[1].name}{tokenList[0].name}
+                                </p>
                               </div>
-                            </td>
-                            <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              N/A
                             </td>
                             <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
                               {loadingData ? (
@@ -749,16 +755,22 @@ export const Stake = () => {
                           <tr className="bg-white">
                             <td className="px-6 py-4 text-sm whitespace-nowrap">
                               <div className="flex items-center">
-                                <div className="flex-shrink-0 w-10 h-10">
-                                  <img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />
+                                <div className="flex -space-x-2 overflow-hidden">
+                                  <img
+                                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
+                                    src={tokenList[2].logo}
+                                    alt=""
+                                  />
+                                  <img
+                                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
+                                    src={tokenList[0].logo}
+                                    alt=""
+                                  />
                                 </div>
-                                <div className="ml-4">
-                                  {microToReadable(lpStxUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ARKV1WSTXUSDA
-                                </div>
+                                <p className="ml-2">
+                                  {microToReadable(lpStxUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ARKV1{tokenList[2].name}{tokenList[0].name}
+                                </p>
                               </div>
-                            </td>
-                            <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              N/A
                             </td>
                             <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
                               {loadingData ? (
@@ -853,16 +865,22 @@ export const Stake = () => {
                           <tr className="bg-white">
                             <td className="px-6 py-4 text-sm whitespace-nowrap">
                               <div className="flex items-center">
-                                <div className="flex-shrink-0 w-10 h-10">
-                                  <img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />
+                                <div className="flex -space-x-2 overflow-hidden">
+                                  <img
+                                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
+                                    src={tokenList[2].logo}
+                                    alt=""
+                                  />
+                                  <img
+                                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
+                                    src={tokenList[1].logo}
+                                    alt=""
+                                  />
                                 </div>
-                                <div className="ml-4">
-                                  {microToReadable(lpStxDikoStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ARKV1WSTXDIKO
-                                </div>
+                                <p className="ml-2">
+                                  {microToReadable(lpStxDikoStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ARKV1{tokenList[2].name}{tokenList[1].name}
+                                </p>
                               </div>
-                            </td>
-                            <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              N/A
                             </td>
                             <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
                               {loadingData ? (
