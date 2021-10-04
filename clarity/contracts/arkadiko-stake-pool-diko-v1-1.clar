@@ -222,6 +222,8 @@
     (deactivated-block (unwrap-panic (contract-call? registry-trait get-pool-deactivated-block .arkadiko-stake-pool-diko-v1-1)))
   )
     (asserts! (is-eq (contract-of registry-trait) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-WRONG-REGISTRY)
+    (asserts! (> block-height (var-get last-reward-add-block)) (ok u0))
+
     ;; Rewards to add can be 0 if called multiple times in same block
     ;; Do not mint if pool deactivated
     (if (or (is-eq rewards-to-add u0) (not (is-eq deactivated-block u0)))
@@ -242,7 +244,10 @@
   (let (
     (rewards-per-block (unwrap-panic (contract-call? registry-trait get-rewards-per-block-for-pool .arkadiko-stake-pool-diko-v1-1)))
     (last-block-info (get-last-block-height registry-trait))
-    (block-diff (- (get height last-block-info) (var-get last-reward-add-block)))
+    (block-diff (if (> (get height last-block-info) (var-get last-reward-add-block))
+      (- (get height last-block-info) (var-get last-reward-add-block))
+      u0
+    ))
     (rewards-to-add (* rewards-per-block block-diff))
   )
     ;; Rewards to add can be 0 if called multiple times in same block
