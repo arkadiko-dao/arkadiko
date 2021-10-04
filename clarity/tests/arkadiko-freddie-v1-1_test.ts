@@ -88,14 +88,14 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("xBTC", 50000);
-    result.expectOk().expectUint(50000000000);
+    let result = oracleManager.updatePrice("xBTC", 50000, 100000000);
+    result.expectOk().expectUintWithDecimals(50000);
 
     result = vaultManager.createVault(deployer, "XBTC-A", 100, 10000, false, false, 'arkadiko-sip10-reserve-v1-1', 'tokensoft-token'); // 1 xBTC, 10K USDA
-    result.expectOk().expectUint(10000000000);
+    result.expectOk().expectUintWithDecimals(10000);
 
     let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
-    call.result.expectOk().expectUint(49999); // TODO: this is wrong (should be 499)
+    call.result.expectOk().expectUint(499);
   }
 });
 

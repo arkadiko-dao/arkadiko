@@ -20,11 +20,12 @@ class OracleManager {
     this.deployer = deployer;
   }
 
-  updatePrice(token: string, price: number) {
+  updatePrice(token: string, price: number, decimals: number = 1000000) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii(token),
         types.uint(price * 1000000),
+        types.uint(decimals)
       ], this.deployer.address),
     ]);
     return block.receipts[0].result;
