@@ -1,5 +1,10 @@
-export const getLiquidationPrice = (liquidationRatio:number, coinsMinted:number, stxCollateral:number) => {
-  return (liquidationRatio * coinsMinted / (stxCollateral * 100)).toFixed(2);
+export const getLiquidationPrice = (liquidationRatio:number, coinsMinted:number, stxCollateral:number, collateralType:string) => {
+  if (collateralType.includes('stx')) {
+    return (liquidationRatio * coinsMinted / (stxCollateral * 100)).toFixed(2);
+  } else {
+    // xBTC
+    return (liquidationRatio * coinsMinted / (stxCollateral * 1)).toFixed(2);
+  }
 };
 
 export const getCollateralToDebtRatio = (price:number, coinsMinted:number, stxCollateral:number) => {

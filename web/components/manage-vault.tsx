@@ -304,7 +304,12 @@ export const ManageVault = ({ match }) => {
   const liquidationPrice = () => {
     if (vault) {
       // (liquidationRatio * coinsMinted) / collateral = rekt
-      return getLiquidationPrice(collateralType?.liquidationRatio, vault['debt'], vault['collateral']);
+      return getLiquidationPrice(
+        collateralType?.liquidationRatio,
+        vault['debt'],
+        vault['collateral'],
+        vault['collateralType']
+      );
     }
 
     return 0;
