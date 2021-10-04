@@ -17,7 +17,7 @@ import { tokenList } from '@components/token-swap-list';
 import { useConnect } from '@stacks/connect-react';
 import { StakeActions } from './stake-actions';
 import { Menu } from '@headlessui/react';
-import { ArrowCircleDownIcon, ArrowCircleUpIcon, CashIcon, PlusIcon, ClockIcon } from '@heroicons/react/solid';
+import { ArrowCircleDownIcon, ArrowCircleUpIcon, CashIcon, PlusIcon, ClockIcon, QuestionMarkCircleIcon, ExternalLinkIcon} from '@heroicons/react/solid';
 import { PlaceHolder } from './placeholder';
 
 export const Stake = () => {
@@ -481,20 +481,35 @@ export const Stake = () => {
         <Container>
           <main className="relative flex-1 py-12">
             <section>
-              <header>
-                <div className="bg-indigo-700 rounded-md">
-                  <div className="max-w-2xl px-4 py-5 mx-auto text-center sm:py-5 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-bold text-white font-headings sm:text-4xl">
-                      <span className="block">Arkadiko Staking</span>
-                    </h2>
-                    <p className="mt-4 text-lg leading-6 text-indigo-200">
-                      Stake your DIKO or LP tokens to earn rewards. When staking DIKO you get 
-                      stDIKO in return which can be used to vote in governance.
-                    </p>
+              <header className="pb-5 border-b border-gray-200 sm:flex sm:justify-between sm:items-end">
+                <div>
+                  <h3 className="text-lg leading-6 text-gray-900 font-headings">DIKO</h3>
+                  <p className="max-w-3xl mt-2 text-sm text-gray-500">
+                    When staking DIKO you get stDIKO in return which can be used to vote in governance. <br /> We call this the <span className="font-semibold">Security Module</span>.
+                  </p>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-5.5 h-5.5 rounded-full bg-indigo-200 flex items-center justify-center">
+                    <QuestionMarkCircleIcon className="w-5 h-5 text-indigo-600" aria-hidden="true" />
                   </div>
+                  <a className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 border-transparent hover:border-indigo-300 hover:text-indigo-700" href="https://docs.arkadiko.finance/protocol/diko/security-module" target="_blank" rel="noopener noreferrer">
+                    More on the Security Module
+                    <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
+                  </a>
                 </div>
               </header>
+            </section>
 
+            <section className="mt-8">
+              <header className="pb-5 border-b border-gray-200">
+                <h3 className="text-lg leading-6 text-gray-900 font-headings">Liquidity Provider Tokens</h3>
+                <p className="max-w-3xl mt-2 text-sm text-gray-500">
+                  Staking LP tokens allows you to earn further rewards. You might be more familiar with the term “farming”.
+                </p>
+              </header>
+            </section>
+            
+            <section className="mt-8">
               <div className="flex flex-col mt-8">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
