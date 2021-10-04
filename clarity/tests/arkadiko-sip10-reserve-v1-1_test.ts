@@ -37,14 +37,14 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
-    let result = oracleManager.updatePrice("xBTC", 40000);
+    let result = oracleManager.updatePrice("xBTC", 40000, 100000000);
     result.expectOk().expectUint(40000000000);
 
     result = vaultManager.createVault(deployer, "XBTC-A", 1, 1, false, false, 'arkadiko-sip10-reserve-v1-1', 'tokensoft-token');
     result.expectOk().expectUintWithDecimals(1);
 
     let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
-    call.result.expectOk().expectUint(4000000);
+    call.result.expectOk().expectUint(40000);
   }
 });
 
@@ -64,7 +64,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(1000000);
 
     // Update xBTC price
-    let result = oracleManager.updatePrice("xBTC", 40000);
+    let result = oracleManager.updatePrice("xBTC", 40000, 100000000);
     result.expectOk().expectUint(40000000000);
 
     // Create vault
@@ -88,7 +88,7 @@ Clarinet.test({
     let vaultManager = new VaultManager(chain, deployer);
 
     // Update xBTC price
-    let result = oracleManager.updatePrice("xBTC", 40000);
+    let result = oracleManager.updatePrice("xBTC", 40000, 100000000);
     result.expectOk().expectUintWithDecimals(40000);
 
     // Create vault 
@@ -125,7 +125,7 @@ Clarinet.test({
     let usdaToken = new UsdaToken(chain, deployer);
 
     // Update xBTC price
-    let result = oracleManager.updatePrice("xBTC", 40000);
+    let result = oracleManager.updatePrice("xBTC", 40000, 100000000);
     result.expectOk().expectUintWithDecimals(40000);
 
     // Create vault
@@ -204,7 +204,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectUintWithDecimals(1000);
 
     // 10k
-    result = oracleManager.updatePrice("xBTC", 10000);
+    result = oracleManager.updatePrice("xBTC", 10000, 100000000);
     result.expectOk().expectUintWithDecimals(10000);
 
     // Notify liquidator
@@ -326,7 +326,7 @@ Clarinet.test({
     let vaultManager = new VaultManager(chain, deployer);
 
     // Update xBTC price
-    let result = oracleManager.updatePrice("xBTC", 40000);
+    let result = oracleManager.updatePrice("xBTC", 40000, 100000000);
     result.expectOk().expectUintWithDecimals(40000);
 
     // Create vault
@@ -383,7 +383,7 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
  
     // Update xBTC and STX price
-    let result = oracleManager.updatePrice("xBTC", 40000);
+    let result = oracleManager.updatePrice("xBTC", 40000, 100000000);
     result.expectOk().expectUintWithDecimals(40000);
     result = oracleManager.updatePrice("STX", 200);
     result.expectOk().expectUintWithDecimals(200);
