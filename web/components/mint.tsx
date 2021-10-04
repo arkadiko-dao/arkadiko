@@ -361,7 +361,7 @@ export const Mint = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
-                          ${stxPrice / 100}
+                          ${stxPrice / 1000000}
                         </td>
                       </tr>
 

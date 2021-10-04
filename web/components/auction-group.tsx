@@ -66,7 +66,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeig
     const postConditions = [
       makeStandardFungiblePostCondition(
         stxAddress || '',
-        FungibleConditionCode.Equal,
+        FungibleConditionCode.LessEqual,
         uintCV(bidAmount * 1000000).value,
         createAssetInfo(
           contractAddress,
@@ -118,7 +118,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeig
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Bidding ${preferredBid.toFixed(4)} will close the lot and assign you the collateral.
+                    Bidding ${(preferredBid + 0.49).toFixed(0)} will close the lot and assign you the collateral.
                   </p>
 
                   <div className="relative mt-4 rounded-md shadow-sm">

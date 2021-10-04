@@ -24,7 +24,7 @@ class OracleManager {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii(token),
-        types.uint(price),
+        types.uint(price * 1000000),
       ], this.deployer.address),
     ]);
     return block.receipts[0].result;
@@ -159,3 +159,53 @@ class DikoUsdaPoolToken {
   }
 }
 export { DikoUsdaPoolToken };
+
+// ---------------------------------------------------------
+// wSTX-USDA LP
+// ---------------------------------------------------------
+
+class StxUsdaPoolToken {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  balanceOf(wallet: string) {
+    return this.chain.callReadOnlyFn("arkadiko-swap-token-wstx-usda", "get-balance", [
+      types.principal(wallet),
+    ], this.deployer.address);
+  }
+  
+  totalSupply() {
+    return this.chain.callReadOnlyFn("", "get-total-supply", [], this.deployer.address);
+  }
+}
+export { StxUsdaPoolToken };
+
+// ---------------------------------------------------------
+// wSTX-DIKO LP
+// ---------------------------------------------------------
+
+class StxDikoPoolToken {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  balanceOf(wallet: string) {
+    return this.chain.callReadOnlyFn("arkadiko-swap-token-wstx-diko", "get-balance", [
+      types.principal(wallet),
+    ], this.deployer.address);
+  }
+  
+  totalSupply() {
+    return this.chain.callReadOnlyFn("", "get-total-supply", [], this.deployer.address);
+  }
+}
+export { StxDikoPoolToken };
