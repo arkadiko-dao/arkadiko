@@ -119,6 +119,10 @@
   )
 )
 
+(define-read-only (get-liquidation-fund-stx-balance)
+  (stx-get-balance (as-contract tx-sender))
+)
+
 ;; ---------------------------------------------------------
 ;; Auction actions
 ;; ---------------------------------------------------------
@@ -135,14 +139,14 @@
   (begin
     (asserts! (is-eq tx-sender (var-get fund-owner)) (err ERR-NOT-AUTHORIZED))
 
-    (contract-call? .arkadiko-auction-engine-v1-1 bid
+    (as-contract (contract-call? .arkadiko-auction-engine-v1-1 bid
       vault-manager
       oracle
       coll-type
       auction-id
       lot-index
       usda
-    )
+    ))
   )
 )
 
@@ -158,14 +162,14 @@
   (begin
     (asserts! (is-eq tx-sender (var-get fund-owner)) (err ERR-NOT-AUTHORIZED))
 
-    (contract-call? .arkadiko-auction-engine-v1-1 redeem-lot-collateral
+    (as-contract (contract-call? .arkadiko-auction-engine-v1-1 redeem-lot-collateral
       vault-manager
       ft
       reserve
       coll-type
       auction-id
       lot-index
-    )
+    ))
   )
 )
 
@@ -174,9 +178,9 @@
   (begin
     (asserts! (is-eq tx-sender (var-get fund-owner)) (err ERR-NOT-AUTHORIZED))
 
-    (contract-call? .arkadiko-freddie-v1-1 redeem-stx
+    (as-contract (contract-call? .arkadiko-freddie-v1-1 redeem-stx
       ustx-amount
-    )
+    ))
   )
 )
 
