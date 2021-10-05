@@ -1,0 +1,193 @@
+;; @contract fund to perform liquidations
+;; @version 1.1
+
+(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
+(use-trait vault-manager-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
+(use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
+(use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
+(use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
+
+;; Errors
+(define-constant ERR-NOT-AUTHORIZED u25001)
+(define-constant ERR-INSUFFICIENT-SHARES u25002)
+
+;; Variables
+(define-data-var fund-owner principal tx-sender)
+(define-data-var total-shares uint u0)
+
+;; ---------------------------------------------------------
+;; Wallet funds
+;; ---------------------------------------------------------
+
+(define-map wallet-shares-stx 
+   { wallet: principal } 
+   {
+      shares: uint
+   }
+)
+
+(define-read-only (get-shares-stx-for-wallet (wallet principal))
+  (default-to 
+    u0
+    (get shares (map-get? wallet-shares-stx { wallet: wallet }) )
+  )
+)
+
+;; ---------------------------------------------------------
+;; Shares
+;; ---------------------------------------------------------
+
+;; STX (deposit & rewards) over total shares
+;; Result with 6 decimals
+(define-read-only (stx-shares-ratio)
+  (let (
+    (contract-stx-balance (stx-get-balance (as-contract tx-sender)))
+  )
+    (if (is-eq (var-get total-shares) u0)
+      (ok u1000000)
+      (ok (/ (* contract-stx-balance u1000000) (var-get total-shares)))
+    )
+  )
+)
+
+;; STX to get for given shares
+(define-read-only (shares-for-stx (shares-amount uint))
+  (let (
+    ;; STX in contract
+    (contract-stx-balance (stx-get-balance (as-contract tx-sender)))
+
+    ;; User shares percentage
+    (shares-percentage (/ (* shares-amount u1000000) (var-get total-shares)))
+
+    ;; Amount of STX the user will receive
+    (stx-to-receive (/ (* shares-percentage contract-stx-balance) u1000000))
+  )
+    (ok stx-to-receive)
+  )
+)
+
+;; ---------------------------------------------------------
+;; Deposit and withdraw
+;; ---------------------------------------------------------
+
+(define-public (deposit-stx (amount uint))
+  (let (
+    ;; STX/shares 
+    (stx-per-shares (unwrap-panic (stx-shares-ratio)))
+
+    ;; Calculate amount of shares to receive
+    (shares-to-receive (/ (* amount u1000000) stx-per-shares))
+
+    ;; Current shares
+    (current-wallet-shares (get-shares-stx-for-wallet tx-sender))
+  )
+    ;; Update total shares
+    (var-set total-shares (+ (var-get total-shares) shares-to-receive))
+
+    ;; Update wallet amount map
+    (map-set wallet-shares-stx { wallet: tx-sender } { shares: (+ current-wallet-shares shares-to-receive) })
+
+    ;; Transfer funds to contract
+    (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
+
+    (ok shares-to-receive)
+  )
+)
+
+(define-public (withdraw-stx (shares-amount uint))
+  (let (
+    (sender tx-sender)
+
+    ;; Current shares
+    (current-wallet-shares (get-shares-stx-for-wallet tx-sender))
+
+    ;; STX to receive
+    (stx-to-receive (unwrap-panic (shares-for-stx shares-amount)))
+  )
+    (asserts! (>= current-wallet-shares shares-amount) (err ERR-INSUFFICIENT-SHARES))
+
+    ;; Update total shares
+    (var-set total-shares (- (var-get total-shares) shares-amount))
+
+    ;; Update wallet amount map
+    (map-set wallet-shares-stx { wallet: tx-sender } { shares: (- current-wallet-shares shares-amount) })
+
+    ;; Transfer STX to owner
+    (try! (as-contract (stx-transfer? stx-to-receive tx-sender sender)))
+
+    (ok stx-to-receive)
+  )
+)
+
+;; ---------------------------------------------------------
+;; Auction actions
+;; ---------------------------------------------------------
+
+;; Auction engine: bid
+(define-public (bid
+  (vault-manager <vault-manager-trait>)
+  (oracle <oracle-trait>)
+  (coll-type <collateral-types-trait>)
+  (auction-id uint)
+  (lot-index uint)
+  (usda uint)
+)
+  (begin
+    (asserts! (is-eq tx-sender (var-get fund-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (contract-call? .arkadiko-auction-engine-v1-1 bid
+      vault-manager
+      oracle
+      coll-type
+      auction-id
+      lot-index
+      usda
+    )
+  )
+)
+
+;; Auction engine: redeem-lot-collateral
+(define-public (redeem-lot-collateral
+  (vault-manager <vault-manager-trait>)
+  (ft <ft-trait>)
+  (reserve <vault-trait>)
+  (coll-type <collateral-types-trait>)
+  (auction-id uint)
+  (lot-index uint)
+)
+  (begin
+    (asserts! (is-eq tx-sender (var-get fund-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (contract-call? .arkadiko-auction-engine-v1-1 redeem-lot-collateral
+      vault-manager
+      ft
+      reserve
+      coll-type
+      auction-id
+      lot-index
+    )
+  )
+)
+
+;; Freddie: redeem-stx
+(define-public (redeem-stx (ustx-amount uint))
+  (begin
+    (asserts! (is-eq tx-sender (var-get fund-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (contract-call? .arkadiko-freddie-v1-1 redeem-stx
+      ustx-amount
+    )
+  )
+)
+
+;; ---------------------------------------------------------
+;; Admin
+;; ---------------------------------------------------------
+
+(define-public (set-fund-owner (address principal))
+  (begin
+    (asserts! (is-eq tx-sender (var-get fund-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set fund-owner address))
+  )
+)

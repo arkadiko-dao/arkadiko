@@ -248,3 +248,7 @@ path = "contracts/arkadiko-diko-init.clar"
 [contracts.sip-010-trait-ft-standard]
 depends_on = []
 path = "contracts/sip-010-trait-ft-standard.clar"
+
+[contracts.arkadiko-liquidation-fund-v1-1]
+depends_on = ["sip-010-trait-ft-standard"]
+path = "contracts/arkadiko-liquidation-fund-v1-1.clar"
