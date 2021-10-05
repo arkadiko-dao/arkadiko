@@ -494,7 +494,7 @@ export const Stake = () => {
                 <div>
                   <h3 className="text-lg leading-6 text-gray-900 font-headings">DIKO</h3>
                   <p className="max-w-3xl mt-2 text-sm text-gray-500">
-                    When staking DIKO you get stDIKO in return which can be used to vote in governance. <br /> We call this the <span className="font-semibold">Security Module</span>.
+                    When staking DIKO in the <span className="font-semibold">security module</span> you get stDIKO in return. Both DIKO and stDIKO can be used to propose and vote in governance.
                   </p>
                 </div>
                 <div className="flex items-center">
@@ -542,8 +542,7 @@ export const Stake = () => {
                       </p>
                       <p className="flex items-center text-base font-normal leading-6 text-gray-500">
                         Cooldown status
-                        {/* Here we should change the tooltip content based on the cooldown status */}
-                        <Tooltip className="ml-2" shouldWrapChildren={true} label={`The cooldown period is the time required prior to unstaking your tokens.`}>
+                        <Tooltip className="ml-2" shouldWrapChildren={true} label={`The cooldown period is the time required prior to unstaking your tokens. Once it expires, there is a 2-day window to unstake your tokens.`}>
                           <InformationCircleIcon className="flex-shrink-0 block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
                         </Tooltip>
                       </p>
