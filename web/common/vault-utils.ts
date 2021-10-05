@@ -21,7 +21,10 @@ export const availableCollateralToWithdraw = (price:number, currentStxCollateral
   return 0;
 };
 
-export const availableCoinsToMint = (price:number, stxCollateral:number, currentCoinsMinted:number, collateralToDebt:number) => {
+export const availableCoinsToMint = (price:number, stxCollateral:number, currentCoinsMinted:number, collateralToDebt:number, collateralType:string) => {
+  if (collateralType?.toLowerCase().includes('btc')) {
+    stxCollateral = stxCollateral * 100;
+  }
   const maximumCoinsToMint = (stxCollateral * price / 1000000) / collateralToDebt;
   if (currentCoinsMinted < maximumCoinsToMint) {
     return maximumCoinsToMint - currentCoinsMinted;

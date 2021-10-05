@@ -470,7 +470,8 @@ export const ManageVault = ({ match }) => {
         price,
         collateralLocked(),
         outstandingDebt(),
-        collateralType?.collateralToDebtRatio
+        collateralType?.collateralToDebtRatio,
+        vault?.collateralToken
       ).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })
     );
   };
@@ -641,12 +642,12 @@ export const ManageVault = ({ match }) => {
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Choose how much extra USDA you want to mint. You can mint a maximum of {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA.
+                    Choose how much extra USDA you want to mint. You can mint a maximum of {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio, vault?.collateralToken).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA.
                   </p>
 
                   <div className="mt-6">
                     <InputAmount
-                      balance={availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                      balance={availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio, vault?.collateralToken).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
                       token="USDA"
                       inputName="mintDebt"
                       inputId="mintUSDAAmount"
@@ -925,7 +926,7 @@ export const ManageVault = ({ match }) => {
                   <div>
                     <div className="flex items-start justify-between">
                       <div>
-                        <p className="text-lg font-semibold leading-none">{availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} <span className="text-sm font-normal">USDA</span></p>
+                        <p className="text-lg font-semibold leading-none">{availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio, vault?.collateralToken).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} <span className="text-sm font-normal">USDA</span></p>
                         <p className="text-base font-normal leading-6 text-gray-500">Available to mint</p>
                       </div>
                       {isVaultOwner ? (
@@ -992,7 +993,7 @@ export const ManageVault = ({ match }) => {
                             <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
                           </div>
                           <div className="flex-1 ml-3 md:flex md:justify-between">
-                            <p className="text-sm text-blue-700">The current STX price is <span className="font-semibold text-blue-900">${price / 1000000} USD</span>. You will be liquidated if the STX price drops below <span className="font-semibold text-blue-900">${liquidationPrice()} USD</span>. Pay back the outstanding debt or deposit extra collateral to keep your vault healthy.</p>
+                            <p className="text-sm text-blue-700">The current {vault?.collateralToken} price is <span className="font-semibold text-blue-900">${price / 1000000} USD</span>. You will be liquidated if the {vault?.collateralToken} price drops below <span className="font-semibold text-blue-900">${liquidationPrice()} USD</span>. Pay back the outstanding debt or deposit extra collateral to keep your vault healthy.</p>
                           </div>
                         </div>
                       </div>
