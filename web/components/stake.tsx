@@ -517,7 +517,7 @@ export const Stake = () => {
                         <div className="flex-shrink-0 w-8 h-8">
                           <img className="w-8 h-8 rounded-full" src={tokenList[1].logo} alt="" />
                         </div>
-                        <p className="ml-2 text-lg font-semibold">
+                        <p className="ml-4 text-lg font-semibold">
                           {microToReadable(stakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
                         </p>
                       </div>
@@ -672,8 +672,14 @@ export const Stake = () => {
                                     alt=""
                                   />
                                 </div>
-                                <p className="ml-2">
-                                  {microToReadable(lpDikoUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ARKV1{tokenList[1].name}{tokenList[0].name}
+                                <p className="ml-4">
+                                  {microToReadable(lpDikoUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} 
+                                  {' '}
+                                  <span className="block text-gray-500">
+                                    <Tooltip shouldWrapChildren={true} label={`ARKV1${tokenList[1].name}${tokenList[0].name}`}>
+                                      Arkadiko V1 {tokenList[1].name} {tokenList[0].name} LP Token
+                                    </Tooltip>
+                                  </span>
                                 </p>
                               </div>
                             </td>
@@ -782,8 +788,14 @@ export const Stake = () => {
                                     alt=""
                                   />
                                 </div>
-                                <p className="ml-2">
-                                  {microToReadable(lpStxUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ARKV1{tokenList[2].name}{tokenList[0].name}
+                                <p className="ml-4">
+                                  {microToReadable(lpStxUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                                  {' '}
+                                  <span className="block text-gray-500">
+                                    <Tooltip shouldWrapChildren={true} label={`ARKV1${tokenList[2].name}${tokenList[0].name}`}>
+                                      Arkadiko V1 {tokenList[2].name} {tokenList[0].name} LP Token
+                                    </Tooltip>
+                                  </span>
                                 </p>
                               </div>
                             </td>
@@ -892,8 +904,14 @@ export const Stake = () => {
                                     alt=""
                                   />
                                 </div>
-                                <p className="ml-2">
-                                  {microToReadable(lpStxDikoStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ARKV1{tokenList[2].name}{tokenList[1].name}
+                                <p className="ml-4">
+                                  {microToReadable(lpStxDikoStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                                  {' '}
+                                  <span className="block text-gray-500">
+                                    <Tooltip shouldWrapChildren={true} label={`ARKV1${tokenList[2].name}${tokenList[1].name}`}>
+                                      Arkadiko V1 {tokenList[2].name} {tokenList[1].name} LP Token
+                                    </Tooltip>
+                                  </span>
                                 </p>
                               </div>
                             </td>
