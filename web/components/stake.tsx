@@ -508,8 +508,7 @@ export const Stake = () => {
                 </div>
               </header>
 
-              <div className="mt-8 bg-white divide-y divide-gray-200 shadow sm:rounded-md sm:overflow-hidden">
-             
+              <div className="mt-4 bg-white divide-y divide-gray-200 shadow sm:rounded-md sm:overflow-hidden">
                 <div className="px-4 py-5 space-y-6 divide-y divide-gray-200 sm:p-6">
                   <div className="grid grid-cols-1 gap-4 sm:items-center sm:grid-cols-4">
                     <div>
@@ -542,7 +541,7 @@ export const Stake = () => {
                       </p>
                       <p className="flex items-center text-base font-normal leading-6 text-gray-500">
                         Cooldown status
-                        <Tooltip className="ml-2" shouldWrapChildren={true} label={`The cooldown period is the time required prior to unstaking your tokens. Once it expires, there is a 2-day window to unstake your tokens.`}>
+                        <Tooltip className="ml-2" shouldWrapChildren={true} label={`The 10-day cooldown period is the time required prior to unstaking your tokens. Once it expires, there is a 2-day window to unstake your tokens.`}>
                           <InformationCircleIcon className="flex-shrink-0 block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
                         </Tooltip>
                       </p>
@@ -622,8 +621,7 @@ export const Stake = () => {
                 </p>
               </header>
             
-              <div className="mt-8">
-                
+              <div className="mt-4">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                     <div className="pb-24 overflow-hidden sm:rounded-lg">
