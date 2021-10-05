@@ -17,8 +17,17 @@ import { tokenList } from '@components/token-swap-list';
 import { useConnect } from '@stacks/connect-react';
 import { StakeActions } from './stake-actions';
 import { Menu } from '@headlessui/react';
-import { ArrowCircleDownIcon, ArrowCircleUpIcon, CashIcon, PlusIcon, ClockIcon, QuestionMarkCircleIcon, ExternalLinkIcon} from '@heroicons/react/solid';
+import { 
+  ArrowCircleDownIcon,
+  ArrowCircleUpIcon,
+  CashIcon,
+  PlusIcon,
+  ClockIcon,
+  QuestionMarkCircleIcon,
+  ExternalLinkIcon,
+  InformationCircleIcon} from '@heroicons/react/solid';
 import { PlaceHolder } from './placeholder';
+import { Tooltip } from '@blockstack/ui';
 
 export const Stake = () => {
   const [state, setState] = useContext(AppContext);
@@ -499,8 +508,110 @@ export const Stake = () => {
                 </div>
               </header>
 
-              <div className="mt-4 bg-white divide-y divide-gray-200 shadow sm:rounded-md sm:overflow-hidden">
-
+              <div className="mt-8 bg-white divide-y divide-gray-200 shadow sm:rounded-md sm:overflow-hidden">
+             
+                <div className="px-4 py-5 space-y-6 divide-y divide-gray-200 sm:p-6">
+                  <div className="grid grid-cols-1 gap-4 sm:items-center sm:grid-cols-4">
+                    <div>
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 w-8 h-8">
+                          <img className="w-8 h-8 rounded-full" src={tokenList[1].logo} alt="" />
+                        </div>
+                        <p className="ml-2 text-lg font-semibold">
+                          {microToReadable(stakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
+                        </p>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-lg font-semibold">
+                        {loadingData ? (
+                          <PlaceHolder />
+                        ) : (
+                          `${apy}%`
+                        )}
+                      </p>
+                      <p className="text-base font-normal leading-6 text-gray-500">Current APY</p>
+                    </div>
+                    <div>
+                      <p className="text-lg font-semibold">
+                        {loadingData ? (
+                          <PlaceHolder />
+                        ) : (
+                          `${dikoCooldown}`
+                        )}
+                      </p>
+                      <p className="flex items-center text-base font-normal leading-6 text-gray-500">
+                        Cooldown status
+                        {/* Here we should change the tooltip content based on the cooldown status */}
+                        <Tooltip className="ml-2" shouldWrapChildren={true} label={`The cooldown period is the time required prior to unstaking your tokens.`}>
+                          <InformationCircleIcon className="flex-shrink-0 block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                        </Tooltip>
+                      </p>
+                    </div>
+                    <div>
+                      {state.balance['diko'] > 0 || state.balance['stdiko'] > 0 || (stakedAmount && canUnstake) ? (
+                        <StakeActions>
+                          {state.balance['diko'] > 0 ? (
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  className={`${
+                                    active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                  onClick={() => setShowStakeModal(true)}
+                                >
+                                  <ArrowCircleDownIcon
+                                    className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
+                                    aria-hidden="true"
+                                  />
+                                  Stake
+                                </button>
+                              )}
+                            </Menu.Item>
+                            
+                          ) : null }
+                          {state.balance['stdiko'] > 0 && !cooldownRunning ? (
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  className={`${
+                                    active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                  onClick={() => startDikoCooldown()}
+                                >
+                                  <ClockIcon
+                                    className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
+                                    aria-hidden="true"
+                                  />
+                                  Start cooldown
+                                </button>
+                              )}
+                            </Menu.Item>
+                            
+                          ) : null }
+                          {stakedAmount && canUnstake ? (
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  className={`${
+                                    active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                  onClick={() => setShowUnstakeModal(true)}
+                                >
+                                  <ArrowCircleUpIcon
+                                    className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
+                                    aria-hidden="true"
+                                  />
+                                  Unstake
+                                </button>
+                              )}
+                            </Menu.Item>
+                          ) : null}
+                        </StakeActions>
+                      ) : null }
+                    </div>
+                  </div>
+                </div>
               </div>
             </section>
 
@@ -547,101 +658,6 @@ export const Stake = () => {
                           </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                          
-                          
-                          {/* DIKO */}
-                          {/* <tr className="bg-white">
-                            <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              <div className="flex items-center">
-                                <div className="flex-shrink-0 w-10 h-10">
-                                  <img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />
-                                </div>
-                                <div className="ml-4">
-                                  {microToReadable(stakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              {loadingData ? (
-                                <PlaceHolder />
-                              ) : (
-                                `${dikoCooldown}`
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
-                              {loadingData ? (
-                                <PlaceHolder />
-                              ) : (
-                                `${apy}%`
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              auto-compounding
-                            </td>
-                            <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
-                              {state.balance['diko'] > 0 || state.balance['stdiko'] > 0 || (stakedAmount && canUnstake) ? (
-                                <StakeActions>
-                                  {state.balance['diko'] > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => setShowStakeModal(true)}
-                                        >
-                                          <ArrowCircleDownIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Stake
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                    
-                                  ) : null }
-                                  {state.balance['stdiko'] > 0 && !cooldownRunning ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => startDikoCooldown()}
-                                        >
-                                          <ClockIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Start cooldown
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                    
-                                  ) : null }
-                                  {stakedAmount && canUnstake ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => setShowUnstakeModal(true)}
-                                        >
-                                          <ArrowCircleUpIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Unstake
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null}
-                                </StakeActions>
-                              ) : null }
-                            </td>
-                          </tr> */}
-
                           <tr className="bg-white">
                             <td className="px-6 py-4 text-sm whitespace-nowrap">
                               <div className="flex items-center">
