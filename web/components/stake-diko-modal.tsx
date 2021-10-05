@@ -13,6 +13,7 @@ import {
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
+import { InformationCircleIcon } from '@heroicons/react/solid';
 
 export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
   const [state, setState] = useContext(AppContext);
@@ -115,6 +116,21 @@ export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
               <p className="mt-3 text-sm text-gray-500">
                 Stake DIKO tokens at {apy}% (estimated APY) and start earning rewards now.
               </p>
+              <div className="p-4 mt-4 text-left rounded-md bg-blue-50">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
+                  </div>
+                  <div className="flex-1 ml-3">
+                    <p className="text-sm text-blue-700">
+                      Once you have staked your DIKO tokens, they will be stuck for at least 10 days (cooldown period).
+                    </p>
+                    <p className="mt-2 text-sm text-blue-700">
+                      <span className="font-semibold">Reminder</span>: The cooldown has to be started manually.
+                    </p>            
+                  </div>
+                </div>
+              </div>
               <div className="mt-6">
                 <InputAmount
                   balance={microToReadable(state.balance['diko']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
