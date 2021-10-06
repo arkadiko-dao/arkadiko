@@ -123,7 +123,7 @@ export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
                   </div>
                   <div className="flex-1 ml-3">
                     <p className="text-sm text-blue-700">
-                      Once you have staked your DIKO tokens, they will be stuck for at least 10 days (cooldown period).
+                      Once you have staked your DIKO tokens, they will be locked for at least 10 days (cooldown period).
                     </p>
                     <p className="mt-2 text-sm text-blue-700">
                       <span className="font-semibold">Reminder</span>: The cooldown has to be started manually.
