@@ -151,15 +151,22 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                         <ExclamationIcon className="w-5 h-5 text-yellow-400" aria-hidden="true" />
                       </div>
                       <div className="ml-3">
-                        <p className="text-sm text-yellow-700">
-                          Attention: Choosing to stack your STX means that they will be locked and become illiquid immediately. They will remain this way until the end of the <a href="https://stacking.club/cycles/next" target="_blank" rel="noopener noreferrer" className="font-medium text-yellow-700 underline hover:text-yellow-600">next PoX cycle</a>  ({state.endDate} + 2-week cooldown period).         
-                        </p>
+                        <h3 className="text-sm font-semibold text-yellow-800">Important note</h3>
+                        <div className="mt-2 text-sm text-yellow-700">
+                          <p className="">
+                            Choosing to stack your STX means that they will be locked and become illiquid immediately.
+                            They will be available again once this period has expired:<br />
+                            <span className="inline-block my-2">
+                              <span className="font-semibold">{state.endDate}</span> (end of the <a href="https://stacking.club/cycles/next" target="_blank" rel="noopener noreferrer" className="font-medium text-yellow-700 underline hover:text-yellow-600">next PoX cycle</a>) <span className="font-semibold">+ 6-week stacking phase + 2-week cooldown period</span>.
+                            </span>
+                          </p>
 
-                        <p className="mt-2 text-sm">
-                          <a href="https://stacking.club/learn" target="_blank" rel="noopener noreferrer" className="font-medium text-yellow-700 underline hover:text-yellow-600">
-                            Learn more about the PoX cycle.
-                          </a>
-                        </p>
+                          <p className="mt-1">
+                            <a href="https://stacking.club/learn" target="_blank" rel="noopener noreferrer" className="font-medium text-yellow-700 underline hover:text-yellow-600">
+                              Learn more about the PoX cycle.
+                            </a>
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
