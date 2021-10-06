@@ -816,7 +816,7 @@ export const ManageVault = ({ match }) => {
                     
                     {isVaultOwner && vault?.stackedTokens > 0 && !vault?.revokedStacking && !canWithdrawCollateral ? (
                       // user has indicated they want to stack their STX tokens
-                      <div className="p-4 mt-4 rounded-md bg-blue-50">
+                      <div className="p-4 mt-4 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
                         <div className="flex">
                           <div className="flex-shrink-0">
                             <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
@@ -855,7 +855,7 @@ export const ManageVault = ({ match }) => {
                         </div>
                       </div>
                     ) : isVaultOwner && vault?.stackedTokens > 0 && vault?.revokedStacking ? (
-                      <div className="p-4 mt-4 rounded-md bg-blue-50">
+                      <div className="p-4 mt-4 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
                         <div className="flex">
                           <div className="flex-shrink-0">
                             <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
@@ -876,7 +876,7 @@ export const ManageVault = ({ match }) => {
                         </div>
                       </div>
                     ) : isVaultOwner ? (
-                      <div className="p-4 mt-4 rounded-md bg-blue-50">
+                      <div className="p-4 mt-4 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
                         <div className="flex">
                           <div className="flex-shrink-0">
                             <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
@@ -972,7 +972,7 @@ export const ManageVault = ({ match }) => {
                         </div>
                       </div>
 
-                      <div className="p-4 mt-4 rounded-md bg-blue-50">
+                      <div className="p-4 mt-4 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
                         <div className="flex">
                           <div className="flex-shrink-0">
                             <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
