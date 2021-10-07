@@ -12,7 +12,8 @@ import {
 
 import { 
   OracleManager,
-  XstxManager
+  XstxManager,
+  UsdaToken
 } from './models/arkadiko-tests-tokens.ts';
 
 import { 
@@ -20,6 +21,10 @@ import {
   VaultLiquidator,
   VaultAuction 
 } from './models/arkadiko-tests-vaults.ts';
+
+import { 
+  Swap,
+} from './models/arkadiko-tests-swap.ts';
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
@@ -78,6 +83,34 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "liquidation-fund: calculate swap stx input for given usda output",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+    let wallet_3 = accounts.get("wallet_3")!;
+
+    let liquidationFund = new LiquidationFund(chain, deployer);
+    let swap = new Swap(chain, deployer);
+
+    // Create STX/USDA pair
+    let result = swap.createPair(deployer, "wrapped-stx-token", "usda-token", "arkadiko-swap-token-wstx-usda", "wSTX-USDA", 80000, 100000);
+    result.expectOk().expectBool(true);
+
+    // Get STX needed (800 STX in, 1000 USDA out)
+    result = liquidationFund.stxNeededForUsdaOutput(1000);
+    result.expectOk().expectUintWithDecimals(840)
+
+    // Check if swap works
+    result = swap.swapXForY(deployer, "wrapped-stx-token", "usda-token", 840, 1000);
+    result.expectOk().expectList()[0].expectUintWithDecimals(840); 
+    result.expectOk().expectList()[1].expectUintWithDecimals(1036.004585); 
+  }
+});
+
+
+
+Clarinet.test({
   name: "liquidation-fund: liquidate vault and split profit",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -91,22 +124,28 @@ Clarinet.test({
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
     let vaultAuction = new VaultAuction(chain, deployer);
     let xstxManager = new XstxManager(chain, deployer);
+    let usdaManager = new UsdaToken(chain, deployer); 
+    let swap = new Swap(chain, deployer);
+
+    // Create STX/USDA pair
+    let result = swap.createPair(deployer, "wrapped-stx-token", "usda-token", "arkadiko-swap-token-wstx-usda", "wSTX-USDA", 80000, 100000);
+    result.expectOk().expectBool(true);
 
     // Deposits to liquidation fund
-    let result = liquidationFund.depositStx(wallet_1, 100);
-    result.expectOk().expectUintWithDecimals(100)
+    result = liquidationFund.depositStx(wallet_1, 1000);
+    result.expectOk().expectUintWithDecimals(1000)
 
-    result = liquidationFund.depositStx(wallet_2, 200);
-    result.expectOk().expectUintWithDecimals(200)
+    result = liquidationFund.depositStx(wallet_2, 2000);
+    result.expectOk().expectUintWithDecimals(2000)
 
-    result = liquidationFund.depositStx(wallet_3, 300);
-    result.expectOk().expectUintWithDecimals(300)
+    result = liquidationFund.depositStx(wallet_3, 3000);
+    result.expectOk().expectUintWithDecimals(3000)
 
     // Check contract balance
     let call = await liquidationFund.getStxBalance();
-    call.result.expectUintWithDecimals(600);
+    call.result.expectUintWithDecimals(6000);
 
-    // Create vault and liquidate
+    // Create vault and liquidate to start auction
     result = oracleManager.updatePrice("STX", 1);
     result.expectOk().expectUintWithDecimals(1);
 
@@ -145,11 +184,7 @@ Clarinet.test({
     result = liquidationFund.redeemLotCollateral(deployer, 1, 2, "xstx-token")
     result.expectOk().expectBool(true);
 
-    // Check xSTX balance
-    // TODO: WRONG??
-    call = await xstxManager.balanceOf(deployer.address);
-    call.result.expectOk().expectUintWithDecimals(6759.375296);
-
+    // Check xSTX balance 
     call = await xstxManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));
     call.result.expectOk().expectUintWithDecimals(6759.375296);
 
@@ -157,20 +192,17 @@ Clarinet.test({
     result = vaultManager.releaseStackedStx(1);
     result.expectOk().expectBool(true);
 
-
-
-    // Original vault had 1500 STX which is now redeemable
+    // Original vault had 10000 STX, which is now redeemable
     call = await vaultManager.getStxRedeemable();
     call.result.expectOk().expectUintWithDecimals(10000);
-        
-        // Redeem STX - too much
-        result = vaultManager.redeemStx(deployer, 1694.444444);
-        result.expectErr().expectUint(1); // Can not burn
 
+    // Redeem STX
+    result = liquidationFund.redeemStx(deployer, 6759.375296);
+    result.expectOk().expectBool(true);
 
-        // Check contract balance
-        call = await liquidationFund.getStxBalance();
-        call.result.expectUintWithDecimals(700);
+    // Check contract balance (initial 6000 + liquidation rewards)
+    call = await liquidationFund.getStxBalance();
+    call.result.expectUintWithDecimals(10886.474383);
 
   }
 });

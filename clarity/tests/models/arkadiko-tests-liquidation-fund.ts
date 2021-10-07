@@ -29,6 +29,15 @@ class LiquidationFund {
     return this.chain.callReadOnlyFn("arkadiko-liquidation-fund-v1-1", "get-liquidation-fund-stx-balance", [], this.deployer.address);
   }
 
+  stxNeededForUsdaOutput(usdaOutput: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "stx-needed-for-usda-output", [
+          types.uint(usdaOutput * 1000000)
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
   depositStx(user: Account, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-liquidation-fund-v1-1", "deposit-stx", [

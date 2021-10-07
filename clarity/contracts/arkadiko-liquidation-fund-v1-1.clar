@@ -10,6 +10,7 @@
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED u25001)
 (define-constant ERR-INSUFFICIENT-SHARES u25002)
+(define-constant ERR-INSUFFICIENT-STX-TO-SWAP u25003)
 
 ;; Variables
 (define-data-var fund-owner principal tx-sender)
@@ -139,6 +140,8 @@
   (begin
     (asserts! (is-eq tx-sender (var-get fund-owner)) (err ERR-NOT-AUTHORIZED))
 
+    (try! (make-usda-available usda))
+
     (as-contract (contract-call? .arkadiko-auction-engine-v1-1 bid
       vault-manager
       oracle
@@ -183,6 +186,50 @@
     ))
   )
 )
+
+;; ---------------------------------------------------------
+;; Token management
+;; ---------------------------------------------------------
+
+(define-public (stx-needed-for-usda-output (usda-output uint))
+  (let (
+    (pair-balances (unwrap-panic (contract-call? .arkadiko-swap-v1-1 get-balances .wrapped-stx-token .usda-token)))
+    (pair-wstx-balance (unwrap-panic (element-at pair-balances u0)))
+    (pair-usda-balance (unwrap-panic (element-at pair-balances u1)))
+    (stx-input (/ (* usda-output pair-wstx-balance) pair-usda-balance))
+    (stx-input-with-extra (/ (* stx-input u105) u100)) ;; 5% extra for fees & slippage
+  )
+    (ok stx-input-with-extra)
+  )
+)
+
+(define-private (make-usda-available (usda-amount uint))
+  (let (
+    (contract-usda-balance (unwrap-panic (contract-call? .usda-token get-balance (as-contract tx-sender))))
+    (contract-stx-balance (get-liquidation-fund-stx-balance))
+    (stx-needed-to-swap (unwrap-panic (stx-needed-for-usda-output usda-amount)))
+  )
+    (if (< contract-usda-balance usda-amount)
+
+      ;; Not enough USDA in contract
+      (if (>= contract-stx-balance stx-needed-to-swap)
+
+        ;; Swap STX for USDA
+        (begin
+          (try! (as-contract (contract-call? .arkadiko-swap-v1-1 swap-x-for-y .wrapped-stx-token .usda-token stx-needed-to-swap usda-amount)))
+          (ok true)
+        )
+
+        ;; Not enough STX in contract to swap
+        (err ERR-INSUFFICIENT-STX-TO-SWAP)
+      )
+
+      ;; Enough USDA in contract    
+      (ok true) 
+    )
+  )
+)
+
 
 ;; ---------------------------------------------------------
 ;; Admin
