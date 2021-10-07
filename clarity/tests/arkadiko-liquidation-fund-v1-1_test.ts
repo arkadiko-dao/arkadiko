@@ -204,5 +204,12 @@ Clarinet.test({
     call = await liquidationFund.getStxBalance();
     call.result.expectUintWithDecimals(10886.474383);
 
+    // Check xSTX balance 
+    call = await xstxManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    // Check USDA balance 
+    call = await usdaManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(80.820142);
   }
 });
