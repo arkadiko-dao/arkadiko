@@ -207,7 +207,9 @@
   (let (
     (contract-usda-balance (unwrap-panic (contract-call? .usda-token get-balance (as-contract tx-sender))))
     (contract-stx-balance (get-liquidation-fund-stx-balance))
-    (stx-needed-to-swap (unwrap-panic (stx-needed-for-usda-output usda-amount)))
+
+    (usda-needed-from-swap (- usda-amount contract-usda-balance))
+    (stx-needed-to-swap (unwrap-panic (stx-needed-for-usda-output usda-needed-from-swap)))
   )
     (if (< contract-usda-balance usda-amount)
 
@@ -216,7 +218,7 @@
 
         ;; Swap STX for USDA
         (begin
-          (try! (as-contract (contract-call? .arkadiko-swap-v1-1 swap-x-for-y .wrapped-stx-token .usda-token stx-needed-to-swap usda-amount)))
+          (try! (as-contract (contract-call? .arkadiko-swap-v1-1 swap-x-for-y .wrapped-stx-token .usda-token stx-needed-to-swap usda-needed-from-swap)))
           (ok true)
         )
 

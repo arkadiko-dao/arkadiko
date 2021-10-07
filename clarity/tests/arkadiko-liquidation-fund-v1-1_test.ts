@@ -86,9 +86,6 @@ Clarinet.test({
   name: "liquidation-fund: calculate swap stx input for given usda output",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
-    let wallet_2 = accounts.get("wallet_2")!;
-    let wallet_3 = accounts.get("wallet_3")!;
 
     let liquidationFund = new LiquidationFund(chain, deployer);
     let swap = new Swap(chain, deployer);
@@ -202,14 +199,15 @@ Clarinet.test({
 
     // Check contract balance (initial 6000 + liquidation rewards)
     call = await liquidationFund.getStxBalance();
-    call.result.expectUintWithDecimals(10886.474383);
+    call.result.expectUintWithDecimals(10948.103319);
 
     // Check xSTX balance 
     call = await xstxManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));
     call.result.expectOk().expectUintWithDecimals(0);
 
     // Check USDA balance 
+    // Always a bit left as we swap an extra 5% STX to USDA to cover fees and slippage
     call = await usdaManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));
-    call.result.expectOk().expectUintWithDecimals(80.820142);
+    call.result.expectOk().expectUintWithDecimals(7.427246);
   }
 });
