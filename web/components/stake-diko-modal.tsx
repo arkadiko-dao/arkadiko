@@ -116,7 +116,7 @@ export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
               <p className="mt-3 text-sm text-gray-500">
                 Stake DIKO tokens at {apy}% (estimated APY) and start earning rewards now.
               </p>
-              <div className="p-4 mt-4 text-left rounded-md bg-blue-50">
+              <div className="p-4 mt-4 text-left border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
                 <div className="flex">
                   <div className="flex-shrink-0">
                     <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
