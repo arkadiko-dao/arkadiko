@@ -1,8 +1,16 @@
-import React from 'react';
-import { QuestionMarkCircleIcon, ExternalLinkIcon } from '@heroicons/react/solid';
+import React, { useContext } from 'react';
+import { AppContext } from '@common/context';
+import { QuestionMarkCircleIcon, ExternalLinkIcon, ExclamationIcon } from '@heroicons/react/solid';
 
 
 export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => {
+  const [state] = useContext(AppContext);
+
+  let endDate = Date.parse(state.endDate);
+  const msInWeek = 7 * 24 * 60 * 60 * 1000;
+  let availableTokensDate = endDate + 8 * msInWeek; // 6-week stacking + 2-week cooldown = 8 weeks
+  let tokensAvailability = new Date(availableTokensDate).toDateString().split(' ').slice(1).join(' ');
+
   const togglePox = () => {
     const newState = !coinAmounts['stack-pox'];
     let autoPayoff = coinAmounts['auto-payoff'];
@@ -142,6 +150,29 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                 </div>
 
                 <div className="pt-4">
+                  <div className="p-4 mt-2 mb-6 border-l-4 border-yellow-400 rounded-sm bg-yellow-50">
+                    <div className="flex">
+                      <div className="flex-shrink-0">
+                        <ExclamationIcon className="w-5 h-5 text-yellow-400" aria-hidden="true" />
+                      </div>
+                      <div className="ml-3">
+                        <h3 className="text-sm font-semibold text-yellow-800">Important note</h3>
+                        <div className="mt-2 text-sm text-yellow-700">
+                          <p className="">
+                            Choosing to stack your STX means that they will be locked and become illiquid immediately.
+                            They will be available again on: <span className="font-semibold">{tokensAvailability}</span> (End of the <a href="https://stacking.club/cycles/next" target="_blank" rel="noopener noreferrer" className="font-medium text-yellow-700 underline hover:text-yellow-600">next PoX cycle</a>: {state.endDate} + 6-week stacking phase + 2-week cooldown period).
+                          </p>
+
+                          <p className="mt-1">
+                            <a href="https://stacking.club/learn" target="_blank" rel="noopener noreferrer" className="font-medium text-yellow-700 underline hover:text-yellow-600">
+                              Learn more about the PoX cycle.
+                            </a>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   <label className="flex items-center space-x-3">
                     <input
                       type="checkbox"
