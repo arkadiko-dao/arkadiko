@@ -294,3 +294,98 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(0);
   }
 });
+
+
+Clarinet.test({
+  name:
+    "auction engine xBTC: return USDA of losing bidder",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let usdaToken = new UsdaToken(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultLiquidator = new VaultLiquidator(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
+
+    // Initialize price of xBTC to $40.000
+    let result = oracleManager.updatePrice("xBTC", 40000);
+
+    // Create vault
+    result = vaultManager.createVault(deployer, "XBTC-A", 0.1, 1500, false, false, "arkadiko-sip10-reserve-v1-1", "tokensoft-token");
+    result.expectOk().expectUintWithDecimals(1500);
+
+    // Upate price and notify risky vault
+    result = oracleManager.updatePrice("xBTC", 1000);
+    result = vaultLiquidator.notifyRiskyVault(deployer);
+    result.expectOk().expectUint(5200);
+
+    // Bid of 100
+    result = vaultAuction.bid(wallet_1, 100);
+    result.expectOk().expectBool(true);
+
+    let call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v1-1'));
+    call.result.expectOk().expectUintWithDecimals(100);
+
+    call = await usdaToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(999900); // 1M - 100
+
+    // Higher bid of 110
+    result = vaultAuction.bid(deployer, 110);
+    result.expectOk().expectBool(true);
+
+    call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v1-1'));
+    call.result.expectOk().expectUintWithDecimals(110);
+
+    call = await usdaToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(1000000); 
+  }
+});
+
+Clarinet.test({
+  name:
+    "auction engine xBTC: extend auction if needed",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultLiquidator = new VaultLiquidator(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
+
+    // Initialize price of xBTC to $40.000
+    let result = oracleManager.updatePrice("xBTC", 40000);
+
+    // Create vault
+    result = vaultManager.createVault(deployer, "XBTC-A", 0.1, 1500, false, false, "arkadiko-sip10-reserve-v1-1", "tokensoft-token");
+    result.expectOk().expectUintWithDecimals(1500);
+
+    // Upate price and notify risky vault
+    result = oracleManager.updatePrice("xBTC", 20000);
+    result = vaultLiquidator.notifyRiskyVault(deployer);
+    result.expectOk().expectUint(5200);
+
+    // Make a bid on the first 1000 USDA
+    result = vaultAuction.bid(wallet_1, 1000, 1, 0);
+    result.expectOk().expectBool(true);
+
+    chain.mineEmptyBlock(160);
+
+    result = vaultAuction.closeAuction(deployer, 1);
+    result.expectOk().expectBool(true);
+
+    let call = await vaultAuction.getAuctionById(1, wallet_1);
+    let auction:any = call.result.expectTuple();
+    auction['lots-sold'].expectUint(1);
+    auction['ends-at'].expectUint(292);
+    auction['total-debt-raised'].expectUintWithDecimals(1000);
+    auction['total-debt-burned'].expectUintWithDecimals(1000);
+    auction['collateral-amount'].expectUintWithDecimals(0.1); // 0.1 BTC
+
+    // Auction still open
+    call = await vaultAuction.getAuctionOpen(1, wallet_1);
+    call.result.expectOk().expectBool(true);
+  }
+});
