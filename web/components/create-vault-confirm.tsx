@@ -6,6 +6,11 @@ import { QuestionMarkCircleIcon, ExternalLinkIcon, ExclamationIcon } from '@hero
 export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => {
   const [state] = useContext(AppContext);
 
+  let endDate = Date.parse(state.endDate);
+  const msInWeek = 7 * 24 * 60 * 60 * 1000;
+  let availableTokensDate = endDate + 8 * msInWeek; // 6-week stacking + 2-week cooldown = 8 weeks
+  let tokensAvailability = new Date(availableTokensDate).toDateString().split(' ').slice(1).join(' ');
+
   const togglePox = () => {
     const newState = !coinAmounts['stack-pox'];
     let autoPayoff = coinAmounts['auto-payoff'];
@@ -155,10 +160,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                         <div className="mt-2 text-sm text-yellow-700">
                           <p className="">
                             Choosing to stack your STX means that they will be locked and become illiquid immediately.
-                            They will be available again once this period has expired:<br />
-                            <span className="inline-block my-2">
-                              <span className="font-semibold">{state.endDate}</span> (end of the <a href="https://stacking.club/cycles/next" target="_blank" rel="noopener noreferrer" className="font-medium text-yellow-700 underline hover:text-yellow-600">next PoX cycle</a>) <span className="font-semibold">+ 6-week stacking phase + 2-week cooldown period</span>.
-                            </span>
+                            They will be available again on: <span className="font-semibold">{tokensAvailability}</span> (End of the <a href="https://stacking.club/cycles/next" target="_blank" rel="noopener noreferrer" className="font-medium text-yellow-700 underline hover:text-yellow-600">next PoX cycle</a>: {state.endDate} + 6-week stacking phase + 2-week cooldown period).
                           </p>
 
                           <p className="mt-1">
