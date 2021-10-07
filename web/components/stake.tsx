@@ -508,7 +508,7 @@ export const Stake = () => {
                 </div>
               </header>
 
-              <div className="mt-4 bg-white divide-y divide-gray-200 shadow sm:rounded-md sm:overflow-hidden">
+              <div className="mt-4 bg-white divide-y divide-gray-200 shadow sm:rounded-md">
                 <div className="px-4 py-5 space-y-6 divide-y divide-gray-200 sm:p-6">
                   <div className="grid grid-cols-1 gap-4 sm:items-center sm:grid-cols-4">
                     <div>
