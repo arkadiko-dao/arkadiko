@@ -184,14 +184,14 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         makeStandardSTXPostCondition(
           stxAddress || '',
           FungibleConditionCode.Equal,
-          uintCV(tokenXAmount * 1000000).value
+          uintCV(parseInt(tokenXAmount * 1000000, 10)).value
         )
       );
       postConditions.push(
         makeStandardFungiblePostCondition(
           stxAddress || '',
           FungibleConditionCode.Equal,
-          uintCV(tokenXAmount * 1000000).value,
+          uintCV(parseInt(tokenXAmount * 1000000, 10)).value,
           createAssetInfo(
             contractAddress,
             tokenXParam,
@@ -218,14 +218,14 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         makeStandardSTXPostCondition(
           stxAddress || '',
           FungibleConditionCode.Equal,
-          uintCV(tokenYAmount * 1000000).value
+          uintCV(parseInt(tokenYAmount * 1000000, 10)).value
         )
       );
       postConditions.push(
         makeStandardFungiblePostCondition(
           stxAddress || '',
           FungibleConditionCode.Equal,
-          uintCV(tokenYAmount * 1000000).value,
+          uintCV(parseInt(tokenYAmount * 1000000, 10)).value,
           createAssetInfo(
             contractAddress,
             tokenYParam,
@@ -257,8 +257,8 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         contractPrincipalCV(contractAddress, tokenXParam),
         contractPrincipalCV(contractAddress, tokenYParam),
         contractPrincipalCV(contractAddress, swapTrait),
-        uintCV(tokenXAmount * 1000000),
-        uintCV(tokenYAmount * 1000000)
+        uintCV(parseInt(tokenXAmount * 1000000, 10)),
+        uintCV(parseInt(tokenYAmount * 1000000, 10))
       ],
       postConditions,
       onFinish: data => {
