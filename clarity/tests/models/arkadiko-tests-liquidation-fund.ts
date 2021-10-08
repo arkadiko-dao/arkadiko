@@ -31,7 +31,7 @@ class LiquidationFund {
 
   stxNeededForUsdaOutput(usdaOutput: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "stx-needed-for-usda-output", [
+      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "swap-stx-needed-for-usda-output", [
           types.uint(usdaOutput * 1000000)
       ], this.deployer.address)
     ]);
@@ -93,6 +93,15 @@ class LiquidationFund {
   redeemStx(user: Account, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-liquidation-fund-v1-1", "redeem-stx", [
+        types.uint(amount * 1000000)
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  setMaxStxToStake(user: Account, amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "set-max-stx-to-stake", [
         types.uint(amount * 1000000)
       ], user.address)
     ]);

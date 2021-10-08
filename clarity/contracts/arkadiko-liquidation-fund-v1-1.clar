@@ -10,11 +10,12 @@
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED u25001)
 (define-constant ERR-INSUFFICIENT-SHARES u25002)
-(define-constant ERR-INSUFFICIENT-STX-TO-SWAP u25003)
+(define-constant ERR-INSUFFICIENT-FUNDS-TO-BID u25003)
 
 ;; Variables
 (define-data-var fund-owner principal tx-sender)
 (define-data-var total-shares uint u0)
+(define-data-var max-stx-to-stake uint u0)
 
 ;; ---------------------------------------------------------
 ;; Wallet funds
@@ -191,7 +192,24 @@
 ;; Token management
 ;; ---------------------------------------------------------
 
-(define-public (stx-needed-for-usda-output (usda-output uint))
+
+;; Make USDA available to contract to make bid
+;; 1 - Check if contract has USDA
+;; 2 - Swap idle STX to USDA
+;; 3 - Unstake and remove liquidity to get STX and USDA
+(define-private (make-usda-available (usda-amount uint))
+  (let (
+    (usda-available-from-funds (unwrap-panic (make-usda-available-from-funds usda-amount)))
+  )
+    (if (is-eq usda-available-from-funds false)
+      (make-usda-available-from-stake usda-amount)
+      (ok true)
+    )
+  )
+)
+
+;; Get how much STX would be needed as input for given USDA output
+(define-public (swap-stx-needed-for-usda-output (usda-output uint))
   (let (
     (pair-balances (unwrap-panic (contract-call? .arkadiko-swap-v1-1 get-balances .wrapped-stx-token .usda-token)))
     (pair-wstx-balance (unwrap-panic (element-at pair-balances u0)))
@@ -203,17 +221,20 @@
   )
 )
 
-(define-private (make-usda-available (usda-amount uint))
-  (let (
+;; Use contract funds to make given USDA available
+;; By swapping STX for USDA if needed
+(define-private (make-usda-available-from-funds (usda-amount uint))
+ (let (
     (contract-usda-balance (unwrap-panic (contract-call? .usda-token get-balance (as-contract tx-sender))))
     (contract-stx-balance (get-liquidation-fund-stx-balance))
 
     (usda-needed-from-swap (- usda-amount contract-usda-balance))
-    (stx-needed-to-swap (unwrap-panic (stx-needed-for-usda-output usda-needed-from-swap)))
+    (stx-needed-to-swap (unwrap-panic (swap-stx-needed-for-usda-output usda-needed-from-swap)))
   )
+    ;; If contract holds enough USDA there is nothing left to do
     (if (< contract-usda-balance usda-amount)
 
-      ;; Not enough USDA in contract
+      ;; If contract holds enough STX it can be swapped for USDA
       (if (>= contract-stx-balance stx-needed-to-swap)
 
         ;; Swap STX for USDA
@@ -222,12 +243,108 @@
           (ok true)
         )
 
-        ;; Not enough STX in contract to swap
-        (err ERR-INSUFFICIENT-STX-TO-SWAP)
+        ;; Not enough USDA or STX in contract
+        (ok false)
       )
 
       ;; Enough USDA in contract    
       (ok true) 
+    )
+  )
+)
+
+;; Unstake and remove liquidity to make STX and USDA available
+;; Makes sure the requested USDA amount is available to make a bid
+(define-private (make-usda-available-from-stake (usda-amount uint))
+
+  (let (
+    (stake-balance (contract-call? .arkadiko-stake-pool-wstx-usda-v1-1 get-stake-amount-of (as-contract tx-sender)))
+  )
+    (if (> stake-balance u0)
+      (begin
+
+        ;; Unstake
+        (try! (as-contract (contract-call? .arkadiko-stake-registry-v1-1 unstake 
+          .arkadiko-stake-registry-v1-1 
+          .arkadiko-stake-pool-wstx-usda-v1-1 
+          .arkadiko-swap-token-wstx-usda 
+          stake-balance
+        )))
+
+        ;; Remove liquidity
+        (try! (as-contract (contract-call? .arkadiko-swap-v1-1 reduce-position
+          .wrapped-stx-token
+          .usda-token
+          .arkadiko-swap-token-wstx-usda
+          u100
+        )))
+
+        ;; Now try to make USDA available from contract funds
+        (make-usda-available-from-funds usda-amount)
+      )
+    
+      ;; Not enough funds to make bid
+      (err ERR-INSUFFICIENT-FUNDS-TO-BID)
+    )
+  )
+)
+
+;; Stake funds
+(define-private (stake-contract-funds)
+  (let (
+    ;; Get the right amount of STX and USDA
+    (stx-to-stake (unwrap-panic (prepare-stake-contract-funds)))
+  )
+    ;; Add liquidity
+    (try! (as-contract (contract-call? .arkadiko-swap-v1-1 add-to-position
+      .wrapped-stx-token
+      .usda-token
+      .arkadiko-swap-token-wstx-usda
+      stx-to-stake
+      u0
+    )))
+
+    ;; Stake LP tokens
+    (let (
+      (lp-balance (unwrap-panic (contract-call? .arkadiko-swap-token-wstx-usda get-balance (as-contract tx-sender))))
+    )
+      (try! (as-contract (contract-call? .arkadiko-stake-registry-v1-1 stake
+        .arkadiko-stake-registry-v1-1 
+        .arkadiko-stake-pool-wstx-usda-v1-1 
+        .arkadiko-swap-token-wstx-usda 
+        lp-balance
+      )))
+      (ok true)
+    )
+  )
+)
+
+;; Make sure to have STX and USDA to provide liquidity and stake
+;; This is done by first converting all USDA to STX
+;; Half of the STX used for staking is converted to USDA
+;; Returns the amount of STX that can be used to stake
+(define-private (prepare-stake-contract-funds)
+  (let (
+    (contract-usda-balance (unwrap-panic (contract-call? .usda-token get-balance (as-contract tx-sender))))
+  )
+    ;; Swap all USDA from contract to STX first
+    (if (> contract-usda-balance u0)
+      (begin
+        (try! (as-contract (contract-call? .arkadiko-swap-v1-1 swap-y-for-x .wrapped-stx-token .usda-token contract-usda-balance u0)))
+        true
+      )
+      true
+    )
+
+    ;; Swap part of STX for USDA
+    (let (
+      (contract-stx-balance (get-liquidation-fund-stx-balance))
+      
+      ;; TODO: do not stake all but take "max-stx-to-stake" into account
+      (stx-to-swap (/ contract-stx-balance u2))
+    )
+      (try! (as-contract (contract-call? .arkadiko-swap-v1-1 swap-x-for-y .wrapped-stx-token .usda-token stx-to-swap u0)))
+      (ok stx-to-swap)
     )
   )
 )
@@ -237,10 +354,27 @@
 ;; Admin
 ;; ---------------------------------------------------------
 
+;; Transfer ownership
 (define-public (set-fund-owner (address principal))
   (begin
     (asserts! (is-eq tx-sender (var-get fund-owner)) (err ERR-NOT-AUTHORIZED))
-
     (ok (var-set fund-owner address))
+  )
+)
+
+;; Set max amount of STX that can be used to stake
+(define-public (set-max-stx-to-stake (max-stx uint))
+  (begin
+    (asserts! (is-eq tx-sender (var-get fund-owner)) (err ERR-NOT-AUTHORIZED))
+    (var-set max-stx-to-stake max-stx)
+    (stake-contract-funds)
+  )
+)
+
+;; TODO - Claim staking rewards
+(define-public (claim-rewards)
+  (begin
+    (asserts! (is-eq tx-sender (var-get fund-owner)) (err ERR-NOT-AUTHORIZED))
+    (ok u123)
   )
 )

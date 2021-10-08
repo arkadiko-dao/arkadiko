@@ -105,10 +105,8 @@ Clarinet.test({
   }
 });
 
-
-
 Clarinet.test({
-  name: "liquidation-fund: liquidate vault and split profit",
+  name: "liquidation-fund: liquidate vault using idle STX and split profit",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -211,3 +209,41 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(7.427246);
   }
 });
+
+Clarinet.test({
+  name: "liquidation-fund: set max STX to stake and intiate staking",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let liquidationFund = new LiquidationFund(chain, deployer);
+    let swap = new Swap(chain, deployer);
+    let usdaManager = new UsdaToken(chain, deployer); 
+
+    // Create STX/USDA pair
+    let result = swap.createPair(deployer, "wrapped-stx-token", "usda-token", "arkadiko-swap-token-wstx-usda", "wSTX-USDA", 80000, 100000);
+    result.expectOk().expectBool(true);
+
+    // Deposits to liquidation fund
+    result = liquidationFund.depositStx(wallet_1, 1000);
+    result.expectOk().expectUintWithDecimals(1000)
+
+    // Stake STX
+    result = liquidationFund.setMaxStxToStake(deployer, 100);
+    result.expectOk().expectBool(true);
+    
+    // Check stake 
+    let call = chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-stake-amount-of", [types.principal(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"))], deployer.address);
+    call.result.expectUint(555544839);
+
+    // STX in contract
+    call = await liquidationFund.getStxBalance();
+    call.result.expectUintWithDecimals(0);
+
+    // USDA in contract
+    call = await usdaManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(1.994559);
+
+  }
+});
+
