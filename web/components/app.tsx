@@ -14,7 +14,6 @@ import { resolveSTXAddress } from '@common/use-stx-address';
 import { TxStatus } from '@components/tx-status';
 import { TxSidebar } from '@components/tx-sidebar';
 import { useLocation } from 'react-router-dom';
-import { TestnetModal } from './testnet-modal';
 import { initiateConnection } from '@common/websocket-tx-updater';
 import ScrollToTop from '@components/scroll-to-top';
 import { Redirect } from 'react-router-dom';
@@ -32,9 +31,11 @@ export const getBalance = async (address: string) => {
   const lpDikoUsdaBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-diko-usda::diko-usda`];
   const lpStxUsdaBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-usda::wstx-usda`];
   const lpStxDikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-diko::wstx-diko`];
+  const xbtcBalance = data.fungible_tokens[`${contractAddress}.tokensoft-token::tokensoft-token`];
 
   return {
     stx: data.stx.balance,
+    xbtc: xbtcBalance ? xbtcBalance.balance : 0,
     usda: usdaBalance ? usdaBalance.balance : 0,
     diko: dikoBalance ? dikoBalance.balance : 0,
     xstx: xStxBalance ? xStxBalance.balance : 0,
@@ -71,6 +72,7 @@ export const App: React.FC = () => {
       ...prevState,
       balance: {
         usda: account.usda.toString(),
+        xbtc: account.xbtc.toString(),
         diko: account.diko.toString(),
         stx: account.stx.toString(),
         xstx: account.xstx.toString(),
@@ -84,7 +86,7 @@ export const App: React.FC = () => {
 
   const fetchCollateralTypes = async (address: string) => {
     let collTypes = {};
-    ['STX-A', 'STX-B'].forEach(async (token) => {
+    ['STX-A', 'STX-B', 'XBTC-A'].forEach(async (token) => {
       const types = await callReadOnlyFunction({
         contractAddress,
         contractName: "arkadiko-collateral-types-v1-1",
@@ -222,7 +224,6 @@ export const App: React.FC = () => {
             {showSidebar ? (
               <TxSidebar setShowSidebar={setShowSidebar} />
             ) : null}
-            <TestnetModal />
 
             {(location.pathname.indexOf('/onboarding') != 0) ? (
               <div className="fixed bottom-0 right-0 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end" style={{zIndex: 99999}}>

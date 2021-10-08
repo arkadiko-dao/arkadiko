@@ -129,24 +129,21 @@
     (if (is-eq (get is-liquidated vault) true)
       (ok u0)
       (begin
-        (let ((stx-price (unwrap-panic (contract-call? oracle fetch-price (get collateral-token vault)))))
-          (if (> (get debt vault) u0)
-            (ok
-              (/              
-                (/
-                  (* (get collateral vault) (get last-price stx-price))
-                  (+
-                    (get debt vault)
-                    (if include-stability-fees
-                      (unwrap-panic (stability-fee-helper (get stability-fee-last-accrued vault) (get debt vault) (get collateral-type vault) coll-type))
-                      u0
-                    )
+        (let ((price (unwrap-panic (contract-call? oracle fetch-price (get collateral-token vault)))))
+          (ok
+            (/
+              (/
+                (* (get collateral vault) (get last-price price))
+                (+
+                  (get debt vault)
+                  (if include-stability-fees
+                    (unwrap-panic (stability-fee-helper (get stability-fee-last-accrued vault) (get debt vault) (get collateral-type vault) coll-type))
+                    u0
                   )
                 )
-                u10000
               )
+              (/ (get decimals price) u100)
             )
-            (err u0)
           )
         )
       )
@@ -641,6 +638,7 @@
           updated-at-block-height: block-height
         })))
     (asserts! (is-eq u0 (get stacked-tokens vault)) (err ERR-STACKING-IN-PROGRESS))
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
     (asserts!
       (or
@@ -648,6 +646,13 @@
         (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "sip10-reserve")))
       )
       (err ERR-NOT-AUTHORIZED)
+    )
+    (asserts!
+      (or
+        (is-eq (get collateral-token vault) "STX")
+        (is-eq (unwrap-panic (contract-call? coll-type get-token-address (get collateral-type vault))) (contract-of ft))
+      )
+      (err ERR-WRONG-COLLATERAL-TOKEN)
     )
 
     (if (is-eq (get debt vault) u0)
@@ -924,6 +929,7 @@
     (asserts! (is-eq true (get is-liquidated vault)) (err ERR-VAULT-NOT-LIQUIDATED))
     (asserts! (is-eq true (get auction-ended vault)) (err ERR-AUCTION-NOT-ENDED))
     (asserts! (is-eq u0 (get stacked-tokens vault)) (err ERR-STACKING-IN-PROGRESS))
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts!
       (or
         (is-eq collateral-token "xSTX")

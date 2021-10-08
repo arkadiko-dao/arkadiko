@@ -20,11 +20,12 @@ class OracleManager {
     this.deployer = deployer;
   }
 
-  updatePrice(token: string, price: number) {
+  updatePrice(token: string, price: number, decimals: number = 1000000) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii(token),
         types.uint(price * 1000000),
+        types.uint(decimals)
       ], this.deployer.address),
     ]);
     return block.receipts[0].result;
@@ -155,7 +156,7 @@ class DikoUsdaPoolToken {
   }
   
   totalSupply() {
-    return this.chain.callReadOnlyFn("", "get-total-supply", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-swap-token-diko-usda", "get-total-supply", [], this.deployer.address);
   }
 }
 export { DikoUsdaPoolToken };
@@ -180,7 +181,7 @@ class StxUsdaPoolToken {
   }
   
   totalSupply() {
-    return this.chain.callReadOnlyFn("", "get-total-supply", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-swap-token-wstx-usda", "get-total-supply", [], this.deployer.address);
   }
 }
 export { StxUsdaPoolToken };
@@ -205,7 +206,33 @@ class StxDikoPoolToken {
   }
   
   totalSupply() {
-    return this.chain.callReadOnlyFn("", "get-total-supply", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-swap-token-wstx-diko", "get-total-supply", [], this.deployer.address);
   }
 }
 export { StxDikoPoolToken };
+
+
+// ---------------------------------------------------------
+// xBTC
+// ---------------------------------------------------------
+
+class XbtcToken {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  balanceOf(wallet: string) {
+    return this.chain.callReadOnlyFn("tokensoft-token", "get-balance", [
+      types.principal(wallet),
+    ], this.deployer.address);
+  }
+  
+  totalSupply() {
+    return this.chain.callReadOnlyFn("tokensoft-token", "get-total-supply", [], this.deployer.address);
+  }
+}
+export { XbtcToken };

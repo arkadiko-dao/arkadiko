@@ -81,6 +81,25 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "freddie: calculate collateralization ratio for xBTC",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+
+    let result = oracleManager.updatePrice("xBTC", 50000, 100000000);
+    result.expectOk().expectUintWithDecimals(50000);
+
+    result = vaultManager.createVault(deployer, "XBTC-A", 100, 10000, false, false, 'arkadiko-sip10-reserve-v1-1', 'tokensoft-token'); // 1 xBTC, 10K USDA
+    result.expectOk().expectUintWithDecimals(10000);
+
+    let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
+    call.result.expectOk().expectUint(499);
+  }
+});
+
+Clarinet.test({
   name: "freddie: calculate collateralization ratio with accrued stability fee",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -239,90 +258,14 @@ Clarinet.test({
     result = oracleManager.updatePrice("DIKO", 2);
     result.expectOk().expectUintWithDecimals(2);
 
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(5000000),
-        types.uint(1000000),
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
-        }),
-        types.ascii("STX-A"),
-        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-token')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
-      ], deployer.address),
-    ]);
-    block.receipts[0].result.expectErr().expectUint(98); // wrong token error
+    result = vaultManager.createVault(deployer, 'STX-A', 5, 1, true, true, 'arkadiko-sip10-reserve-v1-1', 'arkadiko-token')
+    result.expectErr().expectUint(98); // wrong token error
 
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(500000000),
-        types.uint(925000),
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
-        }),
-        types.ascii("DIKO-A"),
-        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-token')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
-      ], deployer.address),
-    ]);
-    block.receipts[0].result.expectErr().expectUint(410); // wrong collateral type
+    result = vaultManager.createVault(deployer, 'WRONG-A', 5, 1, true, true, 'arkadiko-sip10-reserve-v1-1', 'arkadiko-token')
+    result.expectErr().expectUint(410); // wrong token error
 
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(500000000),
-        types.uint(925000),
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
-        }),
-        types.ascii("STX-A"),
-        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-token')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
-      ], deployer.address),
-    ]);
-    block.receipts[0].result.expectErr().expectUint(98); // wrong token error
-
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(500000000),
-        types.uint(925000),
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
-        }),
-        types.ascii("DIKO-A"),
-        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
-        types.principal(Utils.qualifiedName('usda-token')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
-      ], deployer.address),
-    ]);
-    block.receipts[0].result.expectErr().expectUint(410); // wrong collateral type
-
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
-        types.uint(500000000),
-        types.uint(925000),
-        types.tuple({
-          'stack-pox': types.bool(true),
-          'auto-payoff': types.bool(true)
-        }),
-        types.ascii("DIKO-A"),
-        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-token')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
-      ], deployer.address),
-    ]);
-    block.receipts[0].result.expectErr().expectUint(410); // wrong collateral type
+    result = vaultManager.createVault(deployer, 'WRONG-A', 5, 1, true, true, 'arkadiko-stx-reserve-v1-1', 'arkadiko-token')
+    result.expectErr().expectUint(410); // wrong token error
 
   }
 });
@@ -343,18 +286,8 @@ Clarinet.test({
     result.expectOk().expectUint(1);
 
     // Should not be able to deposit in STX reserve
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "deposit", [
-        types.uint(1),
-        types.uint(500000000), // 500 STX
-        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-token')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1'))
-      ], deployer.address)
-    ]);
-    block.receipts[0].result
-      .expectErr()
-      .expectUint(45);
+    result = vaultManager.deposit(deployer, 1, 10, 'arkadiko-sip10-reserve-v1-1', 'arkadiko-token');
+    result.expectErr().expectUint(45);
 
   },
 });

@@ -317,6 +317,7 @@ Clarinet.test({
     let call = await vaultAuction.getAuctionById(1, wallet_1);
     let auction:any = call.result.expectTuple();
     let endBlockHeight = auction['ends-at'].expectUint(148);
+    auction['discount'].expectUint(7);
     // 1 bid has been made and collateral is left.
     // Now image no bids come in for the 2nd lot.
     // Auction should end and a new one should be started
@@ -327,10 +328,13 @@ Clarinet.test({
     let extendedAuction:any = call.result.expectTuple();
     extendedAuction['lots-sold'].expectUint(1);
     extendedAuction['ends-at'].expectUint(endBlockHeight + 144);
+    extendedAuction['total-debt-raised'].expectUintWithDecimals(1000);
+    extendedAuction['total-debt-burned'].expectUintWithDecimals(1000);
 
     // Auction closed
     call = await vaultAuction.getAuctionOpen(1, wallet_1);
     call.result.expectOk().expectBool(true);
+
   }
 });
 

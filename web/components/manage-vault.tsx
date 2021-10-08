@@ -52,6 +52,8 @@ export const ManageVault = ({ match }) => {
   const [startedStacking, setStartedStacking] = useState(true);
   const [canWithdrawCollateral, setCanWithdrawCollateral] = useState(false);
   const [canUnlockCollateral, setCanUnlockCollateral] = useState(false);
+  const [canStackCollateral, setCanStackCollateral] = useState(false);
+  const [decimals, setDecimals] = useState(1000000);
 
   useEffect(() => {
     const fetchVault = async () => {
@@ -180,6 +182,10 @@ export const ManageVault = ({ match }) => {
     };
 
     if (vault?.id) {
+      if (vault['collateralType'].toLowerCase().includes('stx')) {
+        setCanStackCollateral(true);
+      }
+      setDecimals(vault['collateralType'].toLowerCase().includes('stx') ? 1000000 : 100000000);
       fetchFees();
       fetchStackerHeight();
     }
@@ -304,7 +310,12 @@ export const ManageVault = ({ match }) => {
   const liquidationPrice = () => {
     if (vault) {
       // (liquidationRatio * coinsMinted) / collateral = rekt
-      return getLiquidationPrice(collateralType?.liquidationRatio, vault['debt'], vault['collateral']);
+      return getLiquidationPrice(
+        collateralType?.liquidationRatio,
+        vault['debt'],
+        vault['collateral'],
+        vault['collateralType']
+      );
     }
 
     return 0;
@@ -312,7 +323,8 @@ export const ManageVault = ({ match }) => {
 
   const collateralLocked = () => {
     if (vault) {
-      return vault['collateral'] / 1000000;
+      const decimals = vault['collateralType'].toLowerCase().includes('stx') ? 1000000 : 100000000;
+      return vault['collateral'] / decimals;
     }
 
     return 0;
@@ -458,8 +470,9 @@ export const ManageVault = ({ match }) => {
         price,
         collateralLocked(),
         outstandingDebt(),
-        collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 }
-      )
+        collateralType?.collateralToDebtRatio,
+        vault?.collateralToken
+      ).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })
     );
   };
   
@@ -498,7 +511,7 @@ export const ManageVault = ({ match }) => {
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Choose how much extra collateral you want to post. You have a balance of {state.balance['stx'] / 1000000} {vault?.collateralToken.toUpperCase()}.
+                    Choose how much extra collateral you want to post. You have a balance of {state.balance[vault?.collateralToken.toLowerCase()] / decimals} {vault?.collateralToken.toUpperCase()}.
                   </p>
                   <p className="text-sm text-gray-500">
                     We will automatically harvest any DIKO you are eligible for when depositing.
@@ -506,7 +519,7 @@ export const ManageVault = ({ match }) => {
 
                   <div className="mt-6">
                     <InputAmount
-                      balance={(state.balance['stx'] / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                      balance={(state.balance[vault?.collateralToken.toLowerCase()] / decimals).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
                       token={vault?.collateralToken.toUpperCase()}
                       inputName="depositCollateral"
                       inputId="depositExtraStxAmount"
@@ -629,12 +642,12 @@ export const ManageVault = ({ match }) => {
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Choose how much extra USDA you want to mint. You can mint a maximum of {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA.
+                    Choose how much extra USDA you want to mint. You can mint a maximum of {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio, vault?.collateralToken).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA.
                   </p>
 
                   <div className="mt-6">
                     <InputAmount
-                      balance={availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                      balance={availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio, vault?.collateralToken).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
                       token="USDA"
                       inputName="mintDebt"
                       inputId="mintUSDAAmount"
@@ -764,30 +777,32 @@ export const ManageVault = ({ match }) => {
                     ) : null }
                   </div>
 
-                  <div className="pt-6">
-                    <div>
-                      <div className="flex items-center justify-between">
-                        <p className="text-lg font-semibold leading-none">Stacking</p>
-                        {enabledStacking ? (
-                          <p className="text-base font-normal leading-6 text-green-500">Enabled</p>
-                        ) : (
-                          <p className="text-base font-normal leading-6 text-red-500">Disabled</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="mt-4">
-                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <div>
-                          <p className="text-lg font-semibold leading-none">{microToReadable(vault?.stackedTokens)} <span className="text-sm font-normal">{vault?.collateralToken.toUpperCase()}</span></p>
-                          <p className="text-base font-normal leading-6 text-gray-500">Currently stacking</p>
-                        </div>
-                        <div>
-                          <p className="text-lg font-semibold leading-none">{state.endDate}</p>
-                          <p className="text-base font-normal leading-6 text-gray-500">End of current cycle</p>
+                  {canStackCollateral ? (
+                    <div className="pt-6">
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <p className="text-lg font-semibold leading-none">Stacking</p>
+                          {enabledStacking ? (
+                            <p className="text-base font-normal leading-6 text-green-500">Enabled</p>
+                          ) : (
+                            <p className="text-base font-normal leading-6 text-red-500">Disabled</p>
+                          )}
                         </div>
                       </div>
+                      <div className="mt-4">
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                          <div>
+                            <p className="text-lg font-semibold leading-none">{microToReadable(vault?.stackedTokens)} <span className="text-sm font-normal">{vault?.collateralToken.toUpperCase()}</span></p>
+                            <p className="text-base font-normal leading-6 text-gray-500">Currently stacking</p>
+                          </div>
+                          <div>
+                            <p className="text-lg font-semibold leading-none">{state.endDate}</p>
+                            <p className="text-base font-normal leading-6 text-gray-500">End of current cycle</p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ) : null }
                   
                   <div className="pt-6">
                     <div className="sm:flex sm:items-start sm:justify-between">
@@ -814,7 +829,7 @@ export const ManageVault = ({ match }) => {
                       ) : null }
                     </div>
                     
-                    {isVaultOwner && vault?.stackedTokens > 0 && !vault?.revokedStacking && !canWithdrawCollateral ? (
+                    {canStackCollateral && isVaultOwner && vault?.stackedTokens > 0 && !vault?.revokedStacking && !canWithdrawCollateral ? (
                       // user has indicated they want to stack their STX tokens
                       <div className="p-4 mt-4 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
                         <div className="flex">
@@ -854,7 +869,7 @@ export const ManageVault = ({ match }) => {
                           </div>
                         </div>
                       </div>
-                    ) : isVaultOwner && vault?.stackedTokens > 0 && vault?.revokedStacking ? (
+                    ) : canStackCollateral && isVaultOwner && vault?.stackedTokens > 0 && vault?.revokedStacking ? (
                       <div className="p-4 mt-4 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
                         <div className="flex">
                           <div className="flex-shrink-0">
@@ -875,7 +890,7 @@ export const ManageVault = ({ match }) => {
                           </div>
                         </div>
                       </div>
-                    ) : isVaultOwner ? (
+                    ) : canStackCollateral && isVaultOwner ? (
                       <div className="p-4 mt-4 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
                         <div className="flex">
                           <div className="flex-shrink-0">
@@ -911,7 +926,7 @@ export const ManageVault = ({ match }) => {
                   <div>
                     <div className="flex items-start justify-between">
                       <div>
-                        <p className="text-lg font-semibold leading-none">{availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} <span className="text-sm font-normal">USDA</span></p>
+                        <p className="text-lg font-semibold leading-none">{availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio, vault?.collateralToken).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} <span className="text-sm font-normal">USDA</span></p>
                         <p className="text-base font-normal leading-6 text-gray-500">Available to mint</p>
                       </div>
                       {isVaultOwner ? (
@@ -978,7 +993,7 @@ export const ManageVault = ({ match }) => {
                             <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
                           </div>
                           <div className="flex-1 ml-3 md:flex md:justify-between">
-                            <p className="text-sm text-blue-700">The current STX price is <span className="font-semibold text-blue-900">${price / 1000000} USD</span>. You will be liquidated if the STX price drops below <span className="font-semibold text-blue-900">${liquidationPrice()} USD</span>. Pay back the outstanding debt or deposit extra collateral to keep your vault healthy.</p>
+                            <p className="text-sm text-blue-700">The current {vault?.collateralToken} price is <span className="font-semibold text-blue-900">${price / 1000000} USD</span>. You will be liquidated if the {vault?.collateralToken} price drops below <span className="font-semibold text-blue-900">${liquidationPrice()} USD</span>. Pay back the outstanding debt or deposit extra collateral to keep your vault healthy.</p>
                           </div>
                         </div>
                       </div>

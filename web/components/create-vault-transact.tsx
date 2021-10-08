@@ -9,8 +9,11 @@ import {
   falseCV,
   tupleCV,
   makeStandardSTXPostCondition,
+  makeStandardFungiblePostCondition,
   FungibleConditionCode,
-  AnchorMode
+  AnchorMode,
+  createAssetInfo,
+  makeContractFungiblePostCondition
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ExplorerLink } from './explorer-link';
@@ -25,14 +28,15 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   const callCollateralizeAndMint = async () => {
+    const decimals = coinAmounts['token-type'].toLowerCase().includes('stx') ? 1000000 : 100000000
     const token = tokenTraits[coinAmounts['token-name'].toLowerCase()]['name'];
-    const amount = uintCV(parseInt(coinAmounts['amounts']['collateral'], 10) * 1000000)
+    const amount = uintCV(parseInt(coinAmounts['amounts']['collateral'], 10) * decimals);
     const args = [
       amount,
       uintCV(parseInt(coinAmounts['amounts']['usda'], 10) * 1000000),
       tupleCV({
-        'stack-pox': (coinAmounts['stack-pox'] ? trueCV() : falseCV()),
-        'auto-payoff': (coinAmounts['auto-payoff'] ? trueCV() : falseCV())
+        'stack-pox': ((coinAmounts['stack-pox'] && coinAmounts['token-type'].toLowerCase().includes('stx')) ? trueCV() : falseCV()),
+        'auto-payoff': ((coinAmounts['auto-payoff'] && coinAmounts['token-type'].toLowerCase().includes('stx')) ? trueCV() : falseCV())
       }),
       stringAsciiCV(coinAmounts['token-type'].toUpperCase()),
       contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', resolveReserveName(coinAmounts['token-name'].toUpperCase())),
@@ -42,12 +46,27 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
     ];
 
     let postConditions:any[] = [];
+    let postConditionMode = 0x02;
     if (coinAmounts['token-name'].toLowerCase() === 'stx') {
       postConditions = [
         makeStandardSTXPostCondition(
           address || '',
           FungibleConditionCode.Equal,
           amount.value
+        )
+      ];
+    } else {
+      postConditionMode = 0x01;
+      postConditions = [
+        makeStandardFungiblePostCondition(
+          address || '',
+          FungibleConditionCode.LessEqual,
+          200000000,
+          createAssetInfo(
+            contractAddress,
+            'tokensoft-token',
+            'xbtc'
+          )
         )
       ];
     }
@@ -60,6 +79,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       functionName: 'collateralize-and-mint',
       functionArgs: args,
       postConditions,
+      postConditionMode,
       onFinish: data => {
         console.log('finished collateralizing!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'creating vault...' }));
