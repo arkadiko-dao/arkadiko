@@ -63,11 +63,10 @@ Clarinet.test({
     call.result.expectOk().expectUint(1860000); // in cents
 
     // Min collateral amount
-    // 0.1 xBTC at $20000 = $2000
-    // Lot size = 1000 USDA = 0.05 xBTC
-    // Plus 7% discount = 0.0535
+    // xBTC price is $20k with 7% discount it's $18.6k
+    // 1000 USDA / $18600 = 0.053763
     result = vaultManager.fetchMinimumCollateralAmount(1, wallet_1);
-    result.expectOk().expectUintWithDecimals(0.053763); // TODO: expecting 0.0535 xBTC
+    result.expectOk().expectUintWithDecimals(0.053763);
 
     // Vault info
     call = await vaultManager.getVaultById(1, wallet_1);
