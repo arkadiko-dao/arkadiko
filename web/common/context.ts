@@ -10,7 +10,8 @@ interface UserBalance {
   diko: number;
   stdiko: number;
   dikousda: number;
-  stxusda: number;
+  wstxusda: number;
+  wstxdiko: number;
 }
 
 export type UserBalanceKeys = keyof UserBalance;
