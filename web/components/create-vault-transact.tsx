@@ -12,14 +12,14 @@ import {
   makeStandardFungiblePostCondition,
   FungibleConditionCode,
   AnchorMode,
-  createAssetInfo,
-  makeContractFungiblePostCondition
+  createAssetInfo
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ExplorerLink } from './explorer-link';
 import { resolveReserveName, tokenTraits } from '@common/vault-utils';
 import { AppContext } from '@common/context';
-import { ExclamationIcon, CheckCircleIcon } from '@heroicons/react/solid'
+import { ExclamationIcon, CheckCircleIcon } from '@heroicons/react/solid';
+import BN from 'bn.js';
 
 export const CreateVaultTransact = ({ coinAmounts }) => {
   const [state, setState] = useContext(AppContext);
@@ -80,6 +80,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       functionArgs: args,
       postConditions,
       postConditionMode,
+      fee: 1000000,
       onFinish: data => {
         console.log('finished collateralizing!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'creating vault...' }));
