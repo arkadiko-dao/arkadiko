@@ -273,16 +273,15 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectErr().expectUint(4401);
 
-    // TODO: this should work but it crashes
-    // block = chain.mineBlock([
-    //   Tx.contractCall("arkadiko-freddie-v1-1", "withdraw-leftover-collateral", [
-    //     types.uint(1),
-    //     types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
-    //     types.principal(Utils.qualifiedName('tokensoft-token')),
-    //     types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1'))
-    //   ], deployer.address)
-    // ]);
-    // block.receipts[0].result.expectErr().expectUint(4401);
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-freddie-v1-1", "withdraw-leftover-collateral", [
+        types.uint(1),
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('tokensoft-token')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1'))
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk();
   
     // Wrong token
     block = chain.mineBlock([
