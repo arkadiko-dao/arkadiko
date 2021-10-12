@@ -388,6 +388,7 @@ export const Stake = () => {
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token')
       ],
+      postConditionMode: 0x01,
       onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
@@ -408,6 +409,7 @@ export const Stake = () => {
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token')
       ],
+      postConditionMode: 0x01,
       onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
@@ -428,6 +430,7 @@ export const Stake = () => {
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token')
       ],
+      postConditionMode: 0x01,
       onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },
