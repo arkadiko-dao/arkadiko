@@ -8,28 +8,28 @@ export const tokenList = [
     id: 1,
     name: 'USDA',
     nameInPair: 'usda',
-    logo: '/assets/tokens/usda.png',
+    logo: '/assets/tokens/usda.svg',
     listed: true
   },
   {
     id: 2,
     name: 'DIKO',
     nameInPair: 'diko',
-    logo: '/assets/tokens/diko.png',
+    logo: '/assets/tokens/diko.svg',
     listed: true
   },
   {
     id: 3,
     name: 'STX',
     nameInPair: 'wstx',
-    logo: '/assets/tokens/stx.png',
+    logo: '/assets/tokens/stx.svg',
     listed: true
   },
   {
     id: 4,
     name: 'Wrapped Bitcoin',
     nameInPair: 'xbtc',
-    logo: '/assets/tokens/xbtc.png',
+    logo: '/assets/tokens/xbtc.svg',
     listed: false
   }
 ];
