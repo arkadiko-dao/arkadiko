@@ -310,6 +310,18 @@ Clarinet.test({
     result = liquidationFund.bid(deployer, 1000, 1, 0)
     result.expectOk().expectBool(true);
 
+
+
+    // Check USDA balance 
+    call = await usdaManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(2604.005253);
+
+    // Check contract balance
+    call = await liquidationFund.getStxBalance();
+    call.result.expectUintWithDecimals(2999.999999);
+
+    
+
     result = liquidationFund.bid(deployer, 1000, 1, 1)
     result.expectOk().expectBool(true);
 
@@ -351,7 +363,7 @@ Clarinet.test({
 
     // Check contract balance (initial 6000 + liquidation rewards)
     call = await liquidationFund.getStxBalance();
-    call.result.expectUintWithDecimals(6759.375296);
+    call.result.expectUintWithDecimals(9759.375295);
 
     // Check xSTX balance 
     call = await xstxManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));

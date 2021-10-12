@@ -122,7 +122,10 @@
 )
 
 (define-read-only (get-liquidation-fund-stx-balance)
-  (stx-get-balance (as-contract tx-sender))
+  (+
+    (stx-get-balance (as-contract tx-sender))
+    (unwrap-panic (contract-call? .wrapped-stx-token get-balance (as-contract tx-sender)))
+  )
 )
 
 ;; ---------------------------------------------------------
@@ -290,6 +293,10 @@
     )
   )
 )
+
+;; ---------------------------------------------------------
+;; Stake funds
+;; ---------------------------------------------------------
 
 ;; Stake funds
 (define-private (stake-contract-funds)
