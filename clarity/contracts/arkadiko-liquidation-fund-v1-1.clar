@@ -227,26 +227,28 @@
  (let (
     (contract-usda-balance (unwrap-panic (contract-call? .usda-token get-balance (as-contract tx-sender))))
     (contract-stx-balance (get-liquidation-fund-stx-balance))
-
-    (usda-needed-from-swap (- usda-amount contract-usda-balance))
-    (stx-needed-to-swap (unwrap-panic (swap-stx-needed-for-usda-output usda-needed-from-swap)))
   )
     ;; If contract holds enough USDA there is nothing left to do
     (if (< contract-usda-balance usda-amount)
 
-      ;; If contract holds enough STX it can be swapped for USDA
-      (if (>= contract-stx-balance stx-needed-to-swap)
-
-        ;; Swap STX for USDA
-        (begin
-          (try! (as-contract (contract-call? .arkadiko-swap-v1-1 swap-x-for-y .wrapped-stx-token .usda-token stx-needed-to-swap usda-needed-from-swap)))
-          (ok true)
-        )
-
-        ;; Not enough USDA or STX in contract
-        (ok false)
+      (let (
+        (usda-needed-from-swap (- usda-amount contract-usda-balance))
+        (stx-needed-to-swap (unwrap-panic (swap-stx-needed-for-usda-output usda-needed-from-swap)))
       )
+        ;; If contract holds enough STX it can be swapped for USDA
+        (if (>= contract-stx-balance stx-needed-to-swap)
 
+          ;; Swap STX for USDA
+          (begin
+            (try! (as-contract (contract-call? .arkadiko-swap-v1-1 swap-x-for-y .wrapped-stx-token .usda-token stx-needed-to-swap usda-needed-from-swap)))
+            (ok true)
+          )
+
+          ;; Not enough USDA or STX in contract
+          (ok false)
+        )
+      )
+      
       ;; Enough USDA in contract    
       (ok true) 
     )
