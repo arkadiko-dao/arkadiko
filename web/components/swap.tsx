@@ -206,13 +206,20 @@ export const Swap: React.FC = () => {
 
   const swapTokens = async () => {
     let contractName = 'swap-x-for-y';
+    let tokenNameX = tokenX['name'];
+    let tokenNameY = tokenY['name'];
     let tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
     let tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
+    let principalX = contractPrincipalCV(contractAddress, tokenXTrait);
+    let principalY = contractPrincipalCV(contractAddress, tokenYTrait);
     if (inverseDirection) {
       contractName = 'swap-y-for-x';
-      let tmpTrait = tokenXTrait;
-      tokenXTrait = tokenYTrait;
-      tokenYTrait = tmpTrait;
+      let tmpPrincipal = principalX;
+      principalX = principalY;
+      principalY = tmpPrincipal;
+      let tmpName = tokenNameX;
+      tokenNameX = tokenNameY;
+      tokenNameY = tmpName;
     }
 
     const amount = uintCV(tokenXAmount * 1000000);
@@ -242,34 +249,60 @@ export const Swap: React.FC = () => {
           createAssetInfo(
             contractAddress,
             tokenYTrait,
-            tokenY['name'].toLowerCase()
+            tokenNameY.toLowerCase()
           )
         )
       ];
     } else {
-      postConditions = [
-        makeStandardFungiblePostCondition(
-          stxAddress || '',
-          FungibleConditionCode.LessEqual,
-          uintCV(parseFloat(tokenXAmount * 1000000).toFixed(0)).value,
-          createAssetInfo(
+      if (contractName === 'swap-x-for-y') {
+        postConditions = [
+          makeContractFungiblePostCondition(
             contractAddress,
-            tokenXTrait,
-            tokenX['name'].toLowerCase()
+            'arkadiko-swap-v1-1',
+            FungibleConditionCode.LessEqual,
+            uintCV((parseFloat(tokenYAmount) * 1.2 * 1000000).toFixed(0)).value,
+            createAssetInfo(
+              contractAddress,
+              tokenYTrait,
+              tokenNameY.toLowerCase()
+            )
+          ),
+          makeStandardFungiblePostCondition(
+            stxAddress || '',
+            FungibleConditionCode.LessEqual,
+            uintCV(parseFloat(tokenXAmount * 1000000).toFixed(0)).value,
+            createAssetInfo(
+              contractAddress,
+              tokenXTrait,
+              tokenNameX.toLowerCase()
+            )
           )
-        ),
-        makeContractFungiblePostCondition(
-          contractAddress,
-          'arkadiko-swap-v1-1',
-          FungibleConditionCode.LessEqual,
-          uintCV((parseFloat(tokenYAmount) * 1.2 * 1000000).toFixed(0)).value,
-          createAssetInfo(
+        ];
+      } else {
+        postConditions = [
+          makeContractFungiblePostCondition(
             contractAddress,
-            tokenYTrait,
-            tokenY['name'].toLowerCase()
+            'arkadiko-swap-v1-1',
+            FungibleConditionCode.LessEqual,
+            uintCV((parseFloat(tokenYAmount) * 1.2 * 1000000).toFixed(0)).value,
+            createAssetInfo(
+              contractAddress,
+              tokenYTrait,
+              tokenNameX.toLowerCase()
+            )
+          ),
+          makeStandardFungiblePostCondition(
+            stxAddress || '',
+            FungibleConditionCode.LessEqual,
+            uintCV(parseFloat(tokenXAmount * 1000000).toFixed(0)).value,
+            createAssetInfo(
+              contractAddress,
+              tokenXTrait,
+              tokenNameY.toLowerCase()
+            )
           )
-        )
-      ];
+        ];
+      }
     }
     await doContractCall({
       network,
@@ -278,8 +311,8 @@ export const Swap: React.FC = () => {
       contractName: 'arkadiko-swap-v1-1',
       functionName: contractName,
       functionArgs: [
-        contractPrincipalCV(contractAddress, tokenXTrait),
-        contractPrincipalCV(contractAddress, tokenYTrait),
+        principalX,
+        principalY,
         amount,
         uintCV((parseFloat(minimumReceived) * 1000000).toFixed(0))
       ],
