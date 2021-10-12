@@ -122,10 +122,7 @@
 )
 
 (define-read-only (get-liquidation-fund-stx-balance)
-  (+
-    (stx-get-balance (as-contract tx-sender))
-    (unwrap-panic (contract-call? .wrapped-stx-token get-balance (as-contract tx-sender)))
-  )
+  (stx-get-balance (as-contract tx-sender))
 )
 
 ;; ---------------------------------------------------------
@@ -146,14 +143,16 @@
 
     (try! (make-usda-available usda))
 
-    (as-contract (contract-call? .arkadiko-auction-engine-v1-1 bid
+    (try! (as-contract (contract-call? .arkadiko-auction-engine-v1-1 bid
       vault-manager
       oracle
       coll-type
       auction-id
       lot-index
       usda
-    ))
+    )))
+
+    (stake-contract-funds)
   )
 )
 
@@ -192,6 +191,23 @@
 )
 
 ;; ---------------------------------------------------------
+;; Swap helpers
+;; ---------------------------------------------------------
+
+;; Get how much STX would be needed as input for given USDA output
+(define-public (swap-stx-needed-for-usda-output (usda-output uint))
+  (let (
+    (pair-balances (unwrap-panic (contract-call? .arkadiko-swap-v1-1 get-balances .wrapped-stx-token .usda-token)))
+    (pair-wstx-balance (unwrap-panic (element-at pair-balances u0)))
+    (pair-usda-balance (unwrap-panic (element-at pair-balances u1)))
+    (stx-input (/ (* usda-output pair-wstx-balance) pair-usda-balance))
+    (stx-input-with-extra (/ (* stx-input u105) u100)) ;; 5% extra for fees & slippage
+  )
+    (ok stx-input-with-extra)
+  )
+)
+
+;; ---------------------------------------------------------
 ;; Token management
 ;; ---------------------------------------------------------
 
@@ -208,19 +224,6 @@
       (make-usda-available-from-stake usda-amount)
       (ok true)
     )
-  )
-)
-
-;; Get how much STX would be needed as input for given USDA output
-(define-public (swap-stx-needed-for-usda-output (usda-output uint))
-  (let (
-    (pair-balances (unwrap-panic (contract-call? .arkadiko-swap-v1-1 get-balances .wrapped-stx-token .usda-token)))
-    (pair-wstx-balance (unwrap-panic (element-at pair-balances u0)))
-    (pair-usda-balance (unwrap-panic (element-at pair-balances u1)))
-    (stx-input (/ (* usda-output pair-wstx-balance) pair-usda-balance))
-    (stx-input-with-extra (/ (* stx-input u105) u100)) ;; 5% extra for fees & slippage
-  )
-    (ok stx-input-with-extra)
   )
 )
 
@@ -336,6 +339,8 @@
   (let (
     (contract-usda-balance (unwrap-panic (contract-call? .usda-token get-balance (as-contract tx-sender))))
   )
+    ;; TODO: calculate amount to swap
+
     ;; Swap all USDA from contract to STX first
     (if (> contract-usda-balance u0)
       (begin
@@ -381,6 +386,7 @@
 )
 
 ;; TODO - Claim staking rewards
+;; TODO - Allow stakers to claim their part
 (define-public (claim-rewards)
   (begin
     (asserts! (is-eq tx-sender (var-get fund-owner)) (err ERR-NOT-AUTHORIZED))

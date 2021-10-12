@@ -234,7 +234,7 @@ Clarinet.test({
 
     // Check contract balance (initial 6000 + liquidation rewards)
     call = await liquidationFund.getStxBalance();
-    call.result.expectUintWithDecimals(10948.103319);
+    call.result.expectUintWithDecimals(6759.375296);
 
     // Check xSTX balance 
     call = await xstxManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));
@@ -243,7 +243,7 @@ Clarinet.test({
     // Check USDA balance 
     // Always a bit left as we swap an extra 5% STX to USDA to cover fees and slippage
     call = await usdaManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));
-    call.result.expectOk().expectUintWithDecimals(7.427246);
+    call.result.expectOk().expectUintWithDecimals(53.166656);
   }
 });
 
@@ -310,18 +310,6 @@ Clarinet.test({
     result = liquidationFund.bid(deployer, 1000, 1, 0)
     result.expectOk().expectBool(true);
 
-
-
-    // Check USDA balance 
-    call = await usdaManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));
-    call.result.expectOk().expectUintWithDecimals(2604.005253);
-
-    // Check contract balance
-    call = await liquidationFund.getStxBalance();
-    call.result.expectUintWithDecimals(2999.999999);
-
-    
-
     result = liquidationFund.bid(deployer, 1000, 1, 1)
     result.expectOk().expectBool(true);
 
@@ -333,7 +321,7 @@ Clarinet.test({
 
     // Check stake 
     call = chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-stake-amount-of", [types.principal(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"))], deployer.address);
-    call.result.expectUint(0); // TODO: should stake again
+    call.result.expectUint(2216935963);
 
     // Redeem xSTX
     result = liquidationFund.redeemLotCollateral(deployer, 1, 0, "xstx-token")
@@ -363,7 +351,7 @@ Clarinet.test({
 
     // Check contract balance (initial 6000 + liquidation rewards)
     call = await liquidationFund.getStxBalance();
-    call.result.expectUintWithDecimals(9759.375295);
+    call.result.expectUintWithDecimals(6759.375297);
 
     // Check xSTX balance 
     call = await xstxManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));
@@ -372,6 +360,6 @@ Clarinet.test({
     // Check USDA balance 
     // Always a bit left as we swap an extra 5% STX to USDA to cover fees and slippage
     call = await usdaManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));
-    call.result.expectOk().expectUintWithDecimals(1404.005253);
+    call.result.expectOk().expectUintWithDecimals(52.815178);
   }
 });
