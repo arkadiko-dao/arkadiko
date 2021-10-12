@@ -58,8 +58,8 @@
   { ids: (list 100 (tuple (auction-id uint) (lot-index uint))) }
 )
 (define-map redeeming-lot
-  { user: principal }
   { auction-id: uint, lot-index: uint }
+  { bidder: principal }
 )
 
 (define-data-var last-auction-id uint u0)
@@ -217,11 +217,10 @@
 
     (let (
       (auction-id (+ (var-get last-auction-id) u1))
-      (price-in-cents u10)
       (auction {
         id: auction-id,
         auction-type: "debt",
-        collateral-amount: (/ (* u100 debt-to-raise) price-in-cents),
+        collateral-amount: (* debt-to-raise u1000000),
         collateral-token: "DIKO",
         debt-to-raise: debt-to-raise,
         discount: discount,
@@ -244,14 +243,14 @@
 )
 
 ;; @desc calculate the discounted auction price on the (dollarcent) price of the collateral
-;; @param price-in-cents; the current on-chain price in cents
+;; @param price; the current on-chain price
 ;; @param auction-id; the ID of the auction in which the collateral will be sold
-(define-read-only (discounted-auction-price (price-in-cents uint) (auction-id uint))
+(define-read-only (discounted-auction-price (price uint) (auction-id uint))
   (let (
     (auction (get-auction-by-id auction-id))
-    (discount (* price-in-cents (get discount auction)))
+    (discount (* price (get discount auction)))
   )
-    (ok (/ (- (* u100 price-in-cents) discount) u100))
+    (ok (/ (- (* u100 price) discount) u1000000))
   )
 )
 
@@ -279,8 +278,8 @@
         u0
       )
     )
-    (collateral-price-in-cents (unwrap-panic (contract-call? oracle fetch-price (collateral-token (get collateral-token auction)))))
-    (discounted-price (unwrap-panic (discounted-auction-price (get last-price-in-cents collateral-price-in-cents) auction-id)))
+    (collateral-price (unwrap-panic (contract-call? oracle fetch-price (collateral-token (get collateral-token auction)))))
+    (discounted-price (unwrap-panic (discounted-auction-price (get last-price collateral-price) auction-id)))
   )
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
     (asserts!
@@ -397,7 +396,7 @@
     (if (is-eq (get auction-type auction) "debt")
       ;; request "collateral-amount" gov tokens from the DAO
       (begin
-        (try! (contract-call? .arkadiko-dao request-diko-tokens (get collateral-amount auction)))
+        (try! (contract-call? .arkadiko-dao request-diko-tokens (get collateral-amount last-bid)))
         (try! (contract-call? vault-manager redeem-auction-collateral ft token-string reserve (get collateral-amount last-bid) tx-sender))
       )
       (try! (contract-call? vault-manager redeem-auction-collateral ft token-string reserve (get collateral-amount last-bid) tx-sender))
@@ -461,7 +460,10 @@
         (let (
           (amount-to-burn (min-of (- (get total-debt-raised auction) (get total-debt-burned auction)) (- (get debt vault) (get total-debt-burned auction))))
         )
-          (try! (contract-call? .arkadiko-dao burn-token .usda-token amount-to-burn (as-contract tx-sender)))
+          (if (> amount-to-burn u0)
+            (try! (contract-call? .arkadiko-dao burn-token .usda-token amount-to-burn (as-contract tx-sender)))
+            true
+          )
           (map-set auctions
             { id: auction-id }
             (merge auction { total-debt-burned: (+ (get total-debt-burned auction) amount-to-burn) })
@@ -473,7 +475,7 @@
     (try!
       (if (>= (get total-debt-raised auction) (get debt-to-raise auction))
         (begin
-          (try! (remove-auction auction-id))
+          (unwrap-panic (remove-auction auction-id))
           (if (is-eq (get auction-type auction) "collateral")
             (contract-call?
               vault-manager
@@ -496,7 +498,7 @@
           (extend-auction auction-id)
           (begin
             ;; no collateral left. Need to sell governance token to raise more USDA
-            (try! (remove-auction auction-id))
+            (unwrap-panic (remove-auction auction-id))
             (start-debt-auction
               (get vault-id auction)
               (- (get debt-to-raise auction) (get total-debt-raised auction))
@@ -523,7 +525,7 @@
     (let (
       (balance (unwrap-panic (contract-call? token get-balance (as-contract tx-sender))))
     )
-      (as-contract (contract-call? token transfer balance (as-contract tx-sender) (contract-of auction-engine) none))
+      (as-contract (contract-call? token transfer balance tx-sender (contract-of auction-engine) none))
     )
   )
 )
@@ -542,7 +544,7 @@
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
 
-    (as-contract (contract-call? .usda-token transfer usda-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none))
+    (as-contract (contract-call? .usda-token transfer usda-amount tx-sender (contract-call? .arkadiko-dao get-payout-address) none))
   )
 )
 
@@ -578,8 +580,8 @@
     (last-bid (get-last-bid auction-id lot-index))
     (collateral-amount (unwrap-panic (get-minimum-collateral-amount oracle auction-id)))
     (lot-got-sold (if (>= usda (var-get lot-size))
-        (ok u1)
-        (ok u0)
+        u1
+        u0
       )
     )
     (lots (get-winning-lots tx-sender))
@@ -601,7 +603,7 @@
     (map-set auctions
       { id: auction-id }
       (merge auction {
-        lots-sold: (+ (unwrap-panic lot-got-sold) (get lots-sold auction)),
+        lots-sold: (+ lot-got-sold (get lots-sold auction)),
         total-collateral-sold: (- (+ collateral-amount (get total-collateral-sold auction)) (get collateral-amount last-bid)),
         total-debt-raised: (- (+ usda (get total-debt-raised auction)) (get usda last-bid))
       })
@@ -643,24 +645,19 @@
 )
 
 (define-private (remove-winning-lot (lot (tuple (auction-id uint) (lot-index uint))))
-  (let ((current-lot (unwrap-panic (map-get? redeeming-lot { user: tx-sender }))))
-    (if 
-      (and
-        (is-eq (get auction-id lot) (get auction-id current-lot))
-        (is-eq (get lot-index lot) (get lot-index current-lot))
-      )
-      false
-      true
-    )
+  (if (is-some (map-get? redeeming-lot { auction-id: (get auction-id lot), lot-index: (get lot-index lot) }))
+    false
+    true
   )
 )
 
 (define-private (return-usda (owner principal) (usda uint) (auction-id uint) (lot-index uint))
   (if (> usda u0)
-    (let ((lots (get-winning-lots tx-sender)))
-      (map-set redeeming-lot { user: tx-sender } { auction-id: auction-id, lot-index: lot-index})
-      (map-set winning-lots { user: tx-sender } { ids: (filter remove-winning-lot (get ids lots)) })
-      (as-contract (contract-call? .usda-token transfer usda (as-contract tx-sender) owner none))
+    (let ((lots (get-winning-lots owner)))
+      (map-set redeeming-lot { auction-id: auction-id, lot-index: lot-index } { bidder: owner })
+      (map-set winning-lots { user: owner } { ids: (filter remove-winning-lot (get ids lots)) })
+      (try! (as-contract (contract-call? .usda-token transfer usda (as-contract tx-sender) owner none)))
+      (ok (map-delete redeeming-lot { auction-id: auction-id, lot-index: lot-index }))
     )
     (err u0) ;; don't really care if this fails.
   )
@@ -680,13 +677,10 @@
 )
 
 (define-private (remove-auction (auction-id uint))
-  (if true
-    (begin
-      (var-set removing-auction-id auction-id)
-      (var-set auction-ids (unwrap-panic (as-max-len? (filter remove-closed-auction (var-get auction-ids)) u1500)))
-      (ok true)
-    )
-    (err u0)
+  (begin
+    (var-set removing-auction-id auction-id)
+    (var-set auction-ids (unwrap-panic (as-max-len? (filter remove-closed-auction (var-get auction-ids)) u1500)))
+    (ok true)
   )
 )
 

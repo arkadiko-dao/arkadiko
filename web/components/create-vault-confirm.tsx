@@ -1,8 +1,18 @@
-import React from 'react';
-import { QuestionMarkCircleIcon, ExternalLinkIcon } from '@heroicons/react/solid';
-
+import React, { useContext } from 'react';
+import { AppContext } from '@common/context';
+import { QuestionMarkCircleIcon, ExternalLinkIcon, ExclamationIcon } from '@heroicons/react/solid';
+import { useLocation } from 'react-router-dom';
 
 export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => {
+  const [state] = useContext(AppContext);
+  const search = useLocation().search;
+  const tokenName = new URLSearchParams(search).get('token') || 'STX';
+
+  let endDate = Date.parse(state.endDate);
+  const msInWeek = 7 * 24 * 60 * 60 * 1000;
+  let availableTokensDate = endDate + 8 * msInWeek; // 6-week stacking + 2-week cooldown = 8 weeks
+  let tokensAvailability = new Date(availableTokensDate).toDateString().split(' ').slice(1).join(' ');
+
   const togglePox = () => {
     const newState = !coinAmounts['stack-pox'];
     let autoPayoff = coinAmounts['auto-payoff'];
@@ -141,28 +151,51 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                   </p>
                 </div>
 
-                <div className="pt-4">
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-blue-600 checked:border-transparent focus:outline-none"
-                      defaultChecked={coinAmounts['stack-pox']}
-                      checked={coinAmounts['stack-pox']}
-                      onClick={() => togglePox()}
-                    />
-                    <span className="text-gray-900">I want my STX tokens stacked to earn yield</span>
-                  </label>
-                  <label className="flex items-center pt-3 space-x-3">
-                    <input
-                      type="checkbox"
-                      className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-blue-600 checked:border-transparent focus:outline-none"
-                      defaultChecked={coinAmounts['auto-payoff']}
-                      checked={coinAmounts['auto-payoff']}
-                      onClick={() => toggleAutoPayoff()}
-                    />
-                    <span className="text-gray-900">I want my vault loan to be paid off automatically through the earned yield</span>
-                  </label>
-                </div>
+                {tokenName.includes('STX') ? (
+                  <div className="pt-4">
+                    <div className="p-4 mt-2 mb-6 border-l-4 border-yellow-400 rounded-sm bg-yellow-50">
+                      <div className="flex">
+                        <div className="flex-shrink-0">
+                          <ExclamationIcon className="w-5 h-5 text-yellow-400" aria-hidden="true" />
+                        </div>
+                        <div className="ml-3">
+                          <h3 className="text-sm font-semibold text-yellow-800">Important note</h3>
+                          <div className="mt-2 text-sm text-yellow-700">
+                            <p className="">
+                              Choosing to stack your STX means that they will be locked and become illiquid immediately.
+                              They will be available again on: <span className="font-semibold">{tokensAvailability}</span> (End of the <a href="https://stacking.club/cycles/next" target="_blank" rel="noopener noreferrer" className="font-medium text-yellow-700 underline hover:text-yellow-600">next PoX cycle</a>: {state.endDate} + 6-week stacking phase + 2-week cooldown period).
+                            </p>
+
+                            <p className="mt-1">
+                              <a href="https://stacking.club/learn" target="_blank" rel="noopener noreferrer" className="font-medium text-yellow-700 underline hover:text-yellow-600">
+                                Learn more about the PoX cycle.
+                              </a>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <label className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-blue-600 checked:border-transparent focus:outline-none"
+                        checked={coinAmounts['stack-pox']}
+                        onChange={() => togglePox()}
+                      />
+                      <span className="text-gray-900">I want my STX tokens stacked to earn yield</span>
+                    </label>
+                    <label className="flex items-center pt-3 space-x-3">
+                      <input
+                        type="checkbox"
+                        className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-blue-600 checked:border-transparent focus:outline-none"
+                        checked={coinAmounts['auto-payoff']}
+                        onChange={() => toggleAutoPayoff()}
+                      />
+                      <span className="text-gray-900">I want my vault loan to be paid off automatically through the earned yield</span>
+                    </label>
+                  </div>
+                ) : null}
               </div>
               
               <div className="pt-5">

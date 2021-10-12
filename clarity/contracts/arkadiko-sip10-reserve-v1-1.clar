@@ -18,10 +18,10 @@
   (collateralization-ratio uint)
   (oracle <oracle-trait>)
 )
-  (let ((price-in-cents (unwrap-panic (contract-call? oracle fetch-price token))))
+  (let ((price (unwrap-panic (contract-call? oracle fetch-price token))))
     (let ((amount
       (/
-        (* ucollateral-amount (get last-price-in-cents price-in-cents))
+        (* ucollateral-amount (get last-price price))
         collateralization-ratio
       ))
     )
@@ -36,9 +36,9 @@
   (ucollateral uint)
   (oracle <oracle-trait>)
 )
-  (let ((price-in-cents (unwrap-panic (contract-call? oracle fetch-price token))))
+  (let ((price (unwrap-panic (contract-call? oracle fetch-price token))))
     (if (> debt u0)
-      (ok (/ (* ucollateral (get last-price-in-cents price-in-cents)) debt))
+      (ok (/ (/ (* ucollateral (get last-price price)) debt) u10000))
       (err u0)
     )
   )
@@ -63,7 +63,7 @@
     ;; token should be a trait e.g. 'SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.arkadiko-token
     (match (contract-call? token transfer ucollateral-amount sender (as-contract tx-sender) none)
       success (ok debt)
-      error (err ERR-TRANSFER-FAILED)
+      error (err error)
     )
   )
 )
@@ -91,9 +91,12 @@
     (asserts! (is-eq token-string token-symbol) (err ERR-WRONG-TOKEN))
     (asserts! (not (is-eq token-symbol "STX")) (err ERR-WRONG-TOKEN))
 
-    (match (as-contract (contract-call? token transfer ucollateral-amount (as-contract tx-sender) vault-owner none))
-      success (ok true)
-      error (err ERR-WITHDRAW-FAILED)
+    (if (> ucollateral-amount u0)
+      (match (as-contract (contract-call? token transfer ucollateral-amount tx-sender vault-owner none))
+        success (ok true)
+        error (err ERR-WITHDRAW-FAILED)
+      )
+      (ok true)
     )
   )
 )
@@ -130,7 +133,7 @@
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (not (is-eq token-symbol "STX")) (err ERR-WRONG-TOKEN))
 
-    (match (as-contract (contract-call? token transfer collateral-to-return (as-contract tx-sender) vault-owner none))
+    (match (as-contract (contract-call? token transfer collateral-to-return tx-sender vault-owner none))
       transferred (ok true)
       error (err ERR-TRANSFER-FAILED)
     )
@@ -145,7 +148,7 @@
     (asserts! (is-eq token-string token-symbol) (err ERR-WRONG-TOKEN))
     (asserts! (not (is-eq token-string "STX")) (err ERR-WRONG-TOKEN))
     
-    (as-contract (contract-call? token transfer ucollateral (as-contract tx-sender) owner none))
+    (as-contract (contract-call? token transfer ucollateral tx-sender owner none))
   )
 )
 
@@ -179,7 +182,7 @@
     (let (
       (balance (unwrap-panic (contract-call? token get-balance (as-contract tx-sender))))
     )
-      (as-contract (contract-call? token transfer balance (as-contract tx-sender) (contract-of new-vault) none))
+      (as-contract (contract-call? token transfer balance tx-sender (contract-of new-vault) none))
     )
   )
 )

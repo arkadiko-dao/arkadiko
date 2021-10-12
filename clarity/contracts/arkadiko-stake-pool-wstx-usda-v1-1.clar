@@ -140,7 +140,7 @@
       (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
 
       ;; Transfer LP token back from this contract to the user
-      (try! (as-contract (contract-call? .arkadiko-swap-token-wstx-usda transfer amount (as-contract tx-sender) staker none)))
+      (try! (as-contract (contract-call? .arkadiko-swap-token-wstx-usda transfer amount tx-sender staker none)))
 
       ;; Update sender stake info
       (map-set stakes { staker: staker } { uamount: new-stake-amount, cumm-reward-per-stake: (var-get cumm-reward-per-stake) })
@@ -238,6 +238,8 @@
     (last-block-height (get-last-block-height registry-trait))
   )
     (asserts! (is-eq (contract-of registry-trait) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-WRONG-REGISTRY)
+    (asserts! (> block-height (var-get last-reward-increase-block)) (ok u0))
+
     (var-set cumm-reward-per-stake new-cumm-reward-per-stake)
     (var-set last-reward-increase-block last-block-height)
     (ok new-cumm-reward-per-stake)
@@ -252,7 +254,10 @@
     (rewards-per-block (unwrap-panic (contract-call? registry-trait get-rewards-per-block-for-pool .arkadiko-stake-pool-wstx-usda-v1-1)))
     (current-total-staked (var-get total-staked))
     (last-block-height (get-last-block-height registry-trait))
-    (block-diff (- last-block-height (var-get last-reward-increase-block)))
+    (block-diff (if (> last-block-height (var-get last-reward-increase-block))
+      (- last-block-height (var-get last-reward-increase-block))
+      u0
+    ))
     (current-cumm-reward-per-stake (var-get cumm-reward-per-stake)) 
   )
     (if (> current-total-staked u0)
@@ -283,6 +288,7 @@
 )
 
 ;; Initialize the contract
+;; TODO - set block height for mainnet
 (begin
   (var-set last-reward-increase-block block-height)
 )

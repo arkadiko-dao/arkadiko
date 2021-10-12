@@ -9,7 +9,8 @@ import {
 import { 
   OracleManager,
   UsdaToken,
-  XstxManager
+  XstxManager,
+  DikoToken
 } from './models/arkadiko-tests-tokens.ts';
 
 import { 
@@ -35,14 +36,14 @@ Clarinet.test({
     let vaultAuction = new VaultAuction(chain, deployer);
 
     // Initialize price of STX to $2 in the oracle
-    let result = oracleManager.updatePrice("STX", 300);
+    let result = oracleManager.updatePrice("STX", 3);
 
     // Create vault - 1500 STX, 1000 USDA
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
     result.expectOk().expectUintWithDecimals(1000);
 
     // Upate price to $1.0 and notify risky vault
-    result = oracleManager.updatePrice("STX", 100);
+    result = oracleManager.updatePrice("STX", 1);
     result = vaultLiquidator.notifyRiskyVault(deployer);
     result.expectOk().expectUint(5200);
 
@@ -166,18 +167,27 @@ Clarinet.test({
     let vaultManager = new VaultManager(chain, deployer);
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
     let vaultAuction = new VaultAuction(chain, deployer);
+    let dikoToken = new DikoToken(chain, deployer);
 
     // Initialize price of STX to $3 in the oracle
-    let result = oracleManager.updatePrice("STX", 300);
+    let result = oracleManager.updatePrice("STX", 3);
 
     // Create vault
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
     result.expectOk().expectUintWithDecimals(1000);
 
     // Upate price and notify risky vault
-    result = oracleManager.updatePrice("STX", 12);
+    result = oracleManager.updatePrice("STX", 0.12);
     result = vaultLiquidator.notifyRiskyVault(deployer);
     result.expectOk().expectUint(5200);
+
+    // Auction info
+    // No collateral sold yet, so no debt raised
+    let call:any = await vaultAuction.getAuctionById(1, wallet_1);
+    let auction:any = call.result.expectTuple();
+    auction['total-collateral-sold'].expectUintWithDecimals(0);
+    auction['total-debt-raised'].expectUintWithDecimals(0);
+    auction['debt-to-raise'].expectUintWithDecimals(1030.000045); // 1030 USDA (30% extra liquidation penalty + stability fees)
 
     // Now the liquidation started and an auction should have been created!
     // Make a bid on the first 1000 USDA
@@ -189,9 +199,12 @@ Clarinet.test({
 
     // The auction sold off all of its collateral now, but not enough debt was raised
     // As a result, we will raise debt through a governance token auction
-    let call:any = await vaultAuction.getAuctionById(1, wallet_1);
-    let auction:any = call.result.expectTuple();
-    auction['total-collateral-sold'].expectUintWithDecimals(1500);
+    // Still need to raise 30.000045 USDA
+    call = await vaultAuction.getAuctionById(1, wallet_1);
+    auction = call.result.expectTuple();
+    auction['total-collateral-sold'].expectUintWithDecimals(1500); // All collateral sold
+    const debtRaised = auction['total-debt-raised'].expectUintWithDecimals(1000); // 1000 USDA raised
+    const debtToRaise = auction['debt-to-raise'].expectUintWithDecimals(1030.000045); // 1030 USDA
 
     chain.mineEmptyBlock(160);
 
@@ -205,18 +218,32 @@ Clarinet.test({
     call = await vaultAuction.getAuctionOpen(1, wallet_1);
     call.result.expectOk().expectBool(false);
 
-    const debtRaised = auction['total-debt-raised'].expectUintWithDecimals(1000); // 1000 USDA raised
-    const debtToRaise = auction['debt-to-raise'].expectUintWithDecimals(1030.000045); // 1030 USDA
+    call = dikoToken.balanceOf(deployer.address);
+    call.result.expectOk().expectUintWithDecimals(890000);
+    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-auction-engine-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(0);
 
+    // New auction opened with DIKO as collateral token
     call = await vaultAuction.getAuctionById(2, wallet_1);
     let dikoAuction:any = call.result.expectTuple();
     dikoAuction['collateral-token'].expectAscii('DIKO'); // auction off some gov token
     dikoAuction['debt-to-raise'].expectUint(debtToRaise - debtRaised); // raise the remainder of previous auction
 
-    oracleManager.updatePrice("DIKO", 200);
+    // Set DIKO oracle price
+    oracleManager.updatePrice("DIKO", 2);
 
-    result = vaultAuction.bid(deployer, 430, 2, 0);
+    // We need to raise 30.000045 USDA = 15.000022 DIKO
+    result = vaultManager.fetchMinimumCollateralAmount(2, wallet_1);
+    result.expectOk().expectUintWithDecimals(15.000022);
+
+    result = vaultAuction.bid(deployer, 31, 2, 0);
     result.expectOk().expectBool(true);
+
+    call = await vaultAuction.getLastBid(2, 0, deployer);
+    let bid:any = call.result.expectTuple();
+    bid['usda'].expectUintWithDecimals(31); 
+    bid['collateral-amount'].expectUintWithDecimals(15.000022); 
+    bid['collateral-token'].expectAscii("DIKO");
 
     call = await vaultAuction.getAuctionById(2, wallet_1);
     dikoAuction = call.result.expectTuple();
@@ -230,6 +257,31 @@ Clarinet.test({
     vault['leftover-collateral'].expectUint(0);
     vault['is-liquidated'].expectBool(true);
     vault['auction-ended'].expectBool(true);
+
+    // Auction info
+    call = await vaultAuction.getAuctionById(2, wallet_1);
+    auction = call.result.expectTuple();
+    auction['total-collateral-sold'].expectUintWithDecimals(15.000022);
+    auction['total-debt-raised'].expectUintWithDecimals(31.000000); 
+    auction['total-debt-burned'].expectUintWithDecimals(31.000000); 
+    auction['debt-to-raise'].expectUintWithDecimals(30.000045);
+
+    call = await vaultAuction.getAuctionOpen(2, deployer);
+    call.result.expectOk().expectBool(false);
+
+    // Bidder can redeem DIKO
+    result = vaultAuction.redeemLotCollateralDiko(deployer, 2, 0);
+    result.expectOk().expectBool(true);
+
+    // Check balances
+    call = dikoToken.balanceOf(deployer.address);
+    call.result.expectOk().expectUintWithDecimals(890015.000022);
+
+    // Auction engine and SIP10 shoudl not have any DIKO
+    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-auction-engine-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(0);
+    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-sip10-reserve-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(0);
   }
 });
 
@@ -246,14 +298,14 @@ Clarinet.test({
     let vaultAuction = new VaultAuction(chain, deployer);
 
     // Initialize price of STX to $3 in the oracle
-    let result = oracleManager.updatePrice("STX", 300);
+    let result = oracleManager.updatePrice("STX", 3);
 
     // Create vault
     result = vaultManager.createVault(wallet_1, "STX-A", 1500, 1000);
     result.expectOk().expectUintWithDecimals(1000);
 
     // Upate price and notify risky vault
-    result = oracleManager.updatePrice("STX", 100);
+    result = oracleManager.updatePrice("STX", 1);
     result = vaultLiquidator.notifyRiskyVault(deployer);
     result.expectOk().expectUint(5200);
 
@@ -265,6 +317,7 @@ Clarinet.test({
     let call = await vaultAuction.getAuctionById(1, wallet_1);
     let auction:any = call.result.expectTuple();
     let endBlockHeight = auction['ends-at'].expectUint(148);
+    auction['discount'].expectUint(7);
     // 1 bid has been made and collateral is left.
     // Now image no bids come in for the 2nd lot.
     // Auction should end and a new one should be started
@@ -275,10 +328,13 @@ Clarinet.test({
     let extendedAuction:any = call.result.expectTuple();
     extendedAuction['lots-sold'].expectUint(1);
     extendedAuction['ends-at'].expectUint(endBlockHeight + 144);
+    extendedAuction['total-debt-raised'].expectUintWithDecimals(1000);
+    extendedAuction['total-debt-burned'].expectUintWithDecimals(1000);
 
     // Auction closed
     call = await vaultAuction.getAuctionOpen(1, wallet_1);
     call.result.expectOk().expectBool(true);
+
   }
 });
 
@@ -296,14 +352,14 @@ Clarinet.test({
     let vaultAuction = new VaultAuction(chain, deployer);
 
     // Initialize price of STX to $3 in the oracle
-    let result = oracleManager.updatePrice("STX", 300);
+    let result = oracleManager.updatePrice("STX", 3);
 
     // Create vault
     result = vaultManager.createVault(wallet_1, "STX-A", 150, 100);
     result.expectOk().expectUintWithDecimals(100);
 
     // Update price, notify risky vault
-    result = oracleManager.updatePrice("STX", 100);
+    result = oracleManager.updatePrice("STX", 1);
     result = vaultLiquidator.notifyRiskyVault(deployer);
     result.expectOk().expectUint(5200);
 
@@ -340,14 +396,14 @@ Clarinet.test({
     let vaultAuction = new VaultAuction(chain, deployer);
 
     // Initialize price of STX to $3 in the oracle
-    let result = oracleManager.updatePrice("STX", 300); 
+    let result = oracleManager.updatePrice("STX", 3); 
 
     // Create vault
     result = vaultManager.createVault(wallet_1, "STX-A", 1500, 1000);
     result.expectOk().expectUintWithDecimals(1000);
 
     // Price decrease to $1.0
-    result = oracleManager.updatePrice("STX", 100);
+    result = oracleManager.updatePrice("STX", 1);
 
     // Now the liquidation started and an auction should have been created!
     result = vaultLiquidator.notifyRiskyVault(deployer);
@@ -376,12 +432,12 @@ Clarinet.test({
     let vaultAuction = new VaultAuction(chain, deployer);
 
     // Update price and create vault
-    let result = oracleManager.updatePrice("STX", 300);
+    let result = oracleManager.updatePrice("STX", 3);
     result = vaultManager.createVault(wallet_1, "STX-A", 150, 100);
     result.expectOk().expectUintWithDecimals(100);
 
     // Update price, notifiy risky vault
-    result = oracleManager.updatePrice("STX", 100);
+    result = oracleManager.updatePrice("STX", 1);
     result = vaultLiquidator.notifyRiskyVault(deployer)
     result.expectOk().expectUint(5200);
 
@@ -407,9 +463,9 @@ Clarinet.test({name: "auction engine: cannot start auction when emergency shutdo
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
 
     // Create vault and liquidate
-    let result = oracleManager.updatePrice("STX", 300);
+    let result = oracleManager.updatePrice("STX", 3);
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
-    result = oracleManager.updatePrice("STX", 100);
+    result = oracleManager.updatePrice("STX", 1);
     result = vaultLiquidator.notifyRiskyVault(deployer);
 
     // Now the liquidation started and an auction should have been created!
@@ -436,9 +492,9 @@ Clarinet.test({
     let vaultAuction = new VaultAuction(chain, deployer);
 
     // Create vault and liquidate
-    let result = oracleManager.updatePrice("STX", 300);
+    let result = oracleManager.updatePrice("STX", 3);
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
-    result = oracleManager.updatePrice("STX", 100);
+    result = oracleManager.updatePrice("STX", 1);
     result = vaultLiquidator.notifyRiskyVault(deployer);
 
     // USDA balance of deployer
@@ -477,7 +533,7 @@ Clarinet.test({
     let vaultAuction = new VaultAuction(chain, deployer);
 
     // Initialize price of STX to $3.5 in the oracle
-    let result = oracleManager.updatePrice("STX", 350);
+    let result = oracleManager.updatePrice("STX", 3.5);
 
     // Create vault for wallet_1 - 1600 STX, 1100 USDA
     result = vaultManager.createVault(wallet_1, "STX-A", 1600, 1100);
@@ -488,12 +544,12 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(1300);
 
     // Upate price to $0.6 and notify risky vault 1
-    result = oracleManager.updatePrice("STX", 60);
+    result = oracleManager.updatePrice("STX", 0.6);
     result = vaultLiquidator.notifyRiskyVault(deployer, 1);
     result.expectOk().expectUint(5200);
 
     // Price recovers to $2
-    result = oracleManager.updatePrice("STX", 200);
+    result = oracleManager.updatePrice("STX", 2);
 
     // Should not be able to start auction for vault 2
     result = vaultLiquidator.notifyRiskyVault(deployer, 2);
@@ -538,14 +594,14 @@ Clarinet.test({
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
 
     // Initialize price of STX to $3 in the oracle
-    let result = oracleManager.updatePrice("STX", 300);
+    let result = oracleManager.updatePrice("STX", 3);
 
     // Create vault for wallet_1 - 1000 STX, 700 USDA
     result = vaultManager.createVault(wallet_1, "STX-A", 1000, 700);
     result.expectOk().expectUintWithDecimals(700);
 
     // Upate price to $1.0 and notify risky vault 1
-    result = oracleManager.updatePrice("STX", 100);
+    result = oracleManager.updatePrice("STX", 1);
     result = vaultLiquidator.notifyRiskyVault(deployer, 1);
     result.expectOk().expectUint(5200);
 
@@ -577,14 +633,14 @@ Clarinet.test({
     let vaultAuction = new VaultAuction(chain, deployer);
 
     // Initialize price of STX to $3 in the oracle
-    let result = oracleManager.updatePrice("STX", 300);
+    let result = oracleManager.updatePrice("STX", 3);
 
     // Create vault - 1500 STX, 1000 USDA
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
     result.expectOk().expectUintWithDecimals(1000);
 
     // Upate price to $1.0 and notify risky vault
-    result = oracleManager.updatePrice("STX", 100);
+    result = oracleManager.updatePrice("STX", 1);
     result = vaultLiquidator.notifyRiskyVault(deployer);
     result.expectOk().expectUint(5200);
 
@@ -623,14 +679,14 @@ Clarinet.test({
     let vaultAuction = new VaultAuction(chain, deployer);
 
     // Initialize price of STX to $3 in the oracle
-    let result = oracleManager.updatePrice("STX", 300);
+    let result = oracleManager.updatePrice("STX", 3);
 
     // Create vault - 1500 STX, 1000 USDA
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
     result.expectOk().expectUintWithDecimals(1000);
 
     // Upate price to $1.0 and notify risky vault
-    result = oracleManager.updatePrice("STX", 100);
+    result = oracleManager.updatePrice("STX", 1);
     result = vaultLiquidator.notifyRiskyVault(deployer);
     result.expectOk().expectUint(5200);
 
@@ -672,14 +728,14 @@ Clarinet.test({
     let vaultAuction = new VaultAuction(chain, deployer);
 
     // Initialize price of STX to $3 in the oracle
-    let result = oracleManager.updatePrice("STX", 300);
+    let result = oracleManager.updatePrice("STX", 3);
 
     // Create vault for wallet_1 - 1500 STX, 1000 USDA
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
     result.expectOk().expectUintWithDecimals(1000);
 
     // Upate price to $1.0 and notify risky vault 1
-    result = oracleManager.updatePrice("STX", 100);
+    result = oracleManager.updatePrice("STX", 1);
     result = vaultLiquidator.notifyRiskyVault(deployer, 1);
     result.expectOk().expectUint(5200);
     
@@ -728,14 +784,14 @@ Clarinet.test({
     let vaultAuction = new VaultAuction(chain, deployer);
 
     // Initialize price of STX to $3 in the oracle
-    let result = oracleManager.updatePrice("STX", 300);
+    let result = oracleManager.updatePrice("STX", 3);
 
     // Create vault for wallet_1 - 1500 STX, 1100 USDA
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1100);
     result.expectOk().expectUintWithDecimals(1100);
 
     // Upate price to $1.0 and notify risky vault 1
-    result = oracleManager.updatePrice("STX", 100);
+    result = oracleManager.updatePrice("STX", 1);
     result = vaultLiquidator.notifyRiskyVault(deployer, 1);
     result.expectOk().expectUint(5200);
     
@@ -791,7 +847,7 @@ Clarinet.test({
     let vaultAuction = new VaultAuction(chain, deployer);
 
     // Initialize price of STX in the oracle
-    let result = oracleManager.updatePrice("STX", 300);
+    let result = oracleManager.updatePrice("STX", 3);
 
     // Create vault - 1500 STX, 1100 USDA
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1100);
@@ -809,7 +865,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Upate price to $1.0 and notify risky vault 1
-    result = oracleManager.updatePrice("STX", 100);
+    result = oracleManager.updatePrice("STX", 1);
     result = vaultLiquidator.notifyRiskyVault(deployer, 1);
     result.expectOk().expectUint(5200);
     result = vaultLiquidator.notifyRiskyVault(deployer, 2);

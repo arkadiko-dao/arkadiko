@@ -41,7 +41,7 @@ export const Pool: React.FC = () => {
                           href={tab.href}
                           className={classNames(
                             tab.current ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700', 
-                            'px-3 py-2 text-xl font-headings text-sm rounded-md'
+                            'px-3 py-2 text-lg font-headings rounded-md'
                           )}
                           aria-current={tab.current ? 'page' : undefined}
                         >

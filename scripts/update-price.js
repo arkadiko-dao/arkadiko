@@ -24,12 +24,13 @@ const network = utils.resolveNetwork();
 
 const setPrice = async (price) => {
   let nonce = await utils.getNonce(CONTRACT_ADDRESS);
+  const priceWithDecimals = price.toFixed(4) * 1000000;
 
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
     contractName: CONTRACT_NAME,
     functionName: FUNCTION_NAME,
-    functionArgs: [tx.stringAsciiCV('STX'), tx.uintCV(new BN(price.toFixed(2) * 100))],
+    functionArgs: [tx.stringAsciiCV('STX'), tx.uintCV(new BN(priceWithDecimals)), tx.uintCV(1000000)],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     nonce: new BN(nonce),
     postConditionMode: 1,
@@ -43,7 +44,7 @@ const setPrice = async (price) => {
     contractAddress: CONTRACT_ADDRESS,
     contractName: CONTRACT_NAME,
     functionName: FUNCTION_NAME,
-    functionArgs: [tx.stringAsciiCV('xSTX'), tx.uintCV(new BN(price.toFixed(2) * 100))],
+    functionArgs: [tx.stringAsciiCV('xSTX'), tx.uintCV(new BN(priceWithDecimals)), tx.uintCV(1000000)],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     nonce: new BN(nonce + 1),
     postConditionMode: 1,
@@ -52,10 +53,24 @@ const setPrice = async (price) => {
   const transaction2 = await tx.makeContractCall(xTxOptions);
   const result2 = tx.broadcastTransaction(transaction2, network);
   await utils.processing(result2, transaction2.txid(), 0);
+
+  const xBtcTxOptions = {
+    contractAddress: CONTRACT_ADDRESS,
+    contractName: CONTRACT_NAME,
+    functionName: FUNCTION_NAME,
+    functionArgs: [tx.stringAsciiCV('xBTC'), tx.uintCV(new BN(46000 * 1000000)), tx.uintCV(100000000)],
+    senderKey: process.env.STACKS_PRIVATE_KEY,
+    nonce: new BN(nonce + 2),
+    postConditionMode: 1,
+    network
+  };
+  const transaction3 = await tx.makeContractCall(xBtcTxOptions);
+  const result3 = tx.broadcastTransaction(transaction3, network);
+  await utils.processing(result3, transaction3.txid(), 0);
 };
 
 rp(requestOptions).then(async (response) => {
   let price = response['data']['4847']['quote']['USD']['price'];
   await setPrice(price);
 });
-// setPrice(1.11);
+// setPrice(0.5); // 0.5 USD

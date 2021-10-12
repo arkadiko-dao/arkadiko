@@ -26,8 +26,8 @@ Clarinet.test({
     let vaultManager = new VaultManager(chain, deployer);
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 300);
-    result.expectOk().expectUint(300);
+    let result = oracleManager.updatePrice("STX", 3);
+    result.expectOk().expectUintWithDecimals(3);
 
     result = vaultManager.createVault(deployer, "STX-A", 150, 100);
     result.expectOk().expectUintWithDecimals(100);

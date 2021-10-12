@@ -152,10 +152,8 @@
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
 
     (map-set closing-vault { user: (get owner vault) } { vault-id: vault-id })
-    (if (map-set vault-entries { user: tx-sender } { ids: (filter remove-burned-vault entries) })
-      (ok (map-delete vaults { id: vault-id }))
-      (err u0)
-    )
+    (map-set vault-entries { user: tx-sender } { ids: (filter remove-burned-vault entries) })
+    (ok (map-delete vaults { id: vault-id }))
   )
 )
 

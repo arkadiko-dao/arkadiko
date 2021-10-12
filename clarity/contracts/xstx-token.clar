@@ -1,7 +1,7 @@
 (impl-trait .sip-010-trait-ft-standard.sip-010-trait)
 (impl-trait .arkadiko-dao-token-trait-v1.dao-token-trait)
 
-;; Defines an STX derivative according to the SRC20 Standard
+;; Defines an STX derivative according to the SIP010 Standard
 (define-fungible-token xstx)
 
 (define-data-var token-uri (string-utf8 256) u"")

@@ -66,6 +66,12 @@ class Stacker {
     return block.receipts[0].result;
   }
 
+  returnStx(amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stacker-v1-1", "return-stx", [types.uint(amount * 1000000)], this.deployer.address),
+    ]);
+    return block.receipts[0].result;
+  }
 }
 export { Stacker };
 

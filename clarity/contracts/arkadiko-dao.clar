@@ -366,13 +366,6 @@
       qualified-name: 'ST26902A6NT1QSWQXXYM55EM579RY9CCPQDN02QW2.arkadiko-diko-guardian-v1-1
     }
   )
-  (map-set contracts-data
-    { qualified-name: 'ST26902A6NT1QSWQXXYM55EM579RY9CCPQDN02QW2.arkadiko-diko-guardian-v1-1 }
-    {
-      can-mint: true,
-      can-burn: true
-    }
-  )
 
   (map-set contracts
     { name: "diko-init" }

@@ -11,6 +11,7 @@ import {
   createAssetInfo, FungibleConditionCode,
   makeStandardFungiblePostCondition,
   makeStandardSTXPostCondition,
+  makeContractSTXPostCondition,
   makeContractFungiblePostCondition
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
@@ -206,13 +207,21 @@ export const Swap: React.FC = () => {
 
   const swapTokens = async () => {
     let contractName = 'swap-x-for-y';
+    let tokenNameX = tokenX['name'];
+    let tokenNameY = tokenY['name'];
     let tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
     let tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
+    let principalX = contractPrincipalCV(contractAddress, tokenXTrait);
+    let principalY = contractPrincipalCV(contractAddress, tokenYTrait);
+    let postConditionMode = 0x02;
     if (inverseDirection) {
       contractName = 'swap-y-for-x';
-      let tmpTrait = tokenXTrait;
-      tokenXTrait = tokenYTrait;
-      tokenYTrait = tmpTrait;
+      let tmpPrincipal = principalX;
+      principalX = principalY;
+      principalY = tmpPrincipal;
+      let tmpName = tokenNameX;
+      tokenNameX = tokenNameY;
+      tokenNameY = tmpName;
     }
 
     const amount = uintCV(tokenXAmount * 1000000);
@@ -242,34 +251,91 @@ export const Swap: React.FC = () => {
           createAssetInfo(
             contractAddress,
             tokenYTrait,
-            tokenY['name'].toLowerCase()
+            tokenNameY.toLowerCase()
           )
         )
       ];
-    } else {
+    } else if (tokenY.name === 'STX') {
+      postConditionMode = 0x01;
       postConditions = [
-        makeStandardFungiblePostCondition(
-          stxAddress || '',
+        makeContractSTXPostCondition(
+          contractAddress,
+          'arkadiko-swap-v1-1',
           FungibleConditionCode.LessEqual,
-          uintCV(parseFloat(tokenXAmount * 1000000).toFixed(0)).value,
-          createAssetInfo(
-            contractAddress,
-            tokenXTrait,
-            tokenX['name'].toLowerCase()
-          )
+          uintCV((parseFloat(tokenYAmount) * 1000000).toFixed(0)).value
         ),
         makeContractFungiblePostCondition(
           contractAddress,
           'arkadiko-swap-v1-1',
           FungibleConditionCode.LessEqual,
-          uintCV((parseFloat(tokenYAmount) * 1.2 * 1000000).toFixed(0)).value,
+          uintCV((parseFloat(tokenYAmount) * 1000000).toFixed(0)).value,
           createAssetInfo(
             contractAddress,
-            tokenYTrait,
-            tokenY['name'].toLowerCase()
+            'wrapped-stx-token',
+            'wstx'
+          )
+        ),
+        makeStandardFungiblePostCondition(
+          stxAddress || '',
+          FungibleConditionCode.LessEqual,
+          uintCV((parseFloat(tokenXAmount) * 1.2 * 1000000).toFixed(0)).value,
+          createAssetInfo(
+            contractAddress,
+            tokenXTrait,
+            tokenNameY.toLowerCase()
           )
         )
       ];
+    } else {
+      if (contractName === 'swap-x-for-y') {
+        postConditions = [
+          makeContractFungiblePostCondition(
+            contractAddress,
+            'arkadiko-swap-v1-1',
+            FungibleConditionCode.LessEqual,
+            uintCV((parseFloat(tokenYAmount) * 1.2 * 1000000).toFixed(0)).value,
+            createAssetInfo(
+              contractAddress,
+              tokenYTrait,
+              tokenNameY.toLowerCase()
+            )
+          ),
+          makeStandardFungiblePostCondition(
+            stxAddress || '',
+            FungibleConditionCode.LessEqual,
+            uintCV(parseFloat(tokenXAmount * 1000000).toFixed(0)).value,
+            createAssetInfo(
+              contractAddress,
+              tokenXTrait,
+              tokenNameX.toLowerCase()
+            )
+          )
+        ];
+      } else {
+        postConditions = [
+          makeContractFungiblePostCondition(
+            contractAddress,
+            'arkadiko-swap-v1-1',
+            FungibleConditionCode.LessEqual,
+            uintCV((parseFloat(tokenYAmount) * 1.2 * 1000000).toFixed(0)).value,
+            createAssetInfo(
+              contractAddress,
+              tokenYTrait,
+              tokenNameX.toLowerCase()
+            )
+          ),
+          makeStandardFungiblePostCondition(
+            stxAddress || '',
+            FungibleConditionCode.LessEqual,
+            uintCV(parseFloat(tokenXAmount * 1000000).toFixed(0)).value,
+            createAssetInfo(
+              contractAddress,
+              tokenXTrait,
+              tokenNameY.toLowerCase()
+            )
+          )
+        ];
+      }
     }
     await doContractCall({
       network,
@@ -278,12 +344,13 @@ export const Swap: React.FC = () => {
       contractName: 'arkadiko-swap-v1-1',
       functionName: contractName,
       functionArgs: [
-        contractPrincipalCV(contractAddress, tokenXTrait),
-        contractPrincipalCV(contractAddress, tokenYTrait),
+        principalX,
+        principalY,
         amount,
         uintCV((parseFloat(minimumReceived) * 1000000).toFixed(0))
       ],
       postConditions,
+      postConditionMode,
       onFinish: data => {
         console.log('finished swap!', data);
         setState(prevState => ({
@@ -334,7 +401,7 @@ export const Swap: React.FC = () => {
                         href={tab.href}
                         className={classNames(
                           tab.current ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700', 
-                          'px-3 py-2 text-xl font-headings text-sm rounded-md'
+                          'px-3 py-2 text-lg font-headings rounded-md'
                         )}
                         aria-current={tab.current ? 'page' : undefined}
                       >

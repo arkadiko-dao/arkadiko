@@ -206,7 +206,7 @@
       (try! (contract-call? .arkadiko-dao burn-token .stdiko-token amount staker))
 
       ;; Transfer DIKO back from this contract to the user
-      (try! (as-contract (contract-call? .arkadiko-token transfer diko-to-receive (as-contract tx-sender) staker none)))
+      (try! (as-contract (contract-call? .arkadiko-token transfer diko-to-receive tx-sender staker none)))
 
       (ok diko-to-receive)
     )
@@ -222,6 +222,8 @@
     (deactivated-block (unwrap-panic (contract-call? registry-trait get-pool-deactivated-block .arkadiko-stake-pool-diko-v1-1)))
   )
     (asserts! (is-eq (contract-of registry-trait) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-WRONG-REGISTRY)
+    (asserts! (> block-height (var-get last-reward-add-block)) (ok u0))
+
     ;; Rewards to add can be 0 if called multiple times in same block
     ;; Do not mint if pool deactivated
     (if (or (is-eq rewards-to-add u0) (not (is-eq deactivated-block u0)))
@@ -242,7 +244,10 @@
   (let (
     (rewards-per-block (unwrap-panic (contract-call? registry-trait get-rewards-per-block-for-pool .arkadiko-stake-pool-diko-v1-1)))
     (last-block-info (get-last-block-height registry-trait))
-    (block-diff (- (get height last-block-info) (var-get last-reward-add-block)))
+    (block-diff (if (> (get height last-block-info) (var-get last-reward-add-block))
+      (- (get height last-block-info) (var-get last-reward-add-block))
+      u0
+    ))
     (rewards-to-add (* rewards-per-block block-diff))
   )
     ;; Rewards to add can be 0 if called multiple times in same block
@@ -277,7 +282,7 @@
     (dao-owner (contract-call? .arkadiko-dao get-dao-owner))
   )
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "diko-slash"))) ERR-NOT-AUTHORIZED)
-    (try! (as-contract (contract-call? .arkadiko-token transfer slash-total (as-contract tx-sender) dao-owner none)))
+    (try! (as-contract (contract-call? .arkadiko-token transfer slash-total tx-sender dao-owner none)))
     (ok slash-total)
   )
 )
@@ -293,6 +298,7 @@
 )
 
 ;; Initialize the contract
+;; TODO - set block height for mainnet
 (begin
   (var-set last-reward-add-block block-height)
 )

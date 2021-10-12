@@ -64,10 +64,7 @@
 )
 
 (define-private (subtract-stx-redeemable (token-amount uint))
-  (if true
-    (ok (var-set stx-redeemable (- (var-get stx-redeemable) token-amount)))
-    (err u0)
-  )
+  (ok (var-set stx-redeemable (- (var-get stx-redeemable) token-amount)))
 )
 
 (define-read-only (get-stacking-unlock-burn-height (name (string-ascii 256)))
@@ -132,11 +129,11 @@
     (if (is-eq (get is-liquidated vault) true)
       (ok u0)
       (begin
-        (let ((stx-price-in-cents (unwrap-panic (contract-call? oracle fetch-price (get collateral-token vault)))))
-          (if (> (get debt vault) u0)
-            (ok
+        (let ((price (unwrap-panic (contract-call? oracle fetch-price (get collateral-token vault)))))
+          (ok
+            (/
               (/
-                (* (get collateral vault) (get last-price-in-cents stx-price-in-cents))
+                (* (get collateral vault) (get last-price price))
                 (+
                   (get debt vault)
                   (if include-stability-fees
@@ -145,8 +142,8 @@
                   )
                 )
               )
+              (/ (get decimals price) u100)
             )
-            (err u0)
           )
         )
       )
@@ -261,7 +258,7 @@
       (begin
         (try! (contract-call? .arkadiko-sip10-reserve-v1-1 burn-xstx (min-of stx ustx-amount) tx-sender))
         (try! (contract-call? .arkadiko-stx-reserve-v1-1 redeem-xstx (min-of stx ustx-amount) tx-sender))
-        (try! (subtract-stx-redeemable (min-of stx ustx-amount)))
+        (unwrap-panic (subtract-stx-redeemable (min-of stx ustx-amount)))
         (ok true)
       )
       (ok false)
@@ -412,6 +409,7 @@
     )
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
+    (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts!
       (or
         (is-eq collateral-token "STX")
@@ -622,7 +620,8 @@
     )
 
     (try! (pay-stability-fee vault-id coll-type))
-    (burn-partial-debt vault-id (min-of debt (get debt vault)) reserve ft coll-type)
+    (print { type: "vault", action: "burn", data: vault })
+    (burn-partial-debt vault-id (min-of debt (get debt vault)) ft coll-type)
   )
 )
 
@@ -639,6 +638,7 @@
           updated-at-block-height: block-height
         })))
     (asserts! (is-eq u0 (get stacked-tokens vault)) (err ERR-STACKING-IN-PROGRESS))
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-VAULT-LIQUIDATED))
     (asserts!
       (or
@@ -646,6 +646,13 @@
         (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "sip10-reserve")))
       )
       (err ERR-NOT-AUTHORIZED)
+    )
+    (asserts!
+      (or
+        (is-eq (get collateral-token vault) "STX")
+        (is-eq (unwrap-panic (contract-call? coll-type get-token-address (get collateral-type vault))) (contract-of ft))
+      )
+      (err ERR-WRONG-COLLATERAL-TOKEN)
     )
 
     (if (is-eq (get debt vault) u0)
@@ -656,7 +663,7 @@
     (try! (contract-call? coll-type subtract-debt-from-collateral-type (get collateral-type vault) (get debt vault)))
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id updated-vault))
     (try! (contract-call? .arkadiko-vault-rewards-v1-1 remove-collateral (get collateral vault) (get owner vault)))
-    (print { type: "vault", action: "burn", data: updated-vault })
+    (print { type: "vault", action: "close", data: updated-vault })
     (try! (contract-call? .arkadiko-vault-data-v1-1 close-vault vault-id))
     (ok true)
   )
@@ -665,7 +672,6 @@
 (define-private (burn-partial-debt
   (vault-id uint)
   (debt uint)
-  (reserve <vault-trait>)
   (ft <ft-trait>)
   (coll-type <collateral-types-trait>)
 )
@@ -923,6 +929,7 @@
     (asserts! (is-eq true (get is-liquidated vault)) (err ERR-VAULT-NOT-LIQUIDATED))
     (asserts! (is-eq true (get auction-ended vault)) (err ERR-AUCTION-NOT-ENDED))
     (asserts! (is-eq u0 (get stacked-tokens vault)) (err ERR-STACKING-IN-PROGRESS))
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts!
       (or
         (is-eq collateral-token "xSTX")
@@ -973,12 +980,12 @@
 
     (if (and (> usda-amount u0) (> diko-amount u0))
       (begin
-        (try! (as-contract (contract-call? .arkadiko-token transfer diko-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none)))
-        (as-contract (contract-call? .usda-token transfer usda-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none))
+        (try! (as-contract (contract-call? .arkadiko-token transfer diko-amount tx-sender (contract-call? .arkadiko-dao get-payout-address) none)))
+        (as-contract (contract-call? .usda-token transfer usda-amount tx-sender (contract-call? .arkadiko-dao get-payout-address) none))
       )
       (if (> usda-amount u0)
-        (as-contract (contract-call? .usda-token transfer usda-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none))
-        (as-contract (contract-call? .arkadiko-token transfer diko-amount (as-contract tx-sender) (contract-call? .arkadiko-dao get-payout-address) none))
+        (as-contract (contract-call? .usda-token transfer usda-amount tx-sender (contract-call? .arkadiko-dao get-payout-address) none))
+        (as-contract (contract-call? .arkadiko-token transfer diko-amount tx-sender (contract-call? .arkadiko-dao get-payout-address) none))
       )
     )
   )
@@ -997,7 +1004,7 @@
     (let (
       (balance (unwrap-panic (contract-call? token get-balance (as-contract tx-sender))))
     )
-      (as-contract (contract-call? token transfer balance (as-contract tx-sender) (contract-of new-vault-manager) none))
+      (as-contract (contract-call? token transfer balance tx-sender (contract-of new-vault-manager) none))
     )
   )
 )

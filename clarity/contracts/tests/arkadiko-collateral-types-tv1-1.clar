@@ -124,17 +124,6 @@
   )
 )
 
-(define-public (change-token-address (collateral-type (string-ascii 12)) (address principal))
-  (let (
-    (type (unwrap-panic (get-collateral-type-by-name collateral-type)))
-  )
-    (asserts! (is-eq tx-sender OWNER) (err ERR-NOT-AUTHORIZED))
-
-    (map-set collateral-types { name: collateral-type } (merge type { token-address: address }))
-    (ok true)
-  )
-)
-
 (define-private (change-risk-parameter (change (tuple (key (string-ascii 256)) (new-value uint)))
                                        (type (tuple (collateral-to-debt-ratio uint) (liquidation-penalty uint) (liquidation-ratio uint)
                                               (maximum-debt uint) (name (string-ascii 256)) (stability-fee uint) (stability-fee-apy uint) (stability-fee-decimals uint)
@@ -229,6 +218,24 @@
       token-type: "xBTC-A",
       token-address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.tokensoft-token, ;; TODO
       url: "https://www.tokensoft.io/",
+      total-debt: u0,
+      liquidation-ratio: u150,
+      collateral-to-debt-ratio: u250, ;; ~50% LTV
+      maximum-debt: u500000000000000, ;; 500M
+      liquidation-penalty: u1000, ;; 13% in basis points
+      stability-fee: u7610350076, ;; 4% / 365 days / (24*6) blocks = 0.00007610350076 fee per block
+      stability-fee-decimals: u16,
+      stability-fee-apy: u400 ;; 400 basis points
+    }
+  )
+  (map-set collateral-types
+    { name: "DIKO-A" }
+    {
+      name: "Arkadiko Token",
+      token: "DIKO",
+      token-type: "DIKO-A",
+      token-address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-token,
+      url: "https://www.arkadiko.finance",
       total-debt: u0,
       liquidation-ratio: u150,
       collateral-to-debt-ratio: u250, ;; ~50% LTV

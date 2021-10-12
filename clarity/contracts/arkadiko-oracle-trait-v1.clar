@@ -1,5 +1,5 @@
 (define-trait oracle-trait
   (
-    (fetch-price ((string-ascii 12)) (response (tuple (last-price-in-cents uint) (last-block uint)) uint))
+    (fetch-price ((string-ascii 12)) (response (tuple (last-price uint) (last-block uint) (decimals uint)) uint))
   )
 )
