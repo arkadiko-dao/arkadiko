@@ -11,6 +11,7 @@ import {
   createAssetInfo, FungibleConditionCode,
   makeStandardFungiblePostCondition,
   makeStandardSTXPostCondition,
+  makeContractSTXPostCondition,
   makeContractFungiblePostCondition
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
@@ -212,6 +213,7 @@ export const Swap: React.FC = () => {
     let tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
     let principalX = contractPrincipalCV(contractAddress, tokenXTrait);
     let principalY = contractPrincipalCV(contractAddress, tokenYTrait);
+    let postConditionMode = 0x02;
     if (inverseDirection) {
       contractName = 'swap-y-for-x';
       let tmpPrincipal = principalX;
@@ -249,6 +251,37 @@ export const Swap: React.FC = () => {
           createAssetInfo(
             contractAddress,
             tokenYTrait,
+            tokenNameY.toLowerCase()
+          )
+        )
+      ];
+    } else if (tokenY.name === 'STX') {
+      postConditionMode = 0x01;
+      postConditions = [
+        makeContractSTXPostCondition(
+          contractAddress,
+          'arkadiko-swap-v1-1',
+          FungibleConditionCode.LessEqual,
+          uintCV((parseFloat(tokenYAmount) * 1000000).toFixed(0)).value
+        ),
+        makeContractFungiblePostCondition(
+          contractAddress,
+          'arkadiko-swap-v1-1',
+          FungibleConditionCode.LessEqual,
+          uintCV((parseFloat(tokenYAmount) * 1000000).toFixed(0)).value,
+          createAssetInfo(
+            contractAddress,
+            'wrapped-stx-token',
+            'wstx'
+          )
+        ),
+        makeStandardFungiblePostCondition(
+          stxAddress || '',
+          FungibleConditionCode.LessEqual,
+          uintCV((parseFloat(tokenXAmount) * 1.2 * 1000000).toFixed(0)).value,
+          createAssetInfo(
+            contractAddress,
+            tokenXTrait,
             tokenNameY.toLowerCase()
           )
         )
@@ -317,6 +350,7 @@ export const Swap: React.FC = () => {
         uintCV((parseFloat(minimumReceived) * 1000000).toFixed(0))
       ],
       postConditions,
+      postConditionMode,
       onFinish: data => {
         console.log('finished swap!', data);
         setState(prevState => ({
