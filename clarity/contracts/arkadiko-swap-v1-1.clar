@@ -312,8 +312,15 @@
     )
 
     (asserts! (<= percent u100) (err u5))
-    (asserts! (is-ok (as-contract (contract-call? token-x-trait transfer withdrawal-x contract-address sender none))) transfer-x-failed-err)
-    (asserts! (is-ok (as-contract (contract-call? token-y-trait transfer withdrawal-y contract-address sender none))) transfer-y-failed-err)
+    
+    (if (is-eq (unwrap-panic (contract-call? token-x-trait get-symbol)) "wSTX")
+      (asserts! (is-ok (as-contract (stx-transfer? withdrawal-x contract-address sender))) transfer-x-failed-err)
+      (asserts! (is-ok (as-contract (contract-call? token-x-trait transfer withdrawal-x contract-address sender none))) transfer-x-failed-err)
+    )
+    (if (is-eq (unwrap-panic (contract-call? token-y-trait get-symbol)) "wSTX")
+      (asserts! (is-ok (as-contract (stx-transfer? withdrawal-y contract-address sender))) transfer-y-failed-err)
+      (asserts! (is-ok (as-contract (contract-call? token-y-trait transfer withdrawal-y contract-address sender none))) transfer-y-failed-err)
+    )
     (asserts! (is-eq swap-token (contract-of swap-token-trait)) (err ERR-WRONG-SWAP-TOKEN))
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-updated)
