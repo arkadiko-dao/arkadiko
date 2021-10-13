@@ -58,7 +58,7 @@ const setPrice = async (price) => {
     contractAddress: CONTRACT_ADDRESS,
     contractName: CONTRACT_NAME,
     functionName: FUNCTION_NAME,
-    functionArgs: [tx.stringAsciiCV('xBTC'), tx.uintCV(new BN(46000 * 1000000)), tx.uintCV(100000000)],
+    functionArgs: [tx.stringAsciiCV('xBTC'), tx.uintCV(new BN(55000 * 1000000)), tx.uintCV(100000000)],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     nonce: new BN(nonce + 2),
     postConditionMode: 1,
@@ -67,6 +67,42 @@ const setPrice = async (price) => {
   const transaction3 = await tx.makeContractCall(xBtcTxOptions);
   const result3 = tx.broadcastTransaction(transaction3, network);
   await utils.processing(result3, transaction3.txid(), 0);
+
+  const fetchPair = async () => {
+    let details = await tx.callReadOnlyFunction({
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: "arkadiko-swap-v1-1",
+      functionName: "get-pair-details",
+      functionArgs: [
+        tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-token'),
+        tx.contractPrincipalCV(CONTRACT_ADDRESS, 'usda-token')
+      ],
+      senderAddress: CONTRACT_ADDRESS,
+      network: network,
+    });
+
+    return tx.cvToJSON(details);
+  };
+
+  const pair = await fetchPair();
+  if (pair.success) {
+    const pairDetails = pair.value.value.value;
+    const dikoPrice = (pairDetails['balance-y'].value / pairDetails['balance-x'].value).toFixed(2);
+
+    const dikoTxOptions = {
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: CONTRACT_NAME,
+      functionName: FUNCTION_NAME,
+      functionArgs: [tx.stringAsciiCV('DIKO'), tx.uintCV(new BN(dikoPrice * 1000000)), tx.uintCV(1000000)],
+      senderKey: process.env.STACKS_PRIVATE_KEY,
+      nonce: new BN(nonce + 3),
+      postConditionMode: 1,
+      network
+    };
+    const transaction4 = await tx.makeContractCall(dikoTxOptions);
+    const result4 = tx.broadcastTransaction(transaction4, network);
+    await utils.processing(result4, transaction4.txid(), 0);
+  }
 };
 
 rp(requestOptions).then(async (response) => {
