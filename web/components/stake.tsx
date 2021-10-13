@@ -58,6 +58,7 @@ export const Stake = () => {
   const [cooldownRunning, setCooldownRunning] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const [hasUnstakedTokens, setHasUnstakedTokens] = useState(false);
+  const [emissionsStarted, setEmissionsStarted] = useState(false);
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -78,6 +79,18 @@ export const Stake = () => {
     }
 
     const getData = async () => {
+      // Get current block height
+      const client = getRPCClient();
+      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
+      const data = await response.json();
+      let currentBlock = data['stacks_tip_height'];
+      const REWARDS_START_BLOCK_HEIGHT = 4000000000; // TODO: set this on mainnet launch
+      if (currentBlock < REWARDS_START_BLOCK_HEIGHT) {
+        setLoadingData(false);
+        return;
+      }
+
+      setEmissionsStarted(true);
       const stDikoSupplyCall = await callReadOnlyFunction({
         contractAddress,
         contractName: "stdiko-token",
@@ -260,12 +273,6 @@ export const Stake = () => {
       let cooldownInfo = cvToJSON(dikoCooldownInfo).value;
       let redeemStartBlock = cooldownInfo["redeem-period-start-block"]["value"];
       let redeemEndBlock = cooldownInfo["redeem-period-end-block"]["value"];
-
-      // Get current block height
-      const client = getRPCClient();
-      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
-      const data = await response.json();
-      let currentBlock = data['stacks_tip_height'];
 
       // Helper to create countdown text
       function blockDiffToTimeLeft(blockDiff:number) {
@@ -568,8 +575,10 @@ export const Stake = () => {
                       <p className="text-lg font-semibold">
                         {loadingData ? (
                           <PlaceHolder />
-                        ) : (
+                        ) : emissionsStarted ? (
                           `${apy}%`
+                        ) : (
+                          <span>Emissions not started</span>
                         )}
                       </p>
                       <p className="text-base font-normal leading-6 text-gray-500">Current APY</p>
@@ -727,8 +736,10 @@ export const Stake = () => {
                             <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
                               {loadingData ? (
                                 <PlaceHolder />
-                              ) : (
+                              ) : emissionsStarted ? (
                                 `${dikoUsdaLpApy}%`
+                              ) : (
+                                <span>Emissions not started</span>
                               )}
                             </td>
                             <td className="px-6 py-4 text-sm whitespace-nowrap">
@@ -843,8 +854,10 @@ export const Stake = () => {
                             <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
                               {loadingData ? (
                                 <PlaceHolder />
-                              ) : (
+                              ) : emissionsStarted ? (
                                 `${stxUsdaLpApy}%`
+                              ) : (
+                                <span>Emissions not started</span>
                               )}
                             </td>
                             <td className="px-6 py-4 text-sm whitespace-nowrap">
@@ -959,8 +972,10 @@ export const Stake = () => {
                             <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
                               {loadingData ? (
                                 <PlaceHolder />
-                              ) : (
+                              ) : emissionsStarted ? (
                                 `${stxDikoLpApy}%`
+                              ) : (
+                                <span>Emissions not started</span>
                               )}
                             </td>
                             <td className="px-6 py-4 text-sm whitespace-nowrap">
