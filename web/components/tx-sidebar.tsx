@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect,useState } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
+import { XIcon } from '@heroicons/react/outline';
 import { getAccountTransactions, getPendingTransactions } from '@common/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { MempoolContractCallTransaction, ContractCallTransaction } from '@blockstack/stacks-blockchain-api-types';
 import { ContractTransaction } from '@components/contract-transaction';
 
-export const TxSidebar = ({ setShowSidebar }) => {
+export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
   const address = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [transactions, setTransactions] = useState<JSX.Element[]>();
@@ -51,39 +53,54 @@ export const TxSidebar = ({ setShowSidebar }) => {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0" aria-hidden="true"></div>
+    <Transition show={showSidebar} as={Fragment}>
+      <Dialog as="div" className="fixed inset-0 z-50 overflow-hidden" onClose={() => { setShowSidebar(false); }}>
+        <div className="absolute inset-0 overflow-hidden">
+          <Transition.Child
+            as={Fragment}
+            enter="ease-in-out duration-500"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in-out duration-500"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <Dialog.Overlay className="absolute inset-0 transition-opacity bg-gray-700 bg-opacity-50" />
+          </Transition.Child>
 
-        <div className="fixed inset-y-0 right-0 flex max-w-full pl-10">
-          <div className="w-screen max-w-md">
-            <div className="flex flex-col h-full overflow-y-scroll bg-white shadow-xl">
-              <div className="px-4 py-6 bg-indigo-700 sm:px-6">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium text-white font-headings">
-                    Transaction History
-                  </h2>
-                  <div className="flex items-center ml-3 h-7">
-                    <button
-                      onClick={() => { setShowSidebar(false); }}
-                      className="text-indigo-200 bg-indigo-700 rounded-md hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
-                    >
-                      <span className="sr-only">Close</span>
-                      <svg className="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
+          <div className="fixed inset-y-0 right-0 flex max-w-full pl-10">
+            <Transition.Child
+              as={Fragment}
+              enter="transform transition ease-in-out duration-500 sm:duration-700"
+              enterFrom="translate-x-full"
+              enterTo="translate-x-0"
+              leave="transform transition ease-in-out duration-500 sm:duration-700"
+              leaveFrom="translate-x-0"
+              leaveTo="translate-x-full"
+            >
+              <div className="w-screen max-w-md">
+                <div className="flex flex-col h-full overflow-y-scroll bg-white shadow-xl">
+                  <div className="px-4 py-6 bg-indigo-700 sm:px-6">
+                    <div className="flex items-start justify-between">
+                      <Dialog.Title className="text-lg text-white font-headings">Transaction History</Dialog.Title>
+                      <div className="flex items-center ml-3 h-7">
+                        <button
+                          type="button"
+                          className="text-indigo-200 bg-indigo-700 rounded-md hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
+                          onClick={() => { setShowSidebar(false); }}
+                        >
+                          <span className="sr-only">Close panel</span>
+                          <XIcon className="w-6 h-6" aria-hidden="true" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="mt-1">
+                      <p className="text-sm text-indigo-300">
+                        Your pending and confirmed transactions.
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <div className="mt-1">
-                  <p className="text-sm text-indigo-300">
-                    Your pending and confirmed transactions
-                  </p>
-                </div>
-              </div>
-              <div className="relative flex-1 px-4 py-6 sm:px-6">
-                <div className="absolute inset-0 px-4 py-6 sm:px-6">
-                  <div className="h-full" aria-hidden="true">
+                  <div className="relative flex-1 px-4 mt-6 sm:px-6">
                     <ul className="divide-y divide-gray-200">
                       {pendingTransactions}
                       {transactions}
@@ -91,10 +108,10 @@ export const TxSidebar = ({ setShowSidebar }) => {
                   </div>
                 </div>
               </div>
-            </div>
+            </Transition.Child>
           </div>
         </div>
-      </div>
-    </div>
+      </Dialog>
+    </Transition>
   );
 };
