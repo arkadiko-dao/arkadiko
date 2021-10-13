@@ -160,6 +160,15 @@ export const OnboardingNav = (props) => {
           </ol>
         </nav>
       </div>
+      <div className="hidden sm:block relative bg-indigo-500">
+        <div className="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
+          <div className="pr-16 sm:text-center sm:px-16">
+            <p className="text-white">
+              <span className="text-xs font-semibold uppercase mr-6">DISCLAIMER: ARKADIKO IS BETA SOFTWARE - DO NOT INVEST ANYTHING YOU ARE NOT WILLING TO LOSE</span>
+            </p>
+          </div>
+        </div>
+      </div>
 
       <p className="text-right">
         <RouterLink to="/" className="flex items-center justify-end p-4 text-base font-medium text-gray-700 sm:text-xs hover:text-gray-800 hover:underline">
@@ -167,6 +176,7 @@ export const OnboardingNav = (props) => {
           <ArrowNarrowRightIcon className="w-4 h-4 ml-2 text-gray-800" aria-hidden="true" />
         </RouterLink>
       </p>
+
     </>
   );
 };
