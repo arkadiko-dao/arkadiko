@@ -93,9 +93,14 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
       const { value } = event.target;
       setCoinAmount(value);
       const error = [`You cannot mint more than ${maximumToMint / 1000000} USDA`];
-      const filteredAry = errors.filter(e => e !== error[0]);
+      const funnyError = [`You need to mint at least a little bit of USDA ;)`];
+      const filteredAry = errors.filter(e => (e !== error[0]) && (e !== funnyError[0]));
+      console.log('arr:', filteredAry);
       if (parseFloat(value) > maximumToMint / 1000000) {
         setErrors(filteredAry.concat(error));
+      } else if (value <= parseFloat(maximumToMint / 250000)) {
+        console.log(value <= parseFloat(maximumToMint / 2500000));
+        setErrors(filteredAry.concat(funnyError));
       } else {
         setErrors(filteredAry);
       }
@@ -127,9 +132,8 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
           'stx'
         )
       );
-      setCollateralToDebt(
-        getCollateralToDebtRatio(price * 100, parseInt(coinAmount, 10), parseInt(collateralAmount, 10))
-      );
+      const ratio = getCollateralToDebtRatio(price * 100, parseInt(coinAmount, 10), parseInt(collateralAmount, 10));
+      setCollateralToDebt(ratio);
     }
   }, [price, collateralAmount, coinAmount]);
 
