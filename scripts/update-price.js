@@ -58,7 +58,7 @@ const setPrice = async (price) => {
     contractAddress: CONTRACT_ADDRESS,
     contractName: CONTRACT_NAME,
     functionName: FUNCTION_NAME,
-    functionArgs: [tx.stringAsciiCV('xBTC'), tx.uintCV(new BN(55000 * 1000000)), tx.uintCV(100000000)],
+    functionArgs: [tx.stringAsciiCV('xBTC'), tx.uintCV(new BN(55000 * 1000000)), tx.uintCV(100000000)], // TODO: push correct BTC price
     senderKey: process.env.STACKS_PRIVATE_KEY,
     nonce: new BN(nonce + 2),
     postConditionMode: 1,
@@ -87,7 +87,7 @@ const setPrice = async (price) => {
   const pair = await fetchPair();
   if (pair.success) {
     const pairDetails = pair.value.value.value;
-    const dikoPrice = (pairDetails['balance-y'].value / pairDetails['balance-x'].value).toFixed(2);
+    const dikoPrice = (pairDetails['balance-y'].value / pairDetails['balance-x'].value).toFixed(4);
 
     const dikoTxOptions = {
       contractAddress: CONTRACT_ADDRESS,
