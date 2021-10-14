@@ -69,6 +69,16 @@
 )
 
 ;; ---------------------------------------------------------
+;; DIKO rewards
+;; ---------------------------------------------------------
+
+(define-public (claim-stake-rewards)
+  (begin
+    (ok true)
+  )
+)
+
+;; ---------------------------------------------------------
 ;; Deposit and withdraw
 ;; ---------------------------------------------------------
 
@@ -213,14 +223,13 @@
 
 
 ;; Make USDA available to contract to make bid
-;; 1 - Check if contract has USDA
-;; 2 - Swap idle STX to USDA
-;; 3 - Unstake and remove liquidity to get STX and USDA
 (define-private (make-usda-available (usda-amount uint))
   (let (
+    ;; Check if unstaked funds can be used
     (usda-available-from-funds (unwrap-panic (make-usda-available-from-funds usda-amount)))
   )
     (if (is-eq usda-available-from-funds false)
+      ;; Make staked funds available
       (make-usda-available-from-stake usda-amount)
       (ok true)
     )
@@ -334,9 +343,7 @@
         )
       )
 
-
     )
-    
   )
 )
 
@@ -403,11 +410,15 @@
   )
 )
 
-;; TODO - Claim staking rewards
-;; TODO - Allow stakers to claim their part
+;; Claim staking rewards if any
 (define-public (claim-rewards)
   (begin
     (asserts! (is-eq tx-sender (var-get fund-owner)) (err ERR-NOT-AUTHORIZED))
-    (ok u123)
+    (as-contract (contract-call? .arkadiko-stake-registry-v1-1 claim-pending-rewards .arkadiko-stake-registry-v1-1 .arkadiko-stake-pool-wstx-usda-v1-1))
   )
+)
+
+;; Get pending staking rewards
+(define-public (get-pending-rewards)
+  (as-contract (contract-call? .arkadiko-stake-registry-v1-1 get-pending-rewards .arkadiko-stake-registry-v1-1 .arkadiko-stake-pool-wstx-usda-v1-1))
 )
