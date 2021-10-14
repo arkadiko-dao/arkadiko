@@ -47,6 +47,7 @@ export const Vault: React.FC<VaultProps> = ({
   const stxAddress = useSTXAddress();
   const [stabilityFee, setStabilityFee] = useState(0);
   const [_, setState] = useContext(AppContext);
+  const decimals = collateralToken.toLowerCase() === 'stx' ? 1000000 : 100000000;
 
   useEffect(() => {
     const fetchFees = async () => {
@@ -110,29 +111,29 @@ export const Vault: React.FC<VaultProps> = ({
 
   return (
     <tr className={`${debtBackgroundClass(debtRatio)}`}>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         <span className="text-gray-900">
           <RouterLink to={`vaults/${id}`} exact className="px-2.5 py-1.5">
             {id}
           </RouterLink>
         </span>
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         <span className="text-gray-900">{collateralType.toUpperCase()}</span>
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         <span className={`${debtClass(collateralData.liquidationRatio, debtRatio)}`}>{debtRatio}% (&gt; {collateralData['liquidationRatio']}%)</span>
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         <span className="text-gray-900">${stabilityFee / 1000000} USDA</span>
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         <span className="text-gray-900">${(debt / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA</span>
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-500">
-        <span className="text-gray-900">{(collateral / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {collateralToken.toUpperCase()}</span>
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+        <span className="text-gray-900">{(collateral / decimals).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {collateralToken.toUpperCase()}</span>
       </td>
-      <td className="px-6 py-4 text-left whitespace-nowrap text-sm text-gray-900">
+      <td className="px-6 py-4 text-sm text-left text-gray-900 whitespace-nowrap">
         <span className="text-gray-900">
           {isLiquidated ? auctionEnded ? (leftoverCollateral > 0) ? (
             <Text onClick={() => callWithdrawLeftoverCollateral()}

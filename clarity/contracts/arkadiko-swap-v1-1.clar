@@ -314,11 +314,17 @@
     (asserts! (<= percent u100) (err u5))
     
     (if (is-eq (unwrap-panic (contract-call? token-x-trait get-symbol)) "wSTX")
-      (asserts! (is-ok (as-contract (stx-transfer? withdrawal-x contract-address sender))) transfer-x-failed-err)
+      (begin
+        (asserts! (is-ok (as-contract (stx-transfer? withdrawal-x contract-address sender))) transfer-x-failed-err)
+        (try! (as-contract (contract-call? .arkadiko-dao burn-token .wrapped-stx-token withdrawal-x tx-sender)))
+      )
       (asserts! (is-ok (as-contract (contract-call? token-x-trait transfer withdrawal-x contract-address sender none))) transfer-x-failed-err)
     )
     (if (is-eq (unwrap-panic (contract-call? token-y-trait get-symbol)) "wSTX")
-      (asserts! (is-ok (as-contract (stx-transfer? withdrawal-y contract-address sender))) transfer-y-failed-err)
+      (begin
+        (asserts! (is-ok (as-contract (stx-transfer? withdrawal-y contract-address sender))) transfer-y-failed-err)
+        (try! (as-contract (contract-call? .arkadiko-dao burn-token .wrapped-stx-token withdrawal-y tx-sender)))
+      )
       (asserts! (is-ok (as-contract (contract-call? token-y-trait transfer withdrawal-y contract-address sender none))) transfer-y-failed-err)
     )
     (asserts! (is-eq swap-token (contract-of swap-token-trait)) (err ERR-WRONG-SWAP-TOKEN))

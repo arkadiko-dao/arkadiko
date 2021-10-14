@@ -55,13 +55,16 @@ class VaultManager {
     ], caller.address);
   }
 
-  createVault(user: Account, collateralType: string, amount: number, usda: number, stack: boolean = true, autoPayoff: boolean = true) {
-    // Get reserve based on collateralType
-    var reserve = types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1'));
-    if (collateralType.lastIndexOf("STX-", 0) === 0) {
-      reserve = types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1'))
-    }
-
+  createVault(
+    user: Account, 
+    collateralType: string, 
+    amount: number, 
+    usda: number, 
+    stack: boolean = true, 
+    autoPayoff: boolean = true,
+    reserve: string = 'arkadiko-stx-reserve-v1-1',
+    token: string = 'arkadiko-token'
+  ) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "collateralize-and-mint", [
         types.uint(amount * 1000000), 
@@ -71,8 +74,8 @@ class VaultManager {
           'auto-payoff': types.bool(autoPayoff)
         }),
         types.ascii(collateralType),
-        reserve,
-        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.principal(Utils.qualifiedName(reserve)),
+        types.principal(Utils.qualifiedName(token)),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], user.address)
@@ -80,25 +83,31 @@ class VaultManager {
     return block.receipts[0].result;
   }
 
-  deposit(user: Account, vaultId: number, extraCollateral: number) {
+  deposit(
+    user: Account, 
+    vaultId: number, 
+    extraCollateral: number,
+    reserve: string = 'arkadiko-stx-reserve-v1-1',
+    token: string = 'arkadiko-token'
+  ) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "deposit", [
         types.uint(vaultId),
         types.uint(extraCollateral * 1000000),
-        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.principal(Utils.qualifiedName(reserve)),
+        types.principal(Utils.qualifiedName(token)),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1'))
       ], user.address)
     ]);
     return block.receipts[0].result;
   }
 
-  mint(user: Account, vaultId: number, amount: number) {
+  mint(user: Account, vaultId: number, amount: number, reserve: string = 'arkadiko-stx-reserve-v1-1') {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "mint", [
         types.uint(vaultId),
         types.uint(amount * 1000000), 
-        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
+        types.principal(Utils.qualifiedName(reserve)),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], user.address),
@@ -106,38 +115,55 @@ class VaultManager {
     return block.receipts[0].result;
   }
 
-  burn(user: Account, vaultId: number, amount: number) {
+  burn(
+    user: Account, 
+    vaultId: number, 
+    amount: number,
+    reserve: string = 'arkadiko-stx-reserve-v1-1',
+    token: string = 'arkadiko-token'
+  ) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "burn", [
         types.uint(vaultId),
         types.uint(amount * 1000000),
-        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.principal(Utils.qualifiedName(reserve)),
+        types.principal(Utils.qualifiedName(token)),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1'))
       ], user.address),
     ]);
     return block.receipts[0].result;
   }
 
-  closeVault(user: Account, vaultId: number) {
+  closeVault(
+    user: Account, 
+    vaultId: number,
+    reserve: string = 'arkadiko-stx-reserve-v1-1',
+    token: string = 'arkadiko-token'
+  ) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "close-vault", [
         types.uint(vaultId),
-        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.principal(Utils.qualifiedName(reserve)),
+        types.principal(Utils.qualifiedName(token)),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1'))
       ], user.address),
     ]);
     return block.receipts[0].result;
   }
 
-  withdraw(user: Account, vaultId: number, amount: number) {
+  withdraw(
+    user: Account, 
+    vaultId: number, 
+    amount: number,
+    reserve: string = 'arkadiko-stx-reserve-v1-1',
+    token: string = 'arkadiko-token'
+    ) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "withdraw", [
         types.uint(vaultId),
         types.uint(amount * 1000000),
-        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.principal(Utils.qualifiedName(reserve)),
+        types.principal(Utils.qualifiedName(token)),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], user.address)
@@ -354,6 +380,24 @@ class VaultAuction {
     );
   }
 
+  getWinningLots(usser: Account) {
+    return this.chain.callReadOnlyFn(
+      "arkadiko-auction-engine-v1-1",
+      "get-winning-lots",
+      [types.principal(usser.address)],
+      usser.address
+    );
+  }
+
+  getDiscountedAuctionPrice(price: number, auctionId: number) {
+    return this.chain.callReadOnlyFn(
+      "arkadiko-auction-engine-v1-1",
+      "discounted-auction-price",
+      [types.uint(price * 1000000), types.uint(auctionId)],
+      this.deployer.address
+    );
+  }
+
   emergencyShutdown() {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v1-1", "toggle-auction-engine-shutdown", [], this.deployer.address),
@@ -424,6 +468,27 @@ class VaultAuction {
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
         types.principal(
           Utils.qualifiedName('arkadiko-token'),
+        ),
+        types.principal(
+          Utils.qualifiedName('arkadiko-sip10-reserve-v1-1'),
+        ),
+        types.principal(
+          Utils.qualifiedName('arkadiko-collateral-types-v1-1'), 
+        ),
+        types.uint(auctionId),
+        types.uint(lot)
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  // Redeem xBTC
+  redeemLotCollateralXbtc(user: Account, auctionId: number = 1, lot: number = 0) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-auction-engine-v1-1", "redeem-lot-collateral", [
+        types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
+        types.principal(
+          Utils.qualifiedName('tokensoft-token'),
         ),
         types.principal(
           Utils.qualifiedName('arkadiko-sip10-reserve-v1-1'),

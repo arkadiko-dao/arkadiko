@@ -23,7 +23,7 @@ import { tokenList } from '@components/token-swap-list';
 import { VaultProps } from './vault';
 import { EmptyState } from './empty-state';
 import { ArchiveIcon } from '@heroicons/react/outline';
-import { PlaceHolder } from './placeholder';
+import { Placeholder } from './placeholder';
 import { InformationCircleIcon } from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
 
@@ -36,6 +36,7 @@ export const Mint = () => {
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [stxPrice, setStxPrice] = useState(0.0);
   const [dikoPrice, setDikoPrice] = useState(0.0);
+  const [xbtcPrice, setXbtcPrice] = useState(0.0);
   const [loadingVaults, setLoadingVaults] = useState(true);
   const [loadingStackingData, setLoadingStackingData] = useState(false);
   const [pendingVaultRewards, setPendingVaultRewards] = useState(0);
@@ -44,6 +45,9 @@ export const Mint = () => {
     const fetchPrices = async () => {
       let stxPrice = await getPrice('STX');
       setStxPrice(stxPrice);
+
+      let xbtcPrice = await getPrice('xBTC');
+      setXbtcPrice(xbtcPrice);
 
       let dikoPrice = await getDikoAmmPrice();
       setDikoPrice(dikoPrice);
@@ -194,7 +198,7 @@ export const Mint = () => {
                 <dt className="text-xs font-semibold text-indigo-800 uppercase">Stacking Cycle #</dt>
                 <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
-                    <PlaceHolder />
+                    <Placeholder className="py-2" width={Placeholder.width.THIRD} />
                   ) : (
                     <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
                       {state.cycleNumber}
@@ -206,7 +210,7 @@ export const Mint = () => {
                 <dt className="text-xs font-semibold text-indigo-800 uppercase">End date</dt>
                 <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
-                    <PlaceHolder />
+                    <Placeholder className="py-2" width={Placeholder.width.THIRD} />
                   ) : (
                     <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
                       {state.endDate}
@@ -218,7 +222,7 @@ export const Mint = () => {
                 <dt className="text-xs font-semibold text-indigo-800 uppercase">Days in cycle</dt>
                 <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
-                    <PlaceHolder />
+                    <Placeholder className="py-2" width={Placeholder.width.THIRD} />
                   ) : (
                     <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
                       {state.daysPassed}
@@ -230,7 +234,7 @@ export const Mint = () => {
                 <dt className="text-xs font-semibold text-indigo-800 uppercase">Days left</dt>
                 <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
-                    <PlaceHolder />
+                    <Placeholder className="py-2" width={Placeholder.width.THIRD} />
                   ) : (
                     <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
                       {state.daysLeft}
@@ -274,8 +278,28 @@ export const Mint = () => {
             {vaults.length && Object.keys(collateralTypes).length === state.definedCollateralTypes.length ? (
               <VaultGroup vaults={vaults} />
             ) : loadingVaults === true ? (
-              <div>
-                <PlaceHolder />
+              <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead>
+                    <tr>
+                      <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
+                        <Placeholder color={Placeholder.color.GRAY} />
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="bg-white">
+                      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+                        <Placeholder />
+                      </td>
+                    </tr>
+                    <tr className="bg-white">
+                      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+                        <Placeholder />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             ) : (
               <EmptyState
@@ -374,6 +398,22 @@ export const Mint = () => {
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
                           ${dikoPrice}
+                        </td>
+                      </tr>
+
+                      <tr className="bg-white">
+                        <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 w-10 h-10">
+                              <img className="w-10 h-10 rounded-full" src={tokenList[3].logo} alt="" />
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900">xBTC</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm whitespace-nowrap">
+                          ${xbtcPrice / 1000000}
                         </td>
                       </tr>
 

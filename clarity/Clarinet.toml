@@ -10,6 +10,10 @@ path = "contracts/arkadiko-dao-token-trait-v1.clar"
 depends_on = ["arkadiko-collateral-types-trait-v1"]
 path = "contracts/arkadiko-collateral-types-v1-1.clar"
 
+[contracts.arkadiko-collateral-types-tv1-1]
+depends_on = ["arkadiko-collateral-types-trait-v1"]
+path = "contracts/tests/arkadiko-collateral-types-tv1-1.clar"
+
 [contracts.arkadiko-dao]
 depends_on = ["arkadiko-token", "arkadiko-collateral-types-v1-1", "arkadiko-vault-trait-v1"]
 path = "contracts/arkadiko-dao.clar"
@@ -252,3 +256,12 @@ path = "contracts/sip-010-trait-ft-standard.clar"
 [contracts.arkadiko-liquidation-fund-v1-1]
 depends_on = ["sip-010-trait-ft-standard", "arkadiko-swap-token-wstx-usda", "arkadiko-swap-v1-1", "arkadiko-stake-pool-wstx-usda-v1-1"]
 path = "contracts/arkadiko-liquidation-fund-v1-1.clar"
+
+# Tokensoft xBTC
+[contracts.restricted-token-trait]
+path = "contracts/xbtc/restricted-token-trait.clar"
+depends_on = []
+
+[contracts.tokensoft-token]
+path = "contracts/xbtc/tokensoft-token.clar"
+depends_on = ["sip-010-trait-ft-standard", "restricted-token-trait"]

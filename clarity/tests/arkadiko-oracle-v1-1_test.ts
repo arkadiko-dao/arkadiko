@@ -17,6 +17,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("usda-token"),
         types.uint(1000000),
+        types.uint(1000000)
       ], deployer.address),
     ]);
     block.receipts[0].result.expectOk().expectUint(1000000);
@@ -34,6 +35,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
         types.ascii("usda-token"),
         types.uint(1000000),
+        types.uint(1000000)
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(851);

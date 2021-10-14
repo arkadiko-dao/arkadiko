@@ -1,5 +1,10 @@
-export const getLiquidationPrice = (liquidationRatio:number, coinsMinted:number, stxCollateral:number) => {
-  return (liquidationRatio * coinsMinted / (stxCollateral * 100)).toFixed(2);
+export const getLiquidationPrice = (liquidationRatio:number, coinsMinted:number, stxCollateral:number, collateralType:string) => {
+  if (collateralType.includes('stx')) {
+    return (liquidationRatio * coinsMinted / (stxCollateral * 100)).toFixed(2);
+  } else {
+    // xBTC
+    return (liquidationRatio * coinsMinted / (stxCollateral * 1)).toFixed(2);
+  }
 };
 
 export const getCollateralToDebtRatio = (price:number, coinsMinted:number, stxCollateral:number) => {
@@ -16,7 +21,10 @@ export const availableCollateralToWithdraw = (price:number, currentStxCollateral
   return 0;
 };
 
-export const availableCoinsToMint = (price:number, stxCollateral:number, currentCoinsMinted:number, collateralToDebt:number) => {
+export const availableCoinsToMint = (price:number, stxCollateral:number, currentCoinsMinted:number, collateralToDebt:number, collateralType:string) => {
+  if (collateralType?.toLowerCase().includes('btc')) {
+    stxCollateral = stxCollateral * 100;
+  }
   const maximumCoinsToMint = (stxCollateral * price / 1000000) / collateralToDebt;
   if (currentCoinsMinted < maximumCoinsToMint) {
     return maximumCoinsToMint - currentCoinsMinted;
@@ -41,6 +49,10 @@ export const tokenTraits = {
   'usda': {
     'name': 'usda-token',
     'swap': 'usda-token'
+  },
+  'xbtc': {
+    'name': 'tokensoft-token',
+    'swap': 'tokensoft-token'
   },
   'dikousda': {
     'name': 'arkadiko-swap-token-diko-usda',
