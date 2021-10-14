@@ -221,9 +221,8 @@ export const App: React.FC = () => {
               <SubHeader />
             ) : null}
             <TxStatus />
-            {showSidebar ? (
-              <TxSidebar setShowSidebar={setShowSidebar} />
-            ) : null}
+            
+            <TxSidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
 
             {(location.pathname.indexOf('/onboarding') != 0) ? (
               <div className="fixed bottom-0 right-0 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end" style={{zIndex: 99999}}>
