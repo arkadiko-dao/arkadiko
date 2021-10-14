@@ -307,27 +307,36 @@
     ;; Get the right amount of STX and USDA
     (stx-to-stake (unwrap-panic (prepare-stake-contract-funds)))
   )
-    ;; Add liquidity
-    (try! (as-contract (contract-call? .arkadiko-swap-v1-1 add-to-position
-      .wrapped-stx-token
-      .usda-token
-      .arkadiko-swap-token-wstx-usda
-      stx-to-stake
-      u0
-    )))
-
-    ;; Stake LP tokens
-    (let (
-      (lp-balance (unwrap-panic (contract-call? .arkadiko-swap-token-wstx-usda get-balance (as-contract tx-sender))))
-    )
-      (try! (as-contract (contract-call? .arkadiko-stake-registry-v1-1 stake
-        .arkadiko-stake-registry-v1-1 
-        .arkadiko-stake-pool-wstx-usda-v1-1 
-        .arkadiko-swap-token-wstx-usda 
-        lp-balance
-      )))
+    (if (is-eq stx-to-stake u0)
       (ok true)
+
+      (begin
+        ;; Add liquidity
+        (try! (as-contract (contract-call? .arkadiko-swap-v1-1 add-to-position
+          .wrapped-stx-token
+          .usda-token
+          .arkadiko-swap-token-wstx-usda
+          stx-to-stake
+          u0
+        )))
+
+        ;; Stake LP tokens
+        (let (
+          (lp-balance (unwrap-panic (contract-call? .arkadiko-swap-token-wstx-usda get-balance (as-contract tx-sender))))
+        )
+          (try! (as-contract (contract-call? .arkadiko-stake-registry-v1-1 stake
+            .arkadiko-stake-registry-v1-1 
+            .arkadiko-stake-pool-wstx-usda-v1-1 
+            .arkadiko-swap-token-wstx-usda 
+            lp-balance
+          )))
+          (ok true)
+        )
+      )
+
+
     )
+    
   )
 )
 
@@ -339,8 +348,6 @@
   (let (
     (contract-usda-balance (unwrap-panic (contract-call? .usda-token get-balance (as-contract tx-sender))))
   )
-    ;; TODO: calculate amount to swap
-
     ;; Swap all USDA from contract to STX first
     (if (> contract-usda-balance u0)
       (begin
@@ -351,18 +358,29 @@
     )
 
     ;; Swap part of STX for USDA
-    (let (
-      (contract-stx-balance (get-liquidation-fund-stx-balance))
-      
-      ;; TODO: do not stake all but take "max-stx-to-stake" into account
-      (stx-to-swap (/ contract-stx-balance u2))
+    (let (      
+      (stx-to-swap (/ (get-max-stx-to-stake) u2))
+      (stx-to-swap-with-extra (/ (* stx-to-swap u105) u100)) ;; 5% extra for fees & slippage
     )
-      (try! (as-contract (contract-call? .arkadiko-swap-v1-1 swap-x-for-y .wrapped-stx-token .usda-token stx-to-swap u0)))
+      (try! (as-contract (contract-call? .arkadiko-swap-v1-1 swap-x-for-y .wrapped-stx-token .usda-token stx-to-swap-with-extra u0)))
       (ok stx-to-swap)
     )
   )
 )
 
+;; Calculate max STX to stake
+;; Keep 5% for fees and slippage
+(define-read-only (get-max-stx-to-stake)
+  (let (
+    (contract-stx-balance (get-liquidation-fund-stx-balance))
+    (max-set (var-get max-stx-to-stake))
+  )
+    (if (> max-set contract-stx-balance)
+      (/ (* contract-stx-balance u95) u100)
+      (/ (* max-set u95) u100)
+    )
+  )
+)
 
 ;; ---------------------------------------------------------
 ;; Admin

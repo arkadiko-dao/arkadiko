@@ -129,15 +129,15 @@ Clarinet.test({
     
     // Check stake 
     let call = chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-stake-amount-of", [types.principal(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"))], deployer.address);
-    call.result.expectUint(555544839);
+    call.result.expectUint(53073526);
 
     // STX in contract
     call = await liquidationFund.getStxBalance();
-    call.result.expectUintWithDecimals(0);
+    call.result.expectUintWithDecimals(902.625);
 
     // USDA in contract
     call = await usdaManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));
-    call.result.expectOk().expectUintWithDecimals(1.994559);
+    call.result.expectOk().expectUintWithDecimals(2.816962);
 
   }
 });
@@ -173,9 +173,13 @@ Clarinet.test({
     result = liquidationFund.depositStx(wallet_3, 3000);
     result.expectOk().expectUintWithDecimals(3000)
 
+    // Stake STX
+    result = liquidationFund.setMaxStxToStake(deployer, 100);
+    result.expectOk().expectBool(true);
+
     // Check contract balance
     let call = await liquidationFund.getStxBalance();
-    call.result.expectUintWithDecimals(6000);
+    call.result.expectUintWithDecimals(5902.625);
 
     // Create vault and liquidate to start auction
     result = oracleManager.updatePrice("STX", 1);
@@ -234,7 +238,7 @@ Clarinet.test({
 
     // Check contract balance (initial 6000 + liquidation rewards)
     call = await liquidationFund.getStxBalance();
-    call.result.expectUintWithDecimals(6759.375296);
+    call.result.expectUintWithDecimals(10567.709380);
 
     // Check xSTX balance 
     call = await xstxManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));
@@ -243,7 +247,7 @@ Clarinet.test({
     // Check USDA balance 
     // Always a bit left as we swap an extra 5% STX to USDA to cover fees and slippage
     call = await usdaManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));
-    call.result.expectOk().expectUintWithDecimals(53.166656);
+    call.result.expectOk().expectUintWithDecimals(2.683851);
   }
 });
 
@@ -279,16 +283,16 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(3000)
 
     // Stake STX
-    result = liquidationFund.setMaxStxToStake(deployer, 6000);
+    result = liquidationFund.setMaxStxToStake(deployer, 5000);
     result.expectOk().expectBool(true);
 
     // Check stake 
     let call = chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-stake-amount-of", [types.principal(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"))], deployer.address);
-    call.result.expectUint(3232869365);
+    call.result.expectUint(2575061236);
 
     // Check contract balance
     call = await liquidationFund.getStxBalance();
-    call.result.expectUintWithDecimals(0);
+    call.result.expectUintWithDecimals(1131.25);
 
     // Create vault and liquidate to start auction
     result = oracleManager.updatePrice("STX", 1);
@@ -321,7 +325,7 @@ Clarinet.test({
 
     // Check stake 
     call = chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-stake-amount-of", [types.principal(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"))], deployer.address);
-    call.result.expectUint(2216935963);
+    call.result.expectUint(2253069887);
 
     // Redeem xSTX
     result = liquidationFund.redeemLotCollateral(deployer, 1, 0, "xstx-token")
@@ -351,7 +355,7 @@ Clarinet.test({
 
     // Check contract balance (initial 6000 + liquidation rewards)
     call = await liquidationFund.getStxBalance();
-    call.result.expectUintWithDecimals(6759.375297);
+    call.result.expectUintWithDecimals(6761.815565);
 
     // Check xSTX balance 
     call = await xstxManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));
@@ -360,6 +364,6 @@ Clarinet.test({
     // Check USDA balance 
     // Always a bit left as we swap an extra 5% STX to USDA to cover fees and slippage
     call = await usdaManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));
-    call.result.expectOk().expectUintWithDecimals(52.815178);
+    call.result.expectOk().expectUintWithDecimals(2.381001);
   }
 });
