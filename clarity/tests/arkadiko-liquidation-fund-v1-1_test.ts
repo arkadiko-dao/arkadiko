@@ -283,16 +283,16 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(3000)
 
     // Stake STX
-    result = liquidationFund.setMaxStxToStake(deployer, 5000);
+    result = liquidationFund.setMaxStxToStake(deployer, 6000);
     result.expectOk().expectBool(true);
 
     // Check stake 
     let call = chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-stake-amount-of", [types.principal(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"))], deployer.address);
-    call.result.expectUint(2575061236);
+    call.result.expectUint(3071503442);
 
     // Check contract balance
     call = await liquidationFund.getStxBalance();
-    call.result.expectUintWithDecimals(1131.25);
+    call.result.expectUintWithDecimals(157.5);
 
     // Create vault and liquidate to start auction
     result = oracleManager.updatePrice("STX", 1);
@@ -325,7 +325,7 @@ Clarinet.test({
 
     // Check stake 
     call = chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-stake-amount-of", [types.principal(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"))], deployer.address);
-    call.result.expectUint(2253069887);
+    call.result.expectUint(2245929694);
 
     // Redeem xSTX
     result = liquidationFund.redeemLotCollateral(deployer, 1, 0, "xstx-token")
@@ -353,9 +353,9 @@ Clarinet.test({
     result = liquidationFund.redeemStx(deployer, 6759.375296);
     result.expectOk().expectBool(true);
 
-    // Check contract balance (initial 6000 + liquidation rewards)
+    // Check contract balance (6k is staked)
     call = await liquidationFund.getStxBalance();
-    call.result.expectUintWithDecimals(6761.815565);
+    call.result.expectUintWithDecimals(6761.790154);
 
     // Check xSTX balance 
     call = await xstxManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));
@@ -364,6 +364,6 @@ Clarinet.test({
     // Check USDA balance 
     // Always a bit left as we swap an extra 5% STX to USDA to cover fees and slippage
     call = await usdaManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));
-    call.result.expectOk().expectUintWithDecimals(2.381001);
+    call.result.expectOk().expectUintWithDecimals(2.355913);
   }
 });
