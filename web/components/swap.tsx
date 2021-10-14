@@ -22,6 +22,7 @@ import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { SwapSettings } from '@components/swap-settings';
 import { getBalance } from '@components/app';
 import { classNames } from '@common/class-names';
+import { Placeholder } from './placeholder';
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
@@ -40,6 +41,7 @@ export const Swap: React.FC = () => {
   const [lpFee, setLpFee] = useState('0');
   const [foundPair, setFoundPair] = useState(true);
   const defaultFee = 0.4;
+  const [loadingData, setLoadingData] = useState(true);
 
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -120,6 +122,7 @@ export const Swap: React.FC = () => {
         setCurrentPrice(basePrice);
         setInverseDirection(false);
         setFoundPair(true);
+        setLoadingData(false);
       } else if (Number(json3['value']['value']['value']) === 201) {
         const json4 = await fetchPair(tokenYContract, tokenXContract);
         if (json4['success']) {
@@ -131,8 +134,10 @@ export const Swap: React.FC = () => {
           const basePrice = (balanceY / balanceX).toFixed(2);
           setCurrentPrice(basePrice);
           setFoundPair(true);
+          setLoadingData(false);
         } else {
           setFoundPair(false);
+          setLoadingData(false);
         }
       } else {
         setFoundPair(false);
@@ -504,7 +509,11 @@ export const Swap: React.FC = () => {
                 </div>
               </div>
 
-              <p className="mt-2 text-sm font-semibold text-right text-gray-400">1 {tokenY.name} = ≈{currentPrice} {tokenX.name}</p>
+              {loadingData ? (
+                <Placeholder className="justify-end pt-3" width={Placeholder.width.THIRD} />
+              ) : (
+                <p className="mt-2 text-sm font-semibold text-right text-gray-400">1 {tokenY.name} = ≈{currentPrice} {tokenX.name}</p>
+              )}
 
               {state.userData ? (
                 <button

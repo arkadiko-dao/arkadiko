@@ -110,7 +110,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
               <CheckCircleIcon className="w-5 h-5 text-green-400" aria-hidden="true" />
             </div>
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-green-800">Your vault is being created.</h3>
+              <h3 className="text-sm font-semibold text-green-800">Your vault is being created.</h3>
               <div className="mt-2 text-sm text-green-700">
                 <p>Successfully broadcasted the creation of your vault. This can take up to 15 minutes.</p>
                 <p className="mt-1">Your vault will appear automatically on the Vaults page after creation.</p>
