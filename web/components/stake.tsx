@@ -28,7 +28,7 @@ import {
   ExternalLinkIcon,
   InformationCircleIcon,
   XIcon } from '@heroicons/react/solid';
-import { PlaceHolder } from './placeholder';
+import { Placeholder } from './placeholder';
 import { Tooltip } from '@blockstack/ui';
 
 export const Stake = () => {
@@ -574,7 +574,7 @@ export const Stake = () => {
                     <div>
                       <p className="text-lg font-semibold">
                         {loadingData ? (
-                          <PlaceHolder />
+                          <Placeholder className="py-2" width={Placeholder.width.HALF}/>
                         ) : emissionsStarted ? (
                           `${apy}%`
                         ) : (
@@ -586,7 +586,7 @@ export const Stake = () => {
                     <div>
                       <p className="text-lg font-semibold">
                         {loadingData ? (
-                          <PlaceHolder />
+                          <Placeholder className="py-2" width={Placeholder.width.HALF}/>
                         ) : (
                           `${dikoCooldown}`
                         )}
@@ -735,7 +735,7 @@ export const Stake = () => {
                             </td>
                             <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
                               {loadingData ? (
-                                <PlaceHolder />
+                                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
                               ) : emissionsStarted ? (
                                 `${dikoUsdaLpApy}%`
                               ) : (
@@ -853,7 +853,7 @@ export const Stake = () => {
                             </td>
                             <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
                               {loadingData ? (
-                                <PlaceHolder />
+                                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
                               ) : emissionsStarted ? (
                                 `${stxUsdaLpApy}%`
                               ) : (
@@ -971,7 +971,7 @@ export const Stake = () => {
                             </td>
                             <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
                               {loadingData ? (
-                                <PlaceHolder />
+                                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
                               ) : emissionsStarted ? (
                                 `${stxDikoLpApy}%`
                               ) : (

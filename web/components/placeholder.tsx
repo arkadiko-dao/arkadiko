@@ -6,8 +6,16 @@ enum Color {
   INDIGO
 }
 
+enum Width {
+  THIRD,
+  HALF,
+  FULL
+}
+
 type Props = {
   color: Color;
+  width: Width;
+  className?: string;
 };
 
 const colorMap: Record<Color, string> = {
@@ -15,32 +23,30 @@ const colorMap: Record<Color, string> = {
   [Color.INDIGO]: "bg-indigo-300",
 };
 
-export const PlaceHolder = (props: Props)  => {
-  const { color } = props;
+const widthMap: Record<Width, string> = {
+  [Width.THIRD]: "w-1/3",
+  [Width.HALF]: "w-1/2",
+  [Width.FULL]: "w-full",
+};
+
+export function Placeholder(props: Props) {
+  const { className, color, width } = props;
   return (
-    <div className="flex flex-1 animate-pulse">
-      <div className="flex-1 py-1 space-y-2">
-        <div className={classNames(
-          "h-2 rounded w-3/4",
-          colorMap[color])}
-        >  
-        </div>
-        <div className="space-y-1">
-          <div className={classNames(
-            "h-2 rounded",
-            colorMap[color])}
-          ></div>
-          <div className={classNames(
-            "h-2 rounded w-5/6",
-            colorMap[color])}
-          ></div>
-        </div>
-      </div>
+    <div className={`flex flex-1 ${className}`}>
+      <div className={classNames(
+        "py-1 animate-pulse h-2 rounded",
+        colorMap[color], widthMap[width]
+        )}
+      />
     </div>
   )
 };
 
-PlaceHolder.defaultProps = {
-  color: Color.INDIGO
+Placeholder.defaultProps = {
+  color: Color.INDIGO,
+  width: Width.FULL
 };
-PlaceHolder.color = Color;
+
+Placeholder.color = Color;
+Placeholder.width = Width;
+Placeholder.className = '';
