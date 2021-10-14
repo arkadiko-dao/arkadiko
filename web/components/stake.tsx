@@ -85,12 +85,7 @@ export const Stake = () => {
       const data = await response.json();
       let currentBlock = data['stacks_tip_height'];
       const REWARDS_START_BLOCK_HEIGHT = 4000000000; // TODO: set this on mainnet launch
-      if (currentBlock < REWARDS_START_BLOCK_HEIGHT) {
-        setLoadingData(false);
-        return;
-      }
 
-      setEmissionsStarted(true);
       const stDikoSupplyCall = await callReadOnlyFunction({
         contractAddress,
         contractName: "stdiko-token",
@@ -153,6 +148,12 @@ export const Stake = () => {
       });
       let stxDikoLpStaked = cvToJSON(userLpStxDikoStakedCall).value;
       setLpStxDikoStakedAmount(stxDikoLpStaked);
+
+      if (currentBlock < REWARDS_START_BLOCK_HEIGHT) {
+        setLoadingData(false);
+        return;
+      }
+      setEmissionsStarted(true);
 
       const dikoUsdaPendingRewardsCall = await callReadOnlyFunction({
         contractAddress,
