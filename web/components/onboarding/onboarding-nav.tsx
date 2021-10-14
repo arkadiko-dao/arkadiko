@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { CheckIcon, ArrowNarrowRightIcon } from '@heroicons/react/solid';
+import { CheckIcon, ArrowNarrowRightIcon, ExclamationIcon } from '@heroicons/react/solid';
 import { classNames } from '@common/class-names';
 import { NavLink as RouterLink } from 'react-router-dom';
 
@@ -160,12 +160,17 @@ export const OnboardingNav = (props) => {
           </ol>
         </nav>
       </div>
-      <div className="hidden sm:block relative bg-indigo-500">
-        <div className="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
-          <div className="pr-16 sm:text-center sm:px-16">
-            <p className="text-white">
-              <span className="text-xs font-semibold uppercase mr-6">DISCLAIMER: ARKADIKO IS BETA SOFTWARE - DO NOT DEPOSIT ANYTHING YOU ARE NOT WILLING TO LOSE</span>
-            </p>
+      <div className="relative hidden sm:block bg-yellow-50">
+        <div className="px-3 py-3 mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center">
+            <div className="flex-shrink-0">
+              <ExclamationIcon className="w-5 h-5 text-yellow-400" aria-hidden="true" />
+            </div>
+            <div className="ml-3">
+              <p className="text-yellow-700">
+                Arkadiko is beta software. <span className="font-semibold">Do not deposit anything that you are not willing to lose.</span>
+              </p>
+            </div>
           </div>
         </div>
       </div>
