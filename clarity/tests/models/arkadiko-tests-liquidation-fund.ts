@@ -108,5 +108,39 @@ class LiquidationFund {
     return block.receipts[0].result;
   }
 
+  getContractPendingStakingRewards() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "get-contract-pending-staking-rewards", [
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  claimContractStakingRewards() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "claim-contract-staking-rewards", [
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  getPendingStakingRewards(user: Account) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "get-pending-rewards", [
+        types.principal(user.address),
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  claimStakingRewards(user: Account) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "claim-stake-rewards", [
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+  
+
 }
 export { LiquidationFund };

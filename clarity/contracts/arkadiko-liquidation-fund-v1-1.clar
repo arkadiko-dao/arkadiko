@@ -16,6 +16,7 @@
 (define-data-var fund-owner principal tx-sender)
 (define-data-var total-shares uint u0)
 (define-data-var max-stx-to-stake uint u0)
+(define-data-var cumm-reward-per-share uint u0)
 
 ;; ---------------------------------------------------------
 ;; Wallet funds
@@ -72,10 +73,24 @@
 ;; DIKO rewards
 ;; ---------------------------------------------------------
 
-(define-public (claim-stake-rewards)
-  (begin
-    (ok true)
+(define-map wallet-cumm-reward-per-share 
+   { staker: principal } 
+   {
+      cumm-reward-per-share: uint
+   }
+)
+
+(define-read-only (get-stake-cumm-reward-per-share-of (staker principal))
+  (get cumm-reward-per-share 
+    (default-to
+      { cumm-reward-per-share: u0 }
+      (map-get? wallet-cumm-reward-per-share { staker: staker })
+    )
   )
+)
+
+(define-public (claim-stake-rewards)
+  (claim-pending-rewards tx-sender)
 )
 
 ;; ---------------------------------------------------------
@@ -93,6 +108,16 @@
     ;; Current shares
     (current-wallet-shares (get-shares-stx-for-wallet tx-sender))
   )
+    ;; Claim all pending rewards for staker so we can set the new cumm-reward for this user
+    (try! (claim-pending-rewards tx-sender))
+
+    ;; Update cumm reward per stake now that total is updated
+    (unwrap-panic (increase-cumm-reward-per-share))
+
+    ;; Update sender stake info
+    (map-set wallet-cumm-reward-per-share { staker: tx-sender } { cumm-reward-per-share: (var-get cumm-reward-per-share) })
+
+
     ;; Update total shares
     (var-set total-shares (+ (var-get total-shares) shares-to-receive))
 
@@ -117,6 +142,16 @@
     (stx-to-receive (unwrap-panic (shares-for-stx shares-amount)))
   )
     (asserts! (>= current-wallet-shares shares-amount) (err ERR-INSUFFICIENT-SHARES))
+
+    ;; Claim all pending rewards for staker so we can set the new cumm-reward for this user
+    (try! (claim-pending-rewards sender))
+
+    ;; Update cumm reward per stake now that total is updated
+    (unwrap-panic (increase-cumm-reward-per-share))
+
+    ;; Update sender stake info
+    (map-set wallet-cumm-reward-per-share { staker: sender } { cumm-reward-per-share: (var-get cumm-reward-per-share) })
+
 
     ;; Update total shares
     (var-set total-shares (- (var-get total-shares) shares-amount))
@@ -389,6 +424,71 @@
   )
 )
 
+
+;; ---------------------------------------------------------
+;; Rewards
+;; ---------------------------------------------------------
+
+
+(define-public (get-pending-rewards (staker principal))
+  (let (
+    (shares-amount (get-shares-stx-for-wallet staker))
+    (amount-owed-per-token (- (unwrap-panic (calculate-cumm-reward-per-share)) (get-stake-cumm-reward-per-share-of staker)))
+    (rewards-decimals (* shares-amount amount-owed-per-token))
+    (rewards (/ rewards-decimals u1000000))
+  )
+    (ok rewards)
+  )
+)
+
+(define-private (claim-pending-rewards (staker principal))
+  (begin
+
+    (unwrap-panic (increase-cumm-reward-per-share))
+
+    (let (
+      (pending-rewards (unwrap-panic (get-pending-rewards staker)))
+    )
+      (if (>= pending-rewards u1)
+        (begin
+          (try! (as-contract (contract-call? .arkadiko-token transfer pending-rewards tx-sender staker none)))
+
+          (map-set wallet-cumm-reward-per-share { staker: tx-sender } { cumm-reward-per-share: (var-get cumm-reward-per-share) })
+
+          (ok pending-rewards)
+        )
+        (ok u0)
+      )
+    )
+  )
+)
+
+(define-public (increase-cumm-reward-per-share)
+  (let (
+    (new-cumm-reward-per-share (unwrap-panic (calculate-cumm-reward-per-share)))
+  )
+    (var-set cumm-reward-per-share new-cumm-reward-per-share)
+    (ok new-cumm-reward-per-share)
+  )
+)
+
+(define-public (calculate-cumm-reward-per-share)
+  (let (
+    (current-total-shares (var-get total-shares))
+    (current-cumm-reward-per-share (var-get cumm-reward-per-share)) 
+  )
+    (if (> current-total-shares u0)
+      (let (
+        (total-rewards-to-distribute (unwrap-panic (contract-call? .arkadiko-token get-balance (as-contract tx-sender))))
+        (new-cumm-reward-per-share (/ (* total-rewards-to-distribute u1000000) current-total-shares))
+      )
+        (ok new-cumm-reward-per-share)
+      )
+      (ok current-cumm-reward-per-share)
+    )
+  )
+)
+
 ;; ---------------------------------------------------------
 ;; Admin
 ;; ---------------------------------------------------------
@@ -411,7 +511,7 @@
 )
 
 ;; Claim staking rewards if any
-(define-public (claim-rewards)
+(define-public (claim-contract-staking-rewards)
   (begin
     (asserts! (is-eq tx-sender (var-get fund-owner)) (err ERR-NOT-AUTHORIZED))
     (as-contract (contract-call? .arkadiko-stake-registry-v1-1 claim-pending-rewards .arkadiko-stake-registry-v1-1 .arkadiko-stake-pool-wstx-usda-v1-1))
@@ -419,6 +519,9 @@
 )
 
 ;; Get pending staking rewards
-(define-public (get-pending-rewards)
-  (as-contract (contract-call? .arkadiko-stake-registry-v1-1 get-pending-rewards .arkadiko-stake-registry-v1-1 .arkadiko-stake-pool-wstx-usda-v1-1))
+(define-public (get-contract-pending-staking-rewards)
+  (begin
+    (asserts! (is-eq tx-sender (var-get fund-owner)) (err ERR-NOT-AUTHORIZED))
+    (as-contract (contract-call? .arkadiko-stake-registry-v1-1 get-pending-rewards .arkadiko-stake-registry-v1-1 .arkadiko-stake-pool-wstx-usda-v1-1))
+  )
 )

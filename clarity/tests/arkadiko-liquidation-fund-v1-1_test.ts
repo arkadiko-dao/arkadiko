@@ -13,7 +13,8 @@ import {
 import { 
   OracleManager,
   XstxManager,
-  UsdaToken
+  UsdaToken,
+  DikoToken
 } from './models/arkadiko-tests-tokens.ts';
 
 import { 
@@ -50,6 +51,56 @@ Clarinet.test({
     call = liquidationFund.getShares(wallet_1);
     call.result.expectUintWithDecimals(0);
     
+  }
+});
+
+Clarinet.test({
+  name: "liquidation-fund: deposit and claim staking rewards",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let liquidationFund = new LiquidationFund(chain, deployer);
+    let swap = new Swap(chain, deployer);
+    let dikoManager = new DikoToken(chain, deployer); 
+
+    // Create STX/USDA pair
+    let result = swap.createPair(deployer, "wrapped-stx-token", "usda-token", "arkadiko-swap-token-wstx-usda", "wSTX-USDA", 80000, 100000);
+    result.expectOk().expectBool(true);
+
+    // Deposit
+    result = liquidationFund.depositStx(wallet_1, 1000);
+    result.expectOk().expectUintWithDecimals(1000)
+
+    let call = liquidationFund.getShares(wallet_1);
+    call.result.expectUintWithDecimals(1000);
+
+    // Stake STX
+    result = liquidationFund.setMaxStxToStake(deployer, 1000);
+    result.expectOk().expectBool(true);
+ 
+    // Advance 1 day
+    chain.mineEmptyBlock(144);
+
+    // Pending rewards for fund
+    result = liquidationFund.getContractPendingStakingRewards();
+    result.expectOk().expectUintWithDecimals(45413.931544);
+
+    // Claim rewards for fund
+    result = liquidationFund.claimContractStakingRewards();
+    result.expectOk().expectUintWithDecimals(45727.131116);
+
+    // Contract DIKO balance
+    call = await dikoManager.balanceOf(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(45727.131116);
+
+    // Pending rewards for user
+    result = liquidationFund.getPendingStakingRewards(wallet_1);
+    result.expectOk().expectUintWithDecimals(45727.131000);
+    
+    // Claim rewards for user
+    result = liquidationFund.claimStakingRewards(wallet_1);
+    result.expectOk().expectUintWithDecimals(45727.131000);
   }
 });
 
