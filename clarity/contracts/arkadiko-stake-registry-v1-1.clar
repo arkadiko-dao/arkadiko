@@ -44,7 +44,7 @@
   (rewards-percentage uint)
 )
   (begin
-    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
     (map-set pools-data-map
       { pool: pool }
