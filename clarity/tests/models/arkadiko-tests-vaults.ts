@@ -555,5 +555,12 @@ class VaultRewards {
     return block.receipts[0].result;
   }
 
+  toggleEmergencyShutdown(user: Account) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-vault-rewards-v1-1", "toggle-vault-rewards-shutdown", [], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
 }
 export { VaultRewards };

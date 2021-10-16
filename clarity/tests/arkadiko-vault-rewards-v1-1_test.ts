@@ -64,6 +64,55 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "vault-rewards: emergency shutdown",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultRewards = new VaultRewards(chain, deployer);
+
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 2);
+    vaultManager.createVault(deployer, "STX-A", 5, 1);
+
+    // Check rewards
+    let call:any = vaultRewards.getPendingRewards(deployer);
+    call.result.expectOk().expectUintWithDecimals(320)
+
+    // Need to increase cummulative rewards per collateral
+    vaultRewards.increaseCummulativeRewardPerCollateral();
+
+    // Only guardian can toggle shutdown
+    let result = vaultRewards.toggleEmergencyShutdown(wallet_1);
+    result.expectErr().expectUint(20401);
+
+    // Toggle shutdown
+    result = vaultRewards.toggleEmergencyShutdown(deployer);
+    result.expectOk().expectBool(true);
+
+    // Pending rewards have not changed
+    call = vaultRewards.getPendingRewards(deployer);
+    call.result.expectOk().expectUintWithDecimals(320)
+
+    // Cumm reward per collateral
+    call = vaultRewards.calculateCummulativeRewardPerCollateral();
+    call.result.expectUintWithDecimals(64)
+
+    // No changes after 100 blocks
+    chain.mineEmptyBlock(100);
+
+    call = vaultRewards.getPendingRewards(deployer);
+    call.result.expectOk().expectUintWithDecimals(320)
+
+    call = vaultRewards.calculateCummulativeRewardPerCollateral();
+    call.result.expectUintWithDecimals(64)
+
+  },
+});
+
+Clarinet.test({
   name: "vault-rewards: claim DIKO rewards",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
