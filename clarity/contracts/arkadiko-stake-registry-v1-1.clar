@@ -14,6 +14,7 @@
 (define-constant ERR-POOL-EXIST (err u19002))
 (define-constant ERR-POOL-INACTIVE (err u19003))
 (define-constant ERR-WRONG-REGISTRY (err u19004))
+(define-constant ERR-NOT-AUTHORIZED u19401)
 
 ;; Variables
 (define-data-var pool-count uint u0)
@@ -32,6 +33,30 @@
 ;; Get pool info
 (define-read-only (get-pool-data (pool principal))
   (unwrap-panic (map-get? pools-data-map { pool: pool }))
+)
+
+;; Set pool info
+(define-public (set-pool-data
+  (pool principal)
+  (name (string-ascii 256))
+  (deactivated-block uint)
+  (deactivated-rewards-per-block uint)
+  (rewards-percentage uint)
+)
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (map-set pools-data-map
+      { pool: pool }
+      {
+        name: name,
+        deactivated-block: deactivated-block,
+        deactivated-rewards-per-block: deactivated-rewards-per-block,
+        rewards-percentage: rewards-percentage
+      }
+    )
+    (ok true)
+  )
 )
 
 ;; Get pool rewards per block
