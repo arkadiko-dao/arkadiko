@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { CheckIcon, ArrowNarrowRightIcon } from '@heroicons/react/solid';
+import { CheckIcon, ArrowNarrowRightIcon, ExclamationIcon } from '@heroicons/react/solid';
 import { classNames } from '@common/class-names';
 import { NavLink as RouterLink } from 'react-router-dom';
 
@@ -160,6 +160,20 @@ export const OnboardingNav = (props) => {
           </ol>
         </nav>
       </div>
+      <div className="relative hidden sm:block bg-yellow-50">
+        <div className="px-3 py-3 mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center">
+            <div className="flex-shrink-0">
+              <ExclamationIcon className="w-5 h-5 text-yellow-400" aria-hidden="true" />
+            </div>
+            <div className="ml-3">
+              <p className="text-yellow-700">
+                Arkadiko is beta software. <span className="font-semibold">Do not deposit anything that you are not willing to lose.</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <p className="text-right">
         <RouterLink to="/" className="flex items-center justify-end p-4 text-base font-medium text-gray-700 sm:text-xs hover:text-gray-800 hover:underline">
@@ -167,6 +181,7 @@ export const OnboardingNav = (props) => {
           <ArrowNarrowRightIcon className="w-4 h-4 ml-2 text-gray-800" aria-hidden="true" />
         </RouterLink>
       </p>
+
     </>
   );
 };

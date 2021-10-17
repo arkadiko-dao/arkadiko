@@ -159,6 +159,32 @@ Clarinet.test({
   },
 });
 
+Clarinet.test({
+  name: "swap: STX in and out of liquidity position",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    
+    let swap = new Swap(chain, deployer);
+
+    // Wrapped STX balance
+    let call = chain.callReadOnlyFn("wrapped-stx-token", "get-balance", [types.principal(deployer.address)], deployer.address);
+    call.result.expectOk().expectUint(0);
+
+    // Create pair
+    let result:any = swap.createPair(deployer, "wrapped-stx-token", usdaTokenAddress, "arkadiko-swap-token-wstx-usda", "wSTX-USDA", 100, 100);
+    result.expectOk().expectBool(true);
+
+    // Remove from position
+    result = swap.reducePosition(deployer, "wrapped-stx-token", usdaTokenAddress, "arkadiko-swap-token-wstx-usda", 100);
+    result.expectOk().expectList()[0].expectUintWithDecimals(100);
+    result.expectOk().expectList()[1].expectUintWithDecimals(100);
+
+    // Wrapped STX balance - should not have any
+    call = chain.callReadOnlyFn("wrapped-stx-token", "get-balance", [types.principal(deployer.address)], deployer.address);
+    call.result.expectOk().expectUint(0);
+
+  },
+});
 
 // ---------------------------------------------------------
 // Bad actor
