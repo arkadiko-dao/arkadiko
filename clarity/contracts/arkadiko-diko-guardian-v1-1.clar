@@ -25,12 +25,13 @@
     (steps-per-year u26)
     ;; 144 blocks per day, 14 days
     (blocks-per-step u2016)
+    (start-block (var-get contract-start-block))
   )
-    (asserts! (>= block-height (var-get contract-start-block)) u0)
+    (asserts! (>= block-height start-block) u0)
 
     (let (
       ;; each step is equal to 2 weeks. This calculates the current step we are in, since the start
-      (step-number (/ (- block-height (var-get contract-start-block)) blocks-per-step))
+      (step-number (/ (- block-height start-block) blocks-per-step))
 
       ;; year we are currently in since start
       (year-number (+ (/ step-number steps-per-year) u1))
