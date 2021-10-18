@@ -6,7 +6,7 @@
 ;; @version 1.1
 
 (impl-trait .arkadiko-stake-pool-trait-v1.stake-pool-trait)
-(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
+(use-trait ft-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 (use-trait stake-registry-trait .arkadiko-stake-registry-trait-v1.stake-registry-trait)
 
 ;; Errors

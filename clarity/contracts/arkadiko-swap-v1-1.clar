@@ -1,7 +1,7 @@
 ;; @contract Swap - Decentralised exchange
 ;; @version 1
 
-(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
+(use-trait ft-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 (use-trait swap-token .arkadiko-swap-trait-v1.swap-trait)
 
 (define-constant ERR-NOT-AUTHORIZED u20401)
