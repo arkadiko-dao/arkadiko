@@ -75,15 +75,17 @@
 ;; Get currrent vault rewards per block for all vaults
 ;; Rewards only apply in the first year, during which they are reduced every 2 weeks
 (define-read-only (get-vault-rewards-per-block)
-  (begin
-    (asserts! (>= block-height (var-get contract-start-block)) u0)
+  (let (
+    (start-block (var-get contract-start-block))
+  )
+    (asserts! (>= block-height start-block) u0)
 
     (let (
       ;; 144 blocks per day, 7 days
       (blocks-per-step u1008)
 
       ;; each step is equal to 1 week. This calculates the current step we are in, since the start
-      (step-number (/ (- block-height (var-get contract-start-block)) blocks-per-step))
+      (step-number (/ (- block-height start-block) blocks-per-step))
     )
       ;; Rewards only for first 6 weeks (step-number starts at 0)
       (if (<= step-number u5)
