@@ -94,14 +94,3 @@
     (ft-burn? diko amount sender)
   )
 )
-
-
-;; Test environments
-(begin
-  ;; TODO: do not do this on testnet or mainnet
-  (try! (ft-mint? diko u890000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
-  (try! (ft-mint? diko u150000000000 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5))
-  (try! (ft-mint? diko u150000000000 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG))
-  (try! (ft-mint? diko u1000000000000 'STB2BWB0K5XZGS3FXVTG3TKS46CQVV66NAK3YVN8))
-  (try! (ft-mint? diko u1000000000000 'ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF))
-)

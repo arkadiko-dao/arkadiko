@@ -84,7 +84,7 @@ export const Stake = () => {
       const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
       const data = await response.json();
       let currentBlock = data['stacks_tip_height'];
-      const REWARDS_START_BLOCK_HEIGHT = 4000000000; // TODO: set this on mainnet launch
+      const REWARDS_START_BLOCK_HEIGHT = 35300;
 
       const stDikoSupplyCall = await callReadOnlyFunction({
         contractAddress,
