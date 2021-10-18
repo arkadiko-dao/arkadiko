@@ -22,6 +22,7 @@ import { tokenList } from '@components/token-swap-list';
 import { InputAmount } from './input-amount';
 import { getRPCClient } from '@common/utils';
 import { microToReadable } from '@common/vault-utils';
+import { addMinutes } from 'date-fns'
 
 export const ManageVault = ({ match }) => {
   const { doContractCall } = useConnect();
@@ -54,6 +55,7 @@ export const ManageVault = ({ match }) => {
   const [canUnlockCollateral, setCanUnlockCollateral] = useState(false);
   const [canStackCollateral, setCanStackCollateral] = useState(false);
   const [decimals, setDecimals] = useState(1000000);
+  const [stackingEndDate, setStackingEndDate] = useState('');
 
   useEffect(() => {
     const fetchVault = async () => {
@@ -179,6 +181,17 @@ export const ManageVault = ({ match }) => {
       if (unlockBurnHeight > currentBurnHeight) {
         setCanWithdrawCollateral(true);
       }
+
+      if (unlockBurnHeight < currentBurnHeight) {
+        setStackingEndDate("N/A");
+      } else {
+        const stackingBlocksLeft = unlockBurnHeight - currentBurnHeight;
+        const stackingMinutesLeft = (stackingBlocksLeft * 10) + 20160; // plus 2 weeks cooldown
+        const currentDate = new Date();
+        const endDate = addMinutes(currentDate, stackingMinutesLeft);
+        setStackingEndDate(endDate.toDateString());
+      }
+
     };
 
     if (vault?.id) {
@@ -796,8 +809,8 @@ export const ManageVault = ({ match }) => {
                             <p className="text-base font-normal leading-6 text-gray-500">Currently stacking</p>
                           </div>
                           <div>
-                            <p className="text-lg font-semibold leading-none">{state.endDate}</p>
-                            <p className="text-base font-normal leading-6 text-gray-500">End of current cycle</p>
+                            <p className="text-lg font-semibold leading-none">{stackingEndDate}</p>
+                            <p className="text-base font-normal leading-6 text-gray-500">End of stacking</p>
                           </div>
                         </div>
                       </div>
