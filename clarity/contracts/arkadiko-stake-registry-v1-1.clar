@@ -194,7 +194,7 @@
 (begin
   ;; DIKO pool
   (map-set pools-data-map
-    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-1 }
+    { pool: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-stake-pool-diko-v1-1 }
     {
       name: "DIKO",
       deactivated-block: u0,
@@ -204,7 +204,7 @@
   )
   ;; DIKO-USDA LP
   (map-set pools-data-map
-    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-1 }
+    { pool: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-stake-pool-diko-usda-v1-1 }
     {
       name: "DIKO-USDA LP",
       deactivated-block: u0,
@@ -214,7 +214,7 @@
   )
   ;; wSTX-USDA LP
   (map-set pools-data-map
-    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-usda-v1-1 }
+    { pool: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-stake-pool-wstx-usda-v1-1 }
     {
       name: "wSTX-USDA LP",
       deactivated-block: u0,
@@ -224,7 +224,7 @@
   )
   ;; wSTX-DIKO LP
   (map-set pools-data-map
-    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-diko-v1-1 }
+    { pool: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-stake-pool-wstx-diko-v1-1 }
     {
       name: "wSTX-DIKO LP",
       deactivated-block: u0,
@@ -233,4 +233,3 @@
     }
   )
 )
-
