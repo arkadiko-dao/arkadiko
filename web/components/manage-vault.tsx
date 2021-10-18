@@ -161,9 +161,9 @@ export const ManageVault = ({ match }) => {
       });
       const unlockBurnHeight = cvToJSON(call).value.value;
       setUnlockBurnHeight(unlockBurnHeight);
-      if (unlockBurnHeight === 0) {
+      if (Number(unlockBurnHeight) === 0) {
         setStartedStacking(false);
-        if (vault?.stackedTokens === 0) {
+        if (Number(vault?.stackedTokens) === 0) {
           setCanWithdrawCollateral(true);
         }
         if (vault?.revokedStacking) {
@@ -193,7 +193,7 @@ export const ManageVault = ({ match }) => {
 
   useEffect(() => {
     if (vault && collateralType?.collateralToDebtRatio) {
-      if (vault.stackedTokens === 0) {
+      if (Number(vault.stackedTokens) === 0) {
         setMaximumCollateralToWithdraw(availableCollateralToWithdraw(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio));
       } else {
         setMaximumCollateralToWithdraw(0);
