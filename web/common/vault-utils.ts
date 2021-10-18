@@ -1,5 +1,5 @@
 export const getLiquidationPrice = (liquidationRatio:number, coinsMinted:number, stxCollateral:number, collateralType:string) => {
-  if (collateralType.includes('stx')) {
+  if (collateralType.toLowerCase().includes('stx')) {
     return (liquidationRatio * coinsMinted / (stxCollateral * 100)).toFixed(2);
   } else {
     // xBTC
