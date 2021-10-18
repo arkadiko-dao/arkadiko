@@ -186,7 +186,7 @@ export const ManageVault = ({ match }) => {
         setStackingEndDate("N/A");
       } else {
         const stackingBlocksLeft = unlockBurnHeight - currentBurnHeight;
-        const stackingMinutesLeft = (stackingBlocksLeft * 10) + 20160; // plus 2 weeks cooldown
+        const stackingMinutesLeft = (stackingBlocksLeft * 10) + 20160 + 1440; // + 2 weeks cooldown + 1 day
         const currentDate = new Date();
         const endDate = addMinutes(currentDate, stackingMinutesLeft);
         setStackingEndDate(endDate.toDateString());
