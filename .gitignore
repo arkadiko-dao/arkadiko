@@ -10,6 +10,7 @@ docs/deploy.md
 .DS_Store
 clarity/history.txt
 keychain_mainnet.json
+keychain_oracle.json
 keychain_testnet.json
 keychain_regtest.json
 keychain_regtest_2.json
