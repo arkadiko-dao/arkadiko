@@ -336,14 +336,14 @@ export const Mint = () => {
                     Get 5000 STX from mocknet
                   </button>
                 </div>
-              ) : (
+              ) : env === 'testnet' ? (
                 <div className="flex items-center justify-end mb-4">
                   <span className="px-2 py-1 text-xs text-gray-800">{env.replace(/^\w/, (c) => c.toUpperCase())} actions:</span>
                   <button type="button" onClick={() => addTestnetStx()} className="inline-flex items-center px-3 py-2 text-sm font-normal leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Get STX from {env}
                   </button>
                 </div>
-              )}
+              ) : null}
             </div>
           </header>
 
