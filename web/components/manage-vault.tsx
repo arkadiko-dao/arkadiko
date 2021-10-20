@@ -183,7 +183,7 @@ export const ManageVault = ({ match }) => {
       }
 
       if (unlockBurnHeight < currentBurnHeight) {
-        setStackingEndDate("N/A");
+        setStackingEndDate("");
       } else {
         const stackingBlocksLeft = unlockBurnHeight - currentBurnHeight;
         const stackingMinutesLeft = (stackingBlocksLeft * 10) + 20160 + 1440; // + 2 weeks cooldown + 1 day
@@ -808,10 +808,12 @@ export const ManageVault = ({ match }) => {
                             <p className="text-lg font-semibold leading-none">{microToReadable(vault?.stackedTokens)} <span className="text-sm font-normal">{vault?.collateralToken.toUpperCase()}</span></p>
                             <p className="text-base font-normal leading-6 text-gray-500">Currently stacking</p>
                           </div>
-                          <div>
-                            <p className="text-lg font-semibold leading-none">{stackingEndDate}</p>
-                            <p className="text-base font-normal leading-6 text-gray-500">End of stacking</p>
-                          </div>
+                          {stackingEndDate != "" ? (
+                            <div>
+                              <p className="text-lg font-semibold leading-none">{stackingEndDate}</p>
+                              <p className="text-base font-normal leading-6 text-gray-500">End of stacking</p>
+                            </div>
+                          ) : null} 
                         </div>
                       </div>
                     </div>
