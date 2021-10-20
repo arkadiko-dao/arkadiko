@@ -25,6 +25,7 @@ const createPair = async () => {
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     nonce: new BN(nonce),
+    fee: new BN(250000, 10),
     postConditionMode: 1,
     network
   };
