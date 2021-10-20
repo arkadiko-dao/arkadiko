@@ -39,6 +39,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [newShare, setNewShare] = useState(0);
   const [totalShare, setTotalShare] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [insufficientBalance, setInsufficientBalance] = useState(false);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const stxAddress = useSTXAddress();
   const { doContractCall } = useConnect();
@@ -142,22 +143,33 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
 
   useEffect(() => {
     if (currentPrice > 0) {
-      calculateTokenYAmount();
+      calculateTokenYAmount(tokenXAmount);
     }
   }, [tokenXAmount]);
 
   const onInputChange = (event: { target: { name: any; value: any; }; }) => {
     const value = event.target.value;
+    if (!value) {
+      return;
+    }
 
+    setInsufficientBalance(false);
     setTokenXAmount(value);
-    calculateTokenYAmount();
+
+    if (value > balanceSelectedTokenX) {
+      setInsufficientBalance(true);
+    }
+    calculateTokenYAmount(Number(value));
   };
 
-  const calculateTokenYAmount = () => {
-    setTokenYAmount(currentPrice * tokenXAmount);
-    const newTokens = (totalTokens / 1000000 * tokenXAmount) / pooledX;
+  const calculateTokenYAmount = (value:number) => {
+    setTokenYAmount(currentPrice * value);
+    if (currentPrice * value > balanceSelectedTokenY) {
+      setInsufficientBalance(true);
+    }
+    const newTokens = (totalTokens / 1000000 * value) / pooledX;
     setNewTokens(newTokens);
-    if (tokenXAmount > 0) {
+    if (value > 0) {
       const share = Number((1000000 * 100 * newTokens / totalTokens).toFixed(8));
       if (share > 100) {
         setNewShare(100);
@@ -457,7 +469,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
 
                   <button
                     type="button"
-                    disabled={tokenYAmount === 0 || !foundPair}
+                    disabled={insufficientBalance || tokenYAmount === 0 || !foundPair}
                     onClick={() => addLiquidity()}
                     className={classNames((tokenYAmount === 0 || !foundPair) ?
                       'bg-indigo-300 hover:bg-indigo-300 pointer-events-none' :
@@ -467,6 +479,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                   >
                     { !foundPair ? "No liquidity for this pair. Try another one."
                     : tokenYAmount === 0 ? "Please enter an amount"
+                    : insufficientBalance ? "Insufficient balance"
                     : "Confirm adding liquidity"}
                   </button>
 
