@@ -568,7 +568,13 @@ export const Stake = () => {
                           <img className="w-8 h-8 rounded-full" src={tokenList[1].logo} alt="" />
                         </div>
                         <p className="ml-4 text-lg font-semibold">
-                          {microToReadable(stakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
+                          {loadingData ? (
+                            <span>Loading...</span>
+                          ) : (
+                            <>
+                            {microToReadable(stakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
+                            </>
+                          )}
                         </p>
                       </div>
                     </div>
@@ -724,8 +730,14 @@ export const Stake = () => {
                                   />
                                 </div>
                                 <p className="ml-4">
-                                  {microToReadable(lpDikoUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} 
-                                  {' '}
+                                  {loadingData ? (
+                                    <span>Loading...</span>
+                                  ) : (
+                                    <>
+                                    {microToReadable(lpDikoUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                                    {' '}
+                                    </>
+                                  )}
                                   <span className="block text-gray-500">
                                     <Tooltip shouldWrapChildren={true} label={`ARKV1${tokenList[1].name}${tokenList[0].name}`}>
                                       Arkadiko V1 {tokenList[1].name} {tokenList[0].name} LP Token
@@ -744,7 +756,13 @@ export const Stake = () => {
                               )}
                             </td>
                             <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              {microToReadable(lpDikoUsdaPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
+                              {loadingData ? (
+                                <span>Loading...</span>
+                              ) : (
+                                <>
+                                {microToReadable(lpDikoUsdaPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
+                                </>
+                              )}
                             </td>
                             <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
                               {state.balance['dikousda'] > 0 || lpDikoUsdaStakedAmount || lpDikoUsdaPendingRewards ? (
@@ -842,8 +860,14 @@ export const Stake = () => {
                                   />
                                 </div>
                                 <p className="ml-4">
-                                  {microToReadable(lpStxUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
-                                  {' '}
+                                  {loadingData ? (
+                                    <span>Loading...</span>
+                                  ) : (
+                                    <>
+                                    {microToReadable(lpStxUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                                    {' '}
+                                    </>
+                                  )}
                                   <span className="block text-gray-500">
                                     <Tooltip shouldWrapChildren={true} label={`ARKV1${tokenList[2].name}${tokenList[0].name}`}>
                                       Arkadiko V1 {tokenList[2].name} {tokenList[0].name} LP Token
@@ -862,7 +886,13 @@ export const Stake = () => {
                               )}
                             </td>
                             <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              {microToReadable(lpStxUsdaPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
+                              {loadingData ? (
+                                <span>Loading...</span>
+                              ) : (
+                                <>
+                                {microToReadable(lpStxUsdaPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
+                                </>
+                              )}
                             </td>
                             <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
                               {state.balance['wstxusda'] > 0 || lpStxUsdaStakedAmount || lpStxUsdaPendingRewards ? (
@@ -960,8 +990,14 @@ export const Stake = () => {
                                   />
                                 </div>
                                 <p className="ml-4">
-                                  {microToReadable(lpStxDikoStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
-                                  {' '}
+                                  {loadingData ? (
+                                    <span>Loading...</span>
+                                  ) : (
+                                    <>
+                                    {microToReadable(lpStxDikoStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                                    {' '}
+                                    </>
+                                  )}
                                   <span className="block text-gray-500">
                                     <Tooltip shouldWrapChildren={true} label={`ARKV1${tokenList[2].name}${tokenList[1].name}`}>
                                       Arkadiko V1 {tokenList[2].name} {tokenList[1].name} LP Token
@@ -980,7 +1016,13 @@ export const Stake = () => {
                               )}
                             </td>
                             <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              {microToReadable(lpStxDikoPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
+                              {loadingData ? (
+                                <span>Loading...</span>
+                              ) : (
+                                <>
+                                {microToReadable(lpStxDikoPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
+                                </>
+                              )}
                             </td>
                             <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
                               {state.balance['wstxdiko'] > 0 || lpStxDikoStakedAmount || lpStxDikoPendingRewards ? (
