@@ -257,8 +257,8 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         contractPrincipalCV(contractAddress, tokenXParam),
         contractPrincipalCV(contractAddress, tokenYParam),
         contractPrincipalCV(contractAddress, swapTrait),
-        uintCV(tokenXAmount * 1000000),
-        uintCV(tokenYAmount * 1000000)
+        uintCV(parseInt(tokenXAmount * 1000000, 10)),
+        uintCV(parseInt(tokenYAmount * 1000000, 10))
       ],
       postConditions,
       postConditionMode: 0x01,
