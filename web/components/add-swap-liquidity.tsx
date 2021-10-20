@@ -260,7 +260,6 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         uintCV(parseInt(tokenXAmount * 1000000, 10)),
         uintCV(parseInt(tokenYAmount * 1000000, 10))
       ],
-      postConditions,
       postConditionMode: 0x01,
       onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
