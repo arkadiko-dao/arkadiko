@@ -23,6 +23,7 @@ import { SwapSettings } from '@components/swap-settings';
 import { getBalance } from '@components/app';
 import { classNames } from '@common/class-names';
 import { Placeholder } from './placeholder';
+import { Redirect } from 'react-router-dom';
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
@@ -377,225 +378,228 @@ export const Swap: React.FC = () => {
   ]
 
   return (
-    <Container>
-      <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
-        <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow">
-          <div className="flex flex-col p-4">
-            <div className="flex justify-between mb-4">
-              <div>
-                <div className="sm:hidden">
-                  <label htmlFor="tabs" className="sr-only">
-                    Select a tab
-                  </label>
-                  <select
-                    id="tabs"
-                    name="tabs"
-                    className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                    defaultValue={tabs.find((tab) => tab.current).name}
-                  >
-                    {tabs.map((tab) => (
-                      <option key={tab.name}>{tab.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="hidden sm:block">
-                  <nav className="flex space-x-4" aria-label="Tabs">
-                    {tabs.map((tab) => (
-                      <a
-                        key={tab.name}
-                        href={tab.href}
-                        className={classNames(
-                          tab.current ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700', 
-                          'px-3 py-2 text-lg font-headings rounded-md'
-                        )}
-                        aria-current={tab.current ? 'page' : undefined}
-                      >
-                        {tab.name}
-                      </a>
-                    ))}
-                  </nav>
-                </div>
-              </div>
-
-              <SwapSettings
-                slippageTolerance={slippageTolerance}
-                setDefaultSlippage={setDefaultSlippage}
-                setSlippageTolerance={setSlippageTolerance}
-              />
-            </div>
-
-            <form>
-              <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
-                <div className="flex items-center p-4 pb-2">
-
-                  <TokenSwapList
-                    selected={tokenX}
-                    setSelected={setTokenX}
-                  />
-
-                  <label htmlFor="tokenXAmount" className="sr-only">{tokenX.name}</label>
-                  <input
-                    type="number"
-                    inputMode="decimal" 
-                    autoFocus={true}
-                    autoComplete="off"
-                    autoCorrect="off"
-                    name="tokenXAmount"
-                    id="tokenXAmount"
-                    pattern="^[0-9]*[.,]?[0-9]*$"
-                    placeholder="0.0"
-                    value={tokenXAmount || ''}
-                    onChange={onInputChange}
-                    className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
-                    style={{appearance: 'textfield'}} />
-                </div>
-
-                <div className="flex items-center justify-end p-4 pt-0 text-sm">
-                  <div className="flex items-center justify-between w-full">
-                    <div className="flex items-center justify-start">
-                      <p className="text-gray-500">Balance: {balanceSelectedTokenX.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenX.name}</p>
-                      {parseInt(balanceSelectedTokenX, 10) > 0 ? (
-                        <button
-                          type="button"
-                          onClick={() => setMaximum()}
-                          className="p-1 ml-2 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+    <>
+      <Redirect to={{ pathname: '/pool' }} />
+      <Container>
+        <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
+          <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow">
+            <div className="flex flex-col p-4">
+              <div className="flex justify-between mb-4">
+                <div>
+                  <div className="sm:hidden">
+                    <label htmlFor="tabs" className="sr-only">
+                      Select a tab
+                    </label>
+                    <select
+                      id="tabs"
+                      name="tabs"
+                      className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                      defaultValue={tabs.find((tab) => tab.current).name}
+                    >
+                      {tabs.map((tab) => (
+                        <option key={tab.name}>{tab.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="hidden sm:block">
+                    <nav className="flex space-x-4" aria-label="Tabs">
+                      {tabs.map((tab) => (
+                        <a
+                          key={tab.name}
+                          href={tab.href}
+                          className={classNames(
+                            tab.current ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700', 
+                            'px-3 py-2 text-lg font-headings rounded-md'
+                          )}
+                          aria-current={tab.current ? 'page' : undefined}
                         >
-                          Max.
-                        </button>
-                      ) : `` }
+                          {tab.name}
+                        </a>
+                      ))}
+                    </nav>
+                  </div>
+                </div>
+
+                <SwapSettings
+                  slippageTolerance={slippageTolerance}
+                  setDefaultSlippage={setDefaultSlippage}
+                  setSlippageTolerance={setSlippageTolerance}
+                />
+              </div>
+
+              <form>
+                <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
+                  <div className="flex items-center p-4 pb-2">
+
+                    <TokenSwapList
+                      selected={tokenX}
+                      setSelected={setTokenX}
+                    />
+
+                    <label htmlFor="tokenXAmount" className="sr-only">{tokenX.name}</label>
+                    <input
+                      type="number"
+                      inputMode="decimal" 
+                      autoFocus={true}
+                      autoComplete="off"
+                      autoCorrect="off"
+                      name="tokenXAmount"
+                      id="tokenXAmount"
+                      pattern="^[0-9]*[.,]?[0-9]*$"
+                      placeholder="0.0"
+                      value={tokenXAmount || ''}
+                      onChange={onInputChange}
+                      className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
+                      style={{appearance: 'textfield'}} />
+                  </div>
+
+                  <div className="flex items-center justify-end p-4 pt-0 text-sm">
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center justify-start">
+                        <p className="text-gray-500">Balance: {balanceSelectedTokenX.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenX.name}</p>
+                        {parseInt(balanceSelectedTokenX, 10) > 0 ? (
+                          <button
+                            type="button"
+                            onClick={() => setMaximum()}
+                            className="p-1 ml-2 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                          >
+                            Max.
+                          </button>
+                        ) : `` }
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <button
-                type="button"
-                onClick={switchTokens}
-                className="relative z-10 flex items-center justify-center w-8 h-8 -mt-4 -mb-4 -ml-4 text-gray-400 transform bg-white border border-gray-300 rounded-md left-1/2 hover:text-indigo-700 focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-indigo-500"
-              >
-                <SwitchVerticalIcon className="w-5 h-5" aria-hidden="true" />
-              </button>
+                <button
+                  type="button"
+                  onClick={switchTokens}
+                  className="relative z-10 flex items-center justify-center w-8 h-8 -mt-4 -mb-4 -ml-4 text-gray-400 transform bg-white border border-gray-300 rounded-md left-1/2 hover:text-indigo-700 focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-indigo-500"
+                >
+                  <SwitchVerticalIcon className="w-5 h-5" aria-hidden="true" />
+                </button>
 
-              <div className="mt-1 border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
-                <div className="flex items-center p-4 pb-2">
+                <div className="mt-1 border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
+                  <div className="flex items-center p-4 pb-2">
 
-                  <TokenSwapList
-                    selected={tokenY}
-                    setSelected={setTokenY}
-                  />
+                    <TokenSwapList
+                      selected={tokenY}
+                      setSelected={setTokenY}
+                    />
 
-                  <label htmlFor="tokenYAmount" className="sr-only">{tokenY.name}</label>
-                  <input 
-                    inputMode="decimal"
-                    autoComplete="off"
-                    autoCorrect="off"
-                    type="text"
-                    name="tokenYAmount"
-                    id="tokenYAmount"
-                    pattern="^[0-9]*[.,]?[0-9]*$" 
-                    placeholder="0.0"
-                    value={tokenYAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
-                    onChange={onInputChange}
-                    disabled={true}
-                    className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right text-gray-600 truncate border-0 focus:outline-none focus:ring-0 bg-gray-50" />
-                </div>
+                    <label htmlFor="tokenYAmount" className="sr-only">{tokenY.name}</label>
+                    <input 
+                      inputMode="decimal"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      type="text"
+                      name="tokenYAmount"
+                      id="tokenYAmount"
+                      pattern="^[0-9]*[.,]?[0-9]*$" 
+                      placeholder="0.0"
+                      value={tokenYAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                      onChange={onInputChange}
+                      disabled={true}
+                      className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right text-gray-600 truncate border-0 focus:outline-none focus:ring-0 bg-gray-50" />
+                  </div>
 
-                <div className="flex items-center justify-end p-4 pt-0 text-sm">
-                  <div className="flex items-center justify-between w-full">
-                    <div className="flex items-center justify-start">
-                      <p className="text-gray-500">Balance: {balanceSelectedTokenY.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenY.name}</p>
+                  <div className="flex items-center justify-end p-4 pt-0 text-sm">
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center justify-start">
+                        <p className="text-gray-500">Balance: {balanceSelectedTokenY.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenY.name}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {loadingData ? (
-                <Placeholder className="justify-end pt-3" width={Placeholder.width.THIRD} />
-              ) : (
-                <p className="mt-2 text-sm font-semibold text-right text-gray-400">1 {tokenY.name} = ≈{currentPrice} {tokenX.name}</p>
-              )}
+                {loadingData ? (
+                  <Placeholder className="justify-end pt-3" width={Placeholder.width.THIRD} />
+                ) : (
+                  <p className="mt-2 text-sm font-semibold text-right text-gray-400">1 {tokenY.name} = ≈{currentPrice} {tokenX.name}</p>
+                )}
 
-              {state.userData ? (
-                <button
-                  type="button"
-                  disabled={tokenYAmount === 0 || !foundPair}
-                  onClick={() => swapTokens()}
-                  className={classNames((tokenYAmount === 0 || !foundPair) ? 
-                    'bg-indigo-300 hover:bg-indigo-300 pointer-events-none' :
-                    'bg-indigo-600 hover:bg-indigo-700 cursor-pointer', 
-                    'w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500')}
-                >
-                  { !foundPair ? "No liquidity for this pair. Try another one."
-                  : balanceSelectedTokenX === 0 ? "Insufficient balance"
-                  : tokenYAmount === 0 ? "Please enter an amount"
-                  : "Swap"}
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => doOpenAuth()}
-                  className="inline-flex items-center justify-center w-full px-4 py-3 mt-4 text-xl font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  Connect Wallet
-                </button>
-              )}
-            </form>
-            { foundPair ? (
-              <div className="w-full mt-3 text-center">
-                <RouterLink className="text-sm font-medium text-indigo-700 rounded-sm hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" to={`swap/add/${tokenX.name}/${tokenY.name}`}>
-                  Add/remove liquidity on {tokenX.name}-{tokenY.name}
-                </RouterLink>
-              </div>
-            ) : null }
+                {state.userData ? (
+                  <button
+                    type="button"
+                    disabled={tokenYAmount === 0 || !foundPair}
+                    onClick={() => swapTokens()}
+                    className={classNames((tokenYAmount === 0 || !foundPair) ? 
+                      'bg-indigo-300 hover:bg-indigo-300 pointer-events-none' :
+                      'bg-indigo-600 hover:bg-indigo-700 cursor-pointer', 
+                      'w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500')}
+                  >
+                    { !foundPair ? "No liquidity for this pair. Try another one."
+                    : balanceSelectedTokenX === 0 ? "Insufficient balance"
+                    : tokenYAmount === 0 ? "Please enter an amount"
+                    : "Swap"}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => doOpenAuth()}
+                    className="inline-flex items-center justify-center w-full px-4 py-3 mt-4 text-xl font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    Connect Wallet
+                  </button>
+                )}
+              </form>
+              { foundPair ? (
+                <div className="w-full mt-3 text-center">
+                  <RouterLink className="text-sm font-medium text-indigo-700 rounded-sm hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" to={`swap/add/${tokenX.name}/${tokenY.name}`}>
+                    Add/remove liquidity on {tokenX.name}-{tokenY.name}
+                  </RouterLink>
+                </div>
+              ) : null }
+            </div>
           </div>
-        </div>
-        <div className="w-full max-w-md p-4 pt-8 -mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
-          <dl className="space-y-1">
-            <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-              <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
-                Minimum Received
-                <div className="ml-2">
-                  <Tooltip className="z-10" shouldWrapChildren={true} label={`Your transaction will revert if there is a large, unfavorable price movement before it is confirmed`}>
-                    <InformationCircleIcon className="block w-4 h-4 text-indigo-400" aria-hidden="true" />
-                  </Tooltip>
-                </div>
-              </dt>
-              <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
-                <div className="mr-1 truncate">{minimumReceived.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</div>
-                {tokenY.name}
-              </dd>
-            </div>
-            <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-              <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
-                Price Impact
-                <div className="ml-2">
-                  <Tooltip className="z-10" shouldWrapChildren={true} label={`The difference between the market price and estimated price due to trade size`}>
-                    <InformationCircleIcon className="block w-4 h-4 text-indigo-400" aria-hidden="true" />
-                  </Tooltip>
-                </div>
-              </dt>
-              <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
-                ≈<div className="mr-1 truncate">{priceImpact}</div>
-                %
-              </dd>
-            </div>
-            <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-              <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
-                Liquidity Provider fee
-                <div className="ml-2">
-                  <Tooltip className="z-10" shouldWrapChildren={true} label={`A portion of each trade goes to liquidity providers as a protocol incentive`}>
-                    <InformationCircleIcon className="block w-4 h-4 text-indigo-400" aria-hidden="true" />
-                  </Tooltip>
-                </div>
-              </dt>
-              <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
-                <div className="mr-1 truncate">{lpFee}</div>
-                {tokenX.name}
-              </dd>
-            </div>
-          </dl>
-        </div>
-      </main>
-    </Container>
+          <div className="w-full max-w-md p-4 pt-8 -mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
+            <dl className="space-y-1">
+              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  Minimum Received
+                  <div className="ml-2">
+                    <Tooltip className="z-10" shouldWrapChildren={true} label={`Your transaction will revert if there is a large, unfavorable price movement before it is confirmed`}>
+                      <InformationCircleIcon className="block w-4 h-4 text-indigo-400" aria-hidden="true" />
+                    </Tooltip>
+                  </div>
+                </dt>
+                <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
+                  <div className="mr-1 truncate">{minimumReceived.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</div>
+                  {tokenY.name}
+                </dd>
+              </div>
+              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  Price Impact
+                  <div className="ml-2">
+                    <Tooltip className="z-10" shouldWrapChildren={true} label={`The difference between the market price and estimated price due to trade size`}>
+                      <InformationCircleIcon className="block w-4 h-4 text-indigo-400" aria-hidden="true" />
+                    </Tooltip>
+                  </div>
+                </dt>
+                <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
+                  ≈<div className="mr-1 truncate">{priceImpact}</div>
+                  %
+                </dd>
+              </div>
+              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  Liquidity Provider fee
+                  <div className="ml-2">
+                    <Tooltip className="z-10" shouldWrapChildren={true} label={`A portion of each trade goes to liquidity providers as a protocol incentive`}>
+                      <InformationCircleIcon className="block w-4 h-4 text-indigo-400" aria-hidden="true" />
+                    </Tooltip>
+                  </div>
+                </dt>
+                <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
+                  <div className="mr-1 truncate">{lpFee}</div>
+                  {tokenX.name}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </main>
+      </Container>
+    </>
   );
 };
