@@ -139,7 +139,7 @@ export const ManageVault = ({ match }) => {
     };
 
     const fetchStackerHeight = async () => {
-      if (vault?.stackedTokens === 0 && vault?.revokedStacking) {
+      if (vault?.stackedTokens == 0 && vault?.revokedStacking) {
         setEnabledStacking(false);
       }
 
