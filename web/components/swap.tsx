@@ -23,7 +23,6 @@ import { SwapSettings } from '@components/swap-settings';
 import { getBalance } from '@components/app';
 import { classNames } from '@common/class-names';
 import { Placeholder } from './placeholder';
-import { Redirect } from 'react-router-dom';
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
@@ -36,7 +35,7 @@ export const Swap: React.FC = () => {
   const [currentPrice, setCurrentPrice] = useState(0.0);
   const [currentPair, setCurrentPair] = useState();
   const [inverseDirection, setInverseDirection] = useState(false);
-  const [slippageTolerance, setSlippageTolerance] = useState(0.4);
+  const [slippageTolerance, setSlippageTolerance] = useState(2.0);
   const [minimumReceived, setMinimumReceived] = useState(0);
   const [priceImpact, setPriceImpact] = useState('0');
   const [lpFee, setLpFee] = useState('0');
