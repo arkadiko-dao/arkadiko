@@ -6,7 +6,7 @@ import { StacksMainnet, StacksTestnet } from '@stacks/network';
 dayjs.extend(relativeTime);
 const env = process.env.REACT_APP_NETWORK_ENV || 'testnet';
 
-let coreApiUrl = 'https://stacks-node-api.mainnet.stacks.co';
+let coreApiUrl = 'https://stacks-api.onstacks.com';
 if (env.includes('mocknet')) {
   coreApiUrl = `http://localhost:${process.env.LOCAL_STACKS_API_PORT}`;
   // coreApiUrl = 'https://dull-liger-41.loca.lt';
