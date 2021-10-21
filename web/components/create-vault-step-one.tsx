@@ -5,6 +5,7 @@ import { getLiquidationPrice, getCollateralToDebtRatio } from '@common/vault-uti
 import { InputAmount } from './input-amount';
 import { useLocation } from 'react-router-dom';
 import { QuestionMarkCircleIcon, InformationCircleIcon, ExternalLinkIcon } from '@heroicons/react/solid';
+import { Placeholder } from './placeholder';
 import { Tooltip } from '@blockstack/ui';
 
 interface VaultProps {
@@ -45,9 +46,10 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   const [liquidationRatio, setLiquidationRatio] = useState(0);
   const [price, setPrice] = useState(0);
   const [errors, setErrors] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const maximumCoinsToMint = (value: string) => {
-    const minColl = tokenType == 'STX-A' ? 400 : 300;
+    const minColl = tokenType == 'STX-A' ? 400 : 310;
     const maxRatio = Math.max(minColl, parseInt(liquidationRatio, 10) + 30);
     const uCollateralAmount = parseInt(value * 1000000, 10);
     setMaximumToMint(Math.floor((uCollateralAmount * price * 100) / maxRatio));
@@ -57,6 +59,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
     const fetchPrice = async () => {
       const price = await getPrice(tokenName);
       setPrice(price / 1000000);
+      setIsLoading(false);
     };
 
     fetchPrice();
@@ -203,50 +206,59 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
               <div className="space-y-8 divide-y divide-gray-200">
                 <div>
                   <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-8">
-                    <div className="space-y-6 sm:col-span-3">
-                      <div>
-                        <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">
-                          How much {tokenName} do you want to collateralize?
-                        </h3>
-                        <p className="mt-2 text-sm text-gray-500">
-                          The amount of {tokenName} you deposit determines how much USDA you can generate.
-                        </p>
+                    {isLoading ? (
+                      <>
+                      <Placeholder className="py-2" width={Placeholder.width.FULL}/>
+                      <Placeholder className="py-2" width={Placeholder.width.FULL}/>
+                      <Placeholder className="py-2" width={Placeholder.width.FULL}/>
+                      <Placeholder className="py-2" width={Placeholder.width.FULL}/>
+                      </>
+                    ) : (
+                      <div className="space-y-6 sm:col-span-3">
+                        <div>
+                          <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">
+                            How much {tokenName} do you want to collateralize?
+                          </h3>
+                          <p className="mt-2 text-sm text-gray-500">
+                            The amount of {tokenName} you deposit determines how much USDA you can generate.
+                          </p>
 
-                        <div className="mt-4">
-                          <InputAmount
-                            balance={state.balance[tokenKey] / decimals}
-                            token={tokenName}
-                            inputName="collateral"
-                            inputId="collateralAmount"
-                            inputValue={collateralAmount}
-                            inputLabel={`Collateralize ${tokenName}`}
-                            onInputChange={setCollateral}
-                            onClickMax={setMaxBalance}
-                          />
+                          <div className="mt-4">
+                            <InputAmount
+                              balance={state.balance[tokenKey] / decimals}
+                              token={tokenName}
+                              inputName="collateral"
+                              inputId="collateralAmount"
+                              inputValue={collateralAmount}
+                              inputLabel={`Collateralize ${tokenName}`}
+                              onInputChange={setCollateral}
+                              onClickMax={setMaxBalance}
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">
+                            How much USDA would you like to mint?
+                          </h3>
+                          <p className="mt-2 text-sm text-gray-500">
+                            Mint an amount that is safely above the liquidation ratio.
+                          </p>
+
+                          <div className="mt-4">
+                            <InputAmount
+                              balance={maximumToMint / 1000000}
+                              token="USDA"
+                              inputName="coins"
+                              inputId="coinsAmount"
+                              inputValue={coinAmount}
+                              inputLabel="Mint USDA"
+                              onInputChange={setCoins}
+                              onClickMax={setMaxCoins}
+                            />
+                          </div>
                         </div>
                       </div>
-                      <div>
-                        <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">
-                          How much USDA would you like to mint?
-                        </h3>
-                        <p className="mt-2 text-sm text-gray-500">
-                          Mint an amount that is safely above the liquidation ratio.
-                        </p>
-                        
-                        <div className="mt-4">
-                          <InputAmount
-                            balance={maximumToMint / 1000000}
-                            token="USDA"
-                            inputName="coins"
-                            inputId="coinsAmount"
-                            inputValue={coinAmount}
-                            inputLabel="Mint USDA"
-                            onInputChange={setCoins}
-                            onClickMax={setMaxCoins}
-                          />
-                        </div>
-                      </div>
-                    </div>
+                    )}
                     <div className="sm:col-start-6 sm:col-span-5">
                       <div className="w-full border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
                         <dl className="sm:divide-y sm:divide-indigo-200">
