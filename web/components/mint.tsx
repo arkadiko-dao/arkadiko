@@ -38,6 +38,7 @@ export const Mint = () => {
   const [dikoPrice, setDikoPrice] = useState(0.0);
   const [xbtcPrice, setXbtcPrice] = useState(0.0);
   const [loadingVaults, setLoadingVaults] = useState(true);
+  const [loadingPrices, setLoadingPrices] = useState(true);
   const [loadingStackingData, setLoadingStackingData] = useState(false);
   const [pendingVaultRewards, setPendingVaultRewards] = useState(0);
 
@@ -52,8 +53,10 @@ export const Mint = () => {
       let dikoPrice = await getDikoAmmPrice();
       setDikoPrice(dikoPrice);
       setLoadingStackingData(false);
+      setLoadingPrices(false);
     };
 
+    setLoadingPrices(true);
     setLoadingStackingData(true);
     fetchPrices();
   }, []);
@@ -320,7 +323,9 @@ export const Mint = () => {
             <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
               {Object.keys(collateralTypes).length > 0 ? (
                 <CollateralType types={collateralTypes} />
-              ): null }
+              ): (
+                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+              )}
             </div>
           </div>
         </section>
@@ -381,7 +386,11 @@ export const Mint = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
-                          ${stxPrice / 1000000}
+                          {loadingPrices ? (
+                            <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                          ) : (
+                            <span>${stxPrice / 1000000}</span>
+                          )}
                         </td>
                       </tr>
 
@@ -397,7 +406,11 @@ export const Mint = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
-                          ${dikoPrice}
+                          {loadingPrices ? (
+                            <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                          ) : (
+                            <span>${dikoPrice}</span>
+                          )}
                         </td>
                       </tr>
 
@@ -413,7 +426,11 @@ export const Mint = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
-                          ${xbtcPrice / 1000000}
+                          {loadingPrices ? (
+                            <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                          ) : (
+                            <span>${xbtcPrice / 1000000}</span>
+                          )}
                         </td>
                       </tr>
 
