@@ -371,15 +371,21 @@ export const Swap: React.FC = () => {
     });
   };
 
-
-  const tabs = [
-    { name: 'Swap', href: '/swap', current: true },
-    { name: 'Pool', href: '/pool', current: false },
-  ]
+  let tabs = [];
+  if (state.userData) {
+    tabs = [
+      { name: 'Swap', href: '/swap', current: true },
+      { name: 'Pool', href: '/pool', current: false },
+    ];
+  } else {
+    tabs = [
+      { name: 'Swap', href: '/swap', current: true }
+    ];
+  }
 
   return (
     <>
-      {true ? (
+      {state.userData ? (
         <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
           <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow">
             <div className="flex flex-col p-4">
