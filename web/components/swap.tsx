@@ -218,7 +218,7 @@ export const Swap: React.FC = () => {
     let tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
     let principalX = contractPrincipalCV(contractAddress, tokenXTrait);
     let principalY = contractPrincipalCV(contractAddress, tokenYTrait);
-    let postConditionMode = 0x02;
+    let postConditionMode = 0x01;
     if (inverseDirection) {
       contractName = 'swap-y-for-x';
       let tmpPrincipal = principalX;
@@ -354,7 +354,6 @@ export const Swap: React.FC = () => {
         amount,
         uintCV((parseFloat(minimumReceived) * 1000000).toFixed(0))
       ],
-      postConditions,
       postConditionMode,
       onFinish: data => {
         console.log('finished swap!', data);
