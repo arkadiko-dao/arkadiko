@@ -430,7 +430,7 @@ export const Swap: React.FC = () => {
                     </h1>
                     <p className="mt-3 text-base text-gray-300">
                       Arkadiko Swap will open up at block 34640 to give people time to post their liquidity.
-                      Add your liquidity by clicking on Pool above.
+                      Add your liquidity by clicking on Pool above or create a vault in the meantime!
                     </p>
                   </div>
                 </div>
