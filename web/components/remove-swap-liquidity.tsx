@@ -80,7 +80,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         setInverseDirection(false);
         setBalance(balance);
         setBalanceX(balanceX * poolPercentage);
-        setBalanceY((balanceX * poolPercentage) / (balanceY / balanceX));
+        setBalanceY(balanceY * poolPercentage);
         setTokenXToReceive(balanceX * poolPercentage * percentageToRemove / 100);
         setTokenYToReceive(balanceY * poolPercentage * percentageToRemove / 100);
       } else if (Number(json3['value']['value']['value']) === 201) {
@@ -99,7 +99,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
           setInverseDirection(true);
           setBalance(balance);
           setBalanceX(balanceX * poolPercentage);
-          setBalanceY((balanceX * poolPercentage) / (balanceY / balanceX));
+          setBalanceY(balanceY * poolPercentage);
           setTokenXToReceive(balanceX * poolPercentage * percentageToRemove / 100);
           setTokenYToReceive(balanceY * poolPercentage * percentageToRemove / 100);
         }
