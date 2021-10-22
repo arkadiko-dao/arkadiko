@@ -207,7 +207,6 @@ export const ManageVault = ({ match }) => {
     if (Number(totalToBurn) >= Number(state.balance['usda'] / 1000000)) {
       totalToBurn = Number(state.balance['usda'] / 1000000);
     }
-    totalToBurn -= 0.0001;
     const postConditions = [
       makeStandardFungiblePostCondition(
         senderAddress || '',
@@ -229,7 +228,7 @@ export const ManageVault = ({ match }) => {
       functionName: 'burn',
       functionArgs: [
         uintCV(match.params.id),
-        uintCV(parseFloat(totalToBurn) * 1000000),
+        uintCV(parseFloat(usdToBurn - 0.001) * 1000000),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
