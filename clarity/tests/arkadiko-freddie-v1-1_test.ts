@@ -20,7 +20,6 @@ import {
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
-
 Clarinet.test({
   name: "freddie: basic flow",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -566,6 +565,28 @@ Clarinet.test({
 
     result = vaultManager.withdraw(deployer, 1, 200)
     result.expectErr().expectUint(414);
+  }
+});
+
+Clarinet.test({
+  name: "freddie: withdraw all",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+
+    let result = oracleManager.updatePrice("STX", 2);
+    result.expectOk().expectUintWithDecimals(2);
+
+    result = vaultManager.createVault(deployer, "STX-A", 1000, 300, false, false);
+    result.expectOk().expectUintWithDecimals(300);
+
+    result = vaultManager.burn(deployer, 1, 299.99999);
+    result.expectOk().expectBool(true);
+
+    result = vaultManager.withdraw(deployer, 1, 999.9999);
+    result.expectOk().expectBool(true);
   }
 });
 
