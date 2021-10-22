@@ -48,7 +48,7 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
         uintCV(Number(stakeAmount) * 1000000)
       ],
-      postConditions,
+      postConditionMode: 0x01,
       onFinish: data => {
         console.log('finished broadcasting unstaking tx!', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
