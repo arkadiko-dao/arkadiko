@@ -228,7 +228,7 @@ export const ManageVault = ({ match }) => {
       functionName: 'burn',
       functionArgs: [
         uintCV(match.params.id),
-        uintCV(parseFloat(usdToBurn - 0.001) * 1000000),
+        uintCV(parseFloat(usdToBurn) * 1000000),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
@@ -434,6 +434,27 @@ export const ManageVault = ({ match }) => {
     });
   };
 
+  const closeVault = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress: senderAddress,
+      contractName: "arkadiko-freddie-v1-1",
+      functionName: 'close-vault',
+      functionArgs: [
+        uintCV(match.params.id),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
+      ],
+      onFinish: data => {
+        console.log('finished closing vault!', data, data.txId);
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+      },
+      anchorMode: AnchorMode.Any
+    });
+  };
+
   const callWithdraw = async () => {
     if (parseFloat(collateralToWithdraw) > maximumCollateralToWithdraw) {
       return;
@@ -485,9 +506,6 @@ export const ManageVault = ({ match }) => {
     if (debtToPay > state.balance['usda']) {
       const balance = Number(state.balance['usda']) / 1000000;
       debtToPay = balance.toFixed(6);
-    } else {
-      // Temp fix: Leave some USDA in vault to withdraw STX
-      debtToPay -= 0.001
     }
     setUsdToBurn(debtToPay);
   };
@@ -962,7 +980,14 @@ export const ManageVault = ({ match }) => {
                             </Tooltip>
                           </p>
                         </div>
-                        {isVaultOwner ? (
+                        {isVaultOwner && canWithdrawCollateral && Number(totalDebt) <= 0.1 ? (
+                          <button
+                            type="button"
+                            className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            onClick={() => closeVault()}>
+                            Withdraw Collateral & Close Vault
+                          </button>
+                        ) : isVaultOwner ? (
                           <button 
                             type="button" 
                             className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
