@@ -207,6 +207,7 @@ export const ManageVault = ({ match }) => {
     if (Number(totalToBurn) >= Number(state.balance['usda'] / 1000000)) {
       totalToBurn = Number(state.balance['usda'] / 1000000);
     }
+    totalToBurn -= 0.0001;
     const postConditions = [
       makeStandardFungiblePostCondition(
         senderAddress || '',
