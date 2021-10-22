@@ -806,14 +806,25 @@ export const ManageVault = ({ match }) => {
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                           <div>
                             <p className="text-lg font-semibold leading-none">{microToReadable(vault?.stackedTokens)} <span className="text-sm font-normal">{vault?.collateralToken.toUpperCase()}</span></p>
-                            <p className="text-base font-normal leading-6 text-gray-500">Currently stacking</p>
+                            {unlockBurnHeight == 0 ? (
+                              <p className="text-base font-normal leading-6 text-gray-500">Will be stacked</p>
+                            ) : (
+                              <p className="text-base font-normal leading-6 text-gray-500">Currently stacking</p>
+                            )}
                           </div>
                           {stackingEndDate != "" ? (
                             <div>
                               <p className="text-lg font-semibold leading-none">{stackingEndDate}</p>
                               <p className="text-base font-normal leading-6 text-gray-500">End of stacking</p>
                             </div>
+                          ) : unlockBurnHeight == 0 ? (
+                            <div>
+                              <p className="text-lg font-semibold leading-none">{state.daysLeft} <span className="text-sm font-normal">days</span></p>
+                              <p className="text-base font-normal leading-6 text-gray-500">Before stacking starts</p>
+                            </div>
                           ) : null} 
+
+
                         </div>
                       </div>
                     </div>
