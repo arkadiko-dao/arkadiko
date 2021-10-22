@@ -442,6 +442,7 @@ export const ManageVault = ({ match }) => {
       stxAddress: senderAddress,
       contractName: "arkadiko-freddie-v1-1",
       functionName: 'close-vault',
+      postConditionMode: 0x01,
       functionArgs: [
         uintCV(match.params.id),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
