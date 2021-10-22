@@ -203,7 +203,10 @@ export const ManageVault = ({ match }) => {
 
   const callBurn = async () => {
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
-    const totalToBurn = Number(usdToBurn) + (2 * (stabilityFee / 1000000));
+    let totalToBurn = Number(usdToBurn) + (2 * (stabilityFee / 1000000));
+    if (Number(usdToBurn) >= Number(state.balance['usda'] / 1000000)) {
+      totalToBurn = Number(state.balance['usda'] / 1000000);
+    }
     const postConditions = [
       makeStandardFungiblePostCondition(
         senderAddress || '',
@@ -225,7 +228,7 @@ export const ManageVault = ({ match }) => {
       functionName: 'burn',
       functionArgs: [
         uintCV(match.params.id),
-        uintCV(parseFloat(usdToBurn) * 1000000),
+        uintCV(parseFloat(totalToBurn) * 1000000),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
@@ -478,7 +481,15 @@ export const ManageVault = ({ match }) => {
   };
   
   const burnMaxAmount = () => {
-    setUsdToBurn(outstandingDebt());
+    let debtToPay = (Number(outstandingDebt()) * 1000000) + Number(stabilityFee);
+    if (debtToPay > state.balance['usda']) {
+      const balance = Number(state.balance['usda']) / 1000000;
+      debtToPay = balance.toFixed(6);
+    } else {
+      // Temp fix: Leave some USDA in vault to withdraw STX
+      debtToPay -= 0.0001
+    }
+    setUsdToBurn(debtToPay);
   };
 
   const withdrawMaxAmount = () => {
@@ -705,7 +716,7 @@ export const ManageVault = ({ match }) => {
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Choose how much USDA you want to burn. If you burn all USDA, your vault will be closed.
+                    Choose how much USDA you want to burn. Burning will include a stability fee of {stabilityFee / 1000000} USDA, so take this into account.
                   </p>
 
                   <div className="mt-6">
