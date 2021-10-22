@@ -487,7 +487,7 @@ export const ManageVault = ({ match }) => {
       debtToPay = balance.toFixed(6);
     } else {
       // Temp fix: Leave some USDA in vault to withdraw STX
-      debtToPay -= 0.0001
+      debtToPay -= 0.001
     }
     setUsdToBurn(debtToPay);
   };
