@@ -381,10 +381,10 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                     <h4 className="text-xs font-normal text-gray-700 uppercase font-headings">Price</h4>
                     <div className="mt-3 sm:mt-0 space-y-0.5 lg:text-right text-sm text-gray-500">
                       <p>
-                        1 {tokenX.name} = {tokenXPrice} {tokenY.name}
+                        1 {tokenX.name} = {tokenYPrice} {tokenY.name}
                       </p>
                       <p  >
-                        1 {tokenY.name} = {tokenYPrice} {tokenX.name}
+                        1 {tokenY.name} = {tokenXPrice} {tokenX.name}
                       </p>                    
                     </div>
                   </div>
