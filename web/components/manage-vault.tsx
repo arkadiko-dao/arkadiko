@@ -204,7 +204,7 @@ export const ManageVault = ({ match }) => {
   const callBurn = async () => {
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
     let totalToBurn = Number(usdToBurn) + (2 * (stabilityFee / 1000000));
-    if (Number(usdToBurn) >= Number(state.balance['usda'] / 1000000)) {
+    if (Number(totalToBurn) >= Number(state.balance['usda'] / 1000000)) {
       totalToBurn = Number(state.balance['usda'] / 1000000);
     }
     const postConditions = [
