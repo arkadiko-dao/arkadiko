@@ -435,6 +435,7 @@ export const ManageVault = ({ match }) => {
   };
 
   const closeVault = async () => {
+    const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
     await doContractCall({
       network,
       contractAddress,
