@@ -60,6 +60,11 @@ export const Stake = () => {
   const [hasUnstakedTokens, setHasUnstakedTokens] = useState(false);
   const [emissionsStarted, setEmissionsStarted] = useState(false);
 
+  const [stxDikoPoolInfo, setStxDikoPoolInfo] = useState(0);
+  const [stxUsdaPoolInfo, setStxUsdaPoolInfo] = useState(0);
+  const [dikoUsdaPoolInfo, setDikoUsdaPoolInfo] = useState(0);
+
+
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
 
@@ -77,6 +82,102 @@ export const Stake = () => {
         setHasUnstakedTokens(true);
       }
     }
+
+    const fetchLpStakeAmount = async (poolContract:string) => {
+      const stakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: poolContract,
+        functionName: "get-stake-amount-of",
+        functionArgs: [
+          standardPrincipalCV(stxAddress || '')
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      return cvToJSON(stakedCall).value;
+    };
+
+    const fetchLpPendingRewards = async (poolContract:string) => {
+      const dikoUsdaPendingRewardsCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: poolContract,
+        functionName: "get-pending-rewards",
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          standardPrincipalCV(stxAddress || '')
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      return cvToJSON(dikoUsdaPendingRewardsCall).value.value;
+    };
+
+    const fetchTotalStaked = async (poolContract:string) => {
+      const totalStxDikoStakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: poolContract,
+        functionName: "get-total-staked",
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      return cvToJSON(totalStxDikoStakedCall).value / 1000000;
+    };
+
+    const stakedValue = async (poolContract:string, lpTokenAmount: number) => {
+
+      var tokenXContract = "arkadiko-token";
+      var tokenYContract = "usda-token";
+      var tokenXName = "DIKO";
+      var tokenYName = "USDA";
+      if (poolContract == "arkadiko-stake-pool-wstx-diko-v1-1") {
+        tokenXContract = "wrapped-stx-token";
+        tokenYContract = "arkadiko-token";
+        tokenXName = "STX";
+        tokenYName = "DIKO";
+      } else if (poolContract == "arkadiko-stake-pool-wstx-usda-v1-1") {
+        tokenXContract = "wrapped-stx-token";
+        tokenYContract = "usda-token";
+        tokenXName = "STX";
+        tokenYName = "USDA";
+      }
+
+      if (lpTokenAmount == 0) {
+        return {tokenX: tokenXName, tokenY: tokenYName, tokenXAmount: 0, tokenYAmount: 0};
+      }
+
+      console.log("tokenXContract ", tokenXContract);
+      console.log("tokenYContract ", tokenYContract);
+
+      // Get pair details
+      let pairDetailsCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-swap-v1-1",
+        functionName: "get-pair-details",
+        functionArgs: [
+          contractPrincipalCV(contractAddress, tokenXContract),
+          contractPrincipalCV(contractAddress, tokenYContract)
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+
+      const pairDetails = cvToJSON(pairDetailsCall).value.value.value;
+
+      if (!cvToJSON(pairDetailsCall)['success']) {
+        return {tokenX: tokenXName, tokenY: tokenYName, tokenXAmount: 0, tokenYAmount: 0};
+      }
+
+      const balanceX = pairDetails['balance-x'].value;
+      const balanceY = pairDetails['balance-y'].value;
+      const totalTokens = pairDetails['shares-total'].value;      
+
+      const userShare = lpTokenAmount / totalTokens;
+      const userBalanceX = balanceX * userShare;
+      const userBalanceY = balanceY * userShare;
+
+      return {tokenX: tokenXName, tokenY: tokenYName, tokenXAmount: userBalanceX, tokenYAmount: userBalanceY};
+    };
 
     const getData = async () => {
       // Get current block height
@@ -108,46 +209,21 @@ export const Stake = () => {
         network: network,
       });
       let dikoStaked = cvToJSON(userStakedCall).value.value;
+
       setStakedAmount(dikoStaked);
-
-      const userLpDikoUsdaStakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-diko-usda-v1-1",
-        functionName: "get-stake-amount-of",
-        functionArgs: [
-          standardPrincipalCV(stxAddress || '')
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let dikoUsdaLpStaked = cvToJSON(userLpDikoUsdaStakedCall).value;
+      let dikoUsdaLpStaked = await fetchLpStakeAmount("arkadiko-stake-pool-diko-usda-v1-1");
       setLpDikoUsdaStakedAmount(dikoUsdaLpStaked);
-
-      const userLpStxUsdaStakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-wstx-usda-v1-1",
-        functionName: "get-stake-amount-of",
-        functionArgs: [
-          standardPrincipalCV(stxAddress || '')
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let stxUsdaLpStaked = cvToJSON(userLpStxUsdaStakedCall).value;
+      let stxUsdaLpStaked = await fetchLpStakeAmount("arkadiko-stake-pool-wstx-usda-v1-1");
       setLpStxUsdaStakedAmount(stxUsdaLpStaked);
-
-      const userLpStxDikoStakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-wstx-diko-v1-1",
-        functionName: "get-stake-amount-of",
-        functionArgs: [
-          standardPrincipalCV(stxAddress || '')
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let stxDikoLpStaked = cvToJSON(userLpStxDikoStakedCall).value;
+      let stxDikoLpStaked = await fetchLpStakeAmount("arkadiko-stake-pool-wstx-diko-v1-1");
       setLpStxDikoStakedAmount(stxDikoLpStaked);
+
+      let dikoUsdaStakedValue = await stakedValue("arkadiko-stake-pool-diko-usda-v1-1", dikoUsdaLpStaked);
+      setDikoUsdaPoolInfo(dikoUsdaStakedValue);
+      let stxUsdaStakedValue = await stakedValue("arkadiko-stake-pool-wstx-usda-v1-1", stxUsdaLpStaked);
+      setStxUsdaPoolInfo(stxUsdaStakedValue);
+      let stxDikoStakedValue = await stakedValue("arkadiko-stake-pool-wstx-diko-v1-1", stxDikoLpStaked);
+      setStxDikoPoolInfo(stxDikoStakedValue);
 
       // if (currentBlock < REWARDS_START_BLOCK_HEIGHT) {
       //   setLoadingData(false);
@@ -155,88 +231,17 @@ export const Stake = () => {
       // }
       setEmissionsStarted(true);
 
-      const dikoUsdaPendingRewardsCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-diko-usda-v1-1",
-        functionName: "get-pending-rewards",
-        functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-          standardPrincipalCV(stxAddress || '')
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let dikoUsdaLpPendingRewards = cvToJSON(dikoUsdaPendingRewardsCall).value.value;
+      let dikoUsdaLpPendingRewards = await fetchLpPendingRewards("arkadiko-stake-pool-diko-usda-v1-1");
       setLpDikoUsdaPendingRewards(dikoUsdaLpPendingRewards);
-
-      const stxUsdaPendingRewardsCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-wstx-usda-v1-1",
-        functionName: "get-pending-rewards",
-        functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-          standardPrincipalCV(stxAddress || '')
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let stxUsdaLpPendingRewards = cvToJSON(stxUsdaPendingRewardsCall).value.value;
+      let stxUsdaLpPendingRewards = await fetchLpPendingRewards("arkadiko-stake-pool-wstx-usda-v1-1");
       setLpStxUsdaPendingRewards(stxUsdaLpPendingRewards);
-
-      const stxDikoPendingRewardsCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-wstx-diko-v1-1",
-        functionName: "get-pending-rewards",
-        functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-          standardPrincipalCV(stxAddress || '')
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let stxDikoLpPendingRewards = cvToJSON(stxDikoPendingRewardsCall).value.value;
+      let stxDikoLpPendingRewards = await fetchLpPendingRewards("arkadiko-stake-pool-wstx-diko-v1-1");
       setLpStxDikoPendingRewards(stxDikoLpPendingRewards);
 
-
-      const totalDikoStakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-diko-v1-1",
-        functionName: "get-total-staked",
-        functionArgs: [],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let totalDikoStaked = cvToJSON(totalDikoStakedCall).value / 1000000;
-
-      const totalDikoUsdaStakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-diko-usda-v1-1",
-        functionName: "get-total-staked",
-        functionArgs: [],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let totalDikoUsdaStaked = cvToJSON(totalDikoUsdaStakedCall).value / 1000000;
-
-      const totalStxUsdaStakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-wstx-usda-v1-1",
-        functionName: "get-total-staked",
-        functionArgs: [],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let totalStxUsdaStaked = cvToJSON(totalStxUsdaStakedCall).value / 1000000;
-
-      const totalStxDikoStakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-wstx-diko-v1-1",
-        functionName: "get-total-staked",
-        functionArgs: [],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let totalStxDikoStaked = cvToJSON(totalStxDikoStakedCall).value / 1000000;
+      let totalDikoStaked = await fetchTotalStaked("arkadiko-stake-pool-diko-v1-1")
+      let totalDikoUsdaStaked = await fetchTotalStaked("arkadiko-stake-pool-diko-usda-v1-1")
+      let totalStxUsdaStaked = await fetchTotalStaked("arkadiko-stake-pool-wstx-usda-v1-1")
+      let totalStxDikoStaked = await fetchTotalStaked("arkadiko-stake-pool-wstx-diko-v1-1")
 
       const totalStakingRewardsYear1 = 23500000;
 
@@ -685,6 +690,12 @@ export const Stake = () => {
                               scope="col"
                               className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                             >
+                              LP Token
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                            >
                               Staked Value
                             </th>
                             <th
@@ -724,7 +735,9 @@ export const Stake = () => {
                                   />
                                 </div>
                                 <p className="ml-4">
-                                  {microToReadable(lpDikoUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} 
+                                  {microToReadable(lpDikoUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} staked
+                                  <br/>
+                                  {microToReadable(state.balance["dikousda"]).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} available to stake
                                   {' '}
                                   <span className="block text-gray-500">
                                     <Tooltip shouldWrapChildren={true} label={`ARKV1${tokenList[1].name}${tokenList[0].name}`}>
@@ -733,6 +746,21 @@ export const Stake = () => {
                                   </span>
                                 </p>
                               </div>
+                            </td>
+                            <td className="px-6 py-4 text-sm font-medium whitespace-nowrap">
+                              {loadingData ? (
+                                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                              ) : emissionsStarted ? (
+                                `${dikoUsdaLpApy}%`
+                              ) : (
+                                <>
+                                  <span>{microToReadable(dikoUsdaPoolInfo.tokenXAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {dikoUsdaPoolInfo.tokenX}</span> 
+                                  <br/> 
+                                  <span>{microToReadable(dikoUsdaPoolInfo.tokenYAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {dikoUsdaPoolInfo.tokenY}</span>
+                                  <br/>
+                                  <span>$xxxxx</span>
+                                </>
+                              )}
                             </td>
                             <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
                               {loadingData ? (
@@ -842,7 +870,9 @@ export const Stake = () => {
                                   />
                                 </div>
                                 <p className="ml-4">
-                                  {microToReadable(lpStxUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                                  {microToReadable(lpStxUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} staked
+                                  <br/>
+                                  {microToReadable(state.balance["wstxusda"]).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} available to stake
                                   {' '}
                                   <span className="block text-gray-500">
                                     <Tooltip shouldWrapChildren={true} label={`ARKV1${tokenList[2].name}${tokenList[0].name}`}>
@@ -851,6 +881,21 @@ export const Stake = () => {
                                   </span>
                                 </p>
                               </div>
+                            </td>
+                            <td className="px-6 py-4 text-sm font-medium whitespace-nowrap">
+                              {loadingData ? (
+                                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                              ) : emissionsStarted ? (
+                                `${stxUsdaLpApy}%`
+                              ) : (
+                                <>
+                                  <span>{microToReadable(stxUsdaPoolInfo.tokenXAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {stxUsdaPoolInfo.tokenX}</span>
+                                  <br/> 
+                                  <span>{microToReadable(stxUsdaPoolInfo.tokenYAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {stxUsdaPoolInfo.tokenY}</span>
+                                  <br/>
+                                  <span>$xxxxx</span>
+                                </>
+                              )}
                             </td>
                             <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
                               {loadingData ? (
@@ -960,7 +1005,9 @@ export const Stake = () => {
                                   />
                                 </div>
                                 <p className="ml-4">
-                                  {microToReadable(lpStxDikoStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                                  {microToReadable(lpStxDikoStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} staked
+                                  <br/>
+                                  {microToReadable(state.balance["wstxdiko"]).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} available to stake
                                   {' '}
                                   <span className="block text-gray-500">
                                     <Tooltip shouldWrapChildren={true} label={`ARKV1${tokenList[2].name}${tokenList[1].name}`}>
@@ -969,6 +1016,21 @@ export const Stake = () => {
                                   </span>
                                 </p>
                               </div>
+                            </td>
+                            <td className="px-6 py-4 text-sm font-medium whitespace-nowrap">
+                              {loadingData ? (
+                                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                              ) : emissionsStarted ? (
+                                `${stxDikoLpApy}%`
+                              ) : (
+                                <>
+                                  <span>{microToReadable(stxDikoPoolInfo.tokenXAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {stxDikoPoolInfo.tokenX}</span>
+                                  <br/> 
+                                  <span>{microToReadable(stxDikoPoolInfo.tokenYAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {stxDikoPoolInfo.tokenY}</span>
+                                  <br/>
+                                  <span>$xxxxx</span>
+                                </>
+                              )}
                             </td>
                             <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
                               {loadingData ? (
