@@ -30,6 +30,7 @@ import {
   XIcon } from '@heroicons/react/solid';
 import { Placeholder } from './placeholder';
 import { Tooltip } from '@blockstack/ui';
+import { getPrice } from '@common/get-price';
 
 export const Stake = () => {
   const [state, setState] = useContext(AppContext);
@@ -143,11 +144,8 @@ export const Stake = () => {
       }
 
       if (lpTokenAmount == 0) {
-        return {tokenX: tokenXName, tokenY: tokenYName, tokenXAmount: 0, tokenYAmount: 0};
+        return {tokenX: tokenXName, tokenY: tokenYName, tokenXAmount: 0, tokenYAmount: 0, value: 0};
       }
-
-      console.log("tokenXContract ", tokenXContract);
-      console.log("tokenYContract ", tokenYContract);
 
       // Get pair details
       let pairDetailsCall = await callReadOnlyFunction({
@@ -161,13 +159,13 @@ export const Stake = () => {
         senderAddress: stxAddress || '',
         network: network,
       });
-
       const pairDetails = cvToJSON(pairDetailsCall).value.value.value;
 
       if (!cvToJSON(pairDetailsCall)['success']) {
-        return {tokenX: tokenXName, tokenY: tokenYName, tokenXAmount: 0, tokenYAmount: 0};
+        return {tokenX: tokenXName, tokenY: tokenYName, tokenXAmount: 0, tokenYAmount: 0, value: 0};
       }
 
+      // Calculate user balance
       const balanceX = pairDetails['balance-x'].value;
       const balanceY = pairDetails['balance-y'].value;
       const totalTokens = pairDetails['shares-total'].value;      
@@ -176,7 +174,23 @@ export const Stake = () => {
       const userBalanceX = balanceX * userShare;
       const userBalanceY = balanceY * userShare;
 
-      return {tokenX: tokenXName, tokenY: tokenYName, tokenXAmount: userBalanceX, tokenYAmount: userBalanceY};
+      // Estimate value
+      var estimatedValue = 0;
+      if (tokenXName == "STX") {
+        let stxPrice = await getPrice('STX');
+        estimatedValue = (userBalanceX / 1000000) * stxPrice;
+      } else if (tokenYName == "STX") {
+        let stxPrice = await getPrice('STX');
+        estimatedValue = (userBalanceY / 1000000) * stxPrice;
+      } else if (tokenXName == "USDA") {
+        let udsdaPrice = await getPrice('USDA');
+        estimatedValue = (userBalanceX / 1000000) * udsdaPrice;
+      } else if (tokenYName == "USDA") {
+        let udsdaPrice = await getPrice('USDA');
+        estimatedValue = (userBalanceY / 1000000) * udsdaPrice;
+      }
+
+      return {tokenX: tokenXName, tokenY: tokenYName, tokenXAmount: userBalanceX, tokenYAmount: userBalanceY, value: estimatedValue};
     };
 
     const getData = async () => {
@@ -758,7 +772,7 @@ export const Stake = () => {
                                   <br/> 
                                   <span>{microToReadable(dikoUsdaPoolInfo.tokenYAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {dikoUsdaPoolInfo.tokenY}</span>
                                   <br/>
-                                  <span>$xxxxx</span>
+                                  <span>≈${microToReadable(dikoUsdaPoolInfo.value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</span>
                                 </>
                               )}
                             </td>
@@ -893,7 +907,7 @@ export const Stake = () => {
                                   <br/> 
                                   <span>{microToReadable(stxUsdaPoolInfo.tokenYAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {stxUsdaPoolInfo.tokenY}</span>
                                   <br/>
-                                  <span>$xxxxx</span>
+                                  <span>≈${microToReadable(stxUsdaPoolInfo.value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</span>
                                 </>
                               )}
                             </td>
@@ -1028,7 +1042,7 @@ export const Stake = () => {
                                   <br/> 
                                   <span>{microToReadable(stxDikoPoolInfo.tokenYAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {stxDikoPoolInfo.tokenY}</span>
                                   <br/>
-                                  <span>$xxxxx</span>
+                                  <span>≈${microToReadable(stxDikoPoolInfo.value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</span>
                                 </>
                               )}
                             </td>
