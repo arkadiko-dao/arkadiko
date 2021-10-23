@@ -22,6 +22,7 @@ import { tokenList } from '@components/token-swap-list';
 import { InputAmount } from './input-amount';
 import { getRPCClient } from '@common/utils';
 import { microToReadable } from '@common/vault-utils';
+import { addMinutes } from 'date-fns'
 
 export const ManageVault = ({ match }) => {
   const { doContractCall } = useConnect();
@@ -54,6 +55,7 @@ export const ManageVault = ({ match }) => {
   const [canUnlockCollateral, setCanUnlockCollateral] = useState(false);
   const [canStackCollateral, setCanStackCollateral] = useState(false);
   const [decimals, setDecimals] = useState(1000000);
+  const [stackingEndDate, setStackingEndDate] = useState('');
 
   useEffect(() => {
     const fetchVault = async () => {
@@ -137,7 +139,7 @@ export const ManageVault = ({ match }) => {
     };
 
     const fetchStackerHeight = async () => {
-      if (vault?.stackedTokens === 0 && vault?.revokedStacking) {
+      if (vault?.stackedTokens == 0 && vault?.revokedStacking) {
         setEnabledStacking(false);
       }
 
@@ -179,6 +181,17 @@ export const ManageVault = ({ match }) => {
       if (unlockBurnHeight > currentBurnHeight) {
         setCanWithdrawCollateral(true);
       }
+
+      if (unlockBurnHeight < currentBurnHeight) {
+        setStackingEndDate("");
+      } else {
+        const stackingBlocksLeft = unlockBurnHeight - currentBurnHeight;
+        const stackingMinutesLeft = (stackingBlocksLeft * 10) + 20160 + 1440; // + 2 weeks cooldown + 1 day
+        const currentDate = new Date();
+        const endDate = addMinutes(currentDate, stackingMinutesLeft);
+        setStackingEndDate(endDate.toDateString());
+      }
+
     };
 
     if (vault?.id) {
@@ -794,12 +807,25 @@ export const ManageVault = ({ match }) => {
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                           <div>
                             <p className="text-lg font-semibold leading-none">{microToReadable(vault?.stackedTokens)} <span className="text-sm font-normal">{vault?.collateralToken.toUpperCase()}</span></p>
-                            <p className="text-base font-normal leading-6 text-gray-500">Currently stacking</p>
+                            {unlockBurnHeight == 0 ? (
+                              <p className="text-base font-normal leading-6 text-gray-500">Will be stacked</p>
+                            ) : (
+                              <p className="text-base font-normal leading-6 text-gray-500">Currently stacking</p>
+                            )}
                           </div>
-                          <div>
-                            <p className="text-lg font-semibold leading-none">{state.endDate}</p>
-                            <p className="text-base font-normal leading-6 text-gray-500">End of current cycle</p>
-                          </div>
+                          {stackingEndDate != "" ? (
+                            <div>
+                              <p className="text-lg font-semibold leading-none">{stackingEndDate}</p>
+                              <p className="text-base font-normal leading-6 text-gray-500">End of stacking</p>
+                            </div>
+                          ) : unlockBurnHeight == 0 ? (
+                            <div>
+                              <p className="text-lg font-semibold leading-none">{state.daysLeft} <span className="text-sm font-normal">days</span></p>
+                              <p className="text-base font-normal leading-6 text-gray-500">Before stacking starts</p>
+                            </div>
+                          ) : null} 
+
+
                         </div>
                       </div>
                     </div>
