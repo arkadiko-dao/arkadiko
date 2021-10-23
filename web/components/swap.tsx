@@ -104,6 +104,7 @@ export const Swap: React.FC = () => {
     };
 
     const resolvePair = async () => {
+
       if (state?.balance) {
         setTokenBalances();
       }
@@ -213,7 +214,22 @@ export const Swap: React.FC = () => {
     }
   };
 
+  const setupTokenX = async (newTokenX: any) => {
+    if (tokenY.id == newTokenX.id) {
+      setTokenY(tokenX)
+    }
+    setTokenX(newTokenX);
+  }
+
+  const setupTokenY = async (newTokenY: any) => {
+    if (tokenX.id == newTokenY.id) {
+      setTokenX(tokenY)
+    }
+    setTokenY(newTokenY);
+  }
+
   const swapTokens = async () => {
+
     let contractName = 'swap-x-for-y';
     let tokenNameX = tokenX['name'];
     let tokenNameY = tokenY['name'];
@@ -334,7 +350,7 @@ export const Swap: React.FC = () => {
 
                         <TokenSwapList
                           selected={tokenX}
-                          setSelected={setTokenX}
+                          setSelected={setupTokenX}
                         />
 
                         <label htmlFor="tokenXAmount" className="sr-only">{tokenX.name}</label>
@@ -385,7 +401,7 @@ export const Swap: React.FC = () => {
 
                         <TokenSwapList
                           selected={tokenY}
-                          setSelected={setTokenY}
+                          setSelected={setupTokenY}
                         />
 
                         <label htmlFor="tokenYAmount" className="sr-only">{tokenY.name}</label>
