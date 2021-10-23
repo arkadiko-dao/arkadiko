@@ -277,7 +277,10 @@ export const Swap: React.FC = () => {
       <Container>
         <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
           {loadingData ? (
-            <SwapLoadingPlaceholder />
+            <SwapLoadingPlaceholder
+              tokenX={tokenX}
+              tokenY={tokenY}
+            />
           ) : (
             <>
               <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow">
