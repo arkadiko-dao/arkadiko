@@ -139,12 +139,9 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
           </dt>
           <Disclosure.Panel as="dd" className="mt-2">
             <div className="w-full p-4 mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
-
-
               <h4 className="text-xs text-indigo-700 uppercase font-headings">Pool share</h4>
 
               <dl className="mt-2 space-y-1">
-
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                   <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                     Available pool tokens
@@ -165,7 +162,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                   <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                     Staked pool tokens
                     <div className="ml-2">
-                      <Tooltip className="z-10" shouldWrapChildren={true} label={`Indicates the total amount of LP tokens you have staked. Unstake via the stake page to make the tokens available.`}>
+                      <Tooltip className="z-10" shouldWrapChildren={true} label={`Indicates the total amount of LP tokens you have staked`}>
                         <InformationCircleIcon className="block w-4 h-4 text-indigo-400" aria-hidden="true" />
                       </Tooltip>
                     </div>
@@ -176,8 +173,9 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                     ) : 0 }
                   </dt>
                 </div>
+              </dl>
 
-                <br/>
+              <dl className="mt-4 space-y-1">
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                   <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                     Your pool share
@@ -202,6 +200,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                     {pooledX.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
                   </dd>
                 </div>
+                
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                   <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                     Pooled {tokenY.name}
@@ -210,15 +209,27 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                     {pooledY.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}                    
                   </dd>
                 </div>
-
-                <br/>
-                <h4 className="text-xs text-indigo-700 font-headings">
-                  You will need to unstake LP tokens before they can be used to remove pooled tokens.<br/>
-                  -> <a href="/stake">Go to the stake page to unstake.</a>
-                </h4>
-
               </dl>
             </div>
+
+            <div className="p-4 mt-4 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
+                </div>
+                <div className="flex-1 ml-3 md:flex md:justify-between">
+                  <p className="text-sm text-blue-700">
+                    In order to remove liquidity and make the LP tokens available again, keep in mind that you must first <RouterLink
+                      className="font-semibold text-blue-700 underline whitespace-nowrap hover:text-blue-600"
+                      to={'/stake'}
+                    >
+                      unstake them
+                    </RouterLink>.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <div className="mt-4 sm:grid sm:grid-cols-2 sm:gap-2 sm:grid-flow-row-dense">
               <RouterLink
                 className="inline-flex justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-md shadow-sm bg-white-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
