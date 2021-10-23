@@ -34,9 +34,9 @@ export const tokenList = [
   }
 ];
 
-export const TokenSwapList: React.FC = ({ selected, setSelected }) => {
+export const TokenSwapList: React.FC = ({ selected, setSelected, disabled }) => {
   return (
-    <Listbox value={selected} onChange={setSelected}>
+    <Listbox value={selected} onChange={setSelected} disabled={disabled}>
       {({ open }) => (
         <>
           <div className="relative flex-1">
