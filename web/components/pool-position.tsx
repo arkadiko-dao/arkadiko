@@ -186,9 +186,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                     </div>
                   </dt>
                   <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
-                    {state.balance[tokenPair] > 0 ? (
-                      `${totalShare}%`
-                    ) : `0%` }
+                    {totalShare}%
                   </dd>
                 </div>
                 
