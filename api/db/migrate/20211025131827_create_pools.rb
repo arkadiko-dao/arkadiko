@@ -7,7 +7,8 @@ class CreatePools < ActiveRecord::Migration[5.2]
       t.string :token_y_address, null: false
       t.string :swap_token_name, null: false
       t.string :swap_token_address, null: false
-      t.bigint :tvl
+      t.bigint :tvl_token_x, default: 0, null: false
+      t.bigint :tvl_token_y, default: 0, null: false
       t.datetime :tvl_updated_at
 
       t.timestamps

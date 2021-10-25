@@ -10,10 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_25_131827) do
+ActiveRecord::Schema.define(version: 2021_10_25_173855) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "blockchains", force: :cascade do |t|
+    t.bigint "last_block_height_imported"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "pools", force: :cascade do |t|
     t.string "token_x_name", null: false
@@ -22,10 +28,27 @@ ActiveRecord::Schema.define(version: 2021_10_25_131827) do
     t.string "token_y_address", null: false
     t.string "swap_token_name", null: false
     t.string "swap_token_address", null: false
-    t.bigint "tvl"
+    t.bigint "tvl_token_x", default: 0, null: false
+    t.bigint "tvl_token_y", default: 0, null: false
     t.datetime "tvl_updated_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "swap_events", force: :cascade do |t|
+    t.string "function_name", null: false
+    t.string "transaction_id", null: false
+    t.datetime "event_at", null: false
+    t.string "sender", null: false
+    t.bigint "pool_id", null: false
+    t.bigint "token_x_amount", null: false
+    t.bigint "token_y_amount", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_at"], name: "index_swap_events_on_event_at"
+    t.index ["function_name"], name: "index_swap_events_on_function_name"
+    t.index ["pool_id"], name: "index_swap_events_on_pool_id"
+    t.index ["sender"], name: "index_swap_events_on_sender"
   end
 
 end
