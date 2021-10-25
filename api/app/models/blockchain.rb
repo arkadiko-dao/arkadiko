@@ -55,8 +55,30 @@ class Blockchain < ApplicationRecord
 
     contract_address = id.split('.')[0]
     contract_name = id.split('.')[1]
-    puts "Found transaction to #{function_name}"
+    puts "Found transaction to #{function_name} / #{result['tx_id']}"
 
+    token_x = result['contract_call']['function_args'][0]['repr']
+    token_y = result['contract_call']['function_args'][1]['repr']
+    token_x_address = token_x.split('.')[0]
+    token_x_name = token_x.split('.')[1]
+    token_y_address = token_y.split('.')[0]
+    token_y_name = token_y.split('.')[1]
+    pool = Pool.find_by(
+      token_x_address: token_x_address,
+      token_y_address: token_y_address,
+      token_x_name: token_x_name,
+      token_y_name: token_y_name
+    )
+    return if pool.nil?
+
+    if ['swap-x-for-y', 'swap-y-for-x'].include?(function_name)
+      res = result['tx_result']['repr'].gsub('(ok (list ', '').gsub('))', '').gsub('u', '').split(' ')
+      tvl_token_x = res[0]
+      tvl_token_y = res[1]
+    else
+      tvl_token_x = result['contract_call']['function_args'][3]['repr'].gsub('u', '').to_i
+      tvl_token_y = result['contract_call']['function_args'][4]['repr'].gsub('u', '').to_i
+    end
     pool.swap_events.create!(
       function_name: function_name,
       transaction_id: result['tx_id'],
@@ -67,38 +89,12 @@ class Blockchain < ApplicationRecord
     )
     case function_name
     when 'add-to-position'
-      token_x = result['contract_call']['function_args'][0]['repr']
-      token_y = result['contract_call']['function_args'][1]['repr']
-      token_x_address = token_x.split('.')[0]
-      token_x_name = token_x.split('.')[1]
-      token_y_address = token_y.split('.')[0]
-      token_y_name = token_y.split('.')[1]
-      pool = Pool.find_by(
-        token_x_address: token_x_address,
-        token_y_address: token_y_address,
-        token_x_name: token_x_name,
-        token_y_name: token_y_name
+      pool.update(
+        tvl_token_x: pool.tvl_token_x + tvl_token_x,
+        tvl_token_y: pool.tvl_token_y + tvl_token_y,
+        tvl_updated_at: result['parent_burn_block_time_iso']
       )
-      return if pool.nil?
-
-      tvl_token_x = result['contract_call']['function_args'][3]['repr'].gsub('u', '').to_i
-      tvl_token_y = result['contract_call']['function_args'][4]['repr'].gsub('u', '').to_i
-      pool.update(tvl_token_x: pool.tvl_token_x + tvl_token_x, tvl_token_y: pool.tvl_token_y + tvl_token_y)
     when 'reduce-position'
-      token_x = result['contract_call']['function_args'][0]['repr']
-      token_y = result['contract_call']['function_args'][1]['repr']
-      token_x_address = token_x.split('.')[0]
-      token_x_name = token_x.split('.')[1]
-      token_y_address = token_y.split('.')[0]
-      token_y_name = token_y.split('.')[1]
-      pool = Pool.find_by(
-        token_x_address: token_x_address,
-        token_y_address: token_y_address,
-        token_x_name: token_x_name,
-        token_y_name: token_y_name
-      )
-      return if pool.nil?
-
       tvl_token_x = result['contract_call']['function_args'][3]['repr'].gsub('u', '').to_i
       tvl_token_y = result['contract_call']['function_args'][4]['repr'].gsub('u', '').to_i
       pool.update(
@@ -106,10 +102,6 @@ class Blockchain < ApplicationRecord
         tvl_token_y: pool.tvl_token_y - tvl_token_y,
         tvl_updated_at: result['parent_burn_block_time_iso']
       )
-    when 'swap-x-for-y'
-      puts "x-y"
-    when 'swap-y-for-x'
-      puts "y-x"
     end
   end
 end
