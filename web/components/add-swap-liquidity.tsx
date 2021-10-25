@@ -334,7 +334,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
               
                 <form className="mt-4">
                   {isLoading ? (
-                    <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                    <Placeholder className="py-2 justify-center" width={Placeholder.width.HALF}/>
                   ) : (
                     <>
                     <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
@@ -343,6 +343,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                         <TokenSwapList
                           selected={tokenX}
                           setSelected={setTokenX}
+                          disabled={true}
                         />
 
                         <label htmlFor="tokenXAmount" className="sr-only">{tokenX.name}</label>
@@ -390,6 +391,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                         <TokenSwapList
                           selected={tokenY}
                           setSelected={setTokenY}
+                          disabled={true}
                         />
 
                         <label htmlFor="tokenYAmount" className="sr-only">{tokenY.name}</label>
