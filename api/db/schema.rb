@@ -16,12 +16,12 @@ ActiveRecord::Schema.define(version: 2021_10_25_131827) do
   enable_extension "plpgsql"
 
   create_table "pools", force: :cascade do |t|
-    t.string "token_x_name"
-    t.string "token_y_name"
-    t.string "token_x_address"
-    t.string "token_y_address"
-    t.string "swap_token_name"
-    t.string "swap_token_address"
+    t.string "token_x_name", null: false
+    t.string "token_y_name", null: false
+    t.string "token_x_address", null: false
+    t.string "token_y_address", null: false
+    t.string "swap_token_name", null: false
+    t.string "swap_token_address", null: false
     t.bigint "tvl"
     t.datetime "tvl_updated_at"
     t.datetime "created_at", null: false
