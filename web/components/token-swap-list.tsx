@@ -40,14 +40,16 @@ export const TokenSwapList: React.FC = ({ selected, setSelected, disabled }) => 
       {({ open }) => (
         <>
           <div className="relative flex-1">
-            <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-300 rounded-md shadow-sm cursor-default md:w-36 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            <Listbox.Button className={`relative w-full py-2 pl-3 ${disabled ? 'pr-3' : 'pr-10'} text-left bg-white border border-gray-300 rounded-md shadow-sm cursor-default md:w-36 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}>
               <span className="flex items-center">
                 <img src={selected.logo} alt="" className="flex-shrink-0 w-6 h-6 rounded-full" />
                 <span className="block ml-3 truncate">{selected.name}</span>
               </span>
-              <span className="absolute inset-y-0 right-0 flex items-center pr-2 ml-3 pointer-events-none">
-                <SelectorIcon className="w-5 h-5 text-gray-400" aria-hidden="true" />
-              </span>
+              {!disabled ? (
+                <span className="absolute inset-y-0 right-0 flex items-center pr-2 ml-3 pointer-events-none">
+                  <SelectorIcon className="w-5 h-5 text-gray-400" aria-hidden="true" />
+                </span>
+              ) : null}
             </Listbox.Button>
 
             <Transition
