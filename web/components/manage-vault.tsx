@@ -512,7 +512,7 @@ export const ManageVault = ({ match }) => {
         outstandingDebt(),
         collateralType?.collateralToDebtRatio,
         vault?.collateralToken
-      ).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })
+      ) * 0.98
     );
   };
   
