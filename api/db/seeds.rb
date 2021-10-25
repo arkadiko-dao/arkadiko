@@ -29,7 +29,7 @@ Pool.create!(
   token_x_address: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR',
   token_x_name: 'wrapped-stx-token',
   token_y_address: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR',
-  token_y_name: 'diko-token',
+  token_y_name: 'arkadiko-token',
   swap_token_address: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR',
   swap_token_name: 'arkadiko-swap-token-wstx-diko'
 )
