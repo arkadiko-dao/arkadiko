@@ -71,10 +71,10 @@ class Blockchain < ApplicationRecord
     )
     return if pool.nil?
 
-    if ['swap-x-for-y', 'swap-y-for-x'].include?(function_name)
+    if ['swap-x-for-y', 'swap-y-for-x', 'reduce-position'].include?(function_name)
       res = result['tx_result']['repr'].gsub('(ok (list ', '').gsub('))', '').gsub('u', '').split(' ')
-      tvl_token_x = res[0]
-      tvl_token_y = res[1]
+      tvl_token_x = res[0].to_i
+      tvl_token_y = res[1].to_i
     else
       tvl_token_x = result['contract_call']['function_args'][3]['repr'].gsub('u', '').to_i
       tvl_token_y = result['contract_call']['function_args'][4]['repr'].gsub('u', '').to_i
@@ -95,8 +95,6 @@ class Blockchain < ApplicationRecord
         tvl_updated_at: result['parent_burn_block_time_iso']
       )
     when 'reduce-position'
-      tvl_token_x = result['contract_call']['function_args'][3]['repr'].gsub('u', '').to_i
-      tvl_token_y = result['contract_call']['function_args'][4]['repr'].gsub('u', '').to_i
       pool.update(
         tvl_token_x: pool.tvl_token_x - tvl_token_x,
         tvl_token_y: pool.tvl_token_y - tvl_token_y,
