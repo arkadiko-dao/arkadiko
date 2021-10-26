@@ -16,6 +16,10 @@ const tokenToName = (token:string) => {
 };
 
 const getPrice = async (symbol: string) => {
+  if (symbol === 'USDA') {
+    return 1000000;
+  }
+
   const contractAddress = 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR';
   const fetchedPrice = await callReadOnlyFunction({
     contractAddress,
