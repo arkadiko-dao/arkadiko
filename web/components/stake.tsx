@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { Fragment, useEffect, useContext, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
@@ -15,14 +15,12 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { microToReadable } from '@common/vault-utils';
 import { tokenList } from '@components/token-swap-list';
 import { useConnect } from '@stacks/connect-react';
-import { StakeActions } from './stake-actions';
-import { Menu } from '@headlessui/react';
+import { StakeLpRow } from './stake-lp-row';
+import { Menu, Transition } from '@headlessui/react';
 import { 
   ArrowCircleDownIcon,
   ArrowCircleUpIcon,
   DotsVerticalIcon,
-  CashIcon,
-  PlusIcon,
   ClockIcon,
   QuestionMarkCircleIcon,
   ExternalLinkIcon,
@@ -620,64 +618,90 @@ export const Stake = () => {
                     </div>
                     <div>
                       {state.balance['diko'] > 0 || state.balance['stdiko'] > 0 || (stakedAmount && canUnstake) ? (
-                        <StakeActions>
-                          {state.balance['diko'] > 0 ? (
-                            <Menu.Item>
-                              {({ active }) => (
-                                <button
-                                  className={`${
-                                    active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                  onClick={() => setShowStakeModal(true)}
-                                >
-                                  <ArrowCircleDownIcon
-                                    className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                    aria-hidden="true"
-                                  />
-                                  Stake
-                                </button>
-                              )}
-                            </Menu.Item>
-                            
-                          ) : null }
-                          {state.balance['stdiko'] > 0 && !cooldownRunning ? (
-                            <Menu.Item>
-                              {({ active }) => (
-                                <button
-                                  className={`${
-                                    active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                  onClick={() => startDikoCooldown()}
-                                >
-                                  <ClockIcon
-                                    className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                    aria-hidden="true"
-                                  />
-                                  Start cooldown
-                                </button>
-                              )}
-                            </Menu.Item>
-                            
-                          ) : null }
-                          {stakedAmount && canUnstake ? (
-                            <Menu.Item>
-                              {({ active }) => (
-                                <button
-                                  className={`${
-                                    active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                  onClick={() => setShowUnstakeModal(true)}
-                                >
-                                  <ArrowCircleUpIcon
-                                    className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                    aria-hidden="true"
-                                  />
-                                  Unstake
-                                </button>
-                              )}
-                            </Menu.Item>
-                          ) : null}
-                        </StakeActions>
+                        <Menu as="div" className="relative flex items-center justify-end">
+                        {({ open }) => (
+                          <>
+                            <Menu.Button className="inline-flex items-center justify-center w-8 h-8 text-gray-400 bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                              <span className="sr-only">Open options</span>
+                              <DotsVerticalIcon className="w-5 h-5" aria-hidden="true" />
+                            </Menu.Button>
+                            <Transition
+                              show={open}
+                              as={Fragment}
+                              enter="transition ease-out duration-100"
+                              enterFrom="transform opacity-0 scale-95"
+                              enterTo="transform opacity-100 scale-100"
+                              leave="transition ease-in duration-75"
+                              leaveFrom="transform opacity-100 scale-100"
+                              leaveTo="transform opacity-0 scale-95"
+                            >
+                              <Menu.Items
+                                static
+                                className="absolute top-0 z-10 w-48 mx-3 mt-1 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg right-7 ring-1 ring-black ring-opacity-5 focus:outline-none"
+                              >
+                                <div className="px-1 py-1">
+                                  {state.balance['diko'] > 0 ? (
+                                    <Menu.Item>
+                                      {({ active }) => (
+                                        <button
+                                          className={`${
+                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                          onClick={() => setShowStakeModal(true)}
+                                        >
+                                          <ArrowCircleDownIcon
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
+                                            aria-hidden="true"
+                                          />
+                                          Stake
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                    
+                                  ) : null }
+                                  {state.balance['stdiko'] > 0 && !cooldownRunning ? (
+                                    <Menu.Item>
+                                      {({ active }) => (
+                                        <button
+                                          className={`${
+                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                          onClick={() => startDikoCooldown()}
+                                        >
+                                          <ClockIcon
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
+                                            aria-hidden="true"
+                                          />
+                                          Start cooldown
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                    
+                                  ) : null }
+                                  {stakedAmount && canUnstake ? (
+                                    <Menu.Item>
+                                      {({ active }) => (
+                                        <button
+                                          className={`${
+                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                          onClick={() => setShowUnstakeModal(true)}
+                                        >
+                                          <ArrowCircleUpIcon
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
+                                            aria-hidden="true"
+                                          />
+                                          Unstake
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                  ) : null}
+                                </div>
+                              </Menu.Items>
+                            </Transition>
+                          </>
+                        )}
+                      </Menu>
                       ) : null }
                     </div>
                   </div>
@@ -696,8 +720,8 @@ export const Stake = () => {
               <div className="mt-4">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                    <div className="pb-24 overflow-hidden sm:rounded-lg">
-                      <table className="min-w-full border border-gray-200 divide-y divide-gray-200 shadow-sm sm:rounded-lg">
+                    <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
+                      <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                           <tr>
                             <th
@@ -710,19 +734,25 @@ export const Stake = () => {
                               scope="col"
                               className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                             >
-                              Staked Value
+                              Current APR
                             </th>
                             <th
                               scope="col"
                               className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                             >
-                              Current APY
+                              Available
                             </th>
                             <th
                               scope="col"
                               className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                             >
-                              Pending rewards
+                              Staked
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                            >
+                              Rewards
                             </th>
                             <th
                               scope="col"
@@ -732,413 +762,58 @@ export const Stake = () => {
                             </th>
                           </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          <tr className="bg-white">
-                            <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              <div className="flex items-center">
-                                <div className="flex -space-x-2 overflow-hidden">
-                                  <img
-                                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
-                                    src={tokenList[1].logo}
-                                    alt=""
-                                  />
-                                  <img
-                                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
-                                    src={tokenList[0].logo}
-                                    alt=""
-                                  />
-                                </div>
-                                <p className="ml-4">
-                                  {microToReadable(lpDikoUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} staked
-                                  <br/>
-                                  {microToReadable(state.balance["dikousda"]).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} available to stake
-                                  {' '}
-                                  <span className="block text-gray-500">
-                                    <Tooltip shouldWrapChildren={true} label={`ARKV1${tokenList[1].name}${tokenList[0].name}`}>
-                                      Arkadiko V1 {tokenList[1].name} {tokenList[0].name} LP Token
-                                    </Tooltip>
-                                  </span>
-                                </p>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 text-sm font-medium whitespace-nowrap">
-                              {loadingData ? (
-                                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
-                              ) : emissionsStarted ? (
-                                `${dikoUsdaLpApy}%`
-                              ) : (
-                                <>
-                                  <span>{microToReadable(dikoUsdaPoolInfo.tokenXAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {dikoUsdaPoolInfo.tokenX}</span> 
-                                  <br/> 
-                                  <span>{microToReadable(dikoUsdaPoolInfo.tokenYAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {dikoUsdaPoolInfo.tokenY}</span>
-                                  <br/>
-                                  <span>≈${microToReadable(dikoUsdaPoolInfo.value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</span>
-                                </>
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
-                              {loadingData ? (
-                                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
-                              ) : emissionsStarted ? (
-                                `${dikoUsdaLpApy}%`
-                              ) : (
-                                <span>Emissions not started</span>
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              {microToReadable(lpDikoUsdaPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
-                            </td>
-                            <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
-                              {state.balance['dikousda'] > 0 || lpDikoUsdaStakedAmount || lpDikoUsdaPendingRewards ? (
-                                <StakeActions>
-                                  {state.balance['dikousda'] > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => setShowStakeLp1Modal(true)}
-                                        >
-                                          <ArrowCircleDownIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Stake
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                  {lpDikoUsdaStakedAmount > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => setShowUnstakeLp1Modal(true)}
-                                        >
-                                          <ArrowCircleUpIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Unstake
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                  {lpDikoUsdaPendingRewards > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => claimDikoUsdaLpPendingRewards()}
-                                        >
-                                          <CashIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Claim Rewards
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                  {lpDikoUsdaPendingRewards > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => stakeDikoUsdaLpPendingRewards()}
-                                        >
-                                          <PlusIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Stake Rewards
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                </StakeActions>
-                              ) : null }
-                            </td>
-                          </tr>
 
-                          <tr className="bg-white">
-                            <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              <div className="flex items-center">
-                                <div className="flex -space-x-2 overflow-hidden">
-                                  <img
-                                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
-                                    src={tokenList[2].logo}
-                                    alt=""
-                                  />
-                                  <img
-                                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
-                                    src={tokenList[0].logo}
-                                    alt=""
-                                  />
-                                </div>
-                                <p className="ml-4">
-                                  {microToReadable(lpStxUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} staked
-                                  <br/>
-                                  {microToReadable(state.balance["wstxusda"]).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} available to stake
-                                  {' '}
-                                  <span className="block text-gray-500">
-                                    <Tooltip shouldWrapChildren={true} label={`ARKV1${tokenList[2].name}${tokenList[0].name}`}>
-                                      Arkadiko V1 {tokenList[2].name} {tokenList[0].name} LP Token
-                                    </Tooltip>
-                                  </span>
-                                </p>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 text-sm font-medium whitespace-nowrap">
-                              {loadingData ? (
-                                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
-                              ) : emissionsStarted ? (
-                                `${stxUsdaLpApy}%`
-                              ) : (
-                                <>
-                                  <span>{microToReadable(stxUsdaPoolInfo.tokenXAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {stxUsdaPoolInfo.tokenX}</span>
-                                  <br/> 
-                                  <span>{microToReadable(stxUsdaPoolInfo.tokenYAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {stxUsdaPoolInfo.tokenY}</span>
-                                  <br/>
-                                  <span>≈${microToReadable(stxUsdaPoolInfo.value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</span>
-                                </>
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
-                              {loadingData ? (
-                                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
-                              ) : emissionsStarted ? (
-                                `${stxUsdaLpApy}%`
-                              ) : (
-                                <span>Emissions not started</span>
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              {microToReadable(lpStxUsdaPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
-                            </td>
-                            <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
-                              {state.balance['wstxusda'] > 0 || lpStxUsdaStakedAmount || lpStxUsdaPendingRewards ? (
-                                <StakeActions>
-                                  {state.balance['wstxusda'] > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => setShowStakeLp2Modal(true)}
-                                        >
-                                          <ArrowCircleDownIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Stake
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                  {lpStxUsdaStakedAmount > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => setShowUnstakeLp2Modal(true)}
-                                        >
-                                          <ArrowCircleUpIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Unstake
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                  {lpStxUsdaPendingRewards > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => claimStxUsdaLpPendingRewards()}
-                                        >
-                                          <CashIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Claim Rewards
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                  {lpStxUsdaPendingRewards > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => stakeStxUsdaLpPendingRewards()}
-                                        >
-                                          <PlusIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Stake Rewards
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                </StakeActions>
-                              ) : null }
-                            </td>
-                          </tr>
+                        {/* Arkadiko V1 DIKO USDA LP Token */}
+                        <StakeLpRow
+                          loadingData={loadingData}
+                          tokenListItemX={1}
+                          tokenListItemY={0}
+                          balance={state.balance["dikousda"]}
+                          pendingRewards={lpDikoUsdaPendingRewards}
+                          stakedAmount={lpDikoUsdaStakedAmount}
+                          apy={dikoUsdaLpApy}
+                          emissionsStarted={emissionsStarted}
+                          poolInfo={dikoUsdaPoolInfo}
+                          setShowStakeLpModal={setShowStakeLp1Modal}
+                          setShowUnstakeLpModal={setShowUnstakeLp1Modal}
+                          claimLpPendingRewards={claimDikoUsdaLpPendingRewards}
+                          stakeLpPendingRewards={stakeDikoUsdaLpPendingRewards}
+                        />
 
-                          <tr className="bg-white">
-                            <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              <div className="flex items-center">
-                                <div className="flex -space-x-2 overflow-hidden">
-                                  <img
-                                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
-                                    src={tokenList[2].logo}
-                                    alt=""
-                                  />
-                                  <img
-                                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
-                                    src={tokenList[1].logo}
-                                    alt=""
-                                  />
-                                </div>
-                                <p className="ml-4">
-                                  {microToReadable(lpStxDikoStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} staked
-                                  <br/>
-                                  {microToReadable(state.balance["wstxdiko"]).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} available to stake
-                                  {' '}
-                                  <span className="block text-gray-500">
-                                    <Tooltip shouldWrapChildren={true} label={`ARKV1${tokenList[2].name}${tokenList[1].name}`}>
-                                      Arkadiko V1 {tokenList[2].name} {tokenList[1].name} LP Token
-                                    </Tooltip>
-                                  </span>
-                                </p>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 text-sm font-medium whitespace-nowrap">
-                              {loadingData ? (
-                                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
-                              ) : emissionsStarted ? (
-                                `${stxDikoLpApy}%`
-                              ) : (
-                                <>
-                                  <span>{microToReadable(stxDikoPoolInfo.tokenXAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {stxDikoPoolInfo.tokenX}</span>
-                                  <br/> 
-                                  <span>{microToReadable(stxDikoPoolInfo.tokenYAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {stxDikoPoolInfo.tokenY}</span>
-                                  <br/>
-                                  <span>≈${microToReadable(stxDikoPoolInfo.value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</span>
-                                </>
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
-                              {loadingData ? (
-                                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
-                              ) : emissionsStarted ? (
-                                `${stxDikoLpApy}%`
-                              ) : (
-                                <span>Emissions not started</span>
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              {microToReadable(lpStxDikoPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
-                            </td>
-                            <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
-                              {state.balance['wstxdiko'] > 0 || lpStxDikoStakedAmount || lpStxDikoPendingRewards ? (
-                                <StakeActions>
-                                  {state.balance['wstxdiko'] > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => setShowStakeLp3Modal(true)}
-                                        >
-                                          <ArrowCircleDownIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Stake
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                  {lpStxDikoStakedAmount > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => setShowUnstakeLp3Modal(true)}
-                                        >
-                                          <ArrowCircleUpIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Unstake
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                  {lpStxDikoPendingRewards > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => claimStxDikoLpPendingRewards()}
-                                        >
-                                          <CashIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Claim Rewards
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                  {lpStxDikoPendingRewards > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => stakeStxDikoLpPendingRewards()}
-                                        >
-                                          <PlusIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Stake Rewards
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                </StakeActions>
-                              ) : null }
-                            </td>
-                          </tr>
+                        {/* Arkadiko V1 STX USDA LP Token */}
+                        <StakeLpRow
+                          loadingData={loadingData}
+                          tokenListItemX={2}
+                          tokenListItemY={0}
+                          balance={state.balance["wstxusda"]}
+                          pendingRewards={lpStxUsdaPendingRewards}
+                          stakedAmount={lpStxUsdaStakedAmount}
+                          apy={stxUsdaLpApy}
+                          emissionsStarted={emissionsStarted}
+                          poolInfo={stxUsdaPoolInfo}
+                          setShowStakeLpModal={setShowStakeLp2Modal}
+                          setShowUnstakeLpModal={setShowUnstakeLp2Modal}
+                          claimLpPendingRewards={claimStxUsdaLpPendingRewards}
+                          stakeLpPendingRewards={stakeStxUsdaLpPendingRewards}
+                        />
 
-                        </tbody>
+                        {/* Arkadiko V1 STX DIKO LP Token */}
+                        <StakeLpRow
+                          loadingData={loadingData}
+                          tokenListItemX={2}
+                          tokenListItemY={1}
+                          balance={state.balance["wstxdiko"]}
+                          pendingRewards={lpStxDikoPendingRewards}
+                          stakedAmount={lpStxDikoStakedAmount}
+                          apy={stxDikoLpApy}
+                          emissionsStarted={emissionsStarted}
+                          poolInfo={stxDikoPoolInfo}
+                          setShowStakeLpModal={setShowStakeLp3Modal}
+                          setShowUnstakeLpModal={setShowUnstakeLp3Modal}
+                          claimLpPendingRewards={claimStxDikoLpPendingRewards}
+                          stakeLpPendingRewards={stakeStxDikoLpPendingRewards}
+                        />
+                        
                       </table>
                     </div>
                   </div>
