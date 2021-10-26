@@ -588,7 +588,7 @@ export const Stake = () => {
                           <span>Emissions not started</span>
                         )}
                       </p>
-                      <p className="text-base font-normal leading-6 text-gray-500">Current APY</p>
+                      <p className="text-base font-normal leading-6 text-gray-500">Current APR</p>
                     </div>
                     <div>
                       <p className="text-lg font-semibold">
@@ -697,7 +697,7 @@ export const Stake = () => {
                               scope="col"
                               className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                             >
-                              Current APY
+                              Current APR
                             </th>
                             <th
                               scope="col"
