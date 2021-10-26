@@ -9,7 +9,7 @@
 
 (impl-trait .arkadiko-stake-pool-trait-v1.stake-pool-trait)
 (impl-trait .arkadiko-stake-pool-diko-trait-v1.stake-pool-diko-trait)
-(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
+(use-trait ft-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 (use-trait stake-registry-trait .arkadiko-stake-registry-trait-v1.stake-registry-trait)
 
 ;; Errors
@@ -298,7 +298,6 @@
 )
 
 ;; Initialize the contract
-;; TODO - set block height for mainnet
 (begin
-  (var-set last-reward-add-block block-height)
+  (var-set last-reward-add-block u35300)
 )

@@ -19,7 +19,6 @@ interface Contract {
 }
 
 const contracts: Contract[] = [
-  { name: 'sip-010-trait-ft-standard' },
   { name: 'arkadiko-oracle-trait-v1' },
   { name: 'arkadiko-vault-trait-v1' },
   { name: 'arkadiko-collateral-types-trait-v1' },
@@ -62,7 +61,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-stake-pool-wstx-usda-v1-1' },
   { name: 'arkadiko-swap-token-wstx-diko' },
   { name: 'arkadiko-stake-pool-wstx-diko-v1-1' }
-  ];
+];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');
 const privateKey = process.env.CONTRACT_PRIVATE_KEY;

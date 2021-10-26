@@ -14,7 +14,7 @@ import {
   uintCV,
 } from '@stacks/transactions';
 import { VaultGroup } from './vault-group';
-import { getPrice, getDikoAmmPrice } from '@common/get-price';
+import { getPrice, getDikoAmmPrice, getUsdaPrice } from '@common/get-price';
 import { AppContext } from '@common/context';
 import { useConnect } from '@stacks/connect-react';
 import { CollateralType } from '@components/collateral-type';
@@ -37,7 +37,9 @@ export const Mint = () => {
   const [stxPrice, setStxPrice] = useState(0.0);
   const [dikoPrice, setDikoPrice] = useState(0.0);
   const [xbtcPrice, setXbtcPrice] = useState(0.0);
+  const [usdaPrice, setUsdaPrice] = useState(1.0);
   const [loadingVaults, setLoadingVaults] = useState(true);
+  const [loadingPrices, setLoadingPrices] = useState(true);
   const [loadingStackingData, setLoadingStackingData] = useState(false);
   const [pendingVaultRewards, setPendingVaultRewards] = useState(0);
 
@@ -51,9 +53,15 @@ export const Mint = () => {
 
       let dikoPrice = await getDikoAmmPrice();
       setDikoPrice(dikoPrice);
+
+      let usdaPrice = await getPrice('USDA');
+      setUsdaPrice(usdaPrice);
+
       setLoadingStackingData(false);
+      setLoadingPrices(false);
     };
 
+    setLoadingPrices(true);
     setLoadingStackingData(true);
     fetchPrices();
   }, []);
@@ -320,7 +328,9 @@ export const Mint = () => {
             <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
               {Object.keys(collateralTypes).length > 0 ? (
                 <CollateralType types={collateralTypes} />
-              ): null }
+              ): (
+                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+              )}
             </div>
           </div>
         </section>
@@ -336,14 +346,14 @@ export const Mint = () => {
                     Get 5000 STX from mocknet
                   </button>
                 </div>
-              ) : (
+              ) : env === 'testnet' ? (
                 <div className="flex items-center justify-end mb-4">
                   <span className="px-2 py-1 text-xs text-gray-800">{env.replace(/^\w/, (c) => c.toUpperCase())} actions:</span>
                   <button type="button" onClick={() => addTestnetStx()} className="inline-flex items-center px-3 py-2 text-sm font-normal leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Get STX from {env}
                   </button>
                 </div>
-              )}
+              ) : null}
             </div>
           </header>
 
@@ -381,7 +391,11 @@ export const Mint = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
-                          ${stxPrice / 1000000}
+                          {loadingPrices ? (
+                            <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                          ) : (
+                            <span>${stxPrice / 1000000}</span>
+                          )}
                         </td>
                       </tr>
 
@@ -397,7 +411,11 @@ export const Mint = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
-                          ${dikoPrice}
+                          {loadingPrices ? (
+                            <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                          ) : (
+                            <span>${dikoPrice}</span>
+                          )}
                         </td>
                       </tr>
 
@@ -413,7 +431,11 @@ export const Mint = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
-                          ${xbtcPrice / 1000000}
+                          {loadingPrices ? (
+                            <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                          ) : (
+                            <span>${xbtcPrice / 1000000}</span>
+                          )}
                         </td>
                       </tr>
 
@@ -429,7 +451,11 @@ export const Mint = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
-                          $1
+                          {loadingPrices ? (
+                            <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                          ) : (
+                            <span>${usdaPrice / 1000000}</span>
+                          )}
                         </td>
                       </tr>
                     </tbody>

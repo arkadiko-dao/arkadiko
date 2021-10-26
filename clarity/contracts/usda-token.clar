@@ -1,7 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;; SIP 010 ;;;;;;;;;;;;;;;;;;;;;;
-;; testnet: (impl-trait 'STR8P3RD1EHA8AA37ERSSSZSWKS9T2GYQFGXNA4C.sip-010-trait-ft-standard.sip-010-trait)
-;; (impl-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
-(impl-trait .sip-010-trait-ft-standard.sip-010-trait)
+(impl-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 (impl-trait .arkadiko-dao-token-trait-v1.dao-token-trait)
 
 ;; Defines the USDA Stablecoin according to the SIP-010 Standard
@@ -84,14 +82,4 @@
 ;; Burn external - Should never happen
 (define-public (burn (amount uint) (sender principal))
   (err ERR-NOT-AUTHORIZED)
-)
-
-;; Initialize the contract
-(begin
-  ;; TODO: do not do this on testnet or mainnet
-  (try! (ft-mint? usda u10 'ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC))
-  (try! (ft-mint? usda u1000000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)) ;; 1 million USDA
-  (try! (ft-mint? usda u1000000000000 'ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF)) ;; 1 million USDA
-  (try! (ft-mint? usda u1000000000000 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG)) ;; 1 million USDA
-  (try! (ft-mint? usda u1000000000000 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5)) ;; 1 million USDA
 )

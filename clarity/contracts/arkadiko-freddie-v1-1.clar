@@ -5,7 +5,7 @@
 
 (impl-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
-(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
+(use-trait ft-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 (use-trait vault-manager-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
 (use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
 (use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
@@ -1009,7 +1009,6 @@
   )
 )
 
-;; TODO - is this needed?
 ;; @desc sets the amount of STX that is redeemable for xSTX (the derivative that is sold off in an auction)
 ;; @param new-stx-redeemable; the micro-amount of xSTX redeemable for STX
 ;; @post bool; returns true if setting the variable was successful

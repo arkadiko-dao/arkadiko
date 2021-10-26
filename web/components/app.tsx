@@ -46,7 +46,7 @@ export const getBalance = async (address: string) => {
   };
 };
 
-const icon = 'https://testnet.arkadiko.finance/assets/logo.png';
+const icon = 'https://arkadiko.finance/favicon.ico';
 export const App: React.FC = () => {
   const [state, setState] = React.useState<AppState>(defaultState());
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -86,7 +86,7 @@ export const App: React.FC = () => {
 
   const fetchCollateralTypes = async (address: string) => {
     let collTypes = {};
-    ['STX-A', 'STX-B', 'XBTC-A'].forEach(async (token) => {
+    ['STX-A', 'STX-B'].forEach(async (token) => {
       const types = await callReadOnlyFunction({
         contractAddress,
         contractName: "arkadiko-collateral-types-v1-1",
