@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
   scope '/api/v1' do
-    resources :pools, only: [:index, :show]
+    resources :pools, only: [:index, :show] do
+      member do
+        get 'volume'
+      end
+    end
   end
 end

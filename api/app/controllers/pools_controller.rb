@@ -14,4 +14,17 @@ class PoolsController < ApplicationController
       pool: @pool
     }
   end
+
+  def volume
+    @pool = Pool.find(params[:id])
+    if params[:period] == '7'
+      volume = @pool.volume_7d
+    else
+      volume = @pool.volume_24h
+    end
+
+    render json: {
+      volume: volume
+    }
+  end
 end

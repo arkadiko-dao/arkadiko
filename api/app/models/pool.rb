@@ -20,4 +20,18 @@ class Pool < ApplicationRecord
   validates :token_y_name, presence: true
 
   has_many :swap_events
+
+  def volume_24h
+    events = swap_events.where("function_name IN (?)", ['swap-x-for-y', 'swap-y-for-x']).where(event_at: (Time.now - 24.hours)..Time.now)
+    sum_x = events.sum(:token_x_amount)
+    sum_y = events.sum(:token_y_amount)
+    [sum_x.to_i, sum_y.to_i]
+  end
+
+  def volume_7d
+    events = swap_events.where("function_name IN (?)", ['swap-x-for-y', 'swap-y-for-x']).where(event_at: (Time.now - 7 * 24.hours)..Time.now)
+    sum_x = events.sum(:token_x_amount)
+    sum_y = events.sum(:token_y_amount)
+    [sum_x.to_i, sum_y.to_i]
+  end
 end
