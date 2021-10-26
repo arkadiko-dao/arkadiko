@@ -34,4 +34,14 @@ class Pool < ApplicationRecord
     sum_y = events.sum(:token_y_amount)
     [sum_x.to_i, sum_y.to_i]
   end
+
+  def fetch_prices
+    events = swap_events.where("function_name IN (?)", ['swap-x-for-y', 'swap-y-for-x']).where(event_at: (Time.now - 7 * 24.hours)..Time.now)
+    # TODO: fix performance
+    prices = []
+    events.find_each do |event|
+      prices << (event['token_y_amount'].to_f / event['token_x_amount'].to_f).round(2)
+    end
+    prices
+  end
 end

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { PoolRow } from './pool-row';
 import axios from 'axios';
+import * as Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
 
 interface ContainerProps {}
 export const Container: React.FC<ContainerProps> = ({ children, ...props }) => {
@@ -16,11 +18,12 @@ export const Container: React.FC<ContainerProps> = ({ children, ...props }) => {
 export const Home: React.FC = () => {
   const apiUrl = 'http://localhost:3000'; // TODO: process.env.REACT_APP_OFFCHAIN_API;
   const [pools, setPools] = useState([]);
+  const [prices, setPrices] = useState([]);
 
   useEffect(() => {
     const fetchPools = async () => {
       const response = await axios.get(`${apiUrl}/api/v1/pools`);
-      const array = [];
+      const array:any = [];
       response.data.pools.forEach((pool:any) => {
         array.push(
           <PoolRow
@@ -36,8 +39,32 @@ export const Home: React.FC = () => {
     fetchPools();
   }, []);
 
+  useEffect(() => {
+    const fetchDikoPrices = async () => {
+      const response = await axios.get(`${apiUrl}/api/v1/pools/2/prices`);
+      setPrices(response.data.prices);
+    };
+
+    fetchDikoPrices();
+  }, []);
+
+  const options: Highcharts.Options = {
+    title: {
+      text: 'DIKO/USDA price'
+    },
+    series: [{
+      type: 'line',
+      data: prices
+    }]
+  };
+
   return (
     <Container>
+      <HighchartsReact
+        highcharts={Highcharts}
+        options={options}
+      />
+
       <span>Pools</span>
       {pools.length > 0 ? (
         <div className="flex flex-col">

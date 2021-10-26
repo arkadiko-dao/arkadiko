@@ -3,6 +3,7 @@ Rails.application.routes.draw do
     resources :pools, only: [:index, :show] do
       member do
         get 'volume'
+        get 'prices'
       end
     end
   end

@@ -27,4 +27,11 @@ class PoolsController < ApplicationController
       volume: volume
     }
   end
+
+  def prices
+    @pool = Pool.find(params[:id])
+    render json: {
+      prices: @pool.fetch_prices
+    }
+  end
 end
