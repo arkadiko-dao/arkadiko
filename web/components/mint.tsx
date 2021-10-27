@@ -14,7 +14,7 @@ import {
   uintCV,
 } from '@stacks/transactions';
 import { VaultGroup } from './vault-group';
-import { getPrice, getDikoAmmPrice } from '@common/get-price';
+import { getPrice, getDikoAmmPrice, getUsdaPrice } from '@common/get-price';
 import { AppContext } from '@common/context';
 import { useConnect } from '@stacks/connect-react';
 import { CollateralType } from '@components/collateral-type';
@@ -37,6 +37,7 @@ export const Mint = () => {
   const [stxPrice, setStxPrice] = useState(0.0);
   const [dikoPrice, setDikoPrice] = useState(0.0);
   const [xbtcPrice, setXbtcPrice] = useState(0.0);
+  const [usdaPrice, setUsdaPrice] = useState(1.0);
   const [loadingVaults, setLoadingVaults] = useState(true);
   const [loadingPrices, setLoadingPrices] = useState(true);
   const [loadingStackingData, setLoadingStackingData] = useState(false);
@@ -52,6 +53,10 @@ export const Mint = () => {
 
       let dikoPrice = await getDikoAmmPrice();
       setDikoPrice(dikoPrice);
+
+      let usdaPrice = await getPrice('USDA');
+      setUsdaPrice(usdaPrice);
+
       setLoadingStackingData(false);
       setLoadingPrices(false);
     };
@@ -446,7 +451,11 @@ export const Mint = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
-                          $1
+                          {loadingPrices ? (
+                            <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                          ) : (
+                            <span>${usdaPrice / 1000000}</span>
+                          )}
                         </td>
                       </tr>
                     </tbody>

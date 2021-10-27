@@ -149,10 +149,10 @@ export const Stake = () => {
       let stxDikoLpStaked = cvToJSON(userLpStxDikoStakedCall).value;
       setLpStxDikoStakedAmount(stxDikoLpStaked);
 
-      if (currentBlock < REWARDS_START_BLOCK_HEIGHT) {
-        setLoadingData(false);
-        return;
-      }
+      // if (currentBlock < REWARDS_START_BLOCK_HEIGHT) {
+      //   setLoadingData(false);
+      //   return;
+      // }
       setEmissionsStarted(true);
 
       const dikoUsdaPendingRewardsCall = await callReadOnlyFunction({
@@ -246,7 +246,7 @@ export const Stake = () => {
       setApy(Number((100 * dikoApr).toFixed(2)));
 
       if (totalDikoUsdaStaked === 0) { totalDikoUsdaStaked = 10 };
-      const dikoUsdaPoolRewards = totalStakingRewardsYear1 * 0.2;
+      const dikoUsdaPoolRewards = totalStakingRewardsYear1 * 0.25;
       const dikoUsdaApr = dikoUsdaPoolRewards / totalDikoUsdaStaked;
       setDikoUsdaLpApy(Number((100 * dikoUsdaApr).toFixed(2)));
 
@@ -256,7 +256,7 @@ export const Stake = () => {
       setStxUsdaLpApy(Number((100 * stxUsdaApr).toFixed(2)));
 
       if (totalStxDikoStaked === 0) { totalStxDikoStaked = 10 };
-      const stxDikoPoolRewards = totalStakingRewardsYear1 * 0.2;
+      const stxDikoPoolRewards = totalStakingRewardsYear1 * 0.15;
       const stxDikoApr = stxDikoPoolRewards / totalStxDikoStaked;
       setStxDikoLpApy(Number((100 * stxDikoApr).toFixed(2)));
 
@@ -588,7 +588,7 @@ export const Stake = () => {
                           <span>Emissions not started</span>
                         )}
                       </p>
-                      <p className="text-base font-normal leading-6 text-gray-500">Current APY</p>
+                      <p className="text-base font-normal leading-6 text-gray-500">Current APR</p>
                     </div>
                     <div>
                       <p className="text-lg font-semibold">
@@ -697,7 +697,7 @@ export const Stake = () => {
                               scope="col"
                               className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                             >
-                              Current APY
+                              Current APR
                             </th>
                             <th
                               scope="col"
