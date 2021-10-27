@@ -119,58 +119,67 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({ loadingData, tokenListIt
           </tr>
           <Disclosure.Panel as="tr">
             <td className="px-6 py-4 text-sm whitespace-nowrap">
-              <RouterLink to={getLpRoute} className="inline-flex items-center px-4 py-2 text-sm leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Get Lp</RouterLink>
+              <RouterLink to={getLpRoute} className={`inline-flex items-center px-4 py-2 text-sm leading-4 border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${balance > 0 ? 'text-indigo-700 bg-indigo-100 hover:bg-indigo-200' : 'text-white bg-indigo-600 hover:bg-indigo-700'}`}>
+                {balance > 0 ? (
+                  `Add LP`
+                ) : (
+                  `Get LP`
+                )}
+              </RouterLink>
             </td>
             <td className="px-6 py-4 text-sm whitespace-nowrap"/>
             <td className="px-6 py-4 text-sm whitespace-nowrap">
               {loadingData ? (
                 <Placeholder className="py-2" width={Placeholder.width.HALF}/>
-              ) : balance > 0 ? (
+              ) : (
                 <button 
                   type="button" 
-                  className="inline-flex items-center px-4 py-2 text-sm leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="inline-flex items-center px-4 py-2 text-sm leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                  disabled={balance == 0}
                   onClick={() => setShowStakeLpModal(true)}
                 >
                   Stake LP
                 </button>      
-              ) : null }  
+              )}  
             </td>
             <td className="px-6 py-4 text-sm whitespace-nowrap">
-            {loadingData ? (
+              {loadingData ? (
                 <Placeholder className="py-2" width={Placeholder.width.HALF}/>
-              ) : stakedAmount > 0 ? (
+              ) : (
                 <button
                   type="button"
-                  className="inline-flex items-center px-4 py-2 text-sm leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="inline-flex items-center px-4 py-2 text-sm leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                  disabled={stakedAmount == 0}
                   onClick={() => setShowUnstakeLpModal(true)}
                 >
                   Unstake LP
                 </button>
-              ) : null }
+              )}
             </td>
             <td className="px-6 py-4 text-sm whitespace-nowrap">
               <div className="flex space-x-2">
                 {loadingData ? (
                   <Placeholder className="py-2" width={Placeholder.width.HALF}/>
-                ) : pendingRewards > 0 ? (
+                ) : (
                   <>
-                  <button
-                    type="button"
-                    className="inline-flex items-center px-3 py-2 text-sm leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    onClick={() => claimLpPendingRewards()}
-                  >
-                    Claim
-                  </button>
-                  <button
-                    type="button"
-                    className="inline-flex items-center px-3 py-2 text-sm leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    onClick={() => stakeLpPendingRewards()}
-                  >
-                    Stake
-                  </button>
+                    <button
+                      type="button"
+                      className="inline-flex items-center px-3 py-2 text-sm leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                      disabled={pendingRewards == 0}
+                      onClick={() => claimLpPendingRewards()}
+                    >
+                      Claim
+                    </button>
+                    <button
+                      type="button"
+                      className="inline-flex items-center px-3 py-2 text-sm leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                      disabled={pendingRewards == 0}
+                      onClick={() => stakeLpPendingRewards()}
+                    >
+                      Stake
+                    </button>
                   </>
-                ) : null }
-                
+                )}
               </div>
             </td>
             <td className="px-6 py-4 text-sm whitespace-nowrap" />
