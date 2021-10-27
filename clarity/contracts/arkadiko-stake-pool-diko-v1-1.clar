@@ -299,5 +299,5 @@
 
 ;; Initialize the contract
 (begin
-  (var-set last-reward-add-block u35300)
+  (var-set last-reward-add-block block-height)
 )
