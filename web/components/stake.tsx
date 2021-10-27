@@ -608,25 +608,21 @@ export const Stake = () => {
                       </div>
                     </div>
                     <div>
-                      <p className="text-lg font-semibold">
-                        {loadingData ? (
-                          <Placeholder className="py-2" width={Placeholder.width.HALF}/>
-                        ) : emissionsStarted ? (
-                          `${apy}%`
-                        ) : (
-                          <span>Emissions not started</span>
-                        )}
-                      </p>
+                      {loadingData ? (
+                        <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                      ) : emissionsStarted ? (
+                        `${apy}%`
+                      ) : (
+                        <p className="text-lg font-semibold">Emissions not started</p>
+                      )}
                       <p className="text-base font-normal leading-6 text-gray-500">Current APY</p>
                     </div>
                     <div>
-                      <p className="text-lg font-semibold">
-                        {loadingData ? (
-                          <Placeholder className="py-2" width={Placeholder.width.HALF}/>
-                        ) : (
-                          `${dikoCooldown}`
-                        )}
-                      </p>
+                      {loadingData ? (
+                        <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                      ) : (
+                        <p className="text-lg font-semibold">${dikoCooldown}</p>
+                      )}
                       <p className="flex items-center text-base font-normal leading-6 text-gray-500">
                         Cooldown status
                         <Tooltip className="ml-2" shouldWrapChildren={true} label={`The 10-day cooldown period is the time required prior to unstaking your tokens. Once it expires, there is a 2-day window to unstake your tokens.`}>
