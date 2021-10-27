@@ -124,7 +124,7 @@ export const Stake = () => {
       return cvToJSON(totalStxDikoStakedCall).value / 1000000;
     };
 
-    const stakedValue = async (poolContract:string, lpTokenAmount: number) => {
+    const lpTokenValue = async (poolContract:string, lpTokenStakedAmount: number, lpTokenWalletAmount: number) => {
 
       var tokenXContract = "arkadiko-token";
       var tokenYContract = "usda-token";
@@ -142,9 +142,9 @@ export const Stake = () => {
         tokenYName = "USDA";
       }
 
-      if (lpTokenAmount == 0) {
-        return {tokenX: tokenXName, tokenY: tokenYName, tokenXAmount: 0, tokenYAmount: 0, value: 0};
-      }
+      // if (lpTokenAmount == 0) {
+      //   return {tokenX: tokenXName, tokenY: tokenYName, tokenXAmount: 0, tokenYAmount: 0, value: 0};
+      // }
 
       // Get pair details
       let pairDetailsCall = await callReadOnlyFunction({
@@ -169,27 +169,45 @@ export const Stake = () => {
       const balanceY = pairDetails['balance-y'].value;
       const totalTokens = pairDetails['shares-total'].value;      
 
-      const userShare = lpTokenAmount / totalTokens;
-      const userBalanceX = balanceX * userShare;
-      const userBalanceY = balanceY * userShare;
+      const stakedShare = lpTokenStakedAmount / totalTokens;
+      const stakedBalanceX = balanceX * stakedShare;
+      const stakedBalanceY = balanceY * stakedShare;
+
+      const walletShare = lpTokenWalletAmount / totalTokens;
+      const walletBalanceX = balanceX * walletShare;
+      const walletBalanceY = balanceY * walletShare;
 
       // Estimate value
-      var estimatedValue = 0;
+      var estimatedValueStaked = 0;
+      var estimatedValueWallet = 0;
       if (tokenXName == "STX") {
         let stxPrice = await getPrice('STX');
-        estimatedValue = (userBalanceX / 1000000) * stxPrice;
+        estimatedValueStaked = (stakedBalanceX / 1000000) * stxPrice;
+        estimatedValueWallet = (walletBalanceX / 1000000) * stxPrice;
       } else if (tokenYName == "STX") {
         let stxPrice = await getPrice('STX');
-        estimatedValue = (userBalanceY / 1000000) * stxPrice;
+        estimatedValueStaked = (stakedBalanceY / 1000000) * stxPrice;
+        estimatedValueWallet = (walletBalanceY / 1000000) * stxPrice;
       } else if (tokenXName == "USDA") {
         let udsdaPrice = await getPrice('USDA');
-        estimatedValue = (userBalanceX / 1000000) * udsdaPrice;
+        estimatedValueStaked = (stakedBalanceX / 1000000) * udsdaPrice;
+        estimatedValueWallet = (walletBalanceX / 1000000) * udsdaPrice;
       } else if (tokenYName == "USDA") {
         let udsdaPrice = await getPrice('USDA');
-        estimatedValue = (userBalanceY / 1000000) * udsdaPrice;
+        estimatedValueStaked = (stakedBalanceY / 1000000) * udsdaPrice;
+        estimatedValueWallet = (walletBalanceY / 1000000) * udsdaPrice;
       }
 
-      return {tokenX: tokenXName, tokenY: tokenYName, tokenXAmount: userBalanceX, tokenYAmount: userBalanceY, value: estimatedValue};
+      return {
+        tokenX: tokenXName, 
+        tokenY: tokenYName, 
+        stakedTokenXAmount: stakedBalanceX, 
+        stakedTokenYAmount: stakedBalanceY, 
+        stakedValue: estimatedValueStaked,
+        walletTokenXAmount: walletBalanceX, 
+        walletTokenYAmount: walletBalanceY, 
+        walletValue: estimatedValueWallet
+      };
     };
 
     const getData = async () => {
@@ -198,7 +216,6 @@ export const Stake = () => {
       const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
       const data = await response.json();
       let currentBlock = data['stacks_tip_height'];
-      const REWARDS_START_BLOCK_HEIGHT = 4000000000; // TODO: set this on mainnet launch
 
       const stDikoSupplyCall = await callReadOnlyFunction({
         contractAddress,
@@ -231,12 +248,12 @@ export const Stake = () => {
       let stxDikoLpStaked = await fetchLpStakeAmount("arkadiko-stake-pool-wstx-diko-v1-1");
       setLpStxDikoStakedAmount(stxDikoLpStaked);
 
-      let dikoUsdaStakedValue = await stakedValue("arkadiko-stake-pool-diko-usda-v1-1", dikoUsdaLpStaked);
-      setDikoUsdaPoolInfo(dikoUsdaStakedValue);
-      let stxUsdaStakedValue = await stakedValue("arkadiko-stake-pool-wstx-usda-v1-1", stxUsdaLpStaked);
-      setStxUsdaPoolInfo(stxUsdaStakedValue);
-      let stxDikoStakedValue = await stakedValue("arkadiko-stake-pool-wstx-diko-v1-1", stxDikoLpStaked);
-      setStxDikoPoolInfo(stxDikoStakedValue);
+      let dikoUsdaLpValue = await lpTokenValue("arkadiko-stake-pool-diko-usda-v1-1", dikoUsdaLpStaked, state.balance["dikousda"]);
+      setDikoUsdaPoolInfo(dikoUsdaLpValue);
+      let stxUsdaLpValue = await lpTokenValue("arkadiko-stake-pool-wstx-usda-v1-1", stxUsdaLpStaked, state.balance["wstxusda"]);
+      setStxUsdaPoolInfo(stxUsdaLpValue);
+      let stxDikoLpValue = await lpTokenValue("arkadiko-stake-pool-wstx-diko-v1-1", stxDikoLpStaked, state.balance["wstxdiko"]);
+      setStxDikoPoolInfo(stxDikoLpValue);
 
       // if (currentBlock < REWARDS_START_BLOCK_HEIGHT) {
       //   setLoadingData(false);
