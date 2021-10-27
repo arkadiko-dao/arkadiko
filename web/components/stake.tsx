@@ -796,6 +796,7 @@ export const Stake = () => {
                           setShowUnstakeLpModal={setShowUnstakeLp1Modal}
                           claimLpPendingRewards={claimDikoUsdaLpPendingRewards}
                           stakeLpPendingRewards={stakeDikoUsdaLpPendingRewards}
+                          getLpRoute={'/swap/add/DIKO/USDA'}
                         />
 
                         {/* Arkadiko V1 STX USDA LP Token */}
@@ -813,6 +814,7 @@ export const Stake = () => {
                           setShowUnstakeLpModal={setShowUnstakeLp2Modal}
                           claimLpPendingRewards={claimStxUsdaLpPendingRewards}
                           stakeLpPendingRewards={stakeStxUsdaLpPendingRewards}
+                          getLpRoute={'/swap/add/STX/USDA'}
                         />
 
                         {/* Arkadiko V1 STX DIKO LP Token */}
@@ -830,6 +832,7 @@ export const Stake = () => {
                           setShowUnstakeLpModal={setShowUnstakeLp3Modal}
                           claimLpPendingRewards={claimStxDikoLpPendingRewards}
                           stakeLpPendingRewards={stakeStxDikoLpPendingRewards}
+                          getLpRoute={'/swap/add/STX/DIKO'}
                         />
                         
                       </table>

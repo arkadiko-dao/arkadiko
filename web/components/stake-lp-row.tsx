@@ -5,11 +5,12 @@ import { Disclosure } from '@headlessui/react';
 import { InformationCircleIcon, ChevronUpIcon } from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
 import { Placeholder } from './placeholder';
+import { NavLink as RouterLink } from 'react-router-dom';
 
 interface StakeLpRowProps {
 }
 
-export const StakeLpRow: React.FC<StakeLpRowProps> = ({ loadingData, tokenListItemX, tokenListItemY, balance, pendingRewards, stakedAmount, apy, emissionsStarted, poolInfo, setShowStakeLpModal, setShowUnstakeLpModal, claimLpPendingRewards, stakeLpPendingRewards }) => {
+export const StakeLpRow: React.FC<StakeLpRowProps> = ({ loadingData, tokenListItemX, tokenListItemY, balance, pendingRewards, stakedAmount, apy, emissionsStarted, poolInfo, setShowStakeLpModal, setShowUnstakeLpModal, claimLpPendingRewards, stakeLpPendingRewards, getLpRoute }) => {
   return (
     <Disclosure as="tbody" className="bg-white">
       {({ open }) => (
@@ -118,7 +119,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({ loadingData, tokenListIt
           </tr>
           <Disclosure.Panel as="tr">
             <td className="px-6 py-4 text-sm whitespace-nowrap">
-              <button type="button" className="inline-flex items-center px-4 py-2 text-sm leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Get LP</button>
+              <RouterLink to={getLpRoute} className="inline-flex items-center px-4 py-2 text-sm leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Get Lp</RouterLink>
             </td>
             <td className="px-6 py-4 text-sm whitespace-nowrap"/>
             <td className="px-6 py-4 text-sm whitespace-nowrap">
