@@ -96,7 +96,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({ loadingData, tokenListIt
                 <span>Actions</span>
                 <ChevronUpIcon
                   className={`${
-                    open ? 'transform rotate-180 transition ease-in-out duration-300' : ''
+                    open ? '' : 'transform rotate-180 transition ease-in-out duration-300'
                   } ml-2 w-5 h-5 text-indigo-500`}
                 />
               </Disclosure.Button>

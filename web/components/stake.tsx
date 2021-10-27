@@ -25,6 +25,7 @@ import {
   QuestionMarkCircleIcon,
   ExternalLinkIcon,
   InformationCircleIcon,
+  ChevronDownIcon,
   XIcon } from '@heroicons/react/solid';
 import { Placeholder } from './placeholder';
 import { Tooltip } from '@blockstack/ui';
@@ -539,7 +540,7 @@ export const Stake = () => {
                     <h3 className="text-sm font-semibold text-blue-800">Unstaked LP tokens</h3>
                     <div className="mt-2 text-sm text-blue-700">
                       <p>👀 We noticed that your wallet contains LP Tokens that are not staked yet.</p>
-                      <p className="mt-1">If you want to stake them, pick the appropriate token in the table below and hit the <DotsVerticalIcon className="inline w-4 h-4" aria-hidden="true" /> icon to open the actions menu and initiate staking.
+                      <p className="mt-1">If you want to stake them, pick the appropriate token in the table below and hit the <ChevronDownIcon className="inline w-4 h-4" aria-hidden="true" /> icon to open the actions menu and initiate staking.
                       </p>
                     </div>
                   </div>
