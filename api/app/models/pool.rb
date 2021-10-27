@@ -44,4 +44,16 @@ class Pool < ApplicationRecord
     end
     prices
   end
+
+  def tvl
+    add_events = swap_events.where(function_name: 'add-to-position')
+    remove_events = swap_events.where(function_name: 'reduce-position')
+
+    added_x = add_events.sum(:token_x_amount).to_i
+    added_y = add_events.sum(:token_y_amount).to_i
+    removed_x = remove_events.sum(:token_x_amount).to_i
+    removed_y = remove_events.sum(:token_y_amount).to_i
+
+    [added_x - removed_x, added_y - removed_y]
+  end
 end
