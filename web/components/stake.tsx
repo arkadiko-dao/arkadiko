@@ -238,10 +238,10 @@ export const Stake = () => {
       let stxDikoStakedValue = await stakedValue("arkadiko-stake-pool-wstx-diko-v1-1", stxDikoLpStaked);
       setStxDikoPoolInfo(stxDikoStakedValue);
 
-      if (currentBlock < REWARDS_START_BLOCK_HEIGHT) {
-        setLoadingData(false);
-        return;
-      }
+      // if (currentBlock < REWARDS_START_BLOCK_HEIGHT) {
+      //   setLoadingData(false);
+      //   return;
+      // }
       setEmissionsStarted(true);
 
       let dikoUsdaLpPendingRewards = await fetchLpPendingRewards("arkadiko-stake-pool-diko-usda-v1-1");
@@ -264,7 +264,7 @@ export const Stake = () => {
       setApy(Number((100 * dikoApr).toFixed(2)));
 
       if (totalDikoUsdaStaked === 0) { totalDikoUsdaStaked = 10 };
-      const dikoUsdaPoolRewards = totalStakingRewardsYear1 * 0.2;
+      const dikoUsdaPoolRewards = totalStakingRewardsYear1 * 0.25;
       const dikoUsdaApr = dikoUsdaPoolRewards / totalDikoUsdaStaked;
       setDikoUsdaLpApy(Number((100 * dikoUsdaApr).toFixed(2)));
 
@@ -274,7 +274,7 @@ export const Stake = () => {
       setStxUsdaLpApy(Number((100 * stxUsdaApr).toFixed(2)));
 
       if (totalStxDikoStaked === 0) { totalStxDikoStaked = 10 };
-      const stxDikoPoolRewards = totalStakingRewardsYear1 * 0.2;
+      const stxDikoPoolRewards = totalStakingRewardsYear1 * 0.15;
       const stxDikoApr = stxDikoPoolRewards / totalStxDikoStaked;
       setStxDikoLpApy(Number((100 * stxDikoApr).toFixed(2)));
 
