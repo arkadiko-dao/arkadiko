@@ -57,6 +57,24 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "stake-registry: set pool data",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-registry-v1-1", "set-pool-data", [
+        types.principal('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-usda-v1-1'),
+        types.ascii("test"),
+        types.uint(1),
+        types.uint(0),
+        types.uint(0)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk();
+  }
+});
+
+Clarinet.test({
 name: "stake-registry: stake and unstake",
 async fn(chain: Chain, accounts: Map<string, Account>) {
   let deployer = accounts.get("deployer")!;

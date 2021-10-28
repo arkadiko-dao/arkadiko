@@ -59,6 +59,7 @@ export const Stake = () => {
   const [loadingData, setLoadingData] = useState(true);
   const [hasUnstakedTokens, setHasUnstakedTokens] = useState(false);
   const [emissionsStarted, setEmissionsStarted] = useState(false);
+  const [canStakeLp, _] = useState(false);
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -84,7 +85,6 @@ export const Stake = () => {
       const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
       const data = await response.json();
       let currentBlock = data['stacks_tip_height'];
-      const REWARDS_START_BLOCK_HEIGHT = 35300;
 
       const stDikoSupplyCall = await callReadOnlyFunction({
         contractAddress,
@@ -148,11 +148,6 @@ export const Stake = () => {
       });
       let stxDikoLpStaked = cvToJSON(userLpStxDikoStakedCall).value;
       setLpStxDikoStakedAmount(stxDikoLpStaked);
-
-      // if (currentBlock < REWARDS_START_BLOCK_HEIGHT) {
-      //   setLoadingData(false);
-      //   return;
-      // }
       setEmissionsStarted(true);
 
       const dikoUsdaPendingRewardsCall = await callReadOnlyFunction({
@@ -767,7 +762,7 @@ export const Stake = () => {
                             <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
                               {state.balance['dikousda'] > 0 || lpDikoUsdaStakedAmount || lpDikoUsdaPendingRewards ? (
                                 <StakeActions>
-                                  {state.balance['dikousda'] > 0 ? (
+                                  {state.balance['dikousda'] > 0 && canStakeLp ? (
                                     <Menu.Item>
                                       {({ active }) => (
                                         <button
@@ -897,7 +892,7 @@ export const Stake = () => {
                             <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
                               {state.balance['wstxusda'] > 0 || lpStxUsdaStakedAmount || lpStxUsdaPendingRewards ? (
                                 <StakeActions>
-                                  {state.balance['wstxusda'] > 0 ? (
+                                  {state.balance['wstxusda'] > 0 && canStakeLp ? (
                                     <Menu.Item>
                                       {({ active }) => (
                                         <button
@@ -1027,7 +1022,7 @@ export const Stake = () => {
                             <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
                               {state.balance['wstxdiko'] > 0 || lpStxDikoStakedAmount || lpStxDikoPendingRewards ? (
                                 <StakeActions>
-                                  {state.balance['wstxdiko'] > 0 ? (
+                                  {state.balance['wstxdiko'] > 0 && canStakeLp ? (
                                     <Menu.Item>
                                       {({ active }) => (
                                         <button
