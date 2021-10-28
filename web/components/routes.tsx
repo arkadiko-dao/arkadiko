@@ -39,8 +39,6 @@ export function Routes() {
       <Route exact path="/onboarding/end" component={OnboardingEnd} />
       <Route exact path="/vaults" component={Home} />
       <Route exact path="/pool" component={Pool} />
-      <Route exact path="/swap/add/:currencyIdA/:currencyIdB" component={AddSwapLiquidity} />
-      <Route exact path="/swap/remove/:currencyIdA/:currencyIdB" component={RemoveSwapLiquidity} />
 
       <Route exact path="/auctions" component={Auctions} />
       <Route exact path="/governance" component={Governance} />
