@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ThemeProvider, theme, Tooltip } from '@blockstack/ui';
+import { ThemeProvider, theme } from '@blockstack/ui';
 import { Connect } from '@stacks/connect-react';
 import { AuthOptions } from '@stacks/connect';
 import { UserSession, AppConfig } from '@stacks/auth';
@@ -13,6 +13,7 @@ import { callReadOnlyFunction, cvToJSON, stringAsciiCV } from '@stacks/transacti
 import { resolveSTXAddress } from '@common/use-stx-address';
 import { TxStatus } from '@components/tx-status';
 import { TxSidebar } from '@components/tx-sidebar';
+import { Banner } from '@components/banner';
 import { useLocation } from 'react-router-dom';
 import { initiateConnection } from '@common/websocket-tx-updater';
 import ScrollToTop from '@components/scroll-to-top';
@@ -220,6 +221,7 @@ export const App: React.FC = () => {
             {state.userData && (location.pathname.indexOf('/onboarding') != 0 ) ? (
               <SubHeader />
             ) : null}
+            <Banner />
             <TxStatus />
             
             <TxSidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
