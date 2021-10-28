@@ -8,7 +8,7 @@ export const Banner = () => {
         <div className="flex flex-wrap items-center justify-between">
           <div className="flex items-center flex-1 w-0">
             <span className="flex p-2 bg-yellow-100 rounded-lg">
-              <ExclamationIcon className="w-6 h-6 text-yellow-400" aria-hidden="true" />
+              <ExclamationIcon className="w-6 h-6 text-yellow-700" aria-hidden="true" />
             </span>
             <p className="ml-3 text-yellow-700 truncate">
               <span className="md:hidden">Announcement</span>
