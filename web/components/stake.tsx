@@ -621,7 +621,7 @@ export const Stake = () => {
                       {loadingData ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF}/>
                       ) : (
-                        <p className="text-lg font-semibold">${dikoCooldown}</p>
+                        <p className="text-lg font-semibold">{dikoCooldown}</p>
                       )}
                       <p className="flex items-center text-base font-normal leading-6 text-gray-500">
                         Cooldown status
