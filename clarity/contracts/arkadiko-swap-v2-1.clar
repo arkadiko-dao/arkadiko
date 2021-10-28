@@ -26,12 +26,21 @@
 (define-constant no-fee-y-err (err u76))
 
 (define-data-var swap-shutdown-activated bool false)
+(define-data-var can-add-pairs bool true)
 
 (define-public (toggle-swap-shutdown)
   (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
 
     (ok (var-set swap-shutdown-activated (not (var-get swap-shutdown-activated))))
+  )
+)
+
+(define-public (toggle-add-pairs)
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
+    
+    (ok (var-set can-add-pairs (not (var-get can-add-pairs))))
   )
 )
 
@@ -66,7 +75,6 @@
 )
 
 (define-data-var pair-count uint u0)
-(define-data-var pairs-list (list 2000 uint) (list ))
 
 (define-read-only (get-name (token-x-trait <ft-trait>) (token-y-trait <ft-trait>))
   (let
@@ -245,10 +253,6 @@
   (ok (var-get pair-count))
 )
 
-(define-read-only (get-pairs)
-  (ok (map get-pair-contracts (var-get pairs-list)))
-)
-
 ;; @desc create a new pair
 ;; @param token-x-trait; first token of pair
 ;; @param token-y-trait; second token of pair
@@ -290,11 +294,11 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
+    (asserts! (is-eq (var-get can-add-pairs) true))
     (try! (register-swap-token (contract-of swap-token-trait)))
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-data)
     (map-set pairs-map { pair-id: pair-id } { token-x: token-x, token-y: token-y })
-    (var-set pairs-list (unwrap! (as-max-len? (append (var-get pairs-list) pair-id) u2000) too-many-pairs-err))
     (var-set pair-count pair-id)
     (try! (add-to-position token-x-trait token-y-trait swap-token-trait x y))
     (print { object: "pair", action: "created", data: pair-data })

@@ -253,6 +253,10 @@ path = "contracts/xstx-token.clar"
 depends_on = ["arkadiko-token"]
 path = "contracts/arkadiko-diko-init.clar"
 
+[contracts.arkadiko-burn-usda]
+depends_on = []
+path = "contracts/arkadiko-burn-usda.clar"
+
 [contracts.sip-010-trait-ft-standard]
 depends_on = []
 path = "contracts/sip-010-trait-ft-standard.clar"
