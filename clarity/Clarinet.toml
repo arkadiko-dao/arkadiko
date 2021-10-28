@@ -197,6 +197,10 @@ path = "contracts/arkadiko-stake-pool-wstx-diko-v1-1.clar"
 depends_on = ["sip-010-trait-ft-standard", "arkadiko-swap-trait-v1", "wrapped-stx-token"]
 path = "contracts/arkadiko-swap-v1-1.clar"
 
+[contracts.arkadiko-swap-v2-1]
+depends_on = ["sip-010-trait-ft-standard", "arkadiko-swap-trait-v1", "wrapped-stx-token"]
+path = "contracts/arkadiko-swap-v2-1.clar"
+
 [contracts.arkadiko-swap-trait-v1]
 depends_on = []
 path = "contracts/arkadiko-swap-trait-v1.clar"

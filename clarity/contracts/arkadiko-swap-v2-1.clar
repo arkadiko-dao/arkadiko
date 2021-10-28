@@ -60,6 +60,11 @@
   }
 )
 
+(define-map registered-swap-tokens
+  { swap-token: principal }
+  { registered: bool }
+)
+
 (define-data-var pair-count uint u0)
 (define-data-var pairs-list (list 2000 uint) (list ))
 
@@ -137,6 +142,10 @@
     )
     (ok (merge token-data { balances: balances }))
   )
+)
+
+(define-read-only (is-registered-swap-token (swap-token principal))
+  (is-some (map-get? registered-swap-tokens { swap-token: swap-token }))
 )
 
 ;; @desc add liquidity to a pair
@@ -274,6 +283,7 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
+    (asserts! (is-eq (is-registered-swap-token (contract-of swap-token-trait)) false) (err ERR-NOT-AUTHORIZED))
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-data)
     (map-set pairs-map { pair-id: pair-id } { token-x: token-x, token-y: token-y })
@@ -502,6 +512,13 @@
     (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
   )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get swap-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
 
     (map-set pairs-data-map
       { token-x: token-x, token-y: token-y }
@@ -530,16 +547,21 @@
 ;; @param token-y-trait; second token of pair
 ;; @post list; fees for token-x and fees for token-y
 (define-public (collect-fees (token-x-trait <ft-trait>) (token-y-trait <ft-trait>))
-  (let
-    (
-      (token-x (contract-of token-x-trait))
-      (token-y (contract-of token-y-trait))
-      (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
-      (address (unwrap! (get fee-to-address pair) (err ERR-NO-FEE-TO-ADDRESS)))
-      (fee-x (get fee-balance-x pair))
-      (fee-y (get fee-balance-y pair))
+  (let (
+    (token-x (contract-of token-x-trait))
+    (token-y (contract-of token-y-trait))
+    (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
+    (address (unwrap! (get fee-to-address pair) (err ERR-NO-FEE-TO-ADDRESS)))
+    (fee-x (get fee-balance-x pair))
+    (fee-y (get fee-balance-y pair))
+  )
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get swap-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-
     (asserts! (is-eq fee-x u0) no-fee-x-err)
     (asserts! (is-ok (contract-call? token-x-trait transfer fee-x (as-contract tx-sender) address none)) transfer-x-failed-err)
     (asserts! (is-eq fee-y u0) no-fee-y-err)
