@@ -148,6 +148,13 @@
   (is-some (map-get? registered-swap-tokens { swap-token: swap-token }))
 )
 
+(define-public (register-swap-token (swap-token principal))
+  (begin
+    (asserts! (is-eq (is-registered-swap-token swap-token) false) (err ERR-NOT-AUTHORIZED))
+    (map-set { swap-token: swap-token } { registered: true })
+  )
+)
+
 ;; @desc add liquidity to a pair
 ;; @param token-x-trait; first token of pair
 ;; @param token-y-trait; second token of pair
@@ -283,7 +290,7 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-    (asserts! (is-eq (is-registered-swap-token (contract-of swap-token-trait)) false) (err ERR-NOT-AUTHORIZED))
+    (try! (register-swap-token (contract-of swap-token-trait)))
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-data)
     (map-set pairs-map { pair-id: pair-id } { token-x: token-x, token-y: token-y })
