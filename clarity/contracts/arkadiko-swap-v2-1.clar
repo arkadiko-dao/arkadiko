@@ -294,7 +294,7 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-    (asserts! (is-eq (var-get can-add-pairs) true))
+    (asserts! (is-eq (var-get can-add-pairs) true) (err ERR-NOT-AUTHORIZED))
     (try! (register-swap-token (contract-of swap-token-trait)))
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-data)
