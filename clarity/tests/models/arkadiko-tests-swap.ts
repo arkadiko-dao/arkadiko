@@ -157,12 +157,5 @@ class Swap {
     ]);
     return block.receipts[0].result;
   }
-
-  toggleAddPairs() {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-swap-v1-1", "toggle-add-pairs", [], this.deployer.address)
-    ]);
-    return block.receipts[0].result;
-  }
 }
 export { Swap };

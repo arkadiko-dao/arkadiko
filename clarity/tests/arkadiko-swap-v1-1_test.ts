@@ -547,21 +547,16 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "swap: disable/enable adding pairs",
+  name: "swap: allow DAO keys to add pairs only",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
     let swap = new Swap(chain, deployer);
 
-    let result = swap.toggleAddPairs();
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
     result.expectOk().expectBool(true);
 
-    result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
-    result.expectErr().expectUint(20401);
-
-    result = swap.toggleAddPairs();
-    result.expectOk().expectBool(true);
-
-    result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
-    result.expectOk().expectBool(true);
+    result = swap.createPair(wallet_1, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
+    result.expectErr().expectUint(20401);    
   }
 });

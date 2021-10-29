@@ -27,21 +27,12 @@
 (define-constant no-fee-y-err (err u76))
 
 (define-data-var swap-shutdown-activated bool false)
-(define-data-var can-add-pairs bool true)
 
 (define-public (toggle-swap-shutdown)
   (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
 
     (ok (var-set swap-shutdown-activated (not (var-get swap-shutdown-activated))))
-  )
-)
-
-(define-public (toggle-add-pairs)
-  (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
-
-    (ok (var-set can-add-pairs (not (var-get can-add-pairs))))
   )
 )
 
@@ -283,6 +274,7 @@
         name: pair-name,
       })
     )
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
     (asserts!
       (and
         (is-none (map-get? pairs-data-map { token-x: token-x, token-y: token-y }))
@@ -297,7 +289,6 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-    (asserts! (is-eq (var-get can-add-pairs) true) (err ERR-NOT-AUTHORIZED))
     (try! (register-swap-token (contract-of swap-token-trait)))
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-data)
