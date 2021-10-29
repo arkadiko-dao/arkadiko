@@ -48,7 +48,7 @@
 ;; Result with 6 decimals
 (define-read-only (stx-shares-ratio)
   (let (
-    ;; TODO: this is not correct, part of funds might be in LP
+    ;; TODO: this is not correct, part of funds might be in LP or auction
     (contract-stx-balance (stx-get-balance (as-contract tx-sender)))
   )
     (if (is-eq (var-get total-shares) u0)
@@ -62,7 +62,7 @@
 (define-read-only (shares-for-stx (shares-amount uint))
   (let (
     ;; STX in contract
-    ;; TODO: this is not correct, part of funds might be in LP
+    ;; TODO: this is not correct, part of funds might be in LP or auction
     (contract-stx-balance (stx-get-balance (as-contract tx-sender)))
 
     ;; User shares percentage
