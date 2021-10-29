@@ -51,6 +51,7 @@ export const UnstakeLpModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAm
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
         setShowUnstakeModal(false);
       },
+      postConditionMode: 0x01,
       anchorMode: AnchorMode.Any
     });
   };
