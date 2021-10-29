@@ -161,7 +161,16 @@ export const Stake = () => {
       const pairDetails = cvToJSON(pairDetailsCall).value.value.value;
 
       if (!cvToJSON(pairDetailsCall)['success']) {
-        return {tokenX: tokenXName, tokenY: tokenYName, tokenXAmount: 0, tokenYAmount: 0, value: 0};
+        return {
+          tokenX: tokenXName, 
+          tokenY: tokenYName, 
+          stakedTokenXAmount: 0, 
+          stakedTokenYAmount: 0, 
+          stakedValue: 0,
+          walletTokenXAmount: 0, 
+          walletTokenYAmount: 0, 
+          walletValue: 0
+        };
       }
 
       // Calculate user balance
