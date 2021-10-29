@@ -21,8 +21,16 @@ class LiquidationFund {
     this.deployer = deployer;
   }
 
+  getTotalShares() {
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-fund-v1-1", "get-total-shares", [], this.deployer.address);
+  }
+
   getShares(user: Account) {
     return this.chain.callReadOnlyFn("arkadiko-liquidation-fund-v1-1", "get-shares-stx-for-wallet", [types.principal(user.address)], user.address);
+  }
+
+  getSharesToStx(sharesAmount: number) {
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-fund-v1-1", "shares-for-stx", [types.uint(sharesAmount * 1000000)], this.deployer.address);
   }
 
   getStxBalance() {

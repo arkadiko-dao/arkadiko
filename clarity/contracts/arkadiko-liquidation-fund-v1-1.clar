@@ -66,10 +66,10 @@
     (contract-stx-balance (stx-get-balance (as-contract tx-sender)))
 
     ;; User shares percentage
-    (shares-percentage (/ (* shares-amount u1000000) (var-get total-shares)))
+    (shares-percentage (/ (* shares-amount u10000000000000000) (var-get total-shares)))
 
     ;; Amount of STX the user will receive
-    (stx-to-receive (/ (* shares-percentage contract-stx-balance) u1000000))
+    (stx-to-receive (/ (* shares-percentage contract-stx-balance) u10000000000000000))
   )
     (ok stx-to-receive)
   )

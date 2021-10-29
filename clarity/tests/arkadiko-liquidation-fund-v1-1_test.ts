@@ -55,6 +55,55 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "liquidation-fund: deposit and withdraw STX",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let liquidationFund = new LiquidationFund(chain, deployer);
+
+    // Deposit
+    let result = liquidationFund.depositStx(wallet_1, 10000000);
+    result.expectOk().expectUintWithDecimals(10000000)
+
+    result = liquidationFund.depositStx(wallet_2, 100);
+    result.expectOk().expectUintWithDecimals(100)
+
+    // Shares
+    let call = liquidationFund.getShares(wallet_1);
+    call.result.expectUintWithDecimals(10000000);
+
+    call = liquidationFund.getShares(wallet_2);
+    call.result.expectUintWithDecimals(100);
+
+    // Shares and STX
+    call = liquidationFund.getTotalShares();
+    call.result.expectUintWithDecimals(10000100);
+
+    call = liquidationFund.getStxBalance();
+    call.result.expectUintWithDecimals(10000100);
+
+    // Withdraw
+    result = liquidationFund.withdrawStx(wallet_1, 10000000);
+    result.expectOk().expectUintWithDecimals(9999999.999999)
+
+    result = liquidationFund.withdrawStx(wallet_2, 100);
+    result.expectOk().expectUintWithDecimals(100.000001)
+
+    // Shares
+    call = liquidationFund.getShares(wallet_1);
+    call.result.expectUintWithDecimals(0);
+    
+    call = liquidationFund.getShares(wallet_2);
+    call.result.expectUintWithDecimals(0);
+
+    call = liquidationFund.getTotalShares();
+    call.result.expectUintWithDecimals(0);
+  }
+});
+
+Clarinet.test({
   name: "liquidation-fund: deposit and claim staking rewards",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
