@@ -29,6 +29,10 @@
    }
 )
 
+(define-read-only (get-total-shares)
+  (var-get total-shares)
+)
+
 (define-read-only (get-shares-stx-for-wallet (wallet principal))
   (default-to 
     u0
@@ -44,6 +48,7 @@
 ;; Result with 6 decimals
 (define-read-only (stx-shares-ratio)
   (let (
+    ;; TODO: this is not correct, part of funds might be in LP
     (contract-stx-balance (stx-get-balance (as-contract tx-sender)))
   )
     (if (is-eq (var-get total-shares) u0)
@@ -57,6 +62,7 @@
 (define-read-only (shares-for-stx (shares-amount uint))
   (let (
     ;; STX in contract
+    ;; TODO: this is not correct, part of funds might be in LP
     (contract-stx-balance (stx-get-balance (as-contract tx-sender)))
 
     ;; User shares percentage
