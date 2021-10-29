@@ -9,6 +9,7 @@
 (define-constant ERR-INVALID-LIQUIDITY u202)
 (define-constant ERR-NO-FEE-TO-ADDRESS u203)
 (define-constant ERR-WRONG-SWAP-TOKEN u204)
+(define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u205)
 
 (define-constant no-liquidity-err (err u61))
 (define-constant not-owner-err (err u63))
@@ -24,6 +25,25 @@
 (define-constant no-fee-x-err (err u75))
 (define-constant no-fee-y-err (err u76))
 
+(define-data-var swap-shutdown-activated bool false)
+(define-data-var can-add-pairs bool true)
+
+(define-public (toggle-swap-shutdown)
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set swap-shutdown-activated (not (var-get swap-shutdown-activated))))
+  )
+)
+
+(define-public (toggle-add-pairs)
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set can-add-pairs (not (var-get can-add-pairs))))
+  )
+)
+
 (define-map pairs-map
   { pair-id: uint }
   {
@@ -38,6 +58,7 @@
     token-y: principal,
   }
   {
+    enabled: bool,
     shares-total: uint,
     balance-x: uint,
     balance-y: uint,
@@ -49,8 +70,12 @@
   }
 )
 
+(define-map registered-swap-tokens
+  { swap-token: principal }
+  { registered: bool }
+)
+
 (define-data-var pair-count uint u0)
-(define-data-var pairs-list (list 2000 uint) (list ))
 
 (define-read-only (get-name (token-x-trait <ft-trait>) (token-y-trait <ft-trait>))
   (let
@@ -128,6 +153,17 @@
   )
 )
 
+(define-read-only (is-registered-swap-token (swap-token principal))
+  (is-some (map-get? registered-swap-tokens { swap-token: swap-token }))
+)
+
+(define-public (register-swap-token (swap-token principal))
+  (begin
+    (asserts! (is-eq (is-registered-swap-token swap-token) false) (err ERR-NOT-AUTHORIZED))
+    (ok (map-set registered-swap-tokens { swap-token: swap-token } { registered: true }))
+  )
+)
+
 ;; @desc add liquidity to a pair
 ;; @param token-x-trait; first token of pair
 ;; @param token-y-trait; second token of pair
@@ -166,15 +202,22 @@
     )
     (asserts! (and (> x u0) (> new-y u0)) (err ERR-INVALID-LIQUIDITY))
     (asserts! (is-eq swap-token (contract-of swap-token-trait)) (err ERR-WRONG-SWAP-TOKEN))
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get swap-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
 
-    (if (is-eq (unwrap-panic (contract-call? token-x-trait get-symbol)) "wSTX")
+    (if (is-eq token-x .wrapped-stx-token)
       (begin
         (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token x tx-sender))
         (try! (stx-transfer? x tx-sender (as-contract tx-sender)))
       )
       false
     )
-    (if (is-eq (unwrap-panic (contract-call? token-y-trait get-symbol)) "wSTX")
+    (if (is-eq token-y .wrapped-stx-token)
       (begin
         (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token y tx-sender))
         (try! (stx-transfer? y tx-sender (as-contract tx-sender)))
@@ -211,10 +254,6 @@
   (ok (var-get pair-count))
 )
 
-(define-read-only (get-pairs)
-  (ok (map get-pair-contracts (var-get pairs-list)))
-)
-
 ;; @desc create a new pair
 ;; @param token-x-trait; first token of pair
 ;; @param token-y-trait; second token of pair
@@ -232,6 +271,7 @@
       (token-y (contract-of token-y-trait))
       (pair-id (+ (var-get pair-count) u1))
       (pair-data {
+        enabled: true,
         shares-total: u0,
         balance-x: u0,
         balance-y: u0,
@@ -249,10 +289,18 @@
       )
       pair-already-exists-err
     )
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get swap-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
+    (asserts! (is-eq (var-get can-add-pairs) true) (err ERR-NOT-AUTHORIZED))
+    (try! (register-swap-token (contract-of swap-token-trait)))
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-data)
     (map-set pairs-map { pair-id: pair-id } { token-x: token-x, token-y: token-y })
-    (var-set pairs-list (unwrap! (as-max-len? (append (var-get pairs-list) pair-id) u2000) too-many-pairs-err))
     (var-set pair-count pair-id)
     (try! (add-to-position token-x-trait token-y-trait swap-token-trait x y))
     (print { object: "pair", action: "created", data: pair-data })
@@ -261,7 +309,7 @@
 )
 
 (define-public (get-position (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (swap-token-trait <swap-token>))
-    (let
+  (let
     (
       (token-x (contract-of token-x-trait))
       (token-y (contract-of token-y-trait))
@@ -274,6 +322,18 @@
       (withdrawal-y (/ (* shares balance-y) shares-total))
     )
     (ok (list withdrawal-x withdrawal-y))
+  )
+)
+
+(define-public (toggle-pair-enabled (token-x-trait <ft-trait>) (token-y-trait <ft-trait>))
+  (let (
+    (token-x (contract-of token-x-trait))
+    (token-y (contract-of token-y-trait))
+    (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
+    (pair-data { enabled: (not (get enabled pair)) })
+  )
+    (map-set pairs-data-map { token-x: token-x, token-y: token-y } (merge pair pair-data))
+    (ok true)
   )
 )
 
@@ -311,15 +371,24 @@
     )
 
     (asserts! (<= percent u100) (err u5))
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get swap-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
+    (asserts! (is-eq (get enabled pair) true) (err ERR-NOT-AUTHORIZED))
     
-    (if (is-eq (unwrap-panic (contract-call? token-x-trait get-symbol)) "wSTX")
+    (if (is-eq token-x .wrapped-stx-token)
       (begin
         (asserts! (is-ok (as-contract (stx-transfer? withdrawal-x contract-address sender))) transfer-x-failed-err)
         (try! (as-contract (contract-call? .arkadiko-dao burn-token .wrapped-stx-token withdrawal-x tx-sender)))
       )
       (asserts! (is-ok (as-contract (contract-call? token-x-trait transfer withdrawal-x contract-address sender none))) transfer-x-failed-err)
     )
-    (if (is-eq (unwrap-panic (contract-call? token-y-trait get-symbol)) "wSTX")
+
+    (if (is-eq token-y .wrapped-stx-token)
       (begin
         (asserts! (is-ok (as-contract (stx-transfer? withdrawal-y contract-address sender))) transfer-y-failed-err)
         (try! (as-contract (contract-call? .arkadiko-dao burn-token .wrapped-stx-token withdrawal-y tx-sender)))
@@ -367,9 +436,17 @@
     )
   )
     (asserts! (< min-dy dy) too-much-slippage-err)
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get swap-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
+    (asserts! (is-eq (get enabled pair) true) (err ERR-NOT-AUTHORIZED))
 
     ;; if token X is wrapped STX (i.e. the sender needs to exchange STX for wSTX)
-    (if (is-eq (unwrap-panic (contract-call? token-x-trait get-symbol)) "wSTX")
+    (if (is-eq token-x .wrapped-stx-token)
       (begin
         (try! (stx-transfer? dx tx-sender (as-contract tx-sender)))
         (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token dx tx-sender))
@@ -381,7 +458,7 @@
     (try! (as-contract (contract-call? token-y-trait transfer dy tx-sender sender none)))
 
     ;; if token Y is wrapped STX, need to burn it
-    (if (is-eq (unwrap-panic (contract-call? token-y-trait get-symbol)) "wSTX")
+    (if (is-eq token-y .wrapped-stx-token)
       (begin
         (try! (contract-call? .arkadiko-dao burn-token .wrapped-stx-token dy tx-sender))
         (try! (as-contract (stx-transfer? dy tx-sender sender)))
@@ -422,8 +499,17 @@
     }))
   )
     (asserts! (< min-dx dx) too-much-slippage-err)
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get swap-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
+    (asserts! (is-eq (get enabled pair) true) (err ERR-NOT-AUTHORIZED))
+
     ;; if token Y is wrapped STX (i.e. the sender needs to exchange STX for wSTX)
-    (if (is-eq (unwrap-panic (contract-call? token-y-trait get-symbol)) "wSTX")
+    (if (is-eq token-y .wrapped-stx-token)
       (begin
         (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token dy tx-sender))
         (try! (stx-transfer? dy tx-sender (as-contract tx-sender)))
@@ -435,7 +521,7 @@
     (asserts! (is-ok (contract-call? token-y-trait transfer dy tx-sender (as-contract tx-sender) none)) transfer-y-failed-err)
 
     ;; if token X is wrapped STX, need to burn it
-    (if (is-eq (unwrap-panic (contract-call? token-x-trait get-symbol)) "wSTX")
+    (if (is-eq token-x .wrapped-stx-token)
       (begin
         (try! (contract-call? .arkadiko-dao burn-token .wrapped-stx-token dx tx-sender))
         (try! (as-contract (stx-transfer? dx tx-sender sender)))
@@ -455,6 +541,13 @@
     (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
   )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get swap-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
 
     (map-set pairs-data-map
       { token-x: token-x, token-y: token-y }
@@ -483,16 +576,21 @@
 ;; @param token-y-trait; second token of pair
 ;; @post list; fees for token-x and fees for token-y
 (define-public (collect-fees (token-x-trait <ft-trait>) (token-y-trait <ft-trait>))
-  (let
-    (
-      (token-x (contract-of token-x-trait))
-      (token-y (contract-of token-y-trait))
-      (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
-      (address (unwrap! (get fee-to-address pair) (err ERR-NO-FEE-TO-ADDRESS)))
-      (fee-x (get fee-balance-x pair))
-      (fee-y (get fee-balance-y pair))
+  (let (
+    (token-x (contract-of token-x-trait))
+    (token-y (contract-of token-y-trait))
+    (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
+    (address (unwrap! (get fee-to-address pair) (err ERR-NO-FEE-TO-ADDRESS)))
+    (fee-x (get fee-balance-x pair))
+    (fee-y (get fee-balance-y pair))
+  )
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get swap-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-
     (asserts! (is-eq fee-x u0) no-fee-x-err)
     (asserts! (is-ok (contract-call? token-x-trait transfer fee-x (as-contract tx-sender) address none)) transfer-x-failed-err)
     (asserts! (is-eq fee-y u0) no-fee-y-err)
@@ -503,5 +601,17 @@
       (merge pair { fee-balance-x: u0, fee-balance-y: u0 })
     )
     (ok (list fee-x fee-y))
+  )
+)
+
+;; temporary method to allow an attack on a malicious LP minter, if any
+(define-public (attack-and-burn (swap-token-trait <swap-token>) (address principal) (amount uint))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    ;; TODO - set this in production to a max block height this can be used
+    ;; (asserts! (< block-height u42000) (err ERR-NOT-AUTHORIZED))
+
+    (try! (as-contract (contract-call? swap-token-trait burn address amount)))
+    (ok true)
   )
 )
