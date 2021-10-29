@@ -9,7 +9,7 @@ import {
 import * as Utils from './arkadiko-tests-utils.ts'; Utils;
 
 // ---------------------------------------------------------
-// Oracle
+// Swap
 // ---------------------------------------------------------
 
 class Swap {
@@ -19,6 +19,23 @@ class Swap {
   constructor(chain: Chain, deployer: Account) {
     this.chain = chain;
     this.deployer = deployer;
+  }
+
+  getPairCount() {
+    return this.chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-pair-count", [], this.deployer.address);
+  }
+
+  getPairContracts(pairId: number) {
+    return this.chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-pair-contracts", [
+      types.uint(pairId),
+    ], this.deployer.address);
+  }
+
+  getPairDetails(tokenX: string, tokenY: string) {
+    return this.chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-pair-details", [
+      types.principal(Utils.qualifiedName(tokenX)),
+      types.principal(Utils.qualifiedName(tokenY))
+    ], this.deployer.address);
   }
 
   getBalances(tokenX: string, tokenY: string) {

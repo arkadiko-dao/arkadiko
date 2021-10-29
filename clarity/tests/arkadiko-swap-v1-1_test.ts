@@ -187,6 +187,44 @@ Clarinet.test({
   },
 });
 
+Clarinet.test({
+  name: "swap: get all pairs and info",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    
+    let swap = new Swap(chain, deployer);
+
+    // Create pairs
+    let result:any = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, "arkadiko-swap-token-wstx-usda", "wSTX-USDA", 100, 100);
+    result.expectOk().expectBool(true);
+
+    result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
+    result.expectOk().expectBool(true);
+
+    // Total pairs
+    let call:any = swap.getPairCount();
+    call.result.expectOk().expectUint(2);
+
+    // Pair tokens
+    call = swap.getPairContracts(2);
+    call.result.expectTuple()["token-x"].expectPrincipal(Utils.qualifiedName(dikoTokenAddress))
+    call.result.expectTuple()["token-y"].expectPrincipal(Utils.qualifiedName(usdaTokenAddress))
+
+    // Get all pair details
+    call = swap.getPairDetails(dikoTokenAddress, usdaTokenAddress);
+    call.result.expectOk().expectSome().expectTuple()["balance-x"].expectUintWithDecimals(5000);
+    call.result.expectOk().expectSome().expectTuple()["balance-y"].expectUintWithDecimals(1000);
+    call.result.expectOk().expectSome().expectTuple()["enabled"].expectBool(true);
+    call.result.expectOk().expectSome().expectTuple()["fee-balance-x"].expectUintWithDecimals(0);
+    call.result.expectOk().expectSome().expectTuple()["fee-balance-y"].expectUintWithDecimals(0);
+    call.result.expectOk().expectSome().expectTuple()["fee-balance-y"].expectUintWithDecimals(0);
+    call.result.expectOk().expectSome().expectTuple()["fee-to-address"].expectSome().expectPrincipal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM");
+    call.result.expectOk().expectSome().expectTuple()["swap-token"].expectPrincipal(Utils.qualifiedName(dikoUsdaPoolAddress));
+    call.result.expectOk().expectSome().expectTuple()["name"].expectAscii("DIKO-USDA");
+
+  },
+});
+
 // ---------------------------------------------------------
 // Bad actor
 // ---------------------------------------------------------
@@ -263,6 +301,24 @@ Clarinet.test({
     // Remove from position
     result = swap.reducePosition(deployer, dikoTokenAddress, usdaTokenAddress, "arkadiko-swap-token-wstx-usda", 100);
     result.expectErr().expectUint(204);
+
+  },
+});
+
+Clarinet.test({
+  name: "swap: try to add same pair twice",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    
+    let swap = new Swap(chain, deployer);
+
+    // Create pair
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
+    result.expectOk().expectBool(true);
+
+    // Try to create reversed pair
+    result = swap.createPair(deployer, usdaTokenAddress, dikoTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
+    result.expectErr().expectUint(69);
 
   },
 });

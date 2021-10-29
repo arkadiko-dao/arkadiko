@@ -9,7 +9,7 @@ import {
 import * as Utils from './arkadiko-tests-utils.ts'; Utils;
 
 // ---------------------------------------------------------
-// Oracle
+// Swap
 // ---------------------------------------------------------
 
 class Swap {
