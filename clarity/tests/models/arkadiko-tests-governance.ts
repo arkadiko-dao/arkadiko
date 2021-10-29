@@ -59,11 +59,12 @@ class Governance {
     })
   }
 
-  createProposal(user: Account, startBlock: number, title: string, url: string, contractChanges: string[]) {
+  createProposal(user: Account, startBlock: number, title: string, url: string, contractChanges: string[], voteLength: number = 250) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-governance-v1-1", "propose", [
         types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
         types.uint(startBlock),
+        types.uint(voteLength),
         types.utf8(title),
         types.utf8(url),        
         types.list(contractChanges)
