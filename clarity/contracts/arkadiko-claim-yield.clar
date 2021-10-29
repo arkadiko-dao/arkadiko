@@ -8,6 +8,10 @@
 ;; We might deprecate this claimer once Stacks throughput improves or we find a solution that scales better
 ;;
 
+(use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
+(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
+(use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
+
 (define-constant ERR-NOT-AUTHORIZED u40401)
 
 (define-map claims
@@ -46,15 +50,23 @@
   )
 )
 
-(define-public (claim (vault-id uint))
+(define-public (claim
+  (vault-id uint)
+  (reserve <vault-trait>)
+  (ft <ft-trait>)
+  (coll-type <collateral-types-trait>)
+)
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
     (claim-entry (get-claim-by-vault-id vault-id))
+    (sender tx-sender)
   )
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
 
-    ;; TODO - deposit into vault or send to user?
-
+    (try! (as-contract (stx-transfer? (get ustx claim-entry) tx-sender sender)))
+    (try! (contract-call? .arkadiko-freddie-v1-1 deposit vault-id (get ustx claim-entry) reserve ft coll-type))
     (ok true)
   )
 )
