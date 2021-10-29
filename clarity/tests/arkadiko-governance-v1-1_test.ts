@@ -260,6 +260,49 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "governance: use governance to replace governance",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let governance = new Governance(chain, deployer);
+    let dao = new Dao(chain, deployer);
+
+    // Create proposal to start at block 1
+    let contractChange1 = Governance.contractChange("governance", Utils.qualifiedName('arkadiko-governance-tv1-1'), true, true);
+    let result = governance.createProposal(
+      wallet_1, 
+      1, 
+      "Replace governance",
+      "https://discuss.arkadiko.finance/my/very/long/url/path",
+      [contractChange1]
+    );
+    result.expectOk().expectBool(true);
+
+    // Vote for wallet_1
+    result = governance.voteForProposal(wallet_1, 1, 10);
+    result.expectOk().expectUint(3200);
+
+    // Advance
+    chain.mineEmptyBlock(1500);
+
+    // End proposal
+    result = governance.endProposal(1);
+    result.expectOk().expectUint(3200);
+
+    // Check if proposal updated
+    let call:any = governance.getProposalByID(1);
+    call.result.expectTuple()["is-open"].expectBool(false);
+
+    // Check if DAO updated
+    call = dao.getContractAddressByName("governance");
+    call.result.expectSome().expectPrincipal(deployer.address);
+    call = dao.getQualifiedNameByName("governance");
+    call.result.expectSome().expectPrincipal(Utils.qualifiedName('arkadiko-governance-tv1-1'));
+  }
+});
+
+Clarinet.test({
   name: "governance: end proposal but do not execute",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
