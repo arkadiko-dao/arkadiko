@@ -333,6 +333,8 @@
     (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
     (pair-data { enabled: (not (get enabled pair)) })
   )
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
+
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } (merge pair pair-data))
     (ok true)
   )
