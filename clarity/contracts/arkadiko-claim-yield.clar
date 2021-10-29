@@ -46,7 +46,7 @@
   )
 )
 
-(define-public (fetch-claim (vault-id uint))
+(define-public (claim (vault-id uint))
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
     (claim (get-claim-by-vault-id vault-id))
