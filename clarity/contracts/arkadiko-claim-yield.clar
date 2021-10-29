@@ -37,11 +37,11 @@
 
 (define-public (add-claim (recipient { to: uint, ustx: uint }))
   (let (
-    (claim (get-claim-by-vault-id (get to recipient)))
+    (claim-entry (get-claim-by-vault-id (get to recipient)))
   )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
-    (map-set claims { vault-id: (get to recipient) } { ustx: (+ (get ustx recipient) (get ustx claim)) })
+    (map-set claims { vault-id: (get to recipient) } { ustx: (+ (get ustx recipient) (get ustx claim-entry)) })
     (ok true)
   )
 )
@@ -49,7 +49,7 @@
 (define-public (claim (vault-id uint))
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
-    (claim (get-claim-by-vault-id vault-id))
+    (claim-entry (get-claim-by-vault-id vault-id))
   )
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
 
