@@ -299,6 +299,44 @@ Clarinet.test({
     call.result.expectSome().expectPrincipal(deployer.address);
     call = dao.getQualifiedNameByName("governance");
     call.result.expectSome().expectPrincipal(Utils.qualifiedName('arkadiko-governance-tv1-1'));
+
+    contractChange1 = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
+
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-governance-tv1-1", "propose", [
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
+        types.uint(1504),
+        types.utf8("Replace Oracle"),
+        types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),        
+        types.list([contractChange1])
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-governance-tv1-1", "vote-for", [
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.uint(1),
+        types.uint(10 * 1000000)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectUint(3200);
+
+    // Advance
+    chain.mineEmptyBlock(251);
+
+    // End proposal
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-governance-tv1-1", "end-proposal", [
+        types.uint(1)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectUint(3200);
+
+    // // Check if proposal updated
+    call = chain.callReadOnlyFn("arkadiko-governance-tv1-1", "get-proposal-by-id", [types.uint(1)], deployer.address)
+    call.result.expectTuple()["is-open"].expectBool(false);
   }
 });
 
