@@ -124,5 +124,28 @@ class Swap {
     return block.receipts[0].result;
   }
 
+  togglePairEnabled(tokenX: string, tokenY: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-swap-v1-1", "toggle-pair-enabled", [
+        types.principal(Utils.qualifiedName(tokenX)),
+        types.principal(Utils.qualifiedName(tokenY))
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  toggleShutdown() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-swap-v1-1", "toggle-swap-shutdown", [], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  toggleAddPairs() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-swap-v1-1", "toggle-add-pairs", [], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
 }
 export { Swap };

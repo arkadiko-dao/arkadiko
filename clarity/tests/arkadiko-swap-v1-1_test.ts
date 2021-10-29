@@ -19,9 +19,10 @@ import {
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 
-const dikoTokenAddress = 'arkadiko-token'
-const usdaTokenAddress = 'usda-token'
-const dikoUsdaPoolAddress = 'arkadiko-swap-token-diko-usda'
+const dikoTokenAddress = 'arkadiko-token';
+const usdaTokenAddress = 'usda-token';
+const dikoUsdaPoolAddress = 'arkadiko-swap-token-diko-usda';
+const wstxTokenAddress = 'wrapped-stx-token';
 
 Clarinet.test({
   name: "swap: create pair, add and remove liquidity",
@@ -402,4 +403,109 @@ Clarinet.test({
     call.result.expectOk().expectList()[0].expectUintWithDecimals(0.1);
     call.result.expectOk().expectList()[1].expectUintWithDecimals(0.02);
   },
+});
+
+Clarinet.test({
+  name: "swap: allow each LP token once per pair",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let swap = new Swap(chain, deployer);
+
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
+    result.expectOk().expectBool(true);
+
+    result = swap.createPair(deployer, wstxTokenAddress, dikoTokenAddress, dikoUsdaPoolAddress, "wSTX-DIKO", 5000, 1000);
+    result.expectErr().expectUint(204);
+  }
+});
+
+Clarinet.test({
+  name: "swap: burn malicious LP tokens",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let swap = new Swap(chain, deployer);
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
+    result.expectOk().expectBool(true);
+
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-swap-v1-1", "attack-and-burn", [
+        types.principal(Utils.qualifiedName(dikoUsdaPoolAddress)),
+        types.principal(deployer.address),
+        types.uint(100)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk();
+    let [_, _1, _2, burn_event] = block.receipts[0].events;
+    burn_event.ft_burn_event.amount.expectInt(100);
+  }
+});
+
+Clarinet.test({
+  name: "swap: disable/enable trading on a pair",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let swap = new Swap(chain, deployer);
+
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
+    result.expectOk().expectBool(true);
+
+    result = swap.togglePairEnabled(dikoTokenAddress, usdaTokenAddress)
+    result.expectOk().expectBool(true);
+
+    result = swap.swapXForY(deployer, dikoTokenAddress, usdaTokenAddress, 200, 38);
+    result.expectErr().expectUint(206);
+
+    result = swap.togglePairEnabled(dikoTokenAddress, usdaTokenAddress)
+    result.expectOk().expectBool(true);
+
+    result = swap.swapXForY(deployer, dikoTokenAddress, usdaTokenAddress, 200, 38);
+    result.expectOk().expectList()[0].expectUintWithDecimals(200);
+    result.expectOk().expectList()[1].expectUintWithDecimals(38.350578);
+  }
+});
+
+Clarinet.test({
+  name: "swap: toggle emergency shutdown",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let swap = new Swap(chain, deployer);
+
+    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
+    result.expectOk().expectBool(true);
+
+    result = swap.toggleShutdown();
+    result.expectOk().expectBool(true);
+
+    result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
+    result.expectErr().expectUint(205);
+
+    result = swap.swapXForY(deployer, dikoTokenAddress, usdaTokenAddress, 200, 38);
+    result.expectErr().expectUint(205);
+
+    result = swap.swapYForX(deployer, dikoTokenAddress, usdaTokenAddress, 200, 38);
+    result.expectErr().expectUint(205);
+
+    result = swap.addToPosition(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 500, 0);
+    result.expectErr().expectUint(205);
+  }
+});
+
+Clarinet.test({
+  name: "swap: disable/enable adding pairs",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let swap = new Swap(chain, deployer);
+
+    let result = swap.toggleAddPairs();
+    result.expectOk().expectBool(true);
+
+    result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
+    result.expectErr().expectUint(20401);
+
+    result = swap.toggleAddPairs();
+    result.expectOk().expectBool(true);
+
+    result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
+    result.expectOk().expectBool(true);
+  }
 });

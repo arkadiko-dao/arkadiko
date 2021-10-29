@@ -10,6 +10,7 @@
 (define-constant ERR-NO-FEE-TO-ADDRESS u203)
 (define-constant ERR-WRONG-SWAP-TOKEN u204)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u205)
+(define-constant ERR-PAIR-DISABLED u206)
 
 (define-constant no-liquidity-err (err u61))
 (define-constant not-owner-err (err u63))
@@ -159,7 +160,7 @@
 
 (define-public (register-swap-token (swap-token principal))
   (begin
-    (asserts! (is-eq (is-registered-swap-token swap-token) false) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (is-registered-swap-token swap-token) false) (err ERR-WRONG-SWAP-TOKEN))
     (ok (map-set registered-swap-tokens { swap-token: swap-token } { registered: true }))
   )
 )
@@ -378,7 +379,7 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-    (asserts! (is-eq (get enabled pair) true) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (get enabled pair) true) (err ERR-PAIR-DISABLED))
     
     (if (is-eq token-x .wrapped-stx-token)
       (begin
@@ -443,7 +444,7 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-    (asserts! (is-eq (get enabled pair) true) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (get enabled pair) true) (err ERR-PAIR-DISABLED))
 
     ;; if token X is wrapped STX (i.e. the sender needs to exchange STX for wSTX)
     (if (is-eq token-x .wrapped-stx-token)
@@ -506,7 +507,7 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-    (asserts! (is-eq (get enabled pair) true) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (get enabled pair) true) (err ERR-PAIR-DISABLED))
 
     ;; if token Y is wrapped STX (i.e. the sender needs to exchange STX for wSTX)
     (if (is-eq token-y .wrapped-stx-token)
@@ -608,7 +609,7 @@
 (define-public (attack-and-burn (swap-token-trait <swap-token>) (address principal) (amount uint))
   (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
-    ;; TODO - set this in production to a max block height this can be used
+    ;; TODO - set this in production to a max block height
     ;; (asserts! (< block-height u42000) (err ERR-NOT-AUTHORIZED))
 
     (try! (as-contract (contract-call? swap-token-trait burn address amount)))
