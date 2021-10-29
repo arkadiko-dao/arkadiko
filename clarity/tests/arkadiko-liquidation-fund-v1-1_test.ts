@@ -147,9 +147,17 @@ Clarinet.test({
     result = liquidationFund.getPendingStakingRewards(wallet_1);
     result.expectOk().expectUintWithDecimals(45727.131000);
     
+    // DIKO balance
+    call = await dikoManager.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(150000);
+
     // Claim rewards for user
     result = liquidationFund.claimStakingRewards(wallet_1);
-    result.expectOk().expectUintWithDecimals(45727.131000);
+    result.expectOk().expectUintWithDecimals(45727.131);
+
+    // New DIKO balance
+    call = await dikoManager.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(150000 + 45727.131);
   }
 });
 
