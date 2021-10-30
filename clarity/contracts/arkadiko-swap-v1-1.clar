@@ -151,7 +151,7 @@
 
 (define-private (register-swap-token (swap-token principal))
   (begin
-    (asserts! (is-eq (is-registered-swap-token swap-token) false) (err ERR-WRONG-SWAP-TOKEN))
+    (asserts! (not (is-registered-swap-token swap-token)) (err ERR-WRONG-SWAP-TOKEN))
     (ok (map-set registered-swap-tokens { swap-token: swap-token } { registered: true }))
   )
 )
