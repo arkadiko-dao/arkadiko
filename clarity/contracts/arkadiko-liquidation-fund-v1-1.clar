@@ -18,6 +18,9 @@
 (define-data-var max-stx-to-stake uint u0)
 (define-data-var cumm-reward-per-share uint u0)
 
+;; TODO: whitelist wallets
+;; TODO: emergency shutdown (swap all back to stx, whitelisted wallets can withdraw share)
+
 ;; ---------------------------------------------------------
 ;; Wallet funds
 ;; ---------------------------------------------------------
@@ -49,6 +52,8 @@
 (define-read-only (stx-shares-ratio)
   (let (
     ;; TODO: this is not correct, part of funds might be in LP or auction
+    ;; TODO: ignore auction part?
+    ;; TODO: estimate LP position (swap: )
     (contract-stx-balance (stx-get-balance (as-contract tx-sender)))
   )
     (if (is-eq (var-get total-shares) u0)
@@ -252,6 +257,8 @@
     (pair-wstx-balance (unwrap-panic (element-at pair-balances u0)))
     (pair-usda-balance (unwrap-panic (element-at pair-balances u1)))
     (stx-input (/ (* usda-output pair-wstx-balance) pair-usda-balance))
+
+    ;; TODO: slippage?
     (stx-input-with-extra (/ (* stx-input u105) u100)) ;; 5% extra for fees & slippage
   )
     (ok stx-input-with-extra)
@@ -408,6 +415,8 @@
     ;; Swap part of STX for USDA
     (let (      
       (stx-to-swap (/ (get-max-stx-to-stake) u2))
+
+      ;; TODO: slippage?
       (stx-to-swap-with-extra (/ (* stx-to-swap u105) u100)) ;; 5% extra for fees & slippage
     )
       (try! (as-contract (contract-call? .arkadiko-swap-v1-1 swap-x-for-y .wrapped-stx-token .usda-token stx-to-swap-with-extra u0)))

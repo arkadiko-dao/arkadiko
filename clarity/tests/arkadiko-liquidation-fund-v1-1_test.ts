@@ -29,6 +29,8 @@ import {
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
+// TODO: test slippage
+
 Clarinet.test({
   name: "liquidation-fund: deposit and withdraw STX with one wallet",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -100,6 +102,42 @@ Clarinet.test({
 
     call = liquidationFund.getTotalShares();
     call.result.expectUintWithDecimals(0);
+  }
+});
+
+Clarinet.test({
+  name: "liquidation-fund: withdraw while part in LP",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let liquidationFund = new LiquidationFund(chain, deployer);
+    let swap = new Swap(chain, deployer);
+
+    // Create STX/USDA pair
+    let result = swap.createPair(deployer, "wrapped-stx-token", "usda-token", "arkadiko-swap-token-wstx-usda", "wSTX-USDA", 80000, 100000);
+    result.expectOk().expectBool(true);
+
+    // Deposit
+    result = liquidationFund.depositStx(wallet_1, 1000);
+    result.expectOk().expectUintWithDecimals(1000)
+
+    result = liquidationFund.depositStx(wallet_2, 1000);
+    result.expectOk().expectUintWithDecimals(1000)
+
+    // Stake STX
+    result = liquidationFund.setMaxStxToStake(deployer, 1000);
+    result.expectOk().expectBool(true);
+
+    // Withdraw
+    result = liquidationFund.withdrawStx(wallet_1, 1000);
+    result.expectOk().expectUintWithDecimals(1000)
+
+    result = liquidationFund.withdrawStx(wallet_2, 1000);
+    result.expectOk().expectUintWithDecimals(1000)
+
+
   }
 });
 
