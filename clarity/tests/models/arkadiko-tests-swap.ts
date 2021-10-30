@@ -76,12 +76,13 @@ class Swap {
         types.ascii(name),
         types.uint(balanceX * 1000000),
         types.uint(balanceY * 1000000),
+        types.bool(false)
       ], user.address),
     ]);
     return block.receipts[0].result;
   }
 
-  addToPosition(user: Account, tokenX: string, tokenY: string, pool: string, balanceX: number, balanceY: number) {
+  addToPosition(user: Account, tokenX: string, tokenY: string, pool: string, balanceX: number, balanceY: number, migrate: boolean = false) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-swap-v1-1", "add-to-position", [
         types.principal(Utils.qualifiedName(tokenX)),
@@ -89,6 +90,7 @@ class Swap {
         types.principal(Utils.qualifiedName(pool)),
         types.uint(balanceX * 1000000),
         types.uint(balanceY * 1000000),
+        types.bool(migrate)
       ], user.address),
     ]);
     return block.receipts[0].result;

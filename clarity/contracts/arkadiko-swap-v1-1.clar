@@ -163,7 +163,7 @@
 ;; @param x; amount to add to first token of pair
 ;; @param y; amount to add to second token of pair, only used when pair is created
 ;; @post boolean; returns true if liquidity added
-(define-public (add-to-position (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (swap-token-trait <swap-token>) (x uint) (y uint))
+(define-public (add-to-position (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (swap-token-trait <swap-token>) (x uint) (y uint) (migrate bool))
   (let
     (
       (token-x (contract-of token-x-trait))
@@ -221,7 +221,10 @@
     (asserts! (is-ok (contract-call? token-y-trait transfer new-y tx-sender contract-address none)) transfer-y-failed-err)
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-updated)
-    (try! (contract-call? swap-token-trait mint recipient-address new-shares))
+    (if migrate
+      true
+      (try! (contract-call? swap-token-trait mint recipient-address new-shares))
+    )
     (print { object: "pair", action: "liquidity-added", data: pair-updated })
     (ok true)
   )
@@ -246,6 +249,18 @@
   (ok (var-get pair-count))
 )
 
+;; @desc migrate a pair from an old Swap
+;; @param token-x-trait; first token of pair
+;; @param token-y-trait; second token of pair
+;; @param swap-token-trait; LP token
+;; @param pair-name; name for the new pair
+;; @param x; amount to add to first token of pair
+;; @param y; amount to add to second token of pair
+;; @post boolean; returns true if pair created
+(define-public (migrate-pair (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (swap-token-trait <swap-token>) (pair-name (string-ascii 32)) (x uint) (y uint))
+  (create-pair token-x-trait token-y-trait swap-token-trait pair-name x y true)
+)
+
 ;; @desc create a new pair
 ;; @param token-x-trait; first token of pair
 ;; @param token-y-trait; second token of pair
@@ -254,7 +269,15 @@
 ;; @param x; amount to add to first token of pair
 ;; @param y; amount to add to second token of pair
 ;; @post boolean; returns true if pair created
-(define-public (create-pair (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (swap-token-trait <swap-token>) (pair-name (string-ascii 32)) (x uint) (y uint))
+(define-public (create-pair
+  (token-x-trait <ft-trait>)
+  (token-y-trait <ft-trait>)
+  (swap-token-trait <swap-token>)
+  (pair-name (string-ascii 32))
+  (x uint)
+  (y uint)
+  (migrate bool)
+)
   (let
     (
       (name-x (unwrap-panic (contract-call? token-x-trait get-name)))
@@ -294,7 +317,7 @@
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-data)
     (map-set pairs-map { pair-id: pair-id } { token-x: token-x, token-y: token-y })
     (var-set pair-count pair-id)
-    (try! (add-to-position token-x-trait token-y-trait swap-token-trait x y))
+    (try! (add-to-position token-x-trait token-y-trait swap-token-trait x y migrate))
     (print { object: "pair", action: "created", data: pair-data })
     (ok true)
   )
