@@ -196,8 +196,8 @@
     (asserts! (is-eq swap-token (contract-of swap-token-trait)) (err ERR-WRONG-SWAP-TOKEN))
     (asserts!
       (and
-        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
-        (is-eq (var-get swap-shutdown-activated) false)
+        (not (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)))
+        (not (var-get swap-shutdown-activated))
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
