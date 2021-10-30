@@ -22,7 +22,7 @@ async function transact() {
     functionName: 'propose',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-1'),
-      tx.uintCV(35850),
+      tx.uintCV(35835),
       tx.stringUtf8CV('Upgrade Arkadiko Swap Contract'),
       tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/316'),
       list
