@@ -13,7 +13,8 @@ import {
 import { 
   UsdaToken,
   DikoToken,
-  DikoUsdaPoolToken
+  DikoUsdaPoolToken,
+  StxUsdaPoolToken
 } from './models/arkadiko-tests-tokens.ts';
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
@@ -22,6 +23,7 @@ import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 const dikoTokenAddress = 'arkadiko-token';
 const usdaTokenAddress = 'usda-token';
 const dikoUsdaPoolAddress = 'arkadiko-swap-token-diko-usda';
+const wstxUsdaPoolAddress = 'arkadiko-swap-token-wstx-usda';
 const wstxTokenAddress = 'wrapped-stx-token';
 
 Clarinet.test({
@@ -222,6 +224,134 @@ Clarinet.test({
     call.result.expectOk().expectSome().expectTuple()["swap-token"].expectPrincipal(Utils.qualifiedName(dikoUsdaPoolAddress));
     call.result.expectOk().expectSome().expectTuple()["name"].expectAscii("DIKO-USDA");
 
+  },
+});
+
+// ---------------------------------------------------------
+// Migration
+// ---------------------------------------------------------
+
+Clarinet.test({
+  name: "swap: migrate pair and check all saved info",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let swap = new Swap(chain, deployer);
+    let stxUsdaPoolToken = new StxUsdaPoolToken(chain, deployer);
+
+    // Migrate pair
+    let result:any = swap.migratePair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 10000, 20000, 4500.123);
+    result.expectOk().expectBool(true);
+
+    // Deployer should not have LP tokens
+    let call:any = await stxUsdaPoolToken.balanceOf(deployer.address);
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    // Total shares
+    call = await swap.getTotalSupply(wstxTokenAddress, usdaTokenAddress);
+    call.result.expectOk().expectUintWithDecimals(4500.123);
+
+    // Swap token should be registered
+    call = await swap.isRegisteredSwapToken(wstxUsdaPoolAddress);
+    call.result.expectBool(true);
+    
+    // Get pair contracts
+    call = await swap.getPairContracts(1);
+    call.result.expectTuple()["token-x"].expectPrincipal(Utils.qualifiedName(wstxTokenAddress));
+    call.result.expectTuple()["token-y"].expectPrincipal(Utils.qualifiedName(usdaTokenAddress));
+
+    // Get pair count
+    call = await swap.getPairCount();
+    call.result.expectOk().expectUint(1);
+
+    // Check balances
+    call = await swap.getBalances(wstxTokenAddress, usdaTokenAddress);
+    call.result.expectOk().expectList()[0].expectUintWithDecimals(10000);
+    call.result.expectOk().expectList()[1].expectUintWithDecimals(20000);
+
+    // Get all pair details
+    call = swap.getPairDetails(wstxTokenAddress, usdaTokenAddress);
+    call.result.expectOk().expectSome().expectTuple()["balance-x"].expectUintWithDecimals(10000);
+    call.result.expectOk().expectSome().expectTuple()["balance-y"].expectUintWithDecimals(20000);
+    call.result.expectOk().expectSome().expectTuple()["enabled"].expectBool(true);
+    call.result.expectOk().expectSome().expectTuple()["fee-balance-x"].expectUintWithDecimals(0);
+    call.result.expectOk().expectSome().expectTuple()["fee-balance-y"].expectUintWithDecimals(0);
+    call.result.expectOk().expectSome().expectTuple()["fee-to-address"].expectSome().expectPrincipal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM");
+    call.result.expectOk().expectSome().expectTuple()["swap-token"].expectPrincipal(Utils.qualifiedName(wstxUsdaPoolAddress));
+    call.result.expectOk().expectSome().expectTuple()["name"].expectAscii("wSTX-USDA");
+
+  },
+});
+
+Clarinet.test({
+  name: "swap: migrate pair and test swap",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let swap = new Swap(chain, deployer);
+    let stxUsdaPoolToken = new StxUsdaPoolToken(chain, deployer);
+
+    // Migrate pair
+    let result:any = swap.migratePair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 10000, 20000, 4500);
+    result.expectOk().expectBool(true);
+
+    // Deployer should not have LP tokens
+    let call = await stxUsdaPoolToken.balanceOf(deployer.address);
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    // Total shares
+    call = await swap.getTotalSupply(wstxTokenAddress, usdaTokenAddress);
+    call.result.expectOk().expectUintWithDecimals(4500);
+
+    // Swap should work at set rate
+    // K = 10000 * 20000 = 200000000
+    // New wSTX balance = 10000 + 2000 = 12000
+    // New USDA balance = K / new wSTX balance = 200000000 / 12000 = 16666.666666
+    // USDA to receive = 20000 - 16666 = 3334
+    // 3334 USDA minus 0.3% fee = ~3324
+    result = swap.swapXForY(deployer, wstxTokenAddress, usdaTokenAddress, 2000, 100);
+    result.expectOk().expectList()[0].expectUintWithDecimals(2000);
+    result.expectOk().expectList()[1].expectUintWithDecimals(3324.995831);
+
+    // Add to position
+    result = swap.addToPosition(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, 1000, 1);
+    result.expectOk().expectBool(true);
+
+    // Reduce position
+    // 1 STX = ~1.388 USDA
+    result = swap.reducePosition(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, 100);
+    result.expectOk().expectList()[0].expectUintWithDecimals(1000);
+    result.expectOk().expectList()[1].expectUintWithDecimals(1389.583680);
+  },
+});
+
+Clarinet.test({
+  name: "swap: migrate pair and check if V1 LP can reduce position",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_3 = accounts.get("wallet_3")!;
+
+    let swap = new Swap(chain, deployer);
+    let stxUsdaPoolToken = new StxUsdaPoolToken(chain, deployer);
+
+    // Wallet_3 has 100 LP tokens from V1
+    let call = await stxUsdaPoolToken.balanceOf(wallet_3.address);
+    call.result.expectOk().expectUintWithDecimals(100);
+
+    // Migrate pair
+    let result:any = swap.migratePair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 10000, 20000, 10000);
+    result.expectOk().expectBool(true);
+
+    // Reduce position with 100 LP tokens
+    // In total we set 10.000 LP tokens, so user has 1%
+    // User should get 1% of initial balances = 100 STX and 200 USDA
+    result = swap.reducePosition(wallet_3, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, 100);
+    result.expectOk().expectList()[0].expectUintWithDecimals(100);
+    result.expectOk().expectList()[1].expectUintWithDecimals(200);
+    
   },
 });
 
@@ -558,5 +688,21 @@ Clarinet.test({
 
     result = swap.createPair(wallet_1, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
     result.expectErr().expectUint(20401);    
+  }
+});
+
+Clarinet.test({
+  name: "swap: allow DAO keys to migrate",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let swap = new Swap(chain, deployer);
+
+    let result:any = swap.migratePair(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 10000, 20000, 10000);
+    result.expectErr().expectUint(20401);    
+
+    result = swap.migratePair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 10000, 20000, 10000);
+    result.expectOk().expectBool(true);
   }
 });

@@ -67,6 +67,27 @@ class Swap {
     ], this.deployer.address);
   }
 
+  isRegisteredSwapToken(swapToken: string) {
+    return this.chain.callReadOnlyFn("arkadiko-swap-v1-1", "is-registered-swap-token", [
+      types.principal(Utils.qualifiedName(swapToken))
+    ], this.deployer.address);
+  }
+
+  migratePair(user: Account, tokenX: string, tokenY: string, pool: string, name: string, balanceX: number, balanceY: number, totalShares: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-swap-v1-1", "migrate-pair", [
+        types.principal(Utils.qualifiedName(tokenX)),
+        types.principal(Utils.qualifiedName(tokenY)),
+        types.principal(Utils.qualifiedName(pool)),
+        types.ascii(name),
+        types.uint(balanceX * 1000000),
+        types.uint(balanceY * 1000000),
+        types.uint(totalShares * 1000000),
+      ], user.address),
+    ]);
+    return block.receipts[0].result;
+  }
+
   createPair(user: Account, tokenX: string, tokenY: string, pool: string, name: string, balanceX: number, balanceY: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-swap-v1-1", "create-pair", [
@@ -75,22 +96,20 @@ class Swap {
         types.principal(Utils.qualifiedName(pool)),
         types.ascii(name),
         types.uint(balanceX * 1000000),
-        types.uint(balanceY * 1000000),
-        types.bool(false)
+        types.uint(balanceY * 1000000)
       ], user.address),
     ]);
     return block.receipts[0].result;
   }
 
-  addToPosition(user: Account, tokenX: string, tokenY: string, pool: string, balanceX: number, balanceY: number, migrate: boolean = false) {
+  addToPosition(user: Account, tokenX: string, tokenY: string, pool: string, balanceX: number, balanceY: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-swap-v1-1", "add-to-position", [
         types.principal(Utils.qualifiedName(tokenX)),
         types.principal(Utils.qualifiedName(tokenY)),
         types.principal(Utils.qualifiedName(pool)),
         types.uint(balanceX * 1000000),
-        types.uint(balanceY * 1000000),
-        types.bool(migrate)
+        types.uint(balanceY * 1000000)
       ], user.address),
     ]);
     return block.receipts[0].result;

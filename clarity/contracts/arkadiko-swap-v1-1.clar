@@ -163,7 +163,7 @@
 ;; @param x; amount to add to first token of pair
 ;; @param y; amount to add to second token of pair, only used when pair is created
 ;; @post boolean; returns true if liquidity added
-(define-public (add-to-position (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (swap-token-trait <swap-token>) (x uint) (y uint) (migrate bool))
+(define-public (add-to-position (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (swap-token-trait <swap-token>) (x uint) (y uint))
   (let
     (
       (token-x (contract-of token-x-trait))
@@ -221,10 +221,7 @@
     (asserts! (is-ok (contract-call? token-y-trait transfer new-y tx-sender contract-address none)) transfer-y-failed-err)
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-updated)
-    (if migrate
-      true
       (try! (contract-call? swap-token-trait mint recipient-address new-shares))
-    )
     (print { object: "pair", action: "liquidity-added", data: pair-updated })
     (ok true)
   )
@@ -256,9 +253,71 @@
 ;; @param pair-name; name for the new pair
 ;; @param x; amount to add to first token of pair
 ;; @param y; amount to add to second token of pair
+;; @param shares-total; total amount of shares for this pair
 ;; @post boolean; returns true if pair created
-(define-public (migrate-pair (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (swap-token-trait <swap-token>) (pair-name (string-ascii 32)) (x uint) (y uint))
-  (create-pair token-x-trait token-y-trait swap-token-trait pair-name x y true)
+(define-public (migrate-pair (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (swap-token-trait <swap-token>) (pair-name (string-ascii 32)) (x uint) (y uint) (shares-total uint))
+
+  (let (
+    (pair-id (+ (var-get pair-count) u1))
+
+    (contract-address (as-contract tx-sender))
+    (token-x (contract-of token-x-trait))
+    (token-y (contract-of token-y-trait))
+    (token-swap (contract-of swap-token-trait))
+
+    (pair-data {
+      enabled: true,
+      shares-total: shares-total,
+      balance-x: x,
+      balance-y: y,
+      fee-balance-x: u0,
+      fee-balance-y: u0,
+      fee-to-address: (some (contract-call? .arkadiko-dao get-payout-address)),
+      swap-token: token-swap,
+      name: pair-name,
+    })
+  )
+
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts!
+      (and
+        (is-none (map-get? pairs-data-map { token-x: token-x, token-y: token-y }))
+        (is-none (map-get? pairs-data-map { token-x: token-y, token-y: token-x }))
+      )
+      pair-already-exists-err
+    )
+
+    ;; Transfer tokens from tx-sender to this contract
+    (if (is-eq token-x .wrapped-stx-token)
+      (begin
+        (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token x tx-sender))
+        (try! (stx-transfer? x tx-sender (as-contract tx-sender)))
+      )
+      false
+    )
+    (if (is-eq token-y .wrapped-stx-token)
+      (begin
+        (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token y tx-sender))
+        (try! (stx-transfer? y tx-sender (as-contract tx-sender)))
+      )
+      false
+    )
+    (asserts! (is-ok (contract-call? token-x-trait transfer x tx-sender contract-address none)) transfer-x-failed-err)
+    (asserts! (is-ok (contract-call? token-y-trait transfer y tx-sender contract-address none)) transfer-y-failed-err)
+
+    ;; Register swap token
+    (try! (register-swap-token token-swap))
+
+    ;; Update maps
+    (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-data)
+    (map-set pairs-map { pair-id: pair-id } { token-x: token-x, token-y: token-y })
+
+    ;; Increase pair count
+    (var-set pair-count pair-id)
+
+    (ok true)
+  )
+
 )
 
 ;; @desc create a new pair
@@ -276,7 +335,6 @@
   (pair-name (string-ascii 32))
   (x uint)
   (y uint)
-  (migrate bool)
 )
   (let
     (
@@ -317,7 +375,7 @@
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-data)
     (map-set pairs-map { pair-id: pair-id } { token-x: token-x, token-y: token-y })
     (var-set pair-count pair-id)
-    (try! (add-to-position token-x-trait token-y-trait swap-token-trait x y migrate))
+    (try! (add-to-position token-x-trait token-y-trait swap-token-trait x y))
     (print { object: "pair", action: "created", data: pair-data })
     (ok true)
   )
