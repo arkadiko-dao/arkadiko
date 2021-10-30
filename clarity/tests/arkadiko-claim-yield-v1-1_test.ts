@@ -7,6 +7,10 @@ import {
 } from "https://deno.land/x/clarinet@v0.13.0/index.ts";
 
 import { 
+  Swap,
+} from './models/arkadiko-tests-swap.ts';
+
+import { 
   OracleManager,
 } from './models/arkadiko-tests-tokens.ts';
 
@@ -19,6 +23,10 @@ import {
 } from './models/arkadiko-tests-stacker.ts';
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
+
+const usdaTokenAddress = 'usda-token'
+const wstxTokenAddress = 'wrapped-stx-token'
+const wstxUsdaPoolAddress = 'arkadiko-swap-token-wstx-usda'
 
 Clarinet.test({
   name: "claim-yield: initial values",
@@ -131,6 +139,61 @@ Clarinet.test({
     // 20.000 - (2 * 100) = 19800
     call = claimYield.getStxBalance();
     call.result.expectUintWithDecimals(19800);
+  }
+});
+
+Clarinet.test({
+  name: "claim-yield: pay back debt",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let claimYield = new ClaimYield(chain, deployer);
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let swap = new Swap(chain, deployer);
+
+    // Create swap pair
+    let result = swap.createPair(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 100000, 200000);
+    result.expectOk().expectBool(true);
+
+    // Initialize price of STX to $1 in the oracle
+    result = oracleManager.updatePrice("STX", 1);
+    result.expectOk().expectUintWithDecimals(1);
+
+    // Create new vault
+    result = vaultManager.createVault(wallet_1, "STX-A", 5000, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    // Advance 30 block
+    chain.mineEmptyBlock(30);
+
+    // Accrue stability fee
+    vaultManager.accrueStabilityFee(1);
+
+    // Check stability fee and debt for vault before claiming
+    let call = await vaultManager.getVaultById(1, deployer);
+    let vault:any = call.result.expectTuple();
+    vault['stability-fee-accrued'].expectUintWithDecimals(0.023591);
+    vault['debt'].expectUintWithDecimals(1000);
+
+    // Add one claim
+    result = claimYield.addClaim(deployer, 1, 100);
+    result.expectOk().expectBool(true);
+
+    // Claim
+    // 100 STX was swapped to ~199 USDA
+    result = claimYield.claimToPayDebt(wallet_1, 1);
+    result.expectOk().expectUintWithDecimals(199.201396);
+
+    // Check stability fee and debt for vault after claiming
+    // No stability fees left
+    // 1000 - 199 = 801
+    call = await vaultManager.getVaultById(1, deployer);
+    vault = call.result.expectTuple();
+    vault['stability-fee-accrued'].expectUintWithDecimals(0);
+    vault['debt'].expectUintWithDecimals(800.800126);
+
   }
 });
 

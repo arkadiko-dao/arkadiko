@@ -207,6 +207,17 @@ class ClaimYield {
     return block.receipts[0].result;
   }
 
+  claimToPayDebt(user: Account, vaultId: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-claim-yield-v1-1", "claim-to-pay-debt", [
+        types.uint(vaultId),
+        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
   returnStx(user: Account, stxAmount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-claim-yield-v1-1", "return-stx", [

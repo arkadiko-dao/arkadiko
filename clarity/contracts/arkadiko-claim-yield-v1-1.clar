@@ -76,6 +76,47 @@
   )
 )
 
+(define-public (claim-to-pay-debt
+  (vault-id uint)
+  (reserve <vault-trait>)
+  (coll-type <collateral-types-trait>)
+)
+  (let (
+    (sender tx-sender)
+    (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
+    (claim-entry (get-claim-by-vault-id vault-id))
+    
+    (swapped-amounts (unwrap-panic (as-contract (contract-call? .arkadiko-swap-v1-1 swap-x-for-y .wrapped-stx-token .usda-token (get ustx claim-entry) u0))))
+    (usda-amount (unwrap-panic (element-at swapped-amounts u1)))
+    (stability-fee (unwrap-panic (contract-call? .arkadiko-freddie-v1-1 get-stability-fee-for-vault vault-id coll-type)))
+    (leftover-usda
+      (if (> usda-amount stability-fee)
+        (- usda-amount stability-fee)
+        u0
+      )
+    )
+  )
+    (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
+
+    ;; pay back stability fee
+    (if (>= usda-amount stability-fee)
+      (try! (contract-call? .arkadiko-freddie-v1-1 pay-stability-fee vault-id coll-type))
+      u0
+    )
+
+    ;; pay back part of debt
+    (if (> leftover-usda u0)
+      (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id leftover-usda reserve .arkadiko-token coll-type))
+      true
+    )
+  
+    (ok usda-amount)
+  )
+)
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;       Helpers
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

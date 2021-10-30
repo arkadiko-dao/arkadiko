@@ -250,7 +250,7 @@ depends_on = ["arkadiko-token"]
 path = "contracts/arkadiko-diko-init.clar"
 
 [contracts.arkadiko-claim-yield-v1-1]
-depends_on = ["arkadiko-vault-data-v1-1"]
+depends_on = ["arkadiko-vault-data-v1-1", "arkadiko-swap-v1-1"]
 path = "contracts/arkadiko-claim-yield-v1-1.clar"
 
 [contracts.sip-010-trait-ft-standard]
