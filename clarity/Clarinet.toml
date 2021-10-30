@@ -249,9 +249,9 @@ path = "contracts/xstx-token.clar"
 depends_on = ["arkadiko-token"]
 path = "contracts/arkadiko-diko-init.clar"
 
-[contracts.arkadiko-claim-yield]
+[contracts.arkadiko-claim-yield-v1-1]
 depends_on = ["arkadiko-vault-data-v1-1"]
-path = "contracts/arkadiko-claim-yield.clar"
+path = "contracts/arkadiko-claim-yield-v1-1.clar"
 
 [contracts.sip-010-trait-ft-standard]
 depends_on = []

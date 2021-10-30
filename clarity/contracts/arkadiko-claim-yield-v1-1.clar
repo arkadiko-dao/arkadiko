@@ -45,15 +45,20 @@
   )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
+    (try! (stx-transfer? (get ustx recipient) tx-sender (as-contract tx-sender)))
     (map-set claims { vault-id: (get to recipient) } { ustx: (+ (get ustx recipient) (get ustx claim-entry)) })
     (ok true)
   )
 )
 
+;; @desc Claim PoX yield as vault owner
+;; @param vault-id; your vault ID
+;; @param reserve; active STX reserve
+;; @param coll-type; active collateral types contract
+;; @post boolean; returns true if claim was succesful
 (define-public (claim
   (vault-id uint)
   (reserve <vault-trait>)
-  (ft <ft-trait>)
   (coll-type <collateral-types-trait>)
 )
   (let (
@@ -66,7 +71,7 @@
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
 
     (try! (as-contract (stx-transfer? (get ustx claim-entry) tx-sender sender)))
-    (try! (contract-call? .arkadiko-freddie-v1-1 deposit vault-id (get ustx claim-entry) reserve ft coll-type))
+    (try! (contract-call? .arkadiko-freddie-v1-1 deposit vault-id (get ustx claim-entry) reserve .arkadiko-token coll-type))
     (ok true)
   )
 )
