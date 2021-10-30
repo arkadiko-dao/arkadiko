@@ -1023,13 +1023,12 @@ Clarinet.test({
     // Create proposal to start at block 1
     // Vote length of 10 blocks
     let contractChange1 = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
-    let result = governance.createProposal(
+    let result = governance.createProposalDao(
       wallet_1, 
       1, 
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
-      [contractChange1],
-      10
+      [contractChange1]
     );
     result.expectOk().expectBool(true);
 

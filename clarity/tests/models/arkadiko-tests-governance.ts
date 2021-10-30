@@ -73,6 +73,19 @@ class Governance {
     return block.receipts[0].result;
   }
 
+  createProposalDao(user: Account, startBlock: number, title: string, url: string, contractChanges: string[]) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-governance-v1-1", "propose-dao", [
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
+        types.uint(startBlock),
+        types.utf8(title),
+        types.utf8(url),        
+        types.list(contractChanges)
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
   voteForProposal(user: Account, proposal: number, amount: number, token: string = "arkadiko-token") {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-governance-v1-1", "vote-for", [
