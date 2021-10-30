@@ -8,11 +8,13 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { ProposalGroup } from '@components/proposal-group';
 import { DocumentTextIcon } from '@heroicons/react/outline';
 import { EmptyState } from './empty-state';
+import { Placeholder } from './placeholder';
 
 export const Governance = () => {
   const [state, _] = useContext(AppContext);
   const stxAddress = useSTXAddress();
   const [proposals, setProposals] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   useEffect(() => {
@@ -59,6 +61,7 @@ export const Governance = () => {
         }
       });
       setProposals(serializedProposals);
+      setIsLoading(false);
     };
     const extractChanges = (changes) => {
       let newChanges = [];
@@ -99,7 +102,9 @@ export const Governance = () => {
                   <h2 className="text-lg font-medium leading-6 text-gray-900 font-headings">Recent Proposals</h2>
                 </header>
 
-                {proposals.length > 0 ? (
+                {isLoading ? (
+                  <Placeholder className="py-12 justify-center" width={Placeholder.width.HALF}/>
+                ) : proposals.length > 0 ? (
                   <ProposalGroup proposals={proposals} />
                 ) : (
                   <EmptyState

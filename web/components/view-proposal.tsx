@@ -14,6 +14,7 @@ import { ExternalLinkIcon } from '@heroicons/react/solid';
 import { getRPCClient } from '@common/utils';
 import { ProposalProps } from './proposal-group';
 import BN from 'bn.js';
+import { Placeholder } from './placeholder';
 
 export const ViewProposal = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -23,6 +24,7 @@ export const ViewProposal = ({ match }) => {
   const [showVoteStdikoModal, setShowVoteStdikoModal] = useState(false);
   const [amountOfDikoVotes, setAmountOfDikoVotes] = useState('');
   const [amountOfStdikoVotes, setAmountOfStdikoVotes] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [stacksTipHeight, setStacksTipHeight] = useState(0);
@@ -69,6 +71,7 @@ export const ViewProposal = ({ match }) => {
         startBlockHeight: data['start-block-height'].value,
         endBlockHeight: data['end-block-height'].value
       });
+      setIsLoading(false);
     };
     if (mounted) {
       void getData();
@@ -327,107 +330,111 @@ export const ViewProposal = ({ match }) => {
         </div>
       </Modal>
 
-      <main className="my-16">
-        <section>
-          <header className="pb-5 border-b border-gray-200">
-            <h2 className="text-2xl font-bold leading-6 text-gray-900 font-headings">
-              Proposal #{match.params.id} - {proposal.title}
-            </h2>
-          </header>
-        
-          <div className="mt-4">
-            <div className="sm:grid sm:grid-cols-2 sm:gap-x-4">
-              <div className="overflow-hidden bg-white shadow sm:rounded-lg">
-                <div className="px-4 py-5 sm:px-6">
-                  <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">
-                    Details
-                  </h3>
-                </div>
-                <div className="px-4 py-5 border-t border-gray-200 sm:p-0">
-                  <dl className="sm:divide-y sm:divide-gray-200">
-                    <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                        Link
-                        <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
-                      </dt>
-                      <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        <p className="truncate">
-                          <a href={`${proposal.url}`} target="_blank" className="text-sm font-medium text-indigo-700 rounded-sm hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            {proposal.url}
-                          </a>
-                        </p>
-                      </dd>
-                    </div>
-                    <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                        Proposer
-                        <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
-                      </dt>
-                      <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        <a href={`https://explorer.stacks.co/address/${proposal.proposer}`} target="_blank" className="text-sm font-medium text-indigo-700 rounded-sm hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                          {proposal.proposer}
-                        </a>
-                      </dd>
-                    </div>
-                    <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="text-sm font-medium text-gray-500">
-                        Start date
-                      </dt>
-                      <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        Block {proposal.startBlockHeight}
-                      </dd>
-                    </div>
-                    <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="text-sm font-medium text-gray-500">
-                        End date
-                      </dt>
-                      <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        Block {proposal.endBlockHeight} (~{((Number(proposal.endBlockHeight) - stacksTipHeight) * 10 / 60 / 24).toFixed(2)} days)
-                      </dd>
-                    </div>
-                  </dl>
-                </div>
-              </div>
+      {isLoading ? (
+        <Placeholder className="py-12 justify-center" width={Placeholder.width.HALF}/>
+      ) : (
+        <main className="my-16">
+          <section>
+            <header className="pb-5 border-b border-gray-200">
+              <h2 className="text-2xl font-bold leading-6 text-gray-900 font-headings">
+                Proposal #{match.params.id} - {proposal.title}
+              </h2>
+            </header>
 
-              <dl className="bg-white rounded-lg shadow sm:grid sm:grid-cols-2">
-                <div className="flex flex-col justify-center p-6 text-center border-b border-gray-200 sm:border-0 sm:border-r">
-                  <dt className="inline-flex items-center order-2 mx-auto mt-2 text-lg font-medium leading-6 text-gray-500">
-                    <ThumbUpIcon className="block w-6 h-6 mr-2 text-gray-400" aria-hidden="true" />
-                    Vote For
-                  </dt>
-                  <dd className="order-1 text-3xl font-bold text-indigo-600">{proposal.forVotes / 1000000}</dd>
+            <div className="mt-4">
+              <div className="sm:grid sm:grid-cols-2 sm:gap-x-4">
+                <div className="overflow-hidden bg-white shadow sm:rounded-lg">
+                  <div className="px-4 py-5 sm:px-6">
+                    <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">
+                      Details
+                    </h3>
+                  </div>
+                  <div className="px-4 py-5 border-t border-gray-200 sm:p-0">
+                    <dl className="sm:divide-y sm:divide-gray-200">
+                      <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt className="inline-flex items-center text-sm font-medium text-gray-500">
+                          Link
+                          <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
+                        </dt>
+                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                          <p className="truncate">
+                            <a href={`${proposal.url}`} target="_blank" className="text-sm font-medium text-indigo-700 rounded-sm hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                              {proposal.url}
+                            </a>
+                          </p>
+                        </dd>
+                      </div>
+                      <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt className="inline-flex items-center text-sm font-medium text-gray-500">
+                          Proposer
+                          <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
+                        </dt>
+                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                          <a href={`https://explorer.stacks.co/address/${proposal.proposer}`} target="_blank" className="text-sm font-medium text-indigo-700 rounded-sm hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            {proposal.proposer}
+                          </a>
+                        </dd>
+                      </div>
+                      <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt className="text-sm font-medium text-gray-500">
+                          Start date
+                        </dt>
+                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                          Block {proposal.startBlockHeight}
+                        </dd>
+                      </div>
+                      <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt className="text-sm font-medium text-gray-500">
+                          End date
+                        </dt>
+                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                          Block {proposal.endBlockHeight} (~{((Number(proposal.endBlockHeight) - stacksTipHeight) * 10 / 60 / 24).toFixed(2)} days)
+                        </dd>
+                      </div>
+                    </dl>
+                  </div>
                 </div>
-                <div className="flex flex-col justify-center p-6 text-center border-t border-gray-100 sm:border-0 sm:border-l">
-                  <dt className="inline-flex items-center order-2 mx-auto mt-2 text-lg font-medium leading-6 text-gray-500">
-                    <ThumbDownIcon className="block w-6 h-6 mr-2 text-gray-400" aria-hidden="true" />
-                    Vote Against
-                  </dt>
-                  <dd className="order-1 text-3xl font-bold text-indigo-600">{proposal.against / 1000000}</dd>
+
+                <dl className="bg-white rounded-lg shadow sm:grid sm:grid-cols-2">
+                  <div className="flex flex-col justify-center p-6 text-center border-b border-gray-200 sm:border-0 sm:border-r">
+                    <dt className="inline-flex items-center order-2 mx-auto mt-2 text-lg font-medium leading-6 text-gray-500">
+                      <ThumbUpIcon className="block w-6 h-6 mr-2 text-gray-400" aria-hidden="true" />
+                      Vote For
+                    </dt>
+                    <dd className="order-1 text-3xl font-bold text-indigo-600">{proposal.forVotes / 1000000}</dd>
+                  </div>
+                  <div className="flex flex-col justify-center p-6 text-center border-t border-gray-100 sm:border-0 sm:border-l">
+                    <dt className="inline-flex items-center order-2 mx-auto mt-2 text-lg font-medium leading-6 text-gray-500">
+                      <ThumbDownIcon className="block w-6 h-6 mr-2 text-gray-400" aria-hidden="true" />
+                      Vote Against
+                    </dt>
+                    <dd className="order-1 text-3xl font-bold text-indigo-600">{proposal.against / 1000000}</dd>
+                  </div>
+                </dl>
+              </div>
+              <div className="mt-6">
+                <div className="flex justify-center">
+                  <button type="button" onClick={() => setShowVoteDikoModal(true)} className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Vote with DIKO
+                  </button>
                 </div>
-              </dl>
-            </div>
-            <div className="mt-6">
-              <div className="flex justify-center">
-                <button type="button" onClick={() => setShowVoteDikoModal(true)} className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                  Vote with DIKO
-                </button>
+              </div>
+              <div className="mt-0">
+                <div className="flex justify-center">
+                  - or -
+                </div>
+              </div>
+              <div className="mt-0">
+                <div className="flex justify-center">
+                  <button type="button" onClick={() => setShowVoteStdikoModal(true)} className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Vote with stDIKO
+                  </button>
+                </div>
               </div>
             </div>
-            <div className="mt-0">
-              <div className="flex justify-center">
-                - or -
-              </div>
-            </div>
-            <div className="mt-0">
-              <div className="flex justify-center">
-                <button type="button" onClick={() => setShowVoteStdikoModal(true)} className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                  Vote with stDIKO
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
+          </section>
+        </main>
+      )}
     </Container>
   );
 };
