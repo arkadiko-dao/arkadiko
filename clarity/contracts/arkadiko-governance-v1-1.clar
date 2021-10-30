@@ -104,6 +104,11 @@
   )
 )
 
+(define-private (max-of (i1 uint) (i2 uint))
+  (if (> i1 i2)
+      i1
+      i2))
+
 (define-public (propose-dao
   (stake-pool-diko <stake-pool-diko-trait>)
   (start-block-height uint)
@@ -145,7 +150,7 @@
     (proposer-total-balance (+ proposer-diko-votes proposer-stdiko-votes))
     (end-block-height
       (if (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner))
-        (+ start-block-height vote-length)
+        (+ start-block-height (max-of u250 vote-length))
         (+ start-block-height u1440)
       )
     )
