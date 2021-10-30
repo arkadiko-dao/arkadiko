@@ -75,6 +75,28 @@ class Stacker {
 }
 export { Stacker };
 
+
+// ---------------------------------------------------------
+// STX Reserve
+// ---------------------------------------------------------
+
+class StxReserve {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  getTokensToStack(stackerName: string) {
+    return this.chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii(stackerName)], this.deployer.address);
+  }
+
+}
+export { StxReserve };
+
+
 // ---------------------------------------------------------
 // Stacker Payer
 // ---------------------------------------------------------
@@ -124,11 +146,12 @@ class StackerPayer {
 }
 export { StackerPayer };
 
+
 // ---------------------------------------------------------
-// STX Reserve
+// Claim yield
 // ---------------------------------------------------------
 
-class StxReserve {
+class ClaimYield {
   chain: Chain;
   deployer: Account;
 
@@ -137,9 +160,61 @@ class StxReserve {
     this.deployer = deployer;
   }
 
-  getTokensToStack(stackerName: string) {
-    return this.chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-tokens-to-stack", [types.ascii(stackerName)], this.deployer.address);
+  getClaimByVaultId(vaultId: number) {
+    return this.chain.callReadOnlyFn("arkadiko-claim-yield-v1-1", "get-claim-by-vault-id", [types.uint(vaultId)], this.deployer.address);
+  }
+
+  getStxBalance() {
+    return this.chain.callReadOnlyFn("arkadiko-claim-yield-v1-1", "get-stx-balance", [], this.deployer.address);
+  }
+
+  addClaim(user: Account, vaultId: number, stxAmount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-claim-yield-v1-1", "add-claim", [
+        types.tuple({
+          'to': types.uint(vaultId),
+          'ustx': types.uint(stxAmount * 1000000)
+        })
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  static createClaimTuple(vaultId: number, stxAmount: number) {
+    return types.tuple({
+      'to': types.uint(vaultId),
+      'ustx': types.uint(stxAmount * 1000000)
+    })
+  }
+
+  addClaims(user: Account, claims: string[]) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-claim-yield-v1-1", "add-claims", [
+        types.list(claims)
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  claim(user: Account, vaultId: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-claim-yield-v1-1", "claim", [
+        types.uint(vaultId),
+        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  returnStx(user: Account, stxAmount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-claim-yield-v1-1", "return-stx", [
+        types.uint(stxAmount),
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
   }
 
 }
-export { StxReserve };
+export { ClaimYield };
