@@ -103,7 +103,19 @@ export const Governance = () => {
                 </header>
 
                 {isLoading ? (
-                  <Placeholder className="py-12 justify-center" width={Placeholder.width.HALF}/>
+                  <div className="mt-5 overflow-hidden bg-white shadow sm:rounded-md">
+                    <div className="px-4 py-4 sm:px-6">
+                      <div className="flex items-center justify-between">
+                        <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                        <Placeholder className="justify-end py-2" color={Placeholder.color.GRAY} width={Placeholder.width.THIRD}/>
+                      </div>
+                    
+                      <div className="mt-2 sm:flex sm:justify-between">
+                        <Placeholder className="py-1" color={Placeholder.color.GRAY} width={Placeholder.width.FULL}/>
+                        <Placeholder className="justify-end py-1" color={Placeholder.color.GRAY} width={Placeholder.width.HALF}/>
+                      </div>
+                    </div>
+                  </div>
                 ) : proposals.length > 0 ? (
                   <ProposalGroup proposals={proposals} />
                 ) : (
