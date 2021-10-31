@@ -170,14 +170,9 @@ export const ManageVault = ({ match }) => {
         senderAddress: contractAddress || '',
         network: network
       });
-      
-      let unlockBurnHeight = 714350;
-      if (contractName === 'arkadiko-stacker-v1-1') {
-        setUnlockBurnHeight(unlockBurnHeight);
-      } else {
-        unlockBurnHeight = cvToJSON(call).value.value;
-        setUnlockBurnHeight(unlockBurnHeight);
-      }
+
+      const unlockBurnHeight = cvToJSON(call).value.value;
+      setUnlockBurnHeight(unlockBurnHeight);
       if (Number(unlockBurnHeight) === 0) {
         setStartedStacking(false);
         if (Number(vault?.stackedTokens) === 0) {
