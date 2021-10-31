@@ -22,7 +22,8 @@ async function initiateStacking() {
       tx.uintCV(3) // number of cycles
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
-    fee: new BN(250000, 10),
+    nonce: new BN(227, 10),
+    fee: new BN(5000000, 10),
     postConditionMode: 1,
     network
   };
