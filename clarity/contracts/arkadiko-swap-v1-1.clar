@@ -69,6 +69,13 @@
 
 (define-data-var pair-count uint u0)
 
+(define-read-only (is-shutdown-activated)
+  (and
+     (not (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)))
+     (not (var-get swap-shutdown-activated))
+  )
+)
+
 (define-read-only (get-name (token-x-trait <ft-trait>) (token-y-trait <ft-trait>))
   (let
     (
@@ -194,13 +201,7 @@
     )
     (asserts! (and (> x u0) (> new-y u0)) (err ERR-INVALID-LIQUIDITY))
     (asserts! (is-eq swap-token (contract-of swap-token-trait)) (err ERR-WRONG-SWAP-TOKEN))
-    (asserts!
-      (and
-        (not (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)))
-        (not (var-get swap-shutdown-activated))
-      )
-      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
-    )
+    (asserts! (is-shutdown-activated) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
 
     (if (is-eq token-x .wrapped-stx-token)
       (begin
@@ -363,13 +364,7 @@
       )
       pair-already-exists-err
     )
-    (asserts!
-      (and
-        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
-        (is-eq (var-get swap-shutdown-activated) false)
-      )
-      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
-    )
+    (asserts! (is-shutdown-activated) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (try! (register-swap-token (contract-of swap-token-trait)))
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-data)
@@ -447,14 +442,8 @@
 
     (asserts! (<= percent u100) (err u5))
     (asserts! (get enabled pair) (err ERR-PAIR-DISABLED))
-    (asserts!
-      (and
-        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
-        (is-eq (var-get swap-shutdown-activated) false)
-      )
-      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
-    )
-    
+    (asserts! (is-shutdown-activated) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
+
     (if (is-eq token-x .wrapped-stx-token)
       (begin
         (asserts! (is-ok (as-contract (stx-transfer? withdrawal-x contract-address sender))) transfer-x-failed-err)
@@ -511,13 +500,7 @@
     )
   )
     (asserts! (< min-dy dy) too-much-slippage-err)
-    (asserts!
-      (and
-        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
-        (is-eq (var-get swap-shutdown-activated) false)
-      )
-      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
-    )
+    (asserts! (is-shutdown-activated) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq (get enabled pair) true) (err ERR-PAIR-DISABLED))
 
     ;; if token X is wrapped STX (i.e. the sender needs to exchange STX for wSTX)
@@ -574,13 +557,7 @@
     }))
   )
     (asserts! (< min-dx dx) too-much-slippage-err)
-    (asserts!
-      (and
-        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
-        (is-eq (var-get swap-shutdown-activated) false)
-      )
-      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
-    )
+    (asserts! (is-shutdown-activated) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq (get enabled pair) true) (err ERR-PAIR-DISABLED))
 
     ;; if token Y is wrapped STX (i.e. the sender needs to exchange STX for wSTX)
@@ -616,13 +593,7 @@
     (pair (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
   )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
-    (asserts!
-      (and
-        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
-        (is-eq (var-get swap-shutdown-activated) false)
-      )
-      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
-    )
+    (asserts! (is-shutdown-activated) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
 
     (map-set pairs-data-map
       { token-x: token-x, token-y: token-y }
@@ -659,13 +630,7 @@
     (fee-x (get fee-balance-x pair))
     (fee-y (get fee-balance-y pair))
   )
-    (asserts!
-      (and
-        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
-        (is-eq (var-get swap-shutdown-activated) false)
-      )
-      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
-    )
+    (asserts! (is-shutdown-activated) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq fee-x u0) no-fee-x-err)
     (asserts! (is-ok (contract-call? token-x-trait transfer fee-x (as-contract tx-sender) address none)) transfer-x-failed-err)
     (asserts! (is-eq fee-y u0) no-fee-y-err)
