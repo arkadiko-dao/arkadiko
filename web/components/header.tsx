@@ -121,7 +121,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
             {state.userData ? (
               <div>
                 <div className="pt-2 pb-3 space-y-1">
-                  <RouterLink to="/vaults" className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" activeClassName="border-indigo-500 text-gray-900">Mint</RouterLink>
+                  <RouterLink to="/vaults" className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" activeClassName="border-indigo-500 text-gray-900">Vaults</RouterLink>
 
                   <RouterLink to="/stake" className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" activeClassName="border-indigo-500 text-gray-900">Stake</RouterLink>
 
