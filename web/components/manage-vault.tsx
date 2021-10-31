@@ -27,7 +27,7 @@ import { Placeholder } from './placeholder';
 
 export const ManageVault = ({ match }) => {
   const { doContractCall } = useConnect();
-  const senderAddress = 'SP1FW0F2ZYZHXT1BVV8HX8ZXG3MRM0ZVH73QE9VSV'; // useSTXAddress();
+  const senderAddress = useSTXAddress();
   const [state, setState] = useContext(AppContext);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
