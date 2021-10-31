@@ -23,7 +23,7 @@ async function initiateStacking() {
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     nonce: new BN(227, 10),
-    fee: new BN(5000000, 10),
+    fee: new BN(10000000, 10),
     postConditionMode: 1,
     network
   };
