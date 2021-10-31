@@ -34,7 +34,7 @@ export interface AppState {
   userData: UserData | null;
   balance: UserBalance;
   vaults: VaultProps[];
-  definedCollateralTypes: [string, string, string];
+  definedCollateralTypes: [string, string];
   collateralTypes: object;
   showTxModal: boolean;
   currentTxId: string;
@@ -55,7 +55,7 @@ export const defaultState = (): AppState => {
       userData: userSession.loadUserData(),
       balance: defaultBalance(),
       vaults: [],
-      definedCollateralTypes: ['STX-A', 'STX-B', 'XBTC-A'],
+      definedCollateralTypes: ['STX-A', 'STX-B'],
       collateralTypes: [],
       currentTxId: '',
       currentTxStatus: '',
@@ -68,7 +68,7 @@ export const defaultState = (): AppState => {
     userData: null,
     balance: defaultBalance(),
     vaults: [],
-    definedCollateralTypes: ['STX-A', 'STX-B', 'XBTC-A'],
+    definedCollateralTypes: ['STX-A', 'STX-B'],
     collateralTypes: [],
     currentTxId: '',
     currentTxStatus: '',

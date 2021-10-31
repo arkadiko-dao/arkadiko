@@ -30,7 +30,5 @@
 
     ;; redeem collateral after an auction ran
     (redeem-collateral (<ft-trait> (string-ascii 12) uint principal) (response bool uint))
-
-    ;; TODO (set-tokens-to-stack (uint) (response bool uint))
   )
 )

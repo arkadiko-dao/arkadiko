@@ -1009,7 +1009,6 @@
   )
 )
 
-;; TODO - is this needed?
 ;; @desc sets the amount of STX that is redeemable for xSTX (the derivative that is sold off in an auction)
 ;; @param new-stx-redeemable; the micro-amount of xSTX redeemable for STX
 ;; @post bool; returns true if setting the variable was successful

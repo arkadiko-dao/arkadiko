@@ -13,7 +13,7 @@ const claimTokens = async () => {
     contractAddress: CONTRACT_ADDRESS,
     contractName: 'arkadiko-diko-init',
     functionName: 'foundation-claim-tokens',
-    functionArgs: [tx.uintCV(1000000000000)], // 1M DIKO
+    functionArgs: [tx.uintCV(1200000000000)], // 1M DIKO
     senderKey: process.env.STACKS_PRIVATE_KEY,
     nonce: new BN(nonce),
     postConditionMode: 1,

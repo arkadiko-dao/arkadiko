@@ -260,7 +260,6 @@
   )
 )
 
-;; TODO: can be read-only once bug with traits is fixed
 (define-public (get-position (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (swap-token-trait <swap-token>))
     (let
     (

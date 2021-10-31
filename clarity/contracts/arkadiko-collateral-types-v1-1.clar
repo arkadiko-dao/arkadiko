@@ -227,7 +227,7 @@
       name: "Wrapped Bitcoin",
       token: "xBTC",
       token-type: "xBTC-A",
-      token-address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.tokensoft-token, ;; TODO
+      token-address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.tokensoft-token,
       url: "https://www.tokensoft.io/",
       total-debt: u0,
       liquidation-ratio: u150,
