@@ -27,7 +27,7 @@ import { Placeholder } from './placeholder';
 
 export const ManageVault = ({ match }) => {
   const { doContractCall } = useConnect();
-  const senderAddress = useSTXAddress();
+  const senderAddress = 'SP1FW0F2ZYZHXT1BVV8HX8ZXG3MRM0ZVH73QE9VSV'; // useSTXAddress();
   const [state, setState] = useContext(AppContext);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
@@ -171,8 +171,13 @@ export const ManageVault = ({ match }) => {
         network: network
       });
       
-      const unlockBurnHeight = cvToJSON(call).value.value;
-      setUnlockBurnHeight(unlockBurnHeight);
+      let unlockBurnHeight = 714350;
+      if (contractName === 'arkadiko-stacker-v1-1') {
+        setUnlockBurnHeight(unlockBurnHeight);
+      } else {
+        unlockBurnHeight = cvToJSON(call).value.value;
+        setUnlockBurnHeight(unlockBurnHeight);
+      }
       if (Number(unlockBurnHeight) === 0) {
         setStartedStacking(false);
         if (Number(vault?.stackedTokens) === 0) {
@@ -183,13 +188,20 @@ export const ManageVault = ({ match }) => {
         }
         setLoadingStackerData(false);
         return;
+      } else {
+        setStartedStacking(true);
+        if (Number(vault?.stackedTokens) === 0) {
+          setCanWithdrawCollateral(true);
+        } else {
+          setCanWithdrawCollateral(false);
+        }
       }
 
       const client = getRPCClient();
       const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
       const data = await response.json();
       const currentBurnHeight = data['stable_burn_block_height'];
-      if (unlockBurnHeight > currentBurnHeight) {
+      if (unlockBurnHeight < currentBurnHeight) {
         setCanWithdrawCollateral(true);
       }
 
