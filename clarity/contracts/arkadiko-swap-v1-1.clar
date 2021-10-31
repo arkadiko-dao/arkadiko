@@ -446,6 +446,7 @@
     )
 
     (asserts! (<= percent u100) (err u5))
+    (asserts! (get enabled pair) (err ERR-PAIR-DISABLED))
     (asserts!
       (and
         (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
@@ -453,7 +454,6 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-    (asserts! (is-eq (get enabled pair) true) (err ERR-PAIR-DISABLED))
     
     (if (is-eq token-x .wrapped-stx-token)
       (begin
