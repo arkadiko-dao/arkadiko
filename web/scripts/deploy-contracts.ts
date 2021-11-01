@@ -19,6 +19,8 @@ interface Contract {
 }
 
 const contracts: Contract[] = [
+  { name: 'sip-010-trait-ft-standard' },
+
   { name: 'arkadiko-oracle-trait-v1' },
   { name: 'arkadiko-vault-trait-v1' },
   { name: 'arkadiko-collateral-types-trait-v1' },

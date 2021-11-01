@@ -170,7 +170,6 @@ export const ManageVault = ({ match }) => {
         senderAddress: contractAddress || '',
         network: network
       });
-      
       const unlockBurnHeight = cvToJSON(call).value.value;
       setUnlockBurnHeight(unlockBurnHeight);
       if (Number(unlockBurnHeight) === 0) {
@@ -183,13 +182,20 @@ export const ManageVault = ({ match }) => {
         }
         setLoadingStackerData(false);
         return;
+      } else {
+        setStartedStacking(true);
+        if (Number(vault?.stackedTokens) === 0) {
+          setCanWithdrawCollateral(true);
+        } else {
+          setCanWithdrawCollateral(false);
+        }
       }
 
       const client = getRPCClient();
       const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
       const data = await response.json();
       const currentBurnHeight = data['stable_burn_block_height'];
-      if (unlockBurnHeight > currentBurnHeight) {
+      if (unlockBurnHeight < currentBurnHeight) {
         setCanWithdrawCollateral(true);
       }
 
