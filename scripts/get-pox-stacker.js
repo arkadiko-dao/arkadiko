@@ -19,4 +19,49 @@ async function getTokensToStack() {
   return tx.cvToJSON(lastVaultTx).value;
 }
 
-console.log(getTokensToStack());
+async function getTotalStacked() {
+  const lastVaultTx = await tx.callReadOnlyFunction({
+    contractAddress: 'SP000000000000000000002Q6VF78',
+    contractName: "pox",
+    functionName: "get-total-ustx-stacked",
+    functionArgs: [tx.uintCV(20)],
+    senderAddress: CONTRACT_ADDRESS,
+    network
+  });
+
+  console.log('total stacked:', tx.cvToJSON(lastVaultTx).value);
+  return tx.cvToJSON(lastVaultTx).value;
+}
+
+async function getStackingMinimum() {
+  const lastVaultTx = await tx.callReadOnlyFunction({
+    contractAddress: 'SP000000000000000000002Q6VF78',
+    contractName: "pox",
+    functionName: "get-stacking-minimum",
+    functionArgs: [],
+    senderAddress: CONTRACT_ADDRESS,
+    network
+  });
+
+  console.log('stacking minimum:', tx.cvToJSON(lastVaultTx).value);
+  return tx.cvToJSON(lastVaultTx).value;
+}
+
+async function getPoxInfo() {
+  const lastVaultTx = await tx.callReadOnlyFunction({
+    contractAddress: 'SP000000000000000000002Q6VF78',
+    contractName: "pox",
+    functionName: "get-pox-info",
+    functionArgs: [],
+    senderAddress: CONTRACT_ADDRESS,
+    network
+  });
+
+  console.log('PoX Info:', tx.cvToJSON(lastVaultTx).value);
+  return tx.cvToJSON(lastVaultTx).value;
+}
+
+getTokensToStack();
+getTotalStacked();
+getStackingMinimum();
+getPoxInfo();
