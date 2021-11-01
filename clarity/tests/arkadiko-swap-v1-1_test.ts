@@ -588,6 +588,10 @@ Clarinet.test({
     call = await swap.getFees(dikoTokenAddress, usdaTokenAddress);
     call.result.expectOk().expectList()[0].expectUintWithDecimals(0.1);
     call.result.expectOk().expectList()[1].expectUintWithDecimals(0.02);
+
+    result = swap.collectFees(dikoTokenAddress, usdaTokenAddress);
+    result.expectOk().expectList()[0].expectUintWithDecimals(0.1);
+    result.expectOk().expectList()[1].expectUintWithDecimals(0.02);
   },
 });
 

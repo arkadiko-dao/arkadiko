@@ -632,10 +632,22 @@
   )
     (asserts! (is-shutdown-activated) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (> fee-x u0) no-fee-x-err)
-    ;; TODO - fix wSTX fees
-    (asserts! (is-ok (contract-call? token-x-trait transfer fee-x (as-contract tx-sender) address none)) transfer-x-failed-err)
+    (if (is-eq token-x .wrapped-stx-token)
+      (begin
+        (asserts! (is-ok (as-contract (stx-transfer? fee-x (as-contract tx-sender) address))) transfer-x-failed-err)
+        (try! (as-contract (contract-call? .arkadiko-dao burn-token .wrapped-stx-token fee-x tx-sender)))
+      )
+      (try! (as-contract (contract-call? token-x-trait transfer fee-x (as-contract tx-sender) address none)))
+    )
+
     (asserts! (> fee-y u0) no-fee-y-err)
-    (asserts! (is-ok (contract-call? token-y-trait transfer fee-y (as-contract tx-sender) address none)) transfer-y-failed-err)
+    (if (is-eq token-y .wrapped-stx-token)
+      (begin
+        (asserts! (is-ok (as-contract (stx-transfer? fee-y (as-contract tx-sender) address))) transfer-y-failed-err)
+        (try! (as-contract (contract-call? .arkadiko-dao burn-token .wrapped-stx-token fee-y tx-sender)))
+      )
+      (try! (as-contract (contract-call? token-y-trait transfer fee-y (as-contract tx-sender) address none)))
+    )
 
     (map-set pairs-data-map
       { token-x: token-x, token-y: token-y }

@@ -1,7 +1,6 @@
 import {
   Account,
   Chain,
-  Clarinet,
   Tx,
   types,
 } from "https://deno.land/x/clarinet@v0.13.0/index.ts";
@@ -19,16 +18,6 @@ class Swap {
   constructor(chain: Chain, deployer: Account) {
     this.chain = chain;
     this.deployer = deployer;
-  }
-
-  getPairCount() {
-    return this.chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-pair-count", [], this.deployer.address);
-  }
-
-  getPairContracts(pairId: number) {
-    return this.chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-pair-contracts", [
-      types.uint(pairId),
-    ], this.deployer.address);
   }
 
   getPairDetails(tokenX: string, tokenY: string) {
@@ -178,5 +167,26 @@ class Swap {
     ]);
     return block.receipts[0].result;
   }
+
+  collectFees(tokenX: string, tokenY: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-swap-v1-1", "collect-fees", [
+        types.principal(Utils.qualifiedName(tokenX)),
+        types.principal(Utils.qualifiedName(tokenY))
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  getPairCount() {
+    return this.chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-pair-count", [], this.deployer.address);
+  }
+
+  getPairContracts(pairId: number) {
+    return this.chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-pair-contracts", [
+      types.uint(pairId),
+    ], this.deployer.address);
+  }
 }
+
 export { Swap };
