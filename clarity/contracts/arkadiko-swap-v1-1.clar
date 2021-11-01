@@ -87,21 +87,6 @@
   )
 )
 
-;; @desc get symbol for liquidity token
-;; @param token-x-trait; first token of pair
-;; @param token-y-trait; second token of pair
-;; @post string; returns the liquidity token name
-(define-public (get-symbol (token-x-trait <ft-trait>) (token-y-trait <ft-trait>))
-  (ok
-    (concat
-      (unwrap-panic (as-max-len? (unwrap-panic (contract-call? token-x-trait get-symbol)) u15))
-      (concat "-"
-        (unwrap-panic (as-max-len? (unwrap-panic (contract-call? token-y-trait get-symbol)) u15))
-      )
-    )
-  )
-)
-
 (define-read-only (get-total-supply (token-x-trait <ft-trait>) (token-y-trait <ft-trait>))
   (let
     (
@@ -222,7 +207,7 @@
     (asserts! (is-ok (contract-call? token-y-trait transfer new-y tx-sender contract-address none)) transfer-y-failed-err)
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-updated)
-      (try! (contract-call? swap-token-trait mint recipient-address new-shares))
+    (try! (contract-call? swap-token-trait mint recipient-address new-shares))
     (print { object: "pair", action: "liquidity-added", data: pair-updated })
     (ok true)
   )
@@ -278,7 +263,6 @@
       name: pair-name,
     })
   )
-
     (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
     (asserts!
       (and
