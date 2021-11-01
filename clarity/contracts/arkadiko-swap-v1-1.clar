@@ -631,9 +631,10 @@
     (fee-y (get fee-balance-y pair))
   )
     (asserts! (is-shutdown-activated) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
-    (asserts! (is-eq fee-x u0) no-fee-x-err)
+    (asserts! (> fee-x u0) no-fee-x-err)
+    ;; TODO - fix wSTX fees
     (asserts! (is-ok (contract-call? token-x-trait transfer fee-x (as-contract tx-sender) address none)) transfer-x-failed-err)
-    (asserts! (is-eq fee-y u0) no-fee-y-err)
+    (asserts! (> fee-y u0) no-fee-y-err)
     (asserts! (is-ok (contract-call? token-y-trait transfer fee-y (as-contract tx-sender) address none)) transfer-y-failed-err)
 
     (map-set pairs-data-map
