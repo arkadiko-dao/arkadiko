@@ -596,6 +596,53 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "swap: protocol fees on wSTX-USDA",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let swap = new Swap(chain, deployer);
+
+    // Create pair
+    let result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 5000, 1000);
+    result.expectOk().expectBool(true);
+
+    // Set fee to address
+    swap.setFeeToAddress(wstxTokenAddress, usdaTokenAddress, deployer);
+
+    // Swap
+    result = swap.swapXForY(deployer, wstxTokenAddress, usdaTokenAddress, 200, 38);
+    result.expectOk().expectList()[0].expectUintWithDecimals(200);
+    result.expectOk().expectList()[1].expectUintWithDecimals(38.350578);
+
+    // Protocol fees
+    // 200 DIKO * 0.05% = 0.1 DIKO
+    let call = await swap.getFees(wstxTokenAddress, usdaTokenAddress);
+    call.result.expectOk().expectList()[0].expectUintWithDecimals(0.1);
+    call.result.expectOk().expectList()[1].expectUint(0);
+
+    // Swap back
+    result = swap.swapYForX(deployer, wstxTokenAddress, usdaTokenAddress, 40, 1);
+    result.expectOk().expectList()[0].expectUintWithDecimals(207.059318);
+    result.expectOk().expectList()[1].expectUintWithDecimals(40);
+
+    // // Protocol fees
+    // // 40 USDA * 0.05% = 0.02 USDA
+    call = await swap.getFees(wstxTokenAddress, usdaTokenAddress);
+    call.result.expectOk().expectList()[0].expectUintWithDecimals(0.1);
+    call.result.expectOk().expectList()[1].expectUintWithDecimals(0.02);
+
+    call = chain.callReadOnlyFn("usda-token", "get-balance", [types.principal(deployer.address)], deployer.address);
+    call.result.expectOk().expectUint(998998350578);
+    result = swap.collectFees(wstxTokenAddress, usdaTokenAddress);
+    result.expectOk().expectList()[0].expectUintWithDecimals(0.1);
+    result.expectOk().expectList()[1].expectUintWithDecimals(0.02);
+    call = chain.callReadOnlyFn("wrapped-stx-token", "get-balance", [types.principal(deployer.address)], deployer.address);
+    call.result.expectOk().expectUint(0);
+    call = chain.callReadOnlyFn("usda-token", "get-balance", [types.principal(deployer.address)], deployer.address);
+    call.result.expectOk().expectUint(998998370578);
+  },
+});
+
+Clarinet.test({
   name: "swap: allow each LP token once per pair",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
