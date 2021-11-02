@@ -191,14 +191,14 @@
     (if (is-eq token-x .wrapped-stx-token)
       (begin
         (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token x tx-sender))
-        (try! (stx-transfer? x tx-sender (as-contract tx-sender)))
+        (try! (stx-transfer? x tx-sender contract-address))
       )
       false
     )
     (if (is-eq token-y .wrapped-stx-token)
       (begin
         (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token y tx-sender))
-        (try! (stx-transfer? y tx-sender (as-contract tx-sender)))
+        (try! (stx-transfer? y tx-sender contract-address))
       )
       false
     )
@@ -276,14 +276,14 @@
     (if (is-eq token-x .wrapped-stx-token)
       (begin
         (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token x tx-sender))
-        (try! (stx-transfer? x tx-sender (as-contract tx-sender)))
+        (try! (stx-transfer? x tx-sender contract-address))
       )
       false
     )
     (if (is-eq token-y .wrapped-stx-token)
       (begin
         (try! (contract-call? .arkadiko-dao mint-token .wrapped-stx-token y tx-sender))
-        (try! (stx-transfer? y tx-sender (as-contract tx-sender)))
+        (try! (stx-transfer? y tx-sender contract-address))
       )
       false
     )
@@ -427,6 +427,7 @@
     (asserts! (<= percent u100) (err u5))
     (asserts! (get enabled pair) (err ERR-PAIR-DISABLED))
     (asserts! (is-shutdown-activated) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
+    (asserts! (is-eq swap-token (contract-of swap-token-trait)) (err ERR-WRONG-SWAP-TOKEN))
 
     (if (is-eq token-x .wrapped-stx-token)
       (begin
@@ -443,7 +444,6 @@
       )
       (asserts! (is-ok (as-contract (contract-call? token-y-trait transfer withdrawal-y contract-address sender none))) transfer-y-failed-err)
     )
-    (asserts! (is-eq swap-token (contract-of swap-token-trait)) (err ERR-WRONG-SWAP-TOKEN))
 
     (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-updated)
     (try! (contract-call? swap-token-trait burn tx-sender withdrawal))
