@@ -10,6 +10,7 @@ import { tokenTraits } from '@common/vault-utils';
 import { callReadOnlyFunction, cvToJSON, contractPrincipalCV, standardPrincipalCV } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
+import { Alert } from './alert';
 
 export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
   const tokenX = tokenList[indexTokenX];
@@ -210,22 +211,17 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
               </dl>
             </div>
 
-            <div className="p-4 mt-4 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
-                </div>
-                <div className="flex-1 ml-3 md:flex md:justify-between">
-                  <p className="text-sm text-blue-700">
-                    In order to remove liquidity and make the LP tokens available again, keep in mind that you must first <RouterLink
-                      className="font-semibold text-blue-700 underline whitespace-nowrap hover:text-blue-600"
-                      to={'/stake'}
-                    >
-                      unstake them
-                    </RouterLink>.
-                  </p>
-                </div>
-              </div>
+            <div className="mt-4">
+              <Alert>
+                <p>
+                  In order to remove liquidity and make the LP tokens available again, keep in mind that you must first <RouterLink
+                    className="font-semibold text-blue-700 underline whitespace-nowrap hover:text-blue-600"
+                    to={'/stake'}
+                  >
+                    unstake them
+                  </RouterLink>.
+                </p>
+              </Alert>
             </div>
 
             <div className="mt-4 sm:grid sm:grid-cols-2 sm:gap-2 sm:grid-flow-row-dense">

@@ -1,7 +1,8 @@
 import React, { useContext } from 'react';
 import { AppContext } from '@common/context';
-import { QuestionMarkCircleIcon, ExternalLinkIcon, ExclamationIcon } from '@heroicons/react/solid';
+import { QuestionMarkCircleIcon, ExternalLinkIcon } from '@heroicons/react/solid';
 import { useLocation } from 'react-router-dom';
+import { Alert } from './alert';
 
 export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => {
   const [state] = useContext(AppContext);
@@ -153,33 +154,25 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
 
                 {tokenName.includes('STX') ? (
                   <div className="pt-4">
-                    <div className="p-4 mt-2 mb-6 border-l-4 border-yellow-400 rounded-sm bg-yellow-50">
-                      <div className="flex">
-                        <div className="flex-shrink-0">
-                          <ExclamationIcon className="w-5 h-5 text-yellow-400" aria-hidden="true" />
-                        </div>
-                        <div className="ml-3">
-                          <h3 className="text-sm font-semibold text-yellow-800">Important note</h3>
-                          <div className="mt-2 text-sm text-yellow-700">
-                            <p className="">
-                              Choosing to stack your STX means that they will be locked and become illiquid immediately.
-                              They will be available again on: <span className="font-semibold">{tokensAvailability}</span> (End of the <a href="https://stacking.club/cycles/next" target="_blank" rel="noopener noreferrer" className="font-medium text-yellow-700 underline hover:text-yellow-600">next PoX cycle</a>: {state.endDate} + 6-week stacking phase + 2-week cooldown period).
-                            </p>
+                    <div className="mt-2">
+                      <Alert type={Alert.type.WARNING} title="Important note">
+                        <p className="">
+                          Choosing to stack your STX means that they will be locked and become illiquid immediately.
+                          They will be available again on: <span className="font-semibold">{tokensAvailability}</span> (End of the <a href="https://stacking.club/cycles/next" target="_blank" rel="noopener noreferrer" className="font-medium text-yellow-700 underline hover:text-yellow-600">next PoX cycle</a>: {state.endDate} + 6-week stacking phase + 2-week cooldown period).
+                        </p>
 
-                            <p className="mt-1">
-                              <a href="https://stacking.club/learn" target="_blank" rel="noopener noreferrer" className="font-medium text-yellow-700 underline hover:text-yellow-600">
-                                Learn more about the PoX cycle.
-                              </a>
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                        <p className="mt-1">
+                          <a href="https://stacking.club/learn" target="_blank" rel="noopener noreferrer" className="font-medium text-yellow-700 underline hover:text-yellow-600">
+                            Learn more about the PoX cycle.
+                          </a>
+                        </p>
+                      </Alert>
                     </div>
 
                     <label className="flex items-center space-x-3">
                       <input
                         type="checkbox"
-                        className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-blue-600 checked:border-transparent focus:outline-none"
+                        className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-indigo-600 checked:border-transparent focus:outline-none"
                         checked={coinAmounts['stack-pox']}
                         onChange={() => togglePox()}
                       />
@@ -188,7 +181,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                     <label className="flex items-center pt-3 space-x-3">
                       <input
                         type="checkbox"
-                        className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-blue-600 checked:border-transparent focus:outline-none"
+                        className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-indigo-600 checked:border-transparent focus:outline-none"
                         checked={coinAmounts['auto-payoff']}
                         onChange={() => toggleAutoPayoff()}
                       />
