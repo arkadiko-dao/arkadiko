@@ -657,6 +657,30 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "swap: add malicious fungible token and steal tokens",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let swap = new Swap(chain, deployer);
+
+    let result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-DIKO", 5000, 1000);
+    result.expectOk().expectBool(true);
+
+    result = swap.createPair(deployer, 'malicious-ft', usdaTokenAddress, dikoUsdaPoolAddress, "MALI-USDA", 5000, 1000);
+    result.expectOk().expectBool(true);
+
+    let call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
+    call.result.expectOk().expectUint(889000000000);
+
+    result = swap.reducePosition(deployer, 'malicious-ft', usdaTokenAddress, dikoUsdaPoolAddress, 100);
+    result.expectOk().expectList()[0].expectUintWithDecimals(5000);
+    result.expectOk().expectList()[1].expectUintWithDecimals(1000);
+
+    call = chain.callReadOnlyFn("arkadiko-token", "get-balance", [types.principal(deployer.address)], deployer.address);
+    call.result.expectOk().expectUint(890000000000);
+  }
+});
+
+Clarinet.test({
   name: "swap: burn malicious LP tokens",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
