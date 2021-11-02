@@ -13,6 +13,7 @@
 (use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
 
 (define-constant ERR-NOT-AUTHORIZED u40401)
+(define-constant ERR-NOTHING-TO-CLAIM u40402)
 
 (define-map claims
   { vault-id: uint }
@@ -69,9 +70,12 @@
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (> (get ustx claim-entry) u0) (err ERR-NOTHING-TO-CLAIM))
 
     (try! (as-contract (stx-transfer? (get ustx claim-entry) tx-sender sender)))
     (try! (contract-call? .arkadiko-freddie-v1-1 deposit vault-id (get ustx claim-entry) reserve .arkadiko-token coll-type))
+
+    (map-set claims { vault-id: vault-id } { ustx: u0 })
     (ok true)
   )
 )
@@ -99,6 +103,7 @@
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (> (get ustx claim-entry) u0) (err ERR-NOTHING-TO-CLAIM))
 
     ;; pay back stability fee
     (if (>= usda-amount stability-fee)
@@ -111,7 +116,8 @@
       (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id leftover-usda reserve .arkadiko-token coll-type))
       true
     )
-  
+
+    (map-set claims { vault-id: vault-id } { ustx: u0 })
     (ok usda-amount)
   )
 )
