@@ -1034,14 +1034,6 @@ export const ManageVault = ({ match }) => {
                         <Alert>
                           <div className="md:flex md:justify-between">
                             <p className="text-sm text-blue-700">You have unstacked your collateral, you can choose to stack again.</p>
-                            {isVaultOwner ? (
-                              <button 
-                                type="button" 
-                                className="font-medium text-blue-700 whitespace-nowrap hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                onClick={() => callToggleStacking()}>
-                                Restack
-                              </button>
-                            ) : null }
                           </div>
                         </Alert>
                       </div>
