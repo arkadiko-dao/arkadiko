@@ -1,4 +1,4 @@
-;; Stake Pool - Stake DIKO to get sDIKO
+;; Stake Pool - Stake DIKO to get stDIKO
 ;; 
 ;; A fixed amount of rewards per block will be distributed across all stakers, according to their size in the pool
 ;; Rewards will be automatically staked before staking or unstaking. 

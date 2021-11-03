@@ -18,7 +18,7 @@ import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { classNames } from '@common/class-names';
-import { Placeholder } from './placeholder';
+import { Placeholder } from './ui/placeholder';
 
 export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [state, setState] = useContext(AppContext);
