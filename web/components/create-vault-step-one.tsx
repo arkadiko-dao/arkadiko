@@ -5,7 +5,7 @@ import { getLiquidationPrice, getCollateralToDebtRatio } from '@common/vault-uti
 import { InputAmount } from './input-amount';
 import { useLocation } from 'react-router-dom';
 import { QuestionMarkCircleIcon, InformationCircleIcon, ExternalLinkIcon } from '@heroicons/react/solid';
-import { Placeholder } from './placeholder';
+import { Placeholder } from './ui/placeholder';
 import { Tooltip } from '@blockstack/ui';
 import { Alert } from './ui/alert';
 

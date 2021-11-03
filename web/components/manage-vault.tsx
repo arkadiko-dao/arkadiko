@@ -23,7 +23,7 @@ import { InputAmount } from './input-amount';
 import { getRPCClient } from '@common/utils';
 import { microToReadable } from '@common/vault-utils';
 import { addMinutes } from 'date-fns'
-import { Placeholder } from './placeholder';
+import { Placeholder } from './ui/placeholder';
 import { Alert } from './ui/alert';
 
 export const ManageVault = ({ match }) => {

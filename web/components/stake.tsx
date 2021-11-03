@@ -27,7 +27,7 @@ import {
   QuestionMarkCircleIcon,
   ExternalLinkIcon,
   InformationCircleIcon } from '@heroicons/react/solid';
-import { Placeholder } from './placeholder';
+import { Placeholder } from './ui/placeholder';
 import { Tooltip } from '@blockstack/ui';
 import { Alert } from './ui/alert';
 
