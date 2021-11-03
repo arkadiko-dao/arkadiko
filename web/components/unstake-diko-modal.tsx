@@ -20,7 +20,7 @@ import { Alert } from './ui/alert';
 
 export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmount }) => {
   const [state, setState] = useContext(AppContext);
-  const [errors, setErrors] = useState<Array<string>>([]);
+  const [errors, setErrors] = useState<string[]>([]);
   const [stakeAmount, setStakeAmount] = useState('');
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';

@@ -6,9 +6,9 @@ import { NavLink as RouterLink } from 'react-router-dom';
 import { classNames } from '@common/class-names';
 
 export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
-  const collateralItems: Array<CollateralTypeProps> = [];
+  const collateralItems: CollateralTypeProps[] = [];
   ['STX-A', 'STX-B'].forEach((tokenString: string) => {
-    let coll = types?.[tokenString];
+    const coll = types?.[tokenString];
     if (coll) {
       collateralItems.push({
         name: coll['name'],

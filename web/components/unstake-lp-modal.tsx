@@ -18,7 +18,7 @@ export const UnstakeLpModal = ({
   tokenName,
 }) => {
   const [_, setState] = useContext(AppContext);
-  const [errors, setErrors] = useState<Array<string>>([]);
+  const [errors, setErrors] = useState<string[]>([]);
   const [stakeAmount, setStakeAmount] = useState('');
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';

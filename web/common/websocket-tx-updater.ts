@@ -37,7 +37,7 @@ const parseTransaction = (update: any, setState: any) => {
     update['tx_status'] == 'abort_by_post_condition'
   ) {
     console.log(update);
-    let url = `${coreApiUrl}/extended/v1/tx/${update['tx_id']}`;
+    const url = `${coreApiUrl}/extended/v1/tx/${update['tx_id']}`;
     fetch(url)
       .then(response => response.json())
       .then(data => {

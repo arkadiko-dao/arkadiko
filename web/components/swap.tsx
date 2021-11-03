@@ -92,7 +92,7 @@ export const Swap: React.FC = () => {
 
   useEffect(() => {
     const fetchPair = async (tokenXContract: string, tokenYContract: string) => {
-      let details = await callReadOnlyFunction({
+      const details = await callReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-swap-v1-1',
         functionName: 'get-pair-details',
@@ -115,8 +115,8 @@ export const Swap: React.FC = () => {
       setTokenYAmount(0.0);
       setLoadingData(true);
 
-      let tokenXContract = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
-      let tokenYContract = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
+      const tokenXContract = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
+      const tokenYContract = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
       const json3 = await fetchPair(tokenXContract, tokenYContract);
       console.log('Pair Details:', json3);
       if (json3['success']) {
@@ -245,17 +245,17 @@ export const Swap: React.FC = () => {
     let contractName = 'swap-x-for-y';
     let tokenNameX = tokenX['name'];
     let tokenNameY = tokenY['name'];
-    let tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
-    let tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
+    const tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
+    const tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
     let principalX = contractPrincipalCV(contractAddress, tokenXTrait);
     let principalY = contractPrincipalCV(contractAddress, tokenYTrait);
-    let postConditionMode = 0x01;
+    const postConditionMode = 0x01;
     if (inverseDirection) {
       contractName = 'swap-y-for-x';
-      let tmpPrincipal = principalX;
+      const tmpPrincipal = principalX;
       principalX = principalY;
       principalY = tmpPrincipal;
-      let tmpName = tokenNameX;
+      const tmpName = tokenNameX;
       tokenNameX = tokenNameY;
       tokenNameY = tmpName;
     }

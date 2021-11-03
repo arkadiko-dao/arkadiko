@@ -45,16 +45,16 @@ export const Mint = () => {
 
   useEffect(() => {
     const fetchPrices = async () => {
-      let stxPrice = await getPrice('STX');
+      const stxPrice = await getPrice('STX');
       setStxPrice(stxPrice);
 
-      let xbtcPrice = await getPrice('xBTC');
+      const xbtcPrice = await getPrice('xBTC');
       setXbtcPrice(xbtcPrice);
 
-      let dikoPrice = await getDikoAmmPrice();
+      const dikoPrice = await getDikoAmmPrice();
       setDikoPrice(dikoPrice);
 
-      let usdaPrice = await getPrice('USDA');
+      const usdaPrice = await getPrice('USDA');
       setUsdaPrice(usdaPrice);
 
       setLoadingStackingData(false);
@@ -102,7 +102,7 @@ export const Mint = () => {
         network: network,
       });
       const json = cvToJSON(vaults);
-      let arr: Array<VaultProps> = [];
+      const arr: VaultProps[] = [];
 
       await asyncForEach(json.value.ids.value, async (vaultId: any) => {
         if (Number(vaultId.value) !== 0) {

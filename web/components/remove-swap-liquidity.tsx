@@ -68,7 +68,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
 
   useEffect(() => {
     const fetchPair = async (tokenXContract: string, tokenYContract: string) => {
-      let details = await callReadOnlyFunction({
+      const details = await callReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-swap-v1-1',
         functionName: 'get-pair-details',

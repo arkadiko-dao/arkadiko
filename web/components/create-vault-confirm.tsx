@@ -9,10 +9,10 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
   const search = useLocation().search;
   const tokenName = new URLSearchParams(search).get('token') || 'STX';
 
-  let endDate = Date.parse(state.endDate);
+  const endDate = Date.parse(state.endDate);
   const msInWeek = 7 * 24 * 60 * 60 * 1000;
-  let availableTokensDate = endDate + 8 * msInWeek; // 6-week stacking + 2-week cooldown = 8 weeks
-  let tokensAvailability = new Date(availableTokensDate)
+  const availableTokensDate = endDate + 8 * msInWeek; // 6-week stacking + 2-week cooldown = 8 weeks
+  const tokensAvailability = new Date(availableTokensDate)
     .toDateString()
     .split(' ')
     .slice(1)

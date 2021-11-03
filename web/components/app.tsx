@@ -89,7 +89,7 @@ export const App: React.FC = () => {
   };
 
   const fetchCollateralTypes = async (address: string) => {
-    let collTypes = {};
+    const collTypes = {};
     ['STX-A', 'STX-B'].forEach(async token => {
       const types = await callReadOnlyFunction({
         contractAddress,
@@ -125,23 +125,23 @@ export const App: React.FC = () => {
     fetch(metaInfoUrl)
       .then(res => res.json())
       .then(response => {
-        let cycleNumber = response[0]['pox']['current_cycle']['id'];
+        const cycleNumber = response[0]['pox']['current_cycle']['id'];
 
-        let cycleInfoUrl = `https://api.stacking.club/api/cycle-info?cycle=` + cycleNumber;
+        const cycleInfoUrl = `https://api.stacking.club/api/cycle-info?cycle=` + cycleNumber;
         fetch(cycleInfoUrl)
           .then(res => res.json())
           .then(response => {
-            let startTimestamp = response['startDate'];
-            let endTimestamp = response['endDate'];
-            let currentTimestamp = Date.now();
+            const startTimestamp = response['startDate'];
+            const endTimestamp = response['endDate'];
+            const currentTimestamp = Date.now();
 
-            let daysPassed = Math.round(
+            const daysPassed = Math.round(
               (currentTimestamp - startTimestamp) / (1000 * 60 * 60 * 24)
             );
-            let daysLeft = Math.round((endTimestamp - currentTimestamp) / (1000 * 60 * 60 * 24));
+            const daysLeft = Math.round((endTimestamp - currentTimestamp) / (1000 * 60 * 60 * 24));
 
-            let startDate = new Date(startTimestamp).toDateString();
-            let endDate = new Date(endTimestamp).toDateString().split(' ').slice(1).join(' ');
+            const startDate = new Date(startTimestamp).toDateString();
+            const endDate = new Date(endTimestamp).toDateString().split(' ').slice(1).join(' ');
 
             setState(prevState => ({
               ...prevState,

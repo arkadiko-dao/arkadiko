@@ -30,7 +30,7 @@ export const Governance = () => {
         network: network,
       });
       const json = cvToJSON(proposals);
-      let serializedProposals: Array<{
+      const serializedProposals: {
         id: string;
         title: string;
         url: string;
@@ -41,7 +41,7 @@ export const Governance = () => {
         isOpen: boolean;
         startBlockHeight: number;
         endBlockHeight: number;
-      }> = [];
+      }[] = [];
       const data = json.value.value;
 
       data.forEach((element: object) => {
@@ -64,7 +64,7 @@ export const Governance = () => {
       setIsLoading(false);
     };
     const extractChanges = changes => {
-      let newChanges = [];
+      const newChanges = [];
       changes['value'].forEach(change => {
         newChanges.push(change['value']);
       });

@@ -67,7 +67,7 @@ export const Auctions: React.FC = () => {
         network: network,
       });
       const auctionIds = auctionIdsCall.value.list;
-      let serializedAuctions: Array<AuctionProps> = [];
+      const serializedAuctions: AuctionProps[] = [];
       await asyncForEach(auctionIds, async (auctionId: number) => {
         const auction = await callReadOnlyFunction({
           contractAddress,
@@ -117,13 +117,13 @@ export const Auctions: React.FC = () => {
       const jsonLots = cvToJSON(lots);
       let isAuctionOpen;
 
-      let serializedLots: Array<{
+      const serializedLots: {
         'lot-id': string;
         'auction-id': string;
         'collateral-amount': number;
         'collateral-token': string;
         usda: number;
-      }> = [];
+      }[] = [];
       await asyncForEach(jsonLots.value.ids.value, async (e: object) => {
         const lot = tupleCV(e);
         const data = lot.data.value;

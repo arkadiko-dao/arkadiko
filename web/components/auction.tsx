@@ -26,7 +26,7 @@ export const Auction: React.FC<AuctionProps> = ({
 
   useEffect(() => {
     const fetchPrice = async () => {
-      let price = await getPrice(collateralToken);
+      const price = await getPrice(collateralToken);
       setPrice(price);
 
       const discountedPriceCall = await callReadOnlyFunction({

@@ -93,7 +93,7 @@ export const Stake = () => {
       const client = getRPCClient();
       const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
       const data = await response.json();
-      let currentBlock = data['stacks_tip_height'];
+      const currentBlock = data['stacks_tip_height'];
 
       const stDikoSupplyCall = await callReadOnlyFunction({
         contractAddress,
@@ -116,7 +116,7 @@ export const Stake = () => {
         senderAddress: stxAddress || '',
         network: network,
       });
-      let dikoStaked = cvToJSON(userStakedCall).value.value;
+      const dikoStaked = cvToJSON(userStakedCall).value.value;
       setStakedAmount(dikoStaked);
 
       const userLpDikoUsdaStakedCall = await callReadOnlyFunction({
@@ -127,7 +127,7 @@ export const Stake = () => {
         senderAddress: stxAddress || '',
         network: network,
       });
-      let dikoUsdaLpStaked = cvToJSON(userLpDikoUsdaStakedCall).value;
+      const dikoUsdaLpStaked = cvToJSON(userLpDikoUsdaStakedCall).value;
       setLpDikoUsdaStakedAmount(dikoUsdaLpStaked);
 
       const userLpStxUsdaStakedCall = await callReadOnlyFunction({
@@ -138,7 +138,7 @@ export const Stake = () => {
         senderAddress: stxAddress || '',
         network: network,
       });
-      let stxUsdaLpStaked = cvToJSON(userLpStxUsdaStakedCall).value;
+      const stxUsdaLpStaked = cvToJSON(userLpStxUsdaStakedCall).value;
       setLpStxUsdaStakedAmount(stxUsdaLpStaked);
 
       const userLpStxDikoStakedCall = await callReadOnlyFunction({
@@ -149,7 +149,7 @@ export const Stake = () => {
         senderAddress: stxAddress || '',
         network: network,
       });
-      let stxDikoLpStaked = cvToJSON(userLpStxDikoStakedCall).value;
+      const stxDikoLpStaked = cvToJSON(userLpStxDikoStakedCall).value;
       setLpStxDikoStakedAmount(stxDikoLpStaked);
       setEmissionsStarted(true);
 
@@ -164,7 +164,7 @@ export const Stake = () => {
         senderAddress: stxAddress || '',
         network: network,
       });
-      let dikoUsdaLpPendingRewards = cvToJSON(dikoUsdaPendingRewardsCall).value.value;
+      const dikoUsdaLpPendingRewards = cvToJSON(dikoUsdaPendingRewardsCall).value.value;
       setLpDikoUsdaPendingRewards(dikoUsdaLpPendingRewards);
 
       const stxUsdaPendingRewardsCall = await callReadOnlyFunction({
@@ -178,7 +178,7 @@ export const Stake = () => {
         senderAddress: stxAddress || '',
         network: network,
       });
-      let stxUsdaLpPendingRewards = cvToJSON(stxUsdaPendingRewardsCall).value.value;
+      const stxUsdaLpPendingRewards = cvToJSON(stxUsdaPendingRewardsCall).value.value;
       setLpStxUsdaPendingRewards(stxUsdaLpPendingRewards);
 
       const stxDikoPendingRewardsCall = await callReadOnlyFunction({
@@ -192,7 +192,7 @@ export const Stake = () => {
         senderAddress: stxAddress || '',
         network: network,
       });
-      let stxDikoLpPendingRewards = cvToJSON(stxDikoPendingRewardsCall).value.value;
+      const stxDikoLpPendingRewards = cvToJSON(stxDikoPendingRewardsCall).value.value;
       setLpStxDikoPendingRewards(stxDikoLpPendingRewards);
 
       const totalDikoStakedCall = await callReadOnlyFunction({
@@ -273,17 +273,17 @@ export const Stake = () => {
         senderAddress: stxAddress || '',
         network: network,
       });
-      let cooldownInfo = cvToJSON(dikoCooldownInfo).value;
-      let redeemStartBlock = cooldownInfo['redeem-period-start-block']['value'];
-      let redeemEndBlock = cooldownInfo['redeem-period-end-block']['value'];
+      const cooldownInfo = cvToJSON(dikoCooldownInfo).value;
+      const redeemStartBlock = cooldownInfo['redeem-period-start-block']['value'];
+      const redeemEndBlock = cooldownInfo['redeem-period-end-block']['value'];
 
       // Helper to create countdown text
       function blockDiffToTimeLeft(blockDiff: number) {
-        let minDiff = blockDiff * 10;
-        let days = Math.floor(minDiff / (60 * 24));
-        let hours = Math.floor((minDiff % (60 * 24)) / 60);
-        let minutes = Math.floor(minDiff % 60);
-        var text = '';
+        const minDiff = blockDiff * 10;
+        const days = Math.floor(minDiff / (60 * 24));
+        const hours = Math.floor((minDiff % (60 * 24)) / 60);
+        const minutes = Math.floor(minDiff % 60);
+        let text = '';
         if (days != 0) {
           text += days + 'd ';
         }
@@ -299,13 +299,13 @@ export const Stake = () => {
       if (redeemEndBlock == 0 || redeemEndBlock < currentBlock) {
         setDikoCooldown('Not started');
       } else if (redeemStartBlock < currentBlock) {
-        let blockDiff = redeemEndBlock - currentBlock;
+        const blockDiff = redeemEndBlock - currentBlock;
         var text = blockDiffToTimeLeft(blockDiff);
         text += ' left to withdraw';
         setDikoCooldown(text);
         setCanUnstake(true);
       } else {
-        let blockDiff = redeemStartBlock - currentBlock;
+        const blockDiff = redeemStartBlock - currentBlock;
         var text = blockDiffToTimeLeft(blockDiff);
         text += ' left';
         setDikoCooldown(text);

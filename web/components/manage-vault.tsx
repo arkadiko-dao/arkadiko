@@ -106,7 +106,7 @@ export const ManageVault = ({ match }) => {
         setAuctionEnded(data['auction-ended'].value);
         setIsVaultOwner(data['owner'].value === senderAddress);
 
-        let price = await getPrice(data['collateral-token'].value);
+        const price = await getPrice(data['collateral-token'].value);
         setPrice(price);
 
         const type = await callReadOnlyFunction({

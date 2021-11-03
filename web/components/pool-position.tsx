@@ -34,7 +34,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
 
   useEffect(() => {
     const fetchPair = async (tokenXContract: string, tokenYContract: string) => {
-      let details = await callReadOnlyFunction({
+      const details = await callReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-swap-v1-1',
         functionName: 'get-pair-details',
@@ -50,7 +50,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
     };
 
     const fetchStakedTokens = async (poolName: string) => {
-      var poolContract = '';
+      let poolContract = '';
       if (poolName == 'wSTX-DIKO') {
         poolContract = 'arkadiko-stake-pool-wstx-diko-v1-1';
       } else if (poolName == 'wSTX-USDA') {
