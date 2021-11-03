@@ -9,29 +9,29 @@ export const tokenList = [
     name: 'USDA',
     nameInPair: 'usda',
     logo: '/assets/tokens/usda.svg',
-    listed: true
+    listed: true,
   },
   {
     id: 2,
     name: 'DIKO',
     nameInPair: 'diko',
     logo: '/assets/tokens/diko.svg',
-    listed: true
+    listed: true,
   },
   {
     id: 3,
     name: 'STX',
     nameInPair: 'wstx',
     logo: '/assets/tokens/stx.svg',
-    listed: true
+    listed: true,
   },
   {
     id: 4,
     name: 'Wrapped Bitcoin',
     nameInPair: 'xbtc',
     logo: '/assets/tokens/xbtc.svg',
-    listed: false
-  }
+    listed: false,
+  },
 ];
 
 export const TokenSwapList: React.FC = ({ selected, setSelected, disabled }) => {
@@ -40,7 +40,11 @@ export const TokenSwapList: React.FC = ({ selected, setSelected, disabled }) => 
       {({ open }) => (
         <>
           <div className="relative flex-1">
-            <Listbox.Button className={`relative w-full py-2 pl-3 ${disabled ? 'pr-3' : 'pr-10'} text-left bg-white border border-gray-300 rounded-md shadow-sm cursor-default md:w-36 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}>
+            <Listbox.Button
+              className={`relative w-full py-2 pl-3 ${
+                disabled ? 'pr-3' : 'pr-10'
+              } text-left bg-white border border-gray-300 rounded-md shadow-sm cursor-default md:w-36 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+            >
               <span className="flex items-center">
                 <img src={selected.logo} alt="" className="flex-shrink-0 w-6 h-6 rounded-full" />
                 <span className="block ml-3 truncate">{selected.name}</span>
@@ -63,47 +67,56 @@ export const TokenSwapList: React.FC = ({ selected, setSelected, disabled }) => 
                 static
                 className="absolute z-20 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-56 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
               >
-                {tokenList.filter(token => token.listed).map((token) => (
-                  <Listbox.Option
-                    key={token.id}
-                    className={({ active }) =>
-                      classNames(
-                        active ? 'text-white bg-indigo-600' : 'text-gray-900',
-                        'cursor-default select-none relative py-2 pl-3 pr-9'
-                      )
-                    }
-                    value={token}
-                  >
-                    {({ selected, active }) => (
-                      <>
-                        <div className="flex items-center">
-                          <img src={token.logo} alt="" className="flex-shrink-0 w-6 h-6 rounded-full" />
-                          <span
-                            className={classNames(selected ? 'font-semibold' : 'font-normal', 'ml-3 block truncate')}
-                          >
-                            {token.name}
-                          </span>
-                        </div>
+                {tokenList
+                  .filter(token => token.listed)
+                  .map(token => (
+                    <Listbox.Option
+                      key={token.id}
+                      className={({ active }) =>
+                        classNames(
+                          active ? 'text-white bg-indigo-600' : 'text-gray-900',
+                          'cursor-default select-none relative py-2 pl-3 pr-9'
+                        )
+                      }
+                      value={token}
+                    >
+                      {({ selected, active }) => (
+                        <>
+                          <div className="flex items-center">
+                            <img
+                              src={token.logo}
+                              alt=""
+                              className="flex-shrink-0 w-6 h-6 rounded-full"
+                            />
+                            <span
+                              className={classNames(
+                                selected ? 'font-semibold' : 'font-normal',
+                                'ml-3 block truncate'
+                              )}
+                            >
+                              {token.name}
+                            </span>
+                          </div>
 
-                        {selected ? (
-                          <span
-                            className={classNames(
-                              active ? 'text-white' : 'text-indigo-600',
-                              'absolute inset-y-0 right-0 flex items-center pr-4'
-                            )}
-                          >
-                            <CheckIcon className="w-5 h-5" aria-hidden="true" />
-                          </span>
-                        ) : null}
-                      </>
-                    )}
-                  </Listbox.Option>
-                ))}
+                          {selected ? (
+                            <span
+                              className={classNames(
+                                active ? 'text-white' : 'text-indigo-600',
+                                'absolute inset-y-0 right-0 flex items-center pr-4'
+                              )}
+                            >
+                              <CheckIcon className="w-5 h-5" aria-hidden="true" />
+                            </span>
+                          ) : null}
+                        </>
+                      )}
+                    </Listbox.Option>
+                  ))}
               </Listbox.Options>
             </Transition>
           </div>
         </>
       )}
     </Listbox>
-  )
-}
+  );
+};

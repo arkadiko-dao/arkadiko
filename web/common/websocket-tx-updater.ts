@@ -17,7 +17,7 @@ if (env.includes('mocknet')) {
   websocketUrl = 'wss://stacks-node-api.regtest.stacks.co';
 }
 
-export const initiateConnection = async (address:string, setState:any) => {
+export const initiateConnection = async (address: string, setState: any) => {
   const client = await connectWebSocketClient(websocketUrl);
 
   client.subscribeAddressTransactions(address, function (transactionInfo) {
@@ -25,30 +25,35 @@ export const initiateConnection = async (address:string, setState:any) => {
   });
 };
 
-const parseTransaction = (update:any, setState:any) => {
+const parseTransaction = (update: any, setState: any) => {
   if (update['tx_status'] == 'success') {
     setState(prevState => ({
       ...prevState,
       currentTxStatus: 'success',
-      currentTxMessage: 'Transaction successful'
+      currentTxMessage: 'Transaction successful',
     }));
-  } else if (update['tx_status'] == 'abort_by_response' || update['tx_status'] == 'abort_by_post_condition') {
+  } else if (
+    update['tx_status'] == 'abort_by_response' ||
+    update['tx_status'] == 'abort_by_post_condition'
+  ) {
     console.log(update);
     let url = `${coreApiUrl}/extended/v1/tx/${update['tx_id']}`;
-    fetch(url).then(response => response.json()).then(data => {
-      const error = errToHumanReadable(data['tx_result']['repr']);
-      setState(prevState => ({
-        ...prevState,
-        currentTxStatus: 'error',
-        currentTxMessage: error
-      }));
-    });
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const error = errToHumanReadable(data['tx_result']['repr']);
+        setState(prevState => ({
+          ...prevState,
+          currentTxStatus: 'error',
+          currentTxMessage: error,
+        }));
+      });
   }
-}
+};
 
 const errToHumanReadable = (err: string) => {
   console.log(err);
-  const errId = err.split("(err")[1].replace(/ /g, '').replace(')', '');
+  const errId = err.split('(err')[1].replace(/ /g, '').replace(')', '');
   if (errId === 'none') {
     return 'An unknown error occurred. Please try again';
   }
@@ -57,10 +62,10 @@ const errToHumanReadable = (err: string) => {
 };
 
 const errorMessages = {
-  'u1': 'You do not have enough balance to make this transaction',
-  'u119': 'You tried minting too much debt. Try minting less.',
-  'u4401': 'Not Authorized',
-  'u414': 'Stacking still in progress - please withdraw later',
-  'u52': 'No liquidation required',
-  'u71': 'Slippage over tolerance. Try adjusting slippage manually to execute this swap'
+  u1: 'You do not have enough balance to make this transaction',
+  u119: 'You tried minting too much debt. Try minting less.',
+  u4401: 'Not Authorized',
+  u414: 'Stacking still in progress - please withdraw later',
+  u52: 'No liquidation required',
+  u71: 'Slippage over tolerance. Try adjusting slippage manually to execute this swap',
 };

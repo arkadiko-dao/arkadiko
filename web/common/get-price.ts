@@ -1,12 +1,17 @@
 import { stacksNetwork as network } from '@common/utils';
-import { callReadOnlyFunction, stringAsciiCV, cvToJSON, contractPrincipalCV } from '@stacks/transactions';
+import {
+  callReadOnlyFunction,
+  stringAsciiCV,
+  cvToJSON,
+  contractPrincipalCV,
+} from '@stacks/transactions';
 
 export const getPrice = async (symbol: string) => {
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const fetchedPrice = await callReadOnlyFunction({
     contractAddress,
-    contractName: "arkadiko-oracle-v1-1",
-    functionName: "get-price",
+    contractName: 'arkadiko-oracle-v1-1',
+    functionName: 'get-price',
     functionArgs: [stringAsciiCV(symbol || 'stx')],
     senderAddress: contractAddress,
     network: network,
@@ -19,13 +24,13 @@ export const getPrice = async (symbol: string) => {
 export const getDikoAmmPrice = async () => {
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const fetchPair = async () => {
-    let details = await callReadOnlyFunction({
+    const details = await callReadOnlyFunction({
       contractAddress,
-      contractName: "arkadiko-swap-v1-1",
-      functionName: "get-pair-details",
+      contractName: 'arkadiko-swap-v1-1',
+      functionName: 'get-pair-details',
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
-        contractPrincipalCV(contractAddress, 'usda-token')
+        contractPrincipalCV(contractAddress, 'usda-token'),
       ],
       senderAddress: contractAddress,
       network: network,

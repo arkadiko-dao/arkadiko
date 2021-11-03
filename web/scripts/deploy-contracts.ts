@@ -62,7 +62,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-swap-token-wstx-usda' },
   { name: 'arkadiko-stake-pool-wstx-usda-v1-1' },
   { name: 'arkadiko-swap-token-wstx-diko' },
-  { name: 'arkadiko-stake-pool-wstx-diko-v1-1' }
+  { name: 'arkadiko-stake-pool-wstx-diko-v1-1' },
 ];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');
@@ -116,10 +116,10 @@ const run = async () => {
 
     if (result.ok) {
       index += 1;
-      
+
       const txId = (await result.text()).replace(/"/g, '');
       console.log(`${rpcClient.url}/extended/v1/tx/${txId}`);
-      
+
       txResults.push(txId);
     } else {
       const errorMsg = await result.text();

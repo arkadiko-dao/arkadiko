@@ -1,23 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { AuctionProps} from './auction-group';
+import { AuctionProps } from './auction-group';
 import { callReadOnlyFunction, contractPrincipalCV, cvToJSON, uintCV } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { getPrice } from '@common/get-price';
 
-export const Auction: React.FC<AuctionProps> = (
-  {
-    id,
-    lotId,
-    collateralToken,
-    endsAt,
-    stacksTipHeight,
-    setShowBidModal,
-    setBidAuctionId,
-    setBidLotId,
-    setPreferredBid
-  }
-) => {
+export const Auction: React.FC<AuctionProps> = ({
+  id,
+  lotId,
+  collateralToken,
+  endsAt,
+  stacksTipHeight,
+  setShowBidModal,
+  setBidAuctionId,
+  setBidLotId,
+  setPreferredBid,
+}) => {
   const [minimumCollateralAmount, setMinimumCollateralAmount] = useState(0);
   const [currentBid, setCurrentBid] = useState(0);
   const [debtToRaise, setDebtToRaise] = useState(0);
@@ -33,8 +31,8 @@ export const Auction: React.FC<AuctionProps> = (
 
       const discountedPriceCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-auction-engine-v1-1",
-        functionName: "discounted-auction-price",
+        contractName: 'arkadiko-auction-engine-v1-1',
+        functionName: 'discounted-auction-price',
         functionArgs: [uintCV(price), uintCV(id)],
         senderAddress: stxAddress || '',
         network: network,
@@ -52,11 +50,11 @@ export const Auction: React.FC<AuctionProps> = (
     const getData = async () => {
       const minimumCollateralAmount = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-auction-engine-v1-1",
-        functionName: "get-minimum-collateral-amount",
+        contractName: 'arkadiko-auction-engine-v1-1',
+        functionName: 'get-minimum-collateral-amount',
         functionArgs: [
           contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v1-1'),
-          uintCV(id)
+          uintCV(id),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -65,12 +63,12 @@ export const Auction: React.FC<AuctionProps> = (
       const collJson = cvToJSON(minimumCollateralAmount);
       setMinimumCollateralAmount(collJson.value.value);
       const debtMax = 1000000000;
-      setDebtToRaise(Math.min(debtMax, collJson.value.value * discountedPrice / 100));
+      setDebtToRaise(Math.min(debtMax, (collJson.value.value * discountedPrice) / 100));
 
       const currentBid = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-auction-engine-v1-1",
-        functionName: "get-last-bid",
+        contractName: 'arkadiko-auction-engine-v1-1',
+        functionName: 'get-last-bid',
         functionArgs: [uintCV(id), uintCV(lotId)],
         senderAddress: stxAddress || '',
         network: network,
@@ -80,7 +78,9 @@ export const Auction: React.FC<AuctionProps> = (
       if (json.value.usda.value > 0) {
         setCurrentBid(json.value.usda.value);
         setMinimumCollateralAmount(json.value['collateral-amount'].value);
-        setDebtToRaise(Math.min(debtMax, json.value['collateral-amount'].value * discountedPrice / 100));
+        setDebtToRaise(
+          Math.min(debtMax, (json.value['collateral-amount'].value * discountedPrice) / 100)
+        );
       }
     };
 
@@ -88,7 +88,9 @@ export const Auction: React.FC<AuctionProps> = (
       void getData();
     }
 
-    return () => { mounted = false; }
+    return () => {
+      mounted = false;
+    };
   }, [price, discountedPrice]);
 
   const setBidParams = () => {
@@ -107,7 +109,9 @@ export const Auction: React.FC<AuctionProps> = (
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         <span className="font-medium text-gray-900">
-          <span>{minimumCollateralAmount / 1000000} {collateralToken.toUpperCase()}</span>
+          <span>
+            {minimumCollateralAmount / 1000000} {collateralToken.toUpperCase()}
+          </span>
         </span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
@@ -120,11 +124,17 @@ export const Auction: React.FC<AuctionProps> = (
         <span className="font-medium text-gray-900">${currentBid / 1000000}</span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900">{endsAt} (~{((Number(endsAt) - stacksTipHeight) * 10 / 60).toFixed(2)} hours)</span>
+        <span className="font-medium text-gray-900">
+          {endsAt} (~{(((Number(endsAt) - stacksTipHeight) * 10) / 60).toFixed(2)} hours)
+        </span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         <span className="font-medium text-gray-900">
-          <button type="button" onClick={() => setBidParams()} className="mr-2 px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          <button
+            type="button"
+            onClick={() => setBidParams()}
+            className="mr-2 px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
             Bid
           </button>
         </span>

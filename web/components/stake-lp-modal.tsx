@@ -6,16 +6,25 @@ import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { microToReadable } from '@common/vault-utils';
 import {
-  AnchorMode, contractPrincipalCV, uintCV,
-  createAssetInfo, FungibleConditionCode,
-  makeStandardFungiblePostCondition
+  AnchorMode,
+  contractPrincipalCV,
+  uintCV,
+  createAssetInfo,
+  FungibleConditionCode,
+  makeStandardFungiblePostCondition,
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { Alert } from './ui/alert';
 
-export const StakeLpModal = ({ showStakeModal, setShowStakeModal, apy, balanceName, tokenName }) => {
+export const StakeLpModal = ({
+  showStakeModal,
+  setShowStakeModal,
+  apy,
+  balanceName,
+  tokenName,
+}) => {
   const [state, setState] = useContext(AppContext);
   const [errors, setErrors] = useState<Array<string>>([]);
   const [stakeAmount, setStakeAmount] = useState('');
@@ -27,12 +36,14 @@ export const StakeLpModal = ({ showStakeModal, setShowStakeModal, apy, balanceNa
     setStakeAmount(state.balance[balanceName] / 1000000);
   };
 
-  const onInputStakeChange = (event:any) => {
+  const onInputStakeChange = (event: any) => {
     const value = event.target.value;
     // trying to stake
     if (value > state.balance[balanceName] / 1000000) {
       if (errors.length < 1) {
-        setErrors(errors.concat([`You cannot stake more than ${state.balance[balanceName] / 1000000} DIKO`]));
+        setErrors(
+          errors.concat([`You cannot stake more than ${state.balance[balanceName] / 1000000} DIKO`])
+        );
       }
     } else {
       setErrors([]);
@@ -59,12 +70,8 @@ export const StakeLpModal = ({ showStakeModal, setShowStakeModal, apy, balanceNa
         stxAddress || '',
         FungibleConditionCode.Equal,
         amount.value,
-        createAssetInfo(
-          contractAddress,
-          tokenContract,
-          ftContract
-        )
-      )
+        createAssetInfo(contractAddress, tokenContract, ftContract)
+      ),
     ];
 
     await doContractCall({
@@ -77,15 +84,19 @@ export const StakeLpModal = ({ showStakeModal, setShowStakeModal, apy, balanceNa
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, contractName),
         contractPrincipalCV(contractAddress, tokenContract),
-        amount
+        amount,
       ],
       postConditions,
       onFinish: data => {
         console.log('finished broadcasting staking tx!', data);
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
         setShowStakeModal(false);
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -98,9 +109,16 @@ export const StakeLpModal = ({ showStakeModal, setShowStakeModal, apy, balanceNa
               <p>{errors[0]}</p>
             </Alert>
           </div>
-        ) : `` }
+        ) : (
+          ``
+        )}
 
-        <div className="inline-block px-2 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+        <div
+          className="inline-block px-2 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-headline"
+        >
           <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
             <button
               type="button"
@@ -116,15 +134,22 @@ export const StakeLpModal = ({ showStakeModal, setShowStakeModal, apy, balanceNa
           </div>
           <div>
             <div className="mt-3 text-center sm:mt-5">
-              <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings" id="modal-headline">
+              <h3
+                className="text-lg font-medium leading-6 text-gray-900 font-headings"
+                id="modal-headline"
+              >
                 Stake {tokenName} LP Tokens
               </h3>
               <p className="mt-3 text-sm text-gray-500">
-                Stake your {tokenName} LP tokens at {apy}% (estimated APY) and start earning rewards now.
+                Stake your {tokenName} LP tokens at {apy}% (estimated APY) and start earning rewards
+                now.
               </p>
               <div className="mt-6">
                 <InputAmount
-                  balance={microToReadable(state.balance[balanceName]).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                  balance={microToReadable(state.balance[balanceName]).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 6,
+                  })}
                   token={tokenName}
                   inputName="stakeDiko"
                   inputId="stakeAmount"
