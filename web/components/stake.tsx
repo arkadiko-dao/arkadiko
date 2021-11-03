@@ -26,10 +26,10 @@ import {
   ClockIcon,
   QuestionMarkCircleIcon,
   ExternalLinkIcon,
-  InformationCircleIcon,
-  XIcon } from '@heroicons/react/solid';
-import { Placeholder } from './placeholder';
+  InformationCircleIcon } from '@heroicons/react/solid';
+import { Placeholder } from './ui/placeholder';
 import { Tooltip } from '@blockstack/ui';
+import { Alert } from './ui/alert';
 
 export const Stake = () => {
   const [state, setState] = useContext(AppContext);
@@ -508,32 +508,11 @@ export const Stake = () => {
           <main className="relative flex-1 py-12">
 
             {hasUnstakedTokens ? (
-              <div className="p-4 mb-6 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
-                  </div>
-                  <div className="flex-1 ml-3">
-                    <h3 className="text-sm font-semibold text-blue-800">Unstaked LP tokens</h3>
-                    <div className="mt-2 text-sm text-blue-700">
-                      <p>👀 We noticed that your wallet contains LP Tokens that are not staked yet.</p>
-                      <p className="mt-1">If you want to stake them, pick the appropriate token in the table below and hit the <DotsVerticalIcon className="inline w-4 h-4" aria-hidden="true" /> icon to open the actions menu and initiate staking.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="pl-3 ml-auto">
-                    <div className="-mx-1.5 -my-1.5">
-                      <button
-                        type="button"
-                        className="inline-flex bg-blue-50 rounded-md p-1.5 text-blue-500 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-blue-50 focus:ring-blue-600"
-                      >
-                        <span className="sr-only">Dismiss</span>
-                        <XIcon className="w-5 h-5" aria-hidden="true" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <Alert title="Unstaked LP tokens">
+                <p>👀 We noticed that your wallet contains LP Tokens that are not staked yet.</p>
+                <p className="mt-1">If you want to stake them, pick the appropriate token in the table below and hit the <DotsVerticalIcon className="inline w-4 h-4" aria-hidden="true" /> icon to open the actions menu and initiate staking.
+                </p>
+              </Alert>
             ) : null}
             <section>
               <header className="pb-5 border-b border-gray-200 sm:flex sm:justify-between sm:items-end">

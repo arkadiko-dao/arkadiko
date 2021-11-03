@@ -23,7 +23,8 @@ import { InputAmount } from './input-amount';
 import { getRPCClient } from '@common/utils';
 import { microToReadable } from '@common/vault-utils';
 import { addMinutes } from 'date-fns'
-import { Placeholder } from './placeholder';
+import { Placeholder } from './ui/placeholder';
+import { Alert } from './ui/alert';
 
 export const ManageVault = ({ match }) => {
   const { doContractCall } = useConnect();
@@ -1006,66 +1007,40 @@ export const ManageVault = ({ match }) => {
                     </dl>
 
                     {loadingVaultData ? (
-                      <div className="p-4 mt-4 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
-                        <div className="flex">
-                          <div className="flex-shrink-0">
-                            <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
-                          </div>
-                          <div className="flex flex-col flex-1 ml-3">
-                            <Placeholder className="py-2" color={Placeholder.color.INDIGO} width={Placeholder.width.FULL}/>
-                            <Placeholder className="py-2" color={Placeholder.color.INDIGO} width={Placeholder.width.FULL}/>
-                          </div>
-                        </div>
+                      <div className="mt-4">
+                        <Alert>
+                          <Placeholder className="py-2" color={Placeholder.color.INDIGO} width={Placeholder.width.FULL}/>
+                          <Placeholder className="py-2" color={Placeholder.color.INDIGO} width={Placeholder.width.FULL}/>
+                        </Alert>
                       </div>
                     ) : canStackCollateral && isVaultOwner && vault?.stackedTokens > 0 && !vault?.revokedStacking && !canWithdrawCollateral ? (
                       // user has indicated they want to stack their STX tokens
-                      <div className="p-4 mt-4 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
-                        <div className="flex">
-                          <div className="flex-shrink-0">
-                            <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
-                          </div>
-                          <div className="flex-1 ml-3 md:flex md:justify-between">
-                            {startedStacking ? (
-                              <p className="text-sm text-blue-700">
-                                You cannot withdraw your collateral since it is stacked until Bitcoin block {unlockBurnHeight}. Unstack your collateral to unlock it for withdrawal.
-                              </p>
-                            ) : (
-                              <p className="text-sm text-blue-700">
-                                The next stacking cycle has not started yet. You can still choose to opt-out of stacking your STX tokens. If you do so, you will not earn a yield on your vault.
-                              </p>
-                            )}
-                          </div>
-                        </div>
+                      <div className="mt-4">
+                        <Alert>
+                          {startedStacking ? (
+                            <p className="text-sm text-blue-700">
+                              You cannot withdraw your collateral since it is stacked until Bitcoin block {unlockBurnHeight}. Unstack your collateral to unlock it for withdrawal.
+                            </p>
+                          ) : (
+                            <p className="text-sm text-blue-700">
+                              The next stacking cycle has not started yet. You can still choose to opt-out of stacking your STX tokens. If you do so, you will not earn a yield on your vault.
+                            </p>
+                          )}
+                        </Alert>
                       </div>
                     ) : canStackCollateral && isVaultOwner && vault?.stackedTokens > 0 && vault?.revokedStacking ? (
-                      <div className="p-4 mt-4 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
-                        <div className="flex">
-                          <div className="flex-shrink-0">
-                            <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
-                          </div>
-                          <div className="flex-1 ml-3 md:flex md:justify-between">
+                      <div className="mt-4">
+                        <Alert>
+                          <div className="md:flex md:justify-between">
                             <p className="text-sm text-blue-700">You have unstacked your collateral, you can choose to stack again.</p>
-                            {isVaultOwner ? (
-                              <button 
-                                type="button" 
-                                className="font-medium text-blue-700 whitespace-nowrap hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                onClick={() => callToggleStacking()}>
-                                Restack
-                              </button>
-                            ) : null }
                           </div>
-                        </div>
+                        </Alert>
                       </div>
                     ) : canStackCollateral && isVaultOwner ? (
-                      <div className="p-4 mt-4 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
-                        <div className="flex">
-                          <div className="flex-shrink-0">
-                            <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
-                          </div>
-                          <div className="flex-1 ml-3 md:flex md:justify-between">
-                            <p className="text-sm text-blue-700">You are not stacking your collateral.</p>
-                          </div>
-                        </div>
+                      <div className="mt-4">
+                        <Alert>
+                          <p>You are not stacking your collateral.</p>
+                        </Alert>
                       </div>
                     ) : null}
                   </div>
@@ -1195,22 +1170,17 @@ export const ManageVault = ({ match }) => {
                         </div>
                       </dl>
 
-                      <div className="p-4 mt-4 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
-                        <div className="flex">
-                          <div className="flex-shrink-0">
-                            <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
-                          </div>
-                          <div className="flex-1 ml-3 md:flex md:justify-between">
-                            {loadingVaultData ? (
-                              <div className="flex flex-col flex-1">
-                                <Placeholder className="py-2" color={Placeholder.color.INDIGO} width={Placeholder.width.FULL}/>
-                                <Placeholder className="py-2" color={Placeholder.color.INDIGO} width={Placeholder.width.FULL}/>
-                              </div>
-                            ) : (
-                              <p className="text-sm text-blue-700">The current {vault?.collateralToken} price is <span className="font-semibold text-blue-900">${price / 1000000} USD</span>. You will be liquidated if the {vault?.collateralToken} price drops below <span className="font-semibold text-blue-900">${liquidationPrice()} USD</span>. Pay back the outstanding debt or deposit extra collateral to keep your vault healthy.</p>
-                            )}
-                          </div>
-                        </div>
+                      <div className="mt-4">
+                        <Alert>
+                          {loadingVaultData ? (
+                            <div className="flex flex-col flex-1">
+                              <Placeholder className="py-2" color={Placeholder.color.INDIGO} width={Placeholder.width.FULL}/>
+                              <Placeholder className="py-2" color={Placeholder.color.INDIGO} width={Placeholder.width.FULL}/>
+                            </div>
+                          ) : (
+                            <p>The current {vault?.collateralToken} price is <span className="font-semibold text-blue-900">${price / 1000000} USD</span>. You will be liquidated if the {vault?.collateralToken} price drops below <span className="font-semibold text-blue-900">${liquidationPrice()} USD</span>. Pay back the outstanding debt or deposit extra collateral to keep your vault healthy.</p>
+                          )}
+                        </Alert>
                       </div>
                     </div>
                   </div>

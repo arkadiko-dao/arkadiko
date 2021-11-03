@@ -21,9 +21,9 @@ import { CollateralType } from '@components/collateral-type';
 import { useEffect } from 'react';
 import { tokenList } from '@components/token-swap-list';
 import { VaultProps } from './vault';
-import { EmptyState } from './empty-state';
+import { EmptyState } from './ui/empty-state';
 import { ArchiveIcon } from '@heroicons/react/outline';
-import { Placeholder } from './placeholder';
+import { Placeholder } from './ui/placeholder';
 import { InformationCircleIcon } from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
 

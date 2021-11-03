@@ -1,5 +1,5 @@
 import React from 'react';
-import { Placeholder } from './placeholder';
+import { Placeholder } from './ui/placeholder';
 import { SwitchVerticalIcon } from '@heroicons/react/solid';
 import { TokenSwapList } from '@components/token-swap-list';
 
