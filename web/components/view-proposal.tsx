@@ -14,7 +14,7 @@ import { ExternalLinkIcon } from '@heroicons/react/solid';
 import { getRPCClient } from '@common/utils';
 import { ProposalProps } from './proposal-group';
 import BN from 'bn.js';
-import { Placeholder } from './placeholder';
+import { Placeholder } from './ui/placeholder';
 
 export const ViewProposal = ({ match }) => {
   const [state, setState] = useContext(AppContext);

@@ -7,8 +7,8 @@ import { callReadOnlyFunction, cvToJSON } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ProposalGroup } from '@components/proposal-group';
 import { DocumentTextIcon } from '@heroicons/react/outline';
-import { EmptyState } from './empty-state';
-import { Placeholder } from './placeholder';
+import { EmptyState } from './ui/empty-state';
+import { Placeholder } from './ui/placeholder';
 
 export const Governance = () => {
   const [state, _] = useContext(AppContext);

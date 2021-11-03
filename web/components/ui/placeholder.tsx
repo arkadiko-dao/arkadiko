@@ -13,7 +13,7 @@ enum Width {
 }
 
 type Props = {
-  color: Color;
+  color?: Color;
   width: Width;
   className?: string;
 };
@@ -29,8 +29,7 @@ const widthMap: Record<Width, string> = {
   [Width.FULL]: "w-full",
 };
 
-export function Placeholder(props: Props) {
-  const { className, color, width } = props;
+export function Placeholder({className, color = Color.INDIGO, width = Width.FULL}: Props) {
   return (
     <div className={`flex flex-1 ${className}`}>
       <div className={classNames(
@@ -40,11 +39,6 @@ export function Placeholder(props: Props) {
       />
     </div>
   )
-};
-
-Placeholder.defaultProps = {
-  color: Color.INDIGO,
-  width: Width.FULL
 };
 
 Placeholder.color = Color;
