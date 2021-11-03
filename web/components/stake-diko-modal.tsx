@@ -13,7 +13,7 @@ import {
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
-import { Alert } from './alert';
+import { Alert } from './ui/alert';
 
 export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
   const [state, setState] = useContext(AppContext);

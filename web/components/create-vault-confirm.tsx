@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { AppContext } from '@common/context';
 import { QuestionMarkCircleIcon, ExternalLinkIcon } from '@heroicons/react/solid';
 import { useLocation } from 'react-router-dom';
-import { Alert } from './alert';
+import { Alert } from './ui/alert';
 
 export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => {
   const [state] = useContext(AppContext);

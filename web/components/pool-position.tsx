@@ -10,7 +10,7 @@ import { tokenTraits } from '@common/vault-utils';
 import { callReadOnlyFunction, cvToJSON, contractPrincipalCV, standardPrincipalCV } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
-import { Alert } from './alert';
+import { Alert } from './ui/alert';
 
 export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
   const tokenX = tokenList[indexTokenX];

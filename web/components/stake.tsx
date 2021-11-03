@@ -29,7 +29,7 @@ import {
   InformationCircleIcon } from '@heroicons/react/solid';
 import { Placeholder } from './placeholder';
 import { Tooltip } from '@blockstack/ui';
-import { Alert } from './alert';
+import { Alert } from './ui/alert';
 
 export const Stake = () => {
   const [state, setState] = useContext(AppContext);

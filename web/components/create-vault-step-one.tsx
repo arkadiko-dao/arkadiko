@@ -7,7 +7,7 @@ import { useLocation } from 'react-router-dom';
 import { QuestionMarkCircleIcon, InformationCircleIcon, ExternalLinkIcon } from '@heroicons/react/solid';
 import { Placeholder } from './placeholder';
 import { Tooltip } from '@blockstack/ui';
-import { Alert } from './alert';
+import { Alert } from './ui/alert';
 
 interface VaultProps {
   setStep: (arg: number) => void;

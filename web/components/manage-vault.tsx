@@ -24,7 +24,7 @@ import { getRPCClient } from '@common/utils';
 import { microToReadable } from '@common/vault-utils';
 import { addMinutes } from 'date-fns'
 import { Placeholder } from './placeholder';
-import { Alert } from './alert';
+import { Alert } from './ui/alert';
 
 export const ManageVault = ({ match }) => {
   const { doContractCall } = useConnect();

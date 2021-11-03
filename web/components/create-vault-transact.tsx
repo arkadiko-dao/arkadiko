@@ -20,7 +20,7 @@ import { ExplorerLink } from './explorer-link';
 import { resolveReserveName, tokenTraits } from '@common/vault-utils';
 import { AppContext } from '@common/context';
 import { ExclamationIcon, CheckCircleIcon } from '@heroicons/react/solid'
-import { Alert } from './alert';
+import { Alert } from './ui/alert';
 
 export const CreateVaultTransact = ({ coinAmounts }) => {
   const [state, setState] = useContext(AppContext);
