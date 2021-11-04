@@ -300,13 +300,13 @@ export const Stake = () => {
         setDikoCooldown('Not started');
       } else if (redeemStartBlock < currentBlock) {
         const blockDiff = redeemEndBlock - currentBlock;
-        var text = blockDiffToTimeLeft(blockDiff);
+        let text = blockDiffToTimeLeft(blockDiff);
         text += ' left to withdraw';
         setDikoCooldown(text);
         setCanUnstake(true);
       } else {
         const blockDiff = redeemStartBlock - currentBlock;
-        var text = blockDiffToTimeLeft(blockDiff);
+        let text = blockDiffToTimeLeft(blockDiff);
         text += ' left';
         setDikoCooldown(text);
         setCooldownRunning(true);

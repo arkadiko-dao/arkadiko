@@ -127,7 +127,7 @@ export const App: React.FC = () => {
       .then(response => {
         const cycleNumber = response[0]['pox']['current_cycle']['id'];
 
-        const cycleInfoUrl = `https://api.stacking.club/api/cycle-info?cycle=` + cycleNumber;
+        const cycleInfoUrl = `https://api.stacking.club/api/cycle-info?cycle=${cycleNumber}`;
         fetch(cycleInfoUrl)
           .then(res => res.json())
           .then(response => {
