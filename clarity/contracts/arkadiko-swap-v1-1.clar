@@ -232,21 +232,10 @@
   (ok (var-get pair-count))
 )
 
-;; @desc migrate a pair from an old Swap
-;; @param token-x-trait; first token of pair
-;; @param token-y-trait; second token of pair
-;; @param swap-token-trait; LP token
-;; @param pair-name; name for the new pair
-;; @param x; amount to add to first token of pair
-;; @param y; amount to add to second token of pair
-;; @param shares-total; total amount of shares for this pair
-;; @post boolean; returns true if pair created
-(define-public (migrate-pair (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (swap-token-trait <swap-token>) (pair-name (string-ascii 32)) (x uint) (y uint) (shares-total uint))
+(define-public (migrate-create-pair (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (swap-token-trait <swap-token>) (pair-name (string-ascii 32)) (shares-total uint))
 
   (let (
     (pair-id (+ (var-get pair-count) u1))
-
-    (contract-address (as-contract tx-sender))
     (token-x (contract-of token-x-trait))
     (token-y (contract-of token-y-trait))
     (token-swap (contract-of swap-token-trait))
@@ -254,8 +243,8 @@
     (pair-data {
       enabled: true,
       shares-total: shares-total,
-      balance-x: x,
-      balance-y: y,
+      balance-x: u0,
+      balance-y: u0,
       fee-balance-x: u0,
       fee-balance-y: u0,
       fee-to-address: (some (contract-call? .arkadiko-dao get-payout-address)),
@@ -271,6 +260,33 @@
       )
       pair-already-exists-err
     )
+
+    ;; Register swap token
+    (try! (register-swap-token token-swap))
+
+    ;; Update maps
+    (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-data)
+    (map-set pairs-map { pair-id: pair-id } { token-x: token-x, token-y: token-y })
+
+    ;; Increase pair count
+    (var-set pair-count pair-id)
+
+    (ok true)
+  )
+
+)
+
+(define-public (migrate-add-liquidity (token-x-trait <ft-trait>) (token-y-trait <ft-trait>) (x uint) (y uint))
+
+  (let (
+    (contract-address (as-contract tx-sender))
+    (token-x (contract-of token-x-trait))
+    (token-y (contract-of token-y-trait))
+    (pair-data (unwrap-panic (map-get? pairs-data-map { token-x: token-x, token-y: token-y })))
+    (new-balance-x (+ (get balance-x pair-data) x))
+    (new-balance-y (+ (get balance-y pair-data) y))
+  )
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
     ;; Transfer tokens from tx-sender to this contract
     (if (is-eq token-x .wrapped-stx-token)
@@ -290,15 +306,10 @@
     (asserts! (is-ok (contract-call? token-x-trait transfer x tx-sender contract-address none)) transfer-x-failed-err)
     (asserts! (is-ok (contract-call? token-y-trait transfer y tx-sender contract-address none)) transfer-y-failed-err)
 
-    ;; Register swap token
-    (try! (register-swap-token token-swap))
-
-    ;; Update maps
-    (map-set pairs-data-map { token-x: token-x, token-y: token-y } pair-data)
-    (map-set pairs-map { pair-id: pair-id } { token-x: token-x, token-y: token-y })
-
-    ;; Increase pair count
-    (var-set pair-count pair-id)
+    (map-set pairs-data-map
+      { token-x: token-x, token-y: token-y }
+      (merge pair-data { balance-x: new-balance-x, balance-y: new-balance-y })
+    )
 
     (ok true)
   )

@@ -62,16 +62,26 @@ class Swap {
     ], this.deployer.address);
   }
 
-  migratePair(user: Account, tokenX: string, tokenY: string, pool: string, name: string, balanceX: number, balanceY: number, totalShares: number) {
+  migrateCreatePair(user: Account, tokenX: string, tokenY: string, pool: string, name: string, totalShares: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-swap-v1-1", "migrate-pair", [
+      Tx.contractCall("arkadiko-swap-v1-1", "migrate-create-pair", [
         types.principal(Utils.qualifiedName(tokenX)),
         types.principal(Utils.qualifiedName(tokenY)),
         types.principal(Utils.qualifiedName(pool)),
         types.ascii(name),
+        types.uint(totalShares * 1000000),
+      ], user.address),
+    ]);
+    return block.receipts[0].result;
+  }
+
+  migrateAddLiquidity(user: Account, tokenX: string, tokenY: string, balanceX: number, balanceY: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-swap-v1-1", "migrate-add-liquidity", [
+        types.principal(Utils.qualifiedName(tokenX)),
+        types.principal(Utils.qualifiedName(tokenY)),
         types.uint(balanceX * 1000000),
         types.uint(balanceY * 1000000),
-        types.uint(totalShares * 1000000),
       ], user.address),
     ]);
     return block.receipts[0].result;

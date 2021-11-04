@@ -242,7 +242,15 @@ Clarinet.test({
     let stxUsdaPoolToken = new StxUsdaPoolToken(chain, deployer);
 
     // Migrate pair
-    let result:any = swap.migratePair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 10000, 20000, 4500.123);
+    let result:any = swap.migrateCreatePair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 4500.123);
+    result.expectOk().expectBool(true);
+
+    // Add initial test liquidity
+    result = swap.migrateAddLiquidity(deployer, wstxTokenAddress, usdaTokenAddress, 1000, 2000);
+    result.expectOk().expectBool(true);
+
+    // Add all liquidity
+    result = swap.migrateAddLiquidity(deployer, wstxTokenAddress, usdaTokenAddress, 9000, 18000);
     result.expectOk().expectBool(true);
 
     // Deployer should not have LP tokens
@@ -295,7 +303,11 @@ Clarinet.test({
     let stxUsdaPoolToken = new StxUsdaPoolToken(chain, deployer);
 
     // Migrate pair
-    let result:any = swap.migratePair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 10000, 20000, 4500);
+    let result:any = swap.migrateCreatePair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 4500);
+    result.expectOk().expectBool(true);
+
+    // Add liquidity
+    result = swap.migrateAddLiquidity(deployer, wstxTokenAddress, usdaTokenAddress, 10000, 20000);
     result.expectOk().expectBool(true);
 
     // Deployer should not have LP tokens
@@ -342,7 +354,11 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(100);
 
     // Migrate pair
-    let result:any = swap.migratePair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 10000, 20000, 10000);
+    let result:any = swap.migrateCreatePair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 10000);
+    result.expectOk().expectBool(true);
+
+    // Add liquidity
+    result = swap.migrateAddLiquidity(deployer, wstxTokenAddress, usdaTokenAddress, 10000, 20000);
     result.expectOk().expectBool(true);
 
     // Reduce position with 100 LP tokens
@@ -774,10 +790,16 @@ Clarinet.test({
 
     let swap = new Swap(chain, deployer);
 
-    let result:any = swap.migratePair(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 10000, 20000, 10000);
+    let result:any = swap.migrateCreatePair(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 10000);
     result.expectErr().expectUint(20401);    
 
-    result = swap.migratePair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 10000, 20000, 10000);
+    result = swap.migrateCreatePair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 10000);
+    result.expectOk().expectBool(true);
+
+    result = swap.migrateAddLiquidity(wallet_1, wstxTokenAddress, usdaTokenAddress, 10000, 20000);
+    result.expectErr().expectUint(20401);   
+
+    result = swap.migrateAddLiquidity(deployer, wstxTokenAddress, usdaTokenAddress, 10000, 20000);
     result.expectOk().expectBool(true);
   }
 });
