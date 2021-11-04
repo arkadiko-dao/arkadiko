@@ -283,7 +283,7 @@ Clarinet.test({
     call = swap.getPairDetails(wstxTokenAddress, usdaTokenAddress);
     call.result.expectOk().expectSome().expectTuple()["balance-x"].expectUintWithDecimals(10000);
     call.result.expectOk().expectSome().expectTuple()["balance-y"].expectUintWithDecimals(20000);
-    call.result.expectOk().expectSome().expectTuple()["enabled"].expectBool(true);
+    call.result.expectOk().expectSome().expectTuple()["enabled"].expectBool(false);
     call.result.expectOk().expectSome().expectTuple()["fee-balance-x"].expectUintWithDecimals(0);
     call.result.expectOk().expectSome().expectTuple()["fee-balance-y"].expectUintWithDecimals(0);
     call.result.expectOk().expectSome().expectTuple()["fee-to-address"].expectSome().expectPrincipal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM");
@@ -308,6 +308,10 @@ Clarinet.test({
 
     // Add liquidity
     result = swap.migrateAddLiquidity(deployer, wstxTokenAddress, usdaTokenAddress, 10000, 20000);
+    result.expectOk().expectBool(true);
+
+    // Enable pair
+    result = swap.togglePairEnabled(wstxTokenAddress, usdaTokenAddress)
     result.expectOk().expectBool(true);
 
     // Deployer should not have LP tokens
@@ -359,6 +363,10 @@ Clarinet.test({
 
     // Add liquidity
     result = swap.migrateAddLiquidity(deployer, wstxTokenAddress, usdaTokenAddress, 10000, 20000);
+    result.expectOk().expectBool(true);
+
+    // Enable pair
+    result = swap.togglePairEnabled(wstxTokenAddress, usdaTokenAddress)
     result.expectOk().expectBool(true);
 
     // Reduce position with 100 LP tokens

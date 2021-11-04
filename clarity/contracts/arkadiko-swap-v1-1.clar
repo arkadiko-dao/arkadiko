@@ -241,7 +241,7 @@
     (token-swap (contract-of swap-token-trait))
 
     (pair-data {
-      enabled: true,
+      enabled: false,
       shares-total: shares-total,
       balance-x: u0,
       balance-y: u0,
