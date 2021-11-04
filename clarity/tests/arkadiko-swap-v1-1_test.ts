@@ -748,6 +748,12 @@ Clarinet.test({
 
     result = swap.addToPosition(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 500, 0);
     result.expectErr().expectUint(205);
+
+    result = swap.toggleShutdown();
+    result.expectOk().expectBool(true);
+
+    result = swap.addToPosition(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 500, 0);
+    result.expectOk();
   }
 });
 
@@ -762,7 +768,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     result = swap.createPair(wallet_1, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 5000, 1000);
-    result.expectErr().expectUint(20401);    
+    result.expectErr().expectUint(20401);
   }
 });
 
