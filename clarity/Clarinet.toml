@@ -253,9 +253,9 @@ path = "contracts/arkadiko-diko-init.clar"
 depends_on = []
 path = "contracts/sip-010-trait-ft-standard.clar"
 
-[contracts.arkadiko-missing-lp-stake-rewards]
+[contracts.arkadiko-stake-lp-rewards]
 depends_on = []
-path = "contracts/arkadiko-missing-lp-stake-rewards.clar"
+path = "contracts/arkadiko-stake-lp-rewards.clar"
 
 # Tokensoft xBTC
 [contracts.restricted-token-trait]

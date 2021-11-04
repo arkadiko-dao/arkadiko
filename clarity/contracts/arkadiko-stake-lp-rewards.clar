@@ -34,9 +34,10 @@
     (try! (contract-call? .arkadiko-dao mint-token .arkadiko-token diko-rewards sender))
   
     (map-set wallet-rewards { wallet: sender } { diko: u0 })
-    (ok true)
+    (ok diko-rewards)
   )
 )
 
 ;; Init
-(map-set wallet-rewards { wallet: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM } { diko: u123 })
+;; TODO - Set map
+(map-set wallet-rewards { wallet: 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5 } { diko: u100000000 })
