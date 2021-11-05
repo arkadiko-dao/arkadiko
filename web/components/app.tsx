@@ -14,6 +14,7 @@ import { resolveSTXAddress } from '@common/use-stx-address';
 import { TxStatus } from '@components/tx-status';
 import { TxSidebar } from '@components/tx-sidebar';
 import { Banner } from '@components/banner';
+import { Footer } from '@components/footer';
 import { useLocation } from 'react-router-dom';
 import { initiateConnection } from '@common/websocket-tx-updater';
 import ScrollToTop from '@components/scroll-to-top';
@@ -228,8 +229,9 @@ export const App: React.FC = () => {
 
             {!finishedOnboarding ? (
               <Redirect to={{ pathname: '/onboarding' }} />
-            ) : null}
+              ) : null}
             <Routes />
+            <Footer />
           </div>
         </AppContext.Provider>
       </ThemeProvider>
