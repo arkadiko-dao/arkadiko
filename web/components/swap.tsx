@@ -436,6 +436,7 @@ export const Swap: React.FC = () => {
                             maximumFractionDigits: 6,
                           })}
                           onChange={onInputChange}
+                          disabled={true}
                           min={0}
                           className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right text-gray-800 truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
                         />
