@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import { Popover, Transition } from '@headlessui/react';
 import { CogIcon, InformationCircleIcon } from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
+import { classNames } from '@common/class-names';
 
 export const SwapSettings: React.FC = ({
   slippageTolerance,
@@ -59,24 +60,18 @@ export const SwapSettings: React.FC = ({
                     </div>
 
                     <div className="flex items-center justify-between mt-2">
-                      {slippageTolerance !== 0.4 ? (
-                        <button
-                          type="button"
-                          onClick={setDefaultSlippage}
-                          className="inline-flex px-4 py-2 font-medium border border-transparent rounded-md shadow-sm text-grey items-right focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm focus:ring-indigo-500"
-                        >
-                          Auto
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={setDefaultSlippage}
-                          className="inline-flex px-4 py-2 font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm items-right hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm focus:ring-indigo-500"
-                        >
-                          Auto
-                        </button>
-                      )}
-
+                      <button
+                        type="button"
+                        onClick={setDefaultSlippage}
+                        className={classNames(slippageTolerance !== 4 ?
+                          'border-gray-300 shadow-sm text-gray-700 bg-white hover:bg-gray-50' :
+                          'border-transparent text-indigo-700 bg-indigo-100 hover:bg-indigo-200',
+                          'inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500')
+                        }
+                      >
+                        Auto
+                      </button>
+                    
                       <div className="relative flex-1 ml-2 rounded-md shadow-sm">
                         <input
                           type="number"
@@ -89,8 +84,8 @@ export const SwapSettings: React.FC = ({
                           placeholder="0.10"
                           value={slippageTolerance}
                           onChange={onInputChange}
-                          className="block w-full pr-8 text-right border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        />
+                          min={0}
+                          className="block w-full pr-8 text-right border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                         <div className="absolute inset-y-0 right-0 flex items-center justify-center w-8 pointer-events-none">
                           <span className="text-gray-500 sm:text-sm">%</span>
                         </div>
