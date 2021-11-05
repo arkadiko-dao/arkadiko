@@ -8,11 +8,12 @@ const BN = require('bn.js');
 async function getPairDetails() {
   const lastVaultTx = await tx.callReadOnlyFunction({
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-swap-v1-1",
-    functionName: "get-pair-details",
+    contractName: "query-swap",
+    functionName: "get-pair-details-at-block",
     functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wrapped-stx-token'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'usda-token')
+      tx.uintCV(35440),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-token'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'usda-token'),
     ],
     senderAddress: CONTRACT_ADDRESS,
     network
