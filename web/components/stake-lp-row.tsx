@@ -7,10 +7,24 @@ import { Tooltip } from '@blockstack/ui';
 import { Placeholder } from './ui/placeholder';
 import { NavLink as RouterLink } from 'react-router-dom';
 
-interface StakeLpRowProps {
-}
+interface StakeLpRowProps {}
 
-export const StakeLpRow: React.FC<StakeLpRowProps> = ({ loadingData, tokenListItemX, tokenListItemY, balance, pendingRewards, stakedAmount, apy, emissionsStarted, poolInfo, setShowStakeLpModal, setShowUnstakeLpModal, claimLpPendingRewards, stakeLpPendingRewards, getLpRoute }) => {
+export const StakeLpRow: React.FC<StakeLpRowProps> = ({
+  loadingData,
+  tokenListItemX,
+  tokenListItemY,
+  balance,
+  pendingRewards,
+  stakedAmount,
+  apy,
+  emissionsStarted,
+  poolInfo,
+  setShowStakeLpModal,
+  setShowUnstakeLpModal,
+  claimLpPendingRewards,
+  stakeLpPendingRewards,
+  getLpRoute,
+}) => {
   return (
     <Disclosure as="tbody" className="bg-white">
       {({ open }) => (
@@ -32,8 +46,12 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({ loadingData, tokenListIt
                 </div>
                 <p className="ml-4">
                   <span className="block text-gray-500">
-                    <Tooltip shouldWrapChildren={true} label={`ARKV1${tokenList[tokenListItemX].name}${tokenList[tokenListItemY].name}`}>
-                      Arkadiko V1<br/> 
+                    <Tooltip
+                      shouldWrapChildren={true}
+                      label={`ARKV1${tokenList[tokenListItemX].name}${tokenList[tokenListItemY].name}`}
+                    >
+                      Arkadiko V1
+                      <br />
                       {tokenList[tokenListItemX].name}/{tokenList[tokenListItemY].name}
                     </Tooltip>
                   </span>
@@ -42,7 +60,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({ loadingData, tokenListIt
             </td>
             <td className="px-6 py-4 text-sm text-indigo-600 whitespace-nowrap">
               {loadingData ? (
-                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                <Placeholder className="py-2" width={Placeholder.width.HALF} />
               ) : emissionsStarted ? (
                 `${apy}%`
               ) : (
@@ -52,57 +70,101 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({ loadingData, tokenListIt
 
             <td className="px-6 py-4 whitespace-nowrap">
               {loadingData ? (
-                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                <Placeholder className="py-2" width={Placeholder.width.HALF} />
               ) : (
                 <>
-                  <Tooltip shouldWrapChildren={true} label={`
-                    ${microToReadable(poolInfo.walletTokenXAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ${poolInfo.tokenX} 
+                  <Tooltip
+                    shouldWrapChildren={true}
+                    label={`
+                    ${microToReadable(poolInfo.walletTokenXAmount).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 6,
+                    })} ${poolInfo.tokenX} 
                     / 
-                    ${microToReadable(poolInfo.walletTokenYAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ${poolInfo.tokenY}
-                  `}>
+                    ${microToReadable(poolInfo.walletTokenYAmount).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 6,
+                    })} ${poolInfo.tokenY}
+                  `}
+                  >
                     <div className="flex items-center">
                       <p className="font-semibold">
-                        {microToReadable(balance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
-                        {' '} 
+                        {microToReadable(balance).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 6,
+                        })}{' '}
                         <span className="text-sm font-normal">LP</span>
                       </p>
-                      <InformationCircleIcon className="inline w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                      <InformationCircleIcon
+                        className="inline w-5 h-5 ml-2 text-gray-400"
+                        aria-hidden="true"
+                      />
                     </div>
                   </Tooltip>
-                  <p className="mt-1 text-sm">≈${microToReadable(poolInfo.walletValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</p>
+                  <p className="mt-1 text-sm">
+                    ≈$
+                    {microToReadable(poolInfo.walletValue).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 6,
+                    })}
+                  </p>
                 </>
               )}
             </td>
 
             <td className="px-6 py-4 whitespace-nowrap">
               {loadingData ? (
-                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                <Placeholder className="py-2" width={Placeholder.width.HALF} />
               ) : (
                 <>
-                  <Tooltip shouldWrapChildren={true} label={`
-                    ${microToReadable(poolInfo.stakedTokenXAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ${poolInfo.tokenX} 
+                  <Tooltip
+                    shouldWrapChildren={true}
+                    label={`
+                    ${microToReadable(poolInfo.stakedTokenXAmount).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 6,
+                    })} ${poolInfo.tokenX} 
                     / 
-                    ${microToReadable(poolInfo.stakedTokenYAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ${poolInfo.tokenY}
-                  `}>
+                    ${microToReadable(poolInfo.stakedTokenYAmount).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 6,
+                    })} ${poolInfo.tokenY}
+                  `}
+                  >
                     <div className="flex items-center">
                       <p className="font-semibold">
-                        {microToReadable(stakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
-                        {' '}
+                        {microToReadable(stakedAmount).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 6,
+                        })}{' '}
                         <span className="text-sm font-normal">LP</span>
                       </p>
-                      <InformationCircleIcon className="inline w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                      <InformationCircleIcon
+                        className="inline w-5 h-5 ml-2 text-gray-400"
+                        aria-hidden="true"
+                      />
                     </div>
                   </Tooltip>
-                  <p className="mt-1 text-sm">≈${microToReadable(poolInfo.stakedValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</p>
+                  <p className="mt-1 text-sm">
+                    ≈$
+                    {microToReadable(poolInfo.stakedValue).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 6,
+                    })}
+                  </p>
                 </>
               )}
             </td>
             <td className="px-6 py-4 text-sm whitespace-nowrap">
               {loadingData ? (
-                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                <Placeholder className="py-2" width={Placeholder.width.HALF} />
               ) : (
                 <>
-                  {microToReadable(pendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
+                  {microToReadable(pendingRewards).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 6,
+                  })}{' '}
+                  DIKO
                 </>
               )}
             </td>
@@ -119,32 +181,35 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({ loadingData, tokenListIt
           </tr>
           <Disclosure.Panel as="tr">
             <td className="px-6 py-4 text-sm whitespace-nowrap">
-              <RouterLink to={getLpRoute} className={`inline-flex items-center px-4 py-2 text-sm leading-4 border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${balance > 0 ? 'text-indigo-700 bg-indigo-100 hover:bg-indigo-200' : 'text-white bg-indigo-600 hover:bg-indigo-700'}`}>
-                {balance > 0 ? (
-                  `Add LP`
-                ) : (
-                  `Get LP`
-                )}
+              <RouterLink
+                to={getLpRoute}
+                className={`inline-flex items-center px-4 py-2 text-sm leading-4 border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+                  balance > 0
+                    ? 'text-indigo-700 bg-indigo-100 hover:bg-indigo-200'
+                    : 'text-white bg-indigo-600 hover:bg-indigo-700'
+                }`}
+              >
+                {balance > 0 ? `Add LP` : `Get LP`}
               </RouterLink>
             </td>
-            <td className="px-6 py-4 text-sm whitespace-nowrap"/>
+            <td className="px-6 py-4 text-sm whitespace-nowrap" />
             <td className="px-6 py-4 text-sm whitespace-nowrap">
               {loadingData ? (
-                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                <Placeholder className="py-2" width={Placeholder.width.HALF} />
               ) : (
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="inline-flex items-center px-4 py-2 text-sm leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
                   disabled={balance == 0}
                   onClick={() => setShowStakeLpModal(true)}
                 >
                   Stake LP
-                </button>      
-              )}  
+                </button>
+              )}
             </td>
             <td className="px-6 py-4 text-sm whitespace-nowrap">
               {loadingData ? (
-                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                <Placeholder className="py-2" width={Placeholder.width.HALF} />
               ) : (
                 <button
                   type="button"
@@ -159,7 +224,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({ loadingData, tokenListIt
             <td className="px-6 py-4 text-sm whitespace-nowrap">
               <div className="flex space-x-2">
                 {loadingData ? (
-                  <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                  <Placeholder className="py-2" width={Placeholder.width.HALF} />
                 ) : (
                   <>
                     <button

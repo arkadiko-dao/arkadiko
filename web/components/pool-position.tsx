@@ -16,6 +16,7 @@ import {
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { Alert } from './ui/alert';
+import { Placeholder } from './ui/placeholder';
 
 export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
   const tokenX = tokenList[indexTokenX];
@@ -31,6 +32,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
   const [pooledY, setPooledY] = useState(0.0);
   const [totalShare, setTotalShare] = useState(0);
   const [stakedLpTokens, setStakedLpTokens] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchPair = async (tokenXContract: string, tokenYContract: string) => {
@@ -45,12 +47,12 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
         senderAddress: stxAddress || '',
         network: network,
       });
-
+      setIsLoading(false);
       return cvToJSON(details);
     };
 
     const fetchStakedTokens = async (poolName: string) => {
-      let poolContract = '';
+      var poolContract = '';
       if (poolName == 'wSTX-DIKO') {
         poolContract = 'arkadiko-stake-pool-wstx-diko-v1-1';
       } else if (poolName == 'wSTX-USDA') {
@@ -70,6 +72,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
         senderAddress: stxAddress || '',
         network: network,
       });
+      setIsLoading(false);
       return cvToJSON(userLpDikoUsdaStakedCall).value;
     };
 
@@ -105,6 +108,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
         } else {
           setTotalShare(totalShare);
         }
+        setIsLoading(false);
       }
     };
 
@@ -164,7 +168,13 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                     </div>
                   </dt>
                   <dt className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
-                    {state.balance[tokenPair] > 0 ? `${state.balance[tokenPair] / 1000000}` : 0}
+                    {isLoading ? (
+                      <Placeholder className="justify-end" width={Placeholder.width.HALF} />
+                    ) : (
+                      <>
+                        {state.balance[tokenPair] > 0 ? `${state.balance[tokenPair] / 1000000}` : 0}
+                      </>
+                    )}
                   </dt>
                 </div>
 
@@ -185,7 +195,11 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                     </div>
                   </dt>
                   <dt className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
-                    {stakedLpTokens > 0 ? `${stakedLpTokens / 1000000}` : 0}
+                    {isLoading ? (
+                      <Placeholder className="justify-end" width={Placeholder.width.THIRD} />
+                    ) : (
+                      <>{stakedLpTokens > 0 ? `${stakedLpTokens / 1000000}` : 0}</>
+                    )}
                   </dt>
                 </div>
               </dl>
@@ -208,7 +222,11 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                     </div>
                   </dt>
                   <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
-                    {totalShare}%
+                    {isLoading ? (
+                      <Placeholder className="justify-end" width={Placeholder.width.HALF} />
+                    ) : (
+                      <>{totalShare}%</>
+                    )}
                   </dd>
                 </div>
 
@@ -217,10 +235,16 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                     Pooled {tokenX.name}
                   </dt>
                   <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
-                    {pooledX.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                    })}
+                    {isLoading ? (
+                      <Placeholder className="justify-end" width={Placeholder.width.THIRD} />
+                    ) : (
+                      <>
+                        {pooledX.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 6,
+                        })}
+                      </>
+                    )}
                   </dd>
                 </div>
 
@@ -229,10 +253,16 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                     Pooled {tokenY.name}
                   </dt>
                   <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
-                    {pooledY.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                    })}
+                    {isLoading ? (
+                      <Placeholder className="justify-end" width={Placeholder.width.HALF} />
+                    ) : (
+                      <>
+                        {pooledY.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 6,
+                        })}
+                      </>
+                    )}
                   </dd>
                 </div>
               </dl>

@@ -453,10 +453,13 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                         'w-full inline-flex items-center justify-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white hover:bg-indigo-700 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
                       )}
                     >
-                      {!foundPair ? "No liquidity for this pair. Try another one."
-                      : (!percentageToRemove || percentageToRemove === 0) ? "Please enter an amount"
-                      : (tokenXToReceive === 0) ? "Please enter an amount"
-                      : "Remove liquidity"}
+                      {!foundPair
+                        ? 'No liquidity for this pair. Try another one.'
+                        : !percentageToRemove || percentageToRemove === 0
+                        ? 'Please enter an amount'
+                        : tokenXToReceive === 0
+                        ? 'Please enter an amount'
+                        : 'Remove liquidity'}
                     </button>
                   </div>
                 </form>
