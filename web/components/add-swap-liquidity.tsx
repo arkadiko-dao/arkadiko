@@ -186,9 +186,6 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
 
   const onInputXChange = (event: { target: { name: any; value: any; }; }) => {
     const value = event.target.value;
-    if (!value) {
-      return;
-    }
 
     setInsufficientBalance(false);
     setTokenXAmount(value);
@@ -201,9 +198,6 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
 
   const onInputYChange = (event: { target: { name: any; value: any; }; }) => {
     const value = event.target.value;
-    if (!value) {
-      return;
-    }
 
     setInsufficientBalance(false);
     setTokenYAmount(value);
