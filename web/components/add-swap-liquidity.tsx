@@ -186,7 +186,6 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
 
   const onInputXChange = (event: { target: { name: any; value: any; }; }) => {
     const value = event.target.value;
-    console.log("INPUT X change: ", event);
     if (!value) {
       return;
     }
@@ -202,7 +201,6 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
 
   const onInputYChange = (event: { target: { name: any; value: any; }; }) => {
     const value = event.target.value;
-    console.log("INPUT Y change: ", event);
     if (!value) {
       return;
     }
