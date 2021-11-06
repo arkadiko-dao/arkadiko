@@ -218,7 +218,7 @@ export const App: React.FC = () => {
           <div className="flex flex-col font-sans bg-white min-height-screen">
             {(location.pathname.indexOf('/onboarding') != 0) ? (
               <Header signOut={signOut} setShowSidebar={setShowSidebar} />
-            ) : null }
+            ) : null}
             {state.userData && (location.pathname.indexOf('/onboarding') != 0 ) ? (
               <SubHeader />
             ) : null}
@@ -229,7 +229,7 @@ export const App: React.FC = () => {
 
             {!finishedOnboarding ? (
               <Redirect to={{ pathname: '/onboarding' }} />
-              ) : null}
+            ) : null}
             <Routes />
             <Footer />
           </div>
