@@ -14,6 +14,7 @@ import { resolveSTXAddress } from '@common/use-stx-address';
 import { TxStatus } from '@components/tx-status';
 import { TxSidebar } from '@components/tx-sidebar';
 import { Banner } from '@components/banner';
+import { Footer } from '@components/footer';
 import { useLocation } from 'react-router-dom';
 import { initiateConnection } from '@common/websocket-tx-updater';
 import ScrollToTop from '@components/scroll-to-top';
@@ -217,7 +218,7 @@ export const App: React.FC = () => {
           <div className="flex flex-col font-sans bg-white min-height-screen">
             {(location.pathname.indexOf('/onboarding') != 0) ? (
               <Header signOut={signOut} setShowSidebar={setShowSidebar} />
-            ) : null }
+            ) : null}
             {state.userData && (location.pathname.indexOf('/onboarding') != 0 ) ? (
               <SubHeader />
             ) : null}
@@ -230,6 +231,7 @@ export const App: React.FC = () => {
               <Redirect to={{ pathname: '/onboarding' }} />
             ) : null}
             <Routes />
+            <Footer />
           </div>
         </AppContext.Provider>
       </ThemeProvider>
