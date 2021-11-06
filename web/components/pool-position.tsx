@@ -47,7 +47,6 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
         senderAddress: stxAddress || '',
         network: network,
       });
-      setIsLoading(false);
       return cvToJSON(details);
     };
 
@@ -72,7 +71,6 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
         senderAddress: stxAddress || '',
         network: network,
       });
-      setIsLoading(false);
       return cvToJSON(userLpDikoUsdaStakedCall).value;
     };
 
