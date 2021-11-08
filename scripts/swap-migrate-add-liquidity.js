@@ -11,9 +11,9 @@ const txOptions = {
   functionName: 'migrate-add-liquidity',
   functionArgs: [
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wrapped-stx-token'),
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-token'),
-    tx.uintCV(100000),
-    tx.uintCV(100000)
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'usda-token'),
+    tx.uintCV(1000000000000),
+    tx.uintCV(1000000000000)
   ],
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
