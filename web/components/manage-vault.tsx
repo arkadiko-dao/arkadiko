@@ -171,7 +171,6 @@ export const ManageVault = ({ match }) => {
         senderAddress: contractAddress || '',
         network: network
       });
-
       const unlockBurnHeight = cvToJSON(call).value.value;
       setUnlockBurnHeight(unlockBurnHeight);
       if (Number(unlockBurnHeight) === 0) {

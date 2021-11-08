@@ -266,3 +266,9 @@ depends_on = []
 [contracts.tokensoft-token]
 path = "contracts/xbtc/tokensoft-token.clar"
 depends_on = ["sip-010-trait-ft-standard", "restricted-token-trait"]
+
+# Tests
+[contracts.malicious-ft]
+path = "contracts/tests/malicious-ft.clar"
+depends_on = ["sip-010-trait-ft-standard", "arkadiko-dao-token-trait-v1"]
+

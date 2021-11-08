@@ -38,18 +38,18 @@ Clarinet.test({
     let poolStxUsda = new StakePoolStxUsda(chain, deployer);
 
     // Create swap pair to get LP tokens
-    let result = swap.createPair(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaTokenAddress, "wSTX-USDA", 5000, 1000);
+    let result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaTokenAddress, "wSTX-USDA", 5000, 1000);
     result.expectOk().expectBool(true);
 
     // Stake funds
-    result = stakeRegistry.stake(wallet_1, wstxUsdaPoolAddress, wstxUsdaTokenAddress, 100)
+    result = stakeRegistry.stake(deployer, wstxUsdaPoolAddress, wstxUsdaTokenAddress, 100)
     result.expectOk().expectUintWithDecimals(100);
 
     // Advance 144 block
     chain.mineEmptyBlock(144);
 
     // Rewards
-    let call = stakeRegistry.getPendingRewards(wallet_1, wstxUsdaPoolAddress);
+    let call = stakeRegistry.getPendingRewards(deployer, wstxUsdaPoolAddress);
     call.result.expectOk().expectUintWithDecimals(45413.931900);   
 
     // Increase cumm reward per stake
@@ -72,7 +72,7 @@ Clarinet.test({
     chain.mineEmptyBlock(144);
 
     // Rewards still the same
-    call = stakeRegistry.getPendingRewards(wallet_1, wstxUsdaPoolAddress);
+    call = stakeRegistry.getPendingRewards(deployer, wstxUsdaPoolAddress);
     call.result.expectOk().expectUintWithDecimals(45413.931900); 
 
 
@@ -81,7 +81,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);  
 
     // Still the same
-    call = stakeRegistry.getPendingRewards(wallet_1, wstxUsdaPoolAddress);
+    call = stakeRegistry.getPendingRewards(deployer, wstxUsdaPoolAddress);
     call.result.expectOk().expectUintWithDecimals(45413.931900);   
 
     // Last reward block
@@ -105,14 +105,14 @@ Clarinet.test({
     call.result.expectUint(297);   
 
     // Pending rewards still the same
-    call = stakeRegistry.getPendingRewards(wallet_1, wstxUsdaPoolAddress);
+    call = stakeRegistry.getPendingRewards(deployer, wstxUsdaPoolAddress);
     call.result.expectOk().expectUintWithDecimals(45413.931900);  
 
     // Advance 144 block
     chain.mineEmptyBlock(144);
 
     // Rewards distributed again
-    call = stakeRegistry.getPendingRewards(wallet_1, wstxUsdaPoolAddress);
+    call = stakeRegistry.getPendingRewards(deployer, wstxUsdaPoolAddress);
     call.result.expectOk().expectUintWithDecimals(90201.464800); 
   }
 });
@@ -129,18 +129,18 @@ Clarinet.test({
     let poolStxUsda = new StakePoolStxUsda(chain, deployer);
 
     // Create swap pair to get LP tokens
-    let result = swap.createPair(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaTokenAddress, "wSTX-USDA", 5000, 1000);
+    let result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaTokenAddress, "wSTX-USDA", 5000, 1000);
     result.expectOk().expectBool(true);
 
     // Stake funds
-    result = stakeRegistry.stake(wallet_1, wstxUsdaPoolAddress, wstxUsdaTokenAddress, 100)
+    result = stakeRegistry.stake(deployer, wstxUsdaPoolAddress, wstxUsdaTokenAddress, 100)
     result.expectOk().expectUintWithDecimals(100);
 
     // Advance 144 block
     chain.mineEmptyBlock(144);
 
     // Rewards
-    let call = stakeRegistry.getPendingRewards(wallet_1, wstxUsdaPoolAddress);
+    let call = stakeRegistry.getPendingRewards(deployer, wstxUsdaPoolAddress);
     call.result.expectOk().expectUintWithDecimals(45413.931900);   
 
     // Increase cumm reward per stake
@@ -163,7 +163,7 @@ Clarinet.test({
     chain.mineEmptyBlock(144);
 
     // Rewards still the same
-    call = stakeRegistry.getPendingRewards(wallet_1, wstxUsdaPoolAddress);
+    call = stakeRegistry.getPendingRewards(deployer, wstxUsdaPoolAddress);
     call.result.expectOk().expectUintWithDecimals(45413.931900); 
 
     // RESTART STEP 1 - Reset pool data to original
@@ -175,8 +175,7 @@ Clarinet.test({
     call.result.expectUint(147);   
 
     // Pending rewards still the same
-    call = stakeRegistry.getPendingRewards(wallet_1, wstxUsdaPoolAddress);
-    call.result.expectOk().expectUintWithDecimals(91454.262900);  
-  
+    call = stakeRegistry.getPendingRewards(deployer, wstxUsdaPoolAddress);
+    call.result.expectOk().expectUintWithDecimals(91454.262900);
   }
 });

@@ -13,7 +13,6 @@ import { callReadOnlyFunction, cvToJSON, stringAsciiCV } from '@stacks/transacti
 import { resolveSTXAddress } from '@common/use-stx-address';
 import { TxStatus } from '@components/tx-status';
 import { TxSidebar } from '@components/tx-sidebar';
-import { Banner } from '@components/banner';
 import { Footer } from '@components/footer';
 import { useLocation } from 'react-router-dom';
 import { initiateConnection } from '@common/websocket-tx-updater';
@@ -222,7 +221,6 @@ export const App: React.FC = () => {
             {state.userData && (location.pathname.indexOf('/onboarding') != 0 ) ? (
               <SubHeader />
             ) : null}
-            <Banner />
             <TxStatus />
             
             <TxSidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
