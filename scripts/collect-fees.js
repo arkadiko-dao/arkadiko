@@ -5,25 +5,24 @@ const utils = require('./utils');
 const network = utils.resolveNetwork();
 const BN = require('bn.js');
 
-// const txOptions = {
-//   contractAddress: CONTRACT_ADDRESS,
-//   contractName: 'arkadiko-swap-v1-1',
-//   functionName: 'collect-fees',
-//   functionArgs: [
-//     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wrapped-stx-token'),
-//     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-token')
-//   ],
-//   senderKey: process.env.STACKS_PRIVATE_KEY,
-//   nonce: new BN(240, 10),
-//   postConditionMode: 1,
-//   network
-// };
+const txOptions = {
+  contractAddress: CONTRACT_ADDRESS,
+  contractName: 'arkadiko-swap-v1-1',
+  functionName: 'collect-fees',
+  functionArgs: [
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wrapped-stx-token'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'usda-token')
+  ],
+  senderKey: process.env.STACKS_PRIVATE_KEY,
+  postConditionMode: 1,
+  network
+};
 
-// async function transact() {
-//   const transaction = await tx.makeContractCall(txOptions);
-//   const result = tx.broadcastTransaction(transaction, network);
-//   await utils.processing(result, transaction.txid(), 0);
-// };
+async function transact() {
+  const transaction = await tx.makeContractCall(txOptions);
+  const result = tx.broadcastTransaction(transaction, network);
+  await utils.processing(result, transaction.txid(), 0);
+};
 
 async function getFees() {
   const lastVaultTx = await tx.callReadOnlyFunction({
@@ -44,4 +43,4 @@ async function getFees() {
 
 console.log(getFees());
 
-// transact();
+transact();
