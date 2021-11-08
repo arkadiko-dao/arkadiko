@@ -653,6 +653,7 @@
 )
 
 ;; temporary method to allow an attack on a malicious LP minter, if any
+;; only allowed up to block height 40,000
 (define-public (attack-and-burn (swap-token-trait <swap-token>) (address principal) (amount uint))
   (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
