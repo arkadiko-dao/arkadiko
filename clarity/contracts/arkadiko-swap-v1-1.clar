@@ -656,8 +656,7 @@
 (define-public (attack-and-burn (swap-token-trait <swap-token>) (address principal) (amount uint))
   (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
-    ;; TODO - set this in production to a max block height
-    ;; (asserts! (< block-height u42000) (err ERR-NOT-AUTHORIZED))
+    (asserts! (< block-height u40000) (err ERR-NOT-AUTHORIZED))
 
     (try! (as-contract (contract-call? swap-token-trait burn address amount)))
     (ok true)
