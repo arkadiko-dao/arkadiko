@@ -221,9 +221,7 @@ export const App: React.FC = () => {
             {location.pathname.indexOf('/onboarding') != 0 ? (
               <Header signOut={signOut} setShowSidebar={setShowSidebar} />
             ) : null}
-            {state.userData && (location.pathname.indexOf('/onboarding') != 0 ) ? (
-              <SubHeader />
-            ) : null}
+            {state.userData && location.pathname.indexOf('/onboarding') != 0 ? <SubHeader /> : null}
             <TxStatus />
 
             <TxSidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
