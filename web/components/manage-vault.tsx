@@ -1248,13 +1248,13 @@ export const ManageVault = ({ match }) => {
                   ) : null}
 
                   <div className="px-4 py-5 sm:p-6">
-                    <div className="sm:flex sm:items-center: sm:justify-between ">
+                    <div className="sm:flex sm:items-center: sm:justify-between">
                       <h4 className="text-xl font-normal leading-6 text-gray-900 font-headings">
                         Yield
                       </h4>
 
                       {poxYield != 0 ? (
-                        <>
+                        <div>
                           <button
                             type="button"
                             className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -1264,12 +1264,12 @@ export const ManageVault = ({ match }) => {
                           </button>
                           <button
                             type="button"
-                            className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="inline-flex items-center px-3 py-2 ml-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             onClick={() => claimYieldPayDebt()}
                           >
                             Pay back debt
                           </button>
-                        </>
+                        </div>
                       ) : null}
 
                     </div>
