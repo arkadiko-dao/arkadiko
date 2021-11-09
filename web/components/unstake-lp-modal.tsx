@@ -60,7 +60,8 @@ export const UnstakeLpModal = ({
         }));
         setShowUnstakeModal(false);
       },
-      anchorMode: AnchorMode.Any,
+      postConditionMode: 0x01,
+      anchorMode: AnchorMode.Any
     });
   };
 
