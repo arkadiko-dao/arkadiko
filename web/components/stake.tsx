@@ -4,8 +4,12 @@ import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import { stacksNetwork as network, getRPCClient } from '@common/utils';
 import {
-  AnchorMode, callReadOnlyFunction, contractPrincipalCV,
-  uintCV, cvToJSON, standardPrincipalCV
+  AnchorMode,
+  callReadOnlyFunction,
+  contractPrincipalCV,
+  uintCV,
+  cvToJSON,
+  standardPrincipalCV,
 } from '@stacks/transactions';
 import { StakeDikoModal } from './stake-diko-modal';
 import { UnstakeDikoModal } from './unstake-diko-modal';
@@ -25,7 +29,8 @@ import {
   ClockIcon,
   QuestionMarkCircleIcon,
   ExternalLinkIcon,
-  InformationCircleIcon } from '@heroicons/react/solid';
+  InformationCircleIcon,
+} from '@heroicons/react/solid';
 import { Placeholder } from './ui/placeholder';
 import { Tooltip } from '@blockstack/ui';
 import { Alert } from './ui/alert';
@@ -78,10 +83,14 @@ export const Stake = () => {
     let mounted = true;
 
     const checkUnstakedTokens = async () => {
-      if (state.balance['dikousda'] > 0 || state.balance['wstxusda'] > 0 || state.balance['wstxdiko'] > 0) {
+      if (
+        state.balance['dikousda'] > 0 ||
+        state.balance['wstxusda'] > 0 ||
+        state.balance['wstxdiko'] > 0
+      ) {
         setHasUnstakedTokens(true);
       }
-    }
+    };
 
     const fetchLpStakeAmount = async (poolContract:string) => {
       const stakedCall = await callReadOnlyFunction({
@@ -104,7 +113,7 @@ export const Stake = () => {
         functionName: "get-pending-rewards",
         functionArgs: [
           contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-          standardPrincipalCV(stxAddress || '')
+          standardPrincipalCV(stxAddress || ''),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -284,66 +293,77 @@ export const Stake = () => {
 
       const totalStakingRewardsYear1 = 23500000;
 
-      if (totalDikoStaked === 0) { totalDikoStaked = 10 };
+      if (totalDikoStaked === 0) {
+        totalDikoStaked = 10;
+      }
       const dikoPoolRewards = totalStakingRewardsYear1 * 0.1;
       const dikoApr = dikoPoolRewards / totalDikoStaked;
       setApy(Number((100 * dikoApr).toFixed(2)));
 
-      if (totalDikoUsdaStaked === 0) { totalDikoUsdaStaked = 10 };
+      if (totalDikoUsdaStaked === 0) {
+        totalDikoUsdaStaked = 10;
+      }
       const dikoUsdaPoolRewards = totalStakingRewardsYear1 * 0.25;
       const dikoUsdaApr = dikoUsdaPoolRewards / totalDikoUsdaStaked;
       setDikoUsdaLpApy(Number((100 * dikoUsdaApr).toFixed(2)));
 
-      if (totalStxUsdaStaked === 0) { totalStxUsdaStaked = 10 };
+      if (totalStxUsdaStaked === 0) {
+        totalStxUsdaStaked = 10;
+      }
       const stxUsdaPoolRewards = totalStakingRewardsYear1 * 0.5;
       const stxUsdaApr = stxUsdaPoolRewards / totalStxUsdaStaked;
       setStxUsdaLpApy(Number((100 * stxUsdaApr).toFixed(2)));
 
-      if (totalStxDikoStaked === 0) { totalStxDikoStaked = 10 };
+      if (totalStxDikoStaked === 0) {
+        totalStxDikoStaked = 10;
+      }
       const stxDikoPoolRewards = totalStakingRewardsYear1 * 0.15;
       const stxDikoApr = stxDikoPoolRewards / totalStxDikoStaked;
       setStxDikoLpApy(Number((100 * stxDikoApr).toFixed(2)));
 
-
       const dikoCooldownInfo = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-stake-pool-diko-v1-1",
-        functionName: "get-cooldown-info-of",
-        functionArgs: [
-          standardPrincipalCV(stxAddress || '')
-        ],
+        contractName: 'arkadiko-stake-pool-diko-v1-1',
+        functionName: 'get-cooldown-info-of',
+        functionArgs: [standardPrincipalCV(stxAddress || '')],
         senderAddress: stxAddress || '',
         network: network,
       });
-      let cooldownInfo = cvToJSON(dikoCooldownInfo).value;
-      let redeemStartBlock = cooldownInfo["redeem-period-start-block"]["value"];
-      let redeemEndBlock = cooldownInfo["redeem-period-end-block"]["value"];
+      const cooldownInfo = cvToJSON(dikoCooldownInfo).value;
+      const redeemStartBlock = cooldownInfo['redeem-period-start-block']['value'];
+      const redeemEndBlock = cooldownInfo['redeem-period-end-block']['value'];
 
       // Helper to create countdown text
-      function blockDiffToTimeLeft(blockDiff:number) {
-        let minDiff = (blockDiff * 10);
-        let days = Math.floor(minDiff / (60 * 24));
-        let hours = Math.floor((minDiff % (60 * 24)) / 60);
-        let minutes = Math.floor(minDiff % (60));
-        var text = "";
-        if (days != 0) { text += days + "d "; }
-        if (hours != 0) { text += hours + "h "; }
-        if (minutes != 0) { text += minutes + "m "; }
+      function blockDiffToTimeLeft(blockDiff: number) {
+        const minDiff = blockDiff * 10;
+        const days = Math.floor(minDiff / (60 * 24));
+        const hours = Math.floor((minDiff % (60 * 24)) / 60);
+        const minutes = Math.floor(minDiff % 60);
+        let text = '';
+        if (days != 0) {
+          text += days + 'd ';
+        }
+        if (hours != 0) {
+          text += hours + 'h ';
+        }
+        if (minutes != 0) {
+          text += minutes + 'm ';
+        }
         return text;
       }
-  
+
       if (redeemEndBlock == 0 || redeemEndBlock < currentBlock) {
         setDikoCooldown('Not started');
       } else if (redeemStartBlock < currentBlock) {
-        let blockDiff = redeemEndBlock - currentBlock;
-        var text = blockDiffToTimeLeft(blockDiff);
-        text += " left to withdraw";
+        const blockDiff = redeemEndBlock - currentBlock;
+        let text = blockDiffToTimeLeft(blockDiff);
+        text += ' left to withdraw';
         setDikoCooldown(text);
         setCanUnstake(true);
       } else {
-        let blockDiff = redeemStartBlock - currentBlock;
-        var text = blockDiffToTimeLeft(blockDiff);
-        text += " left";
+        const blockDiff = redeemStartBlock - currentBlock;
+        let text = blockDiffToTimeLeft(blockDiff);
+        text += ' left';
         setDikoCooldown(text);
         setCooldownRunning(true);
       }
@@ -355,7 +375,9 @@ export const Stake = () => {
       void getData();
     }
 
-    return () => { mounted = false; }
+    return () => {
+      mounted = false;
+    };
   }, [state.balance]);
 
   const startDikoCooldown = async () => {
@@ -367,9 +389,13 @@ export const Stake = () => {
       functionName: 'start-cooldown',
       functionArgs: [],
       onFinish: data => {
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -382,12 +408,16 @@ export const Stake = () => {
       functionName: 'claim-pending-rewards',
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-usda-v1-1')
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-usda-v1-1'),
       ],
       onFinish: data => {
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -400,12 +430,16 @@ export const Stake = () => {
       functionName: 'claim-pending-rewards',
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-usda-v1-1')
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-usda-v1-1'),
       ],
       onFinish: data => {
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -418,12 +452,16 @@ export const Stake = () => {
       functionName: 'claim-pending-rewards',
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-diko-v1-1')
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-diko-v1-1'),
       ],
       onFinish: data => {
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -438,13 +476,17 @@ export const Stake = () => {
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-usda-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-token')
+        contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
       onFinish: data => {
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -459,13 +501,17 @@ export const Stake = () => {
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-usda-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-token')
+        contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
       onFinish: data => {
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -480,13 +526,17 @@ export const Stake = () => {
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-diko-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-token')
+        contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
       onFinish: data => {
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -555,11 +605,13 @@ export const Stake = () => {
       {state.userData ? (
         <Container>
           <main className="relative flex-1 py-12">
-
             {hasUnstakedTokens ? (
               <Alert title="Unstaked LP tokens">
                 <p>👀 We noticed that your wallet contains LP Tokens that are not staked yet.</p>
-                <p className="mt-1">If you want to stake them, pick the appropriate token in the table below and hit the <DotsVerticalIcon className="inline w-4 h-4" aria-hidden="true" /> icon to open the actions menu and initiate staking.
+                <p className="mt-1">
+                  If you want to stake them, pick the appropriate token in the table below and hit
+                  the <DotsVerticalIcon className="inline w-4 h-4" aria-hidden="true" /> icon to
+                  open the actions menu and initiate staking.
                 </p>
               </Alert>
             ) : null}
@@ -568,14 +620,24 @@ export const Stake = () => {
                 <div>
                   <h3 className="text-lg leading-6 text-gray-900 font-headings">DIKO</h3>
                   <p className="max-w-3xl mt-2 text-sm text-gray-500">
-                    When staking DIKO in the <span className="font-semibold">security module</span> you get stDIKO in return. Both DIKO and stDIKO can be used to propose and vote in governance.
+                    When staking DIKO in the <span className="font-semibold">security module</span>{' '}
+                    you get stDIKO in return. Both DIKO and stDIKO can be used to propose and vote
+                    in governance.
                   </p>
                 </div>
                 <div className="flex items-center">
                   <div className="w-5.5 h-5.5 rounded-full bg-indigo-200 flex items-center justify-center">
-                    <QuestionMarkCircleIcon className="w-5 h-5 text-indigo-600" aria-hidden="true" />
+                    <QuestionMarkCircleIcon
+                      className="w-5 h-5 text-indigo-600"
+                      aria-hidden="true"
+                    />
                   </div>
-                  <a className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 border-transparent hover:border-indigo-300 hover:text-indigo-700" href="https://docs.arkadiko.finance/protocol/diko/security-module" target="_blank" rel="noopener noreferrer">
+                  <a
+                    className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 border-transparent hover:border-indigo-300 hover:text-indigo-700"
+                    href="https://docs.arkadiko.finance/protocol/diko/security-module"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     More on the Security Module
                     <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
                   </a>
@@ -595,7 +657,11 @@ export const Stake = () => {
                             <span>Loading...</span>
                           ) : (
                             <>
-                            {microToReadable(stakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
+                              {microToReadable(stakedAmount).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 6,
+                              })}{' '}
+                              DIKO
                             </>
                           )}
                         </p>
@@ -604,7 +670,7 @@ export const Stake = () => {
                     <div>
                       <p className="text-lg font-semibold">
                         {loadingData ? (
-                          <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                          <Placeholder className="py-2" width={Placeholder.width.HALF} />
                         ) : emissionsStarted ? (
                           `${apy}%`
                         ) : (
@@ -621,8 +687,15 @@ export const Stake = () => {
                       )}
                       <p className="flex items-center text-base font-normal leading-6 text-gray-500">
                         Cooldown status
-                        <Tooltip className="ml-2" shouldWrapChildren={true} label={`The 10-day cooldown period is the time required prior to unstaking your tokens. Once it expires, there is a 2-day window to unstake your tokens.`}>
-                          <InformationCircleIcon className="flex-shrink-0 block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                        <Tooltip
+                          className="ml-2"
+                          shouldWrapChildren={true}
+                          label={`The 10-day cooldown period is the time required prior to unstaking your tokens. Once it expires, there is a 2-day window to unstake your tokens.`}
+                        >
+                          <InformationCircleIcon
+                            className="flex-shrink-0 block w-5 h-5 ml-2 text-gray-400"
+                            aria-hidden="true"
+                          />
                         </Tooltip>
                       </p>
                     </div>

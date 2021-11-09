@@ -6,10 +6,13 @@ import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { microToReadable } from '@common/vault-utils';
 import {
-  AnchorMode, contractPrincipalCV, uintCV,
+  AnchorMode,
+  contractPrincipalCV,
+  uintCV,
   makeStandardFungiblePostCondition,
-  FungibleConditionCode, createAssetInfo
- } from '@stacks/transactions';
+  FungibleConditionCode,
+  createAssetInfo,
+} from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
@@ -17,7 +20,7 @@ import { Alert } from './ui/alert';
 
 export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmount }) => {
   const [state, setState] = useContext(AppContext);
-  const [errors, setErrors] = useState<Array<string>>([]);
+  const [errors, setErrors] = useState<string[]>([]);
   const [stakeAmount, setStakeAmount] = useState('');
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -29,12 +32,8 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
         stxAddress || '',
         FungibleConditionCode.LessEqual,
         uintCV(Number(stakeAmount) * 1000000).value,
-        createAssetInfo(
-          contractAddress,
-          'stdiko-token',
-          'stdiko'
-        )
-      )
+        createAssetInfo(contractAddress, 'stdiko-token', 'stdiko')
+      ),
     ];
 
     await doContractCall({
@@ -47,15 +46,19 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
-        uintCV(Number(stakeAmount) * 1000000)
+        uintCV(Number(stakeAmount) * 1000000),
       ],
       postConditionMode: 0x01,
       onFinish: data => {
         console.log('finished broadcasting unstaking tx!', data);
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
         setShowUnstakeModal(false);
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -63,7 +66,7 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
     setStakeAmount(stakedAmount / 1000000);
   };
 
-  const onInputStakeChange = (event:any) => {
+  const onInputStakeChange = (event: any) => {
     const value = event.target.value;
     // trying to unstake
     if (value > stakedAmount / 1000000) {
@@ -82,12 +85,19 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
         {errors.length > 0 ? (
           <div className="mt-4">
             <Alert type={Alert.type.ERROR}>
-              {errors.map(txt => <p key={txt}>{txt}</p>)}
+              {errors.map(txt => (
+                <p key={txt}>{txt}</p>
+              ))}
             </Alert>
           </div>
         ) : null}
 
-        <div className="inline-block px-2 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+        <div
+          className="inline-block px-2 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-headline"
+        >
           <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
             <button
               type="button"
@@ -103,11 +113,19 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
           </div>
           <div>
             <div className="mt-3 text-center sm:mt-5">
-              <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings" id="modal-headline">
+              <h3
+                className="text-lg font-medium leading-6 text-gray-900 font-headings"
+                id="modal-headline"
+              >
                 Unstake DIKO
               </h3>
               <p className="mt-3 text-sm text-gray-500">
-                You are currently staking {microToReadable(stakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO.
+                You are currently staking{' '}
+                {microToReadable(stakedAmount).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+                })}{' '}
+                DIKO.
               </p>
               <div className="mt-6">
                 <InputAmount

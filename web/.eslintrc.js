@@ -1,15 +1,17 @@
 module.exports = {
-  extends: ['@blockstack/eslint-config'],
+  extends: ['@stacks/eslint-config', 'plugin:jest/recommended'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: './tsconfig.json'
+    tsconfigRootDir: __dirname,
+    project: ['./tsconfig.json'],
+    ecmaVersion: 2019,
+    sourceType: 'module',
   },
   plugins: ['jest'],
   env: {
     browser: true,
     node: true,
     es6: true,
-    'jest/globals': true,
   },
   globals: {
     page: true,
