@@ -8,7 +8,7 @@ import { classNames } from '@common/class-names';
 
 export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
   const collateralItems: Array<CollateralTypeProps> = [];
-  ['STX-A', 'STX-B', 'XBTC-A'].forEach((tokenString: string) => {
+  ['STX-A', 'STX-B'].forEach((tokenString: string) => {
     let coll = types?.[tokenString];
     if (coll) {
       collateralItems.push({
@@ -129,7 +129,7 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
             <caption className="sr-only">Collateral Type Comparison</caption>
             <thead>
               <tr>
-                <th className="px-6 pb-4 text-sm font-medium text-left text-gray-900" scope="col">
+                <th className="w-1/4 px-6 pb-4 text-sm font-medium text-left text-gray-900" scope="col">
                   <span>Collateral types</span>
                 </th>
                 {collateralItems.map((collateral) => (

@@ -231,7 +231,6 @@
 )
 
 ;; Initialize the contract
-;; TODO: set custom block height here for mainnet
 (begin
   (var-set last-reward-increase-block block-height)
 )

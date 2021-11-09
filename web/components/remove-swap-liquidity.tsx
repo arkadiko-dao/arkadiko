@@ -182,7 +182,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         contractPrincipalCV(contractAddress, swapTrait),
         uintCV(percentageToRemove)
       ],
-      postConditions,
+      postConditionMode: 0x01,
       onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
       },

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ThemeProvider, theme, Tooltip } from '@blockstack/ui';
+import { ThemeProvider, theme } from '@blockstack/ui';
 import { Connect } from '@stacks/connect-react';
 import { AuthOptions } from '@stacks/connect';
 import { UserSession, AppConfig } from '@stacks/auth';
@@ -13,6 +13,7 @@ import { callReadOnlyFunction, cvToJSON, stringAsciiCV } from '@stacks/transacti
 import { resolveSTXAddress } from '@common/use-stx-address';
 import { TxStatus } from '@components/tx-status';
 import { TxSidebar } from '@components/tx-sidebar';
+import { Footer } from '@components/footer';
 import { useLocation } from 'react-router-dom';
 import { initiateConnection } from '@common/websocket-tx-updater';
 import ScrollToTop from '@components/scroll-to-top';
@@ -46,7 +47,7 @@ export const getBalance = async (address: string) => {
   };
 };
 
-const icon = 'https://testnet.arkadiko.finance/assets/logo.png';
+const icon = 'https://arkadiko.finance/favicon.ico';
 export const App: React.FC = () => {
   const [state, setState] = React.useState<AppState>(defaultState());
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -86,7 +87,7 @@ export const App: React.FC = () => {
 
   const fetchCollateralTypes = async (address: string) => {
     let collTypes = {};
-    ['STX-A', 'STX-B', 'XBTC-A'].forEach(async (token) => {
+    ['STX-A', 'STX-B'].forEach(async (token) => {
       const types = await callReadOnlyFunction({
         contractAddress,
         contractName: "arkadiko-collateral-types-v1-1",
@@ -216,7 +217,7 @@ export const App: React.FC = () => {
           <div className="flex flex-col font-sans bg-white min-height-screen">
             {(location.pathname.indexOf('/onboarding') != 0) ? (
               <Header signOut={signOut} setShowSidebar={setShowSidebar} />
-            ) : null }
+            ) : null}
             {state.userData && (location.pathname.indexOf('/onboarding') != 0 ) ? (
               <SubHeader />
             ) : null}
@@ -228,6 +229,7 @@ export const App: React.FC = () => {
               <Redirect to={{ pathname: '/onboarding' }} />
             ) : null}
             <Routes />
+            <Footer />
           </div>
         </AppContext.Provider>
       </ThemeProvider>

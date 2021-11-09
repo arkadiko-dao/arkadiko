@@ -74,7 +74,7 @@ export const Vault: React.FC<VaultProps> = ({
   }, []);
 
   const debtBackgroundClass = (ratio: number) => {
-    if (ratio && ratio < collateralData.liquidationRatio) {
+    if (ratio && ratio < collateralData?.liquidationRatio) {
       return 'bg-red-300';
     }
 
@@ -122,7 +122,7 @@ export const Vault: React.FC<VaultProps> = ({
         <span className="text-gray-900">{collateralType.toUpperCase()}</span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className={`${debtClass(collateralData.liquidationRatio, debtRatio)}`}>{debtRatio}% (&gt; {collateralData['liquidationRatio']}%)</span>
+        <span className={`${debtClass(collateralData?.liquidationRatio, debtRatio)}`}>{debtRatio}% (&gt; {collateralData['liquidationRatio']}%)</span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         <span className="text-gray-900">${stabilityFee / 1000000} USDA</span>

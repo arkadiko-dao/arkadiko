@@ -10,7 +10,7 @@ import { AuctionProps, AuctionGroup } from '@components/auction-group';
 import { LotGroup } from '@components/lot-group';
 import { getRPCClient } from '@common/utils';
 import { DocumentSearchIcon, GiftIcon, CashIcon } from '@heroicons/react/outline';
-import { EmptyState } from './empty-state';
+import { EmptyState } from './ui/empty-state';
 
 export const Auctions: React.FC = () => {
   const { doContractCall } = useConnect();

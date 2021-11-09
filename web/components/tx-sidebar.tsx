@@ -16,7 +16,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
     let mounted = true;
 
     const fetchTransations = async () => {
-      if (mounted) {
+      if (mounted && address) {
         const txs = await getAccountTransactions(address || '', contractAddress || '');
         let index = 0;
         const txMap = txs.map((tx: ContractCallTransaction) => {

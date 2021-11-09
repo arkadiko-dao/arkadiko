@@ -4,7 +4,7 @@ import { tokenList } from '@components/token-swap-list';
 import { Disclosure } from '@headlessui/react';
 import { InformationCircleIcon, ChevronUpIcon } from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
-import { Placeholder } from './placeholder';
+import { Placeholder } from './ui/placeholder';
 import { NavLink as RouterLink } from 'react-router-dom';
 
 interface StakeLpRowProps {

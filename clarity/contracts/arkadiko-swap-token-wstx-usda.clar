@@ -86,3 +86,10 @@
     (ft-burn? wstx-usda amount recipient)
   )
 )
+
+
+;; Test environments
+(begin
+  ;; TODO: do not do this on testnet or mainnet
+  (try! (ft-mint? wstx-usda u100000000 'ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC))
+)

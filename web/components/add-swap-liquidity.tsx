@@ -18,6 +18,7 @@ import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { classNames } from '@common/class-names';
+import { Placeholder } from './ui/placeholder';
 
 export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -37,6 +38,8 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [newTokens, setNewTokens] = useState(0);
   const [newShare, setNewShare] = useState(0);
   const [totalShare, setTotalShare] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [insufficientBalance, setInsufficientBalance] = useState(false);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const stxAddress = useSTXAddress();
   const { doContractCall } = useConnect();
@@ -106,6 +109,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         } else {
           setTotalShare(totalShare);
         }
+        setIsLoading(false);
         setFoundPair(true);
       } else if (Number(json3['value']['value']['value']) === 201) {
         const json4 = await fetchPair(tokenYTrait, tokenXTrait);
@@ -130,6 +134,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         } else {
           setFoundPair(false);
         }
+        setIsLoading(false);
       }
     };
 
@@ -138,22 +143,33 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
 
   useEffect(() => {
     if (currentPrice > 0) {
-      calculateTokenYAmount();
+      calculateTokenYAmount(tokenXAmount);
     }
   }, [tokenXAmount]);
 
   const onInputChange = (event: { target: { name: any; value: any; }; }) => {
     const value = event.target.value;
+    if (!value) {
+      return;
+    }
 
+    setInsufficientBalance(false);
     setTokenXAmount(value);
-    calculateTokenYAmount();
+
+    if (value > balanceSelectedTokenX) {
+      setInsufficientBalance(true);
+    }
+    calculateTokenYAmount(Number(value));
   };
 
-  const calculateTokenYAmount = () => {
-    setTokenYAmount(currentPrice * tokenXAmount);
-    const newTokens = (totalTokens / 1000000 * tokenXAmount) / pooledX;
+  const calculateTokenYAmount = (value:number) => {
+    setTokenYAmount(currentPrice * value);
+    if (currentPrice * value > balanceSelectedTokenY) {
+      setInsufficientBalance(true);
+    }
+    const newTokens = (totalTokens / 1000000 * value) / pooledX;
     setNewTokens(newTokens);
-    if (tokenXAmount > 0) {
+    if (value > 0) {
       const share = Number((1000000 * 100 * newTokens / totalTokens).toFixed(8));
       if (share > 100) {
         setNewShare(100);
@@ -184,14 +200,14 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         makeStandardSTXPostCondition(
           stxAddress || '',
           FungibleConditionCode.Equal,
-          uintCV(tokenXAmount * 1000000).value
+          uintCV(parseInt(tokenXAmount * 1000000, 10)).value
         )
       );
       postConditions.push(
         makeStandardFungiblePostCondition(
           stxAddress || '',
           FungibleConditionCode.Equal,
-          uintCV(tokenXAmount * 1000000).value,
+          uintCV(parseInt(tokenXAmount * 1000000, 10)).value,
           createAssetInfo(
             contractAddress,
             tokenXParam,
@@ -218,14 +234,14 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         makeStandardSTXPostCondition(
           stxAddress || '',
           FungibleConditionCode.Equal,
-          uintCV(tokenYAmount * 1000000).value
+          uintCV(parseInt(tokenYAmount * 1000000, 10)).value
         )
       );
       postConditions.push(
         makeStandardFungiblePostCondition(
           stxAddress || '',
           FungibleConditionCode.Equal,
-          uintCV(tokenYAmount * 1000000).value,
+          uintCV(parseInt(tokenYAmount * 1000000, 10)).value,
           createAssetInfo(
             contractAddress,
             tokenYParam,
@@ -257,10 +273,9 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         contractPrincipalCV(contractAddress, tokenXParam),
         contractPrincipalCV(contractAddress, tokenYParam),
         contractPrincipalCV(contractAddress, swapTrait),
-        uintCV(tokenXAmount * 1000000),
-        uintCV(tokenYAmount * 1000000)
+        uintCV(parseInt(tokenXAmount * 1000000, 10)),
+        uintCV(parseInt(tokenYAmount * 1000000, 10))
       ],
-      postConditions,
       postConditionMode: 0x01,
       onFinish: data => {
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
@@ -318,85 +333,93 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                 </div>
               
                 <form className="mt-4">
-                  <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
-                    <div className="flex items-center p-4 pb-2">
+                  {isLoading ? (
+                    <Placeholder className="py-2 justify-center" width={Placeholder.width.HALF}/>
+                  ) : (
+                    <>
+                    <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
+                      <div className="flex items-center p-4 pb-2">
 
-                      <TokenSwapList
-                        selected={tokenX}
-                        setSelected={setTokenX}
-                      />
-
-                      <label htmlFor="tokenXAmount" className="sr-only">{tokenX.name}</label>
-                      <input
-                        type="number"
-                        inputMode="decimal" 
-                        autoFocus={true}
-                        autoComplete="off"
-                        autoCorrect="off"
-                        name="tokenXAmount"
-                        id="tokenXAmount"
-                        pattern="^[0-9]*[.,]?[0-9]*$"
-                        placeholder="0.0"
-                        value={tokenXAmount || ''}
-                        onChange={onInputChange}
-                        className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
-                        style={{appearance: 'textfield'}} />
-                    </div>
-
-                    <div className="flex items-center justify-end p-4 pt-0 text-sm">
-                      <div className="flex items-center justify-between w-full">
-                        <div className="flex items-center justify-start">
-                          <p className="text-gray-500">Balance: {balanceSelectedTokenX.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenX.name}</p>
-                          {parseInt(balanceSelectedTokenX, 10) > 0 ? (
-                            <button
-                              type="button"
-                              onClick={() => setMaximum()}
-                              className="p-1 ml-2 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
-                            >
-                              Max.
-                            </button>
-                          ) : `` }
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                
-                  <div className="flex items-center justify-center my-3">
-                    <PlusIcon className="w-6 h-6 text-gray-500" aria-hidden="true" />
-                  </div>
-
-                  <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
-                    <div className="flex items-center p-4 pb-2">
-
-                      <TokenSwapList
-                        selected={tokenY}
-                        setSelected={setTokenY}
-                      />
-
-                      <label htmlFor="tokenYAmount" className="sr-only">{tokenY.name}</label>
-                      <input
-                        type="text"
-                        inputMode="decimal" 
-                        autoComplete="off"
-                        autoCorrect="off"
-                        name="tokenYAmount"
-                        id="tokenYAmount"
-                        pattern="^[0-9]*[.,]?[0-9]*$"
-                        placeholder="0.0"
-                        value={tokenYAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
-                        disabled={true}
-                        className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
+                        <TokenSwapList
+                          selected={tokenX}
+                          setSelected={setTokenX}
+                          disabled={true}
                         />
-                    </div>
 
-                    <div className="flex items-center justify-end p-4 pt-0 text-sm">
-                      <div className="flex items-center justify-between w-full">
-                        <div className="flex items-center justify-start">
-                          <p className="text-gray-500">Balance: {balanceSelectedTokenY.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenY.name}</p>
+                        <label htmlFor="tokenXAmount" className="sr-only">{tokenX.name}</label>
+                        <input
+                          type="number"
+                          inputMode="decimal" 
+                          autoFocus={true}
+                          autoComplete="off"
+                          autoCorrect="off"
+                          name="tokenXAmount"
+                          id="tokenXAmount"
+                          pattern="^[0-9]*[.,]?[0-9]*$"
+                          placeholder="0.0"
+                          value={tokenXAmount || ''}
+                          onChange={onInputChange}
+                          className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
+                          style={{appearance: 'textfield'}} />
+                      </div>
+
+                      <div className="flex items-center justify-end p-4 pt-0 text-sm">
+                        <div className="flex items-center justify-between w-full">
+                          <div className="flex items-center justify-start">
+                            <p className="text-gray-500">Balance: {balanceSelectedTokenX.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenX.name}</p>
+                            {parseInt(balanceSelectedTokenX, 10) > 0 ? (
+                              <button
+                                type="button"
+                                onClick={() => setMaximum()}
+                                className="p-1 ml-2 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                              >
+                                Max.
+                              </button>
+                            ) : `` }
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  
+                    <div className="flex items-center justify-center my-3">
+                      <PlusIcon className="w-6 h-6 text-gray-500" aria-hidden="true" />
+                    </div>
+
+                    <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
+                      <div className="flex items-center p-4 pb-2">
+
+                        <TokenSwapList
+                          selected={tokenY}
+                          setSelected={setTokenY}
+                          disabled={true}
+                        />
+
+                        <label htmlFor="tokenYAmount" className="sr-only">{tokenY.name}</label>
+                        <input
+                          type="text"
+                          inputMode="decimal" 
+                          autoComplete="off"
+                          autoCorrect="off"
+                          name="tokenYAmount"
+                          id="tokenYAmount"
+                          pattern="^[0-9]*[.,]?[0-9]*$"
+                          placeholder="0.0"
+                          value={tokenYAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                          disabled={true}
+                          className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
+                          />
+                      </div>
+
+                      <div className="flex items-center justify-end p-4 pt-0 text-sm">
+                        <div className="flex items-center justify-between w-full">
+                          <div className="flex items-center justify-start">
+                            <p className="text-gray-500">Balance: {balanceSelectedTokenY.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenY.name}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    </>
+                  )}
 
                   <div className="w-full p-4 mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
                     <h4 className="text-xs text-indigo-700 uppercase font-headings">Prices and pool share</h4>
@@ -448,7 +471,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
 
                   <button
                     type="button"
-                    disabled={tokenYAmount === 0 || !foundPair}
+                    disabled={insufficientBalance || tokenYAmount === 0 || !foundPair}
                     onClick={() => addLiquidity()}
                     className={classNames((tokenYAmount === 0 || !foundPair) ?
                       'bg-indigo-300 hover:bg-indigo-300 pointer-events-none' :
@@ -458,6 +481,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                   >
                     { !foundPair ? "No liquidity for this pair. Try another one."
                     : tokenYAmount === 0 ? "Please enter an amount"
+                    : insufficientBalance ? "Insufficient balance"
                     : "Confirm adding liquidity"}
                   </button>
 

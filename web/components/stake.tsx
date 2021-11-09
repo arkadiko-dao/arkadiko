@@ -13,6 +13,7 @@ import { StakeLpModal } from './stake-lp-modal';
 import { UnstakeLpModal } from './unstake-lp-modal';
 import { useSTXAddress } from '@common/use-stx-address';
 import { microToReadable } from '@common/vault-utils';
+import { getPrice } from '@common/get-price';
 import { tokenList } from '@components/token-swap-list';
 import { useConnect } from '@stacks/connect-react';
 import { StakeLpRow } from './stake-lp-row';
@@ -24,12 +25,10 @@ import {
   ClockIcon,
   QuestionMarkCircleIcon,
   ExternalLinkIcon,
-  InformationCircleIcon,
-  ChevronDownIcon,
-  XIcon } from '@heroicons/react/solid';
-import { Placeholder } from './placeholder';
+  InformationCircleIcon } from '@heroicons/react/solid';
+import { Placeholder } from './ui/placeholder';
 import { Tooltip } from '@blockstack/ui';
-import { getPrice } from '@common/get-price';
+import { Alert } from './ui/alert';
 
 export const Stake = () => {
   const [state, setState] = useContext(AppContext);
@@ -59,6 +58,7 @@ export const Stake = () => {
   const [loadingData, setLoadingData] = useState(true);
   const [hasUnstakedTokens, setHasUnstakedTokens] = useState(false);
   const [emissionsStarted, setEmissionsStarted] = useState(false);
+  const [canStakeLp, _] = useState(false);
 
   const [stxDikoPoolInfo, setStxDikoPoolInfo] = useState(0);
   const [stxUsdaPoolInfo, setStxUsdaPoolInfo] = useState(0);
@@ -126,6 +126,10 @@ export const Stake = () => {
 
     const lpTokenValue = async (poolContract:string, lpTokenStakedAmount: number, lpTokenWalletAmount: number) => {
 
+      if (lpTokenWalletAmount == undefined) {
+        return;
+      }
+
       var tokenXContract = "arkadiko-token";
       var tokenYContract = "usda-token";
       var tokenXName = "DIKO";
@@ -141,10 +145,6 @@ export const Stake = () => {
         tokenXName = "STX";
         tokenYName = "USDA";
       }
-
-      // if (lpTokenAmount == 0) {
-      //   return {tokenX: tokenXName, tokenY: tokenYName, tokenXAmount: 0, tokenYAmount: 0, value: 0};
-      // }
 
       // Get pair details
       let pairDetailsCall = await callReadOnlyFunction({
@@ -557,32 +557,11 @@ export const Stake = () => {
           <main className="relative flex-1 py-12">
 
             {hasUnstakedTokens ? (
-              <div className="p-4 mb-6 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
-                  </div>
-                  <div className="flex-1 ml-3">
-                    <h3 className="text-sm font-semibold text-blue-800">Unstaked LP tokens</h3>
-                    <div className="mt-2 text-sm text-blue-700">
-                      <p>👀 We noticed that your wallet contains LP Tokens that are not staked yet.</p>
-                      <p className="mt-1">If you want to stake them, pick the appropriate token in the table below and hit the <ChevronDownIcon className="inline w-4 h-4" aria-hidden="true" /> icon to open the actions menu and initiate staking.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="pl-3 ml-auto">
-                    <div className="-mx-1.5 -my-1.5">
-                      <button
-                        type="button"
-                        className="inline-flex bg-blue-50 rounded-md p-1.5 text-blue-500 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-blue-50 focus:ring-blue-600"
-                      >
-                        <span className="sr-only">Dismiss</span>
-                        <XIcon className="w-5 h-5" aria-hidden="true" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <Alert title="Unstaked LP tokens">
+                <p>👀 We noticed that your wallet contains LP Tokens that are not staked yet.</p>
+                <p className="mt-1">If you want to stake them, pick the appropriate token in the table below and hit the <DotsVerticalIcon className="inline w-4 h-4" aria-hidden="true" /> icon to open the actions menu and initiate staking.
+                </p>
+              </Alert>
             ) : null}
             <section>
               <header className="pb-5 border-b border-gray-200 sm:flex sm:justify-between sm:items-end">
@@ -612,19 +591,27 @@ export const Stake = () => {
                           <img className="w-8 h-8 rounded-full" src={tokenList[1].logo} alt="" />
                         </div>
                         <p className="ml-4 text-lg font-semibold">
-                          {microToReadable(stakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
+                          {loadingData ? (
+                            <span>Loading...</span>
+                          ) : (
+                            <>
+                            {microToReadable(stakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
+                            </>
+                          )}
                         </p>
                       </div>
                     </div>
                     <div>
-                      {loadingData ? (
-                        <Placeholder className="py-2" width={Placeholder.width.HALF}/>
-                      ) : emissionsStarted ? (
-                        `${apy}%`
-                      ) : (
-                        <p className="text-lg font-semibold">Emissions not started</p>
-                      )}
-                      <p className="text-base font-normal leading-6 text-gray-500">Current APY</p>
+                      <p className="text-lg font-semibold">
+                        {loadingData ? (
+                          <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                        ) : emissionsStarted ? (
+                          `${apy}%`
+                        ) : (
+                          <span>Emissions not started</span>
+                        )}
+                      </p>
+                      <p className="text-base font-normal leading-6 text-gray-500">Current APR</p>
                     </div>
                     <div>
                       {loadingData ? (

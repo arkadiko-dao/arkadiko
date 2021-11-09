@@ -17,6 +17,7 @@ keychain_regtest_2.json
 keychain_regtest_3.json
 keychain_private_testnet.json
 notes.md
+api/
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
