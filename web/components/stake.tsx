@@ -68,6 +68,7 @@ export const Stake = () => {
   const [stxDikoPoolInfo, setStxDikoPoolInfo] = useState(0);
   const [stxUsdaPoolInfo, setStxUsdaPoolInfo] = useState(0);
   const [dikoUsdaPoolInfo, setDikoUsdaPoolInfo] = useState(0);
+  const [missedLpRewards, setMissedLpRewards] = useState(0);
 
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -90,6 +91,20 @@ export const Stake = () => {
       ) {
         setHasUnstakedTokens(true);
       }
+    };
+
+    const fetchMissedLpRewards = async () => {
+      const stakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-stake-lp-rewards",
+        functionName: "get-diko-by-wallet",
+        functionArgs: [
+          standardPrincipalCV(stxAddress || '')
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      return cvToJSON(stakedCall).value;
     };
 
     const fetchLpStakeAmount = async (poolContract:string) => {
@@ -368,6 +383,9 @@ export const Stake = () => {
         setCooldownRunning(true);
       }
 
+      let missedLpRewards = await fetchMissedLpRewards();
+      setMissedLpRewards(missedLpRewards / 1000000);
+
       setLoadingData(false);
     };
     if (mounted) {
@@ -528,6 +546,45 @@ export const Stake = () => {
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
+      postConditionMode: 0x01,
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
+  const claimMissingLpRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-lp-rewards',
+      functionName: 'claim-rewards',
+      functionArgs: [],
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
+  const stakeMissingLpRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-lp-rewards',
+      functionName: 'stake-rewards',
+      functionArgs: [],
       postConditionMode: 0x01,
       onFinish: data => {
         setState(prevState => ({
@@ -799,7 +856,47 @@ export const Stake = () => {
                   Staking LP tokens allows you to earn further rewards. You might be more familiar with the term “farming”.
                 </p>
               </header>
-            
+
+              { missedLpRewards != 0 ? (
+                <div className="mt-4 bg-white divide-y divide-gray-200 shadow sm:rounded-md">
+                  <div className="px-4 py-5 space-y-6 divide-y divide-gray-200 sm:p-6">
+                    <div className="grid grid-cols-1 gap-4 sm:items-center sm:grid-cols-3">
+                      <div>
+                        <div className="flex items-center">
+                          <p className="ml-4 text-m">
+                            <span>LP staking rewards have resumed. Claim the rewards you missed during the pause.</span>
+                          </p>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-lg font-semibold">
+                          <span>{missedLpRewards}</span>
+                        </p>
+                        <p className="text-base font-normal leading-6 text-gray-500">DIKO</p>
+                      </div>
+                      <div>
+                      <>
+                        <button
+                          type="button"
+                          className="inline-flex items-center px-3 py-2 text-sm leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                          onClick={() => claimMissingLpRewards()}
+                        >
+                          Claim
+                        </button>
+                        <button
+                          type="button"
+                          className="inline-flex items-center px-3 py-2 text-sm leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                          onClick={() => stakeMissingLpRewards()}
+                        >
+                          Stake
+                        </button>
+                      </>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+              
               <div className="mt-4">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
