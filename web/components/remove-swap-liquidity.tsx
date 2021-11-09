@@ -96,15 +96,18 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
           state.balance[`${tokenX.nameInPair.toLowerCase()}${tokenY.nameInPair.toLowerCase()}`];
         const totalShares = json3['value']['value']['value']['shares-total'].value;
         const poolPercentage = balance / totalShares;
-        setFoundPair(true);
-        setTokenXPrice(basePrice);
-        setTokenYPrice((balanceY / balanceX).toFixed(2));
-        setInverseDirection(false);
-        setBalance(balance);
-        setBalanceX(balanceX * poolPercentage);
-        setBalanceY(balanceY * poolPercentage);
-        setTokenXToReceive((balanceX * poolPercentage * percentageToRemove) / 100);
-        setTokenYToReceive((balanceY * poolPercentage * percentageToRemove) / 100);
+        if (balance !== undefined) {
+          setFoundPair(true);
+          setTokenXPrice(basePrice);
+          setTokenYPrice((balanceY / balanceX).toFixed(2));
+          setInverseDirection(false);
+          setBalance(balance);
+          setBalanceX(balanceX * poolPercentage);
+          setBalanceY(balanceY * poolPercentage);
+          setTokenXToReceive(balanceX * poolPercentage * percentageToRemove / 100);
+          setTokenYToReceive(balanceY * poolPercentage * percentageToRemove / 100);
+          setIsLoading(false);
+        }
       } else if (Number(json3['value']['value']['value']) === 201) {
         const json4 = await fetchPair(tokenYTrait, tokenXTrait);
         if (json4['success']) {
@@ -116,18 +119,20 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
             state.balance[`${tokenY.nameInPair.toLowerCase()}${tokenX.nameInPair.toLowerCase()}`];
           const totalShares = json4['value']['value']['value']['shares-total'].value;
           const poolPercentage = balance / totalShares;
-          setFoundPair(true);
-          setTokenXPrice(basePrice);
-          setTokenYPrice((balanceY / balanceX).toFixed(2));
-          setInverseDirection(true);
-          setBalance(balance);
-          setBalanceX(balanceX * poolPercentage);
-          setBalanceY(balanceY * poolPercentage);
-          setTokenXToReceive((balanceX * poolPercentage * percentageToRemove) / 100);
-          setTokenYToReceive((balanceY * poolPercentage * percentageToRemove) / 100);
+          if (balance !== undefined) {
+            setFoundPair(true);
+            setTokenXPrice(basePrice);
+            setTokenYPrice((balanceY / balanceX).toFixed(2));
+            setInverseDirection(true);
+            setBalance(balance);
+            setBalanceX(balanceX * poolPercentage);
+            setBalanceY(balanceY * poolPercentage);
+            setTokenXToReceive(balanceX * poolPercentage * percentageToRemove / 100);
+            setTokenYToReceive(balanceY * poolPercentage * percentageToRemove / 100);
+            setIsLoading(false);
+          }
         }
       }
-      setIsLoading(false);
     };
 
     resolvePair();
