@@ -29,9 +29,12 @@ export const getBalance = async (address: string) => {
   const usdaBalance = data.fungible_tokens[`${contractAddress}.usda-token::usda`];
   const xStxBalance = data.fungible_tokens[`${contractAddress}.xstx-token::xstx`];
   const stDikoBalance = data.fungible_tokens[`${contractAddress}.stdiko-token::stdiko`];
-  const lpDikoUsdaBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-diko-usda::diko-usda`];
-  const lpStxUsdaBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-usda::wstx-usda`];
-  const lpStxDikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-diko::wstx-diko`];
+  const lpDikoUsdaBalance =
+    data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-diko-usda::diko-usda`];
+  const lpStxUsdaBalance =
+    data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-usda::wstx-usda`];
+  const lpStxDikoBalance =
+    data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-diko::wstx-diko`];
   const xbtcBalance = data.fungible_tokens[`${contractAddress}.tokensoft-token::tokensoft-token`];
 
   return {
@@ -43,7 +46,7 @@ export const getBalance = async (address: string) => {
     stdiko: stDikoBalance ? stDikoBalance.balance : 0,
     dikousda: lpDikoUsdaBalance ? lpDikoUsdaBalance.balance : 0,
     wstxusda: lpStxUsdaBalance ? lpStxUsdaBalance.balance : 0,
-    wstxdiko: lpStxDikoBalance ? lpStxDikoBalance.balance : 0
+    wstxdiko: lpStxDikoBalance ? lpStxDikoBalance.balance : 0,
   };
 };
 
@@ -60,7 +63,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     setState(prevState => ({ ...prevState, currentTxId: '', currentTxStatus: '' }));
-  },[location.pathname]);
+  }, [location.pathname]);
 
   const signOut = () => {
     userSession.signUserOut();
@@ -80,18 +83,18 @@ export const App: React.FC = () => {
         stdiko: account.stdiko.toString(),
         dikousda: account.dikousda.toString(),
         wstxusda: account.wstxusda.toString(),
-        wstxdiko: account.wstxdiko.toString()
-      }
+        wstxdiko: account.wstxdiko.toString(),
+      },
     }));
   };
 
   const fetchCollateralTypes = async (address: string) => {
-    let collTypes = {};
-    ['STX-A', 'STX-B'].forEach(async (token) => {
+    const collTypes = {};
+    ['STX-A', 'STX-B'].forEach(async token => {
       const types = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-collateral-types-v1-1",
-        functionName: "get-collateral-type-by-name",
+        contractName: 'arkadiko-collateral-types-v1-1',
+        functionName: 'get-collateral-type-by-name',
         functionArgs: [stringAsciiCV(token)],
         senderAddress: address,
         network: network,
@@ -108,11 +111,11 @@ export const App: React.FC = () => {
         liquidationRatio: json.value['liquidation-ratio'].value,
         maximumDebt: json.value['maximum-debt'].value,
         stabilityFee: json.value['stability-fee'].value,
-        stabilityFeeApy: json.value['stability-fee-apy'].value
+        stabilityFeeApy: json.value['stability-fee-apy'].value,
       };
       setState(prevState => ({
         ...prevState,
-        collateralTypes: {...collTypes}
+        collateralTypes: { ...collTypes },
       }));
     });
   };
@@ -120,24 +123,25 @@ export const App: React.FC = () => {
   const fetchStackingCycle = async () => {
     const metaInfoUrl = `https://api.stacking.club/api/meta-info`;
     fetch(metaInfoUrl)
-      .then((res) => res.json())
-      .then((response) => {
-        let cycleNumber = response[0]["pox"]["current_cycle"]["id"];
+      .then(res => res.json())
+      .then(response => {
+        const cycleNumber = response[0]['pox']['current_cycle']['id'];
 
-        let cycleInfoUrl = `https://api.stacking.club/api/cycle-info?cycle=` + cycleNumber;
+        const cycleInfoUrl = `https://api.stacking.club/api/cycle-info?cycle=${cycleNumber}`;
         fetch(cycleInfoUrl)
-          .then((res) => res.json())
-          .then((response) => {
-            
-            let startTimestamp = response["startDate"];
-            let endTimestamp = response["endDate"];
-            let currentTimestamp = Date.now();
+          .then(res => res.json())
+          .then(response => {
+            const startTimestamp = response['startDate'];
+            const endTimestamp = response['endDate'];
+            const currentTimestamp = Date.now();
 
-            let daysPassed = Math.round((currentTimestamp - startTimestamp) / (1000*60*60*24));
-            let daysLeft = Math.round((endTimestamp - currentTimestamp) / (1000*60*60*24));
+            const daysPassed = Math.round(
+              (currentTimestamp - startTimestamp) / (1000 * 60 * 60 * 24)
+            );
+            const daysLeft = Math.round((endTimestamp - currentTimestamp) / (1000 * 60 * 60 * 24));
 
-            let startDate = new Date(startTimestamp).toDateString();
-            let endDate = new Date(endTimestamp).toDateString().split(' ').slice(1).join(' ');
+            const startDate = new Date(startTimestamp).toDateString();
+            const endDate = new Date(endTimestamp).toDateString().split(' ').slice(1).join(' ');
 
             setState(prevState => ({
               ...prevState,
@@ -145,7 +149,7 @@ export const App: React.FC = () => {
               startDate: startDate,
               endDate: endDate,
               daysPassed: daysPassed,
-              daysLeft: daysLeft
+              daysLeft: daysLeft,
             }));
           });
       });
@@ -159,7 +163,6 @@ export const App: React.FC = () => {
 
       const getData = async () => {
         try {
-
           const address = resolveSTXAddress(userData);
           initiateConnection(address, setState);
           fetchBalance(address);
@@ -215,19 +218,15 @@ export const App: React.FC = () => {
       <ThemeProvider theme={theme}>
         <AppContext.Provider value={[state, setState]}>
           <div className="flex flex-col font-sans bg-white min-height-screen">
-            {(location.pathname.indexOf('/onboarding') != 0) ? (
+            {location.pathname.indexOf('/onboarding') != 0 ? (
               <Header signOut={signOut} setShowSidebar={setShowSidebar} />
             ) : null}
-            {state.userData && (location.pathname.indexOf('/onboarding') != 0 ) ? (
-              <SubHeader />
-            ) : null}
+            {state.userData && location.pathname.indexOf('/onboarding') != 0 ? <SubHeader /> : null}
             <TxStatus />
-            
+
             <TxSidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
 
-            {!finishedOnboarding ? (
-              <Redirect to={{ pathname: '/onboarding' }} />
-            ) : null}
+            {!finishedOnboarding ? <Redirect to={{ pathname: '/onboarding' }} /> : null}
             <Routes />
             <Footer />
           </div>

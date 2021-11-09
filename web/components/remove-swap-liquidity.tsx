@@ -1,17 +1,28 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Redirect } from 'react-router-dom';
-import { Container } from './home'
+import { Container } from './home';
 import {
-  AnchorMode, callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV,
-  makeStandardFungiblePostCondition, FungibleConditionCode, createAssetInfo,
-  makeContractFungiblePostCondition
+  AnchorMode,
+  callReadOnlyFunction,
+  cvToJSON,
+  contractPrincipalCV,
+  uintCV,
+  makeStandardFungiblePostCondition,
+  FungibleConditionCode,
+  createAssetInfo,
+  makeContractFungiblePostCondition,
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { tokenTraits } from '@common/vault-utils';
-import { InformationCircleIcon, PlusCircleIcon, MinusCircleIcon, ArrowLeftIcon } from '@heroicons/react/solid';
+import {
+  InformationCircleIcon,
+  PlusCircleIcon,
+  MinusCircleIcon,
+  ArrowLeftIcon,
+} from '@heroicons/react/solid';
 import { ArrowDownIcon } from '@heroicons/react/outline';
 import { tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
@@ -26,8 +37,16 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   const [tokenYPrice, setTokenYPrice] = useState(0.0);
   const [tokenXToReceive, setTokenXToReceive] = useState(0.0);
   const [tokenYToReceive, setTokenYToReceive] = useState(0.0);
-  const [tokenX] = useState(tokenList[tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdA.toLowerCase())]);
-  const [tokenY] = useState(tokenList[tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdB.toLowerCase())]);
+  const [tokenX] = useState(
+    tokenList[
+      tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdA.toLowerCase())
+    ]
+  );
+  const [tokenY] = useState(
+    tokenList[
+      tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdB.toLowerCase())
+    ]
+  );
   const [inverseDirection, setInverseDirection] = useState(false);
   const [foundPair, setFoundPair] = useState(false);
   const [balance, setBalance] = useState(0.0);
@@ -48,14 +67,14 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   }, [state.currentTxStatus]);
 
   useEffect(() => {
-    const fetchPair = async (tokenXContract:string, tokenYContract:string) => {
-      let details = await callReadOnlyFunction({
+    const fetchPair = async (tokenXContract: string, tokenYContract: string) => {
+      const details = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-swap-v1-1",
-        functionName: "get-pair-details",
+        contractName: 'arkadiko-swap-v1-1',
+        functionName: 'get-pair-details',
         functionArgs: [
           contractPrincipalCV(contractAddress, tokenXContract),
-          contractPrincipalCV(contractAddress, tokenYContract)
+          contractPrincipalCV(contractAddress, tokenYContract),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -71,7 +90,8 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
         const basePrice = (balanceX / balanceY).toFixed(2);
-        const balance = state.balance[`${tokenX.nameInPair.toLowerCase()}${tokenY.nameInPair.toLowerCase()}`];
+        const balance =
+          state.balance[`${tokenX.nameInPair.toLowerCase()}${tokenY.nameInPair.toLowerCase()}`];
         const totalShares = json3['value']['value']['value']['shares-total'].value;
         const poolPercentage = balance / totalShares;
         setFoundPair(true);
@@ -81,8 +101,8 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         setBalance(balance);
         setBalanceX(balanceX * poolPercentage);
         setBalanceY(balanceY * poolPercentage);
-        setTokenXToReceive(balanceX * poolPercentage * percentageToRemove / 100);
-        setTokenYToReceive(balanceY * poolPercentage * percentageToRemove / 100);
+        setTokenXToReceive((balanceX * poolPercentage * percentageToRemove) / 100);
+        setTokenYToReceive((balanceY * poolPercentage * percentageToRemove) / 100);
       } else if (Number(json3['value']['value']['value']) === 201) {
         const json4 = await fetchPair(tokenYTrait, tokenXTrait);
         if (json4['success']) {
@@ -90,7 +110,8 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
           const balanceX = json4['value']['value']['value']['balance-x'].value;
           const balanceY = json4['value']['value']['value']['balance-y'].value;
           const basePrice = (balanceX / balanceY).toFixed(2);
-          const balance = state.balance[`${tokenY.nameInPair.toLowerCase()}${tokenX.nameInPair.toLowerCase()}`];
+          const balance =
+            state.balance[`${tokenY.nameInPair.toLowerCase()}${tokenX.nameInPair.toLowerCase()}`];
           const totalShares = json4['value']['value']['value']['shares-total'].value;
           const poolPercentage = balance / totalShares;
           setFoundPair(true);
@@ -100,8 +121,8 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
           setBalance(balance);
           setBalanceX(balanceX * poolPercentage);
           setBalanceY(balanceY * poolPercentage);
-          setTokenXToReceive(balanceX * poolPercentage * percentageToRemove / 100);
-          setTokenYToReceive(balanceY * poolPercentage * percentageToRemove / 100);
+          setTokenXToReceive((balanceX * poolPercentage * percentageToRemove) / 100);
+          setTokenYToReceive((balanceY * poolPercentage * percentageToRemove) / 100);
         }
       }
     };
@@ -109,7 +130,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
     resolvePair();
   }, [tokenX, tokenY, state.balance]);
 
-  const onInputChange = (event: { target: { name: any; value: any; }; }) => {
+  const onInputChange = (event: { target: { name: any; value: any } }) => {
     const value = event.target.value;
 
     removePercentage(value);
@@ -117,8 +138,8 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
 
   const removePercentage = (percentage: number) => {
     setPercentageToRemove(percentage);
-    setTokenXToReceive(balanceX * percentage / 100);
-    setTokenYToReceive(balanceY * percentage / 100);
+    setTokenXToReceive((balanceX * percentage) / 100);
+    setTokenYToReceive((balanceY * percentage) / 100);
   };
 
   const removeLiquidity = async () => {
@@ -140,35 +161,23 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
       makeStandardFungiblePostCondition(
         stxAddress || '',
         FungibleConditionCode.LessEqual,
-        uintCV(parseInt(balance / 100 * (percentageToRemove + 5), 10)).value,
-        createAssetInfo(
-          contractAddress,
-          swapTrait,
-          tokenTraits[pairName]['swap'].toLowerCase()
-        )
+        uintCV(parseInt((balance / 100) * (percentageToRemove + 5), 10)).value,
+        createAssetInfo(contractAddress, swapTrait, tokenTraits[pairName]['swap'].toLowerCase())
       ),
       makeContractFungiblePostCondition(
         contractAddress,
         'arkadiko-swap-v1-1',
         FungibleConditionCode.LessEqual,
         new BN(tokenXToReceive, 10),
-        createAssetInfo(
-          contractAddress,
-          tokenXParam,
-          tokenXName
-        )
+        createAssetInfo(contractAddress, tokenXParam, tokenXName)
       ),
       makeContractFungiblePostCondition(
         contractAddress,
         'arkadiko-swap-v1-1',
         FungibleConditionCode.LessEqual,
         new BN(tokenYToReceive, 10),
-        createAssetInfo(
-          contractAddress,
-          tokenYParam,
-          tokenYName
-        )
-      )
+        createAssetInfo(contractAddress, tokenYParam, tokenYName)
+      ),
     ];
     await doContractCall({
       network,
@@ -180,13 +189,17 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         contractPrincipalCV(contractAddress, tokenXParam),
         contractPrincipalCV(contractAddress, tokenYParam),
         contractPrincipalCV(contractAddress, swapTrait),
-        uintCV(percentageToRemove)
+        uintCV(percentageToRemove),
       ],
       postConditionMode: 0x01,
       onFinish: data => {
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -198,10 +211,11 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
             <p className="w-full max-w-lg">
               <RouterLink className="" to={`/pool`} exact>
                 <span className="p-1.5 rounded-md inline-flex items-center">
-                  <ArrowLeftIcon className="w-4 h-4 mr-2 text-gray-500 group-hover:text-gray-900" aria-hidden="true" />
-                  <span className="text-gray-600 hover:text-gray-900">
-                    Back to pool overview
-                  </span>
+                  <ArrowLeftIcon
+                    className="w-4 h-4 mr-2 text-gray-500 group-hover:text-gray-900"
+                    aria-hidden="true"
+                  />
+                  <span className="text-gray-600 hover:text-gray-900">Back to pool overview</span>
                 </span>
               </RouterLink>
             </p>
@@ -214,38 +228,61 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                     </h2>
                     <p className="inline-flex items-center mt-1 text-sm text-gray-600">
                       Remove liquidity to burn LP tokens and take out your rewards
-                      <Tooltip className="z-10" shouldWrapChildren={true} label={`By removing liquidity, you take out assets your provided and will stop earning on each trade.`}>
-                        <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                      <Tooltip
+                        className="z-10"
+                        shouldWrapChildren={true}
+                        label={`By removing liquidity, you take out assets your provided and will stop earning on each trade.`}
+                      >
+                        <InformationCircleIcon
+                          className="block w-5 h-5 ml-2 text-gray-400"
+                          aria-hidden="true"
+                        />
                       </Tooltip>
                     </p>
                   </div>
                 </div>
                 <div className="group p-0.5 rounded-lg flex w-full bg-gray-50 hover:bg-gray-100">
-                  <RouterLink className="flex items-center justify-center flex-1 rounded-md focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus:outline-none focus-visible:ring-offset-gray-100" to={`/swap/add/${match.params.currencyIdA}/${match.params.currencyIdB}`} exact>
+                  <RouterLink
+                    className="flex items-center justify-center flex-1 rounded-md focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus:outline-none focus-visible:ring-offset-gray-100"
+                    to={`/swap/add/${match.params.currencyIdA}/${match.params.currencyIdB}`}
+                    exact
+                  >
                     <span className="p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md inline-flex items-center text-sm font-medium">
-                      <PlusCircleIcon className="w-4 h-4 mr-2 text-gray-500 group-hover:text-gray-900" aria-hidden="true" />
-                      <span className="text-gray-600 group-hover:text-gray-900">
-                        Add
-                      </span>
+                      <PlusCircleIcon
+                        className="w-4 h-4 mr-2 text-gray-500 group-hover:text-gray-900"
+                        aria-hidden="true"
+                      />
+                      <span className="text-gray-600 group-hover:text-gray-900">Add</span>
                     </span>
                   </RouterLink>
 
-                  <button type="button" className="ml-0.5 p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md flex items-center justify-center flex-1 text-sm text-gray-600 font-medium focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus:outline-none focus-visible:ring-offset-gray-100 bg-white ring-1 ring-black ring-opacity-5">
+                  <button
+                    type="button"
+                    className="ml-0.5 p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md flex items-center justify-center flex-1 text-sm text-gray-600 font-medium focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus:outline-none focus-visible:ring-offset-gray-100 bg-white ring-1 ring-black ring-opacity-5"
+                  >
                     <MinusCircleIcon className="w-4 h-4 mr-2 text-indigo-500" aria-hidden="true" />
-                    <span className="text-gray-900">
-                      Remove
-                    </span>
+                    <span className="text-gray-900">Remove</span>
                   </button>
                 </div>
 
                 <div className="w-full p-4 mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
-                  <h4 className="text-xs font-normal text-indigo-700 uppercase font-headings">Your position</h4>
+                  <h4 className="text-xs font-normal text-indigo-700 uppercase font-headings">
+                    Your position
+                  </h4>
                   <dl className="mt-2 space-y-1">
                     <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                       <dt className="inline-flex items-center text-base font-medium text-indigo-500">
                         <div className="flex mr-2 -space-x-2 overflow-hidden">
-                          <img className="inline-block w-6 h-6 rounded-full ring-2 ring-white" src={tokenX.logo} alt="" />
-                          <img className="inline-block w-6 h-6 rounded-full ring-2 ring-white" src={tokenY.logo} alt="" />
+                          <img
+                            className="inline-block w-6 h-6 rounded-full ring-2 ring-white"
+                            src={tokenX.logo}
+                            alt=""
+                          />
+                          <img
+                            className="inline-block w-6 h-6 rounded-full ring-2 ring-white"
+                            src={tokenY.logo}
+                            alt=""
+                          />
                         </div>
                         {tokenX.name}/{tokenY.name}
                       </dt>
@@ -276,12 +313,17 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                   <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
                     <div className="flex items-center p-4">
                       <div className="lg:flex lg:items-start lg:flex-1 lg:justify-between">
-                        <label htmlFor="removeLiquidityAmount" className="flex-shrink-0 block mr-4 text-base text-gray-700">Amount to remove</label>
+                        <label
+                          htmlFor="removeLiquidityAmount"
+                          className="flex-shrink-0 block mr-4 text-base text-gray-700"
+                        >
+                          Amount to remove
+                        </label>
                         <div className="flex flex-col">
                           <div className="relative rounded-md">
                             <input
                               type="number"
-                              inputMode="decimal" 
+                              inputMode="decimal"
                               autoFocus={true}
                               autoComplete="off"
                               autoCorrect="off"
@@ -292,7 +334,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                               value={percentageToRemove}
                               onChange={onInputChange}
                               className="block p-0 pr-4 m-0 text-3xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50 w-52"
-                              style={{appearance: 'textfield'}}
+                              style={{ appearance: 'textfield' }}
                             />
                             <div className="absolute inset-y-0 right-0 flex items-end pb-1 pointer-events-none">
                               %
@@ -303,28 +345,36 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                             <button
                               type="button"
                               className="p-1 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
-                              onClick={() => { removePercentage(25); }}
+                              onClick={() => {
+                                removePercentage(25);
+                              }}
                             >
                               25%
                             </button>
                             <button
                               type="button"
                               className="p-1 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
-                              onClick={() => { removePercentage(50); }}
+                              onClick={() => {
+                                removePercentage(50);
+                              }}
                             >
                               50%
                             </button>
                             <button
                               type="button"
                               className="p-1 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
-                              onClick={() => { removePercentage(75); }}
+                              onClick={() => {
+                                removePercentage(75);
+                              }}
                             >
                               75%
                             </button>
                             <button
                               type="button"
                               className="p-1 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
-                              onClick={() => { removePercentage(100); }}
+                              onClick={() => {
+                                removePercentage(100);
+                              }}
                             >
                               Max.
                             </button>
@@ -333,7 +383,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                       </div>
                     </div>
                   </div>
-                
+
                   <div className="flex items-center justify-center my-3">
                     <ArrowDownIcon className="w-6 h-6 text-gray-500" aria-hidden="true" />
                   </div>
@@ -341,7 +391,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                   <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
                     <div className="p-4">
                       <p className="text-base text-gray-700">You will receive</p>
-                      
+
                       <dl className="mt-4 space-y-2">
                         <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                           <dt className="text-lg font-medium">
@@ -352,7 +402,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                               <div className="ml-4">
                                 <div className="text-base text-gray-900">{tokenX.name}</div>
                               </div>
-                            </div>                          
+                            </div>
                           </dt>
                           <dd className="mt-1 text-lg font-semibold sm:mt-0 sm:justify-end sm:inline-flex">
                             {microToReadable(tokenXToReceive)}
@@ -367,7 +417,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                               <div className="ml-4">
                                 <div className="text-base text-gray-900">{tokenY.name}</div>
                               </div>
-                            </div>                          
+                            </div>
                           </dt>
                           <dd className="mt-1 text-lg font-semibold sm:mt-0 sm:justify-end sm:inline-flex">
                             {microToReadable(tokenYToReceive)}
@@ -378,32 +428,38 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                   </div>
 
                   <div className="mt-4 lg:flex lg:items-start lg:justify-between">
-                    <h4 className="text-xs font-normal text-gray-700 uppercase font-headings">Price</h4>
+                    <h4 className="text-xs font-normal text-gray-700 uppercase font-headings">
+                      Price
+                    </h4>
                     <div className="mt-3 sm:mt-0 space-y-0.5 lg:text-right text-sm text-gray-500">
                       <p>
                         1 {tokenX.name} = {tokenYPrice} {tokenY.name}
                       </p>
-                      <p  >
+                      <p>
                         1 {tokenY.name} = {tokenXPrice} {tokenX.name}
-                      </p>                    
+                      </p>
                     </div>
                   </div>
-                  
+
                   <div className="mt-4 lg:flex lg:items-center lg:flex-1 lg:space-x-2">
                     <button
                       type="button"
                       disabled={tokenXToReceive === 0 || !foundPair}
                       onClick={() => removeLiquidity()}
-                      className={classNames((tokenXToReceive === 0 || !foundPair) ?
-                        'bg-indigo-300 hover:bg-indigo-300 pointer-events-none' :
-                        'bg-indigo-600 hover:bg-indigo-700 cursor-pointer',
-                        'w-full inline-flex items-center justify-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white hover:bg-indigo-700 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500')
-                      }
+                      className={classNames(
+                        tokenXToReceive === 0 || !foundPair
+                          ? 'bg-indigo-300 hover:bg-indigo-300 pointer-events-none'
+                          : 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer',
+                        'w-full inline-flex items-center justify-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white hover:bg-indigo-700 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+                      )}
                     >
-                      { !foundPair ? "No liquidity for this pair. Try another one."
-                      : (!percentageToRemove || percentageToRemove === 0) ? "Please enter an amount"
-                      : (tokenXToReceive === 0) ? "Please enter an amount"
-                      : "Remove liquidity"}
+                      {!foundPair
+                        ? 'No liquidity for this pair. Try another one.'
+                        : !percentageToRemove || percentageToRemove === 0
+                        ? 'Please enter an amount'
+                        : tokenXToReceive === 0
+                        ? 'Please enter an amount'
+                        : 'Remove liquidity'}
                     </button>
                   </div>
                 </form>

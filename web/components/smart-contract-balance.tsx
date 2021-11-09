@@ -53,37 +53,57 @@ export const SmartContractBalance = ({ address, description, name }) => {
       void getData();
     }
 
-    return () => { mounted = false; }
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return (
     <tr className="bg-white">
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         <div className="flex items-center">
-          {name}    
+          {name}
           <Tooltip shouldWrapChildren={true} label={`${description}`}>
             <InformationCircleIcon className="w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
           </Tooltip>
         </div>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        {stxBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} STX
+        {stxBalance.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 6,
+        })}{' '}
+        STX
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        {dikoBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
+        {dikoBalance.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 6,
+        })}{' '}
+        DIKO
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        {usdaBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA
+        {usdaBalance.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 6,
+        })}{' '}
+        USDA
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        {wStxBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} wSTX
+        {wStxBalance.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 6,
+        })}{' '}
+        wSTX
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        {xStxBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xSTX
+        {xStxBalance.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 6,
+        })}{' '}
+        xSTX
       </td>
-      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        {address}
-      </td>
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">{address}</td>
     </tr>
-  )
+  );
 };

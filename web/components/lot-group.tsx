@@ -10,7 +10,7 @@ export interface LotProps {
 }
 
 export const LotGroup: React.FC<LotProps[]> = ({ lots }) => {
-  const lotItems = lots.map((lot: object) =>
+  const lotItems = lots.map((lot: object) => (
     <Lot
       key={`${lot['auction-id']}-${lot['lot-id']}`}
       id={lot['auction-id']}
@@ -19,7 +19,7 @@ export const LotGroup: React.FC<LotProps[]> = ({ lots }) => {
       collateralToken={lot['collateral-token']}
       usda={lot['usda']}
     />
-  );
+  ));
 
   return (
     <div className="flex flex-col mt-4">
@@ -36,13 +36,10 @@ export const LotGroup: React.FC<LotProps[]> = ({ lots }) => {
               <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
                 USDA spent
               </th>
-              <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
-              </th>
+              <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50"></th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {lotItems}
-          </tbody>
+          <tbody className="bg-white divide-y divide-gray-200">{lotItems}</tbody>
         </table>
       </div>
     </div>

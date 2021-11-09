@@ -24,7 +24,7 @@ export const routerConfig = [
   {
     path: '/',
     component: Home,
-  }
+  },
 ];
 
 export function Routes() {

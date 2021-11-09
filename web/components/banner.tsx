@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExclamationIcon } from '@heroicons/react/outline'
+import { ExclamationIcon } from '@heroicons/react/outline';
 
 export const Banner = () => {
   return (
@@ -12,7 +12,9 @@ export const Banner = () => {
             </span>
             <p className="ml-3 text-yellow-700 truncate">
               <span className="md:hidden">Announcement</span>
-              <span className="hidden md:inline">Arkadiko was hit by an exploit. Swap is disabled until further notice.</span>
+              <span className="hidden md:inline">
+                Arkadiko was hit by an exploit. Swap is disabled until further notice.
+              </span>
             </p>
           </div>
           <div className="flex-shrink-0 w-full mt-2 sm:mt-0 sm:w-auto">
@@ -26,5 +28,5 @@ export const Banner = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
