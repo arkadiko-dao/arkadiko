@@ -857,43 +857,30 @@ export const Stake = () => {
                 </p>
               </header>
 
-              { missedLpRewards != 0 ? (
-                <div className="mt-4 bg-white divide-y divide-gray-200 shadow sm:rounded-md">
-                  <div className="px-4 py-5 space-y-6 divide-y divide-gray-200 sm:p-6">
-                    <div className="grid grid-cols-1 gap-4 sm:items-center sm:grid-cols-3">
-                      <div>
-                        <div className="flex items-center">
-                          <p className="ml-4 text-m">
-                            <span>LP staking rewards have resumed. Claim the rewards you missed during the pause.</span>
-                          </p>
-                        </div>
-                      </div>
-                      <div>
-                        <p className="text-lg font-semibold">
-                          <span>{missedLpRewards}</span>
-                        </p>
-                        <p className="text-base font-normal leading-6 text-gray-500">DIKO</p>
-                      </div>
-                      <div>
-                      <>
+              {missedLpRewards != 0 ? (
+                <div className="mt-4">
+                  <Alert title="LP staking rewards have resumed">
+                    <p>You missed {missedLpRewards} DIKO during the pause.</p>
+                    <p className="mt-1">You have two options, you can either claim them or directly stake them.</p>
+                    <div className="mt-4">
+                      <div className="-mx-2 -my-1.5 flex">
                         <button
                           type="button"
-                          className="inline-flex items-center px-3 py-2 text-sm leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
-                          onClick={() => claimMissingLpRewards()}
-                        >
-                          Claim
-                        </button>
-                        <button
-                          type="button"
-                          className="inline-flex items-center px-3 py-2 text-sm leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                          className="bg-blue-600 px-2 py-1.5 rounded-md text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
                           onClick={() => stakeMissingLpRewards()}
                         >
                           Stake
                         </button>
-                      </>
+                        <button
+                          type="button"
+                          className="ml-3 bg-blue-100 px-2 py-1.5 rounded-md text-sm font-medium text-blue-800 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-blue-50 focus:ring-blue-600 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                          onClick={() => claimMissingLpRewards()}
+                        >
+                          Claim
+                        </button>
                       </div>
                     </div>
-                  </div>
+                  </Alert>
                 </div>
               ) : null}
               
