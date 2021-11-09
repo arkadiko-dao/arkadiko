@@ -104,8 +104,8 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
           setBalance(balance);
           setBalanceX(balanceX * poolPercentage);
           setBalanceY(balanceY * poolPercentage);
-          setTokenXToReceive(balanceX * poolPercentage * percentageToRemove / 100);
-          setTokenYToReceive(balanceY * poolPercentage * percentageToRemove / 100);
+          setTokenXToReceive((balanceX * poolPercentage * percentageToRemove) / 100);
+          setTokenYToReceive((balanceY * poolPercentage * percentageToRemove) / 100);
           setIsLoading(false);
         }
       } else if (Number(json3['value']['value']['value']) === 201) {
@@ -127,8 +127,8 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
             setBalance(balance);
             setBalanceX(balanceX * poolPercentage);
             setBalanceY(balanceY * poolPercentage);
-            setTokenXToReceive(balanceX * poolPercentage * percentageToRemove / 100);
-            setTokenYToReceive(balanceY * poolPercentage * percentageToRemove / 100);
+            setTokenXToReceive((balanceX * poolPercentage * percentageToRemove) / 100);
+            setTokenYToReceive((balanceY * poolPercentage * percentageToRemove) / 100);
             setIsLoading(false);
           }
         }
@@ -298,9 +298,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                         {isLoading ? (
                           <Placeholder className="justify-end" width={Placeholder.width.FULL} />
                         ) : (
-                          <>
-                            {microToReadable(balance)}
-                          </>  
+                          <>{microToReadable(balance)}</>
                         )}
                       </dd>
                     </div>
@@ -312,9 +310,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                         {isLoading ? (
                           <Placeholder className="justify-end" width={Placeholder.width.HALF} />
                         ) : (
-                          <>
-                            {microToReadable(balanceX)}
-                          </>  
+                          <>{microToReadable(balanceX)}</>
                         )}
                       </dd>
                     </div>
@@ -326,9 +322,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                         {isLoading ? (
                           <Placeholder className="justify-end" width={Placeholder.width.HALF} />
                         ) : (
-                          <>
-                            {microToReadable(balanceY)}
-                          </>  
+                          <>{microToReadable(balanceY)}</>
                         )}
                       </dd>
                     </div>
@@ -432,12 +426,14 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                           </dt>
                           <dd className="mt-1 text-lg font-semibold sm:mt-0 sm:justify-end sm:inline-flex">
                             {isLoading ? (
-                              <Placeholder className="justify-end py-2" color={Placeholder.color.GRAY} width={Placeholder.width.HALF} />
+                              <Placeholder
+                                className="justify-end py-2"
+                                color={Placeholder.color.GRAY}
+                                width={Placeholder.width.HALF}
+                              />
                             ) : (
-                              <>
-                                {microToReadable(tokenXToReceive)}
-                              </>  
-                            )}  
+                              <>{microToReadable(tokenXToReceive)}</>
+                            )}
                           </dd>
                         </div>
                         <div className="sm:grid sm:grid-cols-2 sm:gap-4">
@@ -453,12 +449,14 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                           </dt>
                           <dd className="mt-1 text-lg font-semibold sm:mt-0 sm:justify-end sm:inline-flex">
                             {isLoading ? (
-                              <Placeholder className="justify-end py-2" color={Placeholder.color.GRAY} width={Placeholder.width.HALF} />
-                              ) : (
-                                <>
-                                {microToReadable(tokenYToReceive)}
-                              </>  
-                            )} 
+                              <Placeholder
+                                className="justify-end py-2"
+                                color={Placeholder.color.GRAY}
+                                width={Placeholder.width.HALF}
+                              />
+                            ) : (
+                              <>{microToReadable(tokenYToReceive)}</>
+                            )}
                           </dd>
                         </div>
                       </dl>
@@ -466,19 +464,25 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                   </div>
 
                   <div className="mt-4 lg:flex lg:items-start lg:justify-between">
-                    <h4 className="text-xs font-normal text-gray-700 uppercase font-headings">Price</h4>
-                      {isLoading ? (
-                        <Placeholder className="justify-end" color={Placeholder.color.GRAY} width={Placeholder.width.HALF} />
-                      ) : (
-                        <div className="mt-3 sm:mt-0 space-y-0.5 lg:text-right text-sm text-gray-500">
-                          <p>
-                            1 {tokenX.name} = {tokenYPrice} {tokenY.name}
-                          </p>
-                          <p>
-                            1 {tokenY.name} = {tokenXPrice} {tokenX.name}
-                          </p>
-                        </div>
-                      )}
+                    <h4 className="text-xs font-normal text-gray-700 uppercase font-headings">
+                      Price
+                    </h4>
+                    {isLoading ? (
+                      <Placeholder
+                        className="justify-end"
+                        color={Placeholder.color.GRAY}
+                        width={Placeholder.width.HALF}
+                      />
+                    ) : (
+                      <div className="mt-3 sm:mt-0 space-y-0.5 lg:text-right text-sm text-gray-500">
+                        <p>
+                          1 {tokenX.name} = {tokenYPrice} {tokenY.name}
+                        </p>
+                        <p>
+                          1 {tokenY.name} = {tokenXPrice} {tokenX.name}
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   <div className="mt-4 lg:flex lg:items-center lg:flex-1 lg:space-x-2">
@@ -493,11 +497,15 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                         'w-full inline-flex items-center justify-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white hover:bg-indigo-700 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
                       )}
                     >
-                      {isLoading ? "Loading..."
-                      : !foundPair ? "No liquidity for this pair. Try another one."
-                      : (!percentageToRemove || percentageToRemove === 0) ? "Please enter an amount"
-                      : (tokenXToReceive === 0) ? "Please enter an amount"
-                      : "Remove liquidity"}
+                      {isLoading
+                        ? 'Loading...'
+                        : !foundPair
+                        ? 'No liquidity for this pair. Try another one.'
+                        : !percentageToRemove || percentageToRemove === 0
+                        ? 'Please enter an amount'
+                        : tokenXToReceive === 0
+                        ? 'Please enter an amount'
+                        : 'Remove liquidity'}
                     </button>
                   </div>
                 </form>

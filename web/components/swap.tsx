@@ -11,12 +11,6 @@ import {
   cvToJSON,
   contractPrincipalCV,
   uintCV,
-  createAssetInfo,
-  FungibleConditionCode,
-  makeStandardFungiblePostCondition,
-  makeStandardSTXPostCondition,
-  makeContractSTXPostCondition,
-  makeContractFungiblePostCondition,
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';

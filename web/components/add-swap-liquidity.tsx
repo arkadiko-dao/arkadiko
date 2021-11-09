@@ -84,7 +84,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
   const setMaximumX = () => {
     var tokenAmount = parseInt(balanceSelectedTokenX, 10);
     if (tokenX['name'].toLowerCase() === 'stx') {
-      tokenAmount = parseInt(balanceSelectedTokenX, 10) - 1
+      tokenAmount = parseInt(balanceSelectedTokenX, 10) - 1;
     }
     setInsufficientBalance(false);
     setTokenXAmount(tokenAmount);
@@ -94,7 +94,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
   const setMaximumY = () => {
     var tokenAmount = parseInt(balanceSelectedTokenY, 10);
     if (tokenY['name'].toLowerCase() === 'stx') {
-      tokenAmount = parseInt(balanceSelectedTokenY, 10) - 1
+      tokenAmount = parseInt(balanceSelectedTokenY, 10) - 1;
     }
     setInsufficientBalance(false);
     setTokenYAmount(tokenAmount);
@@ -184,7 +184,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
     resolvePair();
   }, [tokenX, tokenY, state.balance]);
 
-  const onInputXChange = (event: { target: { name: any; value: any; }; }) => {
+  const onInputXChange = (event: { target: { name: any; value: any } }) => {
     const value = event.target.value;
 
     setInsufficientBalance(false);
@@ -196,7 +196,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
     }
   };
 
-  const onInputYChange = (event: { target: { name: any; value: any; }; }) => {
+  const onInputYChange = (event: { target: { name: any; value: any } }) => {
     const value = event.target.value;
 
     setInsufficientBalance(false);
@@ -227,15 +227,15 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
     }
   };
 
-  const calculateTokenXAmount = (value:number) => {
+  const calculateTokenXAmount = (value: number) => {
     setTokenXAmount(value / currentPrice);
     if (currentPrice * value > balanceSelectedTokenX) {
       setInsufficientBalance(true);
     }
-    const newTokens = (totalTokens / 1000000 * value) / pooledY;
+    const newTokens = ((totalTokens / 1000000) * value) / pooledY;
     setNewTokens(newTokens);
     if (value > 0) {
-      const share = Number((1000000 * 100 * newTokens / totalTokens).toFixed(8));
+      const share = Number(((1000000 * 100 * newTokens) / totalTokens).toFixed(8));
       if (share > 100) {
         setNewShare(100);
       } else {
@@ -442,72 +442,110 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                             disabled={true}
                           />
 
-                        <label htmlFor="tokenXAmount" className="sr-only">{tokenX.name}</label>
-                        <input
-                          type="number"
-                          inputMode="decimal" 
-                          autoFocus={true}
-                          autoComplete="off"
-                          autoCorrect="off"
-                          name="tokenXAmount"
-                          id="tokenXAmount"
-                          pattern="^[0-9]*[.,]?[0-9]*$"
-                          placeholder="0.0"
-                          value={tokenXAmount || ''}
-                          onChange={onInputXChange}
-                          min={0}
-                          className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
-                          style={{appearance: 'textfield'}} />
-                      </div>
+                          <label htmlFor="tokenXAmount" className="sr-only">
+                            {tokenX.name}
+                          </label>
+                          <input
+                            type="number"
+                            inputMode="decimal"
+                            autoFocus={true}
+                            autoComplete="off"
+                            autoCorrect="off"
+                            name="tokenXAmount"
+                            id="tokenXAmount"
+                            pattern="^[0-9]*[.,]?[0-9]*$"
+                            placeholder="0.0"
+                            value={tokenXAmount || ''}
+                            onChange={onInputXChange}
+                            min={0}
+                            className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
+                            style={{ appearance: 'textfield' }}
+                          />
+                        </div>
 
-                      <div className="flex items-center justify-end p-4 pt-0 text-sm">
-                        <div className="flex items-center justify-between w-full">
-                          <div className="flex items-center justify-start">
-                            <p className="text-gray-500">Balance: {balanceSelectedTokenX.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenX.name}</p>
-                            {parseInt(balanceSelectedTokenX, 10) > 0 ? (
-                              <button
-                                type="button"
-                                onClick={() => setMaximumX()}
-                                className="p-1 ml-2 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
-                              >
-                                Max.
-                              </button>
-                            ) : `` }
+                        <div className="flex items-center justify-end p-4 pt-0 text-sm">
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center justify-start">
+                              <p className="text-gray-500">
+                                Balance:{' '}
+                                {balanceSelectedTokenX.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 6,
+                                })}{' '}
+                                {tokenX.name}
+                              </p>
+                              {parseInt(balanceSelectedTokenX, 10) > 0 ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setMaximumX()}
+                                  className="p-1 ml-2 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                                >
+                                  Max.
+                                </button>
+                              ) : (
+                                ``
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
 
-                        <label htmlFor="tokenYAmount" className="sr-only">{tokenY.name}</label>
-                        <input
-                          type="number"
-                          inputMode="decimal" 
-                          autoFocus={true}
-                          autoComplete="off"
-                          autoCorrect="off"
-                          name="tokenYAmount"
-                          id="tokenYAmount"
-                          pattern="^[0-9]*[.,]?[0-9]*$"
-                          placeholder="0.0"
-                          value={tokenYAmount || ''}
-                          onChange={onInputYChange}
-                          min={0}
-                          className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
-                          style={{appearance: 'textfield'}} />
+                      <div className="flex items-center justify-center my-3">
+                        <PlusIcon className="w-6 h-6 text-gray-500" aria-hidden="true" />
                       </div>
 
-                      <div className="flex items-center justify-end p-4 pt-0 text-sm">
-                        <div className="flex items-center justify-between w-full">
-                          <div className="flex items-center justify-start">
-                            <p className="text-gray-500">Balance: {balanceSelectedTokenY.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenY.name}</p>
-                            {parseInt(balanceSelectedTokenY, 10) > 0 ? (
-                              <button
-                                type="button"
-                                onClick={() => setMaximumY()}
-                                className="p-1 ml-2 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
-                              >
-                                Max.
-                              </button>
-                            ) : `` }
+                      <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
+                        <div className="flex items-center p-4 pb-2">
+                          <TokenSwapList
+                            selected={tokenY}
+                            setSelected={setTokenY}
+                            disabled={true}
+                          />
+
+                          <label htmlFor="tokenYAmount" className="sr-only">
+                            {tokenY.name}
+                          </label>
+                          <input
+                            type="number"
+                            inputMode="decimal"
+                            autoFocus={true}
+                            autoComplete="off"
+                            autoCorrect="off"
+                            name="tokenYAmount"
+                            id="tokenYAmount"
+                            pattern="^[0-9]*[.,]?[0-9]*$"
+                            placeholder="0.0"
+                            value={tokenYAmount || ''}
+                            onChange={onInputYChange}
+                            min={0}
+                            className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
+                            style={{ appearance: 'textfield' }}
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-end p-4 pt-0 text-sm">
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center justify-start">
+                              <p className="text-gray-500">
+                                Balance:{' '}
+                                {balanceSelectedTokenY.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 6,
+                                })}{' '}
+                                {tokenY.name}
+                              </p>
+                              {parseInt(balanceSelectedTokenY, 10) > 0 ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setMaximumY()}
+                                  className="p-1 ml-2 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                                >
+                                  Max.
+                                </button>
+                              ) : (
+                                ``
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>

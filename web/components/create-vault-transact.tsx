@@ -13,7 +13,6 @@ import {
   FungibleConditionCode,
   AnchorMode,
   createAssetInfo,
-  makeContractFungiblePostCondition,
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ExplorerLink } from './explorer-link';
