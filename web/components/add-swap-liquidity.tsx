@@ -82,7 +82,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
   }, [state.currentTxStatus]);
 
   const setMaximumX = () => {
-    var tokenAmount = parseInt(balanceSelectedTokenX, 10);
+    let tokenAmount = parseInt(balanceSelectedTokenX, 10);
     if (tokenX['name'].toLowerCase() === 'stx') {
       tokenAmount = parseInt(balanceSelectedTokenX, 10) - 1;
     }
@@ -92,7 +92,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
   };
 
   const setMaximumY = () => {
-    var tokenAmount = parseInt(balanceSelectedTokenY, 10);
+    let tokenAmount = parseInt(balanceSelectedTokenY, 10);
     if (tokenY['name'].toLowerCase() === 'stx') {
       tokenAmount = parseInt(balanceSelectedTokenY, 10) - 1;
     }

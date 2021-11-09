@@ -51,7 +51,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
     };
 
     const fetchStakedTokens = async (poolName: string) => {
-      var poolContract = '';
+      let poolContract = '';
       if (poolName == 'wSTX-DIKO') {
         poolContract = 'arkadiko-stake-pool-wstx-diko-v1-1';
       } else if (poolName == 'wSTX-USDA') {
