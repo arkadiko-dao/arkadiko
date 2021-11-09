@@ -11,12 +11,12 @@ export const NewVault = () => {
     'collateral-to-debt-ratio': 0,
     'liquidation-price': 0,
     'stack-pox': true,
-    'auto-payoff': true
+    'auto-payoff': true,
   });
 
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [])
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <Container>
@@ -24,7 +24,11 @@ export const NewVault = () => {
         {step === 0 ? (
           <CreateVaultStepOne setStep={setStep} setCoinAmounts={setCoinAmounts} />
         ) : step === 1 ? (
-          <CreateVaultConfirm setStep={setStep} coinAmounts={coinAmounts} setCoinAmounts={setCoinAmounts} />
+          <CreateVaultConfirm
+            setStep={setStep}
+            coinAmounts={coinAmounts}
+            setCoinAmounts={setCoinAmounts}
+          />
         ) : (
           <CreateVaultTransact coinAmounts={coinAmounts} />
         )}

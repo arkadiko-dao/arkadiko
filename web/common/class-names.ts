@@ -1,3 +1,3 @@
-export function classNames(...classes: Array<string | undefined>) {
-  return classes.filter(Boolean).sort().join(' ')
+export function classNames(...classes: (string | undefined)[]) {
+  return classes.filter(Boolean).sort().join(' ');
 }

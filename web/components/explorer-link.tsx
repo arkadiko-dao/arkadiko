@@ -14,7 +14,7 @@ export const ExplorerLink: React.FC<ExplorerLinkProps> = ({ txId, text, classNam
   const url = location.origin.includes('localhost')
     ? `http://localhost:3999/extended/v1/tx/${id}`
     : `https://explorer.stacks.co/txid/${id}`;
-  
+
   return (
     <a className={className} href={url} target="_blank">
       {text || 'View transaction in explorer'}

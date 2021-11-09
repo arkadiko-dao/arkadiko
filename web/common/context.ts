@@ -60,7 +60,7 @@ export const defaultState = (): AppState => {
       currentTxId: '',
       currentTxStatus: '',
       currentTxMessage: '',
-      showTxModal: false
+      showTxModal: false,
     };
   }
 
@@ -73,8 +73,8 @@ export const defaultState = (): AppState => {
     currentTxId: '',
     currentTxStatus: '',
     currentTxMessage: '',
-    showTxModal: false
+    showTxModal: false,
   };
 };
 
-export const AppContext = createContext<Array<AppState>>([defaultState(), () => {}])
+export const AppContext = createContext<AppState[]>([defaultState()]);
