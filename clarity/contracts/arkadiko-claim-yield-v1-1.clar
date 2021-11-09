@@ -52,7 +52,7 @@
   )
 )
 
-;; @desc Claim PoX yield as vault owner
+;; @desc Claim PoX yield and add as collateral
 ;; @param vault-id; your vault ID
 ;; @param reserve; active STX reserve
 ;; @param coll-type; active collateral types contract
