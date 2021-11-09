@@ -154,7 +154,7 @@ Clarinet.test({
     let swap = new Swap(chain, deployer);
 
     // Create swap pair
-    let result = swap.createPair(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 100000, 200000);
+    let result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 100000, 200000);
     result.expectOk().expectBool(true);
 
     // Initialize price of STX to $1 in the oracle
@@ -236,7 +236,7 @@ Clarinet.test({
     let swap = new Swap(chain, deployer);
 
     // Create swap pair
-    let result = swap.createPair(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 100000, 200000);
+    let result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 100000, 200000);
     result.expectOk().expectBool(true);
 
     // Initialize price of STX to $1 in the oracle
@@ -309,7 +309,7 @@ Clarinet.test({
     let swap = new Swap(chain, deployer);
 
     // Create swap pair
-    let result = swap.createPair(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 100000, 200000);
+    let result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 100000, 200000);
     result.expectOk().expectBool(true);
 
     // Initialize price of STX to $1 in the oracle
