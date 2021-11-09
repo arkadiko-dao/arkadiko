@@ -12,10 +12,96 @@ import {
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
+Clarinet.test({
+  name:
+    "stake-lp-rewards: calculate missing rewards wSTX/USDA",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let dikoToken = new DikoToken(chain, deployer);
+
+    // Start block
+    chain.mineEmptyBlock(35440);
+
+    // Calculate total rewards
+    var totalRewards = 0;
+    for (let index = 0; index < 1750; index++) {
+      let block = chain.mineBlock([
+        Tx.contractCall("arkadiko-stake-registry-v1-1", "get-rewards-per-block-for-pool", [
+          types.principal(Utils.qualifiedName("arkadiko-stake-pool-wstx-usda-v1-1")),
+        ], deployer.address)
+      ]);
+      let result = block.receipts[0].result.expectOk().replace("u", "");
+      totalRewards += Number(result);
+    }
+
+    console.log("Total missing for wSTX/USDA: ", totalRewards);
+  }
+});
 
 Clarinet.test({
   name:
-    "stake-lp-rewards: liquidating a healthy vault fails",
+    "stake-lp-rewards: calculate missing rewards wSTX/DIKO",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let dikoToken = new DikoToken(chain, deployer);
+
+    // Start block
+    chain.mineEmptyBlock(35440);
+
+    // Calculate total rewards
+    var totalRewards = 0;
+    for (let index = 0; index < 1750; index++) {
+      let block = chain.mineBlock([
+        Tx.contractCall("arkadiko-stake-registry-v1-1", "get-rewards-per-block-for-pool", [
+          types.principal(Utils.qualifiedName("arkadiko-stake-pool-wstx-diko-v1-1")),
+        ], deployer.address)
+      ]);
+      let result = block.receipts[0].result.expectOk().replace("u", "");
+      totalRewards += Number(result);
+    }
+
+    console.log("Total missing for wSTX/DIKO: ", totalRewards);
+  }
+});
+
+Clarinet.test({
+  name:
+    "stake-lp-rewards: calculate missing rewards DIKO/USDA",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let dikoToken = new DikoToken(chain, deployer);
+
+    // Start block
+    chain.mineEmptyBlock(35440);
+
+    // Calculate total rewards
+    var totalRewards = 0;
+    for (let index = 0; index < 1750; index++) {
+      let block = chain.mineBlock([
+        Tx.contractCall("arkadiko-stake-registry-v1-1", "get-rewards-per-block-for-pool", [
+          types.principal(Utils.qualifiedName("arkadiko-stake-pool-diko-usda-v1-1")),
+        ], deployer.address)
+      ]);
+      let result = block.receipts[0].result.expectOk().replace("u", "");
+      totalRewards += Number(result);
+    }
+
+    console.log("Total missing for DIKO/USDA: ", totalRewards);
+  }
+});
+
+Clarinet.test({
+  name:
+    "stake-lp-rewards: user can claim missing rewards",
   async fn(chain: Chain, accounts: Map<string, Account>) {
 
     let deployer = accounts.get("deployer")!;

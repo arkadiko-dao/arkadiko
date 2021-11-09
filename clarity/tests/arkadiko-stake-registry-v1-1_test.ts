@@ -88,7 +88,7 @@ Clarinet.test({
     call = poolStxUsda.getLastRewardIncreaseBlock();
     call.result.expectUint(147);   
 
-    // RESTART STEP 2 - Increase cumm rewards pers stake to increase last reward block
+    // RESTART STEP 2 - Increase cumm rewards per stake to increase last reward block
     result = poolStxUsda.increaseCumulativeRewardPerStake()
     result.expectOk().expectUintWithDecimals(454.139319);  
 
