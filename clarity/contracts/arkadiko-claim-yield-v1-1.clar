@@ -80,6 +80,11 @@
   )
 )
 
+;; @desc Claim PoX yield and use it to pay debt
+;; @param vault-id; your vault ID
+;; @param reserve; active STX reserve
+;; @param coll-type; active collateral types contract
+;; @post uint; returns amount of usda paid back
 (define-public (claim-to-pay-debt
   (vault-id uint)
   (reserve <vault-trait>)
