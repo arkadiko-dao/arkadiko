@@ -509,7 +509,7 @@ export const Stake = () => {
         setShowStakeModal={setShowStakeLp1Modal}
         apy={dikoUsdaLpApy}
         balanceName={'dikousda'}
-        tokenName={'ARKV1DIKOUSDA'}
+        tokenName={'DIKO/USDA'}
       />
 
       <StakeLpModal
@@ -517,7 +517,7 @@ export const Stake = () => {
         setShowStakeModal={setShowStakeLp2Modal}
         apy={stxUsdaLpApy}
         balanceName={'wstxusda'}
-        tokenName={'ARKV1WSTXUSDA'}
+        tokenName={'STX/USDA'}
       />
 
       <StakeLpModal
@@ -525,7 +525,7 @@ export const Stake = () => {
         setShowStakeModal={setShowStakeLp3Modal}
         apy={stxDikoLpApy}
         balanceName={'wstxdiko'}
-        tokenName={'ARKV1WSTXDIKO'}
+        tokenName={'STX/DIKO'}
       />
 
       <UnstakeLpModal
@@ -533,7 +533,7 @@ export const Stake = () => {
         setShowUnstakeModal={setShowUnstakeLp1Modal}
         stakedAmount={lpDikoUsdaStakedAmount}
         balanceName={'dikousda'}
-        tokenName={'ARKV1DIKOUSDA'}
+        tokenName={'DIKO/USDA'}
       />
 
       <UnstakeLpModal
@@ -541,7 +541,7 @@ export const Stake = () => {
         setShowUnstakeModal={setShowUnstakeLp2Modal}
         stakedAmount={lpStxUsdaStakedAmount}
         balanceName={'wstxusda'}
-        tokenName={'ARKV1WSTXUSDA'}
+        tokenName={'STX/USDA'}
       />
 
       <UnstakeLpModal
@@ -549,7 +549,7 @@ export const Stake = () => {
         setShowUnstakeModal={setShowUnstakeLp3Modal}
         stakedAmount={lpStxDikoStakedAmount}
         balanceName={'wstxdiko'}
-        tokenName={'ARKV1WSTXDIKO'}
+        tokenName={'STX/DIKO'}
       />
 
       {state.userData ? (

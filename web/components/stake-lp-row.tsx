@@ -34,7 +34,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({ loadingData, tokenListIt
                   <span className="block text-gray-500">
                     <Tooltip shouldWrapChildren={true} label={`ARKV1${tokenList[tokenListItemX].name}${tokenList[tokenListItemY].name}`}>
                       Arkadiko V1<br/> 
-                      {tokenList[tokenListItemX].name} {tokenList[tokenListItemY].name}
+                      {tokenList[tokenListItemX].name}/{tokenList[tokenListItemY].name}
                     </Tooltip>
                   </span>
                 </p>
