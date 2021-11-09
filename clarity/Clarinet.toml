@@ -258,7 +258,7 @@ depends_on = []
 path = "contracts/sip-010-trait-ft-standard.clar"
 
 [contracts.arkadiko-stake-lp-rewards]
-depends_on = []
+depends_on = ["arkadiko-stake-registry-v1-1", "arkadiko-stake-pool-diko-v1-1"]
 path = "contracts/arkadiko-stake-lp-rewards.clar"
 
 # Tokensoft xBTC

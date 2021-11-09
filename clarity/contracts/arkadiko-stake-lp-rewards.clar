@@ -38,6 +38,23 @@
   )
 )
 
+;; @desc Claim and stake missed out Diko rewards
+;; @post uint; returns amount that is staked
+(define-public (stake-rewards)
+  (let (
+    (sender tx-sender)
+    (diko-rewards (get-diko-by-wallet sender))
+  )
+    (asserts! (> diko-rewards u0) (err ERR-NOTHING-TO-CLAIM))
+
+    (try! (as-contract (contract-call? .arkadiko-dao mint-token .arkadiko-token diko-rewards sender)))
+  
+    (map-set wallet-rewards { wallet: sender } { diko: u0 })
+
+    (contract-call? .arkadiko-stake-registry-v1-1 stake .arkadiko-stake-registry-v1-1 .arkadiko-stake-pool-diko-v1-1 .arkadiko-token diko-rewards)
+  )
+)
+
 ;; Init
 
 ;; TODO - Set final map
