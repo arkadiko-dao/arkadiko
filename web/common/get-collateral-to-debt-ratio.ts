@@ -2,7 +2,13 @@ import { useContext, useState, useEffect } from 'react';
 import { AppContext } from '@common/context';
 import { useSTXAddress } from './use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
-import { callReadOnlyFunction, contractPrincipalCV, cvToJSON, uintCV, falseCV } from '@stacks/transactions';
+import {
+  callReadOnlyFunction,
+  contractPrincipalCV,
+  cvToJSON,
+  uintCV,
+  falseCV,
+} from '@stacks/transactions';
 
 export const getCollateralToDebtRatio = (vaultId: string) => {
   const stxAddress = useSTXAddress();
@@ -14,16 +20,16 @@ export const getCollateralToDebtRatio = (vaultId: string) => {
     const getCollateralToDebtRatio = async () => {
       const collToDebt = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-freddie-v1-1",
-        functionName: "calculate-current-collateral-to-debt-ratio",
+        contractName: 'arkadiko-freddie-v1-1',
+        functionName: 'calculate-current-collateral-to-debt-ratio',
         functionArgs: [
           uintCV(vaultId),
           contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v1-1'),
           contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v1-1'),
-          falseCV()
+          falseCV(),
         ],
         senderAddress: stxAddress || '',
-        network: network
+        network: network,
       });
       const json = cvToJSON(collToDebt);
       if (json.value) {

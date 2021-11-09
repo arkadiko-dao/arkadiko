@@ -46,29 +46,29 @@ Clarinet.test({
     let dikoToken = new DikoToken(chain, deployer);
 
     // Create swap pair to get LP tokens
-    let result = swap.createPair(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
+    let result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
     result.expectOk().expectBool(true);
 
     // Check balance before staking
-    let call:any = stxUsdaToken.balanceOf(wallet_1.address);
+    let call:any = stxUsdaToken.balanceOf(deployer.address);
     call.result.expectOk().expectUintWithDecimals(223.606797);   
 
     // Staked total
-    call = poolStxUsda.getStakeOf(wallet_1);
+    call = poolStxUsda.getStakeOf(deployer);
     call.result.expectUint(0);
     call = poolStxUsda.getTotalStaked();
     call.result.expectUint(0);
 
     // Stake funds
-    result = stakeRegistry.stake(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 223.606797)
+    result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 223.606797)
     result.expectOk().expectUintWithDecimals(223.606797);
 
     // Check LP tokens after staking
-    call = stxUsdaToken.balanceOf(wallet_1.address);
+    call = stxUsdaToken.balanceOf(deployer.address);
     call.result.expectOk().expectUint(0);   
 
     // Staked total
-    call = poolStxUsda.getStakeOf(wallet_1);
+    call = poolStxUsda.getStakeOf(deployer);
     call.result.expectUintWithDecimals(223.606797);
     call = poolStxUsda.getTotalStaked();
     call.result.expectUintWithDecimals(223.606797);
@@ -79,22 +79,22 @@ Clarinet.test({
     // Advanced 3 blocks for user plus one in calculation
     // At start there are ~626 rewards per block. 4*626=2504 (if 100% of rewards go to this pool)
     // But this pool only gets 50% of total rewards
-    call = stakeRegistry.getPendingRewards(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1");
+    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-usda-v1-1");
     call.result.expectOk().expectUintWithDecimals(1252.798);   
 
     // Unstake funds
-    result = stakeRegistry.unstake(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 223.606797)
+    result = stakeRegistry.unstake(deployer, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 223.606797)
     result.expectOk().expectUintWithDecimals(223.606797);
 
     // Check DIKO and LP token balance after unstake
-    call = stxUsdaToken.balanceOf(wallet_1.address);
+    call = stxUsdaToken.balanceOf(deployer.address);
     call.result.expectOk().expectUintWithDecimals(223.606797);   
 
-    call = dikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(151252.798);   
+    call = dikoToken.balanceOf(deployer.address);
+    call.result.expectOk().expectUintWithDecimals(891252.798);   
 
     // Staked total
-    call = poolStxUsda.getStakeOf(wallet_1);
+    call = poolStxUsda.getStakeOf(deployer);
     call.result.expectUint(0);
     call = poolStxUsda.getTotalStaked();
     call.result.expectUint(0);
@@ -113,7 +113,7 @@ Clarinet.test({
     let stakeRegistry = new StakeRegistry(chain, deployer);
 
     // Create swap pair to get LP tokens
-    let result = swap.createPair(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
+    let result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
     result.expectOk().expectBool(true);
     result = swap.addToPosition(wallet_2, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, 500, 100);
     result.expectOk().expectBool(true);
@@ -126,21 +126,21 @@ Clarinet.test({
     call.result.expectOk().expectUint(0);
 
     // Pending rewards should be 0
-    call = stakeRegistry.getPendingRewards(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1");
+    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-usda-v1-1");
     call.result.expectOk().expectUint(0);
 
     // Initial stake should be 0
-    call = poolStxUsda.getStakeOf(wallet_1);
+    call = poolStxUsda.getStakeOf(deployer);
     call.result.expectUint(0);
     call = poolStxUsda.getTotalStaked();
     call.result.expectUint(0);
 
     // Stake
-    result = stakeRegistry.stake(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 223.606797)
+    result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 223.606797)
     result.expectOk().expectUintWithDecimals(223.606797);
 
     // New stake amounts = 223
-    call = poolStxUsda.getStakeOf(wallet_1);
+    call = poolStxUsda.getStakeOf(deployer);
     call.result.expectUintWithDecimals(223.606797);
     call = poolStxUsda.getTotalStaked();
     call.result.expectUintWithDecimals(223.606797);
@@ -156,13 +156,13 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(1.40067);
 
     // Wallet 1 starts at 20
-    call = poolStxUsda.getCummulativeRewardPerStakeOf(wallet_1);
+    call = poolStxUsda.getCummulativeRewardPerStakeOf(deployer);
     call.result.expectUint(0);
 
     // Advanced 0 blocks for user. 
     // Pending rewards takes into account 1 block extra, 626 at start - if 100% of rewards go to this pool
     // But pool only gets 50% of total staking rewards
-    call = stakeRegistry.getPendingRewards(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1");
+    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-usda-v1-1");
     call.result.expectOk().expectUintWithDecimals(313.199332);
 
     // Advance 3 blocks
@@ -182,7 +182,7 @@ Clarinet.test({
     // Advanced 3 blocks for user plus one in calculation
     // 4 blocks * ~626 rewards = 2504
     // But we only get 50% of total rewards in this pool
-    call = stakeRegistry.getPendingRewards(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1");
+    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-usda-v1-1");
     call.result.expectOk().expectUintWithDecimals(1252.798);   
 
     // Stake - Wallet 2
@@ -214,11 +214,11 @@ Clarinet.test({
     call = stakeRegistry.getPendingRewards(wallet_2, "arkadiko-stake-pool-wstx-usda-v1-1");
     call.result.expectOk().expectUintWithDecimals(147.8726);  
 
-    call = stakeRegistry.getPendingRewards(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1");
+    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-usda-v1-1");
     call.result.expectOk().expectUintWithDecimals(1418.124592);   
 
     // Unstake funds
-    result = stakeRegistry.unstake(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 100)
+    result = stakeRegistry.unstake(deployer, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 100)
     result.expectOk().expectUintWithDecimals(100);
 
     // New cumm reward for wallet
@@ -243,13 +243,13 @@ Clarinet.test({
     let stakeRegistry = new StakeRegistry(chain, deployer);
 
     // Create swap pair to get LP tokens
-    let result = swap.createPair(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
+    let result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
     result.expectOk().expectBool(true);
-    result = swap.addToPosition(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, 500, 100);
+    result = swap.addToPosition(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, 500, 100);
     result.expectOk().expectBool(true);
 
     // Check initial user balance
-    let call = stxUsdaToken.balanceOf(wallet_1.address);
+    let call = stxUsdaToken.balanceOf(deployer.address);
     call.result.expectOk().expectUintWithDecimals(223.606797);   
 
     // Stake in same block
@@ -259,13 +259,13 @@ Clarinet.test({
         types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-usda')),
         types.uint(100000000)
-      ], wallet_1.address),
+      ], deployer.address),
       Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-usda')),
         types.uint(100000000)
-      ], deployer.address)
+      ], wallet_1.address)
     ]);
     block.receipts[0].result.expectOk().expectUintWithDecimals(100);
 
@@ -275,19 +275,19 @@ Clarinet.test({
     // Advanced 3 blocks for user plus one in calculation  
     // 626 pool rewards * 4 blocks * 50% of pool = 1252
     // But only 50% of staking rewards are for this pool
-    call = stakeRegistry.getPendingRewards(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1");
+    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-usda-v1-1");
     call.result.expectOk().expectUintWithDecimals(626.399);
 
     // Claim
-    result = stakeRegistry.claimRewards(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1");
+    result = stakeRegistry.claimRewards(deployer, "arkadiko-stake-pool-wstx-usda-v1-1");
     result.expectOk().expectUintWithDecimals(626.399);
 
     // Check if user got rewards (there is still some in swap)
-    call = dikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(150626.399);
+    call = dikoToken.balanceOf(deployer.address);
+    call.result.expectOk().expectUintWithDecimals(890626.399);
 
     // Just claimed rewards, so this is for 1 block only.
-    call = stakeRegistry.getPendingRewards(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1");
+    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-usda-v1-1");
     call.result.expectOk().expectUintWithDecimals(156.5997);
   }
 });
@@ -305,28 +305,28 @@ name: "stake-pool-wstx-usda - stake DIKO rewards",
     let stakePoolDiko = new StakePoolDiko(chain, deployer);
 
     // Create swap pair to get LP tokens
-    let result = swap.createPair(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
+    let result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
     result.expectOk().expectBool(true);
-    result = swap.addToPosition(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, 500, 100);
+    result = swap.addToPosition(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, 500, 100);
     result.expectOk().expectBool(true);
 
     // Check initial user balance
-    let call = stxUsdaToken.balanceOf(wallet_1.address);
+    let call = stxUsdaToken.balanceOf(deployer.address);
     call.result.expectOk().expectUintWithDecimals(223.606797);   
 
     // Stake
-    result = stakeRegistry.stake(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 100)
+    result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 100)
     result.expectOk().expectUintWithDecimals(100);
 
     // Advance 3 blocks
     chain.mineEmptyBlock(20);
 
     // Pending rewards
-    call = stakeRegistry.getPendingRewards(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1");
+    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-usda-v1-1");
     call.result.expectOk().expectUintWithDecimals(6577.1901);
 
     // Stake of user in DIKO pool
-    result = stakePoolDiko.getStakeOf(wallet_1, 3946.314)
+    result = stakePoolDiko.getStakeOf(deployer, 3946.314)
     result.expectOk().expectUint(0);
 
     // Total stDIKO supply
@@ -334,15 +334,15 @@ name: "stake-pool-wstx-usda - stake DIKO rewards",
     call.result.expectOk().expectUint(0);   
     
     // Stake pending rewards, check stake of user
-    result = stakeRegistry.stakePendingRewards(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1");
+    result = stakeRegistry.stakePendingRewards(deployer, "arkadiko-stake-pool-wstx-usda-v1-1");
     result.expectOk().expectUintWithDecimals(6890.3896);
 
     // Total stDIKO supply
-    call = chain.callReadOnlyFn("stdiko-token", "get-total-supply", [], wallet_1.address);
+    call = chain.callReadOnlyFn("stdiko-token", "get-total-supply", [], deployer.address);
     call.result.expectOk().expectUintWithDecimals(6890.3896);   
 
     // Stake of user in DIKO pool
-    result = stakePoolDiko.getStakeOf(wallet_1, 4134.2337);
+    result = stakePoolDiko.getStakeOf(deployer, 4134.2337);
     result.expectOk().expectUintWithDecimals(14198.372913);
 
   }
@@ -358,17 +358,17 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let stakeRegistry = new StakeRegistry(chain, deployer);
 
   // Create swap pair to get LP tokens
-  let result = swap.createPair(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
+  let result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
   result.expectOk().expectBool(true);
-  result = swap.addToPosition(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, 500, 100);
+  result = swap.addToPosition(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, 500, 100);
   result.expectOk().expectBool(true);
 
   // No rewards to stake yet
-  result = stakeRegistry.stakePendingRewards(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1");
+  result = stakeRegistry.stakePendingRewards(deployer, "arkadiko-stake-pool-wstx-usda-v1-1");
   result.expectErr().expectUint(1);
 
   // Stake
-  result = stakeRegistry.stake(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 100)
+  result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 100)
   result.expectOk().expectUintWithDecimals(100);
 
   // Advance 3 blocks
@@ -381,7 +381,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
       types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1')),
       types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1')),
       types.principal(Utils.qualifiedName('arkadiko-token')),
-    ], wallet_1.address)
+    ], deployer.address)
   ]);
   block.receipts[0].result.expectErr().expectUint(18002);
 
@@ -392,12 +392,12 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
       types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1')),
       types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1')),
       types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-usda')),
-    ], wallet_1.address)
+    ], deployer.address)
   ]);
   block.receipts[0].result.expectErr().expectUint(1);
 
   // Stake pending rewards succeeds
-  result = stakeRegistry.stakePendingRewards(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1");
+  result = stakeRegistry.stakePendingRewards(deployer, "arkadiko-stake-pool-wstx-usda-v1-1");
   result.expectOk().expectUintWithDecimals(7203.5892);
 
   // Claim + stake in DIKO pool should fail
@@ -407,10 +407,9 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
       types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
       types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
       types.principal(Utils.qualifiedName('arkadiko-token')),
-    ], wallet_1.address)
+    ], deployer.address)
   ]);
   block.receipts[0].result.expectErr().expectUint(1);
-
 }
 });
 
@@ -477,36 +476,36 @@ Clarinet.test({
     let stakeRegistry = new StakeRegistry(chain, deployer);
 
     // Create swap pair to get LP tokens
-    let result = swap.createPair(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
+    let result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
     result.expectOk().expectBool(true);
 
     // Check LP before staking
-    let call = stxUsdaToken.balanceOf(wallet_1.address);
+    let call = stxUsdaToken.balanceOf(deployer.address);
     call.result.expectOk().expectUintWithDecimals(223.606797);   
 
     // Staked total
-    call = poolStxUsda.getStakeOf(wallet_1);
+    call = poolStxUsda.getStakeOf(deployer);
     call.result.expectUint(0);
     call = poolStxUsda.getTotalStaked();
     call.result.expectUint(0);
 
     // Stake funds
-    result = stakeRegistry.stake(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 223.606797)
+    result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 223.606797)
     result.expectOk().expectUintWithDecimals(223.606797);
 
     // Check LP after staking
-    call = stxUsdaToken.balanceOf(wallet_1.address);
+    call = stxUsdaToken.balanceOf(deployer.address);
     call.result.expectOk().expectUint(0);   
 
     // Advance 3 block
     chain.mineEmptyBlock(3);
 
     // Emergency withdraw
-    result = poolStxUsda.emergencyWithdraw(wallet_1);
+    result = poolStxUsda.emergencyWithdraw(deployer);
     result.expectOk().expectUint(0); 
 
     // Check LPs after withdraw
-    call = stxUsdaToken.balanceOf(wallet_1.address);
+    call = stxUsdaToken.balanceOf(deployer.address);
     call.result.expectOk().expectUintWithDecimals(223.606797);   
   }
 });
@@ -554,18 +553,18 @@ Clarinet.test({
     let stakeRegistry = new StakeRegistry(chain, deployer);
 
     // Create swap pair to get LP tokens
-    let result = swap.createPair(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
+    let result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
     result.expectOk().expectBool(true);
 
-    let call = stxUsdaToken.balanceOf(wallet_1.address);
+    let call = stxUsdaToken.balanceOf(deployer.address);
     call.result.expectOk().expectUintWithDecimals(223.606797);   
 
     // Stake
-    result = stakeRegistry.stake(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 223.606797)
+    result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 223.606797)
     result.expectOk().expectUintWithDecimals(223.606797);
 
     // Unstake funds
-    result = stakeRegistry.unstake(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 25000)
+    result = stakeRegistry.unstake(deployer, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 25000)
     result.expectErr().expectUint(18003);
   }
 });
@@ -597,7 +596,7 @@ Clarinet.test({
     let swap = new Swap(chain, deployer);
 
     // Create swap pair to get LP tokens
-    let result = swap.createPair(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
+    let result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
     result.expectOk().expectBool(true);
 
     // Stake and claim in same block
@@ -607,11 +606,11 @@ Clarinet.test({
         types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-usda')),
         types.uint(223606797)
-      ], wallet_1.address),
+      ], deployer.address),
       Tx.contractCall("arkadiko-stake-registry-v1-1", "claim-pending-rewards", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1')),
-      ], wallet_1.address)
+      ], deployer.address)
     ]);
     // Should have staked, but no rewards yet as not advanced
     block.receipts[0].result.expectOk().expectUintWithDecimals(223.606797);
@@ -710,7 +709,7 @@ Clarinet.test({
     let contractChange2 = Governance.contractChange("stake-pool-diko-usda", Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1'), false, true);
     let contractChange3 = Governance.contractChange("stake-pool-diko-usda-2", Utils.qualifiedName('arkadiko-stake-pool-diko-usda-tv1-1'), true, true);
     result = governance.createProposal(
-      wallet_1, 
+      wallet_1,
       10, 
       "Change Reward Distribution",
       "https://discuss.arkadiko.finance/prop",
@@ -796,13 +795,13 @@ Clarinet.test({
     let stakePoolStxUsda = new StakePoolStxUsda(chain, deployer);
 
     // Create swap pair to get LP tokens
-    let result = swap.createPair(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
+    let result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
     result.expectOk().expectBool(true);
-    result = swap.addToPosition(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, 500, 100);
+    result = swap.addToPosition(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, 500, 100);
     result.expectOk().expectBool(true);
 
     // Stake funds
-    stakeRegistry.stake(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 223.606797)
+    stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 223.606797)
 
     for (let index = 0; index < 390; index++) {
 
@@ -813,7 +812,7 @@ Clarinet.test({
       stakePoolStxUsda.increaseCumulativeRewardPerStake();
 
       // Check pending rewards
-      let call = stakeRegistry.getPendingRewards(wallet_1, "arkadiko-stake-pool-wstx-usda-v1-1");
+      let call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-usda-v1-1");
       
       // Print rewards, for docs
       // console.log(call.result.expectOk())

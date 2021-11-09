@@ -1,11 +1,15 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { Fragment, useEffect, useContext, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import { stacksNetwork as network, getRPCClient } from '@common/utils';
 import {
-  AnchorMode, callReadOnlyFunction, contractPrincipalCV,
-  uintCV, cvToJSON, standardPrincipalCV
+  AnchorMode,
+  callReadOnlyFunction,
+  contractPrincipalCV,
+  uintCV,
+  cvToJSON,
+  standardPrincipalCV,
 } from '@stacks/transactions';
 import { StakeDikoModal } from './stake-diko-modal';
 import { UnstakeDikoModal } from './unstake-diko-modal';
@@ -13,23 +17,23 @@ import { StakeLpModal } from './stake-lp-modal';
 import { UnstakeLpModal } from './unstake-lp-modal';
 import { useSTXAddress } from '@common/use-stx-address';
 import { microToReadable } from '@common/vault-utils';
+import { getPrice } from '@common/get-price';
 import { tokenList } from '@components/token-swap-list';
 import { useConnect } from '@stacks/connect-react';
-import { StakeActions } from './stake-actions';
-import { Menu } from '@headlessui/react';
+import { StakeLpRow } from './stake-lp-row';
+import { Menu, Transition } from '@headlessui/react';
 import { 
   ArrowCircleDownIcon,
   ArrowCircleUpIcon,
   DotsVerticalIcon,
-  CashIcon,
-  PlusIcon,
   ClockIcon,
   QuestionMarkCircleIcon,
   ExternalLinkIcon,
   InformationCircleIcon,
-  XIcon } from '@heroicons/react/solid';
-import { Placeholder } from './placeholder';
+} from '@heroicons/react/solid';
+import { Placeholder } from './ui/placeholder';
 import { Tooltip } from '@blockstack/ui';
+import { Alert } from './ui/alert';
 
 export const Stake = () => {
   const [state, setState] = useContext(AppContext);
@@ -61,6 +65,11 @@ export const Stake = () => {
   const [emissionsStarted, setEmissionsStarted] = useState(false);
   const [canStakeLp, _] = useState(false);
 
+  const [stxDikoPoolInfo, setStxDikoPoolInfo] = useState(0);
+  const [stxUsdaPoolInfo, setStxUsdaPoolInfo] = useState(0);
+  const [dikoUsdaPoolInfo, setDikoUsdaPoolInfo] = useState(0);
+
+
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
 
@@ -74,10 +83,150 @@ export const Stake = () => {
     let mounted = true;
 
     const checkUnstakedTokens = async () => {
-      if (state.balance['dikousda'] > 0 || state.balance['wstxusda'] > 0 || state.balance['wstxdiko'] > 0) {
+      if (
+        state.balance['dikousda'] > 0 ||
+        state.balance['wstxusda'] > 0 ||
+        state.balance['wstxdiko'] > 0
+      ) {
         setHasUnstakedTokens(true);
       }
-    }
+    };
+
+    const fetchLpStakeAmount = async (poolContract:string) => {
+      const stakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: poolContract,
+        functionName: "get-stake-amount-of",
+        functionArgs: [
+          standardPrincipalCV(stxAddress || '')
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      return cvToJSON(stakedCall).value;
+    };
+
+    const fetchLpPendingRewards = async (poolContract:string) => {
+      const dikoUsdaPendingRewardsCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: poolContract,
+        functionName: "get-pending-rewards",
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          standardPrincipalCV(stxAddress || ''),
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      return cvToJSON(dikoUsdaPendingRewardsCall).value.value;
+    };
+
+    const fetchTotalStaked = async (poolContract:string) => {
+      const totalStxDikoStakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: poolContract,
+        functionName: "get-total-staked",
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      return cvToJSON(totalStxDikoStakedCall).value / 1000000;
+    };
+
+    const lpTokenValue = async (poolContract:string, lpTokenStakedAmount: number, lpTokenWalletAmount: number) => {
+
+      if (lpTokenWalletAmount == undefined) {
+        return;
+      }
+
+      var tokenXContract = "arkadiko-token";
+      var tokenYContract = "usda-token";
+      var tokenXName = "DIKO";
+      var tokenYName = "USDA";
+      if (poolContract == "arkadiko-stake-pool-wstx-diko-v1-1") {
+        tokenXContract = "wrapped-stx-token";
+        tokenYContract = "arkadiko-token";
+        tokenXName = "STX";
+        tokenYName = "DIKO";
+      } else if (poolContract == "arkadiko-stake-pool-wstx-usda-v1-1") {
+        tokenXContract = "wrapped-stx-token";
+        tokenYContract = "usda-token";
+        tokenXName = "STX";
+        tokenYName = "USDA";
+      }
+
+      // Get pair details
+      let pairDetailsCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-swap-v1-1",
+        functionName: "get-pair-details",
+        functionArgs: [
+          contractPrincipalCV(contractAddress, tokenXContract),
+          contractPrincipalCV(contractAddress, tokenYContract)
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const pairDetails = cvToJSON(pairDetailsCall).value.value.value;
+
+      if (!cvToJSON(pairDetailsCall)['success']) {
+        return {
+          tokenX: tokenXName, 
+          tokenY: tokenYName, 
+          stakedTokenXAmount: 0, 
+          stakedTokenYAmount: 0, 
+          stakedValue: 0,
+          walletTokenXAmount: 0, 
+          walletTokenYAmount: 0, 
+          walletValue: 0
+        };
+      }
+
+      // Calculate user balance
+      const balanceX = pairDetails['balance-x'].value;
+      const balanceY = pairDetails['balance-y'].value;
+      const totalTokens = pairDetails['shares-total'].value;      
+
+      const stakedShare = lpTokenStakedAmount / totalTokens;
+      const stakedBalanceX = balanceX * stakedShare;
+      const stakedBalanceY = balanceY * stakedShare;
+
+      const walletShare = lpTokenWalletAmount / totalTokens;
+      const walletBalanceX = balanceX * walletShare;
+      const walletBalanceY = balanceY * walletShare;
+
+      // Estimate value
+      var estimatedValueStaked = 0;
+      var estimatedValueWallet = 0;
+      if (tokenXName == "STX") {
+        let stxPrice = await getPrice('STX');
+        estimatedValueStaked = (stakedBalanceX / 1000000) * stxPrice;
+        estimatedValueWallet = (walletBalanceX / 1000000) * stxPrice;
+      } else if (tokenYName == "STX") {
+        let stxPrice = await getPrice('STX');
+        estimatedValueStaked = (stakedBalanceY / 1000000) * stxPrice;
+        estimatedValueWallet = (walletBalanceY / 1000000) * stxPrice;
+      } else if (tokenXName == "USDA") {
+        let udsdaPrice = await getPrice('USDA');
+        estimatedValueStaked = (stakedBalanceX / 1000000) * udsdaPrice;
+        estimatedValueWallet = (walletBalanceX / 1000000) * udsdaPrice;
+      } else if (tokenYName == "USDA") {
+        let udsdaPrice = await getPrice('USDA');
+        estimatedValueStaked = (stakedBalanceY / 1000000) * udsdaPrice;
+        estimatedValueWallet = (walletBalanceY / 1000000) * udsdaPrice;
+      }
+
+      return {
+        tokenX: tokenXName, 
+        tokenY: tokenYName, 
+        stakedTokenXAmount: stakedBalanceX, 
+        stakedTokenYAmount: stakedBalanceY, 
+        stakedValue: estimatedValueStaked,
+        walletTokenXAmount: walletBalanceX, 
+        walletTokenYAmount: walletBalanceY, 
+        walletValue: estimatedValueWallet
+      };
+    };
 
     const getData = async () => {
       // Get current block height
@@ -108,193 +257,113 @@ export const Stake = () => {
         network: network,
       });
       let dikoStaked = cvToJSON(userStakedCall).value.value;
+
       setStakedAmount(dikoStaked);
-
-      const userLpDikoUsdaStakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-diko-usda-v1-1",
-        functionName: "get-stake-amount-of",
-        functionArgs: [
-          standardPrincipalCV(stxAddress || '')
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let dikoUsdaLpStaked = cvToJSON(userLpDikoUsdaStakedCall).value;
+      let dikoUsdaLpStaked = await fetchLpStakeAmount("arkadiko-stake-pool-diko-usda-v1-1");
       setLpDikoUsdaStakedAmount(dikoUsdaLpStaked);
-
-      const userLpStxUsdaStakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-wstx-usda-v1-1",
-        functionName: "get-stake-amount-of",
-        functionArgs: [
-          standardPrincipalCV(stxAddress || '')
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let stxUsdaLpStaked = cvToJSON(userLpStxUsdaStakedCall).value;
+      let stxUsdaLpStaked = await fetchLpStakeAmount("arkadiko-stake-pool-wstx-usda-v1-1");
       setLpStxUsdaStakedAmount(stxUsdaLpStaked);
-
-      const userLpStxDikoStakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-wstx-diko-v1-1",
-        functionName: "get-stake-amount-of",
-        functionArgs: [
-          standardPrincipalCV(stxAddress || '')
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let stxDikoLpStaked = cvToJSON(userLpStxDikoStakedCall).value;
+      let stxDikoLpStaked = await fetchLpStakeAmount("arkadiko-stake-pool-wstx-diko-v1-1");
       setLpStxDikoStakedAmount(stxDikoLpStaked);
+
+      let dikoUsdaLpValue = await lpTokenValue("arkadiko-stake-pool-diko-usda-v1-1", dikoUsdaLpStaked, state.balance["dikousda"]);
+      setDikoUsdaPoolInfo(dikoUsdaLpValue);
+      let stxUsdaLpValue = await lpTokenValue("arkadiko-stake-pool-wstx-usda-v1-1", stxUsdaLpStaked, state.balance["wstxusda"]);
+      setStxUsdaPoolInfo(stxUsdaLpValue);
+      let stxDikoLpValue = await lpTokenValue("arkadiko-stake-pool-wstx-diko-v1-1", stxDikoLpStaked, state.balance["wstxdiko"]);
+      setStxDikoPoolInfo(stxDikoLpValue);
+
+      // if (currentBlock < REWARDS_START_BLOCK_HEIGHT) {
+      //   setLoadingData(false);
+      //   return;
+      // }
       setEmissionsStarted(true);
 
-      const dikoUsdaPendingRewardsCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-diko-usda-v1-1",
-        functionName: "get-pending-rewards",
-        functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-          standardPrincipalCV(stxAddress || '')
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let dikoUsdaLpPendingRewards = cvToJSON(dikoUsdaPendingRewardsCall).value.value;
+      let dikoUsdaLpPendingRewards = await fetchLpPendingRewards("arkadiko-stake-pool-diko-usda-v1-1");
       setLpDikoUsdaPendingRewards(dikoUsdaLpPendingRewards);
-
-      const stxUsdaPendingRewardsCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-wstx-usda-v1-1",
-        functionName: "get-pending-rewards",
-        functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-          standardPrincipalCV(stxAddress || '')
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let stxUsdaLpPendingRewards = cvToJSON(stxUsdaPendingRewardsCall).value.value;
+      let stxUsdaLpPendingRewards = await fetchLpPendingRewards("arkadiko-stake-pool-wstx-usda-v1-1");
       setLpStxUsdaPendingRewards(stxUsdaLpPendingRewards);
-
-      const stxDikoPendingRewardsCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-wstx-diko-v1-1",
-        functionName: "get-pending-rewards",
-        functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-          standardPrincipalCV(stxAddress || '')
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let stxDikoLpPendingRewards = cvToJSON(stxDikoPendingRewardsCall).value.value;
+      let stxDikoLpPendingRewards = await fetchLpPendingRewards("arkadiko-stake-pool-wstx-diko-v1-1");
       setLpStxDikoPendingRewards(stxDikoLpPendingRewards);
 
-
-      const totalDikoStakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-diko-v1-1",
-        functionName: "get-total-staked",
-        functionArgs: [],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let totalDikoStaked = cvToJSON(totalDikoStakedCall).value / 1000000;
-
-      const totalDikoUsdaStakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-diko-usda-v1-1",
-        functionName: "get-total-staked",
-        functionArgs: [],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let totalDikoUsdaStaked = cvToJSON(totalDikoUsdaStakedCall).value / 1000000;
-
-      const totalStxUsdaStakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-wstx-usda-v1-1",
-        functionName: "get-total-staked",
-        functionArgs: [],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let totalStxUsdaStaked = cvToJSON(totalStxUsdaStakedCall).value / 1000000;
-
-      const totalStxDikoStakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: "arkadiko-stake-pool-wstx-diko-v1-1",
-        functionName: "get-total-staked",
-        functionArgs: [],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      let totalStxDikoStaked = cvToJSON(totalStxDikoStakedCall).value / 1000000;
+      let totalDikoStaked = await fetchTotalStaked("arkadiko-stake-pool-diko-v1-1")
+      let totalDikoUsdaStaked = await fetchTotalStaked("arkadiko-stake-pool-diko-usda-v1-1")
+      let totalStxUsdaStaked = await fetchTotalStaked("arkadiko-stake-pool-wstx-usda-v1-1")
+      let totalStxDikoStaked = await fetchTotalStaked("arkadiko-stake-pool-wstx-diko-v1-1")
 
       const totalStakingRewardsYear1 = 23500000;
 
-      if (totalDikoStaked === 0) { totalDikoStaked = 10 };
+      if (totalDikoStaked === 0) {
+        totalDikoStaked = 10;
+      }
       const dikoPoolRewards = totalStakingRewardsYear1 * 0.1;
       const dikoApr = dikoPoolRewards / totalDikoStaked;
       setApy(Number((100 * dikoApr).toFixed(2)));
 
-      if (totalDikoUsdaStaked === 0) { totalDikoUsdaStaked = 10 };
+      if (totalDikoUsdaStaked === 0) {
+        totalDikoUsdaStaked = 10;
+      }
       const dikoUsdaPoolRewards = totalStakingRewardsYear1 * 0.25;
       const dikoUsdaApr = dikoUsdaPoolRewards / totalDikoUsdaStaked;
       setDikoUsdaLpApy(Number((100 * dikoUsdaApr).toFixed(2)));
 
-      if (totalStxUsdaStaked === 0) { totalStxUsdaStaked = 10 };
+      if (totalStxUsdaStaked === 0) {
+        totalStxUsdaStaked = 10;
+      }
       const stxUsdaPoolRewards = totalStakingRewardsYear1 * 0.5;
       const stxUsdaApr = stxUsdaPoolRewards / totalStxUsdaStaked;
       setStxUsdaLpApy(Number((100 * stxUsdaApr).toFixed(2)));
 
-      if (totalStxDikoStaked === 0) { totalStxDikoStaked = 10 };
+      if (totalStxDikoStaked === 0) {
+        totalStxDikoStaked = 10;
+      }
       const stxDikoPoolRewards = totalStakingRewardsYear1 * 0.15;
       const stxDikoApr = stxDikoPoolRewards / totalStxDikoStaked;
       setStxDikoLpApy(Number((100 * stxDikoApr).toFixed(2)));
 
-
       const dikoCooldownInfo = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-stake-pool-diko-v1-1",
-        functionName: "get-cooldown-info-of",
-        functionArgs: [
-          standardPrincipalCV(stxAddress || '')
-        ],
+        contractName: 'arkadiko-stake-pool-diko-v1-1',
+        functionName: 'get-cooldown-info-of',
+        functionArgs: [standardPrincipalCV(stxAddress || '')],
         senderAddress: stxAddress || '',
         network: network,
       });
-      let cooldownInfo = cvToJSON(dikoCooldownInfo).value;
-      let redeemStartBlock = cooldownInfo["redeem-period-start-block"]["value"];
-      let redeemEndBlock = cooldownInfo["redeem-period-end-block"]["value"];
+      const cooldownInfo = cvToJSON(dikoCooldownInfo).value;
+      const redeemStartBlock = cooldownInfo['redeem-period-start-block']['value'];
+      const redeemEndBlock = cooldownInfo['redeem-period-end-block']['value'];
 
       // Helper to create countdown text
-      function blockDiffToTimeLeft(blockDiff:number) {
-        let minDiff = (blockDiff * 10);
-        let days = Math.floor(minDiff / (60 * 24));
-        let hours = Math.floor((minDiff % (60 * 24)) / 60);
-        let minutes = Math.floor(minDiff % (60));
-        var text = "";
-        if (days != 0) { text += days + "d "; }
-        if (hours != 0) { text += hours + "h "; }
-        if (minutes != 0) { text += minutes + "m "; }
+      function blockDiffToTimeLeft(blockDiff: number) {
+        const minDiff = blockDiff * 10;
+        const days = Math.floor(minDiff / (60 * 24));
+        const hours = Math.floor((minDiff % (60 * 24)) / 60);
+        const minutes = Math.floor(minDiff % 60);
+        let text = '';
+        if (days != 0) {
+          text += days + 'd ';
+        }
+        if (hours != 0) {
+          text += hours + 'h ';
+        }
+        if (minutes != 0) {
+          text += minutes + 'm ';
+        }
         return text;
       }
-  
+
       if (redeemEndBlock == 0 || redeemEndBlock < currentBlock) {
         setDikoCooldown('Not started');
       } else if (redeemStartBlock < currentBlock) {
-        let blockDiff = redeemEndBlock - currentBlock;
-        var text = blockDiffToTimeLeft(blockDiff);
-        text += " left to withdraw";
+        const blockDiff = redeemEndBlock - currentBlock;
+        let text = blockDiffToTimeLeft(blockDiff);
+        text += ' left to withdraw';
         setDikoCooldown(text);
         setCanUnstake(true);
       } else {
-        let blockDiff = redeemStartBlock - currentBlock;
-        var text = blockDiffToTimeLeft(blockDiff);
-        text += " left";
+        const blockDiff = redeemStartBlock - currentBlock;
+        let text = blockDiffToTimeLeft(blockDiff);
+        text += ' left';
         setDikoCooldown(text);
         setCooldownRunning(true);
       }
@@ -306,7 +375,9 @@ export const Stake = () => {
       void getData();
     }
 
-    return () => { mounted = false; }
+    return () => {
+      mounted = false;
+    };
   }, [state.balance]);
 
   const startDikoCooldown = async () => {
@@ -318,9 +389,13 @@ export const Stake = () => {
       functionName: 'start-cooldown',
       functionArgs: [],
       onFinish: data => {
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -333,12 +408,16 @@ export const Stake = () => {
       functionName: 'claim-pending-rewards',
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-usda-v1-1')
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-usda-v1-1'),
       ],
       onFinish: data => {
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -351,12 +430,16 @@ export const Stake = () => {
       functionName: 'claim-pending-rewards',
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-usda-v1-1')
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-usda-v1-1'),
       ],
       onFinish: data => {
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -369,12 +452,16 @@ export const Stake = () => {
       functionName: 'claim-pending-rewards',
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-diko-v1-1')
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-diko-v1-1'),
       ],
       onFinish: data => {
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -389,13 +476,17 @@ export const Stake = () => {
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-usda-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-token')
+        contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
       onFinish: data => {
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -410,13 +501,17 @@ export const Stake = () => {
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-usda-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-token')
+        contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
       onFinish: data => {
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -431,13 +526,17 @@ export const Stake = () => {
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-diko-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-token')
+        contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
       onFinish: data => {
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -460,7 +559,7 @@ export const Stake = () => {
         setShowStakeModal={setShowStakeLp1Modal}
         apy={dikoUsdaLpApy}
         balanceName={'dikousda'}
-        tokenName={'ARKV1DIKOUSDA'}
+        tokenName={'DIKO/USDA'}
       />
 
       <StakeLpModal
@@ -468,7 +567,7 @@ export const Stake = () => {
         setShowStakeModal={setShowStakeLp2Modal}
         apy={stxUsdaLpApy}
         balanceName={'wstxusda'}
-        tokenName={'ARKV1WSTXUSDA'}
+        tokenName={'STX/USDA'}
       />
 
       <StakeLpModal
@@ -476,7 +575,7 @@ export const Stake = () => {
         setShowStakeModal={setShowStakeLp3Modal}
         apy={stxDikoLpApy}
         balanceName={'wstxdiko'}
-        tokenName={'ARKV1WSTXDIKO'}
+        tokenName={'STX/DIKO'}
       />
 
       <UnstakeLpModal
@@ -484,7 +583,7 @@ export const Stake = () => {
         setShowUnstakeModal={setShowUnstakeLp1Modal}
         stakedAmount={lpDikoUsdaStakedAmount}
         balanceName={'dikousda'}
-        tokenName={'ARKV1DIKOUSDA'}
+        tokenName={'DIKO/USDA'}
       />
 
       <UnstakeLpModal
@@ -492,7 +591,7 @@ export const Stake = () => {
         setShowUnstakeModal={setShowUnstakeLp2Modal}
         stakedAmount={lpStxUsdaStakedAmount}
         balanceName={'wstxusda'}
-        tokenName={'ARKV1WSTXUSDA'}
+        tokenName={'STX/USDA'}
       />
 
       <UnstakeLpModal
@@ -500,54 +599,45 @@ export const Stake = () => {
         setShowUnstakeModal={setShowUnstakeLp3Modal}
         stakedAmount={lpStxDikoStakedAmount}
         balanceName={'wstxdiko'}
-        tokenName={'ARKV1WSTXDIKO'}
+        tokenName={'STX/DIKO'}
       />
 
       {state.userData ? (
         <Container>
           <main className="relative flex-1 py-12">
-
             {hasUnstakedTokens ? (
-              <div className="p-4 mb-6 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
-                  </div>
-                  <div className="flex-1 ml-3">
-                    <h3 className="text-sm font-semibold text-blue-800">Unstaked LP tokens</h3>
-                    <div className="mt-2 text-sm text-blue-700">
-                      <p>👀 We noticed that your wallet contains LP Tokens that are not staked yet.</p>
-                      <p className="mt-1">If you want to stake them, pick the appropriate token in the table below and hit the <DotsVerticalIcon className="inline w-4 h-4" aria-hidden="true" /> icon to open the actions menu and initiate staking.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="pl-3 ml-auto">
-                    <div className="-mx-1.5 -my-1.5">
-                      <button
-                        type="button"
-                        className="inline-flex bg-blue-50 rounded-md p-1.5 text-blue-500 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-blue-50 focus:ring-blue-600"
-                      >
-                        <span className="sr-only">Dismiss</span>
-                        <XIcon className="w-5 h-5" aria-hidden="true" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <Alert title="Unstaked LP tokens">
+                <p>👀 We noticed that your wallet contains LP Tokens that are not staked yet.</p>
+                <p className="mt-1">
+                  If you want to stake them, pick the appropriate token in the table below and hit
+                  the <DotsVerticalIcon className="inline w-4 h-4" aria-hidden="true" /> icon to
+                  open the actions menu and initiate staking.
+                </p>
+              </Alert>
             ) : null}
             <section>
               <header className="pb-5 border-b border-gray-200 sm:flex sm:justify-between sm:items-end">
                 <div>
                   <h3 className="text-lg leading-6 text-gray-900 font-headings">DIKO</h3>
                   <p className="max-w-3xl mt-2 text-sm text-gray-500">
-                    When staking DIKO in the <span className="font-semibold">security module</span> you get stDIKO in return. Both DIKO and stDIKO can be used to propose and vote in governance.
+                    When staking DIKO in the <span className="font-semibold">security module</span>{' '}
+                    you get stDIKO in return. Both DIKO and stDIKO can be used to propose and vote
+                    in governance.
                   </p>
                 </div>
                 <div className="flex items-center">
                   <div className="w-5.5 h-5.5 rounded-full bg-indigo-200 flex items-center justify-center">
-                    <QuestionMarkCircleIcon className="w-5 h-5 text-indigo-600" aria-hidden="true" />
+                    <QuestionMarkCircleIcon
+                      className="w-5 h-5 text-indigo-600"
+                      aria-hidden="true"
+                    />
                   </div>
-                  <a className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 border-transparent hover:border-indigo-300 hover:text-indigo-700" href="https://docs.arkadiko.finance/protocol/diko/security-module" target="_blank" rel="noopener noreferrer">
+                  <a
+                    className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 border-transparent hover:border-indigo-300 hover:text-indigo-700"
+                    href="https://docs.arkadiko.finance/protocol/diko/security-module"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     More on the Security Module
                     <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
                   </a>
@@ -567,7 +657,11 @@ export const Stake = () => {
                             <span>Loading...</span>
                           ) : (
                             <>
-                            {microToReadable(stakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
+                              {microToReadable(stakedAmount).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 6,
+                              })}{' '}
+                              DIKO
                             </>
                           )}
                         </p>
@@ -576,7 +670,7 @@ export const Stake = () => {
                     <div>
                       <p className="text-lg font-semibold">
                         {loadingData ? (
-                          <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                          <Placeholder className="py-2" width={Placeholder.width.HALF} />
                         ) : emissionsStarted ? (
                           `${apy}%`
                         ) : (
@@ -586,80 +680,111 @@ export const Stake = () => {
                       <p className="text-base font-normal leading-6 text-gray-500">Current APR</p>
                     </div>
                     <div>
-                      <p className="text-lg font-semibold">
-                        {loadingData ? (
-                          <Placeholder className="py-2" width={Placeholder.width.HALF}/>
-                        ) : (
-                          `${dikoCooldown}`
-                        )}
-                      </p>
+                      {loadingData ? (
+                        <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                      ) : (
+                        <p className="text-lg font-semibold">{dikoCooldown}</p>
+                      )}
                       <p className="flex items-center text-base font-normal leading-6 text-gray-500">
                         Cooldown status
-                        <Tooltip className="ml-2" shouldWrapChildren={true} label={`The 10-day cooldown period is the time required prior to unstaking your tokens. Once it expires, there is a 2-day window to unstake your tokens.`}>
-                          <InformationCircleIcon className="flex-shrink-0 block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                        <Tooltip
+                          className="ml-2"
+                          shouldWrapChildren={true}
+                          label={`The 10-day cooldown period is the time required prior to unstaking your tokens. Once it expires, there is a 2-day window to unstake your tokens.`}
+                        >
+                          <InformationCircleIcon
+                            className="flex-shrink-0 block w-5 h-5 ml-2 text-gray-400"
+                            aria-hidden="true"
+                          />
                         </Tooltip>
                       </p>
                     </div>
                     <div>
                       {state.balance['diko'] > 0 || state.balance['stdiko'] > 0 || (stakedAmount && canUnstake) ? (
-                        <StakeActions>
-                          {state.balance['diko'] > 0 ? (
-                            <Menu.Item>
-                              {({ active }) => (
-                                <button
-                                  className={`${
-                                    active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                  onClick={() => setShowStakeModal(true)}
-                                >
-                                  <ArrowCircleDownIcon
-                                    className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                    aria-hidden="true"
-                                  />
-                                  Stake
-                                </button>
-                              )}
-                            </Menu.Item>
-                            
-                          ) : null }
-                          {state.balance['stdiko'] > 0 && !cooldownRunning ? (
-                            <Menu.Item>
-                              {({ active }) => (
-                                <button
-                                  className={`${
-                                    active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                  onClick={() => startDikoCooldown()}
-                                >
-                                  <ClockIcon
-                                    className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                    aria-hidden="true"
-                                  />
-                                  Start cooldown
-                                </button>
-                              )}
-                            </Menu.Item>
-                            
-                          ) : null }
-                          {stakedAmount && canUnstake ? (
-                            <Menu.Item>
-                              {({ active }) => (
-                                <button
-                                  className={`${
-                                    active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                  onClick={() => setShowUnstakeModal(true)}
-                                >
-                                  <ArrowCircleUpIcon
-                                    className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                    aria-hidden="true"
-                                  />
-                                  Unstake
-                                </button>
-                              )}
-                            </Menu.Item>
-                          ) : null}
-                        </StakeActions>
+                        <Menu as="div" className="relative flex items-center justify-end">
+                        {({ open }) => (
+                          <>
+                            <Menu.Button className="inline-flex items-center justify-center w-8 h-8 text-gray-400 bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                              <span className="sr-only">Open options</span>
+                              <DotsVerticalIcon className="w-5 h-5" aria-hidden="true" />
+                            </Menu.Button>
+                            <Transition
+                              show={open}
+                              as={Fragment}
+                              enter="transition ease-out duration-100"
+                              enterFrom="transform opacity-0 scale-95"
+                              enterTo="transform opacity-100 scale-100"
+                              leave="transition ease-in duration-75"
+                              leaveFrom="transform opacity-100 scale-100"
+                              leaveTo="transform opacity-0 scale-95"
+                            >
+                              <Menu.Items
+                                static
+                                className="absolute top-0 z-10 w-48 mx-3 mt-1 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg right-7 ring-1 ring-black ring-opacity-5 focus:outline-none"
+                              >
+                                <div className="px-1 py-1">
+                                  {state.balance['diko'] > 0 ? (
+                                    <Menu.Item>
+                                      {({ active }) => (
+                                        <button
+                                          className={`${
+                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                          onClick={() => setShowStakeModal(true)}
+                                        >
+                                          <ArrowCircleDownIcon
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
+                                            aria-hidden="true"
+                                          />
+                                          Stake
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                    
+                                  ) : null }
+                                  {state.balance['stdiko'] > 0 && !cooldownRunning ? (
+                                    <Menu.Item>
+                                      {({ active }) => (
+                                        <button
+                                          className={`${
+                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                          onClick={() => startDikoCooldown()}
+                                        >
+                                          <ClockIcon
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
+                                            aria-hidden="true"
+                                          />
+                                          Start cooldown
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                    
+                                  ) : null }
+                                  {stakedAmount && canUnstake ? (
+                                    <Menu.Item>
+                                      {({ active }) => (
+                                        <button
+                                          className={`${
+                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                          onClick={() => setShowUnstakeModal(true)}
+                                        >
+                                          <ArrowCircleUpIcon
+                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
+                                            aria-hidden="true"
+                                          />
+                                          Unstake
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                  ) : null}
+                                </div>
+                              </Menu.Items>
+                            </Transition>
+                          </>
+                        )}
+                      </Menu>
                       ) : null }
                     </div>
                   </div>
@@ -678,15 +803,15 @@ export const Stake = () => {
               <div className="mt-4">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                    <div className="pb-24 overflow-hidden sm:rounded-lg">
-                      <table className="min-w-full border border-gray-200 divide-y divide-gray-200 shadow-sm sm:rounded-lg">
+                    <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
+                      <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                           <tr>
                             <th
                               scope="col"
                               className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                             >
-                              Staked Value
+                              LP Token
                             </th>
                             <th
                               scope="col"
@@ -698,7 +823,19 @@ export const Stake = () => {
                               scope="col"
                               className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                             >
-                              Pending rewards
+                              Available
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                            >
+                              Staked
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                            >
+                              Rewards
                             </th>
                             <th
                               scope="col"
@@ -708,398 +845,61 @@ export const Stake = () => {
                             </th>
                           </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          <tr className="bg-white">
-                            <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              <div className="flex items-center">
-                                <div className="flex -space-x-2 overflow-hidden">
-                                  <img
-                                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
-                                    src={tokenList[1].logo}
-                                    alt=""
-                                  />
-                                  <img
-                                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
-                                    src={tokenList[0].logo}
-                                    alt=""
-                                  />
-                                </div>
-                                <p className="ml-4">
-                                  {loadingData ? (
-                                    <span>Loading...</span>
-                                  ) : (
-                                    <>
-                                    {microToReadable(lpDikoUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
-                                    {' '}
-                                    </>
-                                  )}
-                                  <span className="block text-gray-500">
-                                    <Tooltip shouldWrapChildren={true} label={`ARKV1${tokenList[1].name}${tokenList[0].name}`}>
-                                      Arkadiko V1 {tokenList[1].name} {tokenList[0].name} LP Token
-                                    </Tooltip>
-                                  </span>
-                                </p>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
-                              {loadingData ? (
-                                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
-                              ) : emissionsStarted ? (
-                                `${dikoUsdaLpApy}%`
-                              ) : (
-                                <span>Emissions not started</span>
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              {loadingData ? (
-                                <span>Loading...</span>
-                              ) : (
-                                <>
-                                {microToReadable(lpDikoUsdaPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
-                                </>
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
-                              {state.balance['dikousda'] > 0 || lpDikoUsdaStakedAmount || lpDikoUsdaPendingRewards ? (
-                                <StakeActions>
-                                  {state.balance['dikousda'] > 0 && canStakeLp ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => setShowStakeLp1Modal(true)}
-                                        >
-                                          <ArrowCircleDownIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Stake
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                  {lpDikoUsdaStakedAmount > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => setShowUnstakeLp1Modal(true)}
-                                        >
-                                          <ArrowCircleUpIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Unstake
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                  {lpDikoUsdaPendingRewards > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => claimDikoUsdaLpPendingRewards()}
-                                        >
-                                          <CashIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Claim Rewards
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                  {lpDikoUsdaPendingRewards > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => stakeDikoUsdaLpPendingRewards()}
-                                        >
-                                          <PlusIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Stake Rewards
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                </StakeActions>
-                              ) : null }
-                            </td>
-                          </tr>
 
-                          <tr className="bg-white">
-                            <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              <div className="flex items-center">
-                                <div className="flex -space-x-2 overflow-hidden">
-                                  <img
-                                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
-                                    src={tokenList[2].logo}
-                                    alt=""
-                                  />
-                                  <img
-                                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
-                                    src={tokenList[0].logo}
-                                    alt=""
-                                  />
-                                </div>
-                                <p className="ml-4">
-                                  {loadingData ? (
-                                    <span>Loading...</span>
-                                  ) : (
-                                    <>
-                                    {microToReadable(lpStxUsdaStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
-                                    {' '}
-                                    </>
-                                  )}
-                                  <span className="block text-gray-500">
-                                    <Tooltip shouldWrapChildren={true} label={`ARKV1${tokenList[2].name}${tokenList[0].name}`}>
-                                      Arkadiko V1 {tokenList[2].name} {tokenList[0].name} LP Token
-                                    </Tooltip>
-                                  </span>
-                                </p>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
-                              {loadingData ? (
-                                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
-                              ) : emissionsStarted ? (
-                                `${stxUsdaLpApy}%`
-                              ) : (
-                                <span>Emissions not started</span>
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              {loadingData ? (
-                                <span>Loading...</span>
-                              ) : (
-                                <>
-                                {microToReadable(lpStxUsdaPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
-                                </>
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
-                              {state.balance['wstxusda'] > 0 || lpStxUsdaStakedAmount || lpStxUsdaPendingRewards ? (
-                                <StakeActions>
-                                  {state.balance['wstxusda'] > 0 && canStakeLp ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => setShowStakeLp2Modal(true)}
-                                        >
-                                          <ArrowCircleDownIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Stake
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                  {lpStxUsdaStakedAmount > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => setShowUnstakeLp2Modal(true)}
-                                        >
-                                          <ArrowCircleUpIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Unstake
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                  {lpStxUsdaPendingRewards > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => claimStxUsdaLpPendingRewards()}
-                                        >
-                                          <CashIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Claim Rewards
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                  {lpStxUsdaPendingRewards > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => stakeStxUsdaLpPendingRewards()}
-                                        >
-                                          <PlusIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Stake Rewards
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                </StakeActions>
-                              ) : null }
-                            </td>
-                          </tr>
+                        {/* Arkadiko V1 DIKO USDA LP Token */}
+                        <StakeLpRow
+                          loadingData={loadingData}
+                          tokenListItemX={1}
+                          tokenListItemY={0}
+                          balance={state.balance["dikousda"]}
+                          pendingRewards={lpDikoUsdaPendingRewards}
+                          stakedAmount={lpDikoUsdaStakedAmount}
+                          apy={dikoUsdaLpApy}
+                          emissionsStarted={emissionsStarted}
+                          poolInfo={dikoUsdaPoolInfo}
+                          setShowStakeLpModal={setShowStakeLp1Modal}
+                          setShowUnstakeLpModal={setShowUnstakeLp1Modal}
+                          claimLpPendingRewards={claimDikoUsdaLpPendingRewards}
+                          stakeLpPendingRewards={stakeDikoUsdaLpPendingRewards}
+                          getLpRoute={'/swap/add/DIKO/USDA'}
+                        />
 
-                          <tr className="bg-white">
-                            <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              <div className="flex items-center">
-                                <div className="flex -space-x-2 overflow-hidden">
-                                  <img
-                                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
-                                    src={tokenList[2].logo}
-                                    alt=""
-                                  />
-                                  <img
-                                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
-                                    src={tokenList[1].logo}
-                                    alt=""
-                                  />
-                                </div>
-                                <p className="ml-4">
-                                  {loadingData ? (
-                                    <span>Loading...</span>
-                                  ) : (
-                                    <>
-                                    {microToReadable(lpStxDikoStakedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
-                                    {' '}
-                                    </>
-                                  )}
-                                  <span className="block text-gray-500">
-                                    <Tooltip shouldWrapChildren={true} label={`ARKV1${tokenList[2].name}${tokenList[1].name}`}>
-                                      Arkadiko V1 {tokenList[2].name} {tokenList[1].name} LP Token
-                                    </Tooltip>
-                                  </span>
-                                </p>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 text-sm font-medium text-indigo-600 whitespace-nowrap">
-                              {loadingData ? (
-                                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
-                              ) : emissionsStarted ? (
-                                `${stxDikoLpApy}%`
-                              ) : (
-                                <span>Emissions not started</span>
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-sm whitespace-nowrap">
-                              {loadingData ? (
-                                <span>Loading...</span>
-                              ) : (
-                                <>
-                                {microToReadable(lpStxDikoPendingRewards).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
-                                </>
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
-                              {state.balance['wstxdiko'] > 0 || lpStxDikoStakedAmount || lpStxDikoPendingRewards ? (
-                                <StakeActions>
-                                  {state.balance['wstxdiko'] > 0 && canStakeLp ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => setShowStakeLp3Modal(true)}
-                                        >
-                                          <ArrowCircleDownIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Stake
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                  {lpStxDikoStakedAmount > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => setShowUnstakeLp3Modal(true)}
-                                        >
-                                          <ArrowCircleUpIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Unstake
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                  {lpStxDikoPendingRewards > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => claimStxDikoLpPendingRewards()}
-                                        >
-                                          <CashIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Claim Rewards
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                  {lpStxDikoPendingRewards > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => stakeStxDikoLpPendingRewards()}
-                                        >
-                                          <PlusIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Stake Rewards
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null }
-                                </StakeActions>
-                              ) : null }
-                            </td>
-                          </tr>
+                        {/* Arkadiko V1 STX USDA LP Token */}
+                        <StakeLpRow
+                          loadingData={loadingData}
+                          tokenListItemX={2}
+                          tokenListItemY={0}
+                          balance={state.balance["wstxusda"]}
+                          pendingRewards={lpStxUsdaPendingRewards}
+                          stakedAmount={lpStxUsdaStakedAmount}
+                          apy={stxUsdaLpApy}
+                          emissionsStarted={emissionsStarted}
+                          poolInfo={stxUsdaPoolInfo}
+                          setShowStakeLpModal={setShowStakeLp2Modal}
+                          setShowUnstakeLpModal={setShowUnstakeLp2Modal}
+                          claimLpPendingRewards={claimStxUsdaLpPendingRewards}
+                          stakeLpPendingRewards={stakeStxUsdaLpPendingRewards}
+                          getLpRoute={'/swap/add/STX/USDA'}
+                        />
 
-                        </tbody>
+                        {/* Arkadiko V1 STX DIKO LP Token */}
+                        <StakeLpRow
+                          loadingData={loadingData}
+                          tokenListItemX={2}
+                          tokenListItemY={1}
+                          balance={state.balance["wstxdiko"]}
+                          pendingRewards={lpStxDikoPendingRewards}
+                          stakedAmount={lpStxDikoStakedAmount}
+                          apy={stxDikoLpApy}
+                          emissionsStarted={emissionsStarted}
+                          poolInfo={stxDikoPoolInfo}
+                          setShowStakeLpModal={setShowStakeLp3Modal}
+                          setShowUnstakeLpModal={setShowUnstakeLp3Modal}
+                          claimLpPendingRewards={claimStxDikoLpPendingRewards}
+                          stakeLpPendingRewards={stakeStxDikoLpPendingRewards}
+                          getLpRoute={'/swap/add/STX/DIKO'}
+                        />
+                        
                       </table>
                     </div>
                   </div>

@@ -80,6 +80,19 @@ class StakeRegistry {
     return block.receipts[0].result;
   }
 
+  setPoolData(poolAddress: string, name: string, deactivatedBlock: number, deactivatedRewards: number, rewardsPercentage: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-registry-v1-1", "set-pool-data", [
+        types.principal(Utils.qualifiedName(poolAddress)),
+        types.ascii(name),
+        types.uint(deactivatedBlock),
+        types.uint(deactivatedRewards),
+        types.uint(rewardsPercentage)
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
 }
 export { StakeRegistry };
 
@@ -240,6 +253,10 @@ class StakePoolStxUsda {
 
   getCummulativeRewardPerStake() {
     return  this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-cumm-reward-per-stake", [], this.deployer.address);
+  }
+
+  getLastRewardIncreaseBlock() {
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-last-reward-increase-block", [], this.deployer.address);
   }
 
   calculateCummulativeRewardPerStake() {

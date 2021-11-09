@@ -7,14 +7,26 @@ import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
 import {
-  AnchorMode, uintCV, stringAsciiCV, contractPrincipalCV, cvToJSON,
-  callReadOnlyFunction, makeStandardFungiblePostCondition,
-  createAssetInfo, FungibleConditionCode, makeStandardSTXPostCondition } from '@stacks/transactions';
+  AnchorMode,
+  uintCV,
+  stringAsciiCV,
+  contractPrincipalCV,
+  cvToJSON,
+  callReadOnlyFunction,
+  makeStandardFungiblePostCondition,
+  createAssetInfo,
+  FungibleConditionCode,
+  makeStandardSTXPostCondition,
+} from '@stacks/transactions';
 import { AppContext, CollateralTypeProps } from '@common/context';
 import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
 import { debtClass, VaultProps } from './vault';
 import { getPrice } from '@common/get-price';
-import { getLiquidationPrice, availableCollateralToWithdraw, availableCoinsToMint } from '@common/vault-utils';
+import {
+  getLiquidationPrice,
+  availableCollateralToWithdraw,
+  availableCoinsToMint,
+} from '@common/vault-utils';
 import { Redirect } from 'react-router-dom';
 import { resolveReserveName, tokenTraits } from '@common/vault-utils';
 import BN from 'bn.js';
@@ -22,8 +34,9 @@ import { tokenList } from '@components/token-swap-list';
 import { InputAmount } from './input-amount';
 import { getRPCClient } from '@common/utils';
 import { microToReadable } from '@common/vault-utils';
-import { addMinutes } from 'date-fns'
-import { Placeholder } from './placeholder';
+import { addMinutes } from 'date-fns';
+import { Placeholder } from './ui/placeholder';
+import { Alert } from './ui/alert';
 
 export const ManageVault = ({ match }) => {
   const { doContractCall } = useConnect();
@@ -62,16 +75,15 @@ export const ManageVault = ({ match }) => {
 
   useEffect(() => {
     const fetchVault = async () => {
-
       const serializedVault = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-freddie-v1-1",
-        functionName: "get-vault-by-id",
+        contractName: 'arkadiko-freddie-v1-1',
+        functionName: 'get-vault-by-id',
         functionArgs: [uintCV(match.params.id)],
         senderAddress: senderAddress || '',
         network: network,
       });
-      
+
       const data = cvToJSON(serializedVault).value;
 
       if (data['id'].value !== 0) {
@@ -94,13 +106,13 @@ export const ManageVault = ({ match }) => {
         setAuctionEnded(data['auction-ended'].value);
         setIsVaultOwner(data['owner'].value === senderAddress);
 
-        let price = await getPrice(data['collateral-token'].value);
+        const price = await getPrice(data['collateral-token'].value);
         setPrice(price);
 
         const type = await callReadOnlyFunction({
           contractAddress,
-          contractName: "arkadiko-collateral-types-v1-1",
-          functionName: "get-collateral-type-by-name",
+          contractName: 'arkadiko-collateral-types-v1-1',
+          functionName: 'get-collateral-type-by-name',
           functionArgs: [stringAsciiCV(data['collateral-type'].value)],
           senderAddress: senderAddress || '',
           network: network,
@@ -118,32 +130,31 @@ export const ManageVault = ({ match }) => {
           liquidationRatio: json.value['liquidation-ratio'].value,
           maximumDebt: json.value['maximum-debt'].value,
           stabilityFee: json.value['stability-fee'].value,
-          stabilityFeeApy: json.value['stability-fee-apy'].value
+          stabilityFeeApy: json.value['stability-fee-apy'].value,
         });
         setLoadingVaultData(false);
       }
-    }
+    };
     fetchVault();
   }, [match.params.id]);
 
   useEffect(() => {
-
     const fetchFees = async () => {
       const feeCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-freddie-v1-1",
-        functionName: "get-stability-fee-for-vault",
+        contractName: 'arkadiko-freddie-v1-1',
+        functionName: 'get-stability-fee-for-vault',
         functionArgs: [
           uintCV(vault?.id),
-          contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v1-1')
+          contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v1-1'),
         ],
         senderAddress: contractAddress || '',
         network: network,
       });
-      
+
       const fee = cvToJSON(feeCall);
       setStabilityFee(fee.value.value);
-      setTotalDebt(outstandingDebt() + (fee.value.value / 1000000));
+      setTotalDebt(outstandingDebt() + fee.value.value / 1000000);
       setLoadingFeesData(false);
     };
 
@@ -165,10 +176,10 @@ export const ManageVault = ({ match }) => {
       const call = await callReadOnlyFunction({
         contractAddress,
         contractName,
-        functionName: "get-stacking-unlock-burn-height",
+        functionName: 'get-stacking-unlock-burn-height',
         functionArgs: [],
         senderAddress: contractAddress || '',
-        network: network
+        network: network,
       });
       const unlockBurnHeight = cvToJSON(call).value.value;
       setUnlockBurnHeight(unlockBurnHeight);
@@ -200,10 +211,10 @@ export const ManageVault = ({ match }) => {
       }
 
       if (unlockBurnHeight < currentBurnHeight) {
-        setStackingEndDate("");
+        setStackingEndDate('');
       } else {
         const stackingBlocksLeft = unlockBurnHeight - currentBurnHeight;
-        const stackingMinutesLeft = (stackingBlocksLeft * 10) + 20160 + 1440; // + 2 weeks cooldown + 1 day
+        const stackingMinutesLeft = stackingBlocksLeft * 10 + 20160 + 1440; // + 2 weeks cooldown + 1 day
         const currentDate = new Date();
         const endDate = addMinutes(currentDate, stackingMinutesLeft);
         setStackingEndDate(endDate.toDateString());
@@ -224,7 +235,14 @@ export const ManageVault = ({ match }) => {
   useEffect(() => {
     if (vault && collateralType?.collateralToDebtRatio) {
       if (Number(vault.stackedTokens) === 0) {
-        setMaximumCollateralToWithdraw(availableCollateralToWithdraw(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio));
+        setMaximumCollateralToWithdraw(
+          availableCollateralToWithdraw(
+            price,
+            collateralLocked(),
+            outstandingDebt(),
+            collateralType?.collateralToDebtRatio
+          )
+        );
       } else {
         setMaximumCollateralToWithdraw(0);
       }
@@ -233,7 +251,7 @@ export const ManageVault = ({ match }) => {
 
   const callBurn = async () => {
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
-    let totalToBurn = Number(usdToBurn) + (2 * (stabilityFee / 1000000));
+    let totalToBurn = Number(usdToBurn) + 2 * (stabilityFee / 1000000);
     if (Number(totalToBurn) >= Number(state.balance['usda'] / 1000000)) {
       totalToBurn = Number(state.balance['usda'] / 1000000);
     }
@@ -242,34 +260,37 @@ export const ManageVault = ({ match }) => {
         senderAddress || '',
         FungibleConditionCode.LessEqual,
         uintCV(parseInt(totalToBurn * 1000000, 10)).value,
-        createAssetInfo(
-          contractAddress,
-          'usda-token',
-          'usda'
-        )
-      )
+        createAssetInfo(contractAddress, 'usda-token', 'usda')
+      ),
     ];
 
     await doContractCall({
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: "arkadiko-freddie-v1-1",
+      contractName: 'arkadiko-freddie-v1-1',
       functionName: 'burn',
       functionArgs: [
         uintCV(match.params.id),
         uintCV(parseFloat(usdToBurn) * 1000000),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
+        contractPrincipalCV(
+          process.env.REACT_APP_CONTRACT_ADDRESS || '',
+          'arkadiko-collateral-types-v1-1'
+        ),
       ],
       postConditions,
       onFinish: data => {
         console.log('finished burn!', data);
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
         setShowBurnModal(false);
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
   let debtRatio = 0;
@@ -289,14 +310,14 @@ export const ManageVault = ({ match }) => {
     }
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
 
-    let postConditions:any[] = [];
+    let postConditions: any[] = [];
     if (vault['collateralToken'].toLowerCase() === 'stx') {
       postConditions = [
         makeStandardSTXPostCondition(
           senderAddress || '',
           FungibleConditionCode.Equal,
           new BN(parseFloat(extraCollateralDeposit) * 1000000)
-        )
+        ),
       ];
     } else {
       // postConditions = [
@@ -317,22 +338,29 @@ export const ManageVault = ({ match }) => {
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: "arkadiko-freddie-v1-1",
+      contractName: 'arkadiko-freddie-v1-1',
       functionName: 'deposit',
       functionArgs: [
         uintCV(match.params.id),
         uintCV(parseFloat(extraCollateralDeposit) * 1000000),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
+        contractPrincipalCV(
+          process.env.REACT_APP_CONTRACT_ADDRESS || '',
+          'arkadiko-collateral-types-v1-1'
+        ),
       ],
       postConditions,
       onFinish: data => {
         console.log('finished deposit!', data);
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
         setShowDepositModal(false);
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -348,7 +376,7 @@ export const ManageVault = ({ match }) => {
     }
 
     return 0;
-  }
+  };
 
   const collateralLocked = () => {
     if (vault) {
@@ -357,7 +385,7 @@ export const ManageVault = ({ match }) => {
     }
 
     return 0;
-  }
+  };
 
   const outstandingDebt = () => {
     if (vault) {
@@ -365,9 +393,9 @@ export const ManageVault = ({ match }) => {
     }
 
     return 0;
-  }
+  };
 
-  const onInputChange = (event: { target: { value: any, name: any; }; }) => {
+  const onInputChange = (event: { target: { value: any; name: any } }) => {
     const value = event.target.value;
     if (event.target.name === 'depositCollateral') {
       setExtraCollateralDeposit(value);
@@ -385,21 +413,28 @@ export const ManageVault = ({ match }) => {
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: "arkadiko-freddie-v1-1",
+      contractName: 'arkadiko-freddie-v1-1',
       functionName: 'mint',
       functionArgs: [
         uintCV(match.params.id),
         uintCV(parseFloat(usdToMint) * 1000000),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1'),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1')
+        contractPrincipalCV(
+          process.env.REACT_APP_CONTRACT_ADDRESS || '',
+          'arkadiko-collateral-types-v1-1'
+        ),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1'),
       ],
       onFinish: data => {
         console.log('finished mint!', data, data.txId);
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
         setShowMintModal(false);
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -408,14 +443,18 @@ export const ManageVault = ({ match }) => {
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: "arkadiko-freddie-v1-1",
+      contractName: 'arkadiko-freddie-v1-1',
       functionName: 'toggle-stacking',
       functionArgs: [uintCV(match.params.id)],
       onFinish: data => {
         console.log('finished toggling stacking!', data, data.txId);
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -424,14 +463,18 @@ export const ManageVault = ({ match }) => {
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: "arkadiko-freddie-v1-1",
+      contractName: 'arkadiko-freddie-v1-1',
       functionName: 'stack-collateral',
       functionArgs: [uintCV(match.params.id)],
       onFinish: data => {
         console.log('finished stacking!', data, data.txId);
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -454,9 +497,13 @@ export const ManageVault = ({ match }) => {
       functionName: 'enable-vault-withdrawals',
       functionArgs: [uintCV(match.params.id)],
       onFinish: data => {
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -466,20 +513,27 @@ export const ManageVault = ({ match }) => {
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: "arkadiko-freddie-v1-1",
+      contractName: 'arkadiko-freddie-v1-1',
       functionName: 'close-vault',
       postConditionMode: 0x01,
       functionArgs: [
         uintCV(match.params.id),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1')
+        contractPrincipalCV(
+          process.env.REACT_APP_CONTRACT_ADDRESS || '',
+          'arkadiko-collateral-types-v1-1'
+        ),
       ],
       onFinish: data => {
         console.log('finished closing vault!', data, data.txId);
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -493,28 +547,35 @@ export const ManageVault = ({ match }) => {
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: "arkadiko-freddie-v1-1",
+      contractName: 'arkadiko-freddie-v1-1',
       functionName: 'withdraw',
       functionArgs: [
         uintCV(match.params.id),
         uintCV(parseFloat(collateralToWithdraw) * 1000000),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1'),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1')
+        contractPrincipalCV(
+          process.env.REACT_APP_CONTRACT_ADDRESS || '',
+          'arkadiko-collateral-types-v1-1'
+        ),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1'),
       ],
       postConditionMode: 0x01,
       onFinish: data => {
         console.log('finished withdraw!', data);
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
         setShowWithdrawModal(false);
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
   const depositMaxAmount = () => {
-    setExtraCollateralDeposit((state.balance['stx'] / 1000000) - 1);
+    setExtraCollateralDeposit(state.balance['stx'] / 1000000 - 1);
   };
 
   const mintMaxAmount = () => {
@@ -528,9 +589,9 @@ export const ManageVault = ({ match }) => {
       ) * 0.98
     );
   };
-  
+
   const burnMaxAmount = () => {
-    let debtToPay = (Number(outstandingDebt()) * 1000000) + Number(stabilityFee);
+    let debtToPay = Number(outstandingDebt()) * 1000000 + Number(stabilityFee);
     if (debtToPay > state.balance['usda']) {
       const balance = Number(state.balance['usda']) / 1000000;
       debtToPay = balance.toFixed(6);
@@ -548,7 +609,12 @@ export const ManageVault = ({ match }) => {
 
       <Modal isOpen={showDepositModal}>
         <div className="flex px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-          <div className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+          <div
+            className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-headline"
+          >
             <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
               <button
                 type="button"
@@ -564,12 +630,17 @@ export const ManageVault = ({ match }) => {
             </div>
             <div>
               <div className="mt-3 text-center sm:mt-5">
-                <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings" id="modal-headline">
+                <h3
+                  className="text-lg font-medium leading-6 text-gray-900 font-headings"
+                  id="modal-headline"
+                >
                   Deposit Extra Collateral
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Choose how much extra collateral you want to post. You have a balance of {state.balance[vault?.collateralToken.toLowerCase()] / decimals} {vault?.collateralToken.toUpperCase()}.
+                    Choose how much extra collateral you want to post. You have a balance of{' '}
+                    {state.balance[vault?.collateralToken.toLowerCase()] / decimals}{' '}
+                    {vault?.collateralToken.toUpperCase()}.
                   </p>
                   <p className="text-sm text-gray-500">
                     We will automatically harvest any DIKO you are eligible for when depositing.
@@ -577,7 +648,12 @@ export const ManageVault = ({ match }) => {
 
                   <div className="mt-6">
                     <InputAmount
-                      balance={(state.balance[vault?.collateralToken.toLowerCase()] / decimals).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                      balance={(
+                        state.balance[vault?.collateralToken.toLowerCase()] / decimals
+                      ).toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 6,
+                      })}
                       token={vault?.collateralToken.toUpperCase()}
                       inputName="depositCollateral"
                       inputId="depositExtraStxAmount"
@@ -587,7 +663,6 @@ export const ManageVault = ({ match }) => {
                       onClickMax={depositMaxAmount}
                     />
                   </div>
-
                 </div>
               </div>
             </div>
@@ -613,7 +688,12 @@ export const ManageVault = ({ match }) => {
 
       <Modal isOpen={showWithdrawModal}>
         <div className="flex px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-          <div className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+          <div
+            className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-headline"
+          >
             <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
               <button
                 type="button"
@@ -629,12 +709,16 @@ export const ManageVault = ({ match }) => {
             </div>
             <div>
               <div className="mt-3 text-center sm:mt-5">
-                <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings" id="modal-headline">
+                <h3
+                  className="text-lg font-medium leading-6 text-gray-900 font-headings"
+                  id="modal-headline"
+                >
                   Withdraw Collateral
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Choose how much collateral you want to withdraw. You can withdraw a maximum of {maximumCollateralToWithdraw} {vault?.collateralToken.toUpperCase()}.
+                    Choose how much collateral you want to withdraw. You can withdraw a maximum of{' '}
+                    {maximumCollateralToWithdraw} {vault?.collateralToken.toUpperCase()}.
                   </p>
                   <p className="text-sm text-gray-500">
                     We will automatically harvest any DIKO you are eligible for when withdrawing.
@@ -652,7 +736,6 @@ export const ManageVault = ({ match }) => {
                       onClickMax={withdrawMaxAmount}
                     />
                   </div>
-
                 </div>
               </div>
             </div>
@@ -679,7 +762,12 @@ export const ManageVault = ({ match }) => {
 
       <Modal isOpen={showMintModal}>
         <div className="flex px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-          <div className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+          <div
+            className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-headline"
+          >
             <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
               <button
                 type="button"
@@ -695,17 +783,40 @@ export const ManageVault = ({ match }) => {
             </div>
             <div>
               <div className="mt-3 text-center sm:mt-5">
-                <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings" id="modal-headline">
+                <h3
+                  className="text-lg font-medium leading-6 text-gray-900 font-headings"
+                  id="modal-headline"
+                >
                   Mint extra USDA
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Choose how much extra USDA you want to mint. You can mint a maximum of {availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio, vault?.collateralToken).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA.
+                    Choose how much extra USDA you want to mint. You can mint a maximum of{' '}
+                    {availableCoinsToMint(
+                      price,
+                      collateralLocked(),
+                      outstandingDebt(),
+                      collateralType?.collateralToDebtRatio,
+                      vault?.collateralToken
+                    ).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 6,
+                    })}{' '}
+                    USDA.
                   </p>
 
                   <div className="mt-6">
                     <InputAmount
-                      balance={availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio, vault?.collateralToken).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                      balance={availableCoinsToMint(
+                        price,
+                        collateralLocked(),
+                        outstandingDebt(),
+                        collateralType?.collateralToDebtRatio,
+                        vault?.collateralToken
+                      ).toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 6,
+                      })}
                       token="USDA"
                       inputName="mintDebt"
                       inputId="mintUSDAAmount"
@@ -715,7 +826,6 @@ export const ManageVault = ({ match }) => {
                       onClickMax={mintMaxAmount}
                     />
                   </div>
-
                 </div>
               </div>
             </div>
@@ -741,7 +851,12 @@ export const ManageVault = ({ match }) => {
 
       <Modal isOpen={showBurnModal}>
         <div className="flex px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-          <div className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+          <div
+            className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-headline"
+          >
             <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
               <button
                 type="button"
@@ -757,17 +872,24 @@ export const ManageVault = ({ match }) => {
             </div>
             <div>
               <div className="mt-3 text-center sm:mt-5">
-                <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings" id="modal-headline">
+                <h3
+                  className="text-lg font-medium leading-6 text-gray-900 font-headings"
+                  id="modal-headline"
+                >
                   Burn USDA
                 </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Choose how much USDA you want to burn. Burning will include a stability fee of {stabilityFee / 1000000} USDA, so take this into account.
+                    Choose how much USDA you want to burn. Burning will include a stability fee of{' '}
+                    {stabilityFee / 1000000} USDA, so take this into account.
                   </p>
 
                   <div className="mt-6">
                     <InputAmount
-                      balance={(state.balance['usda'] / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                      balance={(state.balance['usda'] / 1000000).toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 6,
+                      })}
                       token="USDA"
                       inputName="burnDebt"
                       inputId="burnAmount"
@@ -777,7 +899,6 @@ export const ManageVault = ({ match }) => {
                       onClickMax={burnMaxAmount}
                     />
                   </div>
-
                 </div>
               </div>
             </div>
@@ -806,7 +927,11 @@ export const ManageVault = ({ match }) => {
           <header className="pb-5 border-b border-gray-200">
             <h2 className="text-xl font-bold leading-6 text-gray-900 font-headings">
               {loadingVaultData ? (
-                <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.HALF}/>
+                <Placeholder
+                  className="py-2"
+                  color={Placeholder.color.GRAY}
+                  width={Placeholder.width.HALF}
+                />
               ) : (
                 <>
                   {vault?.collateralToken.toUpperCase()}/USDA Vault #{match.params.id}
@@ -814,7 +939,7 @@ export const ManageVault = ({ match }) => {
               )}
             </h2>
           </header>
-          
+
           <div className="mt-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
@@ -823,30 +948,48 @@ export const ManageVault = ({ match }) => {
                     <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings">
                       Supply
                     </h3>
-                    <p className="mt-1 text-sm text-gray-500">Manage and deposit extra collateral.</p>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Manage and deposit extra collateral.
+                    </p>
                   </div>
                   <div className="px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 sm:p-6">
                     <div className="flex items-start justify-between">
                       {loadingVaultData ? (
                         <div className="flex flex-col flex-1">
-                          <Placeholder className="py-1.5" color={Placeholder.color.INDIGO} width={Placeholder.width.HALF}/>
-                          <Placeholder className="py-1.5" color={Placeholder.color.GRAY} width={Placeholder.width.THIRD}/>
+                          <Placeholder
+                            className="py-1.5"
+                            color={Placeholder.color.INDIGO}
+                            width={Placeholder.width.HALF}
+                          />
+                          <Placeholder
+                            className="py-1.5"
+                            color={Placeholder.color.GRAY}
+                            width={Placeholder.width.THIRD}
+                          />
                         </div>
                       ) : (
                         <div>
-                          <p className="text-lg font-semibold leading-none">{collateralLocked()} <span className="text-sm font-normal">{vault?.collateralToken.toUpperCase()}</span></p>
-                          <p className="text-base font-normal leading-6 text-gray-500">{vault?.collateralToken.toUpperCase()} Locked</p>
+                          <p className="text-lg font-semibold leading-none">
+                            {collateralLocked()}{' '}
+                            <span className="text-sm font-normal">
+                              {vault?.collateralToken.toUpperCase()}
+                            </span>
+                          </p>
+                          <p className="text-base font-normal leading-6 text-gray-500">
+                            {vault?.collateralToken.toUpperCase()} Locked
+                          </p>
                         </div>
                       )}
 
                       {isVaultOwner && !loadingVaultData ? (
-                        <button 
-                          type="button" 
+                        <button
+                          type="button"
                           className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                          onClick={() => setShowDepositModal(true)}>
+                          onClick={() => setShowDepositModal(true)}
+                        >
                           Deposit
                         </button>
-                      ) : null }
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -859,12 +1002,20 @@ export const ManageVault = ({ match }) => {
                             Stacking
                           </h3>
                           {canStackCollateral && !loadingVaultData ? (
-                            <Tooltip className="ml-2" shouldWrapChildren={true} label={`Stacking is ${enabledStacking ? 'enabled' : 'disabled'}`}>
+                            <Tooltip
+                              className="ml-2"
+                              shouldWrapChildren={true}
+                              label={`Stacking is ${enabledStacking ? 'enabled' : 'disabled'}`}
+                            >
                               <span className="relative flex w-3 h-3 ml-2">
                                 {enabledStacking ? (
                                   <span className="absolute inline-flex w-full h-full bg-green-400 rounded-full opacity-75 animate-ping"></span>
                                 ) : null}
-                                <span className={`relative inline-flex rounded-full h-3 w-3 ${enabledStacking ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                                <span
+                                  className={`relative inline-flex rounded-full h-3 w-3 ${
+                                    enabledStacking ? 'bg-green-500' : 'bg-red-500'
+                                  }`}
+                                ></span>
                               </span>
                             </Tooltip>
                           ) : null}
@@ -872,41 +1023,54 @@ export const ManageVault = ({ match }) => {
                         <p className="mt-1 text-sm text-gray-500">Update your stacking status.</p>
                       </div>
                       <div>
-                        {canStackCollateral && isVaultOwner && vault?.stackedTokens > 0 && !vault?.revokedStacking && !canWithdrawCollateral && !loadingVaultData ? (
+                        {canStackCollateral &&
+                        isVaultOwner &&
+                        vault?.stackedTokens > 0 &&
+                        !vault?.revokedStacking &&
+                        !canWithdrawCollateral &&
+                        !loadingVaultData ? (
                           // user has indicated they want to stack their STX tokens
                           startedStacking ? (
-                            <button 
-                              type="button" 
+                            <button
+                              type="button"
                               className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => callToggleStacking()}>
+                              onClick={() => callToggleStacking()}
+                            >
                               Unstack
                             </button>
                           ) : (
                             // cycle not started, offer to opt-out
-                            <button 
-                              type="button" 
+                            <button
+                              type="button"
                               className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => callToggleStacking()}>
+                              onClick={() => callToggleStacking()}
+                            >
                               Do not stack
                             </button>
                           )
-                        ) : canStackCollateral && isVaultOwner && vault?.stackedTokens > 0 && vault?.revokedStacking && !loadingVaultData ? (
+                        ) : canStackCollateral &&
+                          isVaultOwner &&
+                          vault?.stackedTokens > 0 &&
+                          vault?.revokedStacking &&
+                          !loadingVaultData ? (
                           // user has unstacked collateral, offer to stack again
                           isVaultOwner ? (
-                            <button 
-                              type="button" 
+                            <button
+                              type="button"
                               className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => callToggleStacking()}>
+                              onClick={() => callToggleStacking()}
+                            >
                               Restack
                             </button>
-                          ) : null 
+                          ) : null
                         ) : canStackCollateral && isVaultOwner && !loadingVaultData ? (
                           // user is not stacking
                           isVaultOwner ? (
-                            <button 
-                              type="button" 
+                            <button
+                              type="button"
                               className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => stackCollateral()}>
+                              onClick={() => stackCollateral()}
+                            >
                               Stack
                             </button>
                           ) : null
@@ -917,12 +1081,28 @@ export const ManageVault = ({ match }) => {
                   {loadingStackerData || loadingVaultData ? (
                     <div className="px-4 py-5 sm:p-6">
                       <div className="flex justify-between flex-1">
-                        <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.HALF}/>
-                        <Placeholder className="justify-end py-2" color={Placeholder.color.INDIGO} width={Placeholder.width.THIRD}/>
+                        <Placeholder
+                          className="py-2"
+                          color={Placeholder.color.GRAY}
+                          width={Placeholder.width.HALF}
+                        />
+                        <Placeholder
+                          className="justify-end py-2"
+                          color={Placeholder.color.INDIGO}
+                          width={Placeholder.width.THIRD}
+                        />
                       </div>
                       <div className="flex justify-between flex-1 mt-4">
-                        <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.HALF}/>
-                        <Placeholder className="justify-end py-2" color={Placeholder.color.INDIGO} width={Placeholder.width.THIRD}/>
+                        <Placeholder
+                          className="py-2"
+                          color={Placeholder.color.GRAY}
+                          width={Placeholder.width.HALF}
+                        />
+                        <Placeholder
+                          className="justify-end py-2"
+                          color={Placeholder.color.INDIGO}
+                          width={Placeholder.width.THIRD}
+                        />
                       </div>
                     </div>
                   ) : canStackCollateral ? (
@@ -931,141 +1111,179 @@ export const ManageVault = ({ match }) => {
                         <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
                           <dt className="inline-flex items-center text-sm font-medium text-gray-500">
                             {unlockBurnHeight == 0 ? (
-                              <p className="text-base font-normal leading-6 text-gray-500">Will be stacked</p>
+                              <p className="text-base font-normal leading-6 text-gray-500">
+                                Will be stacked
+                              </p>
                             ) : (
-                              <p className="text-base font-normal leading-6 text-gray-500">Currently stacking</p>
+                              <p className="text-base font-normal leading-6 text-gray-500">
+                                Currently stacking
+                              </p>
                             )}
                           </dt>
                           <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
-                            <p className="text-lg font-semibold leading-none">{microToReadable(vault?.stackedTokens)} <span className="text-sm font-normal">{vault?.collateralToken.toUpperCase()}</span>
+                            <p className="text-lg font-semibold leading-none">
+                              {microToReadable(vault?.stackedTokens)}{' '}
+                              <span className="text-sm font-normal">
+                                {vault?.collateralToken.toUpperCase()}
+                              </span>
                             </p>
                           </dd>
                         </div>
                         <div className="mt-4 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                          {stackingEndDate != "" ? (
+                          {stackingEndDate != '' ? (
                             <>
                               <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                                <p className="text-base font-normal leading-6 text-gray-500">End of stacking</p>
-                                <Tooltip shouldWrapChildren={true} label={`The yield on your vault is given when stacking ends. If you opt-out of stacking, you can withdraw your funds when stacking ends.`}>
-                                  <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                                <p className="text-base font-normal leading-6 text-gray-500">
+                                  End of stacking
+                                </p>
+                                <Tooltip
+                                  shouldWrapChildren={true}
+                                  label={`The yield on your vault is given when stacking ends. If you opt-out of stacking, you can withdraw your funds when stacking ends.`}
+                                >
+                                  <InformationCircleIcon
+                                    className="block w-5 h-5 ml-2 text-gray-400"
+                                    aria-hidden="true"
+                                  />
                                 </Tooltip>
                               </dt>
                               <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
-                                <p className="text-lg font-semibold leading-none">{stackingEndDate}</p>
+                                <p className="text-lg font-semibold leading-none">
+                                  {stackingEndDate}
+                                </p>
                               </dd>
                             </>
                           ) : unlockBurnHeight == 0 ? (
                             <>
                               <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                                <p className="text-base font-normal leading-6 text-gray-500">Stacking starts in</p>
+                                <p className="text-base font-normal leading-6 text-gray-500">
+                                  Stacking starts in
+                                </p>
                               </dt>
                               <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
-                                <p className="text-lg font-semibold leading-none">{state.daysLeft} days</p>
+                                <p className="text-lg font-semibold leading-none">
+                                  {state.daysLeft} days
+                                </p>
                               </dd>
                             </>
                           ) : null}
                         </div>
                       </dl>
                     </div>
-                  ) : null }
+                  ) : null}
 
                   <div className="px-4 py-5 sm:p-6">
                     <div className="sm:flex sm:items-center: sm:justify-between ">
-                      <h4 className="text-xl font-normal leading-6 text-gray-900 font-headings">Withdrawal</h4>
-                      {isVaultOwner && canWithdrawCollateral && !loadingVaultData && totalDebt > 0 ? (
-                        <button 
-                          type="button" 
+                      <h4 className="text-xl font-normal leading-6 text-gray-900 font-headings">
+                        Withdrawal
+                      </h4>
+                      {isVaultOwner &&
+                      canWithdrawCollateral &&
+                      !loadingVaultData &&
+                      totalDebt > 0 ? (
+                        <button
+                          type="button"
                           className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                          onClick={() => setShowWithdrawModal(true)}>
+                          onClick={() => setShowWithdrawModal(true)}
+                        >
                           Withdraw
                         </button>
-                      ) : null }
-                      {isVaultOwner && canUnlockCollateral && vault?.stackedTokens > 0 && !loadingVaultData ? (
-                        <button 
-                        type="button" 
-                        className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        onClick={() => unlockCollateral()}>
+                      ) : null}
+                      {isVaultOwner &&
+                      canUnlockCollateral &&
+                      vault?.stackedTokens > 0 &&
+                      !loadingVaultData ? (
+                        <button
+                          type="button"
+                          className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          onClick={() => unlockCollateral()}
+                        >
                           Unlock Collateral
-                      </button>
-                      ) : null }
+                        </button>
+                      ) : null}
                     </div>
 
                     <dl className="mt-4">
                       <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
                         <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                          <p className="text-base font-normal leading-6 text-gray-500">Able to withdraw</p>
+                          <p className="text-base font-normal leading-6 text-gray-500">
+                            Able to withdraw
+                          </p>
                         </dt>
                         <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
                           {loadingVaultData ? (
-                            <Placeholder className="justify-end py-2" color={Placeholder.color.INDIGO} width={Placeholder.width.THIRD}/>
+                            <Placeholder
+                              className="justify-end py-2"
+                              color={Placeholder.color.INDIGO}
+                              width={Placeholder.width.THIRD}
+                            />
                           ) : (
-                            <p className="text-lg font-semibold leading-none">{maximumCollateralToWithdraw} <span className="text-sm font-normal">{vault?.collateralToken.toUpperCase()}</span></p>
+                            <p className="text-lg font-semibold leading-none">
+                              {maximumCollateralToWithdraw}{' '}
+                              <span className="text-sm font-normal">
+                                {vault?.collateralToken.toUpperCase()}
+                              </span>
+                            </p>
                           )}
                         </dd>
                       </div>
                     </dl>
 
                     {loadingVaultData ? (
-                      <div className="p-4 mt-4 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
-                        <div className="flex">
-                          <div className="flex-shrink-0">
-                            <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
-                          </div>
-                          <div className="flex flex-col flex-1 ml-3">
-                            <Placeholder className="py-2" color={Placeholder.color.INDIGO} width={Placeholder.width.FULL}/>
-                            <Placeholder className="py-2" color={Placeholder.color.INDIGO} width={Placeholder.width.FULL}/>
-                          </div>
-                        </div>
+                      <div className="mt-4">
+                        <Alert>
+                          <Placeholder
+                            className="py-2"
+                            color={Placeholder.color.INDIGO}
+                            width={Placeholder.width.FULL}
+                          />
+                          <Placeholder
+                            className="py-2"
+                            color={Placeholder.color.INDIGO}
+                            width={Placeholder.width.FULL}
+                          />
+                        </Alert>
                       </div>
-                    ) : canStackCollateral && isVaultOwner && vault?.stackedTokens > 0 && !vault?.revokedStacking && !canWithdrawCollateral ? (
+                    ) : canStackCollateral &&
+                      isVaultOwner &&
+                      vault?.stackedTokens > 0 &&
+                      !vault?.revokedStacking &&
+                      !canWithdrawCollateral ? (
                       // user has indicated they want to stack their STX tokens
-                      <div className="p-4 mt-4 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
-                        <div className="flex">
-                          <div className="flex-shrink-0">
-                            <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
-                          </div>
-                          <div className="flex-1 ml-3 md:flex md:justify-between">
-                            {startedStacking ? (
-                              <p className="text-sm text-blue-700">
-                                You cannot withdraw your collateral since it is stacked until Bitcoin block {unlockBurnHeight}. Unstack your collateral to unlock it for withdrawal.
-                              </p>
-                            ) : (
-                              <p className="text-sm text-blue-700">
-                                The next stacking cycle has not started yet. You can still choose to opt-out of stacking your STX tokens. If you do so, you will not earn a yield on your vault.
-                              </p>
-                            )}
-                          </div>
-                        </div>
+                      <div className="mt-4">
+                        <Alert>
+                          {startedStacking ? (
+                            <p className="text-sm text-blue-700">
+                              You cannot withdraw your collateral since it is stacked until Bitcoin
+                              block {unlockBurnHeight}. Unstack your collateral to unlock it for
+                              withdrawal.
+                            </p>
+                          ) : (
+                            <p className="text-sm text-blue-700">
+                              The next stacking cycle has not started yet. You can still choose to
+                              opt-out of stacking your STX tokens. If you do so, you will not earn a
+                              yield on your vault.
+                            </p>
+                          )}
+                        </Alert>
                       </div>
-                    ) : canStackCollateral && isVaultOwner && vault?.stackedTokens > 0 && vault?.revokedStacking ? (
-                      <div className="p-4 mt-4 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
-                        <div className="flex">
-                          <div className="flex-shrink-0">
-                            <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
+                    ) : canStackCollateral &&
+                      isVaultOwner &&
+                      vault?.stackedTokens > 0 &&
+                      vault?.revokedStacking ? (
+                      <div className="mt-4">
+                        <Alert>
+                          <div className="md:flex md:justify-between">
+                            <p className="text-sm text-blue-700">
+                              You have unstacked your collateral, you can choose to stack again.
+                            </p>
                           </div>
-                          <div className="flex-1 ml-3 md:flex md:justify-between">
-                            <p className="text-sm text-blue-700">You have unstacked your collateral, you can choose to stack again.</p>
-                            {isVaultOwner ? (
-                              <button 
-                                type="button" 
-                                className="font-medium text-blue-700 whitespace-nowrap hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                onClick={() => callToggleStacking()}>
-                                Restack
-                              </button>
-                            ) : null }
-                          </div>
-                        </div>
+                        </Alert>
                       </div>
                     ) : canStackCollateral && isVaultOwner ? (
-                      <div className="p-4 mt-4 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
-                        <div className="flex">
-                          <div className="flex-shrink-0">
-                            <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
-                          </div>
-                          <div className="flex-1 ml-3 md:flex md:justify-between">
-                            <p className="text-sm text-blue-700">You are not stacking your collateral.</p>
-                          </div>
-                        </div>
+                      <div className="mt-4">
+                        <Alert>
+                          <p>You are not stacking your collateral.</p>
+                        </Alert>
                       </div>
                     ) : null}
                   </div>
@@ -1077,46 +1295,91 @@ export const ManageVault = ({ match }) => {
                     <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings">
                       Mint
                     </h3>
-                    <p className="mt-1 text-sm text-gray-500">Manage your loan. Get extra USDA. Pay it back.</p>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Manage your loan. Get extra USDA. Pay it back.
+                    </p>
                   </div>
                   <div className="relative px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 sm:p-6">
                     <div>
                       <div className="flex items-start justify-between">
                         <div>
                           {loadingVaultData ? (
-                            <Placeholder className="py-2" color={Placeholder.color.INDIGO} width={Placeholder.width.THIRD}/>
+                            <Placeholder
+                              className="py-2"
+                              color={Placeholder.color.INDIGO}
+                              width={Placeholder.width.THIRD}
+                            />
                           ) : (
-                            <p className="text-lg font-semibold leading-none">{availableCoinsToMint(price, collateralLocked(), outstandingDebt(), collateralType?.collateralToDebtRatio, vault?.collateralToken).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} <span className="text-sm font-normal">USDA</span></p>
+                            <p className="text-lg font-semibold leading-none">
+                              {availableCoinsToMint(
+                                price,
+                                collateralLocked(),
+                                outstandingDebt(),
+                                collateralType?.collateralToDebtRatio,
+                                vault?.collateralToken
+                              ).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 6,
+                              })}{' '}
+                              <span className="text-sm font-normal">USDA</span>
+                            </p>
                           )}
                           <p className="flex items-center text-base font-normal leading-6 text-gray-500">
-                            Available to mint 
-                            <Tooltip className="ml-2" shouldWrapChildren={true} label={`When the price of ${vault?.collateralToken.toUpperCase()} increases compared to when you created a vault, your collateral is bigger in dollar value so you can mint more.`}>
-                              <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                            Available to mint
+                            <Tooltip
+                              className="ml-2"
+                              shouldWrapChildren={true}
+                              label={`When the price of ${vault?.collateralToken.toUpperCase()} increases compared to when you created a vault, your collateral is bigger in dollar value so you can mint more.`}
+                            >
+                              <InformationCircleIcon
+                                className="block w-5 h-5 ml-2 text-gray-400"
+                                aria-hidden="true"
+                              />
                             </Tooltip>
                           </p>
                         </div>
                         {isVaultOwner && !loadingVaultData ? (
-                          <button 
-                            type="button" 
+                          <button
+                            type="button"
                             className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            onClick={() => setShowMintModal(true)}>
+                            onClick={() => setShowMintModal(true)}
+                          >
                             Mint
                           </button>
-                        ) : null }
+                        ) : null}
                       </div>
 
                       <div className="mt-4">
                         <div className="flex items-start justify-between">
                           <div>
                             {loadingFeesData || loadingVaultData ? (
-                              <Placeholder className="py-2" color={Placeholder.color.INDIGO} width={Placeholder.width.THIRD}/>
+                              <Placeholder
+                                className="py-2"
+                                color={Placeholder.color.INDIGO}
+                                width={Placeholder.width.THIRD}
+                              />
                             ) : (
-                              <p className="text-lg font-semibold leading-none">{totalDebt.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} <span className="text-sm font-normal">USDA</span></p>
-                            )}     
+                              <p className="text-lg font-semibold leading-none">
+                                {totalDebt.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 6,
+                                })}{' '}
+                                <span className="text-sm font-normal">USDA</span>
+                              </p>
+                            )}
                             <p className="flex items-center text-base font-normal leading-6 text-gray-500">
-                              Outstanding USDA debt 
-                              <Tooltip className="ml-2" shouldWrapChildren={true} label={`Includes a ${collateralType?.stabilityFeeApy / 100}% yearly stability fee.`}>
-                                <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                              Outstanding USDA debt
+                              <Tooltip
+                                className="ml-2"
+                                shouldWrapChildren={true}
+                                label={`Includes a ${
+                                  collateralType?.stabilityFeeApy / 100
+                                }% yearly stability fee.`}
+                              >
+                                <InformationCircleIcon
+                                  className="block w-5 h-5 ml-2 text-gray-400"
+                                  aria-hidden="true"
+                                />
                               </Tooltip>
                             </p>
                           </div>
@@ -1124,17 +1387,19 @@ export const ManageVault = ({ match }) => {
                             <button
                               type="button"
                               className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => closeVault()}>
+                              onClick={() => closeVault()}
+                            >
                               Withdraw Collateral & Close Vault
                             </button>
                           ) : isVaultOwner ? (
-                            <button 
-                              type="button" 
+                            <button
+                              type="button"
                               className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => setShowBurnModal(true)}>
+                              onClick={() => setShowBurnModal(true)}
+                            >
                               Pay back
                             </button>
-                          ) : null }
+                          ) : null}
                         </div>
                       </div>
                     </div>
@@ -1142,17 +1407,35 @@ export const ManageVault = ({ match }) => {
                       <dl>
                         <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
                           <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                            <p className="text-base font-normal leading-6 text-gray-500">Collateral to Debt ratio</p>
-                            <Tooltip shouldWrapChildren={true} label={`The amount of collateral you deposit in a vault versus the stablecoin debt you are minting against it`}>
-                              <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                            <p className="text-base font-normal leading-6 text-gray-500">
+                              Collateral to Debt ratio
+                            </p>
+                            <Tooltip
+                              shouldWrapChildren={true}
+                              label={`The amount of collateral you deposit in a vault versus the stablecoin debt you are minting against it`}
+                            >
+                              <InformationCircleIcon
+                                className="block w-5 h-5 ml-2 text-gray-400"
+                                aria-hidden="true"
+                              />
                             </Tooltip>
                           </dt>
                           <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
                             {loadingVaultData ? (
-                              <Placeholder className="justify-end py-2" color={Placeholder.color.INDIGO} width={Placeholder.width.THIRD}/>
+                              <Placeholder
+                                className="justify-end py-2"
+                                color={Placeholder.color.INDIGO}
+                                width={Placeholder.width.THIRD}
+                              />
                             ) : (
-                              <p className={`text-lg font-semibold leading-none ${debtClass(collateralType?.liquidationRatio, debtRatio)}`}>
-                                {debtRatio}<span className="text-sm font-normal">%</span>
+                              <p
+                                className={`text-lg font-semibold leading-none ${debtClass(
+                                  collateralType?.liquidationRatio,
+                                  debtRatio
+                                )}`}
+                              >
+                                {debtRatio}
+                                <span className="text-sm font-normal">%</span>
                               </p>
                             )}
                           </dd>
@@ -1160,17 +1443,30 @@ export const ManageVault = ({ match }) => {
 
                         <div className="mt-4 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
                           <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                            <p className="text-base font-normal leading-6 text-gray-500">Minimum Ratio (before liquidation)</p>
-                            <Tooltip shouldWrapChildren={true} label={`The collateral-to-debt ratio when your vault gets liquidated`}>
-                              <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                            <p className="text-base font-normal leading-6 text-gray-500">
+                              Minimum Ratio (before liquidation)
+                            </p>
+                            <Tooltip
+                              shouldWrapChildren={true}
+                              label={`The collateral-to-debt ratio when your vault gets liquidated`}
+                            >
+                              <InformationCircleIcon
+                                className="block w-5 h-5 ml-2 text-gray-400"
+                                aria-hidden="true"
+                              />
                             </Tooltip>
                           </dt>
                           <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
                             {loadingVaultData ? (
-                              <Placeholder className="justify-end py-2" color={Placeholder.color.INDIGO} width={Placeholder.width.THIRD}/>
+                              <Placeholder
+                                className="justify-end py-2"
+                                color={Placeholder.color.INDIGO}
+                                width={Placeholder.width.THIRD}
+                              />
                             ) : (
                               <p className="text-lg font-semibold leading-none">
-                                {collateralType?.liquidationRatio}<span className="text-sm font-normal">%</span>
+                                {collateralType?.liquidationRatio}
+                                <span className="text-sm font-normal">%</span>
                               </p>
                             )}
                           </dd>
@@ -1178,39 +1474,67 @@ export const ManageVault = ({ match }) => {
 
                         <div className="mt-4 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
                           <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                            <p className="text-base font-normal leading-6 text-gray-500">Liquidation penalty</p>
-                            <Tooltip shouldWrapChildren={true} label={`The penalty you pay when your vault gets liquidated`}>
-                              <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                            <p className="text-base font-normal leading-6 text-gray-500">
+                              Liquidation penalty
+                            </p>
+                            <Tooltip
+                              shouldWrapChildren={true}
+                              label={`The penalty you pay when your vault gets liquidated`}
+                            >
+                              <InformationCircleIcon
+                                className="block w-5 h-5 ml-2 text-gray-400"
+                                aria-hidden="true"
+                              />
                             </Tooltip>
                           </dt>
                           <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
                             {loadingVaultData ? (
-                              <Placeholder className="justify-end py-2" color={Placeholder.color.INDIGO} width={Placeholder.width.THIRD}/>
+                              <Placeholder
+                                className="justify-end py-2"
+                                color={Placeholder.color.INDIGO}
+                                width={Placeholder.width.THIRD}
+                              />
                             ) : (
                               <p className="text-lg font-semibold leading-none">
-                              {collateralType?.liquidationPenalty}<span className="text-sm font-normal">%</span>
+                                {collateralType?.liquidationPenalty}
+                                <span className="text-sm font-normal">%</span>
                               </p>
                             )}
                           </dd>
                         </div>
                       </dl>
 
-                      <div className="p-4 mt-4 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
-                        <div className="flex">
-                          <div className="flex-shrink-0">
-                            <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
-                          </div>
-                          <div className="flex-1 ml-3 md:flex md:justify-between">
-                            {loadingVaultData ? (
-                              <div className="flex flex-col flex-1">
-                                <Placeholder className="py-2" color={Placeholder.color.INDIGO} width={Placeholder.width.FULL}/>
-                                <Placeholder className="py-2" color={Placeholder.color.INDIGO} width={Placeholder.width.FULL}/>
-                              </div>
-                            ) : (
-                              <p className="text-sm text-blue-700">The current {vault?.collateralToken} price is <span className="font-semibold text-blue-900">${price / 1000000} USD</span>. You will be liquidated if the {vault?.collateralToken} price drops below <span className="font-semibold text-blue-900">${liquidationPrice()} USD</span>. Pay back the outstanding debt or deposit extra collateral to keep your vault healthy.</p>
-                            )}
-                          </div>
-                        </div>
+                      <div className="mt-4">
+                        <Alert>
+                          {loadingVaultData ? (
+                            <div className="flex flex-col flex-1">
+                              <Placeholder
+                                className="py-2"
+                                color={Placeholder.color.INDIGO}
+                                width={Placeholder.width.FULL}
+                              />
+                              <Placeholder
+                                className="py-2"
+                                color={Placeholder.color.INDIGO}
+                                width={Placeholder.width.FULL}
+                              />
+                            </div>
+                          ) : (
+                            <p>
+                              The current {vault?.collateralToken} price is{' '}
+                              <span className="font-semibold text-blue-900">
+                                ${price / 1000000} USD
+                              </span>
+                              . You will be liquidated if the {vault?.collateralToken} price drops
+                              below{' '}
+                              <span className="font-semibold text-blue-900">
+                                ${liquidationPrice()} USD
+                              </span>
+                              . Pay back the outstanding debt or deposit extra collateral to keep
+                              your vault healthy.
+                            </p>
+                          )}
+                        </Alert>
                       </div>
                     </div>
                   </div>
@@ -1221,5 +1545,5 @@ export const ManageVault = ({ match }) => {
         </section>
       </main>
     </Container>
-  )
+  );
 };

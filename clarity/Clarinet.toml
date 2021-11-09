@@ -253,6 +253,10 @@ path = "contracts/arkadiko-diko-init.clar"
 depends_on = ["arkadiko-vault-data-v1-1", "arkadiko-swap-v1-1"]
 path = "contracts/arkadiko-claim-yield-v1-1.clar"
 
+[contracts.query-swap]
+depends_on = ["arkadiko-swap-v1-1"]
+path = "contracts/recovery/query-swap.clar"
+
 [contracts.sip-010-trait-ft-standard]
 depends_on = []
 path = "contracts/sip-010-trait-ft-standard.clar"
@@ -266,3 +270,9 @@ depends_on = []
 [contracts.tokensoft-token]
 path = "contracts/xbtc/tokensoft-token.clar"
 depends_on = ["sip-010-trait-ft-standard", "restricted-token-trait"]
+
+# Tests
+[contracts.malicious-ft]
+path = "contracts/tests/malicious-ft.clar"
+depends_on = ["sip-010-trait-ft-standard", "arkadiko-dao-token-trait-v1"]
+

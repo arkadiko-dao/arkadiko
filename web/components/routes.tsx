@@ -24,7 +24,7 @@ export const routerConfig = [
   {
     path: '/',
     component: Home,
-  }
+  },
 ];
 
 export function Routes() {
@@ -38,6 +38,9 @@ export function Routes() {
       <Route exact path="/onboarding/step-4-governance" component={OnboardingStep4Governance} />
       <Route exact path="/onboarding/end" component={OnboardingEnd} />
       <Route exact path="/vaults" component={Home} />
+      <Route exact path="/swap" component={Swap} />
+      <Route exact path="/swap/add/:currencyIdA/:currencyIdB" component={AddSwapLiquidity} />
+      <Route exact path="/swap/remove/:currencyIdA/:currencyIdB" component={RemoveSwapLiquidity} />
       <Route exact path="/pool" component={Pool} />
 
       <Route exact path="/auctions" component={Auctions} />

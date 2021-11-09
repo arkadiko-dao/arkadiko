@@ -21,9 +21,9 @@ import { CollateralType } from '@components/collateral-type';
 import { useEffect } from 'react';
 import { tokenList } from '@components/token-swap-list';
 import { VaultProps } from './vault';
-import { EmptyState } from './empty-state';
+import { EmptyState } from './ui/empty-state';
 import { ArchiveIcon } from '@heroicons/react/outline';
-import { Placeholder } from './placeholder';
+import { Placeholder } from './ui/placeholder';
 import { InformationCircleIcon } from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
 
@@ -45,16 +45,16 @@ export const Mint = () => {
 
   useEffect(() => {
     const fetchPrices = async () => {
-      let stxPrice = await getPrice('STX');
+      const stxPrice = await getPrice('STX');
       setStxPrice(stxPrice);
 
-      let xbtcPrice = await getPrice('xBTC');
+      const xbtcPrice = await getPrice('xBTC');
       setXbtcPrice(xbtcPrice);
 
-      let dikoPrice = await getDikoAmmPrice();
+      const dikoPrice = await getDikoAmmPrice();
       setDikoPrice(dikoPrice);
 
-      let usdaPrice = await getPrice('USDA');
+      const usdaPrice = await getPrice('USDA');
       setUsdaPrice(usdaPrice);
 
       setLoadingStackingData(false);
@@ -73,11 +73,11 @@ export const Mint = () => {
   }, [state.currentTxStatus]);
 
   useEffect(() => {
-    const fetchVault = async (vaultId:number) => {
+    const fetchVault = async (vaultId: number) => {
       const vault = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-vault-data-v1-1",
-        functionName: "get-vault-by-id",
+        contractName: 'arkadiko-vault-data-v1-1',
+        functionName: 'get-vault-by-id',
         functionArgs: [uintCV(vaultId)],
         senderAddress: address || '',
         network: network,
@@ -86,7 +86,7 @@ export const Mint = () => {
       return json;
     };
 
-    async function asyncForEach(array:any, callback:any) {
+    async function asyncForEach(array: any, callback: any) {
       for (let index = 0; index < array.length; index++) {
         await callback(array[index], index, array);
       }
@@ -95,16 +95,16 @@ export const Mint = () => {
     const fetchVaults = async () => {
       const vaults = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-vault-data-v1-1",
-        functionName: "get-vault-entries",
+        contractName: 'arkadiko-vault-data-v1-1',
+        functionName: 'get-vault-entries',
         functionArgs: [standardPrincipalCV(address || '')],
         senderAddress: address || '',
         network: network,
       });
       const json = cvToJSON(vaults);
-      let arr:Array<VaultProps> = [];
+      const arr: VaultProps[] = [];
 
-      await asyncForEach(json.value.ids.value, async (vaultId:any) => {
+      await asyncForEach(json.value.ids.value, async (vaultId: any) => {
         if (Number(vaultId.value) !== 0) {
           const vault = await fetchVault(vaultId.value);
           const data = vault.value;
@@ -119,25 +119,25 @@ export const Mint = () => {
             leftoverCollateral: data['leftover-collateral'].value,
             debt: data['debt'].value,
             stackedTokens: data['stacked-tokens'].value,
-            collateralData: {}
+            collateralData: {},
           });
         }
       });
 
       const rewardCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-vault-rewards-v1-1",
-        functionName: "get-pending-rewards",
+        contractName: 'arkadiko-vault-rewards-v1-1',
+        functionName: 'get-pending-rewards',
         functionArgs: [standardPrincipalCV(address || '')],
         senderAddress: contractAddress || '',
-        network: network
+        network: network,
       });
       const reward = cvToJSON(rewardCall);
       setPendingVaultRewards(reward.value.value / 1000000);
 
       setState(prevState => ({
         ...prevState,
-        vaults: arr
+        vaults: arr,
       }));
       setLoadingVaults(false);
     };
@@ -154,7 +154,7 @@ export const Mint = () => {
       recipient: standardPrincipalCV(address || ''),
       amount: new BN(5000000000),
       senderKey: privateKeyToString(senderKey),
-      network: network
+      network: network,
     });
     await broadcastTransaction(transaction, network);
   };
@@ -169,7 +169,13 @@ export const Mint = () => {
     await fetch(url, {
       method: 'POST',
     });
-    setState(prevState => ({ ...prevState, showTxModal: true, currentTxStatus: 'requesting faucet tokens...', currentTxMessage: 'Please refresh this page manually after 5 minutes. Your balance should be updated.' }));
+    setState(prevState => ({
+      ...prevState,
+      showTxModal: true,
+      currentTxStatus: 'requesting faucet tokens...',
+      currentTxMessage:
+        'Please refresh this page manually after 5 minutes. Your balance should be updated.',
+    }));
   };
 
   const claimPendingRewards = async () => {
@@ -177,13 +183,17 @@ export const Mint = () => {
       network,
       contractAddress,
       stxAddress: address,
-      contractName: "arkadiko-vault-rewards-v1-1",
-      functionName: "claim-pending-rewards",
+      contractName: 'arkadiko-vault-rewards-v1-1',
+      functionName: 'claim-pending-rewards',
       functionArgs: [],
       onFinish: data => {
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -192,18 +202,31 @@ export const Mint = () => {
       <main className="py-12">
         <section>
           <div className="relative">
-            <div className="absolute w-full h-full" style={{backgroundImage: 'url(/assets/stacks-pattern.png)', backgroundSize: '20%'}}></div>
+            <div
+              className="absolute w-full h-full"
+              style={{ backgroundImage: 'url(/assets/stacks-pattern.png)', backgroundSize: '20%' }}
+            ></div>
             <div className="absolute bottom-0 right-0 z-10 p-2 mb-2 mr-2 bg-indigo-600 rounded-full">
               <a href="https://stacking.club/" target="_blank" rel="noopener noreferrer">
-                <svg className="w-4 h-4" viewBox="0 0 120 121" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M108.897 120.001L83.4366 81.4259H120V66.872H0V81.4428H36.5512L11.1027 120.001H30.0887L60.0001 74.6811L89.9113 120.001H108.897ZM120 52.7468V38.0464H84.1795L109.29 0H90.3043L59.9997 45.9149L29.6957 0H10.7099L35.8527 38.0805H0V52.7468H120Z" fill="white"/>
+                <svg
+                  className="w-4 h-4"
+                  viewBox="0 0 120 121"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M108.897 120.001L83.4366 81.4259H120V66.872H0V81.4428H36.5512L11.1027 120.001H30.0887L60.0001 74.6811L89.9113 120.001H108.897ZM120 52.7468V38.0464H84.1795L109.29 0H90.3043L59.9997 45.9149L29.6957 0H10.7099L35.8527 38.0805H0V52.7468H120Z"
+                    fill="white"
+                  />
                 </svg>
               </a>
             </div>
 
             <dl className="relative grid grid-cols-1 overflow-hidden bg-indigo-100 bg-opacity-50 border border-indigo-200 divide-y divide-indigo-200 rounded-lg shadow-sm md:grid-cols-4 md:divide-y-0 md:divide-x">
               <div className="px-4 py-5 sm:p-6">
-                <dt className="text-xs font-semibold text-indigo-800 uppercase">Stacking Cycle #</dt>
+                <dt className="text-xs font-semibold text-indigo-800 uppercase">
+                  Stacking Cycle #
+                </dt>
                 <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
                     <Placeholder className="py-2" width={Placeholder.width.THIRD} />
@@ -253,44 +276,60 @@ export const Mint = () => {
             </dl>
           </div>
         </section>
-        
+
         <section className="mt-12">
           <header className="pb-5 border-b border-gray-200 sm:flex sm:items-center sm:justify-between">
-            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">Your vaults</h3>
+            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">
+              Your vaults
+            </h3>
             <div className="flex items-center mt-3 sm:mt-0 sm:ml-4">
               <div className="flex flex-col items-end text-sm">
                 <p className="flex items-center">
                   Unclaimed rewards
-                  <Tooltip shouldWrapChildren={true} label={`Vaults will receive DIKO rewards pro rata the collateral deposited. First 6 weeks only!`}>
-                    <InformationCircleIcon className="w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                  <Tooltip
+                    shouldWrapChildren={true}
+                    label={`Vaults will receive DIKO rewards pro rata the collateral deposited. First 6 weeks only!`}
+                  >
+                    <InformationCircleIcon
+                      className="w-5 h-5 ml-2 text-gray-400"
+                      aria-hidden="true"
+                    />
                   </Tooltip>
-                </p>  
+                </p>
                 <p className="font-semibold">
-                  {pendingVaultRewards.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
+                  {pendingVaultRewards.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 6,
+                  })}{' '}
+                  DIKO
                 </p>
               </div>
               {pendingVaultRewards > 0 ? (
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="inline-flex items-center px-3 py-2 ml-4 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   onClick={() => claimPendingRewards()}
                   disabled={pendingVaultRewards === 0}
                 >
                   Claim rewards
                 </button>
-              ) : null }
+              ) : null}
             </div>
           </header>
 
           <div className="mt-4">
-            {vaults.length && Object.keys(collateralTypes).length === state.definedCollateralTypes.length ? (
+            {vaults.length &&
+            Object.keys(collateralTypes).length === state.definedCollateralTypes.length ? (
               <VaultGroup vaults={vaults} />
             ) : loadingVaults === true ? (
               <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead>
                     <tr>
-                      <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50"
+                      >
                         <Placeholder color={Placeholder.color.GRAY} />
                       </th>
                     </tr>
@@ -316,20 +355,22 @@ export const Mint = () => {
                 description="Start creating a new vault by choosing the appropriate collateral type below."
               />
             )}
-          </div> 
+          </div>
         </section>
 
         <section className="mt-8">
           <header className="pb-5 border-b border-gray-200">
-            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">Create vault</h3>
+            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">
+              Create vault
+            </h3>
           </header>
 
           <div className="flex flex-col mt-4">
             <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
               {Object.keys(collateralTypes).length > 0 ? (
                 <CollateralType types={collateralTypes} />
-              ): (
-                <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+              ) : (
+                <Placeholder className="py-2" width={Placeholder.width.HALF} />
               )}
             </div>
           </div>
@@ -341,15 +382,25 @@ export const Mint = () => {
             <div className="flex mt-3 sm:mt-0 sm:ml-4">
               {env == 'mocknet' ? (
                 <div className="flex items-center justify-end">
-                  <span className="px-2 py-1 text-xs text-gray-800">Mocknet actions:</span> 
-                  <button type="button" onClick={() => addMocknetStx()} className="inline-flex items-center px-3 py-2 text-sm font-normal leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  <span className="px-2 py-1 text-xs text-gray-800">Mocknet actions:</span>
+                  <button
+                    type="button"
+                    onClick={() => addMocknetStx()}
+                    className="inline-flex items-center px-3 py-2 text-sm font-normal leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
                     Get 5000 STX from mocknet
                   </button>
                 </div>
               ) : env === 'testnet' ? (
                 <div className="flex items-center justify-end mb-4">
-                  <span className="px-2 py-1 text-xs text-gray-800">{env.replace(/^\w/, (c) => c.toUpperCase())} actions:</span>
-                  <button type="button" onClick={() => addTestnetStx()} className="inline-flex items-center px-3 py-2 text-sm font-normal leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  <span className="px-2 py-1 text-xs text-gray-800">
+                    {env.replace(/^\w/, c => c.toUpperCase())} actions:
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => addTestnetStx()}
+                    className="inline-flex items-center px-3 py-2 text-sm font-normal leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
                     Get STX from {env}
                   </button>
                 </div>
@@ -383,7 +434,11 @@ export const Mint = () => {
                         <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="flex-shrink-0 w-10 h-10">
-                              <img className="w-10 h-10 rounded-full" src={tokenList[2].logo} alt="" />
+                              <img
+                                className="w-10 h-10 rounded-full"
+                                src={tokenList[2].logo}
+                                alt=""
+                              />
                             </div>
                             <div className="ml-4">
                               <div className="text-sm font-medium text-gray-900">STX</div>
@@ -392,7 +447,7 @@ export const Mint = () => {
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
                           {loadingPrices ? (
-                            <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                            <Placeholder className="py-2" width={Placeholder.width.HALF} />
                           ) : (
                             <span>${stxPrice / 1000000}</span>
                           )}
@@ -403,7 +458,11 @@ export const Mint = () => {
                         <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="flex-shrink-0 w-10 h-10">
-                              <img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />
+                              <img
+                                className="w-10 h-10 rounded-full"
+                                src={tokenList[1].logo}
+                                alt=""
+                              />
                             </div>
                             <div className="ml-4">
                               <div className="text-sm font-medium text-gray-900">DIKO</div>
@@ -412,7 +471,7 @@ export const Mint = () => {
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
                           {loadingPrices ? (
-                            <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                            <Placeholder className="py-2" width={Placeholder.width.HALF} />
                           ) : (
                             <span>${dikoPrice}</span>
                           )}
@@ -423,7 +482,11 @@ export const Mint = () => {
                         <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="flex-shrink-0 w-10 h-10">
-                              <img className="w-10 h-10 rounded-full" src={tokenList[3].logo} alt="" />
+                              <img
+                                className="w-10 h-10 rounded-full"
+                                src={tokenList[3].logo}
+                                alt=""
+                              />
                             </div>
                             <div className="ml-4">
                               <div className="text-sm font-medium text-gray-900">xBTC</div>
@@ -432,7 +495,7 @@ export const Mint = () => {
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
                           {loadingPrices ? (
-                            <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                            <Placeholder className="py-2" width={Placeholder.width.HALF} />
                           ) : (
                             <span>${xbtcPrice / 1000000}</span>
                           )}
@@ -443,7 +506,11 @@ export const Mint = () => {
                         <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="flex-shrink-0 w-10 h-10">
-                              <img className="w-10 h-10 rounded-full" src={tokenList[0].logo} alt="" />
+                              <img
+                                className="w-10 h-10 rounded-full"
+                                src={tokenList[0].logo}
+                                alt=""
+                              />
                             </div>
                             <div className="ml-4">
                               <div className="text-sm font-medium text-gray-900">USDA</div>
@@ -452,7 +519,7 @@ export const Mint = () => {
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap">
                           {loadingPrices ? (
-                            <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                            <Placeholder className="py-2" width={Placeholder.width.HALF} />
                           ) : (
                             <span>${usdaPrice / 1000000}</span>
                           )}

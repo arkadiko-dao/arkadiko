@@ -22,13 +22,16 @@ export const TxStatus = () => {
     setState(prevState => ({
       ...prevState,
       showTxModal: false,
-      currentTxId: null
+      currentTxId: null,
     }));
   };
 
   return (
     <>
-      <div aria-live="assertive" className="fixed inset-0 z-50 flex items-end px-4 py-6 mt-16 pointer-events-none sm:p-6 sm:items-start">
+      <div
+        aria-live="assertive"
+        className="fixed inset-0 z-50 flex items-end px-4 py-6 mt-16 pointer-events-none sm:p-6 sm:items-start"
+      >
         <div className="flex flex-col items-center w-full space-y-4 sm:items-end">
           {state.currentTxId || state.showTxModal ? (
             <Transition
@@ -55,16 +58,17 @@ export const TxStatus = () => {
                         <p className="mt-1 text-sm text-gray-500">
                           Status: {state.currentTxStatus}
                         </p>
-                      ) : null }
+                      ) : null}
 
                       <div className="my-4">
-                        <ExplorerLink txId={state.currentTxId} className="text-sm font-medium text-green-500 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-50 focus:ring-green-600" />
+                        <ExplorerLink
+                          txId={state.currentTxId}
+                          className="text-sm font-medium text-green-500 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-50 focus:ring-green-600"
+                        />
                       </div>
 
                       {state.currentTxMessage ? (
-                        <p className={`mt-1 text-sm ${statusClass()}`}>
-                          {state.currentTxMessage}
-                        </p>
+                        <p className={`mt-1 text-sm ${statusClass()}`}>{state.currentTxMessage}</p>
                       ) : (
                         <p className="mt-1 text-sm text-gray-500">
                           This page will be updated automatically when the transaction succeeds.
@@ -74,7 +78,10 @@ export const TxStatus = () => {
                     <div className="flex flex-shrink-0 ml-4">
                       <button
                         className="inline-flex text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        onClick={() => {hidePopup()}}>
+                        onClick={() => {
+                          hidePopup();
+                        }}
+                      >
                         <span className="sr-only">Close</span>
                         <XIcon className="w-5 h-5" aria-hidden="true" />
                       </button>
@@ -83,8 +90,8 @@ export const TxStatus = () => {
                 </div>
               </div>
             </Transition>
-          ) : null }
-          </div>
+          ) : null}
+        </div>
       </div>
     </>
   );

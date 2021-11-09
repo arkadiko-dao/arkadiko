@@ -1,16 +1,23 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Redirect } from 'react-router-dom';
-import { Container } from './home'
+import { Container } from './home';
 import { useConnect } from '@stacks/connect-react';
 import { stacksNetwork as network } from '@common/utils';
-import { AnchorMode, callReadOnlyFunction, cvToJSON, tupleCV, uintCV, standardPrincipalCV } from '@stacks/transactions';
+import {
+  AnchorMode,
+  callReadOnlyFunction,
+  cvToJSON,
+  tupleCV,
+  uintCV,
+  standardPrincipalCV,
+} from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { AuctionProps, AuctionGroup } from '@components/auction-group';
 import { LotGroup } from '@components/lot-group';
 import { getRPCClient } from '@common/utils';
 import { DocumentSearchIcon, GiftIcon, CashIcon } from '@heroicons/react/outline';
-import { EmptyState } from './empty-state';
+import { EmptyState } from './ui/empty-state';
 
 export const Auctions: React.FC = () => {
   const { doContractCall } = useConnect();
@@ -26,11 +33,11 @@ export const Auctions: React.FC = () => {
   useEffect(() => {
     let mounted = true;
 
-    const auctionOpen = async (auctionId) => {
+    const auctionOpen = async auctionId => {
       const auctionOpenCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-auction-engine-v1-1",
-        functionName: "get-auction-open",
+        contractName: 'arkadiko-auction-engine-v1-1',
+        functionName: 'get-auction-open',
         functionArgs: [uintCV(auctionId)],
         senderAddress: stxAddress || '',
         network: network,
@@ -53,19 +60,19 @@ export const Auctions: React.FC = () => {
 
       const auctionIdsCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-auction-engine-v1-1",
-        functionName: "get-auction-ids",
+        contractName: 'arkadiko-auction-engine-v1-1',
+        functionName: 'get-auction-ids',
         functionArgs: [],
         senderAddress: stxAddress || '',
         network: network,
       });
       const auctionIds = auctionIdsCall.value.list;
-      let serializedAuctions:Array<AuctionProps> = [];
+      const serializedAuctions: AuctionProps[] = [];
       await asyncForEach(auctionIds, async (auctionId: number) => {
         const auction = await callReadOnlyFunction({
           contractAddress,
-          contractName: "arkadiko-auction-engine-v1-1",
-          functionName: "get-auction-by-id",
+          contractName: 'arkadiko-auction-engine-v1-1',
+          functionName: 'get-auction-by-id',
           functionArgs: [uintCV(auctionId.value)],
           senderAddress: stxAddress || '',
           network: network,
@@ -81,28 +88,28 @@ export const Auctions: React.FC = () => {
             auctionType: data['auction-type'].value,
             collateralToken: data['collateral-token'].value,
             debt: '0',
-            endsAt: data['ends-at'].value
+            endsAt: data['ends-at'].value,
           });
         }
       });
 
-      const getLastBid = async (auctionId:number, lotId:number) => {
+      const getLastBid = async (auctionId: number, lotId: number) => {
         const lastBid = await callReadOnlyFunction({
           contractAddress,
-          contractName: "arkadiko-auction-engine-v1-1",
-          functionName: "get-last-bid",
+          contractName: 'arkadiko-auction-engine-v1-1',
+          functionName: 'get-last-bid',
           functionArgs: [uintCV(auctionId), uintCV(lotId)],
           senderAddress: stxAddress || '',
           network: network,
         });
         const bid = cvToJSON(lastBid).value;
         return bid;
-      }
+      };
 
       const lots = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-auction-engine-v1-1",
-        functionName: "get-winning-lots",
+        contractName: 'arkadiko-auction-engine-v1-1',
+        functionName: 'get-winning-lots',
         functionArgs: [standardPrincipalCV(stxAddress || '')],
         senderAddress: stxAddress || '',
         network: network,
@@ -110,7 +117,13 @@ export const Auctions: React.FC = () => {
       const jsonLots = cvToJSON(lots);
       let isAuctionOpen;
 
-      let serializedLots:Array<{ 'lot-id':string, 'auction-id': string, 'collateral-amount': number, 'collateral-token': string, 'usda': number }> = [];
+      const serializedLots: {
+        'lot-id': string;
+        'auction-id': string;
+        'collateral-amount': number;
+        'collateral-token': string;
+        usda: number;
+      }[] = [];
       await asyncForEach(jsonLots.value.ids.value, async (e: object) => {
         const lot = tupleCV(e);
         const data = lot.data.value;
@@ -124,7 +137,7 @@ export const Auctions: React.FC = () => {
               'auction-id': data['auction-id'].value,
               'collateral-amount': lastBid['collateral-amount'].value,
               'collateral-token': lastBid['collateral-token'].value,
-              'usda': lastBid['usda'].value
+              usda: lastBid['usda'].value,
             });
           }
         }
@@ -136,8 +149,8 @@ export const Auctions: React.FC = () => {
 
       const stxRedeemable = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-freddie-v1-1",
-        functionName: "get-stx-redeemable",
+        contractName: 'arkadiko-freddie-v1-1',
+        functionName: 'get-stx-redeemable',
         functionArgs: [],
         senderAddress: stxAddress || '',
         network: network,
@@ -149,7 +162,9 @@ export const Auctions: React.FC = () => {
       void getData();
     }
 
-    return () => { mounted = false; }
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const redeemStx = async () => {
@@ -159,15 +174,13 @@ export const Auctions: React.FC = () => {
       stxAddress,
       contractName: 'arkadiko-freddie-v1-1',
       functionName: 'redeem-stx',
-      functionArgs: [
-        uintCV(state.balance['xstx'])
-      ],
+      functionArgs: [uintCV(state.balance['xstx'])],
       postConditionMode: 0x01,
       onFinish: data => {
         console.log('finished redeeming stx!', data);
         // setTxId(data.txId);
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -177,29 +190,32 @@ export const Auctions: React.FC = () => {
         <Container>
           <main className="relative z-0 flex-1 pb-8 overflow-y-auto">
             <div className="mt-8">
-
               <div className="max-w-6xl px-4 mx-auto sm:px-6 lg:px-8">
-                <h2 className="mt-8 text-lg font-medium leading-6 text-gray-900 font-headings">Trade xSTX for STX</h2>
+                <h2 className="mt-8 text-lg font-medium leading-6 text-gray-900 font-headings">
+                  Trade xSTX for STX
+                </h2>
 
                 {state.balance['xstx'] > 0 ? (
                   <p className="mt-2">
-                    There are {redeemableStx / 1000000} STX redeemable in the Arkadiko pool. <br/>
-                    You have {state.balance['xstx'] / 1000000} xSTX. <br/>
-
-                    <button type="button" onClick={() => redeemStx()} className="mt-2 px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    There are {redeemableStx / 1000000} STX redeemable in the Arkadiko pool. <br />
+                    You have {state.balance['xstx'] / 1000000} xSTX. <br />
+                    <button
+                      type="button"
+                      onClick={() => redeemStx()}
+                      className="mt-2 px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
                       Redeem
                     </button>
                   </p>
                 ) : (
-                  <EmptyState
-                    Icon={CashIcon}
-                    title="You have no xSTX you can trade."
-                  />
+                  <EmptyState Icon={CashIcon} title="You have no xSTX you can trade." />
                 )}
               </div>
 
               <div className="max-w-6xl px-4 mx-auto sm:px-6 lg:px-8">
-                <h2 className="mt-8 text-lg font-medium leading-6 text-gray-900 font-headings">Your Winning Lots</h2>
+                <h2 className="mt-8 text-lg font-medium leading-6 text-gray-900 font-headings">
+                  Your Winning Lots
+                </h2>
 
                 {lots.length > 0 ? (
                   <LotGroup lots={lots} />
@@ -213,7 +229,9 @@ export const Auctions: React.FC = () => {
               </div>
 
               <div className="max-w-6xl px-4 mx-auto sm:px-6 lg:px-8">
-                <h2 className="mt-8 text-lg font-medium leading-6 text-gray-900 font-headings">Auctions</h2>
+                <h2 className="mt-8 text-lg font-medium leading-6 text-gray-900 font-headings">
+                  Auctions
+                </h2>
 
                 <p>Current Block Height: {stacksTipHeight}</p>
                 {auctions.length > 0 ? (
@@ -227,13 +245,12 @@ export const Auctions: React.FC = () => {
                   />
                 )}
               </div>
-
             </div>
           </main>
         </Container>
       ) : (
         <Redirect to={{ pathname: '/' }} />
       )}
-    </>  
+    </>
   );
 };
