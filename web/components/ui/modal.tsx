@@ -11,14 +11,15 @@ type Props = {
   icon?: ReactNode;
   buttonText: string;
   buttonAction: () => void;
+  initialFocus: React.MutableRefObject<HTMLElement | null> | undefined;
 };
 
-export function Modal({ open, children, title, icon, closeModal, buttonText, buttonAction }: Props) {
+export function Modal({ open, children, title, icon, closeModal, buttonText, buttonAction, initialFocus }: Props) {
   const actionButtonRef = useRef(null)
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" initialFocus={actionButtonRef} onClose={() => closeModal}>
+      <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" initialFocus={initialFocus} onClose={() => closeModal}>
         <div className="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
           <Transition.Child
             as={Fragment}
@@ -62,8 +63,8 @@ export function Modal({ open, children, title, icon, closeModal, buttonText, but
                     {icon}
                   </div>
                 ) : null}
-                <div className="mt-3 text-center sm:mt-5">
-                  <Dialog.Title as="h3" className="text-lg leading-6 text-gray-900 font-headings">
+                <div className="mt-3 sm:mt-5">
+                  <Dialog.Title as="h3" className="text-lg leading-6 text-center text-gray-900 font-headings">
                     {title}
                   </Dialog.Title>
                   <div className="mt-2">
