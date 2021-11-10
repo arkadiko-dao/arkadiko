@@ -17,13 +17,8 @@ import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { Alert } from './ui/alert';
 
-interface StakeDikoModalProps {
-  showStakeModal: boolean;
-  setShowStakeModal: () => void;
-  apy: number;
-}
 
-export const StakeDikoModal: React.FC<StakeDikoModalProps> = ({ showStakeModal, setShowStakeModal, apy }) => {
+export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
   const [state, setState] = useContext(AppContext);
   const [errors, setErrors] = useState<string[]>([]);
   const [stakeAmount, setStakeAmount] = useState('');
