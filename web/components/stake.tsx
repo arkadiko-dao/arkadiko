@@ -578,6 +578,8 @@ export const Stake = () => {
         apy={dikoUsdaLpApy}
         balanceName={'dikousda'}
         tokenName={'DIKO/USDA'}
+        lpPairTokenX={1}
+        lpPairTokenY={0}
       />
 
       <StakeLpModal
@@ -586,6 +588,8 @@ export const Stake = () => {
         apy={stxUsdaLpApy}
         balanceName={'wstxusda'}
         tokenName={'STX/USDA'}
+        lpPairTokenX={2}
+        lpPairTokenY={0}
       />
 
       <StakeLpModal
@@ -594,6 +598,8 @@ export const Stake = () => {
         apy={stxDikoLpApy}
         balanceName={'wstxdiko'}
         tokenName={'STX/DIKO'}
+        lpPairTokenX={2}
+        lpPairTokenY={1}
       />
 
       <UnstakeLpModal
