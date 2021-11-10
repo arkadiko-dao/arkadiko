@@ -10,7 +10,7 @@ import {
   cvToJSON,
   FungibleConditionCode,
   makeStandardFungiblePostCondition,
-  standardPrincipalCV
+  standardPrincipalCV,
 } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
@@ -175,7 +175,7 @@ export const ViewProposal = ({ match }) => {
       functionArgs: [
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
         uintCV(match.params.id),
-        standardPrincipalCV(stxAddress)
+        standardPrincipalCV(stxAddress),
       ],
       onFinish: data => {
         setState(prevState => ({
@@ -199,7 +199,7 @@ export const ViewProposal = ({ match }) => {
       functionArgs: [
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
         uintCV(match.params.id),
-        standardPrincipalCV(stxAddress)
+        standardPrincipalCV(stxAddress),
       ],
       onFinish: data => {
         setState(prevState => ({
