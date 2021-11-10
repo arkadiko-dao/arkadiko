@@ -10,6 +10,7 @@ import {
   cvToJSON,
   FungibleConditionCode,
   makeStandardFungiblePostCondition,
+  standardPrincipalCV
 } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
@@ -21,7 +22,6 @@ import { getRPCClient } from '@common/utils';
 import { ProposalProps } from './proposal-group';
 import BN from 'bn.js';
 import { Placeholder } from './ui/placeholder';
-import { standardPrincipalCV } from '@blockstack/stacks-transactions';
 
 export const ViewProposal = ({ match }) => {
   const [state, setState] = useContext(AppContext);
