@@ -11,7 +11,7 @@ interface InputAmountProps {
   onClickMax: (event: any) => void;
 }
 
-export const InputAmount: React.FC<InputAmountProps> = React.forwardRef(({
+export const InputAmount = React.forwardRef<HTMLInputElement, InputAmountProps>(({
   balance,
   token,
   inputName,
