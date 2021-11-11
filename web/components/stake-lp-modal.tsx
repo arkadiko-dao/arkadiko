@@ -100,8 +100,8 @@ export const StakeLpModal = ({
     });
   };
 
-  const lpPairTokenX = tokenList.findIndex(obj => obj.name == tokenName.split('/').slice(0, 1))
-  const lpPairTokenY = tokenList.findIndex(obj => obj.name == tokenName.split('/').slice(1))
+  const lpPairTokenX = tokenList.findIndex(obj => obj.name == tokenName.split('/').slice(0, 1));
+  const lpPairTokenY = tokenList.findIndex(obj => obj.name == tokenName.split('/').slice(1));
 
   return (
     <Modal
@@ -143,8 +143,8 @@ export const StakeLpModal = ({
             maximumFractionDigits: 6,
           })}
           token={tokenName}
-          inputName="stakeDiko"
-          inputId="stakeAmount"
+          inputName={`stakeLp-${tokenName}`}
+          inputId={`stakeAmount-${tokenName}`}
           inputValue={stakeAmount}
           inputLabel={`Stake ${tokenName}`}
           onInputChange={onInputStakeChange}
