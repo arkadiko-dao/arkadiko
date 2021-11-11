@@ -22,7 +22,7 @@ import { tokenList } from '@components/token-swap-list';
 import { useConnect } from '@stacks/connect-react';
 import { StakeLpRow } from './stake-lp-row';
 import { Menu, Transition } from '@headlessui/react';
-import { 
+import {
   ArrowCircleDownIcon,
   ArrowCircleUpIcon,
   DotsVerticalIcon,
@@ -69,7 +69,6 @@ export const Stake = () => {
   const [stxUsdaPoolInfo, setStxUsdaPoolInfo] = useState(0);
   const [dikoUsdaPoolInfo, setDikoUsdaPoolInfo] = useState(0);
 
-
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
 
@@ -92,25 +91,23 @@ export const Stake = () => {
       }
     };
 
-    const fetchLpStakeAmount = async (poolContract:string) => {
+    const fetchLpStakeAmount = async (poolContract: string) => {
       const stakedCall = await callReadOnlyFunction({
         contractAddress,
         contractName: poolContract,
-        functionName: "get-stake-amount-of",
-        functionArgs: [
-          standardPrincipalCV(stxAddress || '')
-        ],
+        functionName: 'get-stake-amount-of',
+        functionArgs: [standardPrincipalCV(stxAddress || '')],
         senderAddress: stxAddress || '',
         network: network,
       });
       return cvToJSON(stakedCall).value;
     };
 
-    const fetchLpPendingRewards = async (poolContract:string) => {
+    const fetchLpPendingRewards = async (poolContract: string) => {
       const dikoUsdaPendingRewardsCall = await callReadOnlyFunction({
         contractAddress,
         contractName: poolContract,
-        functionName: "get-pending-rewards",
+        functionName: 'get-pending-rewards',
         functionArgs: [
           contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
           standardPrincipalCV(stxAddress || ''),
@@ -121,11 +118,11 @@ export const Stake = () => {
       return cvToJSON(dikoUsdaPendingRewardsCall).value.value;
     };
 
-    const fetchTotalStaked = async (poolContract:string) => {
+    const fetchTotalStaked = async (poolContract: string) => {
       const totalStxDikoStakedCall = await callReadOnlyFunction({
         contractAddress,
         contractName: poolContract,
-        functionName: "get-total-staked",
+        functionName: 'get-total-staked',
         functionArgs: [],
         senderAddress: stxAddress || '',
         network: network,
@@ -133,36 +130,39 @@ export const Stake = () => {
       return cvToJSON(totalStxDikoStakedCall).value / 1000000;
     };
 
-    const lpTokenValue = async (poolContract:string, lpTokenStakedAmount: number, lpTokenWalletAmount: number) => {
-
+    const lpTokenValue = async (
+      poolContract: string,
+      lpTokenStakedAmount: number,
+      lpTokenWalletAmount: number
+    ) => {
       if (lpTokenWalletAmount == undefined) {
         return;
       }
 
-      var tokenXContract = "arkadiko-token";
-      var tokenYContract = "usda-token";
-      var tokenXName = "DIKO";
-      var tokenYName = "USDA";
-      if (poolContract == "arkadiko-stake-pool-wstx-diko-v1-1") {
-        tokenXContract = "wrapped-stx-token";
-        tokenYContract = "arkadiko-token";
-        tokenXName = "STX";
-        tokenYName = "DIKO";
-      } else if (poolContract == "arkadiko-stake-pool-wstx-usda-v1-1") {
-        tokenXContract = "wrapped-stx-token";
-        tokenYContract = "usda-token";
-        tokenXName = "STX";
-        tokenYName = "USDA";
+      let tokenXContract = 'arkadiko-token';
+      let tokenYContract = 'usda-token';
+      let tokenXName = 'DIKO';
+      let tokenYName = 'USDA';
+      if (poolContract == 'arkadiko-stake-pool-wstx-diko-v1-1') {
+        tokenXContract = 'wrapped-stx-token';
+        tokenYContract = 'arkadiko-token';
+        tokenXName = 'STX';
+        tokenYName = 'DIKO';
+      } else if (poolContract == 'arkadiko-stake-pool-wstx-usda-v1-1') {
+        tokenXContract = 'wrapped-stx-token';
+        tokenYContract = 'usda-token';
+        tokenXName = 'STX';
+        tokenYName = 'USDA';
       }
 
       // Get pair details
-      let pairDetailsCall = await callReadOnlyFunction({
+      const pairDetailsCall = await callReadOnlyFunction({
         contractAddress,
         contractName: "arkadiko-swap-v2-1",
         functionName: "get-pair-details",
         functionArgs: [
           contractPrincipalCV(contractAddress, tokenXContract),
-          contractPrincipalCV(contractAddress, tokenYContract)
+          contractPrincipalCV(contractAddress, tokenYContract),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -171,21 +171,21 @@ export const Stake = () => {
 
       if (!cvToJSON(pairDetailsCall)['success']) {
         return {
-          tokenX: tokenXName, 
-          tokenY: tokenYName, 
-          stakedTokenXAmount: 0, 
-          stakedTokenYAmount: 0, 
+          tokenX: tokenXName,
+          tokenY: tokenYName,
+          stakedTokenXAmount: 0,
+          stakedTokenYAmount: 0,
           stakedValue: 0,
-          walletTokenXAmount: 0, 
-          walletTokenYAmount: 0, 
-          walletValue: 0
+          walletTokenXAmount: 0,
+          walletTokenYAmount: 0,
+          walletValue: 0,
         };
       }
 
       // Calculate user balance
       const balanceX = pairDetails['balance-x'].value;
       const balanceY = pairDetails['balance-y'].value;
-      const totalTokens = pairDetails['shares-total'].value;      
+      const totalTokens = pairDetails['shares-total'].value;
 
       const stakedShare = lpTokenStakedAmount / totalTokens;
       const stakedBalanceX = balanceX * stakedShare;
@@ -196,35 +196,35 @@ export const Stake = () => {
       const walletBalanceY = balanceY * walletShare;
 
       // Estimate value
-      var estimatedValueStaked = 0;
-      var estimatedValueWallet = 0;
-      if (tokenXName == "STX") {
-        let stxPrice = await getPrice('STX');
+      let estimatedValueStaked = 0;
+      let estimatedValueWallet = 0;
+      if (tokenXName == 'STX') {
+        const stxPrice = await getPrice('STX');
         estimatedValueStaked = (stakedBalanceX / 1000000) * stxPrice;
         estimatedValueWallet = (walletBalanceX / 1000000) * stxPrice;
-      } else if (tokenYName == "STX") {
-        let stxPrice = await getPrice('STX');
+      } else if (tokenYName == 'STX') {
+        const stxPrice = await getPrice('STX');
         estimatedValueStaked = (stakedBalanceY / 1000000) * stxPrice;
         estimatedValueWallet = (walletBalanceY / 1000000) * stxPrice;
-      } else if (tokenXName == "USDA") {
-        let udsdaPrice = await getPrice('USDA');
+      } else if (tokenXName == 'USDA') {
+        const udsdaPrice = await getPrice('USDA');
         estimatedValueStaked = (stakedBalanceX / 1000000) * udsdaPrice;
         estimatedValueWallet = (walletBalanceX / 1000000) * udsdaPrice;
-      } else if (tokenYName == "USDA") {
-        let udsdaPrice = await getPrice('USDA');
+      } else if (tokenYName == 'USDA') {
+        const udsdaPrice = await getPrice('USDA');
         estimatedValueStaked = (stakedBalanceY / 1000000) * udsdaPrice;
         estimatedValueWallet = (walletBalanceY / 1000000) * udsdaPrice;
       }
 
       return {
-        tokenX: tokenXName, 
-        tokenY: tokenYName, 
-        stakedTokenXAmount: stakedBalanceX, 
-        stakedTokenYAmount: stakedBalanceY, 
+        tokenX: tokenXName,
+        tokenY: tokenYName,
+        stakedTokenXAmount: stakedBalanceX,
+        stakedTokenYAmount: stakedBalanceY,
         stakedValue: estimatedValueStaked,
-        walletTokenXAmount: walletBalanceX, 
-        walletTokenYAmount: walletBalanceY, 
-        walletValue: estimatedValueWallet
+        walletTokenXAmount: walletBalanceX,
+        walletTokenYAmount: walletBalanceY,
+        walletValue: estimatedValueWallet,
       };
     };
 
@@ -233,12 +233,12 @@ export const Stake = () => {
       const client = getRPCClient();
       const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
       const data = await response.json();
-      let currentBlock = data['stacks_tip_height'];
+      const currentBlock = data['stacks_tip_height'];
 
       const stDikoSupplyCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: "stdiko-token",
-        functionName: "get-total-supply",
+        contractName: 'stdiko-token',
+        functionName: 'get-total-supply',
         functionArgs: [],
         senderAddress: stxAddress || '',
         network: network,
@@ -246,31 +246,43 @@ export const Stake = () => {
       const stDikoSupply = cvToJSON(stDikoSupplyCall).value.value;
       const userStakedCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-stake-pool-diko-v1-1",
-        functionName: "get-stake-of",
+        contractName: 'arkadiko-stake-pool-diko-v1-1',
+        functionName: 'get-stake-of',
         functionArgs: [
           contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
           standardPrincipalCV(stxAddress || ''),
-          uintCV(stDikoSupply)
+          uintCV(stDikoSupply),
         ],
         senderAddress: stxAddress || '',
         network: network,
       });
-      let dikoStaked = cvToJSON(userStakedCall).value.value;
+      const dikoStaked = cvToJSON(userStakedCall).value.value;
 
       setStakedAmount(dikoStaked);
-      let dikoUsdaLpStaked = await fetchLpStakeAmount("arkadiko-stake-pool-diko-usda-v1-1");
+      const dikoUsdaLpStaked = await fetchLpStakeAmount('arkadiko-stake-pool-diko-usda-v1-1');
       setLpDikoUsdaStakedAmount(dikoUsdaLpStaked);
-      let stxUsdaLpStaked = await fetchLpStakeAmount("arkadiko-stake-pool-wstx-usda-v1-1");
+      const stxUsdaLpStaked = await fetchLpStakeAmount('arkadiko-stake-pool-wstx-usda-v1-1');
       setLpStxUsdaStakedAmount(stxUsdaLpStaked);
-      let stxDikoLpStaked = await fetchLpStakeAmount("arkadiko-stake-pool-wstx-diko-v1-1");
+      const stxDikoLpStaked = await fetchLpStakeAmount('arkadiko-stake-pool-wstx-diko-v1-1');
       setLpStxDikoStakedAmount(stxDikoLpStaked);
 
-      let dikoUsdaLpValue = await lpTokenValue("arkadiko-stake-pool-diko-usda-v1-1", dikoUsdaLpStaked, state.balance["dikousda"]);
+      const dikoUsdaLpValue = await lpTokenValue(
+        'arkadiko-stake-pool-diko-usda-v1-1',
+        dikoUsdaLpStaked,
+        state.balance['dikousda']
+      );
       setDikoUsdaPoolInfo(dikoUsdaLpValue);
-      let stxUsdaLpValue = await lpTokenValue("arkadiko-stake-pool-wstx-usda-v1-1", stxUsdaLpStaked, state.balance["wstxusda"]);
+      const stxUsdaLpValue = await lpTokenValue(
+        'arkadiko-stake-pool-wstx-usda-v1-1',
+        stxUsdaLpStaked,
+        state.balance['wstxusda']
+      );
       setStxUsdaPoolInfo(stxUsdaLpValue);
-      let stxDikoLpValue = await lpTokenValue("arkadiko-stake-pool-wstx-diko-v1-1", stxDikoLpStaked, state.balance["wstxdiko"]);
+      const stxDikoLpValue = await lpTokenValue(
+        'arkadiko-stake-pool-wstx-diko-v1-1',
+        stxDikoLpStaked,
+        state.balance['wstxdiko']
+      );
       setStxDikoPoolInfo(stxDikoLpValue);
 
       // if (currentBlock < REWARDS_START_BLOCK_HEIGHT) {
@@ -279,17 +291,23 @@ export const Stake = () => {
       // }
       setEmissionsStarted(true);
 
-      let dikoUsdaLpPendingRewards = await fetchLpPendingRewards("arkadiko-stake-pool-diko-usda-v1-1");
+      const dikoUsdaLpPendingRewards = await fetchLpPendingRewards(
+        'arkadiko-stake-pool-diko-usda-v1-1'
+      );
       setLpDikoUsdaPendingRewards(dikoUsdaLpPendingRewards);
-      let stxUsdaLpPendingRewards = await fetchLpPendingRewards("arkadiko-stake-pool-wstx-usda-v1-1");
+      const stxUsdaLpPendingRewards = await fetchLpPendingRewards(
+        'arkadiko-stake-pool-wstx-usda-v1-1'
+      );
       setLpStxUsdaPendingRewards(stxUsdaLpPendingRewards);
-      let stxDikoLpPendingRewards = await fetchLpPendingRewards("arkadiko-stake-pool-wstx-diko-v1-1");
+      const stxDikoLpPendingRewards = await fetchLpPendingRewards(
+        'arkadiko-stake-pool-wstx-diko-v1-1'
+      );
       setLpStxDikoPendingRewards(stxDikoLpPendingRewards);
 
-      let totalDikoStaked = await fetchTotalStaked("arkadiko-stake-pool-diko-v1-1")
-      let totalDikoUsdaStaked = await fetchTotalStaked("arkadiko-stake-pool-diko-usda-v1-1")
-      let totalStxUsdaStaked = await fetchTotalStaked("arkadiko-stake-pool-wstx-usda-v1-1")
-      let totalStxDikoStaked = await fetchTotalStaked("arkadiko-stake-pool-wstx-diko-v1-1")
+      let totalDikoStaked = await fetchTotalStaked('arkadiko-stake-pool-diko-v1-1');
+      let totalDikoUsdaStaked = await fetchTotalStaked('arkadiko-stake-pool-diko-usda-v1-1');
+      let totalStxUsdaStaked = await fetchTotalStaked('arkadiko-stake-pool-wstx-usda-v1-1');
+      let totalStxDikoStaked = await fetchTotalStaked('arkadiko-stake-pool-wstx-diko-v1-1');
 
       const totalStakingRewardsYear1 = 23500000;
 
@@ -681,7 +699,7 @@ export const Stake = () => {
                     </div>
                     <div>
                       {loadingData ? (
-                        <Placeholder className="py-2" width={Placeholder.width.HALF}/>
+                        <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
                         <p className="text-lg font-semibold">{dikoCooldown}</p>
                       )}
@@ -700,92 +718,92 @@ export const Stake = () => {
                       </p>
                     </div>
                     <div>
-                      {state.balance['diko'] > 0 || state.balance['stdiko'] > 0 || (stakedAmount && canUnstake) ? (
+                      {state.balance['diko'] > 0 ||
+                      state.balance['stdiko'] > 0 ||
+                      (stakedAmount && canUnstake) ? (
                         <Menu as="div" className="relative flex items-center justify-end">
-                        {({ open }) => (
-                          <>
-                            <Menu.Button className="inline-flex items-center justify-center w-8 h-8 text-gray-400 bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                              <span className="sr-only">Open options</span>
-                              <DotsVerticalIcon className="w-5 h-5" aria-hidden="true" />
-                            </Menu.Button>
-                            <Transition
-                              show={open}
-                              as={Fragment}
-                              enter="transition ease-out duration-100"
-                              enterFrom="transform opacity-0 scale-95"
-                              enterTo="transform opacity-100 scale-100"
-                              leave="transition ease-in duration-75"
-                              leaveFrom="transform opacity-100 scale-100"
-                              leaveTo="transform opacity-0 scale-95"
-                            >
-                              <Menu.Items
-                                static
-                                className="absolute top-0 z-10 w-48 mx-3 mt-1 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg right-7 ring-1 ring-black ring-opacity-5 focus:outline-none"
+                          {({ open }) => (
+                            <>
+                              <Menu.Button className="inline-flex items-center justify-center w-8 h-8 text-gray-400 bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                <span className="sr-only">Open options</span>
+                                <DotsVerticalIcon className="w-5 h-5" aria-hidden="true" />
+                              </Menu.Button>
+                              <Transition
+                                show={open}
+                                as={Fragment}
+                                enter="transition ease-out duration-100"
+                                enterFrom="transform opacity-0 scale-95"
+                                enterTo="transform opacity-100 scale-100"
+                                leave="transition ease-in duration-75"
+                                leaveFrom="transform opacity-100 scale-100"
+                                leaveTo="transform opacity-0 scale-95"
                               >
-                                <div className="px-1 py-1">
-                                  {state.balance['diko'] > 0 ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => setShowStakeModal(true)}
-                                        >
-                                          <ArrowCircleDownIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Stake
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                    
-                                  ) : null }
-                                  {state.balance['stdiko'] > 0 && !cooldownRunning ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => startDikoCooldown()}
-                                        >
-                                          <ClockIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Start cooldown
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                    
-                                  ) : null }
-                                  {stakedAmount && canUnstake ? (
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          className={`${
-                                            active ? 'bg-indigo-500 text-white' : 'text-gray-900'
-                                          } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                          onClick={() => setShowUnstakeModal(true)}
-                                        >
-                                          <ArrowCircleUpIcon
-                                            className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                            aria-hidden="true"
-                                          />
-                                          Unstake
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  ) : null}
-                                </div>
-                              </Menu.Items>
-                            </Transition>
-                          </>
-                        )}
-                      </Menu>
-                      ) : null }
+                                <Menu.Items
+                                  static
+                                  className="absolute top-0 z-10 w-48 mx-3 mt-1 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg right-7 ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                >
+                                  <div className="px-1 py-1">
+                                    {state.balance['diko'] > 0 ? (
+                                      <Menu.Item>
+                                        {({ active }) => (
+                                          <button
+                                            className={`${
+                                              active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                            } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                            onClick={() => setShowStakeModal(true)}
+                                          >
+                                            <ArrowCircleDownIcon
+                                              className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
+                                              aria-hidden="true"
+                                            />
+                                            Stake
+                                          </button>
+                                        )}
+                                      </Menu.Item>
+                                    ) : null}
+                                    {state.balance['stdiko'] > 0 && !cooldownRunning ? (
+                                      <Menu.Item>
+                                        {({ active }) => (
+                                          <button
+                                            className={`${
+                                              active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                            } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                            onClick={() => startDikoCooldown()}
+                                          >
+                                            <ClockIcon
+                                              className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
+                                              aria-hidden="true"
+                                            />
+                                            Start cooldown
+                                          </button>
+                                        )}
+                                      </Menu.Item>
+                                    ) : null}
+                                    {stakedAmount && canUnstake ? (
+                                      <Menu.Item>
+                                        {({ active }) => (
+                                          <button
+                                            className={`${
+                                              active ? 'bg-indigo-500 text-white' : 'text-gray-900'
+                                            } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                            onClick={() => setShowUnstakeModal(true)}
+                                          >
+                                            <ArrowCircleUpIcon
+                                              className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
+                                              aria-hidden="true"
+                                            />
+                                            Unstake
+                                          </button>
+                                        )}
+                                      </Menu.Item>
+                                    ) : null}
+                                  </div>
+                                </Menu.Items>
+                              </Transition>
+                            </>
+                          )}
+                        </Menu>
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -794,12 +812,15 @@ export const Stake = () => {
 
             <section className="mt-8">
               <header className="pb-5 border-b border-gray-200">
-                <h3 className="text-lg leading-6 text-gray-900 font-headings">Liquidity Provider Tokens</h3>
+                <h3 className="text-lg leading-6 text-gray-900 font-headings">
+                  Liquidity Provider Tokens
+                </h3>
                 <p className="max-w-3xl mt-2 text-sm text-gray-500">
-                  Staking LP tokens allows you to earn further rewards. You might be more familiar with the term “farming”.
+                  Staking LP tokens allows you to earn further rewards. You might be more familiar
+                  with the term “farming”.
                 </p>
               </header>
-            
+
               <div className="mt-4">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -851,7 +872,7 @@ export const Stake = () => {
                           loadingData={loadingData}
                           tokenListItemX={1}
                           tokenListItemY={0}
-                          balance={state.balance["dikousda"]}
+                          balance={state.balance['dikousda']}
                           pendingRewards={lpDikoUsdaPendingRewards}
                           stakedAmount={lpDikoUsdaStakedAmount}
                           apy={dikoUsdaLpApy}
@@ -869,7 +890,7 @@ export const Stake = () => {
                           loadingData={loadingData}
                           tokenListItemX={2}
                           tokenListItemY={0}
-                          balance={state.balance["wstxusda"]}
+                          balance={state.balance['wstxusda']}
                           pendingRewards={lpStxUsdaPendingRewards}
                           stakedAmount={lpStxUsdaStakedAmount}
                           apy={stxUsdaLpApy}
@@ -887,7 +908,7 @@ export const Stake = () => {
                           loadingData={loadingData}
                           tokenListItemX={2}
                           tokenListItemY={1}
-                          balance={state.balance["wstxdiko"]}
+                          balance={state.balance['wstxdiko']}
                           pendingRewards={lpStxDikoPendingRewards}
                           stakedAmount={lpStxDikoStakedAmount}
                           apy={stxDikoLpApy}
@@ -899,7 +920,6 @@ export const Stake = () => {
                           stakeLpPendingRewards={stakeStxDikoLpPendingRewards}
                           getLpRoute={'/swap/add/STX/DIKO'}
                         />
-                        
                       </table>
                     </div>
                   </div>

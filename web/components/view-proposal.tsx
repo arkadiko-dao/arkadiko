@@ -35,6 +35,8 @@ export const ViewProposal = ({ match }) => {
   const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [stacksTipHeight, setStacksTipHeight] = useState(0);
+  const [dikoVoted, setDikoVoted] = useState('');
+  const [stdikoVoted, setStdikoVoted] = useState('');
 
   useEffect(() => {
     if (state.currentTxStatus === 'success') {
@@ -80,6 +82,42 @@ export const ViewProposal = ({ match }) => {
         startBlockHeight: data['start-block-height'].value,
         endBlockHeight: data['end-block-height'].value,
       });
+
+      if (data['is-open'].value == false) {
+
+        // Get DIKO votes for user
+        const votedDiko = await callReadOnlyFunction({
+          contractAddress,
+          contractName: 'arkadiko-governance-v1-1',
+          functionName: 'get-tokens-by-member-by-id',
+          functionArgs: [
+            uintCV(match.params.id),
+            standardPrincipalCV(stxAddress || ''),
+            contractPrincipalCV(contractAddress, 'arkadiko-token'),
+          ],
+          senderAddress: stxAddress || '',
+          network: network,
+        });
+        const votedDikoResult = cvToJSON(votedDiko).value["amount"].value;
+        setDikoVoted(votedDikoResult / 1000000);
+
+        // Get stDIKO votes for user
+        const votedStdiko = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-governance-v1-1',
+        functionName: 'get-tokens-by-member-by-id',
+        functionArgs: [
+          uintCV(match.params.id),
+          standardPrincipalCV(stxAddress || ''),
+          contractPrincipalCV(contractAddress, 'stdiko-token'),
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const votedStdikoResult = cvToJSON(votedStdiko).value["amount"].value;
+      setStdikoVoted(votedStdikoResult / 1000000);
+      }
+
       setIsLoading(false);
     };
     if (mounted) {
@@ -648,21 +686,30 @@ export const ViewProposal = ({ match }) => {
                 </>
               ) : (
                 <>
-                  <button
-                    type="button"
-                    onClick={() => returnDiko()}
-                    className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    Claim DIKO
-                  </button>
-                  <span className="text-xs font-semibold text-center uppercase">— or —</span>
-                  <button
-                    type="button"
-                    onClick={() => returnStDiko()}
-                    className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    Claim stDIKO
-                  </button>
+                  {dikoVoted != 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => returnDiko()}
+                      className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                      Claim {dikoVoted} DIKO
+                    </button>
+                  ) : null}
+  
+                  {dikoVoted != 0 && stdikoVoted != 0 ? (
+                    <span className="text-xs font-semibold text-center uppercase">— or —</span>
+                  ) : null}
+
+                  {stdikoVoted != 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => returnStDiko()}
+                      className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                      Claim {stdikoVoted} stDIKO
+                    </button>
+                  ) : null}
+
                 </>
               )}
             </div>
