@@ -1,4 +1,3 @@
-
 import React, { ReactNode, Fragment, useRef } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XIcon } from '@heroicons/react/outline';
@@ -14,12 +13,26 @@ type Props = {
   initialFocus: React.MutableRefObject<HTMLElement | null> | undefined;
 };
 
-export function Modal({ open, children, title, icon, closeModal, buttonText, buttonAction, initialFocus }: Props) {
-  const actionButtonRef = useRef(null)
+export function Modal({
+  open,
+  children,
+  title,
+  icon,
+  closeModal,
+  buttonText,
+  buttonAction,
+  initialFocus,
+}: Props) {
+  const actionButtonRef = useRef(null);
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" initialFocus={initialFocus} onClose={() => closeModal}>
+      <Dialog
+        as="div"
+        className="fixed inset-0 z-50 overflow-y-auto"
+        initialFocus={initialFocus}
+        onClose={() => closeModal}
+      >
         <div className="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
           <Transition.Child
             as={Fragment}
@@ -64,12 +77,13 @@ export function Modal({ open, children, title, icon, closeModal, buttonText, but
                   </div>
                 ) : null}
                 <div className="mt-3 sm:mt-5">
-                  <Dialog.Title as="h3" className="text-lg leading-6 text-center text-gray-900 font-headings">
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg leading-6 text-center text-gray-900 font-headings"
+                  >
                     {title}
                   </Dialog.Title>
-                  <div className="mt-2">
-                    {children}
-                  </div>
+                  <div className="mt-2">{children}</div>
                 </div>
               </div>
               <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">

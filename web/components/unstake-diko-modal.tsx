@@ -17,7 +17,6 @@ import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { Alert } from './ui/alert';
 
-
 export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmount }) => {
   const [state, setState] = useContext(AppContext);
   const [errors, setErrors] = useState<string[]>([]);

@@ -626,7 +626,8 @@ export const Stake = () => {
               <Alert title="Unstaked LP tokens">
                 <p>👀 We noticed that your wallet contains LP Tokens that are not staked yet.</p>
                 <p className="mt-1">
-                  If you want to stake them, pick the appropriate token in the table below, hit the Actions dropdown button and choose Stake LP to initiate staking.
+                  If you want to stake them, pick the appropriate token in the table below, hit the
+                  Actions dropdown button and choose Stake LP to initiate staking.
                 </p>
               </Alert>
             ) : null}
