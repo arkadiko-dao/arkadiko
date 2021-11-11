@@ -30,6 +30,7 @@ import { NavLink as RouterLink } from 'react-router-dom';
 import { microToReadable } from '@common/vault-utils';
 import { classNames } from '@common/class-names';
 import BN from 'bn.js';
+import { Placeholder } from './ui/placeholder';
 
 export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -53,6 +54,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   const [percentageToRemove, setPercentageToRemove] = useState(100);
   const [balanceX, setBalanceX] = useState(0.0);
   const [balanceY, setBalanceY] = useState(0.0);
+  const [isLoading, setIsLoading] = useState(true);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const stxAddress = useSTXAddress();
   const { doContractCall } = useConnect();
@@ -94,15 +96,18 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
           state.balance[`${tokenX.nameInPair.toLowerCase()}${tokenY.nameInPair.toLowerCase()}`];
         const totalShares = json3['value']['value']['value']['shares-total'].value;
         const poolPercentage = balance / totalShares;
-        setFoundPair(true);
-        setTokenXPrice(basePrice);
-        setTokenYPrice((balanceY / balanceX).toFixed(2));
-        setInverseDirection(false);
-        setBalance(balance);
-        setBalanceX(balanceX * poolPercentage);
-        setBalanceY(balanceY * poolPercentage);
-        setTokenXToReceive((balanceX * poolPercentage * percentageToRemove) / 100);
-        setTokenYToReceive((balanceY * poolPercentage * percentageToRemove) / 100);
+        if (balance !== undefined) {
+          setFoundPair(true);
+          setTokenXPrice(basePrice);
+          setTokenYPrice((balanceY / balanceX).toFixed(2));
+          setInverseDirection(false);
+          setBalance(balance);
+          setBalanceX(balanceX * poolPercentage);
+          setBalanceY(balanceY * poolPercentage);
+          setTokenXToReceive((balanceX * poolPercentage * percentageToRemove) / 100);
+          setTokenYToReceive((balanceY * poolPercentage * percentageToRemove) / 100);
+          setIsLoading(false);
+        }
       } else if (Number(json3['value']['value']['value']) === 201) {
         const json4 = await fetchPair(tokenYTrait, tokenXTrait);
         if (json4['success']) {
@@ -114,15 +119,18 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
             state.balance[`${tokenY.nameInPair.toLowerCase()}${tokenX.nameInPair.toLowerCase()}`];
           const totalShares = json4['value']['value']['value']['shares-total'].value;
           const poolPercentage = balance / totalShares;
-          setFoundPair(true);
-          setTokenXPrice(basePrice);
-          setTokenYPrice((balanceY / balanceX).toFixed(2));
-          setInverseDirection(true);
-          setBalance(balance);
-          setBalanceX(balanceX * poolPercentage);
-          setBalanceY(balanceY * poolPercentage);
-          setTokenXToReceive((balanceX * poolPercentage * percentageToRemove) / 100);
-          setTokenYToReceive((balanceY * poolPercentage * percentageToRemove) / 100);
+          if (balance !== undefined) {
+            setFoundPair(true);
+            setTokenXPrice(basePrice);
+            setTokenYPrice((balanceY / balanceX).toFixed(2));
+            setInverseDirection(true);
+            setBalance(balance);
+            setBalanceX(balanceX * poolPercentage);
+            setBalanceY(balanceY * poolPercentage);
+            setTokenXToReceive((balanceX * poolPercentage * percentageToRemove) / 100);
+            setTokenYToReceive((balanceY * poolPercentage * percentageToRemove) / 100);
+            setIsLoading(false);
+          }
         }
       }
     };
@@ -208,7 +216,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
       {state.userData ? (
         <Container>
           <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
-            <p className="w-full max-w-lg">
+            <p className="w-full max-w-lg mb-2">
               <RouterLink className="" to={`/pool`} exact>
                 <span className="p-1.5 rounded-md inline-flex items-center">
                   <ArrowLeftIcon
@@ -287,7 +295,11 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                         {tokenX.name}/{tokenY.name}
                       </dt>
                       <dd className="mt-1 text-lg font-semibold text-indigo-900 sm:mt-0 sm:text-right">
-                        {microToReadable(balance)}
+                        {isLoading ? (
+                          <Placeholder className="justify-end" width={Placeholder.width.FULL} />
+                        ) : (
+                          <>{microToReadable(balance)}</>
+                        )}
                       </dd>
                     </div>
                     <div className="sm:grid sm:grid-cols-2 sm:gap-4">
@@ -295,7 +307,11 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                         {tokenX.name}
                       </dt>
                       <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
-                        {microToReadable(balanceX)}
+                        {isLoading ? (
+                          <Placeholder className="justify-end" width={Placeholder.width.HALF} />
+                        ) : (
+                          <>{microToReadable(balanceX)}</>
+                        )}
                       </dd>
                     </div>
                     <div className="sm:grid sm:grid-cols-2 sm:gap-4">
@@ -303,7 +319,11 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                         {tokenY.name}
                       </dt>
                       <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
-                        {microToReadable(balanceY)}
+                        {isLoading ? (
+                          <Placeholder className="justify-end" width={Placeholder.width.HALF} />
+                        ) : (
+                          <>{microToReadable(balanceY)}</>
+                        )}
                       </dd>
                     </div>
                   </dl>
@@ -405,7 +425,15 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                             </div>
                           </dt>
                           <dd className="mt-1 text-lg font-semibold sm:mt-0 sm:justify-end sm:inline-flex">
-                            {microToReadable(tokenXToReceive)}
+                            {isLoading ? (
+                              <Placeholder
+                                className="justify-end py-2"
+                                color={Placeholder.color.GRAY}
+                                width={Placeholder.width.HALF}
+                              />
+                            ) : (
+                              <>{microToReadable(tokenXToReceive)}</>
+                            )}
                           </dd>
                         </div>
                         <div className="sm:grid sm:grid-cols-2 sm:gap-4">
@@ -420,7 +448,15 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                             </div>
                           </dt>
                           <dd className="mt-1 text-lg font-semibold sm:mt-0 sm:justify-end sm:inline-flex">
-                            {microToReadable(tokenYToReceive)}
+                            {isLoading ? (
+                              <Placeholder
+                                className="justify-end py-2"
+                                color={Placeholder.color.GRAY}
+                                width={Placeholder.width.HALF}
+                              />
+                            ) : (
+                              <>{microToReadable(tokenYToReceive)}</>
+                            )}
                           </dd>
                         </div>
                       </dl>
@@ -431,14 +467,22 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                     <h4 className="text-xs font-normal text-gray-700 uppercase font-headings">
                       Price
                     </h4>
-                    <div className="mt-3 sm:mt-0 space-y-0.5 lg:text-right text-sm text-gray-500">
-                      <p>
-                        1 {tokenX.name} = {tokenYPrice} {tokenY.name}
-                      </p>
-                      <p>
-                        1 {tokenY.name} = {tokenXPrice} {tokenX.name}
-                      </p>
-                    </div>
+                    {isLoading ? (
+                      <Placeholder
+                        className="justify-end"
+                        color={Placeholder.color.GRAY}
+                        width={Placeholder.width.HALF}
+                      />
+                    ) : (
+                      <div className="mt-3 sm:mt-0 space-y-0.5 lg:text-right text-sm text-gray-500">
+                        <p>
+                          1 {tokenX.name} = {tokenYPrice} {tokenY.name}
+                        </p>
+                        <p>
+                          1 {tokenY.name} = {tokenXPrice} {tokenX.name}
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   <div className="mt-4 lg:flex lg:items-center lg:flex-1 lg:space-x-2">
@@ -453,7 +497,9 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                         'w-full inline-flex items-center justify-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white hover:bg-indigo-700 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
                       )}
                     >
-                      {!foundPair
+                      {isLoading
+                        ? 'Loading...'
+                        : !foundPair
                         ? 'No liquidity for this pair. Try another one.'
                         : !percentageToRemove || percentageToRemove === 0
                         ? 'Please enter an amount'
