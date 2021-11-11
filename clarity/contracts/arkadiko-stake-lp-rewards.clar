@@ -55,8 +55,11 @@
   )
 )
 
-;; Init
+;; Init for test
+;; TODO: Remove for release
+(map-set wallet-rewards { wallet: 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5 } { diko: u100000000 })
 
+;; Init
 (map-set wallet-rewards { wallet: 'SP17Q8MQJNAZEQHNM00VFM3KGYBN9KPWZ7WDF0EFS } { diko: u4481924537 })
 (map-set wallet-rewards { wallet: 'SP2EVH80XBHCSJFQFQ1KKK9NE42Z5ZZJKGMPNW0C9 } { diko: u1967277653 })
 (map-set wallet-rewards { wallet: 'SP26BVEN3WVZYJQZY5W093NHMW6VB50H8SJHX8H7W } { diko: u2023185508 })
