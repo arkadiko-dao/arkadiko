@@ -57,7 +57,7 @@ const setPrice = async (stxPrice, btcPrice) => {
   const fetchPair = async () => {
     let details = await tx.callReadOnlyFunction({
       contractAddress: CONTRACT_ADDRESS,
-      contractName: "arkadiko-swap-v1-1",
+      contractName: "arkadiko-swap-v2-1",
       functionName: "get-pair-details",
       functionArgs: [
         tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-token'),

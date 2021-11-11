@@ -30,7 +30,7 @@ export const routerConfig = [
 export function Routes() {
   return (
     <Switch>
-      <Route exact path="/" component={Home} />
+      <Route exact path="/" component={Swap} />
       <Route exact path="/onboarding" component={Onboarding} />
       <Route exact path="/onboarding/step-1-swap" component={OnboardingStep1Swap} />
       <Route exact path="/onboarding/step-2-vaults" component={OnboardingStep2Vaults} />

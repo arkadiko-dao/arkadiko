@@ -8,17 +8,12 @@ const network = utils.resolveNetwork();
 async function burn() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-governance-v1-1",
-    functionName: "add-contract-address",
-    functionArgs: [
-      tx.stringAsciiCV("arkadiko-burn-usda-2"),
-      tx.standardPrincipalCV(CONTRACT_ADDRESS),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-burn-usda-2'),
-      tx.trueCV(),
-      tx.trueCV()
-    ],
+    contractName: "arkadiko-burn-swap-v1",
+    functionName: "burn-and-mint",
+    functionArgs: [],
     senderKey: process.env.STACKS_PRIVATE_KEY,
-    fee: new BN(5000000, 1),
+    fee: new BN(250000, 1),
+    nonce: new BN(265, 10),
     postConditionMode: 1,
     network
   };

@@ -1,6 +1,6 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-const CONTRACT_NAME = 'arkadiko-swap-v1-1';
+const CONTRACT_NAME = 'arkadiko-swap-v2-1';
 const FUNCTION_NAME = 'add-to-position';
 const tx = require('@stacks/transactions');
 const BN = require('bn.js');
