@@ -84,7 +84,6 @@ export const ViewProposal = ({ match }) => {
       });
 
       if (data['is-open'].value == false) {
-
         // Get DIKO votes for user
         const votedDiko = await callReadOnlyFunction({
           contractAddress,
@@ -98,24 +97,24 @@ export const ViewProposal = ({ match }) => {
           senderAddress: stxAddress || '',
           network: network,
         });
-        const votedDikoResult = cvToJSON(votedDiko).value["amount"].value;
+        const votedDikoResult = cvToJSON(votedDiko).value['amount'].value;
         setDikoVoted(votedDikoResult / 1000000);
 
         // Get stDIKO votes for user
         const votedStdiko = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-governance-v1-1',
-        functionName: 'get-tokens-by-member-by-id',
-        functionArgs: [
-          uintCV(match.params.id),
-          standardPrincipalCV(stxAddress || ''),
-          contractPrincipalCV(contractAddress, 'stdiko-token'),
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const votedStdikoResult = cvToJSON(votedStdiko).value["amount"].value;
-      setStdikoVoted(votedStdikoResult / 1000000);
+          contractAddress,
+          contractName: 'arkadiko-governance-v1-1',
+          functionName: 'get-tokens-by-member-by-id',
+          functionArgs: [
+            uintCV(match.params.id),
+            standardPrincipalCV(stxAddress || ''),
+            contractPrincipalCV(contractAddress, 'stdiko-token'),
+          ],
+          senderAddress: stxAddress || '',
+          network: network,
+        });
+        const votedStdikoResult = cvToJSON(votedStdiko).value['amount'].value;
+        setStdikoVoted(votedStdikoResult / 1000000);
       }
 
       setIsLoading(false);
@@ -695,7 +694,7 @@ export const ViewProposal = ({ match }) => {
                       Claim {dikoVoted} DIKO
                     </button>
                   ) : null}
-  
+
                   {dikoVoted != 0 && stdikoVoted != 0 ? (
                     <span className="text-xs font-semibold text-center uppercase">— or —</span>
                   ) : null}
@@ -709,7 +708,6 @@ export const ViewProposal = ({ match }) => {
                       Claim {stdikoVoted} stDIKO
                     </button>
                   ) : null}
-
                 </>
               )}
             </div>
