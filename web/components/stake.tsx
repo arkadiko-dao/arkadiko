@@ -63,7 +63,6 @@ export const Stake = () => {
   const [loadingData, setLoadingData] = useState(true);
   const [hasUnstakedTokens, setHasUnstakedTokens] = useState(false);
   const [emissionsStarted, setEmissionsStarted] = useState(false);
-  const [canStakeLp, _] = useState(false);
 
   const [stxDikoPoolInfo, setStxDikoPoolInfo] = useState(0);
   const [stxUsdaPoolInfo, setStxUsdaPoolInfo] = useState(0);
@@ -578,8 +577,6 @@ export const Stake = () => {
         apy={dikoUsdaLpApy}
         balanceName={'dikousda'}
         tokenName={'DIKO/USDA'}
-        lpPairTokenX={1}
-        lpPairTokenY={0}
       />
 
       <StakeLpModal
@@ -588,8 +585,6 @@ export const Stake = () => {
         apy={stxUsdaLpApy}
         balanceName={'wstxusda'}
         tokenName={'STX/USDA'}
-        lpPairTokenX={2}
-        lpPairTokenY={0}
       />
 
       <StakeLpModal
@@ -598,8 +593,6 @@ export const Stake = () => {
         apy={stxDikoLpApy}
         balanceName={'wstxdiko'}
         tokenName={'STX/DIKO'}
-        lpPairTokenX={2}
-        lpPairTokenY={1}
       />
 
       <UnstakeLpModal

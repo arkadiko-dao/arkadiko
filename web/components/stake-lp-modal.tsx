@@ -23,8 +23,6 @@ export const StakeLpModal = ({
   apy,
   balanceName,
   tokenName,
-  lpPairTokenX,
-  lpPairTokenY,
 }) => {
   const [state, setState] = useContext(AppContext);
   const [errors, setErrors] = useState<string[]>([]);
@@ -101,6 +99,9 @@ export const StakeLpModal = ({
       anchorMode: AnchorMode.Any,
     });
   };
+
+  const lpPairTokenX = tokenList.findIndex(obj => obj.name == tokenName.split('/').slice(0, 1))
+  const lpPairTokenY = tokenList.findIndex(obj => obj.name == tokenName.split('/').slice(1))
 
   return (
     <Modal
