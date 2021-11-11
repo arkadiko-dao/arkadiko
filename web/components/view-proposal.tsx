@@ -686,15 +686,7 @@ export const ViewProposal = ({ match }) => {
                 </>
               ) : (
                 <>
-                  {dikoVoted == 0 ? (
-                    <button
-                      type="button"
-                      disabled
-                      className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-indigo-200 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                      Claim DIKO
-                    </button>
-                  ) : (
+                  {dikoVoted != 0 ? (
                     <button
                       type="button"
                       onClick={() => returnDiko()}
@@ -702,19 +694,13 @@ export const ViewProposal = ({ match }) => {
                     >
                       Claim {dikoVoted} DIKO
                     </button>
-                  )}
+                  ) : null}
   
-                  <span className="text-xs font-semibold text-center uppercase">— or —</span>
+                  {dikoVoted != 0 && stdikoVoted != 0 ? (
+                    <span className="text-xs font-semibold text-center uppercase">— or —</span>
+                  ) : null}
 
-                  {stdikoVoted == 0 ? (
-                    <button
-                      type="button"
-                      disabled
-                      className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-indigo-200 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                      Claim stDIKO
-                    </button>
-                  ) : (
+                  {stdikoVoted != 0 ? (
                     <button
                       type="button"
                       onClick={() => returnStDiko()}
@@ -722,7 +708,7 @@ export const ViewProposal = ({ match }) => {
                     >
                       Claim {stdikoVoted} stDIKO
                     </button>
-                  )}
+                  ) : null}
 
                 </>
               )}
