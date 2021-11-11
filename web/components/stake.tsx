@@ -158,7 +158,7 @@ export const Stake = () => {
       // Get pair details
       let pairDetailsCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-swap-v1-1",
+        contractName: "arkadiko-swap-v2-1",
         functionName: "get-pair-details",
         functionArgs: [
           contractPrincipalCV(contractAddress, tokenXContract),

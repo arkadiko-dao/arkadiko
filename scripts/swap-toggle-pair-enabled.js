@@ -7,10 +7,10 @@ const BN = require('bn.js');
 
 const txOptions = {
   contractAddress: CONTRACT_ADDRESS,
-  contractName: 'arkadiko-swap-v1-1',
+  contractName: 'arkadiko-swap-v2-1',
   functionName: 'toggle-pair-enabled',
   functionArgs: [
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wrapped-stx-token'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-token'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'usda-token'),
   ],
   senderKey: process.env.STACKS_PRIVATE_KEY,

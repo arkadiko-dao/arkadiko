@@ -94,7 +94,7 @@ export const Swap: React.FC = () => {
     const fetchPair = async (tokenXContract: string, tokenYContract: string) => {
       const details = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-swap-v1-1',
+        contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',
         functionArgs: [
           contractPrincipalCV(contractAddress, tokenXContract),
@@ -265,7 +265,7 @@ export const Swap: React.FC = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-swap-v1-1',
+      contractName: 'arkadiko-swap-v2-1',
       functionName: contractName,
       functionArgs: [
         principalX,

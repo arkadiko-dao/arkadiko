@@ -70,7 +70,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
     const fetchPair = async (tokenXContract: string, tokenYContract: string) => {
       const details = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-swap-v1-1',
+        contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',
         functionArgs: [
           contractPrincipalCV(contractAddress, tokenXContract),
@@ -166,14 +166,14 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
       ),
       makeContractFungiblePostCondition(
         contractAddress,
-        'arkadiko-swap-v1-1',
+        'arkadiko-swap-v2-1',
         FungibleConditionCode.LessEqual,
         new BN(tokenXToReceive, 10),
         createAssetInfo(contractAddress, tokenXParam, tokenXName)
       ),
       makeContractFungiblePostCondition(
         contractAddress,
-        'arkadiko-swap-v1-1',
+        'arkadiko-swap-v2-1',
         FungibleConditionCode.LessEqual,
         new BN(tokenYToReceive, 10),
         createAssetInfo(contractAddress, tokenYParam, tokenYName)
@@ -183,7 +183,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-swap-v1-1',
+      contractName: 'arkadiko-swap-v2-1',
       functionName: 'reduce-position',
       functionArgs: [
         contractPrincipalCV(contractAddress, tokenXParam),

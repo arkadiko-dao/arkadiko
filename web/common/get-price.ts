@@ -26,7 +26,7 @@ export const getDikoAmmPrice = async () => {
   const fetchPair = async () => {
     const details = await callReadOnlyFunction({
       contractAddress,
-      contractName: 'arkadiko-swap-v1-1',
+      contractName: 'arkadiko-swap-v2-1',
       functionName: 'get-pair-details',
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
