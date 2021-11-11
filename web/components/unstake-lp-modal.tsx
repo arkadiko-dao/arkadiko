@@ -62,7 +62,7 @@ export const UnstakeLpModal = ({
         setShowUnstakeModal(false);
       },
       postConditionMode: 0x01,
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 

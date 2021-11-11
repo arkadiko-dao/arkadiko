@@ -11,12 +11,6 @@ import {
   cvToJSON,
   contractPrincipalCV,
   uintCV,
-  createAssetInfo,
-  FungibleConditionCode,
-  makeStandardFungiblePostCondition,
-  makeStandardSTXPostCondition,
-  makeContractSTXPostCondition,
-  makeContractFungiblePostCondition,
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
@@ -302,57 +296,57 @@ export const Swap: React.FC = () => {
     <>
       <Container>
         <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
-          {loadingData ? (
-            <SwapLoadingPlaceholder tokenX={tokenX} tokenY={tokenY} />
-          ) : (
-            <>
-              <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow">
-                <div className="flex flex-col p-4">
-                  <div className="flex justify-between mb-4">
-                    <div>
-                      <div className="sm:hidden">
-                        <label htmlFor="tabs" className="sr-only">
-                          Select a tab
-                        </label>
-                        <select
-                          id="tabs"
-                          name="tabs"
-                          className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                          defaultValue={tabs.find(tab => tab.current).name}
-                        >
-                          {tabs.map(tab => (
-                            <option key={tab.name}>{tab.name}</option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="hidden sm:block">
-                        <nav className="flex space-x-4" aria-label="Tabs">
-                          {tabs.map(tab => (
-                            <a
-                              key={tab.name}
-                              href={tab.href}
-                              className={classNames(
-                                tab.current
-                                  ? 'bg-indigo-100 text-indigo-700'
-                                  : 'text-gray-500 hover:text-gray-700',
-                                'px-3 py-2 text-lg font-headings rounded-md'
-                              )}
-                              aria-current={tab.current ? 'page' : undefined}
-                            >
-                              {tab.name}
-                            </a>
-                          ))}
-                        </nav>
-                      </div>
-                    </div>
-
-                    <SwapSettings
-                      slippageTolerance={slippageTolerance}
-                      setDefaultSlippage={setDefaultSlippage}
-                      setSlippageTolerance={setSlippageTolerance}
-                    />
+          <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow">
+            <div className="flex flex-col p-4">
+              <div className="flex justify-between mb-4">
+                <div>
+                  <div className="sm:hidden">
+                    <label htmlFor="tabs" className="sr-only">
+                      Select a tab
+                    </label>
+                    <select
+                      id="tabs"
+                      name="tabs"
+                      className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                      defaultValue={tabs.find(tab => tab.current).name}
+                    >
+                      {tabs.map(tab => (
+                        <option key={tab.name}>{tab.name}</option>
+                      ))}
+                    </select>
                   </div>
+                  <div className="hidden sm:block">
+                    <nav className="flex space-x-4" aria-label="Tabs">
+                      {tabs.map(tab => (
+                        <a
+                          key={tab.name}
+                          href={tab.href}
+                          className={classNames(
+                            tab.current
+                              ? 'bg-indigo-100 text-indigo-700'
+                              : 'text-gray-500 hover:text-gray-700',
+                            'px-3 py-2 text-lg font-headings rounded-md'
+                          )}
+                          aria-current={tab.current ? 'page' : undefined}
+                        >
+                          {tab.name}
+                        </a>
+                      ))}
+                    </nav>
+                  </div>
+                </div>
 
+                <SwapSettings
+                  slippageTolerance={slippageTolerance}
+                  setDefaultSlippage={setDefaultSlippage}
+                  setSlippageTolerance={setSlippageTolerance}
+                />
+              </div>
+
+              {loadingData ? (
+                <SwapLoadingPlaceholder tokenX={tokenX} tokenY={tokenY} />
+              ) : (
+                <>
                   <form>
                     <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
                       <div className="flex items-center p-4 pb-2">
@@ -373,8 +367,8 @@ export const Swap: React.FC = () => {
                           placeholder="0.0"
                           value={tokenXAmount || ''}
                           onChange={onInputChange}
-                          className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
-                          style={{ appearance: 'textfield' }}
+                          min={0}
+                          className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right text-gray-800 truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
                         />
                       </div>
 
@@ -417,14 +411,16 @@ export const Swap: React.FC = () => {
                       <div className="flex items-center p-4 pb-2">
                         <TokenSwapList selected={tokenY} setSelected={setupTokenY} />
 
+                        <TokenSwapList selected={tokenY} setSelected={setupTokenY} />
+
                         <label htmlFor="tokenYAmount" className="sr-only">
                           {tokenY.name}
                         </label>
                         <input
+                          type="number"
                           inputMode="decimal"
                           autoComplete="off"
                           autoCorrect="off"
-                          type="text"
                           name="tokenYAmount"
                           id="tokenYAmount"
                           pattern="^[0-9]*[.,]?[0-9]*$"
@@ -435,7 +431,8 @@ export const Swap: React.FC = () => {
                           })}
                           onChange={onInputChange}
                           disabled={true}
-                          className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right text-gray-600 truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
+                          min={0}
+                          className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right text-gray-800 truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
                         />
                       </div>
 
@@ -505,27 +502,33 @@ export const Swap: React.FC = () => {
                       </RouterLink>
                     </div>
                   ) : null}
-                </div>
-              </div>
-              <div className="w-full max-w-md p-4 pt-8 -mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
-                <dl className="space-y-1">
-                  <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                    <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
-                      Minimum Received
-                      <div className="ml-2">
-                        <Tooltip
-                          className="z-10"
-                          shouldWrapChildren={true}
-                          label={`Your transaction will revert if there is a large, unfavorable price movement before it is confirmed`}
-                        >
-                          <InformationCircleIcon
-                            className="block w-4 h-4 text-indigo-400"
-                            aria-hidden="true"
-                          />
-                        </Tooltip>
-                      </div>
-                    </dt>
-                    <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
+                </>
+              )}
+            </div>
+          </div>
+          <div className="w-full max-w-md p-4 pt-8 -mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
+            <dl className="space-y-1">
+              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  Minimum Received
+                  <div className="ml-2">
+                    <Tooltip
+                      className="z-10"
+                      shouldWrapChildren={true}
+                      label={`Your transaction will revert if there is a large, unfavorable price movement before it is confirmed`}
+                    >
+                      <InformationCircleIcon
+                        className="block w-4 h-4 text-indigo-400"
+                        aria-hidden="true"
+                      />
+                    </Tooltip>
+                  </div>
+                </dt>
+                <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
+                  {loadingData ? (
+                    <Placeholder className="justify-end" width={Placeholder.width.HALF} />
+                  ) : (
+                    <>
                       <div className="mr-1 truncate">
                         {minimumReceived.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
@@ -533,53 +536,65 @@ export const Swap: React.FC = () => {
                         })}
                       </div>
                       {tokenY.name}
-                    </dd>
+                    </>
+                  )}
+                </dd>
+              </div>
+              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  Price Impact
+                  <div className="ml-2">
+                    <Tooltip
+                      className="z-10"
+                      shouldWrapChildren={true}
+                      label={`The difference between the market price and estimated price due to trade size`}
+                    >
+                      <InformationCircleIcon
+                        className="block w-4 h-4 text-indigo-400"
+                        aria-hidden="true"
+                      />
+                    </Tooltip>
                   </div>
-                  <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                    <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
-                      Price Impact
-                      <div className="ml-2">
-                        <Tooltip
-                          className="z-10"
-                          shouldWrapChildren={true}
-                          label={`The difference between the market price and estimated price due to trade size`}
-                        >
-                          <InformationCircleIcon
-                            className="block w-4 h-4 text-indigo-400"
-                            aria-hidden="true"
-                          />
-                        </Tooltip>
-                      </div>
-                    </dt>
-                    <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
-                      ≈<div className="mr-1 truncate">{priceImpact}</div>%
-                    </dd>
+                </dt>
+                <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
+                  {loadingData ? (
+                    <Placeholder className="justify-end" width={Placeholder.width.THIRD} />
+                  ) : (
+                    <>
+                      ≈<div className="mr-1 truncate">${priceImpact}</div>%
+                    </>
+                  )}
+                </dd>
+              </div>
+              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  Liquidity Provider fee
+                  <div className="ml-2">
+                    <Tooltip
+                      className="z-10"
+                      shouldWrapChildren={true}
+                      label={`A portion of each trade goes to liquidity providers as a protocol incentive`}
+                    >
+                      <InformationCircleIcon
+                        className="block w-4 h-4 text-indigo-400"
+                        aria-hidden="true"
+                      />
+                    </Tooltip>
                   </div>
-                  <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                    <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
-                      Liquidity Provider fee
-                      <div className="ml-2">
-                        <Tooltip
-                          className="z-10"
-                          shouldWrapChildren={true}
-                          label={`A portion of each trade goes to liquidity providers as a protocol incentive`}
-                        >
-                          <InformationCircleIcon
-                            className="block w-4 h-4 text-indigo-400"
-                            aria-hidden="true"
-                          />
-                        </Tooltip>
-                      </div>
-                    </dt>
-                    <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
+                </dt>
+                <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
+                  {loadingData ? (
+                    <Placeholder className="justify-end" width={Placeholder.width.HALF} />
+                  ) : (
+                    <>
                       <div className="mr-1 truncate">{lpFee}</div>
                       {tokenX.name}
-                    </dd>
-                  </div>
-                </dl>
+                    </>
+                  )}
+                </dd>
               </div>
-            </>
-          )}
+            </dl>
+          </div>
         </main>
       </Container>
     </>
