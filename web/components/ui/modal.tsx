@@ -10,7 +10,7 @@ type Props = {
   icon?: ReactNode;
   buttonText: string;
   buttonAction: () => void;
-  initialFocus: React.MutableRefObject<HTMLElement | null> | undefined;
+  initialFocus?: React.MutableRefObject<HTMLElement | null> | undefined;
 };
 
 export function Modal({

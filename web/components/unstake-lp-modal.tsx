@@ -114,7 +114,7 @@ export const UnstakeLpModal = ({
           <p>{errors[0]}</p>
         </Alert>
       ) : null}
-      <p className="mt-3 text-sm text-gray-500">
+      <p className="mt-3 text-sm text-center text-gray-500">
         You are current staking{' '}
         {microToReadable(stakedAmount).toLocaleString(undefined, {
           minimumFractionDigits: 2,
