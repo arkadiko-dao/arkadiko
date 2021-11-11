@@ -411,8 +411,6 @@ export const Swap: React.FC = () => {
                       <div className="flex items-center p-4 pb-2">
                         <TokenSwapList selected={tokenY} setSelected={setupTokenY} />
 
-                        <TokenSwapList selected={tokenY} setSelected={setupTokenY} />
-
                         <label htmlFor="tokenYAmount" className="sr-only">
                           {tokenY.name}
                         </label>
