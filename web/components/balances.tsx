@@ -84,7 +84,7 @@ export const Balances = () => {
     },
     {
       address: `${contractAddress}.arkadiko-swap-v2-1`,
-      name: 'Swap v1',
+      name: 'Swap v2',
       description: "Arkadiko's Decentralised Exchange",
     },
   ];
