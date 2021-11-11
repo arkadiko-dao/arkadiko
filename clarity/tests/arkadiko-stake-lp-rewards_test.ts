@@ -15,6 +15,7 @@ import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 // ---------------------------------------------------------
 // Calculate missing rewards
+// From block 35597 to block 37414 = 1817 blocks
 // ---------------------------------------------------------
 
 // Clarinet.test({
@@ -28,11 +29,11 @@ import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 //     let dikoToken = new DikoToken(chain, deployer);
 
 //     // Start block
-//     chain.mineEmptyBlock(35440);
+//     chain.mineEmptyBlock(35597);
 
 //     // Calculate total rewards
 //     var totalRewards = 0;
-//     for (let index = 0; index < 1750; index++) {
+//     for (let index = 0; index <= 1817; index++) {
 //       let block = chain.mineBlock([
 //         Tx.contractCall("arkadiko-stake-registry-v1-1", "get-rewards-per-block-for-pool", [
 //           types.principal(Utils.qualifiedName("arkadiko-stake-pool-wstx-usda-v1-1")),
@@ -57,11 +58,11 @@ import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 //     let dikoToken = new DikoToken(chain, deployer);
 
 //     // Start block
-//     chain.mineEmptyBlock(35440);
+//     chain.mineEmptyBlock(35597);
 
 //     // Calculate total rewards
 //     var totalRewards = 0;
-//     for (let index = 0; index < 1750; index++) {
+//     for (let index = 0; index <= 1817; index++) {
 //       let block = chain.mineBlock([
 //         Tx.contractCall("arkadiko-stake-registry-v1-1", "get-rewards-per-block-for-pool", [
 //           types.principal(Utils.qualifiedName("arkadiko-stake-pool-wstx-diko-v1-1")),
@@ -86,11 +87,11 @@ import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 //     let dikoToken = new DikoToken(chain, deployer);
 
 //     // Start block
-//     chain.mineEmptyBlock(35440);
+//     chain.mineEmptyBlock(35597);
 
 //     // Calculate total rewards
 //     var totalRewards = 0;
-//     for (let index = 0; index < 1750; index++) {
+//     for (let index = 0; index <= 1817; index++) {
 //       let block = chain.mineBlock([
 //         Tx.contractCall("arkadiko-stake-registry-v1-1", "get-rewards-per-block-for-pool", [
 //           types.principal(Utils.qualifiedName("arkadiko-stake-pool-diko-usda-v1-1")),
