@@ -53,7 +53,7 @@ export const availableCoinsToMint = (
   return 0;
 };
 
-export const tokenTraits = {
+export const tokenTraits: { [index: string]: { name: string; swap: string } } = {
   diko: {
     name: 'arkadiko-token',
     swap: 'arkadiko-token',
