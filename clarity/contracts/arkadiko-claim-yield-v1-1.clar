@@ -61,9 +61,11 @@
   (vault-id uint)
   (reserve <vault-trait>)
   (coll-type <collateral-types-trait>)
+  (stack-yield bool)
 )
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
+    (stacker-name (get stacker-name vault))
     (claim-entry (get-claim-by-vault-id vault-id))
     (sender tx-sender)
   )
@@ -74,6 +76,32 @@
 
     (try! (as-contract (stx-transfer? (get ustx claim-entry) tx-sender sender)))
     (try! (contract-call? .arkadiko-freddie-v1-1 deposit vault-id (get ustx claim-entry) reserve .arkadiko-token coll-type))
+
+    (if (is-eq stack-yield true)
+      (begin
+        ;; Toggle stacking
+        (try! (contract-call? .arkadiko-freddie-v1-1 toggle-stacking vault-id))
+
+        ;; Enable vault withdrawal
+        (if (is-eq stacker-name "stacker")
+          (try! (contract-call? .arkadiko-stacker-v1-1 enable-vault-withdrawals vault-id))
+          (if (is-eq stacker-name "stacker-2")
+            (try! (contract-call? .arkadiko-stacker-2-v1-1 enable-vault-withdrawals vault-id))
+            (if (is-eq stacker-name "stacker-3")
+              (try! (contract-call? .arkadiko-stacker-3-v1-1 enable-vault-withdrawals vault-id))
+              (if (is-eq stacker-name "stacker-4")
+                (try! (contract-call? .arkadiko-stacker-4-v1-1 enable-vault-withdrawals vault-id))
+                false
+              )
+            )
+          )
+        )
+        
+        ;; Stack collateral
+        (try! (contract-call? .arkadiko-freddie-v1-1 stack-collateral vault-id))
+      )
+      true
+    )
 
     (map-set claims { vault-id: vault-id } { ustx: u0 })
     (ok true)

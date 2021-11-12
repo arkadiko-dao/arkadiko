@@ -953,6 +953,10 @@ Clarinet.test({
     // Advance until end of stacking
     chain.mineEmptyBlock(300);
 
+    // Deposit extra
+    result = vaultManager.deposit(deployer, 1, 500);
+    result.expectOk().expectBool(true);
+
     // Turn off stacking
     result = vaultManager.toggleStacking(deployer, 1);
     result.expectOk().expectBool(true);
@@ -961,14 +965,10 @@ Clarinet.test({
     result = vaultManager.enableVaultWithdrawals(1);
     result.expectOk().expectBool(true);
 
-    // Deposit extra
-    result = vaultManager.deposit(deployer, 1, 500);
-    result.expectOk().expectBool(true);
-
     // Stack again
     result = vaultManager.stackCollateral(deployer, 1);
     result.expectOk().expectBool(true);
-
+    
     // Check vault data
     call = vaultManager.getVaultById(1);
     vault = call.result.expectTuple();

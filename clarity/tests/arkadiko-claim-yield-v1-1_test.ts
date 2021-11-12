@@ -76,7 +76,7 @@ Clarinet.test({
     call.result.expectUintWithDecimals(100);
 
     // Claim
-    result = claimYield.claim(deployer, 1);
+    result = claimYield.claim(deployer, 1, false);
     result.expectOk().expectBool(true);
 
     // Check STX balance of contract
@@ -128,17 +128,50 @@ Clarinet.test({
     call.result.expectUintWithDecimals(20000);
 
     // Claim
-    result = claimYield.claim(wallet_1, 1);
+    result = claimYield.claim(wallet_1, 1, false);
     result.expectOk().expectBool(true);
 
     // Claim
-    result = claimYield.claim(wallet_2, 2);
+    result = claimYield.claim(wallet_2, 2, false);
     result.expectOk().expectBool(true);
 
     // Check STX balance of contract
     // 20.000 - (2 * 100) = 19800
     call = claimYield.getStxBalance();
     call.result.expectUintWithDecimals(19800);
+  }
+});
+
+Clarinet.test({
+  name: "claim-yield: claim STX and stack",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let claimYield = new ClaimYield(chain, deployer);
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+
+    // Initialize price of STX to $1 in the oracle
+    let result = oracleManager.updatePrice("STX", 1);
+    result.expectOk().expectUintWithDecimals(1);
+
+    // Create new vault
+    result = vaultManager.createVault(deployer, "STX-A", 5000, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    // Add one claim
+    result = claimYield.addClaim(deployer, 1, 100);
+    result.expectOk().expectBool(true);
+
+    // Claim and stack
+    result = claimYield.claim(deployer, 1, true);
+    result.expectOk().expectBool(true);
+
+    // Check vault data
+    let call = vaultManager.getVaultById(1);
+    let vault:any = call.result.expectTuple();
+    vault['stacked-tokens'].expectUintWithDecimals(5100);
   }
 });
 
@@ -252,7 +285,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Claim
-    result = claimYield.claim(wallet_2, 1);
+    result = claimYield.claim(wallet_2, 1, false);
     result.expectErr().expectUint(40401);
 
     // Claim to pay debt
@@ -287,11 +320,11 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Claim
-    result = claimYield.claim(deployer, 1);
+    result = claimYield.claim(deployer, 1, false);
     result.expectOk().expectBool(true);
 
     // Claim again
-    result = claimYield.claim(deployer, 1);
+    result = claimYield.claim(deployer, 1, false);
     result.expectErr().expectUint(40402);
 
   }
@@ -330,6 +363,7 @@ Clarinet.test({
         types.uint(1),
         types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.bool(false)
       ], deployer.address)
     ]);
     block.receipts[0].result.expectErr().expectUint(40401);
@@ -350,6 +384,7 @@ Clarinet.test({
         types.uint(1),
         types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1')),
+        types.bool(false)
       ], deployer.address)
     ]);
     block.receipts[0].result.expectErr().expectUint(40401);
@@ -394,7 +429,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Claim
-    result = claimYield.claim(wallet_1, 1);
+    result = claimYield.claim(wallet_1, 1, false);
     result.expectErr().expectUint(40401);
 
   }
