@@ -415,7 +415,7 @@ export const Swap: React.FC = () => {
                           {tokenY.name}
                         </label>
                         <input
-                          type="number"
+                          type="text"
                           inputMode="decimal"
                           autoComplete="off"
                           autoCorrect="off"
@@ -429,7 +429,6 @@ export const Swap: React.FC = () => {
                           })}
                           onChange={onInputChange}
                           disabled={true}
-                          min={0}
                           className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right text-gray-800 truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
                         />
                       </div>
