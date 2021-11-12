@@ -173,6 +173,7 @@ export const Swap: React.FC = () => {
       tokenYAmount = ((100 - defaultFee) / 100) * (balanceY / balanceX) * Number(tokenXAmount);
     }
     setMinimumReceived(amount * 0.97);
+    console.log('oh snap', tokenYAmount);
     setTokenYAmount(tokenYAmount);
     const impact = balanceX / 1000000 / tokenXAmount;
     setPriceImpact(
@@ -415,7 +416,7 @@ export const Swap: React.FC = () => {
                           {tokenY.name}
                         </label>
                         <input
-                          type="number"
+                          type="text"
                           inputMode="decimal"
                           autoComplete="off"
                           autoCorrect="off"
