@@ -165,8 +165,9 @@
   (stx-get-balance (as-contract tx-sender))
 )
 
-;; return STX to the STX reserve
+;; return STX to the deposit address
 ;; can be used since yield is not trustless today
+;; temporary method to avoid locked funds
 (define-public (return-stx (ustx-amount uint))
   (let (
     (dao-address (contract-call? .arkadiko-dao get-dao-owner))
