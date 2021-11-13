@@ -94,6 +94,65 @@ class Blockchain < ApplicationRecord
     return stx_amount, usda_amount
   end
 
+  def import_vaults(offset:)
+    url = "#{STACKS_MAINNET_NODE_URL}/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-freddie-v1-1/transactions?limit=50&offset=#{offset}"
+    puts url
+    response = HTTParty.get(url)&.parsed_response['results']
+    vaults = {}
+
+    while offset >= 0
+      response.reverse.each do |res|
+        next if res['contract_call'].nil?
+        next unless res['tx_status'] == 'success'
+
+        function_name = res['contract_call']['function_name']
+        args = res['contract_call']['function_args']
+        if function_name == 'collateralize-and-mint'
+          vault_created = HTTParty.get("https://stacks-node-api.mainnet.stacks.co/extended/v1/tx/#{res['tx_id']}").parsed_response
+          params = vault_created['events'][-1]['contract_log']['value']['repr']
+          id = params.split("(id ")[1].split(")")[0].gsub('u', '')
+          vaults[id] = {
+            'collateral_amount': args[0]['repr'].gsub('u', '').to_i,
+            'debt': args[1]['repr'].gsub('u', '').to_i,
+            'stacking': args[2]['repr'].split('(stack-pox ')[1] == "true))",
+            'stacker_name': params.split('(stacker-name ')[1].split(') (updated-at-block-height')[0]
+          }
+        elsif function_name == 'deposit'
+          id = args[0]['repr'].gsub('u', '')
+          next unless vaults[id]
+          next if res['block_height'] > 35965
+          vaults[id]['collateral_amount'.to_sym] += res['post_conditions'][0]['amount'].to_i
+        elsif function_name == 'withdraw'
+          id = args[0]['repr'].gsub('u', '')
+          next unless vaults[id]
+          next if res['block_height'] > 35965
+          vaults[id]['collateral_amount'.to_sym] -= args[1]['repr'].gsub('u', '').to_i
+        elsif function_name == 'burn'
+        elsif function_name == 'mint'
+        elsif function_name == 'toggle-stacking'
+          id = args[0]['repr'].gsub('u', '')
+          next unless vaults[id]
+          vaults[id]['stacking'.to_sym] = !vaults[id]['stacking']
+        elsif function_name == 'stack-collateral'
+          id = args[0]['repr'].gsub('u', '')
+          next unless vaults[id]
+          vaults[id]['stacking'.to_sym] = true
+        elsif function_name == 'close-vault'
+          id = args[0]['repr'].gsub('u', '')
+          vaults = vaults.except(id)
+        else
+          puts "Function not recognised"
+        end
+      end
+
+      offset -= 50
+      url = "#{STACKS_MAINNET_NODE_URL}/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-freddie-v1-1/transactions?limit=50&offset=#{offset}"
+      response = HTTParty.get(url)&.parsed_response['results']
+    end
+
+    vaults
+  end
+
   def scan_result(result, enforce_block_height)
     return if enforce_block_height && result['block_height'] > last_block_height_imported
     return if %w[coinbase token_transfer].include?(result['tx_type'])
