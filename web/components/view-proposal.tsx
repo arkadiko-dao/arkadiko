@@ -10,6 +10,7 @@ import {
   cvToJSON,
   FungibleConditionCode,
   makeStandardFungiblePostCondition,
+  standardPrincipalCV,
 } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
@@ -21,6 +22,7 @@ import { getRPCClient } from '@common/utils';
 import { ProposalProps } from './proposal-group';
 import BN from 'bn.js';
 import { Placeholder } from './ui/placeholder';
+import { classNames } from '@common/class-names';
 
 export const ViewProposal = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -34,6 +36,8 @@ export const ViewProposal = ({ match }) => {
   const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [stacksTipHeight, setStacksTipHeight] = useState(0);
+  const [dikoVoted, setDikoVoted] = useState('');
+  const [stdikoVoted, setStdikoVoted] = useState('');
 
   useEffect(() => {
     if (state.currentTxStatus === 'success') {
@@ -61,6 +65,17 @@ export const ViewProposal = ({ match }) => {
       const json = cvToJSON(proposal);
       data = json.value;
 
+      const totalVotes =
+        (Number(data['yes-votes'].value) + Number(data['no-votes'].value)) / 1000000;
+      const forVotesPercentage = (
+        (Number(data['yes-votes'].value) / totalVotes / 1000000) *
+        100
+      ).toFixed(1);
+      const againstVotesPercentage = (
+        (Number(data['no-votes'].value) / totalVotes / 1000000) *
+        100
+      ).toFixed(1);
+
       setProposal({
         id: data['id'].value,
         title: data['title'].value,
@@ -78,7 +93,45 @@ export const ViewProposal = ({ match }) => {
         isOpen: data['is-open'].value,
         startBlockHeight: data['start-block-height'].value,
         endBlockHeight: data['end-block-height'].value,
+        totalVotes,
+        forVotesPercentage,
+        againstVotesPercentage,
       });
+
+      if (data['is-open'].value == false) {
+        // Get DIKO votes for user
+        const votedDiko = await callReadOnlyFunction({
+          contractAddress,
+          contractName: 'arkadiko-governance-v1-1',
+          functionName: 'get-tokens-by-member-by-id',
+          functionArgs: [
+            uintCV(match.params.id),
+            standardPrincipalCV(stxAddress || ''),
+            contractPrincipalCV(contractAddress, 'arkadiko-token'),
+          ],
+          senderAddress: stxAddress || '',
+          network: network,
+        });
+        const votedDikoResult = cvToJSON(votedDiko).value['amount'].value;
+        setDikoVoted(votedDikoResult / 1000000);
+
+        // Get stDIKO votes for user
+        const votedStdiko = await callReadOnlyFunction({
+          contractAddress,
+          contractName: 'arkadiko-governance-v1-1',
+          functionName: 'get-tokens-by-member-by-id',
+          functionArgs: [
+            uintCV(match.params.id),
+            standardPrincipalCV(stxAddress || ''),
+            contractPrincipalCV(contractAddress, 'stdiko-token'),
+          ],
+          senderAddress: stxAddress || '',
+          network: network,
+        });
+        const votedStdikoResult = cvToJSON(votedStdiko).value['amount'].value;
+        setStdikoVoted(votedStdikoResult / 1000000);
+      }
+
       setIsLoading(false);
     };
     if (mounted) {
@@ -161,6 +214,54 @@ export const ViewProposal = ({ match }) => {
         setShowVoteDikoModal(false);
       },
       anchorMode: AnchorMode.Any,
+    });
+  };
+
+  const returnDiko = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-governance-v1-1',
+      functionName: 'return-votes-to-member',
+      functionArgs: [
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
+        uintCV(match.params.id),
+        standardPrincipalCV(stxAddress),
+      ],
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+      postConditionMode: 0x01,
+    });
+  };
+
+  const returnStDiko = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-governance-v1-1',
+      functionName: 'return-votes-to-member',
+      functionArgs: [
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
+        uintCV(match.params.id),
+        standardPrincipalCV(stxAddress),
+      ],
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+      postConditionMode: 0x01,
     });
   };
 
@@ -424,23 +525,43 @@ export const ViewProposal = ({ match }) => {
 
       <main className="my-16">
         <section>
-          <header className="pb-5 border-b border-gray-200">
+          <header className="pb-5 border-b border-gray-200 sm:flex sm:items-center sm:justify-between">
             {isLoading ? (
-              <Placeholder
-                className="py-2"
-                color={Placeholder.color.GRAY}
-                width={Placeholder.width.HALF}
-              />
+              <>
+                <Placeholder
+                  className="py-2"
+                  color={Placeholder.color.GRAY}
+                  width={Placeholder.width.HALF}
+                />
+                <Placeholder
+                  className="justify-end py-2"
+                  color={Placeholder.color.GRAY}
+                  width={Placeholder.width.THIRD}
+                />
+              </>
             ) : (
-              <h2 className="text-2xl font-bold leading-6 text-gray-900 font-headings">
-                Proposal #{match.params.id} - {proposal.title}
-              </h2>
+              <>
+                <h2 className="text-2xl font-bold leading-6 text-gray-900 font-headings">
+                  Proposal #{match.params.id} - {proposal.title}
+                </h2>
+                <div className="flex flex-shrink-0 ml-2">
+                  {proposal.isOpen ? (
+                    <p className="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">
+                      Open for Voting
+                    </p>
+                  ) : (
+                    <p className="inline-flex px-2 text-xs font-semibold leading-5 text-red-800 bg-red-100 rounded-full">
+                      Voting Closed
+                    </p>
+                  )}
+                </div>
+              </>
             )}
           </header>
 
           <div className="mt-4">
-            <div className="sm:grid sm:grid-cols-2 sm:gap-x-4">
-              <div className="overflow-hidden bg-white shadow sm:rounded-lg">
+            <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-x-4 lg:space-y-0">
+              <div className="overflow-hidden bg-white rounded-lg shadow">
                 <div className="px-4 py-5 sm:px-6">
                   <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">
                     Details
@@ -538,62 +659,149 @@ export const ViewProposal = ({ match }) => {
                 </div>
               </div>
 
-              <dl className="bg-white rounded-lg shadow sm:grid sm:grid-cols-2">
-                <div className="flex flex-col justify-center p-6 text-center border-b border-gray-200 sm:border-0 sm:border-r">
-                  <dt className="inline-flex items-center order-2 mx-auto mt-2 text-lg font-medium leading-6 text-gray-500">
-                    <ThumbUpIcon className="block w-6 h-6 mr-2 text-gray-400" aria-hidden="true" />
-                    Vote For
-                  </dt>
-                  <dd className="order-1 text-3xl font-bold text-indigo-600">
-                    {isLoading ? (
-                      <Placeholder
-                        className="justify-center py-2"
-                        color={Placeholder.color.INDIGO}
-                        width={Placeholder.width.HALF}
-                      />
-                    ) : (
-                      <>{proposal.forVotes / 1000000}</>
-                    )}
-                  </dd>
-                </div>
-                <div className="flex flex-col justify-center p-6 text-center border-t border-gray-100 sm:border-0 sm:border-l">
-                  <dt className="inline-flex items-center order-2 mx-auto mt-2 text-lg font-medium leading-6 text-gray-500">
-                    <ThumbDownIcon
-                      className="block w-6 h-6 mr-2 text-gray-400"
-                      aria-hidden="true"
+              <div className="flex flex-col overflow-hidden bg-white rounded-lg shadow">
+                <dl className="flex-1 sm:grid sm:grid-cols-2">
+                  <div className="flex flex-col justify-center p-6 text-center border-b border-gray-200 sm:border-0 sm:border-r">
+                    <dt className="inline-flex items-center order-2 mx-auto mt-2 text-lg font-medium leading-6">
+                      <span
+                        className={classNames(
+                          proposal.forVotes > proposal.against && !proposal.isOpen
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-transparent text-gray-500',
+                          'inline-flex items-center px-3 mt-3 py-1.5 rounded-full'
+                        )}
+                      >
+                        <ThumbUpIcon
+                          className={classNames(
+                            proposal.forVotes > proposal.against && !proposal.isOpen
+                              ? 'text-green-800'
+                              : 'text-gray-400',
+                            'block w-6 h-6 mr-2'
+                          )}
+                          aria-hidden="true"
+                        />
+                        Vote For
+                      </span>
+                    </dt>
+                    <dd className="order-1">
+                      {isLoading ? (
+                        <Placeholder
+                          className="justify-center py-2"
+                          color={Placeholder.color.INDIGO}
+                          width={Placeholder.width.HALF}
+                        />
+                      ) : (
+                        <>
+                          <p className="text-3xl font-bold text-indigo-600">
+                            {proposal.forVotesPercentage}%
+                          </p>
+                          <p className="mt-1 font-semibold">{proposal.forVotes / 1000000}</p>
+                        </>
+                      )}
+                    </dd>
+                  </div>
+                  <div className="flex flex-col justify-center p-6 text-center border-t border-gray-100 sm:border-0 sm:border-l">
+                    <dt className="inline-flex items-center order-2 mx-auto mt-2 text-lg font-medium leading-6 text-gray-500">
+                      <span
+                        className={classNames(
+                          proposal.against > proposal.forVotes && !proposal.isOpen
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-transparent text-gray-500',
+                          'inline-flex items-center px-3 mt-3 py-1.5 rounded-full'
+                        )}
+                      >
+                        <ThumbDownIcon
+                          className={classNames(
+                            proposal.against > proposal.forVotes && !proposal.isOpen
+                              ? 'text-red-800'
+                              : 'text-gray-400',
+                            'block w-6 h-6 mr-2'
+                          )}
+                          aria-hidden="true"
+                        />
+                        Vote Against
+                      </span>
+                    </dt>
+                    <dd className="order-1">
+                      {isLoading ? (
+                        <Placeholder
+                          className="justify-center py-2"
+                          color={Placeholder.color.INDIGO}
+                          width={Placeholder.width.HALF}
+                        />
+                      ) : (
+                        <>
+                          <p className="text-3xl font-bold text-indigo-600">
+                            {proposal.againstVotesPercentage}%
+                          </p>
+                          <p className="mt-1 font-semibold">{proposal.against / 1000000}</p>
+                        </>
+                      )}
+                    </dd>
+                  </div>
+                </dl>
+                <div className="p-5 bg-white border-t border-gray-200">
+                  {isLoading ? (
+                    <Placeholder
+                      className="justify-center py-2"
+                      color={Placeholder.color.INDIGO}
+                      width={Placeholder.width.HALF}
                     />
-                    Vote Against
-                  </dt>
-                  <dd className="order-1 text-3xl font-bold text-indigo-600">
-                    {isLoading ? (
-                      <Placeholder
-                        className="justify-center py-2"
-                        color={Placeholder.color.INDIGO}
-                        width={Placeholder.width.HALF}
-                      />
-                    ) : (
-                      <>{proposal.against / 1000000}</>
-                    )}
-                  </dd>
+                  ) : (
+                    <p className="text-sm text-center text-gray-500">
+                      Total votes:{' '}
+                      <span className="font-semibold text-gray-700">{proposal.totalVotes}</span>
+                    </p>
+                  )}
                 </div>
-              </dl>
+              </div>
             </div>
             <div className="mt-6 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-max sm:items-center sm:justify-center">
-              <button
-                type="button"
-                onClick={() => setShowVoteDikoModal(true)}
-                className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Vote with DIKO
-              </button>
-              <span className="text-xs font-semibold text-center uppercase">— or —</span>
-              <button
-                type="button"
-                onClick={() => setShowVoteStdikoModal(true)}
-                className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Vote with stDIKO
-              </button>
+              {proposal.isOpen ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setShowVoteDikoModal(true)}
+                    className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    Vote with DIKO
+                  </button>
+                  <span className="text-xs font-semibold text-center uppercase">— or —</span>
+                  <button
+                    type="button"
+                    onClick={() => setShowVoteStdikoModal(true)}
+                    className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    Vote with stDIKO
+                  </button>
+                </>
+              ) : (
+                <>
+                  {dikoVoted != 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => returnDiko()}
+                      className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                      Claim {dikoVoted} DIKO
+                    </button>
+                  ) : null}
+
+                  {dikoVoted != 0 && stdikoVoted != 0 ? (
+                    <span className="text-xs font-semibold text-center uppercase">— or —</span>
+                  ) : null}
+
+                  {stdikoVoted != 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => returnStDiko()}
+                      className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                      Claim {stdikoVoted} stDIKO
+                    </button>
+                  ) : null}
+                </>
+              )}
             </div>
           </div>
         </section>

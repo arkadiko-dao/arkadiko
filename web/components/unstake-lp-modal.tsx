@@ -9,6 +9,7 @@ import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
+import { Alert } from './ui/alert';
 
 export const UnstakeLpModal = ({
   showUnstakeModal,
@@ -61,7 +62,7 @@ export const UnstakeLpModal = ({
         setShowUnstakeModal(false);
       },
       postConditionMode: 0x01,
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 

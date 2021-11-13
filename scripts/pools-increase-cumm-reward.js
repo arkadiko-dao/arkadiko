@@ -7,16 +7,10 @@ const BN = require('bn.js');
 
 const txOptions = {
   contractAddress: CONTRACT_ADDRESS,
-  contractName: 'arkadiko-swap-v2-1',
-  functionName: 'migrate-create-pair',
-  functionArgs: [
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-token'),
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'usda-token'),
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-swap-token-diko-usda'),
-    tx.stringAsciiCV('DIKO-USDA'),
-    tx.uintCV(653345944650),
-  ],
-  nonce: new BN(260, 10),
+  contractName: 'arkadiko-stake-pool-wstx-usda-v1-1',
+  functionName: 'increase-cumm-reward-per-stake',
+  functionArgs: [tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-registry-v1-1')],
+  nonce: new BN(280, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network

@@ -5,6 +5,7 @@ const FUNCTION_NAME = 'end-proposal';
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
+const BN = require('bn.js');
 
 const proposalId = process.argv.slice(2)[0];
 console.log('Trying to end proposal with ID', proposalId);
@@ -15,6 +16,7 @@ const txOptions = {
   functionName: FUNCTION_NAME,
   functionArgs: [tx.uintCV(proposalId)],
   senderKey: process.env.STACKS_PRIVATE_KEY,
+  fee: new BN(250000, 10),
   postConditionMode: 1,
   network
 };

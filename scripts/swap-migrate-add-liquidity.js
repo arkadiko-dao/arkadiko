@@ -7,15 +7,16 @@ const BN = require('bn.js');
 
 const txOptions = {
   contractAddress: CONTRACT_ADDRESS,
-  contractName: 'arkadiko-swap-v1-1',
+  contractName: 'arkadiko-swap-v2-1',
   functionName: 'migrate-add-liquidity',
   functionArgs: [
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wrapped-stx-token'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'usda-token'),
-    tx.uintCV(1000000000000),
-    tx.uintCV(1000000000000)
+    tx.uintCV(2150823008790),
+    tx.uintCV(3778347020000)
   ],
   senderKey: process.env.STACKS_PRIVATE_KEY,
+  fee: new BN(250000, 10),
   postConditionMode: 1,
   network
 };
