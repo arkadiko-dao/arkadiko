@@ -132,7 +132,7 @@ class Blockchain < ApplicationRecord
         elsif function_name == 'toggle-stacking'
           id = args[0]['repr'].gsub('u', '')
           next unless vaults[id]
-          vaults[id]['stacking'.to_sym] = !vaults[id]['stacking']
+          vaults[id]['stacking'.to_sym] = !vaults[id]['stacking'.to_sym]
         elsif function_name == 'stack-collateral'
           id = args[0]['repr'].gsub('u', '')
           next unless vaults[id]
