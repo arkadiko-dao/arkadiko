@@ -8,7 +8,7 @@ export const Pool: React.FC = () => {
   const tabs = [
     { name: 'Swap', href: '/swap', current: false },
     { name: 'Pool', href: '/pool', current: true },
-  ]
+  ];
 
   return (
     <Container>
@@ -25,27 +25,29 @@ export const Pool: React.FC = () => {
                     id="tabs"
                     name="tabs"
                     className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                    defaultValue={tabs.find((tab) => tab.current).name}
+                    defaultValue={tabs.find(tab => tab.current).name}
                   >
-                    {tabs.map((tab) => (
+                    {tabs.map(tab => (
                       <option key={tab.name}>{tab.name}</option>
                     ))}
                   </select>
                 </div>
                 <div className="hidden sm:block">
                   <nav className="flex space-x-4" aria-label="Tabs">
-                    {tabs.map((tab) => (
+                    {tabs.map(tab => (
                       <h2>
                         <a
                           key={tab.name}
                           href={tab.href}
                           className={classNames(
-                            tab.current ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700', 
+                            tab.current
+                              ? 'bg-indigo-100 text-indigo-700'
+                              : 'text-gray-500 hover:text-gray-700',
                             'px-3 py-2 text-lg font-headings rounded-md'
                           )}
                           aria-current={tab.current ? 'page' : undefined}
                         >
-                        {tab.name}
+                          {tab.name}
                         </a>
                       </h2>
                     ))}
@@ -57,27 +59,15 @@ export const Pool: React.FC = () => {
             <div className="p-3">
               <h3 className="text-xl leading-6 font-headings">Your liquidity positions</h3>
               <dl className="mt-6 space-y-6 divide-y divide-gray-200">
-                <PoolPosition
-                  key="token1"
-                  indexTokenX={2}
-                  indexTokenY={0}
-                />
+                <PoolPosition key="token1" indexTokenX={2} indexTokenY={0} />
               </dl>
 
               <dl className="mt-6 space-y-6 divide-y divide-gray-200">
-                <PoolPosition
-                  key="token2"
-                  indexTokenX={2}
-                  indexTokenY={1}
-                />
+                <PoolPosition key="token2" indexTokenX={2} indexTokenY={1} />
               </dl>
 
               <dl className="mt-6 space-y-6 divide-y divide-gray-200">
-                <PoolPosition
-                  key="token1"
-                  indexTokenX={1}
-                  indexTokenY={0}
-                />
+                <PoolPosition key="token3" indexTokenX={1} indexTokenY={0} />
               </dl>
             </div>
 
@@ -86,7 +76,9 @@ export const Pool: React.FC = () => {
                 <CashIcon className="w-6 h-6 text-indigo-500" aria-hidden="true" />
               </span>
               <p className="ml-4 text-sm text-gray-500">
-                By adding liquidity, you will earn 0.25% on trades for this pool, proportional to your share of liquidity. Earned fees are added back to the pool and claimable by removing liquidity.
+                By adding liquidity, you will earn 0.25% on trades for this pool, proportional to
+                your share of liquidity. Earned fees are added back to the pool and claimable by
+                removing liquidity.
               </p>
             </div>
           </div>

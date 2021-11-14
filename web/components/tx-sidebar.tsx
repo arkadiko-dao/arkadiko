@@ -1,9 +1,12 @@
-import React, { Fragment, useEffect,useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XIcon } from '@heroicons/react/outline';
 import { getAccountTransactions, getPendingTransactions } from '@common/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { MempoolContractCallTransaction, ContractCallTransaction } from '@blockstack/stacks-blockchain-api-types';
+import {
+  MempoolContractCallTransaction,
+  ContractCallTransaction,
+} from '@blockstack/stacks-blockchain-api-types';
 import { ContractTransaction } from '@components/contract-transaction';
 
 export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
@@ -27,34 +30,34 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
             status = 'pending';
           }
           index += 1;
-          return <ContractTransaction
-            key={index}
-            transaction={tx}
-            status={status}
-          />
+          return <ContractTransaction key={index} transaction={tx} status={status} />;
         });
 
         setTransactions(txMap);
         const pending = await getPendingTransactions(address || '', contractAddress || '');
         const pendingMap = pending.map((tx: MempoolContractCallTransaction) => {
           index += 1;
-          return <ContractTransaction
-            key={index}
-            transaction={tx}
-            status='pending'
-          />
+          return <ContractTransaction key={index} transaction={tx} status="pending" />;
         });
         setPendingTransactions(pendingMap);
       }
     };
 
     fetchTransations();
-    return () => { mounted = false; }
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return (
     <Transition show={showSidebar} as={Fragment}>
-      <Dialog as="div" className="fixed inset-0 z-50 overflow-hidden" onClose={() => { setShowSidebar(false); }}>
+      <Dialog
+        as="div"
+        className="fixed inset-0 z-50 overflow-hidden"
+        onClose={() => {
+          setShowSidebar(false);
+        }}
+      >
         <div className="absolute inset-0 overflow-hidden">
           <Transition.Child
             as={Fragment}
@@ -82,12 +85,16 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                 <div className="flex flex-col h-full overflow-y-scroll bg-white shadow-xl">
                   <div className="px-4 py-6 bg-indigo-700 sm:px-6">
                     <div className="flex items-start justify-between">
-                      <Dialog.Title className="text-lg text-white font-headings">Transaction History</Dialog.Title>
+                      <Dialog.Title className="text-lg text-white font-headings">
+                        Transaction History
+                      </Dialog.Title>
                       <div className="flex items-center ml-3 h-7">
                         <button
                           type="button"
                           className="text-indigo-200 bg-indigo-700 rounded-md hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
-                          onClick={() => { setShowSidebar(false); }}
+                          onClick={() => {
+                            setShowSidebar(false);
+                          }}
                         >
                           <span className="sr-only">Close panel</span>
                           <XIcon className="w-6 h-6" aria-hidden="true" />
