@@ -117,6 +117,7 @@ class Blockchain < ApplicationRecord
             'stacking': args[2]['repr'].split('(stack-pox ')[1] == "true))",
             'stacker_name': params.split('(stacker-name ')[1].split(') (updated-at-block-height')[0]
           }
+          puts vaults[id] if id == '2'
         elsif function_name == 'deposit'
           id = args[0]['repr'].gsub('u', '')
           next unless vaults[id]
@@ -132,11 +133,14 @@ class Blockchain < ApplicationRecord
         elsif function_name == 'toggle-stacking'
           id = args[0]['repr'].gsub('u', '')
           next unless vaults[id]
-          vaults[id]['stacking'.to_sym] = !vaults[id]['stacking'.to_sym]
+          next if res['block_height'] > 35965
+          # vaults[id]['stacking'.to_sym] = !vaults[id]['stacking'.to_sym]
+          # NOTHING TO DO HERE YET
         elsif function_name == 'stack-collateral'
           id = args[0]['repr'].gsub('u', '')
           next unless vaults[id]
           vaults[id]['stacking'.to_sym] = true
+          vaults[id]['stack_block_height'.to_sym] = res['block_height']
         elsif function_name == 'close-vault'
           id = args[0]['repr'].gsub('u', '')
           vaults = vaults.except(id)
@@ -145,6 +149,31 @@ class Blockchain < ApplicationRecord
         end
       end
 
+      offset -= 50
+      url = "#{STACKS_MAINNET_NODE_URL}/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-freddie-v1-1/transactions?limit=50&offset=#{offset}"
+      response = HTTParty.get(url)&.parsed_response['results']
+    end
+
+    offset = 100
+    url = "https://stacks-node-api.mainnet.stacks.co/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-stacker-v1-1/transactions?limit=50&offset=#{offset}"
+    puts url
+    response = HTTParty.get(url)&.parsed_response['results']
+    while offset >= 0
+      response.reverse.each do |res|
+        next if res['contract_call'].nil?
+        next unless res['tx_status'] == 'success'
+        function_name = res['contract_call']['function_name']
+        args = res['contract_call']['function_args']
+        if function_name == 'enable-vault-withdrawals'
+          id = args[0]['repr'].gsub('u', '')
+          next if vaults[id]['stack_block_height'.to_sym] && vaults[id]['stack_block_height'.to_sym] > res['block_height']
+
+          vaults[id]['stacking'.to_sym] = !vaults[id]['stacking'.to_sym]
+        else
+          puts function_name.inspect
+        end
+      end
+      
       offset -= 50
       url = "#{STACKS_MAINNET_NODE_URL}/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-freddie-v1-1/transactions?limit=50&offset=#{offset}"
       response = HTTParty.get(url)&.parsed_response['results']
