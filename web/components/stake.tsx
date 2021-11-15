@@ -684,15 +684,15 @@ export const Stake = () => {
                       </div>
                     </div>
                     <div>
-                      <p className="text-lg font-semibold">
-                        {loadingData ? (
-                          <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                        ) : emissionsStarted ? (
-                          `${apy}%`
-                        ) : (
+                      {loadingData ? (
+                        <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                      ) : emissionsStarted ? (
+                        `${apy}%`
+                      ) : (
+                        <p className="text-lg font-semibold">
                           <span>Emissions not started</span>
-                        )}
-                      </p>
+                        </p>
+                      )}
                       <p className="text-base font-normal leading-6 text-gray-500">Current APR</p>
                     </div>
                     <div>
