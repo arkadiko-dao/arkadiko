@@ -104,7 +104,7 @@ export const UnstakeLpModal = ({
           />
         </div>
       }
-      closeModal={setShowUnstakeModal(false)}
+      closeModal={() => setShowUnstakeModal(false)}
       buttonText="Stake"
       buttonAction={unstake}
       initialFocus={inputRef}

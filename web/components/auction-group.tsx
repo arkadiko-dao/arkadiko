@@ -113,7 +113,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeig
       <Modal
         open={showBidModal}
         title="Bid on Auction Lot"
-        closeModal={setShowBidModal(false)}
+        closeModal={() => setShowBidModal(false)}
         buttonText="Add Bid"
         buttonAction={addBid}
       >

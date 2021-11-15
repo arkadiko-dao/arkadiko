@@ -31,7 +31,7 @@ export function Modal({
         as="div"
         className="fixed inset-0 z-50 overflow-y-auto"
         initialFocus={initialFocus}
-        onClose={() => closeModal}
+        onClose={closeModal}
       >
         <div className="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
           <Transition.Child
@@ -64,7 +64,7 @@ export function Modal({
                 <button
                   type="button"
                   className="text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  onClick={() => closeModal}
+                  onClick={closeModal}
                 >
                   <span className="sr-only">Close</span>
                   <XIcon className="w-6 h-6" aria-hidden="true" />
@@ -98,7 +98,7 @@ export function Modal({
                 <button
                   type="button"
                   className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:col-start-1 sm:text-sm"
-                  onClick={() => closeModal}
+                  onClick={closeModal}
                 >
                   Cancel
                 </button>
