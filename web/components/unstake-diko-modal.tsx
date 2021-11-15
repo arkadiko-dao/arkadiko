@@ -86,7 +86,7 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
       icon={<img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />}
       closeModal={() => setShowUnstakeModal(false)}
       buttonText="Unstake"
-      buttonAction={unstakeDiko}
+      buttonAction={() => unstakeDiko()}
       initialFocus={inputRef}
     >
       {errors.length > 0 ? (

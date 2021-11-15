@@ -88,7 +88,7 @@ export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
       icon={<img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />}
       closeModal={() => setShowStakeModal(false)}
       buttonText="Stake"
-      buttonAction={stakeDiko}
+      buttonAction={() => stakeDiko()}
       initialFocus={inputRef}
     >
       {errors.length > 0 ? (
