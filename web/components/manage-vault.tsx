@@ -646,6 +646,14 @@ export const ManageVault = ({ match }) => {
                     We will automatically harvest any DIKO you are eligible for when depositing.
                   </p>
 
+                  <div className="mt-4">
+                    <Alert>
+                      <p className="text-left">
+                        When depositing in a vault that is already stacking, keep in mind that your extra collateral will be <span className="font-semibold">locked but not stacked</span>. 
+                      </p>
+                    </Alert>
+                  </div>
+
                   <div className="mt-6">
                     <InputAmount
                       balance={(
