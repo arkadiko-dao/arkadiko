@@ -199,20 +199,20 @@ export const Stake = () => {
       let estimatedValueWallet = 0;
       if (tokenXName == 'STX') {
         const stxPrice = await getPrice('STX');
-        estimatedValueStaked = (stakedBalanceX / 1000000) * stxPrice;
-        estimatedValueWallet = (walletBalanceX / 1000000) * stxPrice;
+        estimatedValueStaked = (stakedBalanceX / 1000000) * stxPrice * 2;
+        estimatedValueWallet = (walletBalanceX / 1000000) * stxPrice * 2;
       } else if (tokenYName == 'STX') {
         const stxPrice = await getPrice('STX');
-        estimatedValueStaked = (stakedBalanceY / 1000000) * stxPrice;
-        estimatedValueWallet = (walletBalanceY / 1000000) * stxPrice;
+        estimatedValueStaked = (stakedBalanceY / 1000000) * stxPrice * 2;
+        estimatedValueWallet = (walletBalanceY / 1000000) * stxPrice * 2;
       } else if (tokenXName == 'USDA') {
         const udsdaPrice = await getPrice('USDA');
-        estimatedValueStaked = (stakedBalanceX / 1000000) * udsdaPrice;
-        estimatedValueWallet = (walletBalanceX / 1000000) * udsdaPrice;
+        estimatedValueStaked = (stakedBalanceX / 1000000) * udsdaPrice * 2;
+        estimatedValueWallet = (walletBalanceX / 1000000) * udsdaPrice * 2;
       } else if (tokenYName == 'USDA') {
         const udsdaPrice = await getPrice('USDA');
-        estimatedValueStaked = (stakedBalanceY / 1000000) * udsdaPrice;
-        estimatedValueWallet = (walletBalanceY / 1000000) * udsdaPrice;
+        estimatedValueStaked = (stakedBalanceY / 1000000) * udsdaPrice * 2;
+        estimatedValueWallet = (walletBalanceY / 1000000) * udsdaPrice * 2;
       }
 
       return {
