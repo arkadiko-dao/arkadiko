@@ -7,12 +7,23 @@
 
 (define-constant ERR-NOT-AUTHORIZED u80401)
 (define-constant ERR-NOTHING-TO-CLAIM u80402)
+(define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u80403)
+
+(define-data-var claim-shutdown-activated bool false)
 
 (define-map wallet-rewards
   { wallet: principal }
   {
     diko: uint
   }
+)
+
+(define-public (toggle-claim-shutdown)
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set claim-shutdown-activated (not (var-get claim-shutdown-activated))))
+  )
 )
 
 (define-read-only (get-diko-by-wallet (wallet principal))
@@ -29,6 +40,7 @@
     (sender tx-sender)
     (diko-rewards (get-diko-by-wallet sender))
   )
+    (asserts! (not (var-get claim-shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (> diko-rewards u0) (err ERR-NOTHING-TO-CLAIM))
 
     (try! (as-contract (contract-call? .arkadiko-dao mint-token .arkadiko-token diko-rewards sender)))
@@ -46,6 +58,7 @@
     (diko-rewards (get-diko-by-wallet sender))
   )
     (asserts! (> diko-rewards u0) (err ERR-NOTHING-TO-CLAIM))
+    (asserts! (not (var-get claim-shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
 
     (try! (as-contract (contract-call? .arkadiko-dao mint-token .arkadiko-token diko-rewards sender)))
   

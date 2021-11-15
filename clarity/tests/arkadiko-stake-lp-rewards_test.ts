@@ -162,6 +162,50 @@ Clarinet.test({
 
 Clarinet.test({
   name:
+    "stake-lp-rewards: user cannot claim rewards when shutdown is on",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let dikoToken = new DikoToken(chain, deployer);
+
+    // Add new contract to DAO
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-governance-v1-1", "add-contract-address", [
+        types.ascii("arkadiko-stake-lp-rewards"),
+        types.principal(deployer.address),
+        types.principal(Utils.qualifiedName("arkadiko-stake-lp-rewards")),
+        types.bool(true),
+        types.bool(true)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    // Start balance
+    let call = dikoToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(150000);
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-lp-rewards", "toggle-claim-shutdown", [], deployer.address),
+    ]);
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-lp-rewards", "claim-rewards", [], wallet_1.address),
+    ]);
+    block.receipts[0].result.expectErr().expectUint(80403);
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-lp-rewards", "toggle-claim-shutdown", [], deployer.address),
+    ]);
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-lp-rewards", "claim-rewards", [], wallet_1.address),
+    ]);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(100);
+  }
+});
+
+Clarinet.test({
+  name:
     "stake-lp-rewards: user can stake missing rewards",
   async fn(chain: Chain, accounts: Map<string, Account>) {
 
