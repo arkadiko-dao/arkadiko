@@ -297,6 +297,11 @@ Clarinet.test({
     let call = dikoToken.balanceOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(150000);
 
+    let result = chain.callReadOnlyFn("arkadiko-stake-lp-rewards-2", "get-total-diko-by-wallet", [
+      types.principal(wallet_1.address),
+    ], deployer.address);
+    result.result.expectUint(200000000);
+
     // Claim
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-lp-rewards-2", "claim-rewards", [], wallet_1.address),
@@ -306,6 +311,11 @@ Clarinet.test({
     // New balance
     call = dikoToken.balanceOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(150000 + 200);
+
+    result = chain.callReadOnlyFn("arkadiko-stake-lp-rewards-2", "get-total-diko-by-wallet", [
+      types.principal(wallet_1.address),
+    ], deployer.address);
+    result.result.expectUint(0);
 
     // Can not claim again
     block = chain.mineBlock([
