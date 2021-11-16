@@ -10,6 +10,7 @@ type Props = {
   icon?: ReactNode;
   buttonText: string;
   buttonAction: () => void;
+  buttonDisabled?: boolean;
   initialFocus?: React.MutableRefObject<HTMLElement | null> | undefined;
 };
 
@@ -21,6 +22,7 @@ export function Modal({
   closeModal,
   buttonText,
   buttonAction,
+  buttonDisabled,
   initialFocus,
 }: Props) {
   const actionButtonRef = useRef(null);
@@ -89,7 +91,8 @@ export function Modal({
               <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
                 <button
                   type="button"
-                  className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm"
+                  className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                  disabled={buttonDisabled}
                   onClick={buttonAction}
                   ref={actionButtonRef}
                 >
