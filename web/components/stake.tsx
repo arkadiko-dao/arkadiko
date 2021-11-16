@@ -94,15 +94,27 @@ export const Stake = () => {
     const fetchMissedLpRewards = async () => {
       const stakedCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-stake-lp-rewards-2",
-        functionName: "get-total-diko-by-wallet",
+        contractName: "arkadiko-stake-lp-rewards",
+        functionName: "get-diko-by-wallet",
         functionArgs: [
           standardPrincipalCV(stxAddress || '')
         ],
         senderAddress: stxAddress || '',
         network: network,
       });
-      return cvToJSON(stakedCall).value;
+      let value = cvToJSON(stakedCall).value;
+
+      const stakedCall2 = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-stake-lp-rewards-2",
+        functionName: "get-diko-by-wallet",
+        functionArgs: [
+          standardPrincipalCV(stxAddress || '')
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      return value + cvToJSON(stakedCall2).value;
     };
 
     const fetchLpStakeAmount = async (poolContract:string) => {
