@@ -121,9 +121,9 @@ export const StakeLpModal = ({
           />
         </div>
       }
-      closeModal={setShowStakeModal(false)}
+      closeModal={() => setShowStakeModal(false)}
       buttonText="Stake"
-      buttonAction={stake}
+      buttonAction={() => stake()}
       initialFocus={inputRef}
     >
       {errors.length > 0 ? (
