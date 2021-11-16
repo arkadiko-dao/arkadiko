@@ -149,10 +149,6 @@ export const Stake = () => {
       lpTokenStakedAmount: number,
       lpTokenWalletAmount: number
     ) => {
-      if (lpTokenWalletAmount == undefined) {
-        return;
-      }
-
       let tokenXContract = 'arkadiko-token';
       let tokenYContract = 'usda-token';
       let tokenXName = 'DIKO';
@@ -243,6 +239,10 @@ export const Stake = () => {
     };
 
     const getData = async () => {
+      if (state.balance['dikousda'] == undefined || state.balance['wstxusda'] == undefined || state.balance['wstxdiko'] == undefined) {
+        return;
+      }
+
       // Get current block height
       const client = getRPCClient();
       const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
