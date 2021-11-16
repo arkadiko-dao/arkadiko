@@ -709,13 +709,6 @@ export const Stake = () => {
                   <p className="max-w-3xl mt-2 text-sm text-gray-500">
                     When staking DIKO in the security module <span className="font-semibold">you will receive stDIKO</span> which is a representation of your share of the pool. DIKO in the pool is <span className="font-semibold">auto-compounding</span>. Your amount of stDIKO <span className="font-semibold">does not change</span>, but the DIKO value it represents <span className="font-semibold">will increase</span>. Both DIKO and stDIKO can be used to propose and vote in governance.
                   </p>
-                  <p className="max-w-3xl mt-2 text-sm text-gray-500">
-                  {loadingData ? (
-                    <Placeholder className="py-2" width={Placeholder.width.THIRD} />
-                  ) : (
-                    <span className="font-semibold">1 stDIKO ≈ {stDikoToDiko} DIKO</span>
-                  )}
-                  </p>
                 </div>
                 <div className="flex items-center">
                   <div className="w-5.5 h-5.5 rounded-full bg-indigo-200 flex items-center justify-center">
@@ -747,13 +740,28 @@ export const Stake = () => {
                         {loadingData ? (
                           <Placeholder className="py-2 ml-4" width={Placeholder.width.HALF} />
                         ) : (
-                          <p className="ml-4 text-lg font-semibold">
-                            {microToReadable(stakedAmount).toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 6,
-                            })}{' '}
-                            DIKO
-                          </p>
+                          <div>
+                            <p className="ml-4 text-lg font-semibold">
+                              {microToReadable(stakedAmount).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 6,
+                              })}{' '}
+                              DIKO
+                            </p>
+                            <div className="flex items-center mt-1">
+                              <p className="ml-4 text-xs text-gray-500">1 stDIKO ≈ {stDikoToDiko} DIKO</p>
+                              <Tooltip
+                                className="ml-2"
+                                shouldWrapChildren={true}
+                                label={`stDIKO's value is determined by dividing the total supply of DIKO in the pool by the total supply of stDIKO`}
+                              >
+                                <InformationCircleIcon
+                                  className="flex-shrink-0 block w-4 h-4 ml-2 text-gray-400"
+                                  aria-hidden="true"
+                                />
+                              </Tooltip>
+                            </div>
+                          </div>
                         )}
                       </div>
                     </div>
