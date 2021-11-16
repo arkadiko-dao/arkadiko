@@ -103,12 +103,12 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
           minimumFractionDigits: 2,
           maximumFractionDigits: 6,
         })}{' '}
-        DIKO.
+        stDIKO.
       </p>
       <div className="mt-6">
         <InputAmount
           balance={microToReadable(stakedAmount).toLocaleString()}
-          token="DIKO"
+          token="stDIKO"
           inputName="unstakeDiko"
           inputId="unstakeAmount"
           inputValue={stakeAmount}
