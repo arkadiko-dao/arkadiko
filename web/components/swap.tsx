@@ -27,7 +27,7 @@ export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
   const [tokenX, setTokenX] = useState(tokenList[2]);
   const [tokenY, setTokenY] = useState(tokenList[1]);
-  const [tokenXAmount, setTokenXAmount] = useState();
+  const [tokenXAmount, setTokenXAmount] = useState(0.0);
   const [tokenYAmount, setTokenYAmount] = useState(0.0);
   const [balanceSelectedTokenX, setBalanceSelectedTokenX] = useState(0.0);
   const [balanceSelectedTokenY, setBalanceSelectedTokenY] = useState(0.0);
@@ -149,12 +149,12 @@ export const Swap: React.FC = () => {
 
   useEffect(() => {
     if (currentPrice > 0) {
-      calculateTokenYAmount();
+      calculateTokenYAmount(tokenYAmount);
     }
-  }, [tokenXAmount, slippageTolerance]);
+  }, [slippageTolerance]);
 
-  const calculateTokenYAmount = () => {
-    if (!currentPair || tokenXAmount === 0 || tokenXAmount === undefined) {
+  const calculateTokenYAmount = (value: number) => {
+    if (!currentPair || value === 0 || value === undefined) {
       return;
     }
 
@@ -164,17 +164,16 @@ export const Swap: React.FC = () => {
     let tokenYAmount = 0;
 
     const slippage = (100 - slippageTolerance) / 100;
-    // amount = ((slippage * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
     if (inverseDirection) {
-      amount = slippage * (balanceX / balanceY) * Number(tokenXAmount);
-      tokenYAmount = ((100 - defaultFee) / 100) * (balanceX / balanceY) * Number(tokenXAmount);
+      amount = slippage * (balanceX / balanceY) * Number(value);
+      tokenYAmount = ((100 - defaultFee) / 100) * (balanceX / balanceY) * Number(value);
     } else {
-      amount = slippage * (balanceY / balanceX) * Number(tokenXAmount);
-      tokenYAmount = ((100 - defaultFee) / 100) * (balanceY / balanceX) * Number(tokenXAmount);
+      amount = slippage * (balanceY / balanceX) * Number(value);
+      tokenYAmount = ((100 - defaultFee) / 100) * (balanceY / balanceX) * Number(value);
     }
     setMinimumReceived(amount * 0.97);
     setTokenYAmount(tokenYAmount);
-    const impact = balanceX / 1000000 / tokenXAmount;
+    const impact = balanceX / 1000000 / value;
     setPriceImpact(
       (100 / impact).toLocaleString(undefined, {
         minimumFractionDigits: 2,
@@ -182,7 +181,42 @@ export const Swap: React.FC = () => {
       })
     );
     setLpFee(
-      (0.003 * tokenXAmount).toLocaleString(undefined, {
+      (0.003 * value).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 6,
+      })
+    );
+  };
+
+  const calculateTokenXAmount = (value: number) => {
+    if (!currentPair || value === 0 || value === undefined) {
+      return;
+    }
+
+    const balanceX = currentPair['balance-x'].value;
+    const balanceY = currentPair['balance-y'].value;
+    let amount = 0;
+    let tokenXAmount = 0;
+8
+    const slippage = (100 - slippageTolerance) / 100;
+    if (inverseDirection) {
+      amount = slippage * (balanceX / balanceY) * Number(value);
+      tokenXAmount = ((100 - defaultFee) / 100) * (balanceY / balanceX) * Number(value);
+    } else {
+      amount = slippage * (balanceX / balanceY) * Number(value);
+      tokenXAmount = ((100 - defaultFee) / 100) * (balanceX / balanceY) * Number(value);
+    }
+    setMinimumReceived(amount * 0.97);
+    setTokenXAmount(tokenXAmount);
+    const impact = balanceX / 1000000 / value;
+    setPriceImpact(
+      (100 / impact).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 6,
+      })
+    );
+    setLpFee(
+      (0.003 * value).toLocaleString(undefined, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 6,
       })
@@ -195,8 +229,10 @@ export const Swap: React.FC = () => {
 
     if (name === 'tokenXAmount') {
       setTokenXAmount(value);
+      calculateTokenYAmount(Number(value));
     } else {
       setTokenYAmount(value);
+      calculateTokenXAmount(Number(value));
     }
   };
 
@@ -216,8 +252,11 @@ export const Swap: React.FC = () => {
   const setMaximum = () => {
     if (tokenX['name'].toLowerCase() === 'stx') {
       setTokenXAmount(parseInt(balanceSelectedTokenX, 10) - 1);
+      calculateTokenYAmount(Number(parseInt(balanceSelectedTokenX, 10) - 1));
     } else {
       setTokenXAmount(parseInt(balanceSelectedTokenX, 10));
+      calculateTokenYAmount(Number(parseInt(balanceSelectedTokenX, 10)));
+
     }
   };
 
@@ -253,8 +292,8 @@ export const Swap: React.FC = () => {
       tokenNameX = tokenNameY;
       tokenNameY = tmpName;
     }
-
-    const amount = uintCV(tokenXAmount * 1000000);
+    
+    const amount = uintCV(parseInt(Number(tokenXAmount) * 1000000));
     await doContractCall({
       network,
       contractAddress,
@@ -428,7 +467,6 @@ export const Swap: React.FC = () => {
                             maximumFractionDigits: 6,
                           })}
                           onChange={onInputChange}
-                          disabled={true}
                           className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right text-gray-800 truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
                         />
                       </div>
