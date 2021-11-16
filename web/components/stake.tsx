@@ -693,9 +693,7 @@ export const Stake = () => {
                 <div>
                   <h3 className="text-lg leading-6 text-gray-900 font-headings">DIKO</h3>
                   <p className="max-w-3xl mt-2 text-sm text-gray-500">
-                    When staking DIKO in the <span className="font-semibold">security module</span>{' '}
-                    you get stDIKO in return. Both DIKO and stDIKO can be used to propose and vote
-                    in governance.
+                    When staking DIKO in the security module <span className="font-semibold">you will receive stDIKO</span> which is a representation of your share of the pool. DIKO in the pool is <span className="font-semibold">auto-compounding</span>. Your amount of stDIKO <span className="font-semibold">does not change</span>, but the DIKO value it represents <span className="font-semibold">will increase</span>. Both DIKO and stDIKO can be used to propose and vote in governance.
                   </p>
                 </div>
                 <div className="flex items-center">
@@ -725,40 +723,35 @@ export const Stake = () => {
                         <div className="flex-shrink-0 w-8 h-8">
                           <img className="w-8 h-8 rounded-full" src={tokenList[1].logo} alt="" />
                         </div>
-                        <p className="ml-4 text-lg font-semibold">
-                          {loadingData ? (
-                            <span>Loading...</span>
-                          ) : (
-                            <>
-                              {microToReadable(stakedAmount).toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 6,
-                              })}{' '}
-                              DIKO
-                            </>
-                          )}
-                        </p>
+                        {loadingData ? (
+                          <Placeholder className="py-2 ml-4" width={Placeholder.width.HALF} />
+                        ) : (
+                          <p className="ml-4 text-lg font-semibold">
+                            {microToReadable(stakedAmount).toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 6,
+                            })}{' '}
+                            DIKO
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div>
+                      <p className="mb-1 text-sm leading-6 text-gray-500">Current APR</p>
                       {loadingData ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : emissionsStarted ? (
-                        `${apy}%`
+                        <p className="text-lg text-indigo-600">
+                          {apy}%
+                        </p>
                       ) : (
                         <p className="text-lg font-semibold">
-                          <span>Emissions not started</span>
+                          Emissions not started
                         </p>
                       )}
-                      <p className="text-base font-normal leading-6 text-gray-500">Current APR</p>
                     </div>
                     <div>
-                      {loadingData ? (
-                        <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                      ) : (
-                        <p className="text-lg font-semibold">{dikoCooldown}</p>
-                      )}
-                      <p className="flex items-center text-base font-normal leading-6 text-gray-500">
+                      <p className="flex items-center mb-1 text-sm leading-6 text-gray-500">
                         Cooldown status
                         <Tooltip
                           className="ml-2"
@@ -771,6 +764,11 @@ export const Stake = () => {
                           />
                         </Tooltip>
                       </p>
+                      {loadingData ? (
+                        <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                      ) : (
+                        <p className="text-lg">{dikoCooldown}</p>
+                      )}
                     </div>
                     <div>
                       {state.balance['diko'] > 0 ||
