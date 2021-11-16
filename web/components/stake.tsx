@@ -102,7 +102,7 @@ export const Stake = () => {
         senderAddress: stxAddress || '',
         network: network,
       });
-      let value = cvToJSON(stakedCall).value;
+      let value = Number(cvToJSON(stakedCall).value);
 
       const stakedCall2 = await callReadOnlyFunction({
         contractAddress,
@@ -114,7 +114,7 @@ export const Stake = () => {
         senderAddress: stxAddress || '',
         network: network,
       });
-      return value + cvToJSON(stakedCall2).value;
+      return value + Number(cvToJSON(stakedCall2).value);
     };
 
     const fetchLpStakeAmount = async (poolContract:string) => {
