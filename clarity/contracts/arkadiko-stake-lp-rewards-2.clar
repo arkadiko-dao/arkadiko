@@ -33,6 +33,14 @@
   )
 )
 
+(define-read-only (get-total-diko-by-wallet (wallet principal))
+  (let (
+    (v1-balance (contract-call? .arkadiko-stake-lp-rewards get-diko-by-wallet wallet))
+  )
+    (+ v1-balance (get-diko-by-wallet wallet))
+  )
+)
+
 ;; @desc Claim missed out Diko rewards
 ;; @post boolean; returns true if claim was succesful
 (define-public (claim-rewards)
