@@ -67,6 +67,7 @@ export const Stake = () => {
   const [stxDikoPoolInfo, setStxDikoPoolInfo] = useState(0);
   const [stxUsdaPoolInfo, setStxUsdaPoolInfo] = useState(0);
   const [dikoUsdaPoolInfo, setDikoUsdaPoolInfo] = useState(0);
+  const [missedLpRewards, setMissedLpRewards] = useState(0);
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -90,7 +91,21 @@ export const Stake = () => {
       }
     };
 
-    const fetchLpStakeAmount = async (poolContract: string) => {
+    const fetchMissedLpRewards = async () => {
+      const stakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "arkadiko-stake-lp-rewards",
+        functionName: "get-diko-by-wallet",
+        functionArgs: [
+          standardPrincipalCV(stxAddress || '')
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      return cvToJSON(stakedCall).value;
+    };
+
+    const fetchLpStakeAmount = async (poolContract:string) => {
       const stakedCall = await callReadOnlyFunction({
         contractAddress,
         contractName: poolContract,
@@ -385,6 +400,9 @@ export const Stake = () => {
         setCooldownRunning(true);
       }
 
+      let missedLpRewards = await fetchMissedLpRewards();
+      setMissedLpRewards(missedLpRewards / 1000000);
+
       setLoadingData(false);
     };
     if (mounted) {
@@ -545,6 +563,45 @@ export const Stake = () => {
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
+      postConditionMode: 0x01,
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
+  const claimMissingLpRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-lp-rewards',
+      functionName: 'claim-rewards',
+      functionArgs: [],
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
+  const stakeMissingLpRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-lp-rewards',
+      functionName: 'stake-rewards',
+      functionArgs: [],
       postConditionMode: 0x01,
       onFinish: data => {
         setState(prevState => ({
@@ -819,6 +876,33 @@ export const Stake = () => {
                 </p>
               </header>
 
+              {missedLpRewards != 0 ? (
+                <div className="mt-4">
+                  <Alert title="LP staking rewards have resumed">
+                    <p>You missed {missedLpRewards} DIKO during the pause.</p>
+                    <p className="mt-1">You have two options, you can either claim them or directly stake them.</p>
+                    <div className="mt-4">
+                      <div className="-mx-2 -my-1.5 flex">
+                        <button
+                          type="button"
+                          className="bg-blue-600 px-2 py-1.5 rounded-md text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                          onClick={() => stakeMissingLpRewards()}
+                        >
+                          Stake
+                        </button>
+                        <button
+                          type="button"
+                          className="ml-3 bg-blue-100 px-2 py-1.5 rounded-md text-sm font-medium text-blue-800 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-blue-50 focus:ring-blue-600 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                          onClick={() => claimMissingLpRewards()}
+                        >
+                          Claim
+                        </button>
+                      </div>
+                    </div>
+                  </Alert>
+                </div>
+              ) : null}
+              
               <div className="mt-4">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
