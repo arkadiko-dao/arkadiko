@@ -88,7 +88,7 @@ export const Swap: React.FC = () => {
     const fetchPair = async (tokenXContract: string, tokenYContract: string) => {
       const details = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-swap-v1-1',
+        contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',
         functionArgs: [
           contractPrincipalCV(contractAddress, tokenXContract),
@@ -259,7 +259,7 @@ export const Swap: React.FC = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-swap-v1-1',
+      contractName: 'arkadiko-swap-v2-1',
       functionName: contractName,
       functionArgs: [
         principalX,
@@ -411,13 +411,11 @@ export const Swap: React.FC = () => {
                       <div className="flex items-center p-4 pb-2">
                         <TokenSwapList selected={tokenY} setSelected={setupTokenY} />
 
-                        <TokenSwapList selected={tokenY} setSelected={setupTokenY} />
-
                         <label htmlFor="tokenYAmount" className="sr-only">
                           {tokenY.name}
                         </label>
                         <input
-                          type="number"
+                          type="text"
                           inputMode="decimal"
                           autoComplete="off"
                           autoCorrect="off"
@@ -431,7 +429,6 @@ export const Swap: React.FC = () => {
                           })}
                           onChange={onInputChange}
                           disabled={true}
-                          min={0}
                           className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right text-gray-800 truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
                         />
                       </div>

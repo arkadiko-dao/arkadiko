@@ -53,7 +53,9 @@ export const availableCoinsToMint = (
   return 0;
 };
 
-export const tokenTraits = {
+type TokenTraits = Record<string, { name: string, swap: string }>
+
+export const tokenTraits: TokenTraits = {
   diko: {
     name: 'arkadiko-token',
     swap: 'arkadiko-token',

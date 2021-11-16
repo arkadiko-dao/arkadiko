@@ -63,7 +63,6 @@ export const Stake = () => {
   const [loadingData, setLoadingData] = useState(true);
   const [hasUnstakedTokens, setHasUnstakedTokens] = useState(false);
   const [emissionsStarted, setEmissionsStarted] = useState(false);
-  const [canStakeLp, _] = useState(false);
 
   const [stxDikoPoolInfo, setStxDikoPoolInfo] = useState(0);
   const [stxUsdaPoolInfo, setStxUsdaPoolInfo] = useState(0);
@@ -173,7 +172,7 @@ export const Stake = () => {
       // Get pair details
       const pairDetailsCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-swap-v1-1',
+        contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',
         functionArgs: [
           contractPrincipalCV(contractAddress, tokenXContract),
@@ -215,20 +214,20 @@ export const Stake = () => {
       let estimatedValueWallet = 0;
       if (tokenXName == 'STX') {
         const stxPrice = await getPrice('STX');
-        estimatedValueStaked = (stakedBalanceX / 1000000) * stxPrice;
-        estimatedValueWallet = (walletBalanceX / 1000000) * stxPrice;
+        estimatedValueStaked = (stakedBalanceX / 1000000) * stxPrice * 2;
+        estimatedValueWallet = (walletBalanceX / 1000000) * stxPrice * 2;
       } else if (tokenYName == 'STX') {
         const stxPrice = await getPrice('STX');
-        estimatedValueStaked = (stakedBalanceY / 1000000) * stxPrice;
-        estimatedValueWallet = (walletBalanceY / 1000000) * stxPrice;
+        estimatedValueStaked = (stakedBalanceY / 1000000) * stxPrice * 2;
+        estimatedValueWallet = (walletBalanceY / 1000000) * stxPrice * 2;
       } else if (tokenXName == 'USDA') {
         const udsdaPrice = await getPrice('USDA');
-        estimatedValueStaked = (stakedBalanceX / 1000000) * udsdaPrice;
-        estimatedValueWallet = (walletBalanceX / 1000000) * udsdaPrice;
+        estimatedValueStaked = (stakedBalanceX / 1000000) * udsdaPrice * 2;
+        estimatedValueWallet = (walletBalanceX / 1000000) * udsdaPrice * 2;
       } else if (tokenYName == 'USDA') {
         const udsdaPrice = await getPrice('USDA');
-        estimatedValueStaked = (stakedBalanceY / 1000000) * udsdaPrice;
-        estimatedValueWallet = (walletBalanceY / 1000000) * udsdaPrice;
+        estimatedValueStaked = (stakedBalanceY / 1000000) * udsdaPrice * 2;
+        estimatedValueWallet = (walletBalanceY / 1000000) * udsdaPrice * 2;
       }
 
       return {
@@ -684,9 +683,8 @@ export const Stake = () => {
               <Alert title="Unstaked LP tokens">
                 <p>👀 We noticed that your wallet contains LP Tokens that are not staked yet.</p>
                 <p className="mt-1">
-                  If you want to stake them, pick the appropriate token in the table below and hit
-                  the <DotsVerticalIcon className="inline w-4 h-4" aria-hidden="true" /> icon to
-                  open the actions menu and initiate staking.
+                  If you want to stake them, pick the appropriate token in the table below, hit the
+                  Actions dropdown button and choose Stake LP to initiate staking.
                 </p>
               </Alert>
             ) : null}
@@ -743,15 +741,15 @@ export const Stake = () => {
                       </div>
                     </div>
                     <div>
-                      <p className="text-lg font-semibold">
-                        {loadingData ? (
-                          <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                        ) : emissionsStarted ? (
-                          `${apy}%`
-                        ) : (
+                      {loadingData ? (
+                        <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                      ) : emissionsStarted ? (
+                        `${apy}%`
+                      ) : (
+                        <p className="text-lg font-semibold">
                           <span>Emissions not started</span>
-                        )}
-                      </p>
+                        </p>
+                      )}
                       <p className="text-base font-normal leading-6 text-gray-500">Current APR</p>
                     </div>
                     <div>

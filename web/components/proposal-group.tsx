@@ -12,6 +12,9 @@ export interface ProposalProps {
   endBlockHeight: number;
   changes: object[];
   isOpen: boolean;
+  totalVotes: number;
+  forVotesPercentage: string;
+  againstVotesPercentage: string;
 }
 
 export const ProposalGroup: React.FC<ProposalProps[]> = ({ proposals }) => {
@@ -28,6 +31,9 @@ export const ProposalGroup: React.FC<ProposalProps[]> = ({ proposals }) => {
       endBlockHeight={proposal.endBlockHeight}
       changes={proposal.changes}
       isOpen={proposal.isOpen}
+      totalVotes={proposal.totalVotes}
+      forVotesPercentage={proposal.forVotesPercentage}
+      againstVotesPercentage={proposal.againstVotesPercentage}
     />
   ));
 

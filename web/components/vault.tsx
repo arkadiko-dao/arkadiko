@@ -33,11 +33,11 @@ export interface VaultProps {
 }
 
 export const debtClass = (liquidationRatio: number, ratio: number) => {
-  if (ratio >= liquidationRatio + 50) {
+  if (Number(ratio) >= Number(liquidationRatio) + 50) {
     return 'text-green-400';
-  } else if (ratio >= liquidationRatio + 30) {
+  } else if (Number(ratio) >= Number(liquidationRatio) + 30) {
     return 'text-orange-400';
-  } else if (ratio > liquidationRatio + 10) {
+  } else if (Number(ratio) > Number(liquidationRatio) + 10) {
     return 'text-red-900';
   }
 
@@ -87,7 +87,7 @@ export const Vault: React.FC<VaultProps> = ({
   }, []);
 
   const debtBackgroundClass = (ratio: number) => {
-    if (ratio && ratio < collateralData?.liquidationRatio) {
+    if (ratio && ratio < Number(collateralData?.liquidationRatio)) {
       return 'bg-red-300';
     }
 
