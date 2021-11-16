@@ -63,11 +63,11 @@ export const Stake = () => {
   const [loadingData, setLoadingData] = useState(true);
   const [hasUnstakedTokens, setHasUnstakedTokens] = useState(false);
   const [emissionsStarted, setEmissionsStarted] = useState(false);
-
   const [stxDikoPoolInfo, setStxDikoPoolInfo] = useState(0);
   const [stxUsdaPoolInfo, setStxUsdaPoolInfo] = useState(0);
   const [dikoUsdaPoolInfo, setDikoUsdaPoolInfo] = useState(0);
   const [missedLpRewards, setMissedLpRewards] = useState(0);
+  const [stDikoToDiko, setStDikoToDiko] = useState(0);
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -403,6 +403,20 @@ export const Stake = () => {
       let missedLpRewards = await fetchMissedLpRewards();
       setMissedLpRewards(missedLpRewards / 1000000);
 
+      const stDikoToDikoCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-stake-pool-diko-v1-1',
+        functionName: 'diko-for-stdiko',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          uintCV(1000000),
+          uintCV(stDikoSupply),
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const stDikoToDiko = cvToJSON(stDikoToDikoCall).value.value;
+      setStDikoToDiko(Number(stDikoToDiko) / 1000000);
       setLoadingData(false);
     };
     if (mounted) {
@@ -694,6 +708,13 @@ export const Stake = () => {
                   <h3 className="text-lg leading-6 text-gray-900 font-headings">DIKO</h3>
                   <p className="max-w-3xl mt-2 text-sm text-gray-500">
                     When staking DIKO in the security module <span className="font-semibold">you will receive stDIKO</span> which is a representation of your share of the pool. DIKO in the pool is <span className="font-semibold">auto-compounding</span>. Your amount of stDIKO <span className="font-semibold">does not change</span>, but the DIKO value it represents <span className="font-semibold">will increase</span>. Both DIKO and stDIKO can be used to propose and vote in governance.
+                  </p>
+                  <p className="max-w-3xl mt-2 text-sm text-gray-500">
+                  {loadingData ? (
+                    <Placeholder className="py-2 ml-4" width={Placeholder.width.THIRD} />
+                  ) : (
+                    <span className="font-semibold">1 stDIKO ≈ {stDikoToDiko} DIKO</span>
+                  )}
                   </p>
                 </div>
                 <div className="flex items-center">
