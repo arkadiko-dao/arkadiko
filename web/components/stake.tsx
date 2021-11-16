@@ -711,7 +711,7 @@ export const Stake = () => {
                   </p>
                   <p className="max-w-3xl mt-2 text-sm text-gray-500">
                   {loadingData ? (
-                    <Placeholder className="py-2 ml-4" width={Placeholder.width.THIRD} />
+                    <Placeholder className="py-2" width={Placeholder.width.THIRD} />
                   ) : (
                     <span className="font-semibold">1 stDIKO ≈ {stDikoToDiko} DIKO</span>
                   )}
