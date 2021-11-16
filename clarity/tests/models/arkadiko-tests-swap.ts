@@ -21,28 +21,28 @@ class Swap {
   }
 
   getPairDetails(tokenX: string, tokenY: string) {
-    return this.chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-pair-details", [
+    return this.chain.callReadOnlyFn("arkadiko-swap-v2-1", "get-pair-details", [
       types.principal(Utils.qualifiedName(tokenX)),
       types.principal(Utils.qualifiedName(tokenY))
     ], this.deployer.address);
   }
 
   getBalances(tokenX: string, tokenY: string) {
-    return this.chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-balances", [
+    return this.chain.callReadOnlyFn("arkadiko-swap-v2-1", "get-balances", [
       types.principal(Utils.qualifiedName(tokenX)),
       types.principal(Utils.qualifiedName(tokenY))
     ], this.deployer.address);
   }
 
   getFees(tokenX: string, tokenY: string) {
-    return this.chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-fees", [
+    return this.chain.callReadOnlyFn("arkadiko-swap-v2-1", "get-fees", [
       types.principal(Utils.qualifiedName(tokenX)),
       types.principal(Utils.qualifiedName(tokenY))
     ], this.deployer.address);
   }
 
   getPosition(user: Account, tokenX: string, tokenY: string, pool: string) {
-    return this.chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-position", [
+    return this.chain.callReadOnlyFn("arkadiko-swap-v2-1", "get-position", [
       types.principal(Utils.qualifiedName(tokenX)),
       types.principal(Utils.qualifiedName(tokenY)),
       types.principal(Utils.qualifiedName(pool)),
@@ -50,21 +50,21 @@ class Swap {
   }
 
   getTotalSupply(tokenX: string, tokenY: string) {
-    return this.chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-total-supply", [
+    return this.chain.callReadOnlyFn("arkadiko-swap-v2-1", "get-total-supply", [
       types.principal(Utils.qualifiedName(tokenX)),
       types.principal(Utils.qualifiedName(tokenY)),
     ], this.deployer.address);
   }
 
   isRegisteredSwapToken(swapToken: string) {
-    return this.chain.callReadOnlyFn("arkadiko-swap-v1-1", "is-registered-swap-token", [
+    return this.chain.callReadOnlyFn("arkadiko-swap-v2-1", "is-registered-swap-token", [
       types.principal(Utils.qualifiedName(swapToken))
     ], this.deployer.address);
   }
 
   migrateCreatePair(user: Account, tokenX: string, tokenY: string, pool: string, name: string, totalShares: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-swap-v1-1", "migrate-create-pair", [
+      Tx.contractCall("arkadiko-swap-v2-1", "migrate-create-pair", [
         types.principal(Utils.qualifiedName(tokenX)),
         types.principal(Utils.qualifiedName(tokenY)),
         types.principal(Utils.qualifiedName(pool)),
@@ -77,7 +77,7 @@ class Swap {
 
   migrateAddLiquidity(user: Account, tokenX: string, tokenY: string, balanceX: number, balanceY: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-swap-v1-1", "migrate-add-liquidity", [
+      Tx.contractCall("arkadiko-swap-v2-1", "migrate-add-liquidity", [
         types.principal(Utils.qualifiedName(tokenX)),
         types.principal(Utils.qualifiedName(tokenY)),
         types.uint(balanceX * 1000000),
@@ -89,7 +89,7 @@ class Swap {
 
   createPair(user: Account, tokenX: string, tokenY: string, pool: string, name: string, balanceX: number, balanceY: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-swap-v1-1", "create-pair", [
+      Tx.contractCall("arkadiko-swap-v2-1", "create-pair", [
         types.principal(Utils.qualifiedName(tokenX)),
         types.principal(Utils.qualifiedName(tokenY)),
         types.principal(Utils.qualifiedName(pool)),
@@ -103,7 +103,7 @@ class Swap {
 
   addToPosition(user: Account, tokenX: string, tokenY: string, pool: string, balanceX: number, balanceY: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-swap-v1-1", "add-to-position", [
+      Tx.contractCall("arkadiko-swap-v2-1", "add-to-position", [
         types.principal(Utils.qualifiedName(tokenX)),
         types.principal(Utils.qualifiedName(tokenY)),
         types.principal(Utils.qualifiedName(pool)),
@@ -116,7 +116,7 @@ class Swap {
 
   reducePosition(user: Account, tokenX: string, tokenY: string, pool: string, percentage: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-swap-v1-1", "reduce-position", [
+      Tx.contractCall("arkadiko-swap-v2-1", "reduce-position", [
         types.principal(Utils.qualifiedName(tokenX)),
         types.principal(Utils.qualifiedName(tokenY)),
         types.principal(Utils.qualifiedName(pool)),
@@ -128,7 +128,7 @@ class Swap {
 
   swapXForY(user: Account, tokenX: string, tokenY: string, dx: number, dyMin: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-swap-v1-1", "swap-x-for-y", [
+      Tx.contractCall("arkadiko-swap-v2-1", "swap-x-for-y", [
         types.principal(Utils.qualifiedName(tokenX)),
         types.principal(Utils.qualifiedName(tokenY)),
         types.uint(dx * 1000000), // 200
@@ -140,7 +140,7 @@ class Swap {
 
   swapYForX(user: Account, tokenX: string, tokenY: string, dy: number, dxMin: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-swap-v1-1", "swap-y-for-x", [
+      Tx.contractCall("arkadiko-swap-v2-1", "swap-y-for-x", [
         types.principal(Utils.qualifiedName(tokenX)),
         types.principal(Utils.qualifiedName(tokenY)),
         types.uint(dy * 1000000), // 200
@@ -152,7 +152,7 @@ class Swap {
 
   setFeeToAddress(tokenX: string, tokenY: string, address: Account) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-swap-v1-1", "set-fee-to-address", [
+      Tx.contractCall("arkadiko-swap-v2-1", "set-fee-to-address", [
         types.principal(Utils.qualifiedName(tokenX)),
         types.principal(Utils.qualifiedName(tokenY)),
         types.principal(address.address)
@@ -163,7 +163,7 @@ class Swap {
 
   togglePairEnabled(tokenX: string, tokenY: string) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-swap-v1-1", "toggle-pair-enabled", [
+      Tx.contractCall("arkadiko-swap-v2-1", "toggle-pair-enabled", [
         types.principal(Utils.qualifiedName(tokenX)),
         types.principal(Utils.qualifiedName(tokenY))
       ], this.deployer.address)
@@ -173,14 +173,14 @@ class Swap {
 
   toggleShutdown() {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-swap-v1-1", "toggle-swap-shutdown", [], this.deployer.address)
+      Tx.contractCall("arkadiko-swap-v2-1", "toggle-swap-shutdown", [], this.deployer.address)
     ]);
     return block.receipts[0].result;
   }
 
   collectFees(tokenX: string, tokenY: string) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-swap-v1-1", "collect-fees", [
+      Tx.contractCall("arkadiko-swap-v2-1", "collect-fees", [
         types.principal(Utils.qualifiedName(tokenX)),
         types.principal(Utils.qualifiedName(tokenY))
       ], this.deployer.address)
@@ -189,11 +189,11 @@ class Swap {
   }
 
   getPairCount() {
-    return this.chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-pair-count", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-swap-v2-1", "get-pair-count", [], this.deployer.address);
   }
 
   getPairContracts(pairId: number) {
-    return this.chain.callReadOnlyFn("arkadiko-swap-v1-1", "get-pair-contracts", [
+    return this.chain.callReadOnlyFn("arkadiko-swap-v2-1", "get-pair-contracts", [
       types.uint(pairId),
     ], this.deployer.address);
   }

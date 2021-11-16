@@ -47,7 +47,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-liquidator-v1-1' },
   { name: 'arkadiko-swap-trait-v1' },
   { name: 'wrapped-stx-token' },
-  { name: 'arkadiko-swap-v1-1' },
+  { name: 'arkadiko-swap-v2-1' },
   { name: 'arkadiko-stacker-payer-v1-1' },
   { name: 'arkadiko-stacker-2-v1-1' },
   { name: 'arkadiko-stacker-3-v1-1' },
