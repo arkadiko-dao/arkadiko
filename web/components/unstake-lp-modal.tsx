@@ -20,6 +20,7 @@ export const UnstakeLpModal = ({
   const [_, setState] = useContext(AppContext);
   const [errors, setErrors] = useState<string[]>([]);
   const [stakeAmount, setStakeAmount] = useState('');
+  const [isUnstakeButtonDisabled, setIsUnstakeButtonDisabled] = useState(false);
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -77,8 +78,10 @@ export const UnstakeLpModal = ({
       if (errors.length < 1) {
         setErrors(errors.concat(['You cannot unstake more than currently staking']));
       }
+      setIsUnstakeButtonDisabled(true);
     } else {
       setErrors([]);
+      setIsUnstakeButtonDisabled(false);
     }
     setStakeAmount(value);
   };
@@ -107,6 +110,7 @@ export const UnstakeLpModal = ({
       closeModal={() => setShowUnstakeModal(false)}
       buttonText="Unstake"
       buttonAction={() => unstake()}
+      buttonDisabled={isUnstakeButtonDisabled || errors.length > 0}
       initialFocus={inputRef}
     >
       {errors.length > 0 ? (
