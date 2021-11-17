@@ -202,9 +202,6 @@ export const Swap: React.FC = () => {
 
     if (name === 'tokenXAmount') {
       setTokenXAmount(value);
-      if (Number(value) * 1000000 > state.balance[tokenX['name'].toLowerCase()]) {
-        setInsufficientBalance(true);
-      }
     } else {
       setTokenYAmount(value);
     }
@@ -224,6 +221,8 @@ export const Swap: React.FC = () => {
   };
 
   const setMaximum = () => {
+    setInsufficientBalance(false);
+
     if (tokenX['name'].toLowerCase() === 'stx') {
       setTokenXAmount(parseInt(balanceSelectedTokenX, 10) - 1);
     } else {
