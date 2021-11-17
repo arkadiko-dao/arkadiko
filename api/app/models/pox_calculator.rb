@@ -8,10 +8,11 @@ class PoxCalculator
       next unless vault['stacker-name']['value'] == name
       next if vault['stacked-tokens']['value'] == 0
 
+      collateral = vault['collateral']['value']
       stacked = vault['stacked-tokens']['value']
-      ratio = stacked / ustx_stacked.to_f
+      ratio = collateral / ustx_stacked.to_f
       vaults[vault['id']['value']] = {
-        'collateral': vault['collateral']['value'],
+        'collateral': collateral,
         'stacked': stacked,
         'yield': (ratio * ustx_yield).round(0)
       }
