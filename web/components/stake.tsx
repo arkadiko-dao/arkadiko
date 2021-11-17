@@ -94,30 +94,26 @@ export const Stake = () => {
     const fetchMissedLpRewards = async () => {
       const stakedCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-stake-lp-rewards",
-        functionName: "get-diko-by-wallet",
-        functionArgs: [
-          standardPrincipalCV(stxAddress || '')
-        ],
+        contractName: 'arkadiko-stake-lp-rewards',
+        functionName: 'get-diko-by-wallet',
+        functionArgs: [standardPrincipalCV(stxAddress || '')],
         senderAddress: stxAddress || '',
         network: network,
       });
-      let value = Number(cvToJSON(stakedCall).value);
+      const value = Number(cvToJSON(stakedCall).value);
 
       const stakedCall2 = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-stake-lp-rewards-2",
-        functionName: "get-diko-by-wallet",
-        functionArgs: [
-          standardPrincipalCV(stxAddress || '')
-        ],
+        contractName: 'arkadiko-stake-lp-rewards-2',
+        functionName: 'get-diko-by-wallet',
+        functionArgs: [standardPrincipalCV(stxAddress || '')],
         senderAddress: stxAddress || '',
         network: network,
       });
       return value + Number(cvToJSON(stakedCall2).value);
     };
 
-    const fetchLpStakeAmount = async (poolContract:string) => {
+    const fetchLpStakeAmount = async (poolContract: string) => {
       const stakedCall = await callReadOnlyFunction({
         contractAddress,
         contractName: poolContract,
@@ -251,7 +247,11 @@ export const Stake = () => {
     };
 
     const getData = async () => {
-      if (state.balance['dikousda'] == undefined || state.balance['wstxusda'] == undefined || state.balance['wstxdiko'] == undefined) {
+      if (
+        state.balance['dikousda'] == undefined ||
+        state.balance['wstxusda'] == undefined ||
+        state.balance['wstxdiko'] == undefined
+      ) {
         return;
       }
 
@@ -412,7 +412,7 @@ export const Stake = () => {
         setCooldownRunning(true);
       }
 
-      let missedLpRewards = await fetchMissedLpRewards();
+      const missedLpRewards = await fetchMissedLpRewards();
       setMissedLpRewards(missedLpRewards / 1000000);
 
       setLoadingData(false);
@@ -892,7 +892,9 @@ export const Stake = () => {
                 <div className="mt-4">
                   <Alert title="LP staking rewards have resumed">
                     <p>You missed {missedLpRewards} DIKO during the pause.</p>
-                    <p className="mt-1">You have two options, you can either claim them or directly stake them.</p>
+                    <p className="mt-1">
+                      You have two options, you can either claim them or directly stake them.
+                    </p>
                     <div className="mt-4">
                       <div className="-mx-2 -my-1.5 flex">
                         <button
@@ -914,7 +916,7 @@ export const Stake = () => {
                   </Alert>
                 </div>
               ) : null}
-              
+
               <div className="mt-4">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
