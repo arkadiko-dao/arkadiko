@@ -180,6 +180,18 @@ class ClaimYield {
     return block.receipts[0].result;
   }
 
+  removeClaim(user: Account, vaultId: number, stxAmount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-claim-yield-v1-1", "remove-claim", [
+        types.tuple({
+          'to': types.uint(vaultId),
+          'ustx': types.uint(stxAmount * 1000000)
+        })
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
   static createClaimTuple(vaultId: number, stxAmount: number) {
     return types.tuple({
       'to': types.uint(vaultId),
@@ -190,6 +202,15 @@ class ClaimYield {
   addClaims(user: Account, claims: string[]) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-claim-yield-v1-1", "add-claims", [
+        types.list(claims)
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  removeClaims(user: Account, claims: string[]) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-claim-yield-v1-1", "remove-claims", [
         types.list(claims)
       ], user.address)
     ]);

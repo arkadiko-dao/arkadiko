@@ -46,10 +46,9 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "claim-yield: add one claim",
+  name: "claim-yield: add and remove one claim",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
 
     let claimYield = new ClaimYield(chain, deployer);
     let oracleManager = new OracleManager(chain, deployer);
@@ -74,6 +73,22 @@ Clarinet.test({
     // Check STX balance of contract
     call = claimYield.getStxBalance();
     call.result.expectUintWithDecimals(100);
+
+    // Remove one claim
+    result = claimYield.removeClaim(deployer, 1, 100);
+    result.expectOk().expectBool(true);
+
+    // Check result
+    call = claimYield.getClaimByVaultId(1);
+    call.result.expectTuple()["ustx"].expectUintWithDecimals(0);
+
+    // Check STX balance of contract
+    call = claimYield.getStxBalance();
+    call.result.expectUintWithDecimals(0);
+
+    // Add claim again
+    result = claimYield.addClaim(deployer, 1, 100);
+    result.expectOk().expectBool(true);
 
     // Claim
     result = claimYield.claim(deployer, 1, false);
@@ -127,6 +142,15 @@ Clarinet.test({
     call = claimYield.getStxBalance();
     call.result.expectUintWithDecimals(20000);
 
+    // Remove 2 claims
+    result = claimYield.removeClaims(deployer, claims.slice(198));
+    result.expectOk().expectBool(true);
+
+    // Check STX balance of contract
+    // 20.000 - (2 * 100) = 19800
+    call = claimYield.getStxBalance();
+    call.result.expectUintWithDecimals(19800);
+
     // Claim
     result = claimYield.claim(wallet_1, 1, false);
     result.expectOk().expectBool(true);
@@ -136,9 +160,9 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Check STX balance of contract
-    // 20.000 - (2 * 100) = 19800
+    // 19.800 - (2 * 100) = 19600
     call = claimYield.getStxBalance();
-    call.result.expectUintWithDecimals(19800);
+    call.result.expectUintWithDecimals(19600);
   }
 });
 

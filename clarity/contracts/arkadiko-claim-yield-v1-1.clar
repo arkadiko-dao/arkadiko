@@ -52,6 +52,27 @@
   )
 )
 
+(define-public (remove-claims (recipients (list 200 { to: uint, ustx: uint })))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (map remove-claim recipients)
+    (ok true)
+  )
+)
+
+(define-public (remove-claim (recipient { to: uint, ustx: uint }))
+  (let (
+    (claim-entry (get-claim-by-vault-id (get to recipient)))
+  )
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (try! (return-stx (get ustx claim-entry)))
+    (map-set claims { vault-id: (get to recipient) } { ustx: (- (get ustx claim-entry) (get ustx recipient)) })
+    (ok true)
+  )
+)
+
 ;; @desc Claim PoX yield and add as collateral
 ;; @param vault-id; your vault ID
 ;; @param reserve; active STX reserve
@@ -172,7 +193,7 @@
   (let (
     (dao-address (contract-call? .arkadiko-dao get-dao-owner))
   )
-    (asserts! (is-eq tx-sender dao-address) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller dao-address) (err ERR-NOT-AUTHORIZED))
 
     (as-contract (stx-transfer? ustx-amount tx-sender dao-address))
   )
