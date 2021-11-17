@@ -164,7 +164,7 @@ export const ManageVault = ({ match }) => {
     const fetchYield = async () => {
       const yieldCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-claim-yield-v1-1',
+        contractName: 'arkadiko-claim-yield-v2-1',
         functionName: 'get-claim-by-vault-id',
         functionArgs: [
           uintCV(vault?.id)
@@ -629,7 +629,7 @@ export const ManageVault = ({ match }) => {
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-claim-yield-v1-1',
+      contractName: 'arkadiko-claim-yield-v2-1',
       functionName: 'claim',
       postConditionMode: 0x01,
       functionArgs: [
@@ -658,7 +658,7 @@ export const ManageVault = ({ match }) => {
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-claim-yield-v1-1',
+      contractName: 'arkadiko-claim-yield-v2-1',
       functionName: 'claim-to-pay-debt',
       postConditionMode: 0x01,
       functionArgs: [

@@ -208,7 +208,7 @@ async function transact() {
   ]);
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: 'arkadiko-claim-yield-v1-1',
+    contractName: 'arkadiko-claim-yield-v2-1',
     functionName: 'add-claims',
     functionArgs: [list],
     senderKey: process.env.STACKS_PRIVATE_KEY,
