@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Container } from './home';
-import { SwitchVerticalIcon, InformationCircleIcon } from '@heroicons/react/solid';
+import { SwitchVerticalIcon, InformationCircleIcon, CogIcon } from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { microToReadable } from '@common/vault-utils';
@@ -22,6 +22,7 @@ import { getBalance } from '@components/app';
 import { classNames } from '@common/class-names';
 import { Placeholder } from './ui/placeholder';
 import { SwapLoadingPlaceholder } from './swap-loading-placeholder';
+import { Alert } from './ui/alert';
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
@@ -35,6 +36,7 @@ export const Swap: React.FC = () => {
   const [currentPair, setCurrentPair] = useState();
   const [inverseDirection, setInverseDirection] = useState(false);
   const [slippageTolerance, setSlippageTolerance] = useState(4.0);
+  const [isSlippageHighEnough, setIsSlippageHighEnough] = useState(true);
   const [minimumReceived, setMinimumReceived] = useState(0);
   const [priceImpact, setPriceImpact] = useState('0');
   const [lpFee, setLpFee] = useState('0');
@@ -187,6 +189,8 @@ export const Swap: React.FC = () => {
         maximumFractionDigits: 6,
       })
     );
+    
+    checkSlippageTolerance();
   };
 
   const onInputChange = (event: { target: { name: any; value: any } }) => {
@@ -199,6 +203,13 @@ export const Swap: React.FC = () => {
       setTokenYAmount(value);
     }
   };
+
+  const checkSlippageTolerance = () => {
+    if (Number(priceImpact) > slippageTolerance) {
+      setIsSlippageHighEnough(false)
+    }
+    setIsSlippageHighEnough(true)
+  }
 
   const switchTokens = () => {
     const tmpTokenX = tokenX;
@@ -457,6 +468,14 @@ export const Swap: React.FC = () => {
                       </p>
                     )}
 
+                    {!isSlippageHighEnough ? (
+                      <div className="max-w-lg mt-4 -mb-4">
+                        <Alert type={Alert.type.WARNING}>
+                          <p>If you proceed with this swap, your transaction will <span className="font-semibold">most definitely fail</span> because the slippage tolerance is not set high enough. Please click on the <CogIcon className="inline w-5 h-5" aria-hidden="true" /> to adjust the swap settings.</p>
+                        </Alert>
+                      </div>
+                    ) : null}
+
                     {state.userData ? (
                       <button
                         type="button"
@@ -558,7 +577,7 @@ export const Swap: React.FC = () => {
                     <Placeholder className="justify-end" width={Placeholder.width.THIRD} />
                   ) : (
                     <>
-                      ≈<div className="mr-1 truncate">${priceImpact}</div>%
+                      ≈<div className="mr-1 truncate">{priceImpact}</div>%
                     </>
                   )}
                 </dd>
