@@ -17,6 +17,7 @@ import {
   createAssetInfo,
   FungibleConditionCode,
   makeStandardSTXPostCondition,
+  falseCV,
 } from '@stacks/transactions';
 import { AppContext, CollateralTypeProps } from '@common/context';
 import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
@@ -638,6 +639,7 @@ export const ManageVault = ({ match }) => {
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
           'arkadiko-collateral-types-v1-1'
         ),
+        falseCV()
       ],
       onFinish: data => {
         console.log('claiming yield', data, data.txId);
