@@ -14,6 +14,9 @@
 
 (define-constant ERR-NOT-AUTHORIZED u40401)
 (define-constant ERR-NOTHING-TO-CLAIM u40402)
+(define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u40403)
+
+(define-data-var claim-shutdown-activated bool false)
 
 (define-map claims
   { vault-id: uint }
@@ -28,6 +31,14 @@
       ustx: u0
     }
     (map-get? claims { vault-id: vault-id })
+  )
+)
+
+(define-public (toggle-claim-shutdown)
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set claim-shutdown-activated (not (var-get claim-shutdown-activated))))
   )
 )
 
@@ -90,6 +101,7 @@
     (claim-entry (get-claim-by-vault-id vault-id))
     (sender tx-sender)
   )
+    (asserts! (not (var-get claim-shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
@@ -154,6 +166,7 @@
       )
     )
   )
+    (asserts! (not (var-get claim-shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
