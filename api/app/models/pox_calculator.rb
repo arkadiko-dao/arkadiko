@@ -14,6 +14,7 @@ class PoxCalculator
       vaults[vault['id']['value']] = {
         'collateral': collateral,
         'stacked': stacked,
+        'ratio': ratio,
         'yield': (ratio * ustx_yield).round(0)
       }
     end
