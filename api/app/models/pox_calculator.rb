@@ -1,5 +1,5 @@
 class PoxCalculator
-  def calculate_yields(name: 'stacker', file: 'vaults-pox-20.json', ustx_stacked: 12_622_260_119_595, ustx_yield: 41_666_000_000)
+  def calculate_yields(name: 'stacker', file: 'vaults-pox-20.json', ustx_stacked: 12_622_260_119_595, ustx_yield: 45_524_528_400)
     file = File.open("files/#{file}")
     data = JSON.load(file)
     vaults = {}
