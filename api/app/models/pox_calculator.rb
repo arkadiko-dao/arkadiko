@@ -21,4 +21,11 @@ class PoxCalculator
 
     vaults
   end
+
+  def build_clarity_list_tuples
+    vaults = calculate_yields
+    vaults.each do |vault_id, value|
+      puts "tx.tupleCV({ 'to': tx.uintCV(#{vault_id}), 'ustx': tx.uintCV(#{value[:yield]}) }),"
+    end
+  end
 end
