@@ -13,6 +13,14 @@
 (define-data-var total-collateral uint u0) 
 (define-data-var cumm-reward-per-collateral uint u0) 
 (define-data-var last-reward-increase-block uint u0) 
+(define-data-var vault-rewards-shutdown-activated bool false)
+
+(define-public (toggle-vault-rewards-shutdown)
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
+    (ok (var-set vault-rewards-shutdown-activated (not (var-get vault-rewards-shutdown-activated))))
+  )
+)
 
 ;; Keep track of cumm rewards per collateral for user
 (define-map user-collateral
@@ -195,7 +203,7 @@
 ;; Calculate current cumm reward per collateral
 (define-read-only (calculate-cumm-reward-per-collateral)
   (let (
-    (rewards-per-block (contract-call? .arkadiko-diko-guardian-v1-1 get-vault-rewards-per-block))
+    (rewards-per-block (get-rewards-per-block))
     (current-total-collateral (var-get total-collateral))
     (current-cumm-reward-per-collateral (var-get cumm-reward-per-collateral)) 
   )
@@ -215,8 +223,14 @@
   )
 )
 
+(define-private (get-rewards-per-block)
+  (if (is-eq (var-get vault-rewards-shutdown-activated) true)
+    u0
+    (contract-call? .arkadiko-diko-guardian-v1-1 get-vault-rewards-per-block)
+  )
+)
+
 ;; Initialize the contract
-;; TODO: set custom block height here for mainnet
 (begin
   (var-set last-reward-increase-block block-height)
 )

@@ -39,8 +39,9 @@ There is no separate CONTRIBUTING.md instructions for now, but you can use the f
 2. Comment/Uncomment minting in arkadiko-token.clar and usda-token.clar
 3. Replace SIP10 trait
 4. Replace all correct addresses in arkadiko DAO map and pools data in stake registry
-5. Run deploy script (deploy-contracts.ts)
-6. Deploy external scripts
+5. Replace ST000000000000000000002AMW42H in stackers
+6. Run deploy script (deploy-contracts.ts)
+7. Deploy external scripts
 
 For testnet:
 Faucet: curl -X POST "https://stacks-node-api.testnet.stacks.co/extended/v1/faucets/stx?address=<ADDR>"

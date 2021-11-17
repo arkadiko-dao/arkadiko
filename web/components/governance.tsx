@@ -7,12 +7,14 @@ import { callReadOnlyFunction, cvToJSON } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ProposalGroup } from '@components/proposal-group';
 import { DocumentTextIcon } from '@heroicons/react/outline';
-import { EmptyState } from './empty-state';
+import { EmptyState } from './ui/empty-state';
+import { Placeholder } from './ui/placeholder';
 
 export const Governance = () => {
   const [state, _] = useContext(AppContext);
   const stxAddress = useSTXAddress();
   const [proposals, setProposals] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   useEffect(() => {
@@ -21,25 +23,25 @@ export const Governance = () => {
     const getData = async () => {
       const proposals = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-governance-v1-1",
-        functionName: "get-proposals",
+        contractName: 'arkadiko-governance-v1-1',
+        functionName: 'get-proposals',
         functionArgs: [],
         senderAddress: stxAddress || '',
         network: network,
       });
       const json = cvToJSON(proposals);
-      let serializedProposals:Array<{
-        id: string,
-        title: string,
-        url: string,
-        proposer: string,
-        forVotes: number,
-        against: number,
-        changes: object[],
-        isOpen: boolean,
-        startBlockHeight: number,
-        endBlockHeight: number
-      }> = [];
+      const serializedProposals: {
+        id: string;
+        title: string;
+        url: string;
+        proposer: string;
+        forVotes: number;
+        against: number;
+        changes: object[];
+        isOpen: boolean;
+        startBlockHeight: number;
+        endBlockHeight: number;
+      }[] = [];
       const data = json.value.value;
 
       data.forEach((element: object) => {
@@ -54,15 +56,16 @@ export const Governance = () => {
             changes: extractChanges(element.value['contract-changes']),
             isOpen: element.value['is-open'].value,
             startBlockHeight: element.value['start-block-height'].value,
-            endBlockHeight: element.value['end-block-height'].value
+            endBlockHeight: element.value['end-block-height'].value,
           });
         }
       });
       setProposals(serializedProposals);
+      setIsLoading(false);
     };
-    const extractChanges = (changes) => {
-      let newChanges = [];
-      changes['value'].forEach((change) => {
+    const extractChanges = changes => {
+      const newChanges = [];
+      changes['value'].forEach(change => {
         newChanges.push(change['value']);
       });
       return newChanges;
@@ -71,7 +74,9 @@ export const Governance = () => {
       void getData();
     }
 
-    return () => { mounted = false; }
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return (
@@ -96,10 +101,38 @@ export const Governance = () => {
 
               <div className="mt-8">
                 <header className="pb-5 border-b border-gray-200">
-                  <h2 className="text-lg font-medium leading-6 text-gray-900 font-headings">Recent Proposals</h2>
+                  <h2 className="text-lg font-medium leading-6 text-gray-900 font-headings">
+                    Recent Proposals
+                  </h2>
                 </header>
 
-                {proposals.length > 0 ? (
+                {isLoading ? (
+                  <div className="mt-5 overflow-hidden bg-white shadow sm:rounded-md">
+                    <div className="px-4 py-4 sm:px-6">
+                      <div className="flex items-center justify-between">
+                        <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                        <Placeholder
+                          className="justify-end py-2"
+                          color={Placeholder.color.GRAY}
+                          width={Placeholder.width.THIRD}
+                        />
+                      </div>
+
+                      <div className="mt-2 sm:flex sm:justify-between">
+                        <Placeholder
+                          className="py-1"
+                          color={Placeholder.color.GRAY}
+                          width={Placeholder.width.FULL}
+                        />
+                        <Placeholder
+                          className="justify-end py-1"
+                          color={Placeholder.color.GRAY}
+                          width={Placeholder.width.HALF}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ) : proposals.length > 0 ? (
                   <ProposalGroup proposals={proposals} />
                 ) : (
                   <EmptyState

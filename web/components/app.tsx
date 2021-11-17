@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ThemeProvider, theme, Tooltip } from '@blockstack/ui';
+import { ThemeProvider, theme } from '@blockstack/ui';
 import { Connect } from '@stacks/connect-react';
 import { AuthOptions } from '@stacks/connect';
 import { UserSession, AppConfig } from '@stacks/auth';
@@ -13,6 +13,7 @@ import { callReadOnlyFunction, cvToJSON, stringAsciiCV } from '@stacks/transacti
 import { resolveSTXAddress } from '@common/use-stx-address';
 import { TxStatus } from '@components/tx-status';
 import { TxSidebar } from '@components/tx-sidebar';
+import { Footer } from '@components/footer';
 import { useLocation } from 'react-router-dom';
 import { initiateConnection } from '@common/websocket-tx-updater';
 import ScrollToTop from '@components/scroll-to-top';
@@ -28,9 +29,12 @@ export const getBalance = async (address: string) => {
   const usdaBalance = data.fungible_tokens[`${contractAddress}.usda-token::usda`];
   const xStxBalance = data.fungible_tokens[`${contractAddress}.xstx-token::xstx`];
   const stDikoBalance = data.fungible_tokens[`${contractAddress}.stdiko-token::stdiko`];
-  const lpDikoUsdaBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-diko-usda::diko-usda`];
-  const lpStxUsdaBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-usda::wstx-usda`];
-  const lpStxDikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-diko::wstx-diko`];
+  const lpDikoUsdaBalance =
+    data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-diko-usda::diko-usda`];
+  const lpStxUsdaBalance =
+    data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-usda::wstx-usda`];
+  const lpStxDikoBalance =
+    data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-diko::wstx-diko`];
   const xbtcBalance = data.fungible_tokens[`${contractAddress}.tokensoft-token::tokensoft-token`];
 
   return {
@@ -42,11 +46,11 @@ export const getBalance = async (address: string) => {
     stdiko: stDikoBalance ? stDikoBalance.balance : 0,
     dikousda: lpDikoUsdaBalance ? lpDikoUsdaBalance.balance : 0,
     wstxusda: lpStxUsdaBalance ? lpStxUsdaBalance.balance : 0,
-    wstxdiko: lpStxDikoBalance ? lpStxDikoBalance.balance : 0
+    wstxdiko: lpStxDikoBalance ? lpStxDikoBalance.balance : 0,
   };
 };
 
-const icon = 'https://testnet.arkadiko.finance/assets/logo.png';
+const icon = 'https://arkadiko.finance/favicon.ico';
 export const App: React.FC = () => {
   const [state, setState] = React.useState<AppState>(defaultState());
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -59,7 +63,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     setState(prevState => ({ ...prevState, currentTxId: '', currentTxStatus: '' }));
-  },[location.pathname]);
+  }, [location.pathname]);
 
   const signOut = () => {
     userSession.signUserOut();
@@ -79,18 +83,18 @@ export const App: React.FC = () => {
         stdiko: account.stdiko.toString(),
         dikousda: account.dikousda.toString(),
         wstxusda: account.wstxusda.toString(),
-        wstxdiko: account.wstxdiko.toString()
-      }
+        wstxdiko: account.wstxdiko.toString(),
+      },
     }));
   };
 
   const fetchCollateralTypes = async (address: string) => {
-    let collTypes = {};
-    ['STX-A', 'STX-B', 'XBTC-A'].forEach(async (token) => {
+    const collTypes = {};
+    ['STX-A', 'STX-B'].forEach(async token => {
       const types = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-collateral-types-v1-1",
-        functionName: "get-collateral-type-by-name",
+        contractName: 'arkadiko-collateral-types-v1-1',
+        functionName: 'get-collateral-type-by-name',
         functionArgs: [stringAsciiCV(token)],
         senderAddress: address,
         network: network,
@@ -107,11 +111,11 @@ export const App: React.FC = () => {
         liquidationRatio: json.value['liquidation-ratio'].value,
         maximumDebt: json.value['maximum-debt'].value,
         stabilityFee: json.value['stability-fee'].value,
-        stabilityFeeApy: json.value['stability-fee-apy'].value
+        stabilityFeeApy: json.value['stability-fee-apy'].value,
       };
       setState(prevState => ({
         ...prevState,
-        collateralTypes: {...collTypes}
+        collateralTypes: { ...collTypes },
       }));
     });
   };
@@ -119,24 +123,25 @@ export const App: React.FC = () => {
   const fetchStackingCycle = async () => {
     const metaInfoUrl = `https://api.stacking.club/api/meta-info`;
     fetch(metaInfoUrl)
-      .then((res) => res.json())
-      .then((response) => {
-        let cycleNumber = response[0]["pox"]["current_cycle"]["id"];
+      .then(res => res.json())
+      .then(response => {
+        const cycleNumber = response[0]['pox']['current_cycle']['id'];
 
-        let cycleInfoUrl = `https://api.stacking.club/api/cycle-info?cycle=` + cycleNumber;
+        const cycleInfoUrl = `https://api.stacking.club/api/cycle-info?cycle=${cycleNumber}`;
         fetch(cycleInfoUrl)
-          .then((res) => res.json())
-          .then((response) => {
-            
-            let startTimestamp = response["startDate"];
-            let endTimestamp = response["endDate"];
-            let currentTimestamp = Date.now();
+          .then(res => res.json())
+          .then(response => {
+            const startTimestamp = response['startDate'];
+            const endTimestamp = response['endDate'];
+            const currentTimestamp = Date.now();
 
-            let daysPassed = Math.round((currentTimestamp - startTimestamp) / (1000*60*60*24));
-            let daysLeft = Math.round((endTimestamp - currentTimestamp) / (1000*60*60*24));
+            const daysPassed = Math.round(
+              (currentTimestamp - startTimestamp) / (1000 * 60 * 60 * 24)
+            );
+            const daysLeft = Math.round((endTimestamp - currentTimestamp) / (1000 * 60 * 60 * 24));
 
-            let startDate = new Date(startTimestamp).toDateString();
-            let endDate = new Date(endTimestamp).toDateString().split(' ').slice(1).join(' ');
+            const startDate = new Date(startTimestamp).toDateString();
+            const endDate = new Date(endTimestamp).toDateString().split(' ').slice(1).join(' ');
 
             setState(prevState => ({
               ...prevState,
@@ -144,7 +149,7 @@ export const App: React.FC = () => {
               startDate: startDate,
               endDate: endDate,
               daysPassed: daysPassed,
-              daysLeft: daysLeft
+              daysLeft: daysLeft,
             }));
           });
       });
@@ -158,7 +163,6 @@ export const App: React.FC = () => {
 
       const getData = async () => {
         try {
-
           const address = resolveSTXAddress(userData);
           initiateConnection(address, setState);
           fetchBalance(address);
@@ -214,37 +218,17 @@ export const App: React.FC = () => {
       <ThemeProvider theme={theme}>
         <AppContext.Provider value={[state, setState]}>
           <div className="flex flex-col font-sans bg-white min-height-screen">
-            {(location.pathname.indexOf('/onboarding') != 0) ? (
+            {location.pathname.indexOf('/onboarding') != 0 ? (
               <Header signOut={signOut} setShowSidebar={setShowSidebar} />
-            ) : null }
-            {state.userData && (location.pathname.indexOf('/onboarding') != 0 ) ? (
-              <SubHeader />
             ) : null}
+            {state.userData && location.pathname.indexOf('/onboarding') != 0 ? <SubHeader /> : null}
             <TxStatus />
-            
+
             <TxSidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
 
-            {(location.pathname.indexOf('/onboarding') != 0) ? (
-              <div className="fixed bottom-0 right-0 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end" style={{zIndex: 99999}}>
-                <Tooltip label={`Got feedback?`}>
-                  <div className="w-full max-w-sm overflow-hidden pointer-events-auto">
-                    <div className="p-4">
-                      <div className="flex items-start">
-                        <a href="mailto:philip@arkadiko.finance?subject=Feedback on Arkadiko Testnet" className="inline-flex items-center p-2 text-white bg-indigo-600 border border-transparent rounded-full shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                          </svg>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </Tooltip>
-              </div>
-            ) : null }
-            {!finishedOnboarding ? (
-              <Redirect to={{ pathname: '/onboarding' }} />
-            ) : null}
+            {!finishedOnboarding ? <Redirect to={{ pathname: '/onboarding' }} /> : null}
             <Routes />
+            <Footer />
           </div>
         </AppContext.Provider>
       </ThemeProvider>

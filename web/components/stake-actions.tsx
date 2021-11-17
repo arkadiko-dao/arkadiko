@@ -1,5 +1,5 @@
-import React, { Fragment } from 'react'
-import { Menu, Transition } from '@headlessui/react'
+import React, { Fragment } from 'react';
+import { Menu, Transition } from '@headlessui/react';
 import { DotsVerticalIcon } from '@heroicons/react/solid';
 
 interface StakeActionsProps {
@@ -29,9 +29,7 @@ export const StakeActions: React.FC<StakeActionsProps> = ({ children }) => {
               static
               className="absolute top-0 z-10 w-48 mx-3 mt-1 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg right-7 ring-1 ring-black ring-opacity-5 focus:outline-none"
             >
-              <div className="px-1 py-1">
-                {children}
-              </div>
+              <div className="px-1 py-1">{children}</div>
             </Menu.Items>
           </Transition>
         </>

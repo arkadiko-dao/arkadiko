@@ -3,7 +3,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CheckerPlugin = require('fork-ts-checker-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
@@ -40,7 +40,8 @@ const hmtlProdOpts = !isDevelopment
   : {};
 
 const getSourceMap = () => {
-  if (extEnv === 'web' && nodeEnv != 'production') { // do not generate for production for now
+  if (extEnv === 'web' && nodeEnv != 'production') {
+    // do not generate for production for now
     return nodeEnv === 'production' ? 'eval' : 'cheap-source-map';
   }
   return 'none';
@@ -65,7 +66,7 @@ module.exports = {
     path: distRootPath,
     chunkFilename: !isDevelopment ? '[name].[contenthash].chunk.js' : '[name].chunk.js',
     filename: !isDevelopment ? '[name].[contenthash].js' : '[name].js',
-    publicPath: '/'
+    publicPath: '/',
   },
   resolve: {
     extensions: ['.js', '.ts', '.tsx', '.json'],
@@ -164,15 +165,12 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          "css-loader", "postcss-loader",
-          ],
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
       },
-			{
-				test: /\.(woff|ttf|otf|eot|woff2|svg)$/i,
-				loader: "file-loader"
-			}
+      {
+        test: /\.(woff|ttf|otf|eot|woff2|svg)$/i,
+        loader: 'file-loader',
+      },
     ],
   },
   devServer: {
@@ -189,8 +187,8 @@ module.exports = {
     new webpack.HashedModuleIdsPlugin(),
     new CheckerPlugin(),
     new MiniCssExtractPlugin({
-      filename: "styles.css",
-      chunkFilename: "styles.css"
+      filename: 'styles.css',
+      chunkFilename: 'styles.css',
     }),
     new HtmlWebpackPlugin({
       template: path.join(sourceRootPath, '../', 'public', 'html', 'index.html'),

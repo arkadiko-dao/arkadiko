@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { getRPCClient } from '@common/utils';
+import { Tooltip } from '@blockstack/ui';
+import { InformationCircleIcon } from '@heroicons/react/solid';
 
-export const SmartContractBalance = ({ address }) => {
+export const SmartContractBalance = ({ address, description, name }) => {
   const [stxBalance, setStxBalance] = useState(0.0);
   const [dikoBalance, setDikoBalance] = useState(0.0);
   const [usdaBalance, setUsdaBalance] = useState(0.0);
@@ -51,29 +53,57 @@ export const SmartContractBalance = ({ address }) => {
       void getData();
     }
 
-    return () => { mounted = false; }
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return (
     <tr className="bg-white">
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        {address}
+        <div className="flex items-center">
+          {name}
+          <Tooltip shouldWrapChildren={true} label={`${description}`}>
+            <InformationCircleIcon className="w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+          </Tooltip>
+        </div>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        {stxBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} STX
+        {stxBalance.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 6,
+        })}{' '}
+        STX
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        {dikoBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} DIKO
+        {dikoBalance.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 6,
+        })}{' '}
+        DIKO
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        {usdaBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA
+        {usdaBalance.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 6,
+        })}{' '}
+        USDA
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        {wStxBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} wSTX
+        {wStxBalance.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 6,
+        })}{' '}
+        wSTX
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        {xStxBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} xSTX
+        {xStxBalance.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 6,
+        })}{' '}
+        xSTX
       </td>
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">{address}</td>
     </tr>
-  )
+  );
 };

@@ -1,53 +1,50 @@
-
 import React from 'react';
-import { CheckIcon, ArrowNarrowRightIcon } from '@heroicons/react/solid';
+import { CheckIcon, ArrowNarrowRightIcon, ExclamationIcon } from '@heroicons/react/solid';
 import { classNames } from '@common/class-names';
 import { NavLink as RouterLink } from 'react-router-dom';
 
-export const OnboardingNav = (props) => { 
+export const OnboardingNav = props => {
   const onboardingSections = [
-    { 
+    {
       id: '01',
       name: 'Swap',
       description: 'Exchange your favorite tokens easily.',
       href: '/onboarding/step-1-swap',
       status: 'current',
     },
-    { 
+    {
       id: '02',
       name: 'Vaults',
       description: 'Deposit STX and generate USDA.',
       href: '/onboarding/step-2-vaults',
       status: 'upcoming',
     },
-    { 
+    {
       id: '03',
       name: 'Staking',
       description: 'Stake your tokens to earn rewards.',
       href: '/onboarding/step-3-staking',
       status: 'upcoming',
     },
-    { 
+    {
       id: '04',
       name: 'Governance',
       description: 'Vote on proposals.',
       href: '/onboarding/step-4-governance',
       status: 'upcoming',
     },
-  ]
-  
+  ];
+
   onboardingSections.forEach((section, index) => {
-    const currentSection = props.currentSection
+    const currentSection = props.currentSection;
     if (index < currentSection) {
       section.status = 'complete';
-    }
-    else if (index === currentSection) {
+    } else if (index === currentSection) {
       section.status = 'current';
-    }
-    else {
+    } else {
       section.status = 'upcoming';
     }
-  })
+  });
 
   return (
     <>
@@ -85,7 +82,9 @@ export const OnboardingNav = (props) => {
                         </span>
                         <span className="mt-0.5 ml-4 min-w-0 flex flex-col">
                           <span className="text-base font-headings">{section.name}</span>
-                          <span className="text-sm font-medium text-gray-500">{section.description}</span>
+                          <span className="text-sm font-medium text-gray-500">
+                            {section.description}
+                          </span>
                         </span>
                       </span>
                     </RouterLink>
@@ -110,7 +109,9 @@ export const OnboardingNav = (props) => {
                           <span className="text-base text-indigo-600 font-headings">
                             {section.name}
                           </span>
-                          <span className="text-sm font-medium text-gray-500">{section.description}</span>
+                          <span className="text-sm font-medium text-gray-500">
+                            {section.description}
+                          </span>
                         </span>
                       </span>
                     </RouterLink>
@@ -132,8 +133,12 @@ export const OnboardingNav = (props) => {
                           </span>
                         </span>
                         <span className="mt-0.5 ml-4 min-w-0 flex flex-col">
-                          <span className="text-base text-gray-500 font-headings">{section.name}</span>
-                          <span className="text-sm font-medium text-gray-500">{section.description}</span>
+                          <span className="text-base text-gray-500 font-headings">
+                            {section.name}
+                          </span>
+                          <span className="text-sm font-medium text-gray-500">
+                            {section.description}
+                          </span>
                         </span>
                       </span>
                     </RouterLink>
@@ -142,14 +147,21 @@ export const OnboardingNav = (props) => {
                   {sectionIdx !== 0 ? (
                     <>
                       {/* Separator */}
-                      <div className="absolute inset-0 top-0 left-0 hidden w-3 lg:block" aria-hidden="true">
+                      <div
+                        className="absolute inset-0 top-0 left-0 hidden w-3 lg:block"
+                        aria-hidden="true"
+                      >
                         <svg
                           className="w-full h-full text-gray-300"
                           viewBox="0 0 12 82"
                           fill="none"
                           preserveAspectRatio="none"
                         >
-                          <path d="M0.5 0V31L10.5 41L0.5 51V82" stroke="currentcolor" vectorEffect="non-scaling-stroke" />
+                          <path
+                            d="M0.5 0V31L10.5 41L0.5 51V82"
+                            stroke="currentcolor"
+                            vectorEffect="non-scaling-stroke"
+                          />
                         </svg>
                       </div>
                     </>
@@ -160,9 +172,29 @@ export const OnboardingNav = (props) => {
           </ol>
         </nav>
       </div>
+      <div className="relative hidden sm:block bg-yellow-50">
+        <div className="px-3 py-3 mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center">
+            <div className="flex-shrink-0">
+              <ExclamationIcon className="w-5 h-5 text-yellow-400" aria-hidden="true" />
+            </div>
+            <div className="ml-3">
+              <p className="text-yellow-700">
+                Arkadiko is beta software.{' '}
+                <span className="font-semibold">
+                  Do not deposit anything that you are not willing to lose.
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <p className="text-right">
-        <RouterLink to="/" className="flex items-center justify-end p-4 text-base font-medium text-gray-700 sm:text-xs hover:text-gray-800 hover:underline">
+        <RouterLink
+          to="/"
+          className="flex items-center justify-end p-4 text-base font-medium text-gray-700 sm:text-xs hover:text-gray-800 hover:underline"
+        >
           Skip the onboarding
           <ArrowNarrowRightIcon className="w-4 h-4 ml-2 text-gray-800" aria-hidden="true" />
         </RouterLink>

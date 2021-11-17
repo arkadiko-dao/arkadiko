@@ -924,3 +924,55 @@ Clarinet.test({
     call.result.expectUintWithDecimals(0);
   }
 });
+
+Clarinet.test({
+  name: "stacker: add extra deposit to stacking amount",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 2);
+    vaultManager.createVault(deployer, "STX-A", 1000, 100, true, true);
+    vaultManager.createVault(wallet_1, "STX-A", 21000000, 1000, true, true);
+
+    // Check vault data
+    let call = vaultManager.getVaultById(1);
+    let vault:any = call.result.expectTuple();
+    vault['stacked-tokens'].expectUintWithDecimals(1000);
+    vault['collateral-token'].expectAscii("STX");  
+    
+    // Initiate stacking
+    let result = stacker.initiateStacking(10, 1);
+    result.expectOk().expectUintWithDecimals(21001000);
+
+    // Advance until end of stacking
+    chain.mineEmptyBlock(300);
+
+    // Deposit extra
+    result = vaultManager.deposit(deployer, 1, 500);
+    result.expectOk().expectBool(true);
+
+    // Turn off stacking
+    result = vaultManager.toggleStacking(deployer, 1);
+    result.expectOk().expectBool(true);
+
+    // Enable vault withdrawal
+    result = vaultManager.enableVaultWithdrawals(1);
+    result.expectOk().expectBool(true);
+
+    // Stack again
+    result = vaultManager.stackCollateral(deployer, 1);
+    result.expectOk().expectBool(true);
+    
+    // Check vault data
+    call = vaultManager.getVaultById(1);
+    vault = call.result.expectTuple();
+    vault['stacked-tokens'].expectUintWithDecimals(1500);
+    
+  }
+});

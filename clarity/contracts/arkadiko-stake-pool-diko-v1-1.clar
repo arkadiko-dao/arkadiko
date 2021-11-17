@@ -1,4 +1,4 @@
-;; @contract DIKO Stake Pool - Stake DIKO to get sDIKO
+;; @contract DIKO Stake Pool - Stake DIKO to get stDIKO
 ;; A fixed amount of rewards per block will be distributed across all stakers, according to their size in the pool
 ;; Rewards will be automatically staked before staking or unstaking. 
 ;; The cumm reward per stake represents the rewards over time, taking into account total staking volume over time
@@ -298,7 +298,6 @@
 )
 
 ;; Initialize the contract
-;; TODO - set block height for mainnet
 (begin
   (var-set last-reward-add-block block-height)
 )
