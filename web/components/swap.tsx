@@ -190,7 +190,7 @@ export const Swap: React.FC = () => {
       })
     );
     
-    checkSlippageTolerance();
+    checkSlippageTolerance((100 / impact));
   };
 
   const onInputChange = (event: { target: { name: any; value: any } }) => {
@@ -204,11 +204,11 @@ export const Swap: React.FC = () => {
     }
   };
 
-  const checkSlippageTolerance = () => {
-    if (Number(priceImpact) > slippageTolerance) {
+  const checkSlippageTolerance = (priceImpact: Number) => {
+    setIsSlippageHighEnough(true)
+    if (Number(priceImpact) > Number(slippageTolerance)) {
       setIsSlippageHighEnough(false)
     }
-    setIsSlippageHighEnough(true)
   }
 
   const switchTokens = () => {
