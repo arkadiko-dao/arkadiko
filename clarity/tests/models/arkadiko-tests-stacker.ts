@@ -161,16 +161,16 @@ class ClaimYield {
   }
 
   getClaimByVaultId(vaultId: number) {
-    return this.chain.callReadOnlyFn("arkadiko-claim-yield-v1-1", "get-claim-by-vault-id", [types.uint(vaultId)], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-claim-yield-v2-1", "get-claim-by-vault-id", [types.uint(vaultId)], this.deployer.address);
   }
 
   getStxBalance() {
-    return this.chain.callReadOnlyFn("arkadiko-claim-yield-v1-1", "get-stx-balance", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-claim-yield-v2-1", "get-stx-balance", [], this.deployer.address);
   }
 
   addClaim(user: Account, vaultId: number, stxAmount: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-claim-yield-v1-1", "add-claim", [
+      Tx.contractCall("arkadiko-claim-yield-v2-1", "add-claim", [
         types.tuple({
           'to': types.uint(vaultId),
           'ustx': types.uint(stxAmount * 1000000)
@@ -182,7 +182,7 @@ class ClaimYield {
 
   removeClaim(user: Account, vaultId: number, stxAmount: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-claim-yield-v1-1", "remove-claim", [
+      Tx.contractCall("arkadiko-claim-yield-v2-1", "remove-claim", [
         types.tuple({
           'to': types.uint(vaultId),
           'ustx': types.uint(stxAmount * 1000000)
@@ -201,7 +201,7 @@ class ClaimYield {
 
   addClaims(user: Account, claims: string[]) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-claim-yield-v1-1", "add-claims", [
+      Tx.contractCall("arkadiko-claim-yield-v2-1", "add-claims", [
         types.list(claims)
       ], user.address)
     ]);
@@ -210,7 +210,7 @@ class ClaimYield {
 
   removeClaims(user: Account, claims: string[]) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-claim-yield-v1-1", "remove-claims", [
+      Tx.contractCall("arkadiko-claim-yield-v2-1", "remove-claims", [
         types.list(claims)
       ], user.address)
     ]);
@@ -219,7 +219,7 @@ class ClaimYield {
 
   claim(user: Account, vaultId: number, stack: boolean) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-claim-yield-v1-1", "claim", [
+      Tx.contractCall("arkadiko-claim-yield-v2-1", "claim", [
         types.uint(vaultId),
         types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
@@ -231,7 +231,7 @@ class ClaimYield {
 
   claimToPayDebt(user: Account, vaultId: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-claim-yield-v1-1", "claim-to-pay-debt", [
+      Tx.contractCall("arkadiko-claim-yield-v2-1", "claim-to-pay-debt", [
         types.uint(vaultId),
         types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
@@ -242,7 +242,7 @@ class ClaimYield {
 
   returnStx(user: Account, stxAmount: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-claim-yield-v1-1", "return-stx", [
+      Tx.contractCall("arkadiko-claim-yield-v2-1", "return-stx", [
         types.uint(stxAmount),
       ], user.address)
     ]);
