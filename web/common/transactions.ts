@@ -26,12 +26,12 @@ export const getPendingTransactions = async (address: string, contractAddress: s
 
   // Find amount of pages
   const result = await api.getMempoolTransactionList({ limit: 1 });
-  let pages = Math.ceil(parseFloat(result.total) / 200.0);
+  const pages = Math.ceil(parseFloat(result.total) / 200.0);
 
   // Go over all pages
-  var swapTransactions = [];
+  let swapTransactions = [];
   for (var i = 0; i < pages; i++) {
-    let offset = i * 200;
+    const offset = i * 200;
     const txs = await api.getMempoolTransactionList({ offset: offset, limit: 200 });
 
     // Find relevant transactions
