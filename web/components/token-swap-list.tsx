@@ -35,12 +35,12 @@ export const tokenList = [
 ];
 
 type tokenListProps = {
-  id: number,
-  name: string,
-  nameInPair: string,
-  logo: string,
-  listed: boolean,
-}
+  id: number;
+  name: string;
+  nameInPair: string;
+  logo: string;
+  listed: boolean;
+};
 
 interface Props {
   selected: tokenListProps;

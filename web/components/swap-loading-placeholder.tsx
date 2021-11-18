@@ -3,7 +3,7 @@ import { Placeholder } from './ui/placeholder';
 import { SwitchVerticalIcon } from '@heroicons/react/solid';
 import { TokenSwapList } from '@components/token-swap-list';
 
-interface Props{
+interface Props {
   tokenX: object;
   tokenY: object;
 }

@@ -189,8 +189,8 @@ export const Swap: React.FC = () => {
         maximumFractionDigits: 6,
       })
     );
-    
-    checkSlippageTolerance((100 / impact));
+
+    checkSlippageTolerance(100 / impact);
   };
 
   const onInputChange = (event: { target: { name: any; value: any } }) => {
@@ -205,11 +205,11 @@ export const Swap: React.FC = () => {
   };
 
   const checkSlippageTolerance = (priceImpact: Number) => {
-    setIsSlippageHighEnough(true)
+    setIsSlippageHighEnough(true);
     if (Number(priceImpact) > Number(slippageTolerance)) {
-      setIsSlippageHighEnough(false)
+      setIsSlippageHighEnough(false);
     }
-  }
+  };
 
   const switchTokens = () => {
     const tmpTokenX = tokenX;
@@ -471,7 +471,13 @@ export const Swap: React.FC = () => {
                     {!isSlippageHighEnough ? (
                       <div className="max-w-lg mt-4 -mb-4">
                         <Alert type={Alert.type.WARNING}>
-                          <p>If you proceed with this swap, your transaction will <span className="font-semibold">most definitely fail</span> because the slippage tolerance is not set high enough. Please click on the <CogIcon className="inline w-5 h-5" aria-hidden="true" /> to adjust the swap settings.</p>
+                          <p>
+                            If you proceed with this swap, your transaction will{' '}
+                            <span className="font-semibold">most definitely fail</span> because the
+                            slippage tolerance is not set high enough. Please click on the{' '}
+                            <CogIcon className="inline w-5 h-5" aria-hidden="true" /> to adjust the
+                            swap settings.
+                          </p>
                         </Alert>
                       </div>
                     ) : null}
