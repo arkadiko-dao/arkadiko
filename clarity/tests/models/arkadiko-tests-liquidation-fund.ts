@@ -21,26 +21,14 @@ class LiquidationFund {
     this.deployer = deployer;
   }
 
-  getTotalShares() {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-fund-v1-1", "get-total-shares", [], this.deployer.address);
-  }
-
-  getShares(user: Account) {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-fund-v1-1", "get-shares-stx-for-wallet", [types.principal(user.address)], user.address);
-  }
-
-  getSharesToStx(sharesAmount: number) {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-fund-v1-1", "shares-for-stx", [types.uint(sharesAmount * 1000000)], this.deployer.address);
-  }
-
   getStxBalance() {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-fund-v1-1", "get-liquidation-fund-stx-balance", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-fund-v1-1", "get-contract-balance", [], this.deployer.address);
   }
-
-  stxNeededForUsdaOutput(usdaOutput: number) {
+  
+  setFundController(wallet: Account) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "swap-stx-needed-for-usda-output", [
-          types.uint(usdaOutput * 1000000)
+      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "set-fund-controller", [
+        types.principal(wallet.address),
       ], this.deployer.address)
     ]);
     return block.receipts[0].result;
@@ -55,11 +43,88 @@ class LiquidationFund {
     return block.receipts[0].result;
   }
 
-  withdrawStx(user: Account, amount: number) {
+  withdraw(wallet: Account, stx: number, diko: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "withdraw-stx", [
-          types.uint(amount * 1000000)
-      ], user.address)
+      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "withdraw", [
+        types.principal(wallet.address),
+        types.uint(stx * 1000000),
+        types.uint(diko * 1000000)
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  doStakeToStx() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "do-stake-to-stx", [], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  doStxToStake(amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "do-stx-to-stake", [
+        types.uint(amount * 1000000)
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  swapStxToUsda(amount: number, minOutput: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "swap-stx-to-usda", [
+        types.uint(amount * 1000000),
+        types.uint(minOutput * 1000000)
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  swapUsdaToStx(amount: number, minOutput: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "swap-usda-to-stx", [
+        types.uint(amount * 1000000),
+        types.uint(minOutput * 1000000)
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  addLp(stxAmount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "add-lp", [
+        types.uint(stxAmount * 1000000)
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  removeLp(percentage: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "remove-lp", [
+        types.uint(percentage)
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  stakeLp() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "stake-lp", [], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  unstakeLp() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "unstake-lp", [], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  claimRewards() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "claim-rewards", [], this.deployer.address)
     ]);
     return block.receipts[0].result;
   }
@@ -97,7 +162,7 @@ class LiquidationFund {
     ]);
     return block.receipts[0].result;
   }
-
+ 
   redeemStx(user: Account, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-liquidation-fund-v1-1", "redeem-stx", [
@@ -106,49 +171,5 @@ class LiquidationFund {
     ]);
     return block.receipts[0].result;
   }
-
-  setMaxStxToStake(user: Account, amount: number) {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "set-max-stx-to-stake", [
-        types.uint(amount * 1000000)
-      ], user.address)
-    ]);
-    return block.receipts[0].result;
-  }
-
-  getContractPendingStakingRewards() {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "get-contract-pending-staking-rewards", [
-      ], this.deployer.address)
-    ]);
-    return block.receipts[0].result;
-  }
-
-  claimContractStakingRewards() {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "claim-contract-staking-rewards", [
-      ], this.deployer.address)
-    ]);
-    return block.receipts[0].result;
-  }
-
-  getPendingStakingRewards(user: Account) {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "get-pending-rewards", [
-        types.principal(user.address),
-      ], user.address)
-    ]);
-    return block.receipts[0].result;
-  }
-
-  claimStakingRewards(user: Account) {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-fund-v1-1", "claim-stake-rewards", [
-      ], user.address)
-    ]);
-    return block.receipts[0].result;
-  }
-  
-
 }
 export { LiquidationFund };

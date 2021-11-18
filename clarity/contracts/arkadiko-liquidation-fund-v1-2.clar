@@ -1,22 +1,23 @@
 ;; @contract fund to perform liquidations
 ;; @version 1.1
 
-(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
-(use-trait vault-manager-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
-(use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
-(use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
-(use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
-
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED u25001)
+(define-constant ERR-INSUFFICIENT-SHARES u25002)
 
 ;; Variables
 (define-data-var fund-controller principal tx-sender)
+(define-data-var total-shares uint u0)
+(define-data-var max-stx-to-stake uint u0)
 
+(define-data-var cumm-reward-per-share uint u0)
 
 ;; ---------------------------------------------------------
 ;; Admin
 ;; ---------------------------------------------------------
+
+;; TODO: emergency shutdown
+;; TODO: send funds back to depositer 
 
 ;; Transfer controller
 (define-public (set-fund-controller (address principal))
@@ -26,6 +27,36 @@
   )
 )
 
+;; Set max amount of STX that can be used to stake
+(define-public (set-max-stx-to-stake (max-stx uint))
+  (begin
+    (asserts! (is-eq tx-sender (var-get fund-controller)) (err ERR-NOT-AUTHORIZED))
+    (var-set max-stx-to-stake max-stx)
+    (ok true)
+  )
+)
+
+;; ---------------------------------------------------------
+;; Wallets and shares
+;; ---------------------------------------------------------
+
+(define-map wallet-shares 
+   { wallet: principal } 
+   {
+      shares: uint
+   }
+)
+
+(define-read-only (get-shares-for-wallet (wallet principal))
+  (default-to 
+    u0
+    (get shares (map-get? wallet-shares { wallet: wallet }) )
+  )
+)
+
+(define-read-only (get-total-shares)
+  (var-get total-shares)
+)
 
 ;; ---------------------------------------------------------
 ;; Deposit and withdraw
@@ -41,22 +72,112 @@
 )
 
 (define-public (withdraw (wallet principal) (stx-amount uint) (diko-amount uint))
-  (begin
+  (let (
+    (sender tx-sender)
+  )
     (asserts! (is-eq tx-sender (var-get fund-controller)) (err ERR-NOT-AUTHORIZED))
 
     ;; Transfer STX
-    (if (is-eq stx-amount u0)
-      true
-      (try! (as-contract (stx-transfer? stx-amount tx-sender wallet)))
-    )
+    (try! (as-contract (stx-transfer? stx-amount tx-sender sender)))
 
     ;; Transfer DIKO
-    (if (is-eq diko-amount u0)
-      true
-      (try! (as-contract (contract-call? .arkadiko-token transfer diko-amount tx-sender wallet none)))
-    )
+    (try! (as-contract (contract-call? .arkadiko-token transfer diko-amount tx-sender sender none)))
 
     (ok stx-amount)
+  )
+)
+
+;; Helper for deposit-stx
+(define-public (new-shares-for-stx (amount uint))
+  (let (
+    ;; Current contract balance
+    (contract-stx-balance (stx-get-balance (as-contract tx-sender)))
+  )
+    (if (is-eq (var-get total-shares) u0)
+      (ok u10000000)
+      (let (
+        (shares-per-stx (/ (* (var-get total-shares) u100000000) contract-stx-balance))
+      )
+        (ok (/ (* amount shares-per-stx) u100000000))
+      )
+    )
+  )
+)
+
+(define-public (deposit-stx (amount uint))
+  (let (
+    ;; Unstake and convert all to STX
+    ;; Important to do first, as next calculations depend on available STX in this contract
+    (all-to-stx (unwrap-panic (as-contract (do-stake-to-stx))))
+
+    ;; Shares to receive
+    (new-shares (unwrap-panic (new-shares-for-stx amount)))
+
+    ;; Current shares
+    (current-wallet-shares (get-shares-for-wallet tx-sender))
+  )
+    ;; Update total shares
+    (var-set total-shares (+ (var-get total-shares) new-shares))
+
+    ;; ;; Update wallet amount map
+    (map-set wallet-shares { wallet: tx-sender } { shares: (+ current-wallet-shares new-shares) })
+
+    ;; Transfer funds to contract
+    (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
+
+    ;; Add liquidity and stake LP
+    (try! (as-contract (do-stx-to-stake)))
+
+    (ok new-shares)
+  )
+)
+
+;; Helper for withdraw-stx
+(define-public (stx-for-shares (shares-amount uint))
+  (let (
+    ;; Current contract balance
+    (contract-stx-balance (stx-get-balance (as-contract tx-sender)))
+
+    ;; User shares percentage
+    (shares-percentage (/ (* shares-amount u10000000000000000) (var-get total-shares)))
+
+    ;; Amount of STX the user will receive
+    (stx-to-receive (/ (* shares-percentage contract-stx-balance) u10000000000000000))
+  )
+    (ok stx-to-receive)
+  )
+)
+
+(define-public (withdraw-stx (shares-amount uint))
+  (let (
+    (sender tx-sender)
+
+    ;; Current shares
+    (current-wallet-shares (get-shares-for-wallet tx-sender))
+
+    ;; Unstake and convert all to STX
+    ;; Important to do first, as next calculations depend on available STX in this contract
+    (all-to-stx (unwrap-panic (as-contract (do-stake-to-stx))))
+
+    ;; STX to receive
+    (stx-to-receive (unwrap-panic (stx-for-shares shares-amount)))
+
+  )
+    (asserts! (>= current-wallet-shares shares-amount) (err ERR-INSUFFICIENT-SHARES))
+
+    ;; Update total shares
+    (var-set total-shares (- (var-get total-shares) shares-amount))
+
+    ;; Update wallet amount map
+    (map-set wallet-shares { wallet: tx-sender } { shares: (- current-wallet-shares shares-amount) })
+
+    ;; Transfer STX
+    (try! (as-contract (stx-transfer? stx-to-receive tx-sender sender)))
+
+    ;; Add liquidity and stake LP
+    (try! (as-contract (do-stx-to-stake)))
+
+    (ok stx-to-receive)
   )
 )
 
@@ -121,6 +242,7 @@
     (stx-to-add-exact (/ (* contract-usda-balance balance-x) balance-y))
     
     ;; 5% slippage
+    ;; TODO: able to set by fund controller
     (slippage u50000)
     (stx-to-add (- stx-to-add-exact (/ (* stx-to-add-exact slippage) u1000000)))
   )
