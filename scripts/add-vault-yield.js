@@ -8,7 +8,7 @@ const network = utils.resolveNetwork();
 async function addPoxYield() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-claim-yield-v1-1",
+    contractName: "arkadiko-claim-yield-v2-1",
     functionName: "add-claim",
     functionArgs: [
       tx.tupleCV({

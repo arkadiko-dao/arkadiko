@@ -10,7 +10,7 @@ async function transact() {
   const list = tx.listCV([]);
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: 'arkadiko-claim-yield-v1-1',
+    contractName: 'arkadiko-claim-yield-v2-1',
     functionName: 'return-stx',
     functionArgs: [
       tx.uintCV(26985796798)
