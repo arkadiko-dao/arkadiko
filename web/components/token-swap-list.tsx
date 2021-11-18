@@ -34,7 +34,21 @@ export const tokenList = [
   },
 ];
 
-export const TokenSwapList: React.FC = ({ selected, setSelected, disabled }) => {
+type tokenListProps = {
+  id: number,
+  name: string,
+  nameInPair: string,
+  logo: string,
+  listed: boolean,
+}
+
+interface Props {
+  selected: tokenListProps;
+  setSelected(): void;
+  disabled?: boolean;
+}
+
+export const TokenSwapList: React.FC<Props> = ({ selected, setSelected, disabled }) => {
   return (
     <Listbox value={selected} onChange={setSelected} disabled={disabled}>
       {({ open }) => (

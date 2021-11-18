@@ -3,7 +3,12 @@ import { Placeholder } from './ui/placeholder';
 import { SwitchVerticalIcon } from '@heroicons/react/solid';
 import { TokenSwapList } from '@components/token-swap-list';
 
-export const SwapLoadingPlaceholder: React.FC = ({ tokenX, tokenY }) => {
+interface Props{
+  tokenX: object;
+  tokenY: object;
+}
+
+export const SwapLoadingPlaceholder: React.FC<Props> = ({ tokenX, tokenY }) => {
   return (
     <>
       <div>

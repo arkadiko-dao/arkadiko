@@ -28,7 +28,7 @@ export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
   const [tokenX, setTokenX] = useState(tokenList[2]);
   const [tokenY, setTokenY] = useState(tokenList[1]);
-  const [tokenXAmount, setTokenXAmount] = useState();
+  const [tokenXAmount, setTokenXAmount] = useState<number>();
   const [tokenYAmount, setTokenYAmount] = useState(0.0);
   const [balanceSelectedTokenX, setBalanceSelectedTokenX] = useState(0.0);
   const [balanceSelectedTokenY, setBalanceSelectedTokenY] = useState(0.0);
@@ -119,7 +119,7 @@ export const Swap: React.FC = () => {
         setCurrentPair(json3['value']['value']['value']);
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
-        const basePrice = (balanceX / balanceY).toFixed(2);
+        const basePrice = Number((balanceX / balanceY).toFixed(2));
         // const price = parseFloat(basePrice) + (parseFloat(basePrice) * 0.01);
         setCurrentPrice(basePrice);
         setInverseDirection(false);
@@ -133,7 +133,7 @@ export const Swap: React.FC = () => {
           setInverseDirection(true);
           const balanceX = json4['value']['value']['value']['balance-x'].value;
           const balanceY = json4['value']['value']['value']['balance-y'].value;
-          const basePrice = (balanceY / balanceX).toFixed(2);
+          const basePrice = Number((balanceY / balanceX).toFixed(2));
           setCurrentPrice(basePrice);
           setFoundPair(true);
           setLoadingData(false);
@@ -226,9 +226,9 @@ export const Swap: React.FC = () => {
 
   const setMaximum = () => {
     if (tokenX['name'].toLowerCase() === 'stx') {
-      setTokenXAmount(parseInt(balanceSelectedTokenX, 10) - 1);
+      setTokenXAmount(Math.floor(balanceSelectedTokenX) - 1);
     } else {
-      setTokenXAmount(parseInt(balanceSelectedTokenX, 10));
+      setTokenXAmount(Math.floor(balanceSelectedTokenX));
     }
   };
 
@@ -319,7 +319,7 @@ export const Swap: React.FC = () => {
                       id="tabs"
                       name="tabs"
                       className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                      defaultValue={tabs.find(tab => tab.current).name}
+                      defaultValue={tabs.find(tab => tab.current)?.name}
                     >
                       {tabs.map(tab => (
                         <option key={tab.name}>{tab.name}</option>
@@ -394,7 +394,7 @@ export const Swap: React.FC = () => {
                               })}{' '}
                               {tokenX.name}
                             </p>
-                            {parseInt(balanceSelectedTokenX, 10) > 0 ? (
+                            {Math.floor(balanceSelectedTokenX) > 0 ? (
                               <button
                                 type="button"
                                 onClick={() => setMaximum()}
