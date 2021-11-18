@@ -9,7 +9,7 @@
 ;;
 
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
-(use-trait ft-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
+(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
 
 (define-constant ERR-NOT-AUTHORIZED u40401)
