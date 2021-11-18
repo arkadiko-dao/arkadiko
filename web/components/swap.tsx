@@ -160,25 +160,30 @@ export const Swap: React.FC = () => {
       return;
     }
 
-    const balanceX = currentPair['balance-x'].value;
-    const balanceY = currentPair['balance-y'].value;
-    let amount = 0;
-    let tokenYAmount = 0;
+    const balanceX = currentPair['balance-x'].value / 1000000;
+    const balanceY = currentPair['balance-y'].value / 1000000;
 
+    const inputWithoutFees = Number(tokenXAmount) * 0.997;
+
+    let tokenYAmount = 0;
+    let priceImpact = 0;
     const slippage = (100 - slippageTolerance) / 100;
-    // amount = ((slippage * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
     if (inverseDirection) {
-      amount = slippage * (balanceX / balanceY) * Number(tokenXAmount);
-      tokenYAmount = ((100 - defaultFee) / 100) * (balanceX / balanceY) * Number(tokenXAmount);
+      const newBalanceY = balanceY + inputWithoutFees;
+      const newBalanceX = (balanceY * balanceX) / newBalanceY;
+      tokenYAmount = balanceX - newBalanceX;
+      priceImpact = (newBalanceY/newBalanceX) / (balanceY/balanceX) - 1.0
     } else {
-      amount = slippage * (balanceY / balanceX) * Number(tokenXAmount);
-      tokenYAmount = ((100 - defaultFee) / 100) * (balanceY / balanceX) * Number(tokenXAmount);
+      const newBalanceX = balanceX + inputWithoutFees;
+      const newBalanceY = (balanceX * balanceY) / newBalanceX;
+      tokenYAmount = balanceY - newBalanceY;
+      priceImpact = (newBalanceX/newBalanceY) / (balanceX/balanceY) - 1.0
     }
-    setMinimumReceived(amount * 0.97);
+
+    setMinimumReceived(tokenYAmount * slippage);
     setTokenYAmount(tokenYAmount);
-    const impact = balanceX / 1000000 / tokenXAmount;
     setPriceImpact(
-      (100 / impact).toLocaleString(undefined, {
+      (priceImpact * 100).toLocaleString(undefined, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 6,
       })
@@ -190,7 +195,7 @@ export const Swap: React.FC = () => {
       })
     );
 
-    checkSlippageTolerance(100 / impact);
+    // checkSlippageTolerance(100 / priceImpact);
   };
 
   const onInputChange = (event: { target: { name: any; value: any } }) => {
