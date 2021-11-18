@@ -3,18 +3,14 @@ import { Placeholder } from './ui/placeholder';
 import { SwitchVerticalIcon } from '@heroicons/react/solid';
 import { TokenSwapList } from '@components/token-swap-list';
 
-interface Props {
-  tokenX: object;
-  tokenY: object;
-}
 
-export const SwapLoadingPlaceholder: React.FC<Props> = ({ tokenX, tokenY }) => {
+export const SwapLoadingPlaceholder: React.FC = ({ tokenX, tokenY }) => {
   return (
     <>
       <div>
         <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 h-[104px]">
           <div className="flex items-center p-4 pb-2">
-            <TokenSwapList selected={tokenX} disabled={true} />
+            <TokenSwapList selected={tokenX} setSelected={() => {}} disabled={true} />
           </div>
 
           <div className="flex items-center justify-end p-4 pt-0">
@@ -28,7 +24,7 @@ export const SwapLoadingPlaceholder: React.FC<Props> = ({ tokenX, tokenY }) => {
 
         <div className="mt-1 border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 h-[104px]">
           <div className="flex items-center p-4 pb-2">
-            <TokenSwapList selected={tokenY} disabled={true} />
+            <TokenSwapList selected={tokenY} setSelected={() => {}} disabled={true} />
           </div>
 
           <div className="flex items-center justify-end p-4 pt-0">

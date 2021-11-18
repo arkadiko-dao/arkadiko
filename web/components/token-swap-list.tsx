@@ -34,17 +34,16 @@ export const tokenList = [
   },
 ];
 
-type tokenListProps = {
+type Token = {
   id: number;
   name: string;
   nameInPair: string;
   logo: string;
   listed: boolean;
 };
-
 interface Props {
-  selected: tokenListProps;
-  setSelected(): void;
+  selected: Token;
+  setSelected(selected: Token): void;
   disabled?: boolean;
 }
 
