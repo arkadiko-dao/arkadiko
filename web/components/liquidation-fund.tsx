@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState, useRef } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
@@ -18,9 +18,6 @@ export const LiquidationFund = () => {
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
-
-  const inputRef = useRef<HTMLInputElement>(null);
-  const actionButtonRef = useRef(null);
   const [depositAmount, setDepositAmount] = useState(0);
   const [insufficientFunds, setInsufficientFunds] = useState(false);
 
@@ -75,60 +72,47 @@ export const LiquidationFund = () => {
         <Container>
           <main className="flex-1 py-12">
             <section>
-              <header>
-                <div className="bg-indigo-700 rounded-md">
-                  <div className=" px-4 py-5 mx-auto text-center sm:py-5 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-extrabold text-white font-headings sm:text-4xl">
-                      <span className="block">Liquidation Fund</span>
+              <div className="flex flex-col items-center justify-center flex-1 py-12">
+                <div className="relative w-full max-w-lg">
+                  <div className="absolute top-0 bg-indigo-400 rounded-full -left-8 w-80 h-80 mix-blend-multiply filter blur-xl opacity-70"></div>
+                  <div className="absolute bg-indigo-200 rounded-full -bottom-16 opacity-70 -right-16 w-80 h-80 mix-blend-multiply filter blur-xl"></div>
+
+                  <div className="relative p-4 bg-white rounded-lg">
+                    <h2 className="text-2xl font-headings">
+                      Liquidation Fund
                     </h2>
-                    <p className="mt-4 text-lg leading-6 text-indigo-200">
-                      Deposited STX will be used to provide STX/USDA liquidity and stake the LP tokens. <br/>
-                      Funds can be used by the controller to perform liquidations and participate in auctions.
+                    <p className="mt-4 text-gray-800">
+                      Deposited STX will be used to provide STX/USDA liquidity and stake the LP tokens. Funds can be used by the controller to perform liquidations and participate in auctions.
                     </p>
+                    
+                    <div className="mt-6">
+                      <InputAmount
+                        balance={state.balance['stx'] / 1000000}
+                        token="STX"
+                        inputName={`deposit`}
+                        inputId={`unstakeAmount`}
+                        inputValue={depositAmount}
+                        inputLabel={`Deposit to liquidation fund`}
+                        onInputChange={onInputChange}
+                        onClickMax={onMaxPressed}
+                        autoFocus
+                      />
+
+                      <button
+                        type="button"
+                        disabled={insufficientFunds || depositAmount === 0}
+                        onClick={() => deposit()}
+                        className="inline-flex items-center justify-center w-full px-4 py-3 mt-4 text-xl font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm cursor-pointer hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-300 disabled:hover:bg-indigo-300 disabled:pointer-events-none"
+                      >
+                        {insufficientFunds
+                          ? 'Insufficient funds'
+                          : depositAmount === 0
+                          ? 'Please enter an amount'
+                          : 'Deposit'}
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </header>
-
-              <div className="mt-8">
-                <header className="pb-5 border-b border-gray-200">
-                  <h2 className="text-lg font-medium leading-6 text-gray-900 font-headings">
-                    Deposit
-                  </h2>
-                </header>
-
-                <InputAmount
-                  balance={state.balance['stx'] / 1000000}
-                  token="STX"
-                  inputName={`deposit`}
-                  inputId={`unstakeAmount`}
-                  inputValue={depositAmount}
-                  inputLabel={`Deposit to liquidation fund`}
-                  onInputChange={onInputChange}
-                  onClickMax={onMaxPressed}
-                  ref={inputRef}
-                />
-
-                {insufficientFunds ? (
-                  <button
-                    type="button"
-                    className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-indigo-500 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
-                    onClick={() => deposit()}
-                    disabled
-                    ref={actionButtonRef}
-                  >
-                    Insufficient funds
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
-                    onClick={() => deposit()}
-                    ref={actionButtonRef}
-                  >
-                    Deposit
-                  </button>
-                )}
-
               </div>
             </section>
           </main>
