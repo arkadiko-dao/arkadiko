@@ -7,7 +7,7 @@ const BN = require('bn.js');
 
 const txOptions = {
   contractAddress: CONTRACT_ADDRESS,
-  contractName: 'arkadiko-swap-v1-1',
+  contractName: 'arkadiko-swap-v2-1',
   functionName: 'collect-fees',
   functionArgs: [
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wrapped-stx-token'),
@@ -27,7 +27,7 @@ async function transact() {
 async function getFees() {
   const lastVaultTx = await tx.callReadOnlyFunction({
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-swap-v1-1",
+    contractName: "arkadiko-swap-v2-1",
     functionName: "get-fees",
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wrapped-stx-token'),

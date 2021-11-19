@@ -383,7 +383,7 @@ Clarinet.test({
 
     // Wrong reserve
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-claim-yield-v1-1", "claim", [
+      Tx.contractCall("arkadiko-claim-yield-v2-1", "claim", [
         types.uint(1),
         types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
@@ -394,7 +394,7 @@ Clarinet.test({
 
     // Wrong reserve
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-claim-yield-v1-1", "claim-to-pay-debt", [
+      Tx.contractCall("arkadiko-claim-yield-v2-1", "claim-to-pay-debt", [
         types.uint(1),
         types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
@@ -404,7 +404,7 @@ Clarinet.test({
 
     // Wrong collateral types
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-claim-yield-v1-1", "claim", [
+      Tx.contractCall("arkadiko-claim-yield-v2-1", "claim", [
         types.uint(1),
         types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1')),
@@ -415,7 +415,7 @@ Clarinet.test({
 
     // Wrong collateral types
     // block = chain.mineBlock([
-    //   Tx.contractCall("arkadiko-claim-yield-v1-1", "claim-to-pay-debt", [
+    //   Tx.contractCall("arkadiko-claim-yield-v2-1", "claim-to-pay-debt", [
     //     types.uint(1),
     //     types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
     //     types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1')),

@@ -10,7 +10,7 @@ async function getTokensToStack() {
     contractAddress: CONTRACT_ADDRESS,
     contractName: "arkadiko-dao",
     functionName: "get-contract-can-mint-by-qualified-name",
-    functionArgs: [tx.contractPrincipalCV('SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR', 'arkadiko-swap-v1-1')],
+    functionArgs: [tx.contractPrincipalCV('SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR', 'arkadiko-swap-v2-1')],
     senderAddress: CONTRACT_ADDRESS,
     network
   });
