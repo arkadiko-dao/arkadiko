@@ -64,7 +64,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-swap-token-wstx-diko' },
   { name: 'arkadiko-stake-pool-wstx-diko-v1-1' },
   { name: 'arkadiko-claim-yield-v2-1' },
-  { name: 'arkadiko-stake-lp-rewards' }
+  { name: 'arkadiko-stake-lp-rewards' },
 ];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');
