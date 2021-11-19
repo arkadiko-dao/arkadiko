@@ -19,6 +19,7 @@ import { ManageVault } from './manage-vault';
 import { ViewProposal } from './view-proposal';
 import { Stake } from './stake';
 import { Balances } from './balances';
+import { LiquidationFund } from './liquidation-fund';
 
 export const routerConfig = [
   {
@@ -50,6 +51,9 @@ export function Routes() {
       <Route exact path="/balances" component={Balances} />
       <Route path="/vaults/:id" component={ManageVault} />
       <Route path="/governance/:id" component={ViewProposal} />
+
+      <Route exact path="/liquidation-fund" component={LiquidationFund} />
+
       <Redirect to="/" />
     </Switch>
   );
