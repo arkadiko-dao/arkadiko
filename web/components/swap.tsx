@@ -36,7 +36,6 @@ export const Swap: React.FC = () => {
   const [currentPair, setCurrentPair] = useState();
   const [inverseDirection, setInverseDirection] = useState(false);
   const [slippageTolerance, setSlippageTolerance] = useState(4.0);
-  const [isSlippageHighEnough, setIsSlippageHighEnough] = useState(true);
   const [minimumReceived, setMinimumReceived] = useState(0);
   const [priceImpact, setPriceImpact] = useState('0');
   const [lpFee, setLpFee] = useState('0');
@@ -194,8 +193,6 @@ export const Swap: React.FC = () => {
         maximumFractionDigits: 6,
       })
     );
-
-    // checkSlippageTolerance(100 / priceImpact);
   };
 
   const onInputChange = (event: { target: { name: any; value: any } }) => {
@@ -206,13 +203,6 @@ export const Swap: React.FC = () => {
       setTokenXAmount(value);
     } else {
       setTokenYAmount(value);
-    }
-  };
-
-  const checkSlippageTolerance = (priceImpact: Number) => {
-    setIsSlippageHighEnough(true);
-    if (Number(priceImpact) > Number(slippageTolerance)) {
-      setIsSlippageHighEnough(false);
     }
   };
 
@@ -472,20 +462,6 @@ export const Swap: React.FC = () => {
                         1 {tokenY.name} = ≈{currentPrice} {tokenX.name}
                       </p>
                     )}
-
-                    {!isSlippageHighEnough ? (
-                      <div className="max-w-lg mt-4 -mb-4">
-                        <Alert type={Alert.type.WARNING}>
-                          <p>
-                            If you proceed with this swap, your transaction will{' '}
-                            <span className="font-semibold">most definitely fail</span> because the
-                            slippage tolerance is not set high enough. Please click on the{' '}
-                            <CogIcon className="inline w-5 h-5" aria-hidden="true" /> to adjust the
-                            swap settings.
-                          </p>
-                        </Alert>
-                      </div>
-                    ) : null}
 
                     {state.userData ? (
                       <button
