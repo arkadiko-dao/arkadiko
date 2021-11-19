@@ -41,6 +41,7 @@ export const Swap: React.FC = () => {
   const [foundPair, setFoundPair] = useState(true);
   const defaultFee = 0.4;
   const [loadingData, setLoadingData] = useState(true);
+  const [insufficientBalance, setInsufficientBalance] = useState(false);
 
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -187,11 +188,17 @@ export const Swap: React.FC = () => {
         maximumFractionDigits: 6,
       })
     );
+
+    if (Number(tokenXAmount) * 1000000 > state.balance[tokenX['name'].toLowerCase()]) {
+      setInsufficientBalance(true);
+    }
   };
 
   const onInputChange = (event: { target: { name: any; value: any } }) => {
     const name = event.target.name;
     const value = event.target.value;
+
+    setInsufficientBalance(false);
 
     if (name === 'tokenXAmount') {
       setTokenXAmount(value);
@@ -214,6 +221,8 @@ export const Swap: React.FC = () => {
   };
 
   const setMaximum = () => {
+    setInsufficientBalance(false);
+
     if (tokenX['name'].toLowerCase() === 'stx') {
       setTokenXAmount(parseInt(balanceSelectedTokenX, 10) - 1);
     } else {
@@ -460,10 +469,10 @@ export const Swap: React.FC = () => {
                     {state.userData ? (
                       <button
                         type="button"
-                        disabled={loadingData || tokenYAmount === 0 || !foundPair}
+                        disabled={loadingData || insufficientBalance || tokenYAmount === 0 || !foundPair}
                         onClick={() => swapTokens()}
                         className={classNames(
-                          tokenYAmount === 0 || !foundPair
+                          tokenYAmount === 0 || insufficientBalance || !foundPair
                             ? 'bg-indigo-300 hover:bg-indigo-300 pointer-events-none'
                             : 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer',
                           'w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
@@ -473,7 +482,7 @@ export const Swap: React.FC = () => {
                           ? 'Loading...'
                           : !foundPair
                           ? 'No liquidity for this pair. Try another one.'
-                          : balanceSelectedTokenX === 0
+                          : balanceSelectedTokenX === 0 || insufficientBalance
                           ? 'Insufficient balance'
                           : tokenYAmount === 0
                           ? 'Please enter an amount'
