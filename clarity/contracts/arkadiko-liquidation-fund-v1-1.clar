@@ -115,7 +115,7 @@
 (define-public (add-usda-to-lp)
   (let (
     (contract-usda-balance (unwrap-panic (contract-call? .usda-token get-balance (as-contract tx-sender))))
-    (swap-balances (unwrap-panic (contract-call? .arkadiko-swap-v1-1 get-balances .wrapped-stx-token .usda-token)))
+    (swap-balances (unwrap-panic (contract-call? .arkadiko-swap-v2-1 get-balances .wrapped-stx-token .usda-token)))
     (balance-x (unwrap-panic (element-at swap-balances u0)))
     (balance-y (unwrap-panic (element-at swap-balances u1)))
     (stx-to-add-exact (/ (* contract-usda-balance balance-x) balance-y))
@@ -146,7 +146,7 @@
 
     (if (is-eq stx-amount u0)
       (ok (list u0 u0))
-      (as-contract (contract-call? .arkadiko-swap-v1-1 swap-x-for-y .wrapped-stx-token .usda-token stx-amount min-usda-out))
+      (as-contract (contract-call? .arkadiko-swap-v2-1 swap-x-for-y .wrapped-stx-token .usda-token stx-amount min-usda-out))
     )
   )
 )
@@ -164,7 +164,7 @@
 
     (if (is-eq usda-amount u0)
       (ok (list u0 u0))
-      (as-contract (contract-call? .arkadiko-swap-v1-1 swap-y-for-x .wrapped-stx-token .usda-token usda-amount min-stx-out))
+      (as-contract (contract-call? .arkadiko-swap-v2-1 swap-y-for-x .wrapped-stx-token .usda-token usda-amount min-stx-out))
     )
   )
 )
@@ -182,7 +182,7 @@
 
     (if (is-eq stx-amount u0)
       (ok true)
-      (as-contract (contract-call? .arkadiko-swap-v1-1 add-to-position
+      (as-contract (contract-call? .arkadiko-swap-v2-1 add-to-position
         .wrapped-stx-token
         .usda-token
         .arkadiko-swap-token-wstx-usda
@@ -208,7 +208,7 @@
 
     (if (is-eq contract-lp-balance u0)
       (ok (list u0 u0))
-      (as-contract (contract-call? .arkadiko-swap-v1-1 reduce-position
+      (as-contract (contract-call? .arkadiko-swap-v2-1 reduce-position
         .wrapped-stx-token
         .usda-token
         .arkadiko-swap-token-wstx-usda
