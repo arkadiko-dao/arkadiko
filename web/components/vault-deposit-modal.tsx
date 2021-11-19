@@ -1,0 +1,193 @@
+import React, { useContext, useState, useRef, useEffect } from 'react';
+import { Modal } from '@components/ui/modal';
+import { tokenList } from '@components/token-swap-list';
+import { AppContext } from '@common/context';
+import { InputAmount } from './input-amount';
+import { Alert } from './ui/alert';
+import {
+  AnchorMode,
+  contractPrincipalCV,
+  cvToJSON,
+  uintCV,
+  callReadOnlyFunction,
+  FungibleConditionCode,
+  makeStandardSTXPostCondition,
+} from '@stacks/transactions';
+import { useSTXAddress } from '@common/use-stx-address';
+import { stacksNetwork as network } from '@common/utils';
+import { useConnect } from '@stacks/connect-react';
+import BN from 'bn.js';
+import { VaultProps } from './vault';
+import { resolveReserveName, tokenTraits } from '@common/vault-utils';
+
+interface Props {
+  showDepositModal: boolean;
+  setShowDepositModal: (arg: boolean) => void;
+}
+
+export const VaultDepositModal: React.FC<Props> = ({ match, showDepositModal, setShowDepositModal }) => {
+  const [state, setState] = useContext(AppContext);
+  const [vault, setVault] = useState<VaultProps>();
+  const [extraCollateralDeposit, setExtraCollateralDeposit] = useState('');
+  const [reserveName, setReserveName] = useState('');
+  const decimals = 1000000;
+
+
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const senderAddress = useSTXAddress();
+  const { doContractCall } = useConnect();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const fetchVault = async () => {
+      const serializedVault = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-freddie-v1-1',
+        functionName: 'get-vault-by-id',
+        functionArgs: [uintCV(match.params.id)],
+        senderAddress: senderAddress || '',
+        network: network,
+      });
+
+      const data = cvToJSON(serializedVault).value;
+
+      if (data['id'].value !== 0) {
+        setVault({
+          id: data['id'].value,
+          owner: data['owner'].value,
+          collateral: data['collateral'].value,
+          collateralType: data['collateral-type'].value,
+          collateralToken: data['collateral-token'].value,
+          isLiquidated: data['is-liquidated'].value,
+          auctionEnded: data['auction-ended'].value,
+          leftoverCollateral: data['leftover-collateral'].value,
+          debt: data['debt'].value,
+          stackedTokens: data['stacked-tokens'].value,
+          stackerName: data['stacker-name'].value,
+          revokedStacking: data['revoked-stacking'].value,
+          collateralData: {},
+        });
+        setReserveName(resolveReserveName(data['collateral-token'].value));
+      }
+    };
+    fetchVault();
+  }, [match.params.id]);
+  
+  const addDeposit = async () => {
+    if (!extraCollateralDeposit) {
+      return;
+    }
+    const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
+
+    let postConditions: any[] = [];
+    if (vault['collateralToken'].toLowerCase() === 'stx') {
+      postConditions = [
+        makeStandardSTXPostCondition(
+          senderAddress || '',
+          FungibleConditionCode.Equal,
+          new BN(parseFloat(extraCollateralDeposit) * 1000000)
+        ),
+      ];
+    } else {
+      // postConditions = [
+      //   makeStandardFungiblePostCondition(
+      //     senderAddress || '',
+      //     FungibleConditionCode.Equal,
+      //     new BN(parseFloat(extraCollateralDeposit) * 1000000),
+      //     createAssetInfo(
+      //       "CONTRACT_ADDRESS",
+      //       token,
+      //       vault['collateralToken'].toUpperCase()
+      //     )
+      //   )
+      // ];
+    }
+
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress: senderAddress,
+      contractName: 'arkadiko-freddie-v1-1',
+      functionName: 'deposit',
+      functionArgs: [
+        uintCV(match.params.id),
+        uintCV(parseFloat(extraCollateralDeposit) * 1000000),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
+        contractPrincipalCV(
+          process.env.REACT_APP_CONTRACT_ADDRESS || '',
+          'arkadiko-collateral-types-v1-1'
+        ),
+      ],
+      postConditions,
+      onFinish: data => {
+        console.log('finished deposit!', data);
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+        setShowDepositModal(false);
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
+  const depositMaxAmount = () => {
+    setExtraCollateralDeposit((state.balance['stx'] / 1000000 - 1).toString());
+  };
+
+  const onInputChange = (event: { target: { value: any; name: any } }) => {
+    const value = event.target.value;
+    setExtraCollateralDeposit(value);
+  };
+
+  
+  return (
+    <Modal
+      open={showDepositModal}
+      title="Deposit Extra Collateral"
+      icon={<img className="w-10 h-10 rounded-full" src={tokenList[2].logo} alt="" />}
+      closeModal={() => setShowDepositModal(false)}
+      buttonText="Add deposit"
+      buttonAction={() => addDeposit()}
+      initialFocus={inputRef}
+    >
+      <p className="text-sm text-center text-gray-500">
+        Choose how much extra collateral you want to post. You have a balance of{' '}
+        {state.balance[vault?.collateralToken.toLowerCase()] / decimals}{' '}
+        {vault?.collateralToken.toUpperCase()}.
+      </p>
+      <p className="text-sm text-center text-gray-500">
+        We will automatically harvest any DIKO you are eligible for when depositing.
+      </p>
+
+      <div className="mt-4">
+        <Alert>
+          <p>
+            When depositing in a vault that is already stacking, keep in mind that your extra collateral will be <span className="font-semibold">locked but not stacked</span>. You won't be able to stack these STX until the cooldown cycle!
+          </p>
+        </Alert>
+      </div>
+
+      <div className="mt-6">
+        <InputAmount
+          balance={(
+            state.balance[vault?.collateralToken.toLowerCase()] / decimals
+          ).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 6,
+          })}
+          token={vault?.collateralToken.toUpperCase()}
+          inputName="depositCollateral"
+          inputId="depositExtraStxAmount"
+          inputValue={extraCollateralDeposit}
+          inputLabel="Deposit Extra Collateral"
+          onInputChange={onInputChange}
+          onClickMax={depositMaxAmount}
+          ref={inputRef}
+        />
+      </div>
+    </Modal>
+  );
+};
