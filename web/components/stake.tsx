@@ -236,6 +236,32 @@ export const Stake = () => {
       const data = await response.json();
       const currentBlock = data['stacks_tip_height'];
 
+      // User staked DIKO
+      const stDikoCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'stdiko-token',
+        functionName: 'get-total-supply',
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const stDikoData = cvToJSON(stDikoCall).value.value;
+
+      const userStakedDikoCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-stake-pool-diko-v1-1',
+        functionName: 'get-stake-of',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          standardPrincipalCV(stxAddress || ''),
+          uintCV(stDikoData)
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const userStakedDikoData = cvToJSON(userStakedDikoCall).value.value;
+      setStakedAmount(userStakedDikoData);
+
       // User staked amounts
       const userStakedCall = await callReadOnlyFunction({
         contractAddress,
@@ -248,8 +274,6 @@ export const Stake = () => {
         network: network,
       });
       const userStakedData = cvToJSON(userStakedCall).value.value;
-      console.log("STAKED: ", userStakedData);
-      setStakedAmount(userStakedData["stake-amount-diko"].value);
       setLpDikoUsdaStakedAmount(userStakedData["stake-amount-diko-usda"].value);
       setLpStxUsdaStakedAmount(userStakedData["stake-amount-wstx-usda"].value);
       setLpStxDikoStakedAmount(userStakedData["stake-amount-wstx-diko"].value);
@@ -265,19 +289,19 @@ export const Stake = () => {
       // LP value
       const dikoUsdaLpValue = await lpTokenValue(
         'arkadiko-stake-pool-diko-usda-v1-1',
-        lpDikoUsdaStakedAmount,
+        userStakedData["stake-amount-diko-usda"].value,
         state.balance['dikousda']
       );
       setDikoUsdaPoolInfo(dikoUsdaLpValue);
       const stxUsdaLpValue = await lpTokenValue(
         'arkadiko-stake-pool-wstx-usda-v1-1',
-        lpStxUsdaStakedAmount,
+        userStakedData["stake-amount-wstx-usda"].value,
         state.balance['wstxusda']
       );
       setStxUsdaPoolInfo(stxUsdaLpValue);
       const stxDikoLpValue = await lpTokenValue(
         'arkadiko-stake-pool-wstx-diko-v1-1',
-        lpStxDikoStakedAmount,
+        userStakedData["stake-amount-wstx-diko"].value,
         state.balance['wstxdiko']
       );
       setStxDikoPoolInfo(stxDikoLpValue);
