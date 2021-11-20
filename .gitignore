@@ -101,5 +101,5 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 
-# # IntelliJ
+# IntelliJ
 .idea
