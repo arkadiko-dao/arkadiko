@@ -469,7 +469,9 @@ export const Swap: React.FC = () => {
                     {state.userData ? (
                       <button
                         type="button"
-                        disabled={loadingData || insufficientBalance || tokenYAmount === 0 || !foundPair}
+                        disabled={
+                          loadingData || insufficientBalance || tokenYAmount === 0 || !foundPair
+                        }
                         onClick={() => swapTokens()}
                         className={classNames(
                           tokenYAmount === 0 || insufficientBalance || !foundPair
