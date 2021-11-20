@@ -4,6 +4,7 @@ import { Tooltip } from '@blockstack/ui';
 import { InformationCircleIcon } from '@heroicons/react/solid';
 import { Container } from './home';
 import { VaultDepositModal } from '@components/vault-deposit-modal';
+import { VaultWithdrawModal } from '@components/vault-withdraw-modal';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
@@ -25,7 +26,6 @@ import { debtClass, VaultProps } from './vault';
 import { getPrice } from '@common/get-price';
 import {
   getLiquidationPrice,
-  availableCollateralToWithdraw,
   availableCoinsToMint,
 } from '@common/vault-utils';
 import { Redirect } from 'react-router-dom';
@@ -49,10 +49,8 @@ export const ManageVault = ({ match }) => {
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [showMintModal, setShowMintModal] = useState(false);
   const [showBurnModal, setShowBurnModal] = useState(false);
-  const [extraCollateralDeposit, setExtraCollateralDeposit] = useState('');
   const [auctionEnded, setAuctionEnded] = useState(false);
-  const [collateralToWithdraw, setCollateralToWithdraw] = useState('');
-  const [maximumCollateralToWithdraw, setMaximumCollateralToWithdraw] = useState(0);
+  const [maximumCollateralToWithdraw] = useState(0);
   const [usdToMint, setUsdToMint] = useState('');
   const [usdToBurn, setUsdToBurn] = useState('');
   const [reserveName, setReserveName] = useState('');
@@ -251,23 +249,6 @@ export const ManageVault = ({ match }) => {
     }
   }, [vault]);
 
-  useEffect(() => {
-    if (vault && collateralType?.collateralToDebtRatio) {
-      if (Number(vault.stackedTokens) === 0) {
-        setMaximumCollateralToWithdraw(
-          availableCollateralToWithdraw(
-            price,
-            collateralLocked(),
-            outstandingDebt(),
-            collateralType?.collateralToDebtRatio
-          )
-        );
-      } else {
-        setMaximumCollateralToWithdraw(0);
-      }
-    }
-  }, [collateralType?.collateralToDebtRatio, price]);
-
   const callBurn = async () => {
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
     let totalToBurn = Number(usdToBurn) + (stabilityFee / 1000000);
@@ -323,8 +304,6 @@ export const ManageVault = ({ match }) => {
     }
   }, [state.currentTxStatus]);
 
-  
-
   const liquidationPrice = () => {
     if (vault) {
       // (liquidationRatio * coinsMinted) / collateral = rekt
@@ -360,10 +339,8 @@ export const ManageVault = ({ match }) => {
     const value = event.target.value;
     if (event.target.name === 'mintDebt') {
       setUsdToMint(value);
-    } else if (event.target.name === 'burnDebt') {
-      setUsdToBurn(value);
     } else {
-      setCollateralToWithdraw(value);
+      setUsdToBurn(value);
     }
   };
 
@@ -496,43 +473,6 @@ export const ManageVault = ({ match }) => {
     });
   };
 
-  const callWithdraw = async () => {
-    if (parseFloat(collateralToWithdraw) > maximumCollateralToWithdraw) {
-      return;
-    }
-
-    const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'withdraw',
-      functionArgs: [
-        uintCV(match.params.id),
-        uintCV(parseFloat(collateralToWithdraw) * 1000000),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
-        contractPrincipalCV(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v1-1'
-        ),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1'),
-      ],
-      postConditionMode: 0x01,
-      onFinish: data => {
-        console.log('finished withdraw!', data);
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-        setShowWithdrawModal(false);
-      },
-      anchorMode: AnchorMode.Any,
-    });
-  };
-
   const mintMaxAmount = () => {
     setUsdToMint(
       availableCoinsToMint(
@@ -554,9 +494,6 @@ export const ManageVault = ({ match }) => {
     setUsdToBurn(debtToPay);
   };
 
-  const withdrawMaxAmount = () => {
-    return setCollateralToWithdraw(String(maximumCollateralToWithdraw));
-  };
 
   const claimYield = async () => {
     await doContractCall({
@@ -619,44 +556,18 @@ export const ManageVault = ({ match }) => {
     <Container>
       {auctionEnded && <Redirect to="/vaults" />}
 
-      {/* TODO Add Show DepositModal Call */}
       <VaultDepositModal
         showDepositModal={showDepositModal}
         setShowDepositModal={setShowDepositModal}
         match={match}
-      />
+        />
+      
+      <VaultWithdrawModal
+        showWithdrawModal={showWithdrawModal}
+        setShowWithdrawModal={setShowWithdrawModal}
+        match={match}
+        />
 
-      <Modal
-        open={showWithdrawModal}
-        title="Withdraw Collateral"
-        icon={<img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />}
-        closeModal={() => setShowWithdrawModal(false)}
-        buttonText="Withdraw"
-        buttonAction={() => callWithdraw()}
-        initialFocus={inputRef}
-      >
-        <p className="text-sm text-center text-gray-500">
-          Choose how much collateral you want to withdraw. You can withdraw a maximum of{' '}
-          {maximumCollateralToWithdraw} {vault?.collateralToken.toUpperCase()}.
-        </p>
-        <p className="text-sm text-center text-gray-500">
-          We will automatically harvest any DIKO you are eligible for when withdrawing.
-        </p>
-
-        <div className="mt-6">
-          <InputAmount
-            balance={maximumCollateralToWithdraw}
-            token={vault?.collateralToken.toUpperCase()}
-            inputName="withdrawCollateral"
-            inputId="withdrawCollateralAmount"
-            inputValue={collateralToWithdraw}
-            inputLabel="Withdraw Collateral"
-            onInputChange={onInputChange}
-            onClickMax={withdrawMaxAmount}
-            ref={inputRef}
-          />
-        </div>
-      </Modal>
 
       <Modal
         open={showMintModal}
