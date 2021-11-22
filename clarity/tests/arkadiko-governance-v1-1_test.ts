@@ -260,6 +260,181 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "governance: proposal as DAO with short vote length",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let governance = new Governance(chain, deployer);
+    let dao = new Dao(chain, deployer);
+
+    // Create proposal to start at block 1
+    // Vote length of 10 blocks
+    // But min vote length is 250 blocks
+    let contractChange1 = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
+    let result = governance.createProposal(
+      deployer, 
+      1, 
+      "Test Title",
+      "https://discuss.arkadiko.finance/my/very/long/url/path",
+      [contractChange1],
+      10
+    );
+    result.expectOk().expectBool(true);
+
+    // Check if proposal updated
+    let call:any = governance.getProposalByID(1);
+    call.result.expectTuple()["is-open"].expectBool(true);
+    call.result.expectTuple()["start-block-height"].expectUint(1);
+    call.result.expectTuple()["end-block-height"].expectUint(251);
+
+    // Vote for wallet_1
+    result = governance.voteForProposal(wallet_1, 1, 10);
+    result.expectOk().expectUint(3200);
+
+    // Advance
+    chain.mineEmptyBlock(50);
+
+    // Can not end yet, min vote length is 250 blocks
+    result = governance.endProposal(1);
+    result.expectErr().expectUint(35);
+
+    // Advance
+    chain.mineEmptyBlock(200);
+
+    // End proposal
+    result = governance.endProposal(1);
+    result.expectOk().expectUint(3200);
+
+    // Check if proposal updated
+    call = governance.getProposalByID(1);
+    call.result.expectTuple()["is-open"].expectBool(false);
+
+    // Check if DAO updated
+    call = dao.getContractAddressByName("oracle");
+    call.result.expectSome().expectPrincipal(deployer.address);
+    call = dao.getQualifiedNameByName("oracle");
+    call.result.expectSome().expectPrincipal(Utils.qualifiedName('new-oracle'));
+  }
+});
+
+Clarinet.test({
+  name: "governance: use governance to replace governance",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let governance = new Governance(chain, deployer);
+    let dao = new Dao(chain, deployer);
+
+    // Create proposal to start at block 1
+    let contractChange1 = Governance.contractChange("governance", Utils.qualifiedName('arkadiko-governance-tv1-1'), true, true);
+    let result = governance.createProposal(
+      wallet_1, 
+      1, 
+      "Replace governance",
+      "https://discuss.arkadiko.finance/my/very/long/url/path",
+      [contractChange1]
+    );
+    result.expectOk().expectBool(true);
+
+    // Vote for wallet_1
+    result = governance.voteForProposal(wallet_1, 1, 10);
+    result.expectOk().expectUint(3200);
+
+    // Advance
+    chain.mineEmptyBlock(1500);
+
+    // End proposal
+    result = governance.endProposal(1);
+    result.expectOk().expectUint(3200);
+
+    // Check if proposal updated
+    let call:any = governance.getProposalByID(1);
+    call.result.expectTuple()["is-open"].expectBool(false);
+
+    // Check if DAO updated
+    call = dao.getContractAddressByName("governance");
+    call.result.expectSome().expectPrincipal(deployer.address);
+    call = dao.getQualifiedNameByName("governance");
+    call.result.expectSome().expectPrincipal(Utils.qualifiedName('arkadiko-governance-tv1-1'));
+
+    contractChange1 = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
+
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-governance-tv1-1", "propose", [
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
+        types.uint(1504),
+        types.utf8("Replace Oracle"),
+        types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),        
+        types.list([contractChange1])
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-governance-tv1-1", "vote-for", [
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-token')),
+        types.uint(1),
+        types.uint(10 * 1000000)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectUint(3200);
+
+    // Advance
+    chain.mineEmptyBlock(251);
+
+    // End proposal
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-governance-tv1-1", "end-proposal", [
+        types.uint(1)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectUint(3200);
+
+    // Check if proposal updated
+    call = chain.callReadOnlyFn("arkadiko-governance-tv1-1", "get-proposal-by-id", [types.uint(1)], deployer.address)
+    call.result.expectTuple()["is-open"].expectBool(false);
+
+    // Check if DAO updated
+    call = dao.getContractAddressByName("oracle");
+    call.result.expectSome().expectPrincipal(deployer.address);
+    call = dao.getQualifiedNameByName("oracle");
+    call.result.expectSome().expectPrincipal(Utils.qualifiedName('new-oracle'));
+
+    // Old governance still accepts proposals
+    // So we need to shut down the old governance module
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-governance-v1-1", "propose", [
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
+        types.uint(2504),
+        types.uint(123),
+        types.utf8("Replace Oracle"),
+        types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),
+        types.list([contractChange1])
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    result = governance.toggleShutdown();
+    result.expectOk().expectBool(true);
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-governance-v1-1", "propose", [
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
+        types.uint(2504),
+        types.uint(123),
+        types.utf8("Replace Oracle"),
+        types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),
+        types.list([contractChange1])
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(34);
+  }
+});
+
+Clarinet.test({
   name: "governance: end proposal but do not execute",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -862,5 +1037,33 @@ Clarinet.test({
       ], wallet_1.address)
     ]);
     block.receipts[0].result.expectErr().expectUint(3401);
+  }
+});
+
+Clarinet.test({
+  name: "governance: only DAO owner can set vote length on proposal",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let governance = new Governance(chain, deployer);
+    let dao = new Dao(chain, deployer);
+
+    // Create proposal to start at block 1
+    // Vote length of 10 blocks
+    let contractChange1 = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
+    let result = governance.createProposalDao(
+      wallet_1, 
+      1, 
+      "Test Title",
+      "https://discuss.arkadiko.finance/my/very/long/url/path",
+      [contractChange1]
+    );
+    result.expectOk().expectBool(true);
+
+    // End block has still taken 1440 blocks (~10 days) into account
+    let call:any = governance.getProposalByID(1);
+    call.result.expectTuple()["end-block-height"].expectUint(1441);
+
   }
 });
