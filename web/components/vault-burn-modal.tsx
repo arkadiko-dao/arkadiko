@@ -3,7 +3,6 @@ import { Modal } from '@components/ui/modal';
 import { tokenList } from '@components/token-swap-list';
 import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
-import { Alert } from './ui/alert';
 import {
   AnchorMode,
   contractPrincipalCV,
@@ -11,30 +10,32 @@ import {
   uintCV,
   callReadOnlyFunction,
   FungibleConditionCode,
-  makeStandardSTXPostCondition,
+  makeStandardFungiblePostCondition,
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
-import BN from 'bn.js';
 import { VaultProps } from './vault';
 import { resolveReserveName, tokenTraits } from '@common/vault-utils';
 
 interface Props {
-  showDepositModal: boolean;
-  setShowDepositModal: (arg: boolean) => void;
+  showBurnModal: boolean;
+  setShowBurnModal: (arg: boolean) => void;
+  outstandingDebt: () => void;
+  stabilityFee: number;
 }
 
-export const VaultDepositModal: React.FC<Props> = ({
+export const VaultBurnModal: React.FC<Props> = ({
   match,
-  showDepositModal,
-  setShowDepositModal,
+  showBurnModal,
+  setShowBurnModal,
+  outstandingDebt,
+  stabilityFee,
 }) => {
   const [state, setState] = useContext(AppContext);
   const [vault, setVault] = useState<VaultProps>();
-  const [extraCollateralDeposit, setExtraCollateralDeposit] = useState('');
+  const [usdToBurn, setUsdToBurn] = useState('');
   const [reserveName, setReserveName] = useState('');
-  const decimals = 1000000;
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const senderAddress = useSTXAddress();
@@ -76,45 +77,30 @@ export const VaultDepositModal: React.FC<Props> = ({
     fetchVault();
   }, [match.params.id]);
 
-  const addDeposit = async () => {
-    if (!extraCollateralDeposit) {
-      return;
-    }
+  const callBurn = async () => {
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
-
-    let postConditions: any[] = [];
-    if (vault['collateralToken'].toLowerCase() === 'stx') {
-      postConditions = [
-        makeStandardSTXPostCondition(
-          senderAddress || '',
-          FungibleConditionCode.Equal,
-          new BN(parseFloat(extraCollateralDeposit) * 1000000)
-        ),
-      ];
-    } else {
-      // postConditions = [
-      //   makeStandardFungiblePostCondition(
-      //     senderAddress || '',
-      //     FungibleConditionCode.Equal,
-      //     new BN(parseFloat(extraCollateralDeposit) * 1000000),
-      //     createAssetInfo(
-      //       "CONTRACT_ADDRESS",
-      //       token,
-      //       vault['collateralToken'].toUpperCase()
-      //     )
-      //   )
-      // ];
+    let totalToBurn = Number(usdToBurn) + 2 * (stabilityFee / 1000000);
+    if (Number(totalToBurn) >= Number(state.balance['usda'] / 1000000)) {
+      totalToBurn = Number(state.balance['usda'] / 1000000);
     }
+    const postConditions = [
+      makeStandardFungiblePostCondition(
+        senderAddress || '',
+        FungibleConditionCode.LessEqual,
+        uintCV(parseInt(totalToBurn * 1000000, 10)).value,
+        createAssetInfo(contractAddress, 'usda-token', 'usda')
+      ),
+    ];
 
     await doContractCall({
       network,
       contractAddress,
       stxAddress: senderAddress,
       contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'deposit',
+      functionName: 'burn',
       functionArgs: [
         uintCV(match.params.id),
-        uintCV(parseFloat(extraCollateralDeposit) * 1000000),
+        uintCV(parseFloat(usdToBurn) * 1000000),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
         contractPrincipalCV(
@@ -124,72 +110,61 @@ export const VaultDepositModal: React.FC<Props> = ({
       ],
       postConditions,
       onFinish: data => {
-        console.log('finished deposit!', data);
+        console.log('finished burn!', data);
         setState(prevState => ({
           ...prevState,
           currentTxId: data.txId,
           currentTxStatus: 'pending',
         }));
-        setShowDepositModal(false);
+        setShowBurnModal(false);
       },
       anchorMode: AnchorMode.Any,
     });
   };
 
-  const depositMaxAmount = () => {
-    setExtraCollateralDeposit((state.balance['stx'] / 1000000 - 1).toString());
+  const burnMaxAmount = () => {
+    let debtToPay = Number(outstandingDebt()) * 1000000 + Number(stabilityFee);
+    if (debtToPay > state.balance['usda']) {
+      const balance = Number(state.balance['usda']) / 1000000;
+      debtToPay = balance.toFixed(6);
+    }
+    setUsdToBurn(debtToPay);
   };
 
   const onInputChange = (event: { target: { value: any; name: any } }) => {
     const value = event.target.value;
-    setExtraCollateralDeposit(value);
+    setUsdToBurn(value);
   };
 
   return (
     <Modal
-      open={showDepositModal}
-      title="Deposit Extra Collateral"
-      icon={<img className="w-10 h-10 rounded-full" src={tokenList[2].logo} alt="" />}
-      closeModal={() => setShowDepositModal(false)}
-      buttonText="Add deposit"
-      buttonAction={() => addDeposit()}
+      open={showBurnModal}
+      title="Burn USDA"
+      icon={<img className="w-10 h-10 rounded-full" src={tokenList[0].logo} alt="" />}
+      closeModal={() => setShowBurnModal(false)}
+      buttonText="Burn"
+      buttonAction={() => callBurn()}
       initialFocus={inputRef}
     >
       <p className="text-sm text-center text-gray-500">
-        Choose how much extra collateral you want to post. You have a balance of{' '}
-        {state.balance[vault?.collateralToken.toLowerCase()] / decimals}{' '}
-        {vault?.collateralToken.toUpperCase()}.
+        Choose how much USDA you want to burn. Burning will include a stability fee of{' '}
+        <span className="font-semibold">{stabilityFee / 1000000} USDA</span>, so take this into
+        account.
       </p>
-      <p className="text-sm text-center text-gray-500">
-        We will automatically harvest any DIKO you are eligible for when depositing.
-      </p>
-
-      <div className="mt-4">
-        <Alert>
-          <p>
-            When depositing in a vault that is already stacking, keep in mind that your extra
-            collateral will be <span className="font-semibold">locked but not stacked</span>. You
-            won't be able to stack these STX until the cooldown cycle!
-          </p>
-        </Alert>
-      </div>
 
       <div className="mt-6">
         <InputAmount
-          balance={(state.balance[vault?.collateralToken.toLowerCase()] / decimals).toLocaleString(
-            undefined,
-            {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-            }
-          )}
-          token={vault?.collateralToken.toUpperCase()}
-          inputName="depositCollateral"
-          inputId="depositExtraStxAmount"
-          inputValue={extraCollateralDeposit}
-          inputLabel="Deposit Extra Collateral"
+          balance={(state.balance['usda'] / 1000000).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 6,
+          })}
+          token="USDA"
+          inputName="burnDebt"
+          inputId="burnAmount"
+          inputValue={usdToBurn}
+          inputLabel="Burn USDA"
           onInputChange={onInputChange}
-          onClickMax={depositMaxAmount}
+          onClickMax={burnMaxAmount}
           ref={inputRef}
         />
       </div>

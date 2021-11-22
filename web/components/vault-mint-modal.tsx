@@ -97,7 +97,7 @@ export const VaultMintModal: React.FC<Props> = ({ match, showMintModal, setShowM
     };
     fetchVault();
   }, [match.params.id]);
-  
+
   const callMint = async () => {
     await doContractCall({
       network,
@@ -162,7 +162,6 @@ export const VaultMintModal: React.FC<Props> = ({ match, showMintModal, setShowM
     setUsdToMint(value);
   };
 
-  
   return (
     <Modal
       open={showMintModal}
@@ -187,7 +186,7 @@ export const VaultMintModal: React.FC<Props> = ({ match, showMintModal, setShowM
         })}{' '}
         USDA.
       </p>
-      
+
       <div className="mt-6">
         <InputAmount
           balance={availableCoinsToMint(

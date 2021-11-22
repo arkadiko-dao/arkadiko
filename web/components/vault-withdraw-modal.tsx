@@ -15,7 +15,11 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { VaultProps } from './vault';
-import { availableCollateralToWithdraw, resolveReserveName, tokenTraits } from '@common/vault-utils';
+import {
+  availableCollateralToWithdraw,
+  resolveReserveName,
+  tokenTraits,
+} from '@common/vault-utils';
 import { getPrice } from '@common/get-price';
 
 interface Props {
@@ -23,7 +27,11 @@ interface Props {
   setShowWithdrawModal: (arg: boolean) => void;
 }
 
-export const VaultWithdrawModal: React.FC<Props> = ({ match, showWithdrawModal, setShowWithdrawModal }) => {
+export const VaultWithdrawModal: React.FC<Props> = ({
+  match,
+  showWithdrawModal,
+  setShowWithdrawModal,
+}) => {
   const setState = useContext(AppContext);
   const [vault, setVault] = useState<VaultProps>();
   const [price, setPrice] = useState(0);
@@ -67,7 +75,7 @@ export const VaultWithdrawModal: React.FC<Props> = ({ match, showWithdrawModal, 
           collateralData: {},
         });
         setReserveName(resolveReserveName(data['collateral-token'].value));
-      
+
         const price = await getPrice(data['collateral-token'].value);
         setPrice(price);
 
@@ -152,7 +160,7 @@ export const VaultWithdrawModal: React.FC<Props> = ({ match, showWithdrawModal, 
       anchorMode: AnchorMode.Any,
     });
   };
-  
+
   const withdrawMaxAmount = () => {
     return setCollateralToWithdraw(String(maximumCollateralToWithdraw));
   };
@@ -162,7 +170,6 @@ export const VaultWithdrawModal: React.FC<Props> = ({ match, showWithdrawModal, 
     setCollateralToWithdraw(value);
   };
 
-  
   return (
     <Modal
       open={showWithdrawModal}

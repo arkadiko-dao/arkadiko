@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
-import { Modal } from '@components/ui/modal';
+import React, { useContext, useEffect, useState } from 'react';
 import { Tooltip } from '@blockstack/ui';
 import { InformationCircleIcon } from '@heroicons/react/solid';
 import { Container } from './home';
 import { VaultDepositModal } from '@components/vault-deposit-modal';
 import { VaultWithdrawModal } from '@components/vault-withdraw-modal';
 import { VaultMintModal } from '@components/vault-mint-modal';
+import { VaultBurnModal } from '@components/vault-burn-modal';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
@@ -16,23 +16,15 @@ import {
   contractPrincipalCV,
   cvToJSON,
   callReadOnlyFunction,
-  makeStandardFungiblePostCondition,
-  createAssetInfo,
-  FungibleConditionCode,
   falseCV,
 } from '@stacks/transactions';
 import { AppContext, CollateralTypeProps } from '@common/context';
 import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
 import { debtClass, VaultProps } from './vault';
 import { getPrice } from '@common/get-price';
-import {
-  getLiquidationPrice,
-  availableCoinsToMint,
-} from '@common/vault-utils';
+import { getLiquidationPrice, availableCoinsToMint } from '@common/vault-utils';
 import { Redirect } from 'react-router-dom';
 import { resolveReserveName, tokenTraits } from '@common/vault-utils';
-import { tokenList } from '@components/token-swap-list';
-import { InputAmount } from './input-amount';
 import { getRPCClient } from '@common/utils';
 import { microToReadable } from '@common/vault-utils';
 import { addMinutes } from 'date-fns';
@@ -44,7 +36,6 @@ export const ManageVault = ({ match }) => {
   const senderAddress = useSTXAddress();
   const [state, setState] = useContext(AppContext);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
@@ -52,7 +43,6 @@ export const ManageVault = ({ match }) => {
   const [showBurnModal, setShowBurnModal] = useState(false);
   const [auctionEnded, setAuctionEnded] = useState(false);
   const [maximumCollateralToWithdraw] = useState(0);
-  const [usdToBurn, setUsdToBurn] = useState('');
   const [reserveName, setReserveName] = useState('');
   const [vault, setVault] = useState<VaultProps>();
   const [price, setPrice] = useState(0);
@@ -249,50 +239,6 @@ export const ManageVault = ({ match }) => {
     }
   }, [vault]);
 
-  const callBurn = async () => {
-    const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
-    let totalToBurn = Number(usdToBurn) + (stabilityFee / 1000000);
-    if (Number(totalToBurn) >= Number(state.balance['usda'] / 1000000)) {
-      totalToBurn = Number(state.balance['usda'] / 1000000);
-    }
-    const postConditions = [
-      makeStandardFungiblePostCondition(
-        senderAddress || '',
-        FungibleConditionCode.LessEqual,
-        uintCV(parseInt(totalToBurn * 1000000, 10)).value,
-        createAssetInfo(contractAddress, 'usda-token', 'usda')
-      ),
-    ];
-
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'burn',
-      functionArgs: [
-        uintCV(match.params.id),
-        uintCV(Number((parseFloat(usdToBurn) * 1000000) - (1.5 * stabilityFee))),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
-        contractPrincipalCV(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v1-1'
-        ),
-      ],
-      postConditions,
-      onFinish: data => {
-        console.log('finished burn!', data);
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-        setShowBurnModal(false);
-      },
-      anchorMode: AnchorMode.Any,
-    });
-  };
   let debtRatio = 0;
   if (match.params.id) {
     debtRatio = getCollateralToDebtRatio(match.params.id)?.collateralToDebt;
@@ -333,11 +279,6 @@ export const ManageVault = ({ match }) => {
     }
 
     return 0;
-  };
-
-  const onInputChange = (event: { target: { value: any; name: any } }) => {
-    const value = event.target.value;
-    setUsdToBurn(value);
   };
 
   const callToggleStacking = async () => {
@@ -439,16 +380,6 @@ export const ManageVault = ({ match }) => {
     });
   };
 
-  const burnMaxAmount = () => {
-    let debtToPay = Number(outstandingDebt()) * 1000000 + Number(stabilityFee);
-    if (debtToPay > state.balance['usda']) {
-      const balance = Number(state.balance['usda']) / 1000000;
-      debtToPay = balance.toFixed(6);
-    }
-    setUsdToBurn(debtToPay);
-  };
-
-
   const claimYield = async () => {
     await doContractCall({
       network,
@@ -514,51 +445,27 @@ export const ManageVault = ({ match }) => {
         showDepositModal={showDepositModal}
         setShowDepositModal={setShowDepositModal}
         match={match}
-        />
-      
+      />
+
       <VaultWithdrawModal
         showWithdrawModal={showWithdrawModal}
         setShowWithdrawModal={setShowWithdrawModal}
         match={match}
-        />
+      />
 
       <VaultMintModal
         showMintModal={showMintModal}
         setShowMintModal={setShowMintModal}
         match={match}
-        />
+      />
 
-      <Modal
-        open={showBurnModal}
-        title="Burn USDA"
-        icon={<img className="w-10 h-10 rounded-full" src={tokenList[0].logo} alt="" />}
-        closeModal={() => setShowBurnModal(false)}
-        buttonText="Burn"
-        buttonAction={() => callBurn()}
-        initialFocus={inputRef}
-      >
-        <p className="text-sm text-center text-gray-500">
-          Choose how much USDA you want to burn. Burning will include a stability fee of{' '}
-          {stabilityFee / 1000000} USDA, so take this into account.
-        </p>
-        
-        <div className="mt-6">
-          <InputAmount
-            balance={(state.balance['usda'] / 1000000).toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-            })}
-            token="USDA"
-            inputName="burnDebt"
-            inputId="burnAmount"
-            inputValue={usdToBurn}
-            inputLabel="Burn USDA"
-            onInputChange={onInputChange}
-            onClickMax={burnMaxAmount}
-            ref={inputRef}
-          />
-        </div>
-      </Modal>
+      <VaultBurnModal
+        showBurnModal={showBurnModal}
+        setShowBurnModal={setShowBurnModal}
+        outstandingDebt={outstandingDebt}
+        stabilityFee={stabilityFee}
+        match={match}
+      />
 
       <main className="flex-1 py-12">
         <section>
