@@ -402,6 +402,35 @@ Clarinet.test({
     call.result.expectSome().expectPrincipal(deployer.address);
     call = dao.getQualifiedNameByName("oracle");
     call.result.expectSome().expectPrincipal(Utils.qualifiedName('new-oracle'));
+
+    // Old governance still accepts proposals
+    // So we need to shut down the old governance module
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-governance-v1-1", "propose", [
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
+        types.uint(2504),
+        types.uint(123),
+        types.utf8("Replace Oracle"),
+        types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),
+        types.list([contractChange1])
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    result = governance.toggleShutdown();
+    result.expectOk().expectBool(true);
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-governance-v1-1", "propose", [
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
+        types.uint(2504),
+        types.uint(123),
+        types.utf8("Replace Oracle"),
+        types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),
+        types.list([contractChange1])
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(34);
   }
 });
 
