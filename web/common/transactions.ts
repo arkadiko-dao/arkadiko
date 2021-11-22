@@ -29,14 +29,15 @@ export const getPendingTransactions = async (address: string, contractAddress: s
   const pages = Math.ceil(parseFloat(result.total) / 200.0);
 
   // Go over all pages
-  let swapTransactions = [];
-  for (var i = 0; i < pages; i++) {
+  const swapTransactions = [];
+  for (let i = 0; i < pages; i++) {
     const offset = i * 200;
     const txs = await api.getMempoolTransactionList({ offset: offset, limit: 200 });
 
     // Find relevant transactions
     for (const tx of txs.results) {
-      if (tx.tx_type === 'contract_call' &&
+      if (
+        tx.tx_type === 'contract_call' &&
         tx.sender_address === address &&
         tx.contract_call.contract_id.split('.')[0] === contractAddress &&
         tx.tx_status === 'pending'

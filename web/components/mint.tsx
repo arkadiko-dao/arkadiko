@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, getRPCClient } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import BN from 'bn.js';
 import {
@@ -14,7 +14,7 @@ import {
   uintCV,
 } from '@stacks/transactions';
 import { VaultGroup } from './vault-group';
-import { getPrice, getDikoAmmPrice, getUsdaPrice } from '@common/get-price';
+import { getPriceInfo, getDikoAmmPrice, getUsdaPrice } from '@common/get-price';
 import { AppContext } from '@common/context';
 import { useConnect } from '@stacks/connect-react';
 import { CollateralType } from '@components/collateral-type';
@@ -38,6 +38,14 @@ export const Mint = () => {
   const [dikoPrice, setDikoPrice] = useState(0.0);
   const [xbtcPrice, setXbtcPrice] = useState(0.0);
   const [usdaPrice, setUsdaPrice] = useState(1.0);
+  const [stxBlockUpdate, setStxBlockUpdate] = useState(0.0);
+  const [xbtcBlockUpdate, setXbtcBlockUpdate] = useState(0.0);
+  const [usdaBlockUpdate, setUsdaBlockUpdate] = useState(0.0);
+  const [dikoBlockUpdate, setDikoBlockUpdate] = useState(0.0);
+  const [stxBlockAgoUpdate, setStxBlockAgoUpdate] = useState(0.0);
+  const [xbtcBlockAgoUpdate, setXbtcBlockAgoUpdate] = useState(0.0);
+  const [usdaBlockAgoUpdate, setUsdaBlockAgoUpdate] = useState(0.0);
+  const [dikoBlockAgoUpdate, setDikoBlockAgoUpdate] = useState(0.0);
   const [loadingVaults, setLoadingVaults] = useState(true);
   const [loadingPrices, setLoadingPrices] = useState(true);
   const [loadingStackingData, setLoadingStackingData] = useState(false);
@@ -45,17 +53,32 @@ export const Mint = () => {
 
   useEffect(() => {
     const fetchPrices = async () => {
-      const stxPrice = await getPrice('STX');
-      setStxPrice(stxPrice);
 
-      const xbtcPrice = await getPrice('xBTC');
-      setXbtcPrice(xbtcPrice);
+      // Get current block height
+      const client = getRPCClient();
+      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
+      const data = await response.json();
+      const currentBlock = data['stacks_tip_height'];
+
+      const stxPrice = await getPriceInfo('STX');
+      setStxPrice(stxPrice['last-price'].value);
+      setStxBlockUpdate(stxPrice['last-block'].value);
+      setStxBlockAgoUpdate(currentBlock - stxPrice['last-block'].value)
+      
+      const xbtcPrice = await getPriceInfo('xBTC');
+      setXbtcPrice(xbtcPrice['last-price'].value);
+      setXbtcBlockUpdate(xbtcPrice['last-block'].value);
+      setXbtcBlockAgoUpdate(currentBlock - xbtcPrice['last-block'].value)
 
       const dikoPrice = await getDikoAmmPrice();
       setDikoPrice(dikoPrice);
+      setDikoBlockUpdate(currentBlock);
+      setDikoBlockAgoUpdate(1)
 
-      const usdaPrice = await getPrice('USDA');
-      setUsdaPrice(usdaPrice);
+      const usdaPrice = await getPriceInfo('USDA');
+      setUsdaPrice(usdaPrice['last-price'].value);
+      setUsdaBlockUpdate(usdaPrice['last-block'].value);
+      setUsdaBlockAgoUpdate(currentBlock - usdaPrice['last-block'].value)
 
       setLoadingStackingData(false);
       setLoadingPrices(false);
@@ -427,6 +450,12 @@ export const Mint = () => {
                         >
                           Last Oracle Price
                         </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                        >
+                          Updated Block Height
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -450,6 +479,16 @@ export const Mint = () => {
                             <Placeholder className="py-2" width={Placeholder.width.HALF} />
                           ) : (
                             <span>${stxPrice / 1000000}</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-sm whitespace-nowrap">
+                          {loadingPrices ? (
+                            <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                          ) : (
+                            <>
+                            <span>{stxBlockUpdate} </span>
+                            <span className="text-gray-500">({stxBlockAgoUpdate} blocks ago)</span>
+                            </>
                           )}
                         </td>
                       </tr>
@@ -476,6 +515,16 @@ export const Mint = () => {
                             <span>${dikoPrice}</span>
                           )}
                         </td>
+                        <td className="px-6 py-4 text-sm whitespace-nowrap">
+                          {loadingPrices ? (
+                            <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                          ) : (
+                            <>
+                            <span>{dikoBlockUpdate} </span>
+                            <span className="text-gray-500">({dikoBlockAgoUpdate} blocks ago)</span>
+                            </>
+                          )}
+                        </td>
                       </tr>
 
                       <tr className="bg-white">
@@ -500,6 +549,16 @@ export const Mint = () => {
                             <span>${xbtcPrice / 1000000}</span>
                           )}
                         </td>
+                        <td className="px-6 py-4 text-sm whitespace-nowrap">
+                          {loadingPrices ? (
+                            <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                          ) : (
+                            <>
+                            <span>{xbtcBlockUpdate} </span>
+                            <span className="text-gray-500">({xbtcBlockAgoUpdate} blocks ago)</span>
+                            </>
+                          )}
+                        </td>
                       </tr>
 
                       <tr className="bg-white">
@@ -522,6 +581,16 @@ export const Mint = () => {
                             <Placeholder className="py-2" width={Placeholder.width.HALF} />
                           ) : (
                             <span>${usdaPrice / 1000000}</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-sm whitespace-nowrap">
+                          {loadingPrices ? (
+                            <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                          ) : (
+                            <>
+                            <span>{usdaBlockUpdate} </span>
+                            <span className="text-gray-500">({usdaBlockAgoUpdate} blocks ago)</span>
+                            </>
                           )}
                         </td>
                       </tr>

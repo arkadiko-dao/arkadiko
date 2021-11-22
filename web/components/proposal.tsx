@@ -15,7 +15,7 @@ export const Proposal: React.FC<ProposalProps> = ({
       <RouterLink to={`governance/${id}`} exact className="block hover:bg-gray-50">
         <div className="px-4 py-4 sm:px-6">
           <div className="flex items-center justify-between">
-            <p className="text-base font-medium text-indigo-600 truncate">{title}</p>
+            <p className="text-base font-medium text-indigo-600 truncate"><span className="font-semibold text-gray-600">#{id}<span className="text-gray-400"> &middot; </span></span>{title}</p>
             <div className="flex flex-shrink-0 ml-2">
               {isOpen ? (
                 <p className="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">
