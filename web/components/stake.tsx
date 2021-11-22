@@ -81,7 +81,7 @@ export const Stake = () => {
   useEffect(() => {
     let mounted = true;
 
-    const checkUnstakedTokens = async () => {
+    const checkUnstakedTokens = () => {
       if (
         state.balance['dikousda'] > 0 ||
         state.balance['wstxusda'] > 0 ||
@@ -283,32 +283,38 @@ export const Stake = () => {
         network: network,
       });
       const dikoStaked = cvToJSON(userStakedCall).value.value;
-
       setStakedAmount(dikoStaked);
-      const dikoUsdaLpStaked = await fetchLpStakeAmount('arkadiko-stake-pool-diko-usda-v1-1');
+
+      const [dikoUsdaLpStaked, stxUsdaLpStaked, stxDikoLpStaked] = await Promise.all([
+        fetchLpStakeAmount('arkadiko-stake-pool-diko-usda-v1-1'),
+        fetchLpStakeAmount('arkadiko-stake-pool-wstx-usda-v1-1'),
+        fetchLpStakeAmount('arkadiko-stake-pool-wstx-diko-v1-1'),
+      ]);
+
       setLpDikoUsdaStakedAmount(dikoUsdaLpStaked);
-      const stxUsdaLpStaked = await fetchLpStakeAmount('arkadiko-stake-pool-wstx-usda-v1-1');
       setLpStxUsdaStakedAmount(stxUsdaLpStaked);
-      const stxDikoLpStaked = await fetchLpStakeAmount('arkadiko-stake-pool-wstx-diko-v1-1');
       setLpStxDikoStakedAmount(stxDikoLpStaked);
 
-      const dikoUsdaLpValue = await lpTokenValue(
-        'arkadiko-stake-pool-diko-usda-v1-1',
-        dikoUsdaLpStaked,
-        state.balance['dikousda']
-      );
+      const [dikoUsdaLpValue, stxUsdaLpValue, stxDikoLpValue] = await Promise.all([
+        lpTokenValue(
+          'arkadiko-stake-pool-diko-usda-v1-1',
+          dikoUsdaLpStaked,
+          state.balance['dikousda']
+        ),
+        lpTokenValue(
+          'arkadiko-stake-pool-wstx-usda-v1-1',
+          stxUsdaLpStaked,
+          state.balance['wstxusda']
+        ),
+        lpTokenValue(
+          'arkadiko-stake-pool-wstx-diko-v1-1',
+          stxDikoLpStaked,
+          state.balance['wstxdiko']
+        ),
+      ]);
+
       setDikoUsdaPoolInfo(dikoUsdaLpValue);
-      const stxUsdaLpValue = await lpTokenValue(
-        'arkadiko-stake-pool-wstx-usda-v1-1',
-        stxUsdaLpStaked,
-        state.balance['wstxusda']
-      );
       setStxUsdaPoolInfo(stxUsdaLpValue);
-      const stxDikoLpValue = await lpTokenValue(
-        'arkadiko-stake-pool-wstx-diko-v1-1',
-        stxDikoLpStaked,
-        state.balance['wstxdiko']
-      );
       setStxDikoPoolInfo(stxDikoLpValue);
 
       // if (currentBlock < REWARDS_START_BLOCK_HEIGHT) {
@@ -317,23 +323,24 @@ export const Stake = () => {
       // }
       setEmissionsStarted(true);
 
-      const dikoUsdaLpPendingRewards = await fetchLpPendingRewards(
-        'arkadiko-stake-pool-diko-usda-v1-1'
-      );
+      const [dikoUsdaLpPendingRewards, stxUsdaLpPendingRewards, stxDikoLpPendingRewards] =
+        await Promise.all([
+          fetchLpPendingRewards('arkadiko-stake-pool-diko-usda-v1-1'),
+          fetchLpPendingRewards('arkadiko-stake-pool-wstx-usda-v1-1'),
+          fetchLpPendingRewards('arkadiko-stake-pool-wstx-diko-v1-1'),
+        ]);
+
       setLpDikoUsdaPendingRewards(dikoUsdaLpPendingRewards);
-      const stxUsdaLpPendingRewards = await fetchLpPendingRewards(
-        'arkadiko-stake-pool-wstx-usda-v1-1'
-      );
       setLpStxUsdaPendingRewards(stxUsdaLpPendingRewards);
-      const stxDikoLpPendingRewards = await fetchLpPendingRewards(
-        'arkadiko-stake-pool-wstx-diko-v1-1'
-      );
       setLpStxDikoPendingRewards(stxDikoLpPendingRewards);
 
-      let totalDikoStaked = await fetchTotalStaked('arkadiko-stake-pool-diko-v1-1');
-      let totalDikoUsdaStaked = await fetchTotalStaked('arkadiko-stake-pool-diko-usda-v1-1');
-      let totalStxUsdaStaked = await fetchTotalStaked('arkadiko-stake-pool-wstx-usda-v1-1');
-      let totalStxDikoStaked = await fetchTotalStaked('arkadiko-stake-pool-wstx-diko-v1-1');
+      let [totalDikoStaked, totalDikoUsdaStaked, totalStxUsdaStaked, totalStxDikoStaked] =
+        await Promise.all([
+          fetchTotalStaked('arkadiko-stake-pool-diko-v1-1'),
+          fetchTotalStaked('arkadiko-stake-pool-diko-usda-v1-1'),
+          fetchTotalStaked('arkadiko-stake-pool-wstx-usda-v1-1'),
+          fetchTotalStaked('arkadiko-stake-pool-wstx-diko-v1-1'),
+        ]);
 
       const totalStakingRewardsYear1 = 23500000;
 
