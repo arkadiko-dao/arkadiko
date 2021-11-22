@@ -28,7 +28,7 @@ import {
 
 import { 
   StakeRegistry,
-  StakePoolDiko,
+  StakePoolDikoV1,
   StakePoolDikoUsda,
   StakePoolStxUsda,
   StakePoolStxDiko
@@ -343,7 +343,7 @@ Clarinet.test({
     let stDikoToken = new StDikoToken(chain, deployer);
     let dikoUsdaToken = new DikoUsdaPoolToken(chain, deployer);
     let stakeRegistry = new StakeRegistry(chain, deployer);
-    let stakePoolDiko = new StakePoolDiko(chain, deployer);
+    let stakePoolDiko = new StakePoolDikoV1(chain, deployer);
 
     // Create swap pair to get LP tokens
     let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
