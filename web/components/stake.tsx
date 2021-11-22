@@ -25,7 +25,7 @@ import { Menu, Transition } from '@headlessui/react';
 import {
   ArrowCircleDownIcon,
   ArrowCircleUpIcon,
-  DotsVerticalIcon,
+  ChevronUpIcon,
   ClockIcon,
   QuestionMarkCircleIcon,
   ExternalLinkIcon,
@@ -791,9 +791,13 @@ export const Stake = () => {
                         <Menu as="div" className="relative flex items-center justify-end">
                           {({ open }) => (
                             <>
-                              <Menu.Button className="inline-flex items-center justify-center w-8 h-8 text-gray-400 bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                <span className="sr-only">Open options</span>
-                                <DotsVerticalIcon className="w-5 h-5" aria-hidden="true" />
+                              <Menu.Button className="inline-flex items-center justify-center text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75">
+                                <span>Actions</span>
+                                <ChevronUpIcon
+                                  className={`${
+                                    open ? '' : 'transform rotate-180 transition ease-in-out duration-300'
+                                  } ml-2 w-5 h-5 text-indigo-500`}
+                                />
                               </Menu.Button>
                               <Transition
                                 show={open}
@@ -807,7 +811,7 @@ export const Stake = () => {
                               >
                                 <Menu.Items
                                   static
-                                  className="absolute top-0 z-10 w-48 mx-3 mt-1 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg right-7 ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                  className="absolute top-0 z-10 w-48 mx-3 mt-6 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg right-3 ring-1 ring-black ring-opacity-5 focus:outline-none"
                                 >
                                   <div className="px-1 py-1">
                                     {state.balance['diko'] > 0 ? (
