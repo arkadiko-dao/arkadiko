@@ -9,6 +9,12 @@ export const SmartContractBalance = ({ address, description, name }) => {
   const [usdaBalance, setUsdaBalance] = useState(0.0);
   const [wStxBalance, setWStxBalance] = useState(0.0);
   const [xStxBalance, setXStxBalance] = useState(0.0);
+
+  const [stDikoBalance, setStDikoBalance] = useState(0.0);
+  const [wstxDikoBalance, setWstxDikoBalance] = useState(0.0);
+  const [wstxUsdaBalance, setWstxUsdaBalance] = useState(0.0);
+  const [dikoUsdaBalance, setDikoUsdaBalance] = useState(0.0);
+
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   useEffect(() => {
@@ -48,6 +54,35 @@ export const SmartContractBalance = ({ address, description, name }) => {
       } else {
         setXStxBalance(0.0);
       }
+
+      const stDikoBalance = data.fungible_tokens[`${contractAddress}.stdiko-token::stdiko`];
+      if (stDikoBalance) {
+        setStDikoBalance(stDikoBalance.balance / 1000000);
+      } else {
+        setStDikoBalance(0.0);
+      }
+
+      const wstxDikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-diko::wstx-diko`];
+      if (wstxDikoBalance) {
+        setWstxDikoBalance(wstxDikoBalance.balance / 1000000);
+      } else {
+        setWstxDikoBalance(0.0);
+      }
+
+      const wstxUsdaBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-usda::wstx-usda`];
+      if (wstxUsdaBalance) {
+        setWstxUsdaBalance(wstxUsdaBalance.balance / 1000000);
+      } else {
+        setWstxUsdaBalance(0.0);
+      }
+
+      const dikoUsdaBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-diko-usda::diko-usda`];
+      if (dikoUsdaBalance) {
+        setDikoUsdaBalance(dikoUsdaBalance.balance / 1000000);
+      } else {
+        setDikoUsdaBalance(0.0);
+      }
+
     };
     if (mounted) {
       void getData();
@@ -102,6 +137,34 @@ export const SmartContractBalance = ({ address, description, name }) => {
           maximumFractionDigits: 6,
         })}{' '}
         xSTX
+      </td>
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+        {stDikoBalance.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 6,
+        })}{' '}
+        stDIKO
+      </td>
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+        {wstxUsdaBalance.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 6,
+        })}{' '}
+        wSTX/USDA
+      </td>
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+        {wstxDikoBalance.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 6,
+        })}{' '}
+        wSTX/DIKO
+      </td>
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+        {dikoUsdaBalance.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 6,
+        })}{' '}
+        DIKO/USDA
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">{address}</td>
     </tr>

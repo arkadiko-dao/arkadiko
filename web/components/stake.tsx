@@ -25,7 +25,7 @@ import { Menu, Transition } from '@headlessui/react';
 import {
   ArrowCircleDownIcon,
   ArrowCircleUpIcon,
-  DotsVerticalIcon,
+  ChevronUpIcon,
   ClockIcon,
   QuestionMarkCircleIcon,
   ExternalLinkIcon,
@@ -94,30 +94,26 @@ export const Stake = () => {
     const fetchMissedLpRewards = async () => {
       const stakedCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-stake-lp-rewards",
-        functionName: "get-diko-by-wallet",
-        functionArgs: [
-          standardPrincipalCV(stxAddress || '')
-        ],
+        contractName: 'arkadiko-stake-lp-rewards',
+        functionName: 'get-diko-by-wallet',
+        functionArgs: [standardPrincipalCV(stxAddress || '')],
         senderAddress: stxAddress || '',
         network: network,
       });
-      let value = Number(cvToJSON(stakedCall).value);
+      const value = Number(cvToJSON(stakedCall).value);
 
       const stakedCall2 = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-stake-lp-rewards-2",
-        functionName: "get-diko-by-wallet",
-        functionArgs: [
-          standardPrincipalCV(stxAddress || '')
-        ],
+        contractName: 'arkadiko-stake-lp-rewards-2',
+        functionName: 'get-diko-by-wallet',
+        functionArgs: [standardPrincipalCV(stxAddress || '')],
         senderAddress: stxAddress || '',
         network: network,
       });
       return value + Number(cvToJSON(stakedCall2).value);
     };
 
-    const fetchLpStakeAmount = async (poolContract:string) => {
+    const fetchLpStakeAmount = async (poolContract: string) => {
       const stakedCall = await callReadOnlyFunction({
         contractAddress,
         contractName: poolContract,
@@ -251,7 +247,11 @@ export const Stake = () => {
     };
 
     const getData = async () => {
-      if (state.balance['dikousda'] == undefined || state.balance['wstxusda'] == undefined || state.balance['wstxdiko'] == undefined) {
+      if (
+        state.balance['dikousda'] == undefined ||
+        state.balance['wstxusda'] == undefined ||
+        state.balance['wstxdiko'] == undefined
+      ) {
         return;
       }
 
@@ -412,7 +412,7 @@ export const Stake = () => {
         setCooldownRunning(true);
       }
 
-      let missedLpRewards = await fetchMissedLpRewards();
+      const missedLpRewards = await fetchMissedLpRewards();
       setMissedLpRewards(missedLpRewards / 1000000);
 
       setLoadingData(false);
@@ -791,9 +791,13 @@ export const Stake = () => {
                         <Menu as="div" className="relative flex items-center justify-end">
                           {({ open }) => (
                             <>
-                              <Menu.Button className="inline-flex items-center justify-center w-8 h-8 text-gray-400 bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                <span className="sr-only">Open options</span>
-                                <DotsVerticalIcon className="w-5 h-5" aria-hidden="true" />
+                              <Menu.Button className="inline-flex items-center justify-center text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75">
+                                <span>Actions</span>
+                                <ChevronUpIcon
+                                  className={`${
+                                    open ? '' : 'transform rotate-180 transition ease-in-out duration-300'
+                                  } ml-2 w-5 h-5 text-indigo-500`}
+                                />
                               </Menu.Button>
                               <Transition
                                 show={open}
@@ -807,7 +811,7 @@ export const Stake = () => {
                               >
                                 <Menu.Items
                                   static
-                                  className="absolute top-0 z-10 w-48 mx-3 mt-1 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg right-7 ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                  className="absolute top-0 z-10 w-48 mx-3 mt-6 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg right-3 ring-1 ring-black ring-opacity-5 focus:outline-none"
                                 >
                                   <div className="px-1 py-1">
                                     {state.balance['diko'] > 0 ? (
@@ -892,7 +896,9 @@ export const Stake = () => {
                 <div className="mt-4">
                   <Alert title="LP staking rewards have resumed">
                     <p>You missed {missedLpRewards} DIKO during the pause.</p>
-                    <p className="mt-1">You have two options, you can either claim them or directly stake them.</p>
+                    <p className="mt-1">
+                      You have two options, you can either claim them or directly stake them.
+                    </p>
                     <div className="mt-4">
                       <div className="-mx-2 -my-1.5 flex">
                         <button
@@ -914,7 +920,7 @@ export const Stake = () => {
                   </Alert>
                 </div>
               ) : null}
-              
+
               <div className="mt-4">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">

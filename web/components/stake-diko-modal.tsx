@@ -102,7 +102,7 @@ export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
       ) : null}
 
       <p className="mt-3 text-sm text-center text-gray-500">
-        Stake DIKO tokens at {apy}% (estimated APY) and start earning rewards now.
+        Stake DIKO tokens at {apy}% (estimated APR) and start earning rewards now.
       </p>
       <div className="mt-4">
         <Alert>

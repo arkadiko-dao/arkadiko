@@ -43,7 +43,18 @@ export interface AppState {
 }
 
 export const defaultBalance = () => {
-  return { stx: 0, xbtc: 0, usda: 0, diko: 0, xstx: 0, stdiko: 0, dikousda: 0, stxusda: 0 };
+  return {
+    stx: 0,
+    xbtc: 0,
+    usda: 0,
+    diko: 0,
+    xstx: 0,
+    stdiko: 0,
+    dikousda: 0,
+    stxusda: 0,
+    wstxusda: 0,
+    wstxdiko: 0,
+  };
 };
 
 export const defaultState = (): AppState => {
