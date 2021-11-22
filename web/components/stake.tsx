@@ -265,7 +265,7 @@ export const Stake = () => {
       // User staked amounts
       const userStakedCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-ui-stake-v1-1',
+        contractName: 'arkadiko-ui-stake-v1-2',
         functionName: 'get-stake-amounts',
         functionArgs: [
           standardPrincipalCV(stxAddress || ''),
@@ -309,7 +309,7 @@ export const Stake = () => {
       // Total staked
       const totalStakedCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-ui-stake-v1-1',
+        contractName: 'arkadiko-ui-stake-v1-2',
         functionName: 'get-stake-totals',
         functionArgs: [],
         senderAddress: stxAddress || '',
