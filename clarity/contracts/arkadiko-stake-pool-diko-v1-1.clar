@@ -119,10 +119,10 @@
     (total-diko-supply (+ diko-supply rewards-to-add))
 
     ;; User stDIKO percentage
-    (stdiko-percentage (/ (* amount u1000000) stdiko-supply))
+    (stdiko-percentage (/ (* amount u1000000000000) stdiko-supply))
 
     ;; Amount of DIKO the user will receive
-    (diko-to-receive (/ (* stdiko-percentage total-diko-supply) u1000000))
+    (diko-to-receive (/ (* stdiko-percentage total-diko-supply) u1000000000000))
   )
     (ok diko-to-receive)
   )

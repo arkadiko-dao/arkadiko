@@ -384,7 +384,7 @@ Clarinet.test({
 
     // Stake of user in DIKO pool
     result = stakePoolDiko.getStakeOf(deployer, 4134.2337);
-    result.expectOk().expectUintWithDecimals(4228.191938);
+    result.expectOk().expectUintWithDecimals(4228.193691);
 
   }
 });
