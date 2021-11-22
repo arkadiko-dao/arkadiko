@@ -13,8 +13,8 @@ export interface ProposalProps {
   changes: object[];
   isOpen: boolean;
   totalVotes: number;
-  forVotesPercentage: string;
-  againstVotesPercentage: string;
+  forVotesPercentage: number;
+  againstVotesPercentage: number;
 }
 
 export const ProposalGroup: React.FC<ProposalProps[]> = ({ proposals }) => {
@@ -36,6 +36,8 @@ export const ProposalGroup: React.FC<ProposalProps[]> = ({ proposals }) => {
       againstVotesPercentage={proposal.againstVotesPercentage}
     />
   ));
+
+  proposalItems.sort((a, b) => (a.endBlockHeight > b.endBlockHeight) ? 1 : -1);
 
   return (
     <div className="mt-5 overflow-hidden bg-white shadow sm:rounded-md">

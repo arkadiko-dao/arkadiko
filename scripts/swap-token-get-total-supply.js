@@ -8,7 +8,7 @@ const BN = require('bn.js');
 async function getPairDetails() {
   const lastVaultTx = await tx.callReadOnlyFunction({
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-swap-token-diko-usda",
+    contractName: "arkadiko-token",
     functionName: "get-total-supply",
     functionArgs: [],
     senderAddress: CONTRACT_ADDRESS,

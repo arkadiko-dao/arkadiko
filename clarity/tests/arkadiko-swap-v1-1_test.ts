@@ -60,9 +60,9 @@ Clarinet.test({
     call.result.expectOk().expectList()[1].expectUintWithDecimals(200);
 
     // Check if tracked balances is the same as tokens owned by contract
-    call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-swap-v1-1'));
+    call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-swap-v2-1'));
     call.result.expectOk().expectUintWithDecimals(1000);
-    call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-swap-v1-1'));
+    call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-swap-v2-1'));
     call.result.expectOk().expectUintWithDecimals(200);
 
     // Remove other 90% of liquidity
@@ -713,7 +713,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-swap-v1-1", "attack-and-burn", [
+      Tx.contractCall("arkadiko-swap-v2-1", "attack-and-burn", [
         types.principal(Utils.qualifiedName(dikoUsdaPoolAddress)),
         types.principal(deployer.address),
         types.uint(100)

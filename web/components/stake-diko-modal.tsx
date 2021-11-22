@@ -21,6 +21,7 @@ export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
   const [state, setState] = useContext(AppContext);
   const [errors, setErrors] = useState<string[]>([]);
   const [stakeAmount, setStakeAmount] = useState('');
+  const [isStakeButtonDisabled, setIsStakeButtonDisabled] = useState(false);
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -39,8 +40,10 @@ export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
           errors.concat([`You cannot stake more than ${state.balance['diko'] / 1000000} DIKO`])
         );
       }
+      setIsStakeButtonDisabled(true);
     } else {
       setErrors([]);
+      setIsStakeButtonDisabled(false);
     }
     setStakeAmount(value);
   };
@@ -86,9 +89,10 @@ export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
       open={showStakeModal}
       title="Stake DIKO"
       icon={<img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />}
-      closeModal={setShowStakeModal(false)}
+      closeModal={() => setShowStakeModal(false)}
       buttonText="Stake"
-      buttonAction={stakeDiko}
+      buttonAction={() => stakeDiko()}
+      buttonDisabled={isStakeButtonDisabled || errors.length > 0}
       initialFocus={inputRef}
     >
       {errors.length > 0 ? (

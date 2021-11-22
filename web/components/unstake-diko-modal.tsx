@@ -21,6 +21,7 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
   const [state, setState] = useContext(AppContext);
   const [errors, setErrors] = useState<string[]>([]);
   const [stakeAmount, setStakeAmount] = useState('');
+  const [isUnstakeButtonDisabled, setIsUnstakeButtonDisabled] = useState(false);
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -73,8 +74,10 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
       if (errors.length < 1) {
         setErrors(errors.concat(['You cannot unstake more than currently staking']));
       }
+      setIsUnstakeButtonDisabled(true);
     } else {
       setErrors([]);
+      setIsUnstakeButtonDisabled(false);
     }
     setStakeAmount(value);
   };
@@ -84,9 +87,10 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
       open={showUnstakeModal}
       title="Unstake DIKO"
       icon={<img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />}
-      closeModal={setShowUnstakeModal(false)}
+      closeModal={() => setShowUnstakeModal(false)}
       buttonText="Unstake"
-      buttonAction={unstakeDiko}
+      buttonAction={() => unstakeDiko()}
+      buttonDisabled={isUnstakeButtonDisabled || errors.length > 0}
       initialFocus={inputRef}
     >
       {errors.length > 0 ? (

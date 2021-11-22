@@ -53,7 +53,7 @@ export const availableCoinsToMint = (
   return 0;
 };
 
-type TokenTraits = Record<string, { name: string, swap: string }>
+type TokenTraits = Record<string, { name: string; swap: string }>;
 
 export const tokenTraits: TokenTraits = {
   diko: {

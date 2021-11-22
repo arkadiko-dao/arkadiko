@@ -17,6 +17,7 @@ import {
   createAssetInfo,
   FungibleConditionCode,
   makeStandardSTXPostCondition,
+  falseCV,
 } from '@stacks/transactions';
 import { AppContext, CollateralTypeProps } from '@common/context';
 import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
@@ -69,9 +70,11 @@ export const ManageVault = ({ match }) => {
   const [canStackCollateral, setCanStackCollateral] = useState(false);
   const [decimals, setDecimals] = useState(1000000);
   const [stackingEndDate, setStackingEndDate] = useState('');
+  const [poxYield, setPoxYield] = useState(0);
   const [loadingVaultData, setLoadingVaultData] = useState(true);
   const [loadingFeesData, setLoadingFeesData] = useState(true);
   const [loadingStackerData, setLoadingStackerData] = useState(true);
+  const [loadingPoxYieldData, setLoadingPoxYieldData] = useState(true);
 
   useEffect(() => {
     const fetchVault = async () => {
@@ -158,6 +161,21 @@ export const ManageVault = ({ match }) => {
       setLoadingFeesData(false);
     };
 
+    const fetchYield = async () => {
+      const yieldCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-claim-yield-v2-1',
+        functionName: 'get-claim-by-vault-id',
+        functionArgs: [uintCV(vault?.id)],
+        senderAddress: contractAddress || '',
+        network: network,
+      });
+
+      const poxYield = cvToJSON(yieldCall);
+      setPoxYield(poxYield.value['ustx'].value / 1000000);
+      setLoadingPoxYieldData(false);
+    };
+
     const fetchStackerHeight = async () => {
       if (vault?.stackedTokens == 0 && vault?.revokedStacking) {
         setEnabledStacking(false);
@@ -229,6 +247,7 @@ export const ManageVault = ({ match }) => {
       setDecimals(vault['collateralType'].toLowerCase().includes('stx') ? 1000000 : 100000000);
       fetchFees();
       fetchStackerHeight();
+      fetchYield();
     }
   }, [vault]);
 
@@ -603,6 +622,63 @@ export const ManageVault = ({ match }) => {
     return setCollateralToWithdraw(String(maximumCollateralToWithdraw));
   };
 
+  const claimYield = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress: senderAddress,
+      contractName: 'arkadiko-claim-yield-v2-1',
+      functionName: 'claim',
+      postConditionMode: 0x01,
+      functionArgs: [
+        uintCV(match.params.id),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
+        contractPrincipalCV(
+          process.env.REACT_APP_CONTRACT_ADDRESS || '',
+          'arkadiko-collateral-types-v1-1'
+        ),
+        falseCV(),
+      ],
+      onFinish: data => {
+        console.log('claiming yield', data, data.txId);
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
+  const claimYieldPayDebt = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress: senderAddress,
+      contractName: 'arkadiko-claim-yield-v2-1',
+      functionName: 'claim-to-pay-debt',
+      postConditionMode: 0x01,
+      functionArgs: [
+        uintCV(match.params.id),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
+        contractPrincipalCV(
+          process.env.REACT_APP_CONTRACT_ADDRESS || '',
+          'arkadiko-collateral-types-v1-1'
+        ),
+      ],
+      onFinish: data => {
+        console.log('claiming yield', data, data.txId);
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
   return (
     <Container>
       {auctionEnded && <Redirect to="/vaults" />}
@@ -645,6 +721,17 @@ export const ManageVault = ({ match }) => {
                   <p className="text-sm text-gray-500">
                     We will automatically harvest any DIKO you are eligible for when depositing.
                   </p>
+
+                  <div className="mt-4">
+                    <Alert>
+                      <p className="text-left">
+                        When depositing in a vault that is already stacking, keep in mind that your
+                        extra collateral will be{' '}
+                        <span className="font-semibold">locked but not stacked</span>. You won't be
+                        able to stack these STX until the cooldown cycle!
+                      </p>
+                    </Alert>
+                  </div>
 
                   <div className="mt-6">
                     <InputAmount
@@ -1170,6 +1257,59 @@ export const ManageVault = ({ match }) => {
                       </dl>
                     </div>
                   ) : null}
+
+                  <div className="px-4 py-5 sm:p-6">
+                    <div className="sm:flex sm:items-center: sm:justify-between">
+                      <h4 className="text-xl font-normal leading-6 text-gray-900 font-headings">
+                        Yield
+                      </h4>
+
+                      {poxYield != 0 ? (
+                        <div>
+                          <button
+                            type="button"
+                            className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            onClick={() => claimYield()}
+                          >
+                            Add as collateral
+                          </button>
+                          <button
+                            type="button"
+                            className="inline-flex items-center px-3 py-2 ml-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            onClick={() => claimYieldPayDebt()}
+                          >
+                            Pay back debt
+                          </button>
+                        </div>
+                      ) : null}
+                    </div>
+
+                    <dl className="mt-4">
+                      <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
+                        <dt className="inline-flex items-center text-sm font-medium text-gray-500">
+                          <p className="text-base font-normal leading-6 text-gray-500">
+                            Available yield
+                          </p>
+                        </dt>
+                        <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
+                          {loadingPoxYieldData ? (
+                            <Placeholder
+                              className="justify-end py-2"
+                              color={Placeholder.color.INDIGO}
+                              width={Placeholder.width.THIRD}
+                            />
+                          ) : (
+                            <p className="text-lg font-semibold leading-none">
+                              {poxYield}{' '}
+                              <span className="text-sm font-normal">
+                                {vault?.collateralToken.toUpperCase()}
+                              </span>
+                            </p>
+                          )}
+                        </dd>
+                      </div>
+                    </dl>
+                  </div>
 
                   <div className="px-4 py-5 sm:p-6">
                     <div className="sm:flex sm:items-center: sm:justify-between ">

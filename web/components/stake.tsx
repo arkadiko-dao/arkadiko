@@ -67,6 +67,7 @@ export const Stake = () => {
   const [stxDikoPoolInfo, setStxDikoPoolInfo] = useState(0);
   const [stxUsdaPoolInfo, setStxUsdaPoolInfo] = useState(0);
   const [dikoUsdaPoolInfo, setDikoUsdaPoolInfo] = useState(0);
+  const [missedLpRewards, setMissedLpRewards] = useState(0);
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -88,6 +89,28 @@ export const Stake = () => {
       ) {
         setHasUnstakedTokens(true);
       }
+    };
+
+    const fetchMissedLpRewards = async () => {
+      const stakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-stake-lp-rewards',
+        functionName: 'get-diko-by-wallet',
+        functionArgs: [standardPrincipalCV(stxAddress || '')],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const value = Number(cvToJSON(stakedCall).value);
+
+      const stakedCall2 = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-stake-lp-rewards-2',
+        functionName: 'get-diko-by-wallet',
+        functionArgs: [standardPrincipalCV(stxAddress || '')],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      return value + Number(cvToJSON(stakedCall2).value);
     };
 
     const fetchLpStakeAmount = async (poolContract: string) => {
@@ -134,10 +157,6 @@ export const Stake = () => {
       lpTokenStakedAmount: number,
       lpTokenWalletAmount: number
     ) => {
-      if (lpTokenWalletAmount == undefined) {
-        return;
-      }
-
       let tokenXContract = 'arkadiko-token';
       let tokenYContract = 'usda-token';
       let tokenXName = 'DIKO';
@@ -199,20 +218,20 @@ export const Stake = () => {
       let estimatedValueWallet = 0;
       if (tokenXName == 'STX') {
         const stxPrice = await getPrice('STX');
-        estimatedValueStaked = (stakedBalanceX / 1000000) * stxPrice;
-        estimatedValueWallet = (walletBalanceX / 1000000) * stxPrice;
+        estimatedValueStaked = (stakedBalanceX / 1000000) * stxPrice * 2;
+        estimatedValueWallet = (walletBalanceX / 1000000) * stxPrice * 2;
       } else if (tokenYName == 'STX') {
         const stxPrice = await getPrice('STX');
-        estimatedValueStaked = (stakedBalanceY / 1000000) * stxPrice;
-        estimatedValueWallet = (walletBalanceY / 1000000) * stxPrice;
+        estimatedValueStaked = (stakedBalanceY / 1000000) * stxPrice * 2;
+        estimatedValueWallet = (walletBalanceY / 1000000) * stxPrice * 2;
       } else if (tokenXName == 'USDA') {
         const udsdaPrice = await getPrice('USDA');
-        estimatedValueStaked = (stakedBalanceX / 1000000) * udsdaPrice;
-        estimatedValueWallet = (walletBalanceX / 1000000) * udsdaPrice;
+        estimatedValueStaked = (stakedBalanceX / 1000000) * udsdaPrice * 2;
+        estimatedValueWallet = (walletBalanceX / 1000000) * udsdaPrice * 2;
       } else if (tokenYName == 'USDA') {
         const udsdaPrice = await getPrice('USDA');
-        estimatedValueStaked = (stakedBalanceY / 1000000) * udsdaPrice;
-        estimatedValueWallet = (walletBalanceY / 1000000) * udsdaPrice;
+        estimatedValueStaked = (stakedBalanceY / 1000000) * udsdaPrice * 2;
+        estimatedValueWallet = (walletBalanceY / 1000000) * udsdaPrice * 2;
       }
 
       return {
@@ -228,6 +247,14 @@ export const Stake = () => {
     };
 
     const getData = async () => {
+      if (
+        state.balance['dikousda'] == undefined ||
+        state.balance['wstxusda'] == undefined ||
+        state.balance['wstxdiko'] == undefined
+      ) {
+        return;
+      }
+
       // Get current block height
       const client = getRPCClient();
       const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
@@ -384,6 +411,9 @@ export const Stake = () => {
         setDikoCooldown(text);
         setCooldownRunning(true);
       }
+
+      const missedLpRewards = await fetchMissedLpRewards();
+      setMissedLpRewards(missedLpRewards / 1000000);
 
       setLoadingData(false);
     };
@@ -557,6 +587,45 @@ export const Stake = () => {
     });
   };
 
+  const claimMissingLpRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-lp-rewards-2',
+      functionName: 'claim-rewards',
+      functionArgs: [],
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
+  const stakeMissingLpRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-lp-rewards-2',
+      functionName: 'stake-rewards',
+      functionArgs: [],
+      postConditionMode: 0x01,
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
   return (
     <div>
       <StakeDikoModal
@@ -684,15 +753,15 @@ export const Stake = () => {
                       </div>
                     </div>
                     <div>
-                      <p className="text-lg font-semibold">
-                        {loadingData ? (
-                          <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                        ) : emissionsStarted ? (
-                          `${apy}%`
-                        ) : (
+                      {loadingData ? (
+                        <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                      ) : emissionsStarted ? (
+                        `${apy}%`
+                      ) : (
+                        <p className="text-lg font-semibold">
                           <span>Emissions not started</span>
-                        )}
-                      </p>
+                        </p>
+                      )}
                       <p className="text-base font-normal leading-6 text-gray-500">Current APR</p>
                     </div>
                     <div>
@@ -818,6 +887,35 @@ export const Stake = () => {
                   with the term “farming”.
                 </p>
               </header>
+
+              {missedLpRewards != 0 ? (
+                <div className="mt-4">
+                  <Alert title="LP staking rewards have resumed">
+                    <p>You missed {missedLpRewards} DIKO during the pause.</p>
+                    <p className="mt-1">
+                      You have two options, you can either claim them or directly stake them.
+                    </p>
+                    <div className="mt-4">
+                      <div className="-mx-2 -my-1.5 flex">
+                        <button
+                          type="button"
+                          className="bg-blue-600 px-2 py-1.5 rounded-md text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                          onClick={() => stakeMissingLpRewards()}
+                        >
+                          Stake
+                        </button>
+                        <button
+                          type="button"
+                          className="ml-3 bg-blue-100 px-2 py-1.5 rounded-md text-sm font-medium text-blue-800 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-blue-50 focus:ring-blue-600 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                          onClick={() => claimMissingLpRewards()}
+                        >
+                          Claim
+                        </button>
+                      </div>
+                    </div>
+                  </Alert>
+                </div>
+              ) : null}
 
               <div className="mt-4">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">

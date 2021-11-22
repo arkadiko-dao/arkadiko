@@ -65,16 +65,15 @@ export const ViewProposal = ({ match }) => {
       const json = cvToJSON(proposal);
       data = json.value;
 
-      const totalVotes =
-        (Number(data['yes-votes'].value) + Number(data['no-votes'].value)) / 1000000;
-      const forVotesPercentage = (
-        (Number(data['yes-votes'].value) / totalVotes / 1000000) *
-        100
-      ).toFixed(1);
-      const againstVotesPercentage = (
-        (Number(data['no-votes'].value) / totalVotes / 1000000) *
-        100
-      ).toFixed(1);
+      const yesVotes = Number(data['yes-votes'].value);
+      const noVotes = Number(data['no-votes'].value)
+      const totalVotes = (yesVotes + noVotes) / 1000000;
+      
+      let forVotesPercentage = ((yesVotes / totalVotes / 1000000) * 100) || 0;
+      let againstVotesPercentage = ((noVotes / totalVotes / 1000000) * 100) || 0;
+
+      forVotesPercentage = Math.round(forVotesPercentage * 100) / 100;
+      againstVotesPercentage = Math.round(againstVotesPercentage * 100) / 100;
 
       setProposal({
         id: data['id'].value,

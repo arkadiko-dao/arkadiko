@@ -1,5 +1,5 @@
 import React, { useContext, useState, useRef } from 'react';
-import { Modal } from '@blockstack/ui';
+import { Modal } from '@components/ui/modal';
 import { tokenList } from '@components/token-swap-list';
 import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
@@ -20,6 +20,7 @@ export const UnstakeLpModal = ({
   const [_, setState] = useContext(AppContext);
   const [errors, setErrors] = useState<string[]>([]);
   const [stakeAmount, setStakeAmount] = useState('');
+  const [isUnstakeButtonDisabled, setIsUnstakeButtonDisabled] = useState(false);
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -77,8 +78,10 @@ export const UnstakeLpModal = ({
       if (errors.length < 1) {
         setErrors(errors.concat(['You cannot unstake more than currently staking']));
       }
+      setIsUnstakeButtonDisabled(true);
     } else {
       setErrors([]);
+      setIsUnstakeButtonDisabled(false);
     }
     setStakeAmount(value);
   };
@@ -104,18 +107,22 @@ export const UnstakeLpModal = ({
           />
         </div>
       }
-      closeModal={setShowUnstakeModal(false)}
-      buttonText="Stake"
-      buttonAction={unstake}
+      closeModal={() => setShowUnstakeModal(false)}
+      buttonText="Unstake"
+      buttonAction={() => unstake()}
+      buttonDisabled={isUnstakeButtonDisabled || errors.length > 0}
       initialFocus={inputRef}
     >
       {errors.length > 0 ? (
         <Alert type={Alert.type.ERROR}>
-          <p>{errors[0]}</p>
+          {errors.map(txt => (
+            <p key={txt}>{txt}</p>
+          ))}
         </Alert>
       ) : null}
+
       <p className="mt-3 text-sm text-center text-gray-500">
-        You are current staking{' '}
+        You are currently staking{' '}
         {microToReadable(stakedAmount).toLocaleString(undefined, {
           minimumFractionDigits: 2,
           maximumFractionDigits: 6,
@@ -129,7 +136,7 @@ export const UnstakeLpModal = ({
           inputName={`unstakeLp-${tokenName}`}
           inputId={`unstakeAmount-${tokenName}`}
           inputValue={stakeAmount}
-          inputLabel={`Unstack ${tokenName}`}
+          inputLabel={`Unstake ${tokenName}`}
           onInputChange={onInputStakeChange}
           onClickMax={unstakeMaxAmount}
           ref={inputRef}

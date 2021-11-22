@@ -113,9 +113,9 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeig
       <Modal
         open={showBidModal}
         title="Bid on Auction Lot"
-        closeModal={setShowBidModal(false)}
+        closeModal={() => setShowBidModal(false)}
         buttonText="Add Bid"
-        buttonAction={addBid}
+        buttonAction={() => addBid()}
       >
         <p className="text-sm text-center text-gray-500">
           Bidding ${(preferredBid + 0.49).toFixed(0)} will close the lot and assign you the

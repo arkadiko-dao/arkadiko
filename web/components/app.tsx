@@ -138,7 +138,7 @@ export const App: React.FC = () => {
             const daysPassed = Math.round(
               (currentTimestamp - startTimestamp) / (1000 * 60 * 60 * 24)
             );
-            const daysLeft = Math.round((endTimestamp - currentTimestamp) / (1000 * 60 * 60 * 24));
+            const daysLeft = Math.max(0, Math.round((endTimestamp - currentTimestamp) / (1000 * 60 * 60 * 24)));
 
             const startDate = new Date(startTimestamp).toDateString();
             const endDate = new Date(endTimestamp).toDateString().split(' ').slice(1).join(' ');
