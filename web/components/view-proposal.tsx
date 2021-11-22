@@ -56,7 +56,7 @@ export const ViewProposal = ({ match }) => {
 
       const proposal = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-governance-v1-1',
+        contractName: 'arkadiko-governance-v2-1',
         functionName: 'get-proposal-by-id',
         functionArgs: [uintCV(match.params.id)],
         senderAddress: stxAddress || '',
@@ -101,7 +101,7 @@ export const ViewProposal = ({ match }) => {
         // Get DIKO votes for user
         const votedDiko = await callReadOnlyFunction({
           contractAddress,
-          contractName: 'arkadiko-governance-v1-1',
+          contractName: 'arkadiko-governance-v2-1',
           functionName: 'get-tokens-by-member-by-id',
           functionArgs: [
             uintCV(match.params.id),
@@ -117,7 +117,7 @@ export const ViewProposal = ({ match }) => {
         // Get stDIKO votes for user
         const votedStdiko = await callReadOnlyFunction({
           contractAddress,
-          contractName: 'arkadiko-governance-v1-1',
+          contractName: 'arkadiko-governance-v2-1',
           functionName: 'get-tokens-by-member-by-id',
           functionArgs: [
             uintCV(match.params.id),
@@ -155,7 +155,7 @@ export const ViewProposal = ({ match }) => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-governance-v1-1',
+      contractName: 'arkadiko-governance-v2-1',
       functionName: 'vote-for',
       functionArgs: [
         contractPrincipalCV(
@@ -192,7 +192,7 @@ export const ViewProposal = ({ match }) => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-governance-v1-1',
+      contractName: 'arkadiko-governance-v2-1',
       functionName: 'vote-against',
       functionArgs: [
         contractPrincipalCV(
@@ -221,7 +221,7 @@ export const ViewProposal = ({ match }) => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-governance-v1-1',
+      contractName: 'arkadiko-governance-v2-1',
       functionName: 'return-votes-to-member',
       functionArgs: [
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
@@ -245,7 +245,7 @@ export const ViewProposal = ({ match }) => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-governance-v1-1',
+      contractName: 'arkadiko-governance-v2-1',
       functionName: 'return-votes-to-member',
       functionArgs: [
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
@@ -282,7 +282,7 @@ export const ViewProposal = ({ match }) => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-governance-v1-1',
+      contractName: 'arkadiko-governance-v2-1',
       functionName: 'vote-for',
       functionArgs: [
         contractPrincipalCV(
@@ -319,7 +319,7 @@ export const ViewProposal = ({ match }) => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-governance-v1-1',
+      contractName: 'arkadiko-governance-v2-1',
       functionName: 'vote-against',
       functionArgs: [
         contractPrincipalCV(
