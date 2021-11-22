@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Container } from './home';
-import { SwitchVerticalIcon, InformationCircleIcon } from '@heroicons/react/solid';
+import { SwitchVerticalIcon, InformationCircleIcon, CogIcon } from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { microToReadable } from '@common/vault-utils';
@@ -22,12 +22,13 @@ import { getBalance } from '@components/app';
 import { classNames } from '@common/class-names';
 import { Placeholder } from './ui/placeholder';
 import { SwapLoadingPlaceholder } from './swap-loading-placeholder';
+import { Alert } from './ui/alert';
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
   const [tokenX, setTokenX] = useState(tokenList[2]);
   const [tokenY, setTokenY] = useState(tokenList[1]);
-  const [tokenXAmount, setTokenXAmount] = useState();
+  const [tokenXAmount, setTokenXAmount] = useState<number>();
   const [tokenYAmount, setTokenYAmount] = useState(0.0);
   const [balanceSelectedTokenX, setBalanceSelectedTokenX] = useState(0.0);
   const [balanceSelectedTokenY, setBalanceSelectedTokenY] = useState(0.0);
@@ -118,7 +119,7 @@ export const Swap: React.FC = () => {
         setCurrentPair(json3['value']['value']['value']);
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
-        const basePrice = (balanceX / balanceY).toFixed(2);
+        const basePrice = Number((balanceX / balanceY).toFixed(2));
         // const price = parseFloat(basePrice) + (parseFloat(basePrice) * 0.01);
         setCurrentPrice(basePrice);
         setInverseDirection(false);
@@ -132,7 +133,7 @@ export const Swap: React.FC = () => {
           setInverseDirection(true);
           const balanceX = json4['value']['value']['value']['balance-x'].value;
           const balanceY = json4['value']['value']['value']['balance-y'].value;
-          const basePrice = (balanceY / balanceX).toFixed(2);
+          const basePrice = Number((balanceY / balanceX).toFixed(2));
           setCurrentPrice(basePrice);
           setFoundPair(true);
           setLoadingData(false);
@@ -159,25 +160,30 @@ export const Swap: React.FC = () => {
       return;
     }
 
-    const balanceX = currentPair['balance-x'].value;
-    const balanceY = currentPair['balance-y'].value;
-    let amount = 0;
-    let tokenYAmount = 0;
+    const balanceX = currentPair['balance-x'].value / 1000000;
+    const balanceY = currentPair['balance-y'].value / 1000000;
 
+    const inputWithoutFees = Number(tokenXAmount) * 0.997;
+
+    let tokenYAmount = 0;
+    let priceImpact = 0;
     const slippage = (100 - slippageTolerance) / 100;
-    // amount = ((slippage * balanceY * tokenXAmount) / ((1000 * balanceX) + (997 * tokenXAmount))).toFixed(6);
     if (inverseDirection) {
-      amount = slippage * (balanceX / balanceY) * Number(tokenXAmount);
-      tokenYAmount = ((100 - defaultFee) / 100) * (balanceX / balanceY) * Number(tokenXAmount);
+      const newBalanceY = balanceY + inputWithoutFees;
+      const newBalanceX = (balanceY * balanceX) / newBalanceY;
+      tokenYAmount = balanceX - newBalanceX;
+      priceImpact = (newBalanceY/newBalanceX) / (balanceY/balanceX) - 1.0
     } else {
-      amount = slippage * (balanceY / balanceX) * Number(tokenXAmount);
-      tokenYAmount = ((100 - defaultFee) / 100) * (balanceY / balanceX) * Number(tokenXAmount);
+      const newBalanceX = balanceX + inputWithoutFees;
+      const newBalanceY = (balanceX * balanceY) / newBalanceX;
+      tokenYAmount = balanceY - newBalanceY;
+      priceImpact = (newBalanceX/newBalanceY) / (balanceX/balanceY) - 1.0
     }
-    setMinimumReceived(amount * 0.97);
+
+    setMinimumReceived(tokenYAmount * slippage);
     setTokenYAmount(tokenYAmount);
-    const impact = balanceX / 1000000 / tokenXAmount;
     setPriceImpact(
-      (100 / impact).toLocaleString(undefined, {
+      (priceImpact * 100).toLocaleString(undefined, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 6,
       })
@@ -224,9 +230,9 @@ export const Swap: React.FC = () => {
     setInsufficientBalance(false);
 
     if (tokenX['name'].toLowerCase() === 'stx') {
-      setTokenXAmount(parseInt(balanceSelectedTokenX, 10) - 1);
+      setTokenXAmount(Math.floor(balanceSelectedTokenX) - 1);
     } else {
-      setTokenXAmount(parseInt(balanceSelectedTokenX, 10));
+      setTokenXAmount(Math.floor(balanceSelectedTokenX));
     }
   };
 
@@ -317,7 +323,7 @@ export const Swap: React.FC = () => {
                       id="tabs"
                       name="tabs"
                       className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                      defaultValue={tabs.find(tab => tab.current).name}
+                      defaultValue={tabs.find(tab => tab.current)?.name}
                     >
                       {tabs.map(tab => (
                         <option key={tab.name}>{tab.name}</option>
@@ -392,7 +398,7 @@ export const Swap: React.FC = () => {
                               })}{' '}
                               {tokenX.name}
                             </p>
-                            {parseInt(balanceSelectedTokenX, 10) > 0 ? (
+                            {Math.floor(balanceSelectedTokenX) > 0 ? (
                               <button
                                 type="button"
                                 onClick={() => setMaximum()}
@@ -469,7 +475,9 @@ export const Swap: React.FC = () => {
                     {state.userData ? (
                       <button
                         type="button"
-                        disabled={loadingData || insufficientBalance || tokenYAmount === 0 || !foundPair}
+                        disabled={
+                          loadingData || insufficientBalance || tokenYAmount === 0 || !foundPair
+                        }
                         onClick={() => swapTokens()}
                         className={classNames(
                           tokenYAmount === 0 || insufficientBalance || !foundPair
@@ -567,7 +575,7 @@ export const Swap: React.FC = () => {
                     <Placeholder className="justify-end" width={Placeholder.width.THIRD} />
                   ) : (
                     <>
-                      ≈<div className="mr-1 truncate">${priceImpact}</div>%
+                      ≈<div className="mr-1 truncate">{priceImpact}</div>%
                     </>
                   )}
                 </dd>

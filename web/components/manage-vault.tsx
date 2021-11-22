@@ -166,15 +166,13 @@ export const ManageVault = ({ match }) => {
         contractAddress,
         contractName: 'arkadiko-claim-yield-v2-1',
         functionName: 'get-claim-by-vault-id',
-        functionArgs: [
-          uintCV(vault?.id)
-        ],
+        functionArgs: [uintCV(vault?.id)],
         senderAddress: contractAddress || '',
         network: network,
       });
 
       const poxYield = cvToJSON(yieldCall);
-      setPoxYield(poxYield.value["ustx"].value / 1000000);
+      setPoxYield(poxYield.value['ustx'].value / 1000000);
       setLoadingPoxYieldData(false);
     };
 
@@ -639,7 +637,7 @@ export const ManageVault = ({ match }) => {
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
           'arkadiko-collateral-types-v1-1'
         ),
-        falseCV()
+        falseCV(),
       ],
       onFinish: data => {
         console.log('claiming yield', data, data.txId);
@@ -727,7 +725,10 @@ export const ManageVault = ({ match }) => {
                   <div className="mt-4">
                     <Alert>
                       <p className="text-left">
-                        When depositing in a vault that is already stacking, keep in mind that your extra collateral will be <span className="font-semibold">locked but not stacked</span>. You won't be able to stack these STX until the cooldown cycle!
+                        When depositing in a vault that is already stacking, keep in mind that your
+                        extra collateral will be{' '}
+                        <span className="font-semibold">locked but not stacked</span>. You won't be
+                        able to stack these STX until the cooldown cycle!
                       </p>
                     </Alert>
                   </div>
@@ -1281,7 +1282,6 @@ export const ManageVault = ({ match }) => {
                           </button>
                         </div>
                       ) : null}
-
                     </div>
 
                     <dl className="mt-4">

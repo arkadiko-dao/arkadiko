@@ -104,28 +104,6 @@
   )
 )
 
-(define-private (max-of (i1 uint) (i2 uint))
-  (if (> i1 i2)
-      i1
-      i2))
-
-(define-public (propose-dao
-  (stake-pool-diko <stake-pool-diko-trait>)
-  (start-block-height uint)
-  (title (string-utf8 256))
-  (url (string-utf8 256))
-  (contract-changes (list 10 (tuple (name (string-ascii 256)) (address principal) (qualified-name principal) (can-mint bool) (can-burn bool))))
-)
-  (propose
-    stake-pool-diko
-    start-block-height
-    u250
-    title
-    url
-    contract-changes
-  )
-)
-
 ;; @desc Start a proposal. Requires 1% of the supply in your wallet. Voting period is ~10 days.
 ;; @param stake-pool-diko; DIKO pool to get stDIKO/DIKO ratio from
 ;; @param start-block-height; block at which voting starts
@@ -136,7 +114,6 @@
 (define-public (propose
   (stake-pool-diko <stake-pool-diko-trait>)
   (start-block-height uint)
-  (vote-length uint)
   (title (string-utf8 256))
   (url (string-utf8 256))
   (contract-changes (list 10 (tuple (name (string-ascii 256)) (address principal) (qualified-name principal) (can-mint bool) (can-burn bool))))
@@ -148,12 +125,6 @@
     (proposer-diko-votes (unwrap-panic (token-amount-to-votes stake-pool-diko .arkadiko-token proposer-diko-balance)))
     (proposer-stdiko-votes (unwrap-panic (token-amount-to-votes stake-pool-diko .stdiko-token proposer-stdiko-balance)))
     (proposer-total-balance (+ proposer-diko-votes proposer-stdiko-votes))
-    (end-block-height
-      (if (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner))
-        (+ start-block-height (max-of u250 vote-length))
-        (+ start-block-height u1440)
-      )
-    )
 
     (diko-init-balance (unwrap-panic (contract-call? .arkadiko-token get-balance .arkadiko-diko-init)))
     (supply (- (unwrap-panic (contract-call? .arkadiko-token get-total-supply)) diko-init-balance))
@@ -165,7 +136,7 @@
       url: url,
       is-open: true,
       start-block-height: start-block-height,
-      end-block-height: end-block-height,
+      end-block-height: (+ start-block-height u250),
       yes-votes: u0,
       no-votes: u0,
       contract-changes: contract-changes
@@ -428,12 +399,7 @@
   (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
-    (if (is-some (contract-call? .arkadiko-dao get-contract-address-by-name name))
-      (ok false)
-      (begin
-        (try! (contract-call? .arkadiko-dao set-contract-address name address qualified-name can-mint can-burn))
-        (ok true)
-      )
-    )
+    (try! (contract-call? .arkadiko-dao set-contract-address name address qualified-name can-mint can-burn))
+    (ok true)
   )
 )
