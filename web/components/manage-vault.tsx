@@ -5,6 +5,7 @@ import { InformationCircleIcon } from '@heroicons/react/solid';
 import { Container } from './home';
 import { VaultDepositModal } from '@components/vault-deposit-modal';
 import { VaultWithdrawModal } from '@components/vault-withdraw-modal';
+import { VaultMintModal } from '@components/vault-mint-modal';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
@@ -51,7 +52,6 @@ export const ManageVault = ({ match }) => {
   const [showBurnModal, setShowBurnModal] = useState(false);
   const [auctionEnded, setAuctionEnded] = useState(false);
   const [maximumCollateralToWithdraw] = useState(0);
-  const [usdToMint, setUsdToMint] = useState('');
   const [usdToBurn, setUsdToBurn] = useState('');
   const [reserveName, setReserveName] = useState('');
   const [vault, setVault] = useState<VaultProps>();
@@ -337,41 +337,7 @@ export const ManageVault = ({ match }) => {
 
   const onInputChange = (event: { target: { value: any; name: any } }) => {
     const value = event.target.value;
-    if (event.target.name === 'mintDebt') {
-      setUsdToMint(value);
-    } else {
-      setUsdToBurn(value);
-    }
-  };
-
-  const callMint = async () => {
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'mint',
-      functionArgs: [
-        uintCV(match.params.id),
-        uintCV(Number(parseFloat(usdToMint)).toFixed(6) * 1000000),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v1-1'
-        ),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1'),
-      ],
-      onFinish: data => {
-        console.log('finished mint!', data, data.txId);
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-        setShowMintModal(false);
-      },
-      anchorMode: AnchorMode.Any,
-    });
+    setUsdToBurn(value);
   };
 
   const callToggleStacking = async () => {
@@ -473,18 +439,6 @@ export const ManageVault = ({ match }) => {
     });
   };
 
-  const mintMaxAmount = () => {
-    setUsdToMint(
-      availableCoinsToMint(
-        price,
-        collateralLocked(),
-        outstandingDebt(),
-        collateralType?.collateralToDebtRatio,
-        vault?.collateralToken
-      ) * 0.98
-    );
-  };
-
   const burnMaxAmount = () => {
     let debtToPay = Number(outstandingDebt()) * 1000000 + Number(stabilityFee);
     if (debtToPay > state.balance['usda']) {
@@ -568,54 +522,11 @@ export const ManageVault = ({ match }) => {
         match={match}
         />
 
-
-      <Modal
-        open={showMintModal}
-        title="Mint extra USDA"
-        icon={<img className="w-10 h-10 rounded-full" src={tokenList[0].logo} alt="" />}
-        closeModal={() => setShowMintModal(false)}
-        buttonText="Mint"
-        buttonAction={() => callMint()}
-        initialFocus={inputRef}
-      >
-        <p className="text-sm text-center text-gray-500">
-          Choose how much extra USDA you want to mint. You can mint a maximum of{' '}
-          {availableCoinsToMint(
-            price,
-            collateralLocked(),
-            outstandingDebt(),
-            collateralType?.collateralToDebtRatio,
-            vault?.collateralToken
-          ).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 6,
-          })}{' '}
-          USDA.
-        </p>
-        
-        <div className="mt-6">
-          <InputAmount
-            balance={availableCoinsToMint(
-              price,
-              collateralLocked(),
-              outstandingDebt(),
-              collateralType?.collateralToDebtRatio,
-              vault?.collateralToken
-            ).toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-            })}
-            token="USDA"
-            inputName="mintDebt"
-            inputId="mintUSDAAmount"
-            inputValue={usdToMint}
-            inputLabel="Mint USDA"
-            onInputChange={onInputChange}
-            onClickMax={mintMaxAmount}
-            ref={inputRef}
-          />
-        </div>
-      </Modal>
+      <VaultMintModal
+        showMintModal={showMintModal}
+        setShowMintModal={setShowMintModal}
+        match={match}
+        />
 
       <Modal
         open={showBurnModal}
