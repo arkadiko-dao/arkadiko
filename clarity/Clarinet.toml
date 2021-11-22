@@ -177,6 +177,10 @@ path = "contracts/arkadiko-stake-pool-diko-trait-v1.clar"
 depends_on = ["arkadiko-stake-pool-trait-v1", "arkadiko-stake-pool-diko-trait-v1", "arkadiko-token", "stdiko-token", "sip-010-trait-ft-standard", "arkadiko-stake-registry-v1-1"]
 path = "contracts/arkadiko-stake-pool-diko-v1-1.clar"
 
+[contracts.arkadiko-stake-pool-diko-v1-2]
+depends_on = ["arkadiko-stake-pool-trait-v1", "arkadiko-stake-pool-diko-trait-v1", "arkadiko-token", "stdiko-token", "sip-010-trait-ft-standard", "arkadiko-stake-registry-v1-1"]
+path = "contracts/arkadiko-stake-pool-diko-v1-2.clar"
+
 [contracts.arkadiko-stake-pool-diko-slash-v1-1]
 depends_on = ["arkadiko-stake-pool-diko-v1-1"]
 path = "contracts/arkadiko-stake-pool-diko-slash-v1-1.clar"
