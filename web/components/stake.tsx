@@ -80,7 +80,7 @@ export const Stake = () => {
   useEffect(() => {
     let mounted = true;
 
-    const checkUnstakedTokens = async () => {
+    const checkUnstakedTokens = () => {
       if (
         state.balance['dikousda'] > 0 ||
         state.balance['wstxusda'] > 0 ||
@@ -278,34 +278,6 @@ export const Stake = () => {
       setLpStxUsdaStakedAmount(userStakedData["stake-amount-wstx-usda"].value);
       setLpStxDikoStakedAmount(userStakedData["stake-amount-wstx-diko"].value);
 
-      // Pending rewards
-      const dikoUsdaLpPendingRewards = await fetchLpPendingRewards('arkadiko-stake-pool-diko-usda-v1-1');
-      setLpDikoUsdaPendingRewards(dikoUsdaLpPendingRewards);
-      const stxUsdaLpPendingRewards = await fetchLpPendingRewards('arkadiko-stake-pool-wstx-usda-v1-1');
-      setLpStxUsdaPendingRewards(stxUsdaLpPendingRewards);
-      const stxDikoLpPendingRewards = await fetchLpPendingRewards('arkadiko-stake-pool-wstx-diko-v1-1');
-      setLpStxDikoPendingRewards(stxDikoLpPendingRewards);
-
-      // LP value
-      const dikoUsdaLpValue = await lpTokenValue(
-        'arkadiko-stake-pool-diko-usda-v1-1',
-        userStakedData["stake-amount-diko-usda"].value,
-        state.balance['dikousda']
-      );
-      setDikoUsdaPoolInfo(dikoUsdaLpValue);
-      const stxUsdaLpValue = await lpTokenValue(
-        'arkadiko-stake-pool-wstx-usda-v1-1',
-        userStakedData["stake-amount-wstx-usda"].value,
-        state.balance['wstxusda']
-      );
-      setStxUsdaPoolInfo(stxUsdaLpValue);
-      const stxDikoLpValue = await lpTokenValue(
-        'arkadiko-stake-pool-wstx-diko-v1-1',
-        userStakedData["stake-amount-wstx-diko"].value,
-        state.balance['wstxdiko']
-      );
-      setStxDikoPoolInfo(stxDikoLpValue);
-
       // Total staked
       const totalStakedCall = await callReadOnlyFunction({
         contractAddress,
@@ -320,6 +292,41 @@ export const Stake = () => {
       let totalDikoUsdaStaked = totalStakedData["stake-total-diko-usda"].value;
       let totalStxUsdaStaked = totalStakedData["stake-total-wstx-usda"].value;
       let totalStxDikoStaked = totalStakedData["stake-total-wstx-diko"].value;
+     
+      // LP value
+      const [dikoUsdaLpValue, stxUsdaLpValue, stxDikoLpValue] = await Promise.all([
+        lpTokenValue(
+          'arkadiko-stake-pool-diko-usda-v1-1',
+          userStakedData["stake-amount-diko-usda"].value,
+          state.balance['dikousda']
+        ),
+        lpTokenValue(
+          'arkadiko-stake-pool-wstx-usda-v1-1',
+          userStakedData["stake-amount-wstx-usda"].value,
+          state.balance['wstxusda']
+        ),
+        lpTokenValue(
+          'arkadiko-stake-pool-wstx-diko-v1-1',
+          userStakedData["stake-amount-wstx-diko"].value,
+          state.balance['wstxdiko']
+        ),
+      ]);
+
+      setDikoUsdaPoolInfo(dikoUsdaLpValue);
+      setStxUsdaPoolInfo(stxUsdaLpValue);
+      setStxDikoPoolInfo(stxDikoLpValue);
+
+      // Pending rewards
+      const [dikoUsdaLpPendingRewards, stxUsdaLpPendingRewards, stxDikoLpPendingRewards] =
+        await Promise.all([
+          fetchLpPendingRewards('arkadiko-stake-pool-diko-usda-v1-1'),
+          fetchLpPendingRewards('arkadiko-stake-pool-wstx-usda-v1-1'),
+          fetchLpPendingRewards('arkadiko-stake-pool-wstx-diko-v1-1'),
+        ]);
+
+      setLpDikoUsdaPendingRewards(dikoUsdaLpPendingRewards);
+      setLpStxUsdaPendingRewards(stxUsdaLpPendingRewards);
+      setLpStxDikoPendingRewards(stxDikoLpPendingRewards);
 
       const totalStakingRewardsYear1 = 23500000;
 
