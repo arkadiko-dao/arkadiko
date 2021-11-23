@@ -15,4 +15,6 @@
 #
 class SwapEvent < ApplicationRecord
   belongs_to :pool
+
+  validates :transaction_id, uniqueness: true
 end
