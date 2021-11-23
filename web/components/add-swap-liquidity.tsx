@@ -4,21 +4,32 @@ import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import { microToReadable } from '@common/vault-utils';
 import {
-  AnchorMode, callReadOnlyFunction, cvToJSON, contractPrincipalCV, uintCV,
-  makeStandardSTXPostCondition, FungibleConditionCode, makeStandardFungiblePostCondition,
-  createAssetInfo
+  AnchorMode,
+  callReadOnlyFunction,
+  cvToJSON,
+  contractPrincipalCV,
+  uintCV,
+  makeStandardSTXPostCondition,
+  FungibleConditionCode,
+  makeStandardFungiblePostCondition,
+  createAssetInfo,
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { tokenTraits } from '@common/vault-utils';
-import { InformationCircleIcon, PlusCircleIcon, MinusCircleIcon, ArrowLeftIcon } from '@heroicons/react/solid';
+import {
+  InformationCircleIcon,
+  PlusCircleIcon,
+  MinusCircleIcon,
+  ArrowLeftIcon,
+} from '@heroicons/react/solid';
 import { CashIcon, PlusIcon } from '@heroicons/react/outline';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { classNames } from '@common/class-names';
-import { Placeholder } from './placeholder';
+import { Placeholder } from './ui/placeholder';
 
 export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -29,8 +40,16 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
   const [currentPrice, setCurrentPrice] = useState(0.0);
   const [pooledX, setPooledX] = useState(0.0);
   const [pooledY, setPooledY] = useState(0.0);
-  const [tokenX, setTokenX] = useState(tokenList[tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdA.toLowerCase())]);
-  const [tokenY, setTokenY] = useState(tokenList[tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdB.toLowerCase())]);
+  const [tokenX, setTokenX] = useState(
+    tokenList[
+      tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdA.toLowerCase())
+    ]
+  );
+  const [tokenY, setTokenY] = useState(
+    tokenList[
+      tokenList.findIndex(v => v['name'].toLowerCase() === match.params.currencyIdB.toLowerCase())
+    ]
+  );
   const [tokenPair, setTokenPair] = useState('');
   const [inverseDirection, setInverseDirection] = useState(false);
   const [foundPair, setFoundPair] = useState(false);
@@ -62,23 +81,35 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
     }
   }, [state.currentTxStatus]);
 
-  const setMaximum = () => {
+  const setMaximumX = () => {
+    let tokenAmount = parseInt(balanceSelectedTokenX, 10);
     if (tokenX['name'].toLowerCase() === 'stx') {
-      setTokenXAmount(parseInt(balanceSelectedTokenX, 10) - 1);
-    } else {
-      setTokenXAmount(parseInt(balanceSelectedTokenX, 10));
+      tokenAmount = parseInt(balanceSelectedTokenX, 10) - 1;
     }
+    setInsufficientBalance(false);
+    setTokenXAmount(tokenAmount);
+    calculateTokenYAmount(Number(tokenAmount));
+  };
+
+  const setMaximumY = () => {
+    let tokenAmount = parseInt(balanceSelectedTokenY, 10);
+    if (tokenY['name'].toLowerCase() === 'stx') {
+      tokenAmount = parseInt(balanceSelectedTokenY, 10) - 1;
+    }
+    setInsufficientBalance(false);
+    setTokenYAmount(tokenAmount);
+    calculateTokenXAmount(Number(tokenAmount));
   };
 
   useEffect(() => {
-    const fetchPair = async (tokenXContract:string, tokenYContract:string) => {
-      let details = await callReadOnlyFunction({
+    const fetchPair = async (tokenXContract: string, tokenYContract: string) => {
+      const details = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-swap-v1-1",
-        functionName: "get-pair-details",
+        contractName: 'arkadiko-swap-v2-1',
+        functionName: 'get-pair-details',
         functionArgs: [
           contractPrincipalCV(contractAddress, tokenXContract),
-          contractPrincipalCV(contractAddress, tokenYContract)
+          contractPrincipalCV(contractAddress, tokenYContract),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -103,7 +134,13 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         setCurrentPrice(basePrice);
         const totalTokens = json3['value']['value']['value']['shares-total'].value;
         setTotalTokens(totalTokens);
-        const totalShare = Number(((state.balance[`${tokenX.name.toLowerCase()}${tokenY.name.toLowerCase()}`] / totalTokens) * 100).toFixed(2));
+        const totalShare = Number(
+          (
+            (state.balance[`${tokenX.name.toLowerCase()}${tokenY.name.toLowerCase()}`] /
+              totalTokens) *
+            100
+          ).toFixed(2)
+        );
         if (totalShare > 100) {
           setTotalShare(100);
         } else {
@@ -124,7 +161,13 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
           setCurrentPrice(basePrice);
           const totalTokens = json4['value']['value']['value']['shares-total'].value;
           setTotalTokens(totalTokens);
-          const totalShare = Number(((state.balance[`${tokenY.name.toLowerCase()}${tokenX.name.toLowerCase()}`] / totalTokens) * 100).toFixed(2));
+          const totalShare = Number(
+            (
+              (state.balance[`${tokenY.name.toLowerCase()}${tokenX.name.toLowerCase()}`] /
+                totalTokens) *
+              100
+            ).toFixed(2)
+          );
           if (totalShare > 100) {
             setTotalShare(100);
           } else {
@@ -141,36 +184,61 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
     resolvePair();
   }, [tokenX, tokenY, state.balance]);
 
-  useEffect(() => {
-    if (currentPrice > 0) {
-      calculateTokenYAmount(tokenXAmount);
-    }
-  }, [tokenXAmount]);
+  const onInputXChange = (event: { target: { name: any; value: any } }) => {
+    const value = event.target.value;
 
-  const onInputChange = (event: { target: { name: any; value: any; }; }) => {
+    setInsufficientBalance(false);
+    setTokenXAmount(value);
+    calculateTokenYAmount(Number(value));
+
+    if (value > balanceSelectedTokenX) {
+      setInsufficientBalance(true);
+    }
+  };
+
+  const onInputYChange = (event: { target: { name: any; value: any } }) => {
     const value = event.target.value;
     if (!value) {
       return;
     }
 
     setInsufficientBalance(false);
-    setTokenXAmount(value);
+    setTokenYAmount(value);
+    calculateTokenXAmount(Number(value));
 
-    if (value > balanceSelectedTokenX) {
+    if (value > balanceSelectedTokenY) {
       setInsufficientBalance(true);
     }
-    calculateTokenYAmount(Number(value));
   };
 
-  const calculateTokenYAmount = (value:number) => {
+  const calculateTokenYAmount = (value: number) => {
     setTokenYAmount(currentPrice * value);
     if (currentPrice * value > balanceSelectedTokenY) {
       setInsufficientBalance(true);
     }
-    const newTokens = (totalTokens / 1000000 * value) / pooledX;
+    const newTokens = ((totalTokens / 1000000) * value) / pooledX;
     setNewTokens(newTokens);
     if (value > 0) {
-      const share = Number((1000000 * 100 * newTokens / totalTokens).toFixed(8));
+      const share = Number(((1000000 * 100 * newTokens) / totalTokens).toFixed(8));
+      if (share > 100) {
+        setNewShare(100);
+      } else {
+        setNewShare(share);
+      }
+    } else {
+      setNewShare(0);
+    }
+  };
+
+  const calculateTokenXAmount = (value: number) => {
+    setTokenXAmount(value / currentPrice);
+    if (currentPrice * value > balanceSelectedTokenX) {
+      setInsufficientBalance(true);
+    }
+    const newTokens = ((totalTokens / 1000000) * value) / pooledY;
+    setNewTokens(newTokens);
+    if (value > 0) {
+      const share = Number(((1000000 * 100 * newTokens) / totalTokens).toFixed(8));
       if (share > 100) {
         setNewShare(100);
       } else {
@@ -182,13 +250,15 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
   };
 
   const addLiquidity = async () => {
-    let swapTrait = tokenTraits[`${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`]['name'];
+    let swapTrait =
+      tokenTraits[`${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`]['name'];
     let tokenXParam = tokenXTrait;
     let tokenYParam = tokenYTrait;
     let tokenXName = tokenX['name'].toLowerCase();
     let tokenYName = tokenY['name'].toLowerCase();
     if (inverseDirection) {
-      swapTrait = tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['name'];
+      swapTrait =
+        tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['name'];
       tokenXParam = tokenYTrait;
       tokenYParam = tokenXTrait;
       tokenXName = tokenY['name'].toLowerCase();
@@ -208,24 +278,16 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
           stxAddress || '',
           FungibleConditionCode.Equal,
           uintCV(parseInt(tokenXAmount * 1000000, 10)).value,
-          createAssetInfo(
-            contractAddress,
-            tokenXParam,
-            'wstx'
-          )
+          createAssetInfo(contractAddress, tokenXParam, 'wstx')
         )
-      )
+      );
     } else {
       postConditions.push(
         makeStandardFungiblePostCondition(
           stxAddress || '',
           FungibleConditionCode.LessEqual,
           uintCV(parseInt(tokenXAmount * 1000000, 10)).value,
-          createAssetInfo(
-            contractAddress,
-            tokenXParam,
-            tokenXName
-          )
+          createAssetInfo(contractAddress, tokenXParam, tokenXName)
         )
       );
     }
@@ -242,24 +304,16 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
           stxAddress || '',
           FungibleConditionCode.Equal,
           uintCV(parseInt(tokenYAmount * 1000000, 10)).value,
-          createAssetInfo(
-            contractAddress,
-            tokenYParam,
-            'wstx'
-          )
+          createAssetInfo(contractAddress, tokenYParam, 'wstx')
         )
-      )
+      );
     } else {
       postConditions.push(
         makeStandardFungiblePostCondition(
           stxAddress || '',
           FungibleConditionCode.LessEqual,
           uintCV(parseInt(tokenYAmount * 1000000, 10)).value,
-          createAssetInfo(
-            contractAddress,
-            tokenYParam,
-            tokenYName
-          )
+          createAssetInfo(contractAddress, tokenYParam, tokenYName)
         )
       );
     }
@@ -267,20 +321,24 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-swap-v1-1',
+      contractName: 'arkadiko-swap-v2-1',
       functionName: 'add-to-position',
       functionArgs: [
         contractPrincipalCV(contractAddress, tokenXParam),
         contractPrincipalCV(contractAddress, tokenYParam),
         contractPrincipalCV(contractAddress, swapTrait),
         uintCV(parseInt(tokenXAmount * 1000000, 10)),
-        uintCV(parseInt(tokenYAmount * 1000000, 10))
+        uintCV(parseInt(tokenYAmount * 1000000, 10)),
       ],
       postConditionMode: 0x01,
       onFinish: data => {
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -289,13 +347,14 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
       {state.userData ? (
         <Container>
           <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
-            <p className="w-full max-w-lg">
+            <p className="w-full max-w-lg mb-2">
               <RouterLink className="" to={`/pool`} exact>
                 <span className="p-1.5 rounded-md inline-flex items-center">
-                  <ArrowLeftIcon className="w-4 h-4 mr-2 text-gray-500 group-hover:text-gray-900" aria-hidden="true" />
-                  <span className="text-gray-600 hover:text-gray-900">
-                    Back to pool overview
-                  </span>
+                  <ArrowLeftIcon
+                    className="w-4 h-4 mr-2 text-gray-500 group-hover:text-gray-900"
+                    aria-hidden="true"
+                  />
+                  <span className="text-gray-600 hover:text-gray-900">Back to pool overview</span>
                 </span>
               </RouterLink>
             </p>
@@ -303,168 +362,297 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
               <div className="flex flex-col p-4">
                 <div className="flex justify-between mb-4">
                   <div>
-                    <h2 className="text-xl leading-6 text-gray-900 font-headings">
-                      Liquidity
-                    </h2>
+                    <h2 className="text-xl leading-6 text-gray-900 font-headings">Liquidity</h2>
                     <p className="inline-flex items-center mt-1 text-sm text-gray-600">
                       Add liquidity to receive LP tokens
-                      <Tooltip className="z-10" shouldWrapChildren={true} label={`Providing liquidity through a pair of assets is a great way to earn passive income from your idle crypto tokens.`}>
-                        <InformationCircleIcon className="block w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+                      <Tooltip
+                        className="z-10"
+                        shouldWrapChildren={true}
+                        label={`Providing liquidity through a pair of assets is a great way to earn passive income from your idle crypto tokens.`}
+                      >
+                        <InformationCircleIcon
+                          className="block w-5 h-5 ml-2 text-gray-400"
+                          aria-hidden="true"
+                        />
                       </Tooltip>
                     </p>
                   </div>
                 </div>
                 <div className="group p-0.5 rounded-lg flex w-full bg-gray-50 hover:bg-gray-100">
-                  <button type="button" className="p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md flex items-center justify-center flex-1 text-sm text-gray-600 font-medium focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus:outline-none focus-visible:ring-offset-gray-100 bg-white ring-1 ring-black ring-opacity-5">
+                  <button
+                    type="button"
+                    className="p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md flex items-center justify-center flex-1 text-sm text-gray-600 font-medium focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus:outline-none focus-visible:ring-offset-gray-100 bg-white ring-1 ring-black ring-opacity-5"
+                  >
                     <PlusCircleIcon className="w-4 h-4 mr-2 text-indigo-500" aria-hidden="true" />
-                    <span className="text-gray-900">
-                      Add
-                    </span>
+                    <span className="text-gray-900">Add</span>
                   </button>
 
-                  <RouterLink className="ml-0.5 flex items-center justify-center flex-1 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 rounded-md focus:outline-none focus-visible:ring-offset-gray-100" to={`/swap/remove/${match.params.currencyIdA}/${match.params.currencyIdB}`} exact>
+                  <RouterLink
+                    className="ml-0.5 flex items-center justify-center flex-1 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 rounded-md focus:outline-none focus-visible:ring-offset-gray-100"
+                    to={`/swap/remove/${match.params.currencyIdA}/${match.params.currencyIdB}`}
+                    exact
+                  >
                     <span className="p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md inline-flex items-center text-sm font-medium">
-                      <MinusCircleIcon className="w-4 h-4 mr-2 text-gray-500 group-hover:text-gray-900" aria-hidden="true" />
-                      <span className="text-gray-600 group-hover:text-gray-900">
-                        Remove
-                      </span>
+                      <MinusCircleIcon
+                        className="w-4 h-4 mr-2 text-gray-500 group-hover:text-gray-900"
+                        aria-hidden="true"
+                      />
+                      <span className="text-gray-600 group-hover:text-gray-900">Remove</span>
                     </span>
                   </RouterLink>
                 </div>
-              
+
                 <form className="mt-4">
                   {isLoading ? (
-                    <Placeholder className="py-2 justify-center" width={Placeholder.width.HALF}/>
+                    <>
+                      <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 h-[104px]">
+                        <div className="flex items-center p-4 pb-2">
+                          <TokenSwapList selected={tokenX} disabled={true} />
+                        </div>
+
+                        <div className="flex items-center justify-end p-4 pt-0">
+                          <Placeholder
+                            className="justify-start py-2"
+                            width={Placeholder.width.THIRD}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-center my-3">
+                        <PlusIcon className="w-6 h-6 text-gray-500" aria-hidden="true" />
+                      </div>
+
+                      <div className="mt-1 border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 h-[104px]">
+                        <div className="flex items-center p-4 pb-2">
+                          <TokenSwapList selected={tokenY} disabled={true} />
+                        </div>
+
+                        <div className="flex items-center justify-end p-4 pt-0">
+                          <Placeholder
+                            className="justify-start py-2"
+                            width={Placeholder.width.THIRD}
+                          />
+                        </div>
+                      </div>
+                    </>
                   ) : (
                     <>
-                    <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
-                      <div className="flex items-center p-4 pb-2">
-
-                        <TokenSwapList
-                          selected={tokenX}
-                          setSelected={setTokenX}
-                          disabled={true}
-                        />
-
-                        <label htmlFor="tokenXAmount" className="sr-only">{tokenX.name}</label>
-                        <input
-                          type="number"
-                          inputMode="decimal" 
-                          autoFocus={true}
-                          autoComplete="off"
-                          autoCorrect="off"
-                          name="tokenXAmount"
-                          id="tokenXAmount"
-                          pattern="^[0-9]*[.,]?[0-9]*$"
-                          placeholder="0.0"
-                          value={tokenXAmount || ''}
-                          onChange={onInputChange}
-                          className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
-                          style={{appearance: 'textfield'}} />
-                      </div>
-
-                      <div className="flex items-center justify-end p-4 pt-0 text-sm">
-                        <div className="flex items-center justify-between w-full">
-                          <div className="flex items-center justify-start">
-                            <p className="text-gray-500">Balance: {balanceSelectedTokenX.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenX.name}</p>
-                            {parseInt(balanceSelectedTokenX, 10) > 0 ? (
-                              <button
-                                type="button"
-                                onClick={() => setMaximum()}
-                                className="p-1 ml-2 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
-                              >
-                                Max.
-                              </button>
-                            ) : `` }
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  
-                    <div className="flex items-center justify-center my-3">
-                      <PlusIcon className="w-6 h-6 text-gray-500" aria-hidden="true" />
-                    </div>
-
-                    <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
-                      <div className="flex items-center p-4 pb-2">
-
-                        <TokenSwapList
-                          selected={tokenY}
-                          setSelected={setTokenY}
-                          disabled={true}
-                        />
-
-                        <label htmlFor="tokenYAmount" className="sr-only">{tokenY.name}</label>
-                        <input
-                          type="text"
-                          inputMode="decimal" 
-                          autoComplete="off"
-                          autoCorrect="off"
-                          name="tokenYAmount"
-                          id="tokenYAmount"
-                          pattern="^[0-9]*[.,]?[0-9]*$"
-                          placeholder="0.0"
-                          value={tokenYAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
-                          disabled={true}
-                          className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
+                      <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
+                        <div className="flex items-center p-4 pb-2">
+                          <TokenSwapList
+                            selected={tokenX}
+                            setSelected={setTokenX}
+                            disabled={true}
                           />
-                      </div>
 
-                      <div className="flex items-center justify-end p-4 pt-0 text-sm">
-                        <div className="flex items-center justify-between w-full">
-                          <div className="flex items-center justify-start">
-                            <p className="text-gray-500">Balance: {balanceSelectedTokenY.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {tokenY.name}</p>
+                          <label htmlFor="tokenXAmount" className="sr-only">
+                            {tokenX.name}
+                          </label>
+                          <input
+                            type="number"
+                            inputMode="decimal"
+                            autoFocus={true}
+                            autoComplete="off"
+                            autoCorrect="off"
+                            name="tokenXAmount"
+                            id="tokenXAmount"
+                            pattern="^[0-9]*[.,]?[0-9]*$"
+                            placeholder="0.0"
+                            value={tokenXAmount || ''}
+                            onChange={onInputXChange}
+                            min={0}
+                            className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
+                            style={{ appearance: 'textfield' }}
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-end p-4 pt-0 text-sm">
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center justify-start">
+                              <p className="text-gray-500">
+                                Balance:{' '}
+                                {balanceSelectedTokenX.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 6,
+                                })}{' '}
+                                {tokenX.name}
+                              </p>
+                              {parseInt(balanceSelectedTokenX, 10) > 0 ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setMaximumX()}
+                                  className="p-1 ml-2 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                                >
+                                  Max.
+                                </button>
+                              ) : (
+                                ``
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+
+                      <div className="flex items-center justify-center my-3">
+                        <PlusIcon className="w-6 h-6 text-gray-500" aria-hidden="true" />
+                      </div>
+
+                      <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
+                        <div className="flex items-center p-4 pb-2">
+                          <TokenSwapList
+                            selected={tokenY}
+                            setSelected={setTokenY}
+                            disabled={true}
+                          />
+
+                          <label htmlFor="tokenYAmount" className="sr-only">
+                            {tokenY.name}
+                          </label>
+                          <input
+                            type="number"
+                            inputMode="decimal"
+                            autoFocus={true}
+                            autoComplete="off"
+                            autoCorrect="off"
+                            name="tokenYAmount"
+                            id="tokenYAmount"
+                            pattern="^[0-9]*[.,]?[0-9]*$"
+                            placeholder="0.0"
+                            value={tokenYAmount || ''}
+                            onChange={onInputYChange}
+                            min={0}
+                            className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
+                            style={{ appearance: 'textfield' }}
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-end p-4 pt-0 text-sm">
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center justify-start">
+                              <p className="text-gray-500">
+                                Balance:{' '}
+                                {balanceSelectedTokenY.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 6,
+                                })}{' '}
+                                {tokenY.name}
+                              </p>
+                              {parseInt(balanceSelectedTokenY, 10) > 0 ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setMaximumY()}
+                                  className="p-1 ml-2 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                                >
+                                  Max.
+                                </button>
+                              ) : (
+                                ``
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </>
                   )}
 
                   <div className="w-full p-4 mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
-                    <h4 className="text-xs text-indigo-700 uppercase font-headings">Prices and pool share</h4>
+                    <h4 className="text-xs text-indigo-700 uppercase font-headings">
+                      Prices and pool share
+                    </h4>
                     <dl className="mt-2 space-y-1">
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                         <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                           Your pool tokens
                           <div className="ml-2">
-                            <Tooltip className="z-10" shouldWrapChildren={true} label={`Indicates the total amount of LP tokens you own of the pair in this pool`}>
-                              <InformationCircleIcon className="block w-4 h-4 text-indigo-400" aria-hidden="true" />
+                            <Tooltip
+                              className="z-10"
+                              shouldWrapChildren={true}
+                              label={`Indicates the total amount of LP tokens you own of the pair in this pool`}
+                            >
+                              <InformationCircleIcon
+                                className="block w-4 h-4 text-indigo-400"
+                                aria-hidden="true"
+                              />
                             </Tooltip>
                           </div>
                         </dt>
                         <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
-                          {state.balance[tokenPair] > 0 ? (
-                            `${state.balance[tokenPair] / 1000000 + newTokens} (${newTokens} new)`
-                          ) : newTokens }
+                          {isLoading ? (
+                            <Placeholder className="justify-end" width={Placeholder.width.HALF} />
+                          ) : (
+                            <>
+                              {state.balance[tokenPair] > 0
+                                ? `${
+                                    state.balance[tokenPair] / 1000000 + newTokens
+                                  } (${newTokens} new)`
+                                : newTokens}
+                            </>
+                          )}
                         </dd>
                       </div>
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                         <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                           Your pool share
                           <div className="ml-2">
-                            <Tooltip className="z-10" shouldWrapChildren={true} label={`The percentual share of LP tokens you own agains the whole pool supply`}>
-                              <InformationCircleIcon className="block w-4 h-4 text-indigo-400" aria-hidden="true" />
+                            <Tooltip
+                              className="z-10"
+                              shouldWrapChildren={true}
+                              label={`The percentual share of LP tokens you own agains the whole pool supply`}
+                            >
+                              <InformationCircleIcon
+                                className="block w-4 h-4 text-indigo-400"
+                                aria-hidden="true"
+                              />
                             </Tooltip>
                           </div>
                         </dt>
                         <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
-                          {state.balance[tokenPair] > 0 ? (
-                            `${(totalShare + newShare).toFixed(2)}% (${newShare.toFixed(2)}% new)`
-                          ) : `${newShare}%` }
+                          {isLoading ? (
+                            <Placeholder className="justify-end" width={Placeholder.width.FULL} />
+                          ) : (
+                            <>
+                              {state.balance[tokenPair] > 0
+                                ? `${(totalShare + newShare).toFixed(2)}% (${newShare.toFixed(
+                                    2
+                                  )}% new)`
+                                : `${newShare}%`}
+                            </>
+                          )}
                         </dd>
                       </div>
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                         <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                           Pooled {tokenX.name}
                         </dt>
-                        <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">{pooledX.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</dd>
+                        <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
+                          {isLoading ? (
+                            <Placeholder className="justify-end" width={Placeholder.width.THIRD} />
+                          ) : (
+                            <>
+                              {pooledX.toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 6,
+                              })}
+                            </>
+                          )}
+                        </dd>
                       </div>
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                         <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                           Pooled {tokenY.name}
                         </dt>
-                        <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">{pooledY.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}</dd>
+                        <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
+                          {isLoading ? (
+                            <Placeholder className="justify-end" width={Placeholder.width.THIRD} />
+                          ) : (
+                            <>
+                              {pooledY.toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 6,
+                              })}
+                            </>
+                          )}
+                        </dd>
                       </div>
                     </dl>
                   </div>
@@ -473,24 +661,32 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                     type="button"
                     disabled={insufficientBalance || tokenYAmount === 0 || !foundPair}
                     onClick={() => addLiquidity()}
-                    className={classNames((tokenYAmount === 0 || !foundPair) ?
-                      'bg-indigo-300 hover:bg-indigo-300 pointer-events-none' :
-                      'bg-indigo-600 hover:bg-indigo-700 cursor-pointer',
-                      'w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500')
-                    }
+                    className={classNames(
+                      tokenYAmount === 0 || !foundPair
+                        ? 'bg-indigo-300 hover:bg-indigo-300 pointer-events-none'
+                        : 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer',
+                      'w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+                    )}
                   >
-                    { !foundPair ? "No liquidity for this pair. Try another one."
-                    : tokenYAmount === 0 ? "Please enter an amount"
-                    : insufficientBalance ? "Insufficient balance"
-                    : "Confirm adding liquidity"}
+                    {isLoading
+                      ? 'Loading...'
+                      : !foundPair
+                      ? 'No liquidity for this pair. Try another one.'
+                      : tokenYAmount === 0
+                      ? 'Please enter an amount'
+                      : insufficientBalance
+                      ? 'Insufficient balance'
+                      : 'Confirm adding liquidity'}
                   </button>
 
-                  <div className="flex items-start flex-1 mt-4">
+                  <div className="flex items-start flex-1 mt-8">
                     <span className="flex p-2 bg-gray-100 rounded-lg">
                       <CashIcon className="w-6 h-6 text-indigo-500" aria-hidden="true" />
                     </span>
                     <p className="ml-4 text-sm text-gray-500">
-                      By adding liquidity, you will earn 0.25% on trades for this pool, proportional to your share of liquidity. Earned fees are added back to the pool and claimable by removing liquidity.
+                      By adding liquidity, you will earn 0.25% on trades for this pool, proportional
+                      to your share of liquidity. Earned fees are added back to the pool and
+                      claimable by removing liquidity.
                     </p>
                   </div>
                 </form>

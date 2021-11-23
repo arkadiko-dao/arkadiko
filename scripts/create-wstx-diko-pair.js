@@ -1,6 +1,6 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-const CONTRACT_NAME = 'arkadiko-swap-v1-1';
+const CONTRACT_NAME = 'arkadiko-swap-v2-1';
 const FUNCTION_NAME = 'create-pair';
 const rp = require('request-promise');
 const tx = require('@stacks/transactions');

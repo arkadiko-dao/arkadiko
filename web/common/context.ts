@@ -43,7 +43,18 @@ export interface AppState {
 }
 
 export const defaultBalance = () => {
-  return { stx: 0, xbtc: 0, usda: 0, diko: 0, xstx: 0, stdiko: 0, dikousda: 0, stxusda: 0 };
+  return {
+    stx: 0,
+    xbtc: 0,
+    usda: 0,
+    diko: 0,
+    xstx: 0,
+    stdiko: 0,
+    dikousda: 0,
+    stxusda: 0,
+    wstxusda: 0,
+    wstxdiko: 0,
+  };
 };
 
 export const defaultState = (): AppState => {
@@ -60,7 +71,7 @@ export const defaultState = (): AppState => {
       currentTxId: '',
       currentTxStatus: '',
       currentTxMessage: '',
-      showTxModal: false
+      showTxModal: false,
     };
   }
 
@@ -73,8 +84,8 @@ export const defaultState = (): AppState => {
     currentTxId: '',
     currentTxStatus: '',
     currentTxMessage: '',
-    showTxModal: false
+    showTxModal: false,
   };
 };
 
-export const AppContext = createContext<Array<AppState>>([defaultState(), () => {}])
+export const AppContext = createContext<AppState[]>([defaultState()]);

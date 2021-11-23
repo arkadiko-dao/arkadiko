@@ -7,9 +7,16 @@ import { Disclosure } from '@headlessui/react';
 import { tokenList } from '@components/token-swap-list';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { tokenTraits } from '@common/vault-utils';
-import { callReadOnlyFunction, cvToJSON, contractPrincipalCV, standardPrincipalCV } from '@stacks/transactions';
+import {
+  callReadOnlyFunction,
+  cvToJSON,
+  contractPrincipalCV,
+  standardPrincipalCV,
+} from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
+import { Alert } from './ui/alert';
+import { Placeholder } from './ui/placeholder';
 
 export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
   const tokenX = tokenList[indexTokenX];
@@ -25,45 +32,42 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
   const [pooledY, setPooledY] = useState(0.0);
   const [totalShare, setTotalShare] = useState(0);
   const [stakedLpTokens, setStakedLpTokens] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPair = async (tokenXContract:string, tokenYContract:string) => {
-      let details = await callReadOnlyFunction({
+    const fetchPair = async (tokenXContract: string, tokenYContract: string) => {
+      const details = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-swap-v1-1",
-        functionName: "get-pair-details",
+        contractName: 'arkadiko-swap-v2-1',
+        functionName: 'get-pair-details',
         functionArgs: [
           contractPrincipalCV(contractAddress, tokenXContract),
-          contractPrincipalCV(contractAddress, tokenYContract)
+          contractPrincipalCV(contractAddress, tokenYContract),
         ],
         senderAddress: stxAddress || '',
         network: network,
       });
-
       return cvToJSON(details);
     };
 
-    const fetchStakedTokens = async (poolName:string) => {
-
-      var poolContract = "";
-      if (poolName == "wSTX-DIKO") {
-        poolContract = "arkadiko-stake-pool-wstx-diko-v1-1";
-      } else if (poolName == "wSTX-USDA") {
-        poolContract = "arkadiko-stake-pool-wstx-usda-v1-1";
-      }  else if (poolName == "DIKO-USDA") {
-        poolContract = "arkadiko-stake-pool-diko-usda-v1-1";
-      } 
-      if (poolContract == "") {
+    const fetchStakedTokens = async (poolName: string) => {
+      let poolContract = '';
+      if (poolName == 'wSTX-DIKO') {
+        poolContract = 'arkadiko-stake-pool-wstx-diko-v1-1';
+      } else if (poolName == 'wSTX-USDA') {
+        poolContract = 'arkadiko-stake-pool-wstx-usda-v1-1';
+      } else if (poolName == 'DIKO-USDA') {
+        poolContract = 'arkadiko-stake-pool-diko-usda-v1-1';
+      }
+      if (poolContract == '') {
         return 0;
       }
 
       const userLpDikoUsdaStakedCall = await callReadOnlyFunction({
         contractAddress,
         contractName: poolContract,
-        functionName: "get-stake-amount-of",
-        functionArgs: [
-          standardPrincipalCV(stxAddress || '')
-        ],
+        functionName: 'get-stake-amount-of',
+        functionArgs: [standardPrincipalCV(stxAddress || '')],
         senderAddress: stxAddress || '',
         network: network,
       });
@@ -73,16 +77,23 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
     const resolvePair = async () => {
       const json3 = await fetchPair(tokenXTrait, tokenYTrait);
       if (json3['success']) {
-
-        const stakedTokens = await fetchStakedTokens(json3['value']['value']['value']['name'].value)
+        const stakedTokens = await fetchStakedTokens(
+          json3['value']['value']['value']['name'].value
+        );
         setStakedLpTokens(stakedTokens);
 
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
 
-        const tokenPair = `${tokenX.nameInPair.toLowerCase()}${tokenY.nameInPair.toLowerCase()}`
+        const tokenPair = `${tokenX.nameInPair.toLowerCase()}${tokenY.nameInPair.toLowerCase()}`;
         const totalTokens = json3['value']['value']['value']['shares-total'].value;
         const tokenXYBalance = Number(state.balance[tokenPair]) + Number(stakedTokens);
+
+        // to make sure data is loaded properly
+        if (state.balance[tokenPair] == undefined) {
+          return;
+        }
+
         let totalShare = Number(((tokenXYBalance / totalTokens) * 100).toFixed(3));
         if (!tokenXYBalance) {
           totalShare = 0;
@@ -93,15 +104,15 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
 
         setTokenPair(tokenPair);
 
-        setPooledX((balanceX / 1000000) * totalShare / 100);
-        setPooledY((balanceY / 1000000) * totalShare / 100);
+        setPooledX(((balanceX / 1000000) * totalShare) / 100);
+        setPooledY(((balanceY / 1000000) * totalShare) / 100);
 
         if (totalShare > 100) {
           setTotalShare(100);
         } else {
           setTotalShare(totalShare);
         }
-        
+        setIsLoading(false);
       }
     };
 
@@ -127,7 +138,9 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                     alt=""
                   />
                 </div>
-                <p className="ml-2 text-base text-gray-800">{tokenX.name}/{tokenY.name}</p>
+                <p className="ml-2 text-base text-gray-800">
+                  {tokenX.name}/{tokenY.name}
+                </p>
               </div>
               <span className="flex items-center ml-6 h-7">
                 <ChevronDownIcon
@@ -146,31 +159,51 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                   <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                     Available pool tokens
                     <div className="ml-2">
-                      <Tooltip className="z-10" shouldWrapChildren={true} label={`Indicates the total amount of LP tokens you have in your wallet`}>
-                        <InformationCircleIcon className="block w-4 h-4 text-indigo-400" aria-hidden="true" />
+                      <Tooltip
+                        className="z-10"
+                        shouldWrapChildren={true}
+                        label={`Indicates the total amount of LP tokens you have in your wallet`}
+                      >
+                        <InformationCircleIcon
+                          className="block w-4 h-4 text-indigo-400"
+                          aria-hidden="true"
+                        />
                       </Tooltip>
                     </div>
                   </dt>
                   <dt className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
-                    {state.balance[tokenPair] > 0 ? (
-                      `${state.balance[tokenPair] / 1000000}`
-                    ) : 0 }
+                    {isLoading ? (
+                      <Placeholder className="justify-end" width={Placeholder.width.HALF} />
+                    ) : (
+                      <>
+                        {state.balance[tokenPair] > 0 ? `${state.balance[tokenPair] / 1000000}` : 0}
+                      </>
+                    )}
                   </dt>
                 </div>
-                
+
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                   <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                     Staked pool tokens
                     <div className="ml-2">
-                      <Tooltip className="z-10" shouldWrapChildren={true} label={`Indicates the total amount of LP tokens you have staked`}>
-                        <InformationCircleIcon className="block w-4 h-4 text-indigo-400" aria-hidden="true" />
+                      <Tooltip
+                        className="z-10"
+                        shouldWrapChildren={true}
+                        label={`Indicates the total amount of LP tokens you have staked`}
+                      >
+                        <InformationCircleIcon
+                          className="block w-4 h-4 text-indigo-400"
+                          aria-hidden="true"
+                        />
                       </Tooltip>
                     </div>
                   </dt>
                   <dt className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
-                    {stakedLpTokens > 0 ? (
-                      `${stakedLpTokens / 1000000}`
-                    ) : 0 }
+                    {isLoading ? (
+                      <Placeholder className="justify-end" width={Placeholder.width.THIRD} />
+                    ) : (
+                      <>{stakedLpTokens > 0 ? `${stakedLpTokens / 1000000}` : 0}</>
+                    )}
                   </dt>
                 </div>
               </dl>
@@ -180,52 +213,79 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                   <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                     Your pool share
                     <div className="ml-2">
-                      <Tooltip className="z-10" shouldWrapChildren={true} label={`The percentual share of LP tokens you own agains the whole pool supply`}>
-                        <InformationCircleIcon className="block w-4 h-4 text-indigo-400" aria-hidden="true" />
+                      <Tooltip
+                        className="z-10"
+                        shouldWrapChildren={true}
+                        label={`The percentual share of LP tokens you own agains the whole pool supply`}
+                      >
+                        <InformationCircleIcon
+                          className="block w-4 h-4 text-indigo-400"
+                          aria-hidden="true"
+                        />
                       </Tooltip>
                     </div>
                   </dt>
                   <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
-                    {totalShare}%
+                    {isLoading ? (
+                      <Placeholder className="justify-end" width={Placeholder.width.HALF} />
+                    ) : (
+                      <>{totalShare}%</>
+                    )}
                   </dd>
                 </div>
-                
+
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                   <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                     Pooled {tokenX.name}
                   </dt>
                   <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
-                    {pooledX.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+                    {isLoading ? (
+                      <Placeholder className="justify-end" width={Placeholder.width.THIRD} />
+                    ) : (
+                      <>
+                        {pooledX.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 6,
+                        })}
+                      </>
+                    )}
                   </dd>
                 </div>
-                
+
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                   <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                     Pooled {tokenY.name}
                   </dt>
                   <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
-                    {pooledY.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}                    
+                    {isLoading ? (
+                      <Placeholder className="justify-end" width={Placeholder.width.HALF} />
+                    ) : (
+                      <>
+                        {pooledY.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 6,
+                        })}
+                      </>
+                    )}
                   </dd>
                 </div>
               </dl>
             </div>
 
-            <div className="p-4 mt-4 border-l-4 border-blue-400 rounded-tr-md rounded-br-md bg-blue-50">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />
-                </div>
-                <div className="flex-1 ml-3 md:flex md:justify-between">
-                  <p className="text-sm text-blue-700">
-                    In order to remove liquidity and make the LP tokens available again, keep in mind that you must first <RouterLink
-                      className="font-semibold text-blue-700 underline whitespace-nowrap hover:text-blue-600"
-                      to={'/stake'}
-                    >
-                      unstake them
-                    </RouterLink>.
-                  </p>
-                </div>
-              </div>
+            <div className="mt-4">
+              <Alert>
+                <p>
+                  In order to remove liquidity and make the LP tokens available again, keep in mind
+                  that you must first{' '}
+                  <RouterLink
+                    className="font-semibold text-blue-700 underline whitespace-nowrap hover:text-blue-600"
+                    to={'/stake'}
+                  >
+                    unstake them
+                  </RouterLink>
+                  .
+                </p>
+              </Alert>
             </div>
 
             <div className="mt-4 sm:grid sm:grid-cols-2 sm:gap-2 sm:grid-flow-row-dense">

@@ -242,7 +242,7 @@
 )
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
-    (swapped-amounts (unwrap-panic (as-contract (contract-call? .arkadiko-swap-v1-1 swap-x-for-y wstx usda earned-stx-amount u0))))
+    (swapped-amounts (unwrap-panic (as-contract (contract-call? .arkadiko-swap-v2-1 swap-x-for-y wstx usda earned-stx-amount u0))))
     (usda-amount (unwrap-panic (element-at swapped-amounts u1)))
     (stability-fee (unwrap-panic (contract-call? .arkadiko-freddie-v1-1 get-stability-fee-for-vault vault-id coll-type)))
     (leftover-usda

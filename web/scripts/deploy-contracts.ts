@@ -19,6 +19,8 @@ interface Contract {
 }
 
 const contracts: Contract[] = [
+  { name: 'sip-010-trait-ft-standard' },
+
   { name: 'arkadiko-oracle-trait-v1' },
   { name: 'arkadiko-vault-trait-v1' },
   { name: 'arkadiko-collateral-types-trait-v1' },
@@ -45,7 +47,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-liquidator-v1-1' },
   { name: 'arkadiko-swap-trait-v1' },
   { name: 'wrapped-stx-token' },
-  { name: 'arkadiko-swap-v1-1' },
+  { name: 'arkadiko-swap-v2-1' },
   { name: 'arkadiko-stacker-payer-v1-1' },
   { name: 'arkadiko-stacker-2-v1-1' },
   { name: 'arkadiko-stacker-3-v1-1' },
@@ -60,7 +62,9 @@ const contracts: Contract[] = [
   { name: 'arkadiko-swap-token-wstx-usda' },
   { name: 'arkadiko-stake-pool-wstx-usda-v1-1' },
   { name: 'arkadiko-swap-token-wstx-diko' },
-  { name: 'arkadiko-stake-pool-wstx-diko-v1-1' }
+  { name: 'arkadiko-stake-pool-wstx-diko-v1-1' },
+  { name: 'arkadiko-claim-yield-v2-1' },
+  { name: 'arkadiko-stake-lp-rewards' },
 ];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');
@@ -114,10 +118,10 @@ const run = async () => {
 
     if (result.ok) {
       index += 1;
-      
+
       const txId = (await result.text()).replace(/"/g, '');
       console.log(`${rpcClient.url}/extended/v1/tx/${txId}`);
-      
+
       txResults.push(txId);
     } else {
       const errorMsg = await result.text();

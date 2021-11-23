@@ -6,7 +6,7 @@ interface EmptyStateProps {
   description?: string;
 }
 
-export const EmptyState: React.FC<EmptyStateProps> = ({Icon, title, description}) => {
+export const EmptyState: React.FC<EmptyStateProps> = ({ Icon, title, description }) => {
   return (
     <div className="flex justify-center w-full mx-auto mt-12 md:w-2/3">
       <div className="flow-root p-8 bg-gray-100 border-2 border-gray-300 border-dotted rounded-lg">
@@ -18,16 +18,10 @@ export const EmptyState: React.FC<EmptyStateProps> = ({Icon, title, description}
             <p className="text-lg font-medium leading-6 text-gray-900 md:ml-8">{title}</p>
           </div>
           {description ? (
-            <p className="mt-2 text-base text-gray-500 md:ml-8">
-              {description}
-            </p>
-          ) : (
-            null
-          )}
+            <p className="mt-2 text-base text-gray-500 md:ml-8">{description}</p>
+          ) : null}
         </div>
       </div>
     </div>
-  )
+  );
 };
-
-

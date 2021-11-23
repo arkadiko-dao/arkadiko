@@ -400,12 +400,12 @@
   (map-set contracts
     { name: "swap" }
     {
-      address: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR,
-      qualified-name: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-swap-v1-1
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-swap-v2-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-swap-v1-1 }
+    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-swap-v2-1 }
     {
       can-mint: true,
       can-burn: true

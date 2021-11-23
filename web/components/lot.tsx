@@ -25,17 +25,27 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collatera
       functionArgs: [
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-freddie-v1-1'),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', resolveReserveName(collateralToken.toLowerCase())),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-collateral-types-v1-1'),
+        contractPrincipalCV(
+          process.env.REACT_APP_CONTRACT_ADDRESS || '',
+          resolveReserveName(collateralToken.toLowerCase())
+        ),
+        contractPrincipalCV(
+          process.env.REACT_APP_CONTRACT_ADDRESS || '',
+          'arkadiko-collateral-types-v1-1'
+        ),
         uintCV(id),
-        uintCV(lotId)
+        uintCV(lotId),
       ],
       postConditionMode: 0x01,
       onFinish: data => {
         console.log('finished redeeming lot!', data);
-        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      anchorMode: AnchorMode.Any
+      anchorMode: AnchorMode.Any,
     });
   };
 
@@ -48,16 +58,24 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collatera
   return (
     <tr className="bg-white">
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900">{id}.{lotId + 1}</span>
+        <span className="font-medium text-gray-900">
+          {id}.{lotId + 1}
+        </span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900">{collateralAmount / 1000000} {collateralToken.toUpperCase()}</span>
+        <span className="font-medium text-gray-900">
+          {collateralAmount / 1000000} {collateralToken.toUpperCase()}
+        </span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         <span className="font-medium text-gray-900">{usda / 1000000} USDA</span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <button type="button" onClick={() => redeemLot()} className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        <button
+          type="button"
+          onClick={() => redeemLot()}
+          className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
           Redeem
         </button>
       </td>

@@ -26,4 +26,4 @@ export const resolveSTXAddress = (userData: UserData | null) => {
     return userData?.profile?.stxAddress?.mainnet as string;
   }
   return userData?.profile?.stxAddress?.testnet as string;
-}
+};
