@@ -152,7 +152,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                 </>
               )}
             </td>
-            <td className="px-6 py-4 text-sm whitespace-nowrap">
+            <td className="px-6 py-4 text-sm font-semibold whitespace-nowrap">
               {loadingData ? (
                 <Placeholder className="py-2" width={Placeholder.width.HALF} />
               ) : (
@@ -161,7 +161,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 6,
                   })}{' '}
-                  DIKO
+                  <span className="text-sm font-normal">DIKO</span>
                 </>
               )}
             </td>

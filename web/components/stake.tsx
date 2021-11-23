@@ -62,11 +62,11 @@ export const Stake = () => {
   const [cooldownRunning, setCooldownRunning] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const [hasUnstakedTokens, setHasUnstakedTokens] = useState(false);
-
   const [stxDikoPoolInfo, setStxDikoPoolInfo] = useState(0);
   const [stxUsdaPoolInfo, setStxUsdaPoolInfo] = useState(0);
   const [dikoUsdaPoolInfo, setDikoUsdaPoolInfo] = useState(0);
   const [missedLpRewards, setMissedLpRewards] = useState(0);
+  const [stDikoToDiko, setStDikoToDiko] = useState(0);
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -335,10 +335,6 @@ export const Stake = () => {
       }
       const dikoPoolRewards = totalStakingRewardsYear1 * 0.1;
       const dikoApr = dikoPoolRewards / totalDikoStaked;
-
-      console.log("dikoPoolRewards: ", dikoPoolRewards);
-      console.log("totalDikoStaked: ", totalDikoStaked);
-      console.log("dikoApr: ", dikoApr);
       setApy(Number((100 * dikoApr).toFixed(2)));
 
       if (totalDikoUsdaStaked == 0) {
@@ -412,6 +408,20 @@ export const Stake = () => {
       const missedLpRewards = await fetchMissedLpRewards();
       setMissedLpRewards(missedLpRewards / 1000000);
 
+      const stDikoToDikoCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-stake-pool-diko-v1-1',
+        functionName: 'diko-for-stdiko',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          uintCV(1000000 * 10),
+          uintCV(stDikoData),
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const stDikoToDiko = cvToJSON(stDikoToDikoCall).value.value / 10;
+      setStDikoToDiko(Number(stDikoToDiko) / 1000000);
       setLoadingData(false);
     };
     if (mounted) {
@@ -702,9 +712,7 @@ export const Stake = () => {
                 <div>
                   <h3 className="text-lg leading-6 text-gray-900 font-headings">DIKO</h3>
                   <p className="max-w-3xl mt-2 text-sm text-gray-500">
-                    When staking DIKO in the <span className="font-semibold">security module</span>{' '}
-                    you get stDIKO in return. Both DIKO and stDIKO can be used to propose and vote
-                    in governance.
+                    When staking DIKO in the security module <span className="font-semibold">you will receive stDIKO</span> which is a representation of your share of the pool. DIKO in the pool is <span className="font-semibold">auto-compounding</span>. Your amount of stDIKO <span className="font-semibold">does not change</span>, but the DIKO value it represents <span className="font-semibold">will increase</span>. Both DIKO and stDIKO can be used to propose and vote in governance.
                   </p>
                 </div>
                 <div className="flex items-center">
@@ -734,36 +742,50 @@ export const Stake = () => {
                         <div className="flex-shrink-0 w-8 h-8">
                           <img className="w-8 h-8 rounded-full" src={tokenList[1].logo} alt="" />
                         </div>
-                        <p className="ml-4 text-lg font-semibold">
-                          {loadingData ? (
-                            <span>Loading...</span>
-                          ) : (
-                            <>
+                        {loadingData ? (
+                          <Placeholder className="py-2 ml-4" width={Placeholder.width.HALF} />
+                        ) : (
+                          <div>
+                            <p className="ml-4 text-lg font-semibold">
                               {microToReadable(stakedAmount).toLocaleString(undefined, {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 6,
                               })}{' '}
                               DIKO
-                            </>
-                          )}
-                        </p>
+                            </p>
+                            <div className="flex items-center mt-1">
+                              <p className="ml-4 text-xs text-gray-500">
+                                1 stDIKO ≈ {' '}
+                                {(stDikoToDiko).toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 6,
+                                })} DIKO
+                              </p>
+                              <Tooltip
+                                className="ml-2"
+                                shouldWrapChildren={true}
+                                label={`stDIKO's value is determined by dividing the total supply of DIKO in the pool by the total supply of stDIKO`}
+                              >
+                                <InformationCircleIcon
+                                  className="flex-shrink-0 block w-4 h-4 ml-2 text-gray-400"
+                                  aria-hidden="true"
+                                />
+                              </Tooltip>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div>
+                      <p className="mb-1 text-sm leading-6 text-gray-500">Current APR</p>
                       {loadingData ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
                         `${apy}%`
                       )}
-                      <p className="text-base font-normal leading-6 text-gray-500">Current APR</p>
                     </div>
                     <div>
-                      {loadingData ? (
-                        <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                      ) : (
-                        <p className="text-lg font-semibold">{dikoCooldown}</p>
-                      )}
-                      <p className="flex items-center text-base font-normal leading-6 text-gray-500">
+                      <p className="flex items-center mb-1 text-sm leading-6 text-gray-500">
                         Cooldown status
                         <Tooltip
                           className="ml-2"
@@ -776,6 +798,11 @@ export const Stake = () => {
                           />
                         </Tooltip>
                       </p>
+                      {loadingData ? (
+                        <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                      ) : (
+                        <p className="text-lg">{dikoCooldown}</p>
+                      )}
                     </div>
                     <div>
                       {state.balance['diko'] > 0 ||
