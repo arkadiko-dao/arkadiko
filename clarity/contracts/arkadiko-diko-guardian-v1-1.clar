@@ -104,5 +104,5 @@
 )
 
 (begin
-  (var-set contract-start-block u35300)
+  (var-set contract-start-block block-height)
 )
