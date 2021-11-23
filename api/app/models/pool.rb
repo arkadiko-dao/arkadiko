@@ -36,7 +36,7 @@ class Pool < ApplicationRecord
   end
 
   def fetch_prices
-    events = swap_events.where("function_name IN (?)", ['swap-x-for-y', 'swap-y-for-x']).where(event_at: (Time.now - 7 * 24.hours)..Time.now)
+    events = swap_events.where("function_name IN (?)", ['swap-x-for-y', 'swap-y-for-x'])
     # TODO: fix performance
     prices = []
     events.find_each do |event|
