@@ -3,7 +3,7 @@
 ;; A proposal will just update the DAO with new contracts.
 ;; @version 1.1
 
-(use-trait ft-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
+(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait stake-pool-diko-trait .arkadiko-stake-pool-diko-trait-v1.stake-pool-diko-trait)
 
 ;; Errors
