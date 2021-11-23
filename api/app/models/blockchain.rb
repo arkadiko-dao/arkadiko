@@ -42,59 +42,6 @@ class Blockchain < ApplicationRecord
     end
   end
 
-  def calculate_add_to_position(starting_block)
-    response = HTTParty.get("#{STACKS_MAINNET_NODE_URL}/v2/info")&.parsed_response
-    tip_height = response['stacks_tip_height']
-    stx_amount = 35680485330
-    usda_amount = 62447534474
-
-    while starting_block <= tip_height
-      puts "Scanning block #{starting_block}"
-      response = HTTParty.get("#{STACKS_MAINNET_NODE_URL}/extended/v1/block/by_height/#{starting_block}")&.parsed_response
-      response['txs'].each do |tx_id|
-        result = HTTParty.get("#{STACKS_MAINNET_NODE_URL}/extended/v1/tx/#{tx_id}")&.parsed_response
-
-        next if %w[coinbase token_transfer].include?(result['tx_type'])
-        next if result['contract_call'].nil?
-
-        id = result['contract_call']['contract_id']
-        next unless Blockchain::SUPPORTED_CONTRACT_IDS.include?(id)
-        next unless result['tx_status'] == 'success'
-
-        function_name = result['contract_call']['function_name']
-        next unless ['add-to-position', 'reduce-position'].include?(function_name)
-
-        contract_address = id.split('.')[0]
-        contract_name = id.split('.')[1]
-
-        token_x = result['contract_call']['function_args'][0]['repr']
-        token_y = result['contract_call']['function_args'][1]['repr']
-        puts token_x, token_y
-        next unless token_x == 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.wrapped-stx-token'
-        next unless token_y == 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.usda-token'
-
-        puts "Found transaction to #{function_name} / #{result['tx_id']}"
-        if function_name == 'add-to-position'
-          tvl_token_x = result['contract_call']['function_args'][3]['repr'].gsub('u', '').to_i
-          tvl_token_y = result['contract_call']['function_args'][4]['repr'].gsub('u', '').to_i
-          stx_amount += tvl_token_x
-          usda_amount += tvl_token_y
-        else
-          res = result['tx_result']['repr'].gsub('(ok (list ', '').gsub('))', '').gsub('u', '').split(' ')
-          tvl_token_x = res[0].to_i
-          tvl_token_y = res[1].to_i
-          stx_amount -= tvl_token_x
-          usda_amount -= tvl_token_y
-        end
-
-        puts "Total amounts: #{stx_amount}, #{usda_amount}"
-      end
-      starting_block += 1
-    end
-
-    return stx_amount, usda_amount
-  end
-
   def import_vaults(offset:)
     url = "#{STACKS_MAINNET_NODE_URL}/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-freddie-v1-1/transactions?limit=50&offset=#{offset}"
     puts url
