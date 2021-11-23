@@ -17,7 +17,6 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
   pendingRewards,
   stakedAmount,
   apy,
-  emissionsStarted,
   poolInfo,
   setShowStakeLpModal,
   setShowUnstakeLpModal,
@@ -61,10 +60,8 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
             <td className="px-6 py-4 text-sm text-indigo-600 whitespace-nowrap">
               {loadingData ? (
                 <Placeholder className="py-2" width={Placeholder.width.HALF} />
-              ) : emissionsStarted ? (
-                `${apy}%`
               ) : (
-                <span>Emissions not started</span>
+                `${apy}%`
               )}
             </td>
 
