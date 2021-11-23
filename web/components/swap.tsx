@@ -104,7 +104,6 @@ export const Swap: React.FC = () => {
     };
 
     const resolvePair = async () => {
-
       if (state?.balance) {
         setTokenBalances();
       }
@@ -252,7 +251,6 @@ export const Swap: React.FC = () => {
   };
 
   const swapTokens = async () => {
-
     let contractName = 'swap-x-for-y';
     let tokenNameX = tokenX['name'];
     let tokenNameY = tokenY['name'];
