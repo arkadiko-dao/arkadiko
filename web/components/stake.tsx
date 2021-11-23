@@ -288,10 +288,10 @@ export const Stake = () => {
         network: network,
       });
       const totalStakedData = cvToJSON(totalStakedCall).value.value;
-      let totalDikoStaked = totalStakedData["stake-total-diko"].value;
-      let totalDikoUsdaStaked = totalStakedData["stake-total-diko-usda"].value;
-      let totalStxUsdaStaked = totalStakedData["stake-total-wstx-usda"].value;
-      let totalStxDikoStaked = totalStakedData["stake-total-wstx-diko"].value;
+      let totalDikoStaked = totalStakedData["stake-total-diko"].value / 1000000;
+      let totalDikoUsdaStaked = totalStakedData["stake-total-diko-usda"].value / 1000000;
+      let totalStxUsdaStaked = totalStakedData["stake-total-wstx-usda"].value / 1000000;
+      let totalStxDikoStaked = totalStakedData["stake-total-wstx-diko"].value / 1000000;
      
       // LP value
       const [dikoUsdaLpValue, stxUsdaLpValue, stxDikoLpValue] = await Promise.all([
