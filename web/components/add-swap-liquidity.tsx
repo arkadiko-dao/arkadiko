@@ -246,7 +246,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
     }
   };
 
-  const addLiquidity = async () => {    
+  const addLiquidity = async () => {
     let swapTrait =
       tokenTraits[`${tokenX['name'].toLowerCase()}${tokenY['name'].toLowerCase()}`]['name'];
     let tokenXParam = tokenXTrait;
