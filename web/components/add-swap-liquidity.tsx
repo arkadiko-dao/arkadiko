@@ -229,7 +229,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
 
   const calculateTokenXAmount = (value: number) => {
     setTokenXAmount(value / currentPrice);
-    if (currentPrice * value > balanceSelectedTokenX) {
+    if (value / currentPrice > balanceSelectedTokenX) {
       setInsufficientBalance(true);
     }
     const newTokens = ((totalTokens / 1000000) * value) / pooledY;
