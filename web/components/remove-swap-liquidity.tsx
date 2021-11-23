@@ -239,7 +239,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                       <Tooltip
                         className="z-10"
                         shouldWrapChildren={true}
-                        label={`By removing liquidity, you take out assets your provided and will stop earning on each trade.`}
+                        label={`By removing liquidity, you take out assets you provided and will stop earning on each trade.`}
                       >
                         <InformationCircleIcon
                           className="block w-5 h-5 ml-2 text-gray-400"
