@@ -10,6 +10,7 @@
 class Blockchain < ApplicationRecord
   SUPPORTED_CONTRACT_IDS = %w[
     SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-swap-v1-1
+    SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-swap-v2-1
   ].freeze
   STACKS_MAINNET_NODE_URL = 'https://stacks-node-api.mainnet.stacks.co'.freeze
 
