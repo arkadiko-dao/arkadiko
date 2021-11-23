@@ -23,14 +23,29 @@ export const getAccountTransactions = async (address: string, contractAddress: s
 export const getPendingTransactions = async (address: string, contractAddress: string) => {
   const config = new Configuration({ basePath: network.coreApiUrl });
   const api = new TransactionsApi(config);
-  const txs = await api.getMempoolTransactionList({ limit: 96 });
-  const list = (txs as MempoolTransactionListResponse).results.filter(
-    tx =>
-      tx.tx_type === 'contract_call' &&
-      tx.contract_call.contract_id.split('.')[0] === contractAddress &&
-      tx.sender_address === address &&
-      tx.tx_status === 'pending'
-  );
 
-  return list as MempoolContractCallTransaction[];
+  // Find amount of pages
+  const result = await api.getMempoolTransactionList({ limit: 1 });
+  const pages = Math.ceil(parseFloat(result.total) / 200.0);
+
+  // Go over all pages
+  const swapTransactions = [];
+  for (let i = 0; i < pages; i++) {
+    const offset = i * 200;
+    const txs = await api.getMempoolTransactionList({ offset: offset, limit: 200 });
+
+    // Find relevant transactions
+    for (const tx of txs.results) {
+      if (
+        tx.tx_type === 'contract_call' &&
+        tx.sender_address === address &&
+        tx.contract_call.contract_id.split('.')[0] === contractAddress &&
+        tx.tx_status === 'pending'
+      ) {
+        swapTransactions.push(tx);
+      }
+    }
+  }
+
+  return swapTransactions as MempoolContractCallTransaction[];
 };

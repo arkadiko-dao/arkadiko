@@ -27,6 +27,7 @@ export const StakeLpModal = ({
   const [state, setState] = useContext(AppContext);
   const [errors, setErrors] = useState<string[]>([]);
   const [stakeAmount, setStakeAmount] = useState('');
+  const [isStakeButtonDisabled, setIsStakeButtonDisabled] = useState(false);
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -45,8 +46,10 @@ export const StakeLpModal = ({
           errors.concat([`You cannot stake more than ${state.balance[balanceName] / 1000000} DIKO`])
         );
       }
+      setIsStakeButtonDisabled(true);
     } else {
       setErrors([]);
+      setIsStakeButtonDisabled(false);
     }
     setStakeAmount(value);
   };
@@ -124,6 +127,7 @@ export const StakeLpModal = ({
       closeModal={() => setShowStakeModal(false)}
       buttonText="Stake"
       buttonAction={() => stake()}
+      buttonDisabled={isStakeButtonDisabled || errors.length > 0}
       initialFocus={inputRef}
     >
       {errors.length > 0 ? (

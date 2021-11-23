@@ -21,6 +21,7 @@ export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
   const [state, setState] = useContext(AppContext);
   const [errors, setErrors] = useState<string[]>([]);
   const [stakeAmount, setStakeAmount] = useState('');
+  const [isStakeButtonDisabled, setIsStakeButtonDisabled] = useState(false);
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -39,8 +40,10 @@ export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
           errors.concat([`You cannot stake more than ${state.balance['diko'] / 1000000} DIKO`])
         );
       }
+      setIsStakeButtonDisabled(true);
     } else {
       setErrors([]);
+      setIsStakeButtonDisabled(false);
     }
     setStakeAmount(value);
   };
@@ -89,6 +92,7 @@ export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
       closeModal={() => setShowStakeModal(false)}
       buttonText="Stake"
       buttonAction={() => stakeDiko()}
+      buttonDisabled={isStakeButtonDisabled || errors.length > 0}
       initialFocus={inputRef}
     >
       {errors.length > 0 ? (
@@ -98,7 +102,7 @@ export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
       ) : null}
 
       <p className="mt-3 text-sm text-center text-gray-500">
-        Stake DIKO tokens at {apy}% (estimated APY) and start earning rewards now.
+        Stake DIKO tokens at {apy}% (estimated APR) and start earning rewards now.
       </p>
       <div className="mt-4">
         <Alert>
