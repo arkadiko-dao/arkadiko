@@ -1,0 +1,33 @@
+# == Schema Information
+#
+# Table name: swap_events
+#
+#  id             :bigint           not null, primary key
+#  function_name  :string           not null
+#  transaction_id :string           not null
+#  event_at       :datetime         not null
+#  sender         :string           not null
+#  pool_id        :bigint           not null
+#  token_x_amount :bigint           not null
+#  token_y_amount :bigint           not null
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#
+
+one:
+  function_name: MyString
+  transaction_id: MyString
+  event_at: 2021-10-25 19:38:55
+  sender: MyString
+  pool_id: one
+  token_x_amount: 
+  token_y_amount: 
+
+two:
+  function_name: MyString
+  transaction_id: MyString
+  event_at: 2021-10-25 19:38:55
+  sender: MyString
+  pool_id: two
+  token_x_amount: 
+  token_y_amount: 
