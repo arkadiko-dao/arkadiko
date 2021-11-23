@@ -1,0 +1,37 @@
+# == Schema Information
+#
+# Table name: pools
+#
+#  id                 :bigint           not null, primary key
+#  token_x_name       :string           not null
+#  token_y_name       :string           not null
+#  token_x_address    :string           not null
+#  token_y_address    :string           not null
+#  swap_token_name    :string           not null
+#  swap_token_address :string           not null
+#  tvl_token_x        :bigint           default(0), not null
+#  tvl_token_y        :bigint           default(0), not null
+#  tvl_updated_at     :datetime
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#
+
+one:
+  token_x_name: MyString
+  token_y_name: MyString
+  token_x_address: MyString
+  token_y_address: MyString
+  swap_token_name: MyString
+  swap_token_address: MyString
+  tvl: 
+  tvl_updated_at: 2021-10-25 15:18:27
+
+two:
+  token_x_name: MyString
+  token_y_name: MyString
+  token_x_address: MyString
+  token_y_address: MyString
+  swap_token_name: MyString
+  swap_token_address: MyString
+  tvl: 
+  tvl_updated_at: 2021-10-25 15:18:27

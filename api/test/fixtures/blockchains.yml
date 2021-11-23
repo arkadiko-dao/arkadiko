@@ -1,0 +1,15 @@
+# == Schema Information
+#
+# Table name: blockchains
+#
+#  id                         :bigint           not null, primary key
+#  last_block_height_imported :bigint
+#  created_at                 :datetime         not null
+#  updated_at                 :datetime         not null
+#
+
+one:
+  last_block_height_imported: 
+
+two:
+  last_block_height_imported: 
