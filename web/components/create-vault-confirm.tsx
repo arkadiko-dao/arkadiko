@@ -84,7 +84,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                       Depositing
                     </h3>
                     <p className="text-sm text-gray-600 sm:max-w-2xl">
-                      The amount of {coinAmounts['token-name']} tokens that your are depositing into
+                      The amount of {coinAmounts['token-name']} tokens that you are depositing into
                       your vault.
                     </p>
                   </div>
