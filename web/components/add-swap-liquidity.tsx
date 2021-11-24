@@ -598,7 +598,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                             <Tooltip
                               className="z-10"
                               shouldWrapChildren={true}
-                              label={`The percentual share of LP tokens you own agains the whole pool supply`}
+                              label={`The percentual share of LP tokens you own against the whole pool supply`}
                             >
                               <InformationCircleIcon
                                 className="block w-4 h-4 text-indigo-400"
