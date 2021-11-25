@@ -168,7 +168,7 @@ class Blockchain < ApplicationRecord
       tvl_token_x = result['contract_call']['function_args'][3]['repr'].gsub('u', '').to_i
       tvl_token_y = result['contract_call']['function_args'][4]['repr'].gsub('u', '').to_i
     end
-    pool.swap_events.create!(
+    pool.swap_events.create(
       function_name: function_name,
       transaction_id: result['tx_id'],
       event_at: result['parent_burn_block_time_iso'],
