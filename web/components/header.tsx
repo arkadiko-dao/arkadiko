@@ -185,7 +185,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                 <div className="pt-2 pb-3 space-y-1">
                   <RouterLink
                     to="/swap"
-                    className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700"
+                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
                     activeClassName="border-indigo-500 text-gray-900"
                   >
                     Swap
@@ -225,19 +225,21 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   </RouterLink>
 
                   <a
-                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
+                    className="flex items-center py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
                     href="https://docs.arkadiko.finance/"
                     target="_blank"
                   >
                     Docs
+                    <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
                   </a>
 
                   <a
-                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
+                    className="flex items-center py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
                     href="https://github.com/arkadiko-dao/arkadiko/blob/master/SECURITY.md"
                     target="_blank"
                   >
                     Security
+                    <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
                   </a>
                 </div>
                 <div className="pt-4 pb-3 border-t border-gray-200">

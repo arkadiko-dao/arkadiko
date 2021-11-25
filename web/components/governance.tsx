@@ -107,7 +107,7 @@ export const Governance = () => {
                 </header>
 
                 {isLoading ? (
-                  <div className="mt-5 overflow-hidden bg-white shadow sm:rounded-md">
+                  <div className="mt-5 overflow-hidden bg-white rounded-md shadow">
                     <div className="px-4 py-4 sm:px-6">
                       <div className="flex items-center justify-between">
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
