@@ -203,7 +203,7 @@ export const Mint = () => {
 
   return (
     <div>
-      <main className="relative py-12 overflow-hidden">
+      <main className="py-12">
         <section>
           <div className="relative">
             <div
@@ -366,38 +366,36 @@ export const Mint = () => {
           </header>
 
           <div className="flex flex-col mt-4">
-            <div className="min-w-full overflow-hidden overflow-x-auto align-middle border border-gray-200 rounded-lg">
-              {Object.keys(collateralTypes).length > 0 ? (
-                <CollateralType types={collateralTypes} />
-              ) : (
-                <div className="min-w-full mt-4 overflow-hidden overflow-x-auto align-middle rounded-lg shadow">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead>
-                      <tr>
-                        <th
-                          scope="col"
-                          className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50"
-                        >
-                          <Placeholder color={Placeholder.color.GRAY} />
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="bg-white">
-                        <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-                          <Placeholder />
-                        </td>
-                      </tr>
-                      <tr className="bg-white">
-                        <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-                          <Placeholder />
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+            {Object.keys(collateralTypes).length > 0 ? (
+              <CollateralType types={collateralTypes} />
+            ) : (
+              <div className="min-w-full mt-4 overflow-hidden overflow-x-auto align-middle rounded-lg sm:shadow">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead>
+                    <tr>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50"
+                      >
+                        <Placeholder color={Placeholder.color.GRAY} />
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="bg-white">
+                      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+                        <Placeholder />
+                      </td>
+                    </tr>
+                    <tr className="bg-white">
+                      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+                        <Placeholder />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
               )}
-            </div>
           </div>
         </section>
 
