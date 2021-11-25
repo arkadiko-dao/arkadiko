@@ -40,7 +40,6 @@ export const Swap: React.FC = () => {
   const [priceImpact, setPriceImpact] = useState('0');
   const [lpFee, setLpFee] = useState('0');
   const [foundPair, setFoundPair] = useState(true);
-  const defaultFee = 0.4;
   const [loadingData, setLoadingData] = useState(true);
   const [insufficientBalance, setInsufficientBalance] = useState(false);
 
@@ -120,7 +119,6 @@ export const Swap: React.FC = () => {
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
         const basePrice = Number((balanceX / balanceY).toFixed(2));
-        // const price = parseFloat(basePrice) + (parseFloat(basePrice) * 0.01);
         setCurrentPrice(basePrice);
         setInverseDirection(false);
         setFoundPair(true);
