@@ -470,30 +470,31 @@ export const Swap: React.FC = () => {
                     {loadingData ? (
                       <Placeholder className="justify-end pt-3" width={Placeholder.width.THIRD} />
                     ) : (
-                      <p className="mt-2 text-sm font-semibold text-right text-gray-400">
-                        {exchangeRateSwitched ? (
-                          <>
-                          1 {tokenX.name} ≈ {' '}
-                          {(1 / currentPrice).toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                          })} {' '}
-                          {tokenY.name}
-                          </>
-                        ) : (
-                          <>
-                          1 {tokenY.name} ≈ {currentPrice} {tokenX.name}
-                          </>
-                        )}
-
+                      <div className="flex items-center justify-end mt-2">
+                        <p className="text-sm font-semibold text-right text-gray-400">
+                          {exchangeRateSwitched ? (
+                            <>
+                            1 {tokenX.name} ≈ {' '}
+                            {(1 / currentPrice).toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 6,
+                            })} {' '}
+                            {tokenY.name}
+                            </>
+                          ) : (
+                            <>
+                            1 {tokenY.name} ≈ {currentPrice} {tokenX.name}
+                            </>
+                          )}
+                        </p>
                         <button
                           type="button"
                           onClick={switchExchangeRate}
-                          className="ml-2"
+                          className="ml-2 text-gray-400 hover:text-indigo-700"
                         >
                           <SwitchHorizontalIcon className="w-5 h-5" aria-hidden="true" />
                         </button>
-                      </p>
+                      </div>
                     )}
 
                     {state.userData ? (
