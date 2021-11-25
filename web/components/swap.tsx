@@ -1,7 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Container } from './home';
-import { SwitchVerticalIcon, InformationCircleIcon, SwitchHorizontalIcon} from '@heroicons/react/solid';
+import {
+  SwitchVerticalIcon,
+  InformationCircleIcon,
+  SwitchHorizontalIcon,
+} from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { microToReadable } from '@common/vault-utils';
@@ -171,12 +175,12 @@ export const Swap: React.FC = () => {
       const newBalanceY = balanceY + inputWithoutFees;
       const newBalanceX = (balanceY * balanceX) / newBalanceY;
       tokenYAmount = balanceX - newBalanceX;
-      priceImpact = (newBalanceY/newBalanceX) / (balanceY/balanceX) - 1.0
+      priceImpact = newBalanceY / newBalanceX / (balanceY / balanceX) - 1.0;
     } else {
       const newBalanceX = balanceX + inputWithoutFees;
       const newBalanceY = (balanceX * balanceY) / newBalanceX;
       tokenYAmount = balanceY - newBalanceY;
-      priceImpact = (newBalanceX/newBalanceY) / (balanceX/balanceY) - 1.0
+      priceImpact = newBalanceX / newBalanceY / (balanceX / balanceY) - 1.0;
     }
 
     setMinimumReceived(tokenYAmount * slippage);
@@ -222,7 +226,7 @@ export const Swap: React.FC = () => {
   };
 
   const switchExchangeRate = () => {
-    setExchangeRateSwitched(!exchangeRateSwitched)
+    setExchangeRateSwitched(!exchangeRateSwitched);
   };
 
   const setDefaultSlippage = () => {
@@ -474,16 +478,16 @@ export const Swap: React.FC = () => {
                         <p className="text-sm font-semibold text-right text-gray-400">
                           {exchangeRateSwitched ? (
                             <>
-                            1 {tokenX.name} ≈ {' '}
-                            {(1 / currentPrice).toLocaleString(undefined, {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 6,
-                            })} {' '}
-                            {tokenY.name}
+                              1 {tokenX.name} ≈{' '}
+                              {(1 / currentPrice).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 6,
+                              })}{' '}
+                              {tokenY.name}
                             </>
                           ) : (
                             <>
-                            1 {tokenY.name} ≈ {currentPrice} {tokenX.name}
+                              1 {tokenY.name} ≈ {currentPrice} {tokenX.name}
                             </>
                           )}
                         </p>
