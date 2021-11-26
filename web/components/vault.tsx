@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
 import { NavLink as RouterLink } from 'react-router-dom';
-import { Text } from '@blockstack/ui';
 import { AppContext } from '@common/context';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
@@ -179,13 +178,13 @@ export const Vault: React.FC<VaultProps> = ({
               {isLiquidated ? (
                 auctionEnded ? (
                   leftoverCollateral > 0 ? (
-                    <Text
-                      onClick={() => callWithdrawLeftoverCollateral()}
-                      _hover={{ cursor: 'pointer' }}
+                    <button
+                      type="button"
                       className="text-indigo-600 hover:text-indigo-900"
+                      onClick={() => callWithdrawLeftoverCollateral()}
                     >
                       Withdraw Leftover Collateral
-                    </Text>
+                    </button>
                   ) : (
                     <span>Vault liquidated & closed</span>
                   )
@@ -298,13 +297,14 @@ export const Vault: React.FC<VaultProps> = ({
             {isLiquidated ? (
               auctionEnded ? (
                 leftoverCollateral > 0 ? (
-                  <Text
+                  <button 
+                    type="button"
+                    className="block w-full px-4 py-2 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     onClick={() => callWithdrawLeftoverCollateral()}
-                    _hover={{ cursor: 'pointer' }}
-                    className="text-indigo-600 hover:text-indigo-900"
-                  >
-                    Withdraw Leftover Collateral
-                  </Text>
+                    >
+                      Withdraw Leftover Collateral
+                  </button>
+
                 ) : (
                   <span>Vault liquidated & closed</span>
                 )
