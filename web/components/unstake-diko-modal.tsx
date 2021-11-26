@@ -17,7 +17,12 @@ import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { Alert } from './ui/alert';
 
-export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmount }) => {
+export const UnstakeDikoModal = ({
+  showUnstakeModal,
+  setShowUnstakeModal,
+  stakedAmount,
+  stDikoToDiko,
+}) => {
   const [state, setState] = useContext(AppContext);
   const [errors, setErrors] = useState<string[]>([]);
   const [stakeAmount, setStakeAmount] = useState('');
@@ -85,7 +90,7 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
   return (
     <Modal
       open={showUnstakeModal}
-      title="Unstake DIKO"
+      title="Unstake stDIKO"
       icon={<img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />}
       closeModal={() => setShowUnstakeModal(false)}
       buttonText="Unstake"
@@ -107,7 +112,12 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
           minimumFractionDigits: 2,
           maximumFractionDigits: 6,
         })}{' '}
-        stDIKO.
+        stDIKO which equals to{' '}
+        {microToReadable(stakedAmount * stDikoToDiko).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 6,
+        })}{' '}
+        DIKO.
       </p>
       <div className="mt-6">
         <InputAmount
