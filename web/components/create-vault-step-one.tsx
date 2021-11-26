@@ -179,7 +179,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                 rel="noopener noreferrer"
               >
                 Need help with vaults?
-                <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
+                <ExternalLinkIcon className="flex-shrink-0 block w-3 h-3 ml-2" aria-hidden="true" />
               </a>
             </div>
           </div>
