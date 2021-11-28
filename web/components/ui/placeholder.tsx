@@ -14,7 +14,7 @@ enum Width {
 
 type Props = {
   color?: Color;
-  width: Width;
+  width?: Width;
   className?: string;
 };
 
