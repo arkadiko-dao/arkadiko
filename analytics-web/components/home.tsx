@@ -6,7 +6,7 @@ import HighchartsReact from 'highcharts-react-official';
 
 
 export const Home: React.FC = () => {
-  const apiUrl = 'https://arkadiko-api.herokuapp.com/';
+  const apiUrl = 'https://arkadiko-api.herokuapp.com';
   const [pools, setPools] = useState([]);
   const [prices, setPrices] = useState([]);  
 
