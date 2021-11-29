@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import {
   TrendingUpIcon,
@@ -7,16 +7,25 @@ import {
   XIcon,
 } from '@heroicons/react/outline';
 import { classNames } from '@common/class-names';
-import { NavLink as RouterLink } from 'react-router-dom';
+import { NavLink as RouterLink, useLocation } from 'react-router-dom';
 
 
 export const Sidebar: React.FC = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  let location = useLocation();
 
-  const navigation = [
+  const [navigation, updateNavigation] = useState([
     { name: 'Dashboard', href: '/', icon: TrendingUpIcon, current: true },
     { name: 'Balances', href: '/balances', icon: ScaleIcon, current: false },
-  ]
+  ])
+
+  useEffect(() => {
+    updateNavigation(navigation => [
+      ...navigation.map((item, index) => item.href.toLowerCase() === location.pathname
+      ? { ...item, current: true, key: index }
+      : { ...item, current: false, key: index }),
+    ])
+  }, [location])
 
   return (
     <div>
