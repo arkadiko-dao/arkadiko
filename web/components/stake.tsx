@@ -643,7 +643,6 @@ export const Stake = () => {
         showUnstakeModal={showUnstakeModal}
         setShowUnstakeModal={setShowUnstakeModal}
         stakedAmount={stakedAmount}
-        stDikoToDiko={stDikoToDiko}
       />
 
       <StakeLpModal
@@ -752,7 +751,7 @@ export const Stake = () => {
                       ) : (
                         <div>
                           <p className="text-lg font-semibold">
-                            {microToReadable(stakedAmount).toLocaleString(undefined, {
+                            {microToReadable(state.balance['stdiko']).toLocaleString(undefined, {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 6,
                             })}
@@ -786,7 +785,7 @@ export const Stake = () => {
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
                         <p className="text-lg font-semibold">
-                          {microToReadable(stakedAmount * stDikoToDiko).toLocaleString(undefined, {
+                          {microToReadable(stakedAmount).toLocaleString(undefined, {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 6,
                           })}

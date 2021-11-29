@@ -21,7 +21,6 @@ export const UnstakeDikoModal = ({
   showUnstakeModal,
   setShowUnstakeModal,
   stakedAmount,
-  stDikoToDiko,
 }) => {
   const [state, setState] = useContext(AppContext);
   const [errors, setErrors] = useState<string[]>([]);
@@ -69,13 +68,13 @@ export const UnstakeDikoModal = ({
   };
 
   const unstakeMaxAmount = () => {
-    setStakeAmount(stakedAmount / 1000000);
+    setStakeAmount(state.balance['stdiko'] / 1000000);
   };
 
   const onInputStakeChange = (event: any) => {
     const value = event.target.value;
     // trying to unstake
-    if (value > stakedAmount / 1000000) {
+    if (value > state.balance['stdiko'] / 1000000) {
       if (errors.length < 1) {
         setErrors(errors.concat(['You cannot unstake more than currently staking']));
       }
@@ -108,12 +107,12 @@ export const UnstakeDikoModal = ({
 
       <p className="mt-3 text-sm text-center text-gray-500">
         You are currently staking{' '}
-        {microToReadable(stakedAmount).toLocaleString(undefined, {
+        {microToReadable(state.balance['stdiko']).toLocaleString(undefined, {
           minimumFractionDigits: 2,
           maximumFractionDigits: 6,
         })}{' '}
         stDIKO which equals to{' '}
-        {microToReadable(stakedAmount * stDikoToDiko).toLocaleString(undefined, {
+        {microToReadable(stakedAmount).toLocaleString(undefined, {
           minimumFractionDigits: 2,
           maximumFractionDigits: 6,
         })}{' '}
@@ -121,7 +120,7 @@ export const UnstakeDikoModal = ({
       </p>
       <div className="mt-6">
         <InputAmount
-          balance={microToReadable(stakedAmount).toLocaleString()}
+          balance={microToReadable(state.balance['stdiko']).toLocaleString()}
           token="stDIKO"
           inputName="unstakeDiko"
           inputId="unstakeAmount"
