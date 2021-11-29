@@ -32,6 +32,7 @@ export const Home: React.FC = () => {
   useEffect(() => {
     const fetchDikoPrices = async () => {
       const response = await axios.get(`${apiUrl}/api/v1/pools/2/prices`);
+      console.log(response.data)
       setPrices(response.data.prices);
     };
 
@@ -117,6 +118,7 @@ export const Home: React.FC = () => {
       color: '#6366f1'
     }]
   };
+  console.log(prices)
 
   return (
     <>
