@@ -4,7 +4,6 @@ import {
   TrendingUpIcon,
   ScaleIcon,
   MenuIcon,
-  UserIcon,
   XIcon,
 } from '@heroicons/react/outline';
 import { classNames } from '@common/class-names';

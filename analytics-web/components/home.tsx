@@ -6,7 +6,7 @@ import HighchartsReact from 'highcharts-react-official';
 
 
 export const Home: React.FC = () => {
-  const apiUrl = 'https://arkadiko-api.herokuapp.com/';
+  const apiUrl = 'https://arkadiko-api.herokuapp.com';
   const [pools, setPools] = useState([]);
   const [prices, setPrices] = useState([]);  
 
@@ -32,7 +32,6 @@ export const Home: React.FC = () => {
   useEffect(() => {
     const fetchDikoPrices = async () => {
       const response = await axios.get(`${apiUrl}/api/v1/pools/2/prices`);
-      console.log(response.data)
       setPrices(response.data.prices);
     };
 
@@ -118,7 +117,6 @@ export const Home: React.FC = () => {
       color: '#6366f1'
     }]
   };
-  console.log(prices)
 
   return (
     <>
