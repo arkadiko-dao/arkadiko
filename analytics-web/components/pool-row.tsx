@@ -35,7 +35,7 @@ const getPrice = async (symbol: string) => {
 };
 
 export const PoolRow: React.FC = ({ id, pool }) => {
-  const apiUrl = 'http://localhost:3000'; // TODO: process.env.REACT_APP_OFFCHAIN_API;
+  const apiUrl = 'https://arkadiko-api.herokuapp.com/';
   const [priceX, setPriceX] = useState(0);
   const [priceY, setPriceY] = useState(0);
   const [volume24, setVolume24] = useState('0');
