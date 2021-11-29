@@ -551,7 +551,7 @@ export const Swap: React.FC = () => {
           </div>
           <div className="w-full max-w-md p-4 pt-8 -mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
             <dl className="space-y-1">
-              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                   Minimum Received
                   <div className="ml-2">
@@ -567,7 +567,7 @@ export const Swap: React.FC = () => {
                     </Tooltip>
                   </div>
                 </dt>
-                <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
+                <dd className="inline-flex justify-end mt-0 mt-1 text-sm font-semibold text-indigo-900">
                   {loadingData ? (
                     <Placeholder className="justify-end" width={Placeholder.width.HALF} />
                   ) : (
@@ -583,7 +583,7 @@ export const Swap: React.FC = () => {
                   )}
                 </dd>
               </div>
-              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                   Price Impact
                   <div className="ml-2">
@@ -599,7 +599,7 @@ export const Swap: React.FC = () => {
                     </Tooltip>
                   </div>
                 </dt>
-                <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
+                <dd className="inline-flex justify-end mt-0 mt-1 text-sm font-semibold text-indigo-900">
                   {loadingData ? (
                     <Placeholder className="justify-end" width={Placeholder.width.THIRD} />
                   ) : (
@@ -609,7 +609,7 @@ export const Swap: React.FC = () => {
                   )}
                 </dd>
               </div>
-              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                   Liquidity Provider fee
                   <div className="ml-2">
@@ -625,7 +625,7 @@ export const Swap: React.FC = () => {
                     </Tooltip>
                   </div>
                 </dt>
-                <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
+                <dd className="inline-flex justify-end mt-0 mt-1 text-sm font-semibold text-indigo-900">
                   {loadingData ? (
                     <Placeholder className="justify-end" width={Placeholder.width.HALF} />
                   ) : (

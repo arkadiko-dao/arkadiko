@@ -38,6 +38,7 @@ class Blockchain < ApplicationRecord
       response['txs'].each do |tx_id|
         scan_transaction(tx_id)
       end
+      update(last_block_height_imported: starting_block)
       starting_block += 1
     end
   end
@@ -168,9 +169,13 @@ class Blockchain < ApplicationRecord
       tvl_token_x = result['contract_call']['function_args'][3]['repr'].gsub('u', '').to_i
       tvl_token_y = result['contract_call']['function_args'][4]['repr'].gsub('u', '').to_i
     end
-    pool.swap_events.create!(
+    event = pool.swap_events.find_or_initialize_by(
+      transaction_id: result['tx_id']
+    )
+    return unless event.new_record?
+
+    event.update(
       function_name: function_name,
-      transaction_id: result['tx_id'],
       event_at: result['parent_burn_block_time_iso'],
       sender: result['sender_address'],
       token_x_amount: tvl_token_x,

@@ -729,12 +729,12 @@ export const Stake = () => {
                     rel="noopener noreferrer"
                   >
                     More on the Security Module
-                    <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
+                    <ExternalLinkIcon className="flex-shrink-0 block w-3 h-3 ml-2" aria-hidden="true" />
                   </a>
                 </div>
               </header>
 
-              <div className="mt-4 bg-white divide-y divide-gray-200 shadow sm:rounded-md">
+              <div className="mt-4 bg-white divide-y divide-gray-200 rounded-md shadow">
                 <div className="px-4 py-5 space-y-6 divide-y divide-gray-200 sm:p-6">
                   <div className="grid grid-cols-1 gap-4 sm:items-center sm:grid-cols-4">
                     <div>
@@ -901,7 +901,7 @@ export const Stake = () => {
               </div>
             </section>
 
-            <section className="mt-8">
+            <section className="relative mt-8 overflow-hidden">
               <header className="pb-5 border-b border-gray-200">
                 <h3 className="text-lg leading-6 text-gray-900 font-headings">
                   Liquidity Provider Tokens
@@ -941,10 +941,10 @@ export const Stake = () => {
                 </div>
               ) : null}
 
-              <div className="mt-4">
+              <div className="flex flex-col mt-4">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                    <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
+                    <div className="overflow-hidden border border-gray-200 rounded-lg">
                       <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                           <tr>

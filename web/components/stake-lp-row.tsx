@@ -30,20 +30,20 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
         <>
           <tr className="bg-white">
             <td className="px-6 py-4 text-sm whitespace-nowrap">
-              <div className="flex items-center">
-                <div className="flex -space-x-2 overflow-hidden">
+              <div className="flex flex-wrap items-center flex-1 sm:flex-nowrap">
+                <div className="flex flex-shrink-0 -space-x-2 overflow-hidden">
                   <img
-                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
+                    className="flex-shrink-0 inline-block w-8 h-8 rounded-full ring-2 ring-white"
                     src={tokenList[tokenListItemX].logo}
                     alt=""
                   />
                   <img
-                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
+                    className="flex-shrink-0 inline-block w-8 h-8 rounded-full ring-2 ring-white"
                     src={tokenList[tokenListItemY].logo}
                     alt=""
                   />
                 </div>
-                <p className="ml-4">
+                <p className="mt-2 sm:mt-0 sm:ml-4">
                   <span className="block text-gray-500">
                     <Tooltip
                       shouldWrapChildren={true}
