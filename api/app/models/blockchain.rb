@@ -38,6 +38,7 @@ class Blockchain < ApplicationRecord
       response['txs'].each do |tx_id|
         scan_transaction(tx_id)
       end
+      update(last_block_height_imported: starting_block)
       starting_block += 1
     end
   end
