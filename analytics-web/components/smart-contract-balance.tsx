@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { getRPCClient } from '@common/utils';
-import { Tooltip } from '@blockstack/ui';
-import { InformationCircleIcon } from '@heroicons/react/solid';
 
 export const SmartContractBalance = ({ address, description, name }) => {
   const [stxBalance, setStxBalance] = useState(0.0);
@@ -25,7 +23,6 @@ export const SmartContractBalance = ({ address, description, name }) => {
       const url = `${client.url}/extended/v1/address/${address}/balances`;
       const response = await fetch(url, { credentials: 'omit' });
       const data = await response.json();
-      console.log(client.url);
       setStxBalance(data.stx.balance / 1000000);
       const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
       if (dikoBalance) {
