@@ -96,16 +96,16 @@ export const SmartContractBalance = ({ address, description, name }) => {
   return (
     <div
       key={name}
-      className="relative flex px-6 py-5 pb-0 space-x-3 bg-white border border-gray-300 rounded-lg shadow-sm"
+      className="relative flex px-6 py-5 space-x-3 bg-white border border-gray-300 rounded-lg shadow-sm"
     >
       <div className="flex flex-col flex-1 min-w-0 group">
         <h3 className="text-lg font-semibold leading-none text-gray-900">{name}</h3>
         <p className="max-w-4xl mt-1 text-xs text-gray-500">
           {description}
         </p>
-        <div className="flex flex-col h-full mt-2 mb-4">
+        <div className="flex flex-col h-full my-4">
           {stxBalance ? (
-            <p className="text-lg font-semibold text-gray-600">
+            <p className="text-lg font-semibold text-gray-800">
               {stxBalance.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 6,
@@ -114,7 +114,7 @@ export const SmartContractBalance = ({ address, description, name }) => {
             </p>
           ) : null}
           {dikoBalance ? (
-            <p className="text-lg font-semibold text-gray-600">
+            <p className="text-lg font-semibold text-gray-800">
               {dikoBalance.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 6,
@@ -123,7 +123,7 @@ export const SmartContractBalance = ({ address, description, name }) => {
             </p>
           ) : null}
           {usdaBalance ? (
-            <p className="text-lg font-semibold text-gray-600">
+            <p className="text-lg font-semibold text-gray-800">
               {usdaBalance.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 6,
@@ -132,7 +132,7 @@ export const SmartContractBalance = ({ address, description, name }) => {
             </p>
           ) : null}
           {wStxBalance ? (
-            <p className="text-lg font-semibold text-gray-600">
+            <p className="text-lg font-semibold text-gray-800">
               {wStxBalance.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 6,
@@ -141,7 +141,7 @@ export const SmartContractBalance = ({ address, description, name }) => {
             </p>
           ) : null}
           {xStxBalance ? (
-            <p className="text-lg font-semibold text-gray-600">
+            <p className="text-lg font-semibold text-gray-800">
               {xStxBalance.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 6,
@@ -150,7 +150,7 @@ export const SmartContractBalance = ({ address, description, name }) => {
             </p>
           ) : null}
           {stDikoBalance ? (
-            <p className="text-lg font-semibold text-gray-600">
+            <p className="text-lg font-semibold text-gray-800">
               {stDikoBalance.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 6,
@@ -159,7 +159,7 @@ export const SmartContractBalance = ({ address, description, name }) => {
             </p>
           ) : null}
           {wstxUsdaBalance ? (
-            <p className="text-lg font-semibold text-gray-600">
+            <p className="text-lg font-semibold text-gray-800">
               {wstxUsdaBalance.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 6,
@@ -168,7 +168,7 @@ export const SmartContractBalance = ({ address, description, name }) => {
             </p>
           ) : null}
           {wstxDikoBalance ? (
-            <p className="text-lg font-semibold text-gray-600">
+            <p className="text-lg font-semibold text-gray-800">
               {wstxDikoBalance.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 6,
@@ -177,7 +177,7 @@ export const SmartContractBalance = ({ address, description, name }) => {
             </p>
           ) : null}
           {dikoUsdaBalance ? (
-            <p className="text-lg font-semibold text-gray-600">
+            <p className="text-lg font-semibold text-gray-800">
               {dikoUsdaBalance.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 6,
@@ -186,14 +186,14 @@ export const SmartContractBalance = ({ address, description, name }) => {
             </p>
           ) : null}
         </div>
-        <div className="px-6 py-3 mt-auto -mx-6 rounded-bl-lg rounded-br-lg bg-gray-50 group-hover:bg-gray-100">
-          <p className="text-xs font-semibold leading-none text-gray-400 uppercase">Contract name</p>
+        <div className="p-3 mt-auto rounded-md bg-gray-50">
+          <p className="text-xs font-semibold leading-none text-gray-500 uppercase">Contract name</p>
           <p className="truncate">
             <a 
               target="_blank"
               rel="noopener noreferrer"
               href={`https://explorer.stacks.co/address/${address}`}
-              className="text-xs text-gray-600 hover:text-indigo-700">
+              className="text-xs text-indigo-700">
                 {address}
             </a>
           </p>
