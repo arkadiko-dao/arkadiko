@@ -187,7 +187,7 @@ export const SmartContractBalance = ({ address, description, name }) => {
           ) : null}
         </div>
         <div className="p-3 mt-auto rounded-md bg-gray-50">
-          <p className="text-xs font-semibold leading-none text-gray-500 uppercase">Contract name</p>
+          <p className="text-xs font-semibold leading-none text-gray-500 uppercase">Contract</p>
           <p className="truncate">
             <a 
               target="_blank"
