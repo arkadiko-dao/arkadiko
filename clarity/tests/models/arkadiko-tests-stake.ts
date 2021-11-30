@@ -440,3 +440,27 @@ class StakePoolStxDiko {
 
 }
 export { StakePoolStxDiko };
+
+// ---------------------------------------------------------
+// Stake UI
+// ---------------------------------------------------------
+
+class StakeUI {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  getStakeAmounts(user: Account) {
+    return this.chain.callReadOnlyFn("arkadiko-ui-stake-v1-1", "get-stake-amounts", [types.principal(user.address)], this.deployer.address);
+  }
+
+  getStakeTotals() {
+    return this.chain.callReadOnlyFn("arkadiko-ui-stake-v1-1", "get-stake-totals", [], this.deployer.address);
+  }
+  
+}
+export { StakeUI };

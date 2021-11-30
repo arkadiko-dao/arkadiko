@@ -62,12 +62,11 @@ export const Stake = () => {
   const [cooldownRunning, setCooldownRunning] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const [hasUnstakedTokens, setHasUnstakedTokens] = useState(false);
-  const [emissionsStarted, setEmissionsStarted] = useState(false);
-
   const [stxDikoPoolInfo, setStxDikoPoolInfo] = useState(0);
   const [stxUsdaPoolInfo, setStxUsdaPoolInfo] = useState(0);
   const [dikoUsdaPoolInfo, setDikoUsdaPoolInfo] = useState(0);
   const [missedLpRewards, setMissedLpRewards] = useState(0);
+  const [stDikoToDiko, setStDikoToDiko] = useState(0);
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -81,7 +80,7 @@ export const Stake = () => {
   useEffect(() => {
     let mounted = true;
 
-    const checkUnstakedTokens = async () => {
+    const checkUnstakedTokens = () => {
       if (
         state.balance['dikousda'] > 0 ||
         state.balance['wstxusda'] > 0 ||
@@ -113,18 +112,6 @@ export const Stake = () => {
       return value + Number(cvToJSON(stakedCall2).value);
     };
 
-    const fetchLpStakeAmount = async (poolContract: string) => {
-      const stakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: poolContract,
-        functionName: 'get-stake-amount-of',
-        functionArgs: [standardPrincipalCV(stxAddress || '')],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      return cvToJSON(stakedCall).value;
-    };
-
     const fetchLpPendingRewards = async (poolContract: string) => {
       const dikoUsdaPendingRewardsCall = await callReadOnlyFunction({
         contractAddress,
@@ -139,19 +126,7 @@ export const Stake = () => {
       });
       return cvToJSON(dikoUsdaPendingRewardsCall).value.value;
     };
-
-    const fetchTotalStaked = async (poolContract: string) => {
-      const totalStxDikoStakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: poolContract,
-        functionName: 'get-total-staked',
-        functionArgs: [],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      return cvToJSON(totalStxDikoStakedCall).value / 1000000;
-    };
-
+    
     const lpTokenValue = async (
       poolContract: string,
       lpTokenStakedAmount: number,
@@ -261,7 +236,8 @@ export const Stake = () => {
       const data = await response.json();
       const currentBlock = data['stacks_tip_height'];
 
-      const stDikoSupplyCall = await callReadOnlyFunction({
+      // User staked DIKO
+      const stDikoCall = await callReadOnlyFunction({
         contractAddress,
         contractName: 'stdiko-token',
         functionName: 'get-total-supply',
@@ -269,96 +245,113 @@ export const Stake = () => {
         senderAddress: stxAddress || '',
         network: network,
       });
-      const stDikoSupply = cvToJSON(stDikoSupplyCall).value.value;
-      const userStakedCall = await callReadOnlyFunction({
+      const stDikoData = cvToJSON(stDikoCall).value.value;
+
+      const userStakedDikoCall = await callReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-stake-pool-diko-v1-1',
         functionName: 'get-stake-of',
         functionArgs: [
           contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
           standardPrincipalCV(stxAddress || ''),
-          uintCV(stDikoSupply),
+          uintCV(stDikoData)
         ],
         senderAddress: stxAddress || '',
         network: network,
       });
-      const dikoStaked = cvToJSON(userStakedCall).value.value;
+      const userStakedDikoData = cvToJSON(userStakedDikoCall).value.value;
+      setStakedAmount(userStakedDikoData);
 
-      setStakedAmount(dikoStaked);
-      const dikoUsdaLpStaked = await fetchLpStakeAmount('arkadiko-stake-pool-diko-usda-v1-1');
-      setLpDikoUsdaStakedAmount(dikoUsdaLpStaked);
-      const stxUsdaLpStaked = await fetchLpStakeAmount('arkadiko-stake-pool-wstx-usda-v1-1');
-      setLpStxUsdaStakedAmount(stxUsdaLpStaked);
-      const stxDikoLpStaked = await fetchLpStakeAmount('arkadiko-stake-pool-wstx-diko-v1-1');
-      setLpStxDikoStakedAmount(stxDikoLpStaked);
+      // User staked amounts
+      const userStakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-ui-stake-v1-2',
+        functionName: 'get-stake-amounts',
+        functionArgs: [
+          standardPrincipalCV(stxAddress || ''),
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const userStakedData = cvToJSON(userStakedCall).value.value;
+      setLpDikoUsdaStakedAmount(userStakedData["stake-amount-diko-usda"].value);
+      setLpStxUsdaStakedAmount(userStakedData["stake-amount-wstx-usda"].value);
+      setLpStxDikoStakedAmount(userStakedData["stake-amount-wstx-diko"].value);
 
-      const dikoUsdaLpValue = await lpTokenValue(
-        'arkadiko-stake-pool-diko-usda-v1-1',
-        dikoUsdaLpStaked,
-        state.balance['dikousda']
-      );
+      // Total staked
+      const totalStakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-ui-stake-v1-2',
+        functionName: 'get-stake-totals',
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const totalStakedData = cvToJSON(totalStakedCall).value.value;
+      let totalDikoStaked = totalStakedData["stake-total-diko"].value / 1000000;
+      let totalDikoUsdaStaked = totalStakedData["stake-total-diko-usda"].value / 1000000;
+      let totalStxUsdaStaked = totalStakedData["stake-total-wstx-usda"].value / 1000000;
+      let totalStxDikoStaked = totalStakedData["stake-total-wstx-diko"].value / 1000000;
+     
+      // LP value
+      const [dikoUsdaLpValue, stxUsdaLpValue, stxDikoLpValue] = await Promise.all([
+        lpTokenValue(
+          'arkadiko-stake-pool-diko-usda-v1-1',
+          userStakedData["stake-amount-diko-usda"].value,
+          state.balance['dikousda']
+        ),
+        lpTokenValue(
+          'arkadiko-stake-pool-wstx-usda-v1-1',
+          userStakedData["stake-amount-wstx-usda"].value,
+          state.balance['wstxusda']
+        ),
+        lpTokenValue(
+          'arkadiko-stake-pool-wstx-diko-v1-1',
+          userStakedData["stake-amount-wstx-diko"].value,
+          state.balance['wstxdiko']
+        ),
+      ]);
+
       setDikoUsdaPoolInfo(dikoUsdaLpValue);
-      const stxUsdaLpValue = await lpTokenValue(
-        'arkadiko-stake-pool-wstx-usda-v1-1',
-        stxUsdaLpStaked,
-        state.balance['wstxusda']
-      );
       setStxUsdaPoolInfo(stxUsdaLpValue);
-      const stxDikoLpValue = await lpTokenValue(
-        'arkadiko-stake-pool-wstx-diko-v1-1',
-        stxDikoLpStaked,
-        state.balance['wstxdiko']
-      );
       setStxDikoPoolInfo(stxDikoLpValue);
 
-      // if (currentBlock < REWARDS_START_BLOCK_HEIGHT) {
-      //   setLoadingData(false);
-      //   return;
-      // }
-      setEmissionsStarted(true);
+      // Pending rewards
+      const [dikoUsdaLpPendingRewards, stxUsdaLpPendingRewards, stxDikoLpPendingRewards] =
+        await Promise.all([
+          fetchLpPendingRewards('arkadiko-stake-pool-diko-usda-v1-1'),
+          fetchLpPendingRewards('arkadiko-stake-pool-wstx-usda-v1-1'),
+          fetchLpPendingRewards('arkadiko-stake-pool-wstx-diko-v1-1'),
+        ]);
 
-      const dikoUsdaLpPendingRewards = await fetchLpPendingRewards(
-        'arkadiko-stake-pool-diko-usda-v1-1'
-      );
       setLpDikoUsdaPendingRewards(dikoUsdaLpPendingRewards);
-      const stxUsdaLpPendingRewards = await fetchLpPendingRewards(
-        'arkadiko-stake-pool-wstx-usda-v1-1'
-      );
       setLpStxUsdaPendingRewards(stxUsdaLpPendingRewards);
-      const stxDikoLpPendingRewards = await fetchLpPendingRewards(
-        'arkadiko-stake-pool-wstx-diko-v1-1'
-      );
       setLpStxDikoPendingRewards(stxDikoLpPendingRewards);
-
-      let totalDikoStaked = await fetchTotalStaked('arkadiko-stake-pool-diko-v1-1');
-      let totalDikoUsdaStaked = await fetchTotalStaked('arkadiko-stake-pool-diko-usda-v1-1');
-      let totalStxUsdaStaked = await fetchTotalStaked('arkadiko-stake-pool-wstx-usda-v1-1');
-      let totalStxDikoStaked = await fetchTotalStaked('arkadiko-stake-pool-wstx-diko-v1-1');
 
       const totalStakingRewardsYear1 = 23500000;
 
-      if (totalDikoStaked === 0) {
+      if (totalDikoStaked == 0) {
         totalDikoStaked = 10;
       }
       const dikoPoolRewards = totalStakingRewardsYear1 * 0.1;
       const dikoApr = dikoPoolRewards / totalDikoStaked;
       setApy(Number((100 * dikoApr).toFixed(2)));
 
-      if (totalDikoUsdaStaked === 0) {
+      if (totalDikoUsdaStaked == 0) {
         totalDikoUsdaStaked = 10;
       }
       const dikoUsdaPoolRewards = totalStakingRewardsYear1 * 0.25;
       const dikoUsdaApr = dikoUsdaPoolRewards / totalDikoUsdaStaked;
       setDikoUsdaLpApy(Number((100 * dikoUsdaApr).toFixed(2)));
 
-      if (totalStxUsdaStaked === 0) {
+      if (totalStxUsdaStaked == 0) {
         totalStxUsdaStaked = 10;
       }
       const stxUsdaPoolRewards = totalStakingRewardsYear1 * 0.5;
       const stxUsdaApr = stxUsdaPoolRewards / totalStxUsdaStaked;
       setStxUsdaLpApy(Number((100 * stxUsdaApr).toFixed(2)));
 
-      if (totalStxDikoStaked === 0) {
+      if (totalStxDikoStaked == 0) {
         totalStxDikoStaked = 10;
       }
       const stxDikoPoolRewards = totalStakingRewardsYear1 * 0.15;
@@ -415,6 +408,20 @@ export const Stake = () => {
       const missedLpRewards = await fetchMissedLpRewards();
       setMissedLpRewards(missedLpRewards / 1000000);
 
+      const stDikoToDikoCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-stake-pool-diko-v1-1',
+        functionName: 'diko-for-stdiko',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          uintCV(1000000 * 10),
+          uintCV(stDikoData),
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const stDikoToDiko = cvToJSON(stDikoToDikoCall).value.value / 10;
+      setStDikoToDiko(Number(stDikoToDiko) / 1000000);
       setLoadingData(false);
     };
     if (mounted) {
@@ -705,9 +712,7 @@ export const Stake = () => {
                 <div>
                   <h3 className="text-lg leading-6 text-gray-900 font-headings">DIKO</h3>
                   <p className="max-w-3xl mt-2 text-sm text-gray-500">
-                    When staking DIKO in the <span className="font-semibold">security module</span>{' '}
-                    you get stDIKO in return. Both DIKO and stDIKO can be used to propose and vote
-                    in governance.
+                    When staking DIKO in the security module <span className="font-semibold">you will receive stDIKO</span> which is a representation of your share of the pool. DIKO in the pool is <span className="font-semibold">auto-compounding</span>. Your amount of stDIKO <span className="font-semibold">does not change</span>, but the DIKO value it represents <span className="font-semibold">will increase</span>. Both DIKO and stDIKO can be used to propose and vote in governance.
                   </p>
                 </div>
                 <div className="flex items-center">
@@ -724,12 +729,12 @@ export const Stake = () => {
                     rel="noopener noreferrer"
                   >
                     More on the Security Module
-                    <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
+                    <ExternalLinkIcon className="flex-shrink-0 block w-3 h-3 ml-2" aria-hidden="true" />
                   </a>
                 </div>
               </header>
 
-              <div className="mt-4 bg-white divide-y divide-gray-200 shadow sm:rounded-md">
+              <div className="mt-4 bg-white divide-y divide-gray-200 rounded-md shadow">
                 <div className="px-4 py-5 space-y-6 divide-y divide-gray-200 sm:p-6">
                   <div className="grid grid-cols-1 gap-4 sm:items-center sm:grid-cols-4">
                     <div>
@@ -737,40 +742,50 @@ export const Stake = () => {
                         <div className="flex-shrink-0 w-8 h-8">
                           <img className="w-8 h-8 rounded-full" src={tokenList[1].logo} alt="" />
                         </div>
-                        <p className="ml-4 text-lg font-semibold">
-                          {loadingData ? (
-                            <span>Loading...</span>
-                          ) : (
-                            <>
+                        {loadingData ? (
+                          <Placeholder className="py-2 ml-4" width={Placeholder.width.HALF} />
+                        ) : (
+                          <div>
+                            <p className="ml-4 text-lg font-semibold">
                               {microToReadable(stakedAmount).toLocaleString(undefined, {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 6,
                               })}{' '}
                               DIKO
-                            </>
-                          )}
-                        </p>
+                            </p>
+                            <div className="flex items-center mt-1">
+                              <p className="ml-4 text-xs text-gray-500">
+                                1 stDIKO ≈ {' '}
+                                {(stDikoToDiko).toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 6,
+                                })} DIKO
+                              </p>
+                              <Tooltip
+                                className="ml-2"
+                                shouldWrapChildren={true}
+                                label={`stDIKO's value is determined by dividing the total supply of DIKO in the pool by the total supply of stDIKO`}
+                              >
+                                <InformationCircleIcon
+                                  className="flex-shrink-0 block w-4 h-4 ml-2 text-gray-400"
+                                  aria-hidden="true"
+                                />
+                              </Tooltip>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div>
+                      <p className="mb-1 text-sm leading-6 text-gray-500">Current APR</p>
                       {loadingData ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                      ) : emissionsStarted ? (
-                        `${apy}%`
                       ) : (
-                        <p className="text-lg font-semibold">
-                          <span>Emissions not started</span>
-                        </p>
+                        `${apy}%`
                       )}
-                      <p className="text-base font-normal leading-6 text-gray-500">Current APR</p>
                     </div>
                     <div>
-                      {loadingData ? (
-                        <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                      ) : (
-                        <p className="text-lg font-semibold">{dikoCooldown}</p>
-                      )}
-                      <p className="flex items-center text-base font-normal leading-6 text-gray-500">
+                      <p className="flex items-center mb-1 text-sm leading-6 text-gray-500">
                         Cooldown status
                         <Tooltip
                           className="ml-2"
@@ -783,6 +798,11 @@ export const Stake = () => {
                           />
                         </Tooltip>
                       </p>
+                      {loadingData ? (
+                        <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                      ) : (
+                        <p className="text-lg">{dikoCooldown}</p>
+                      )}
                     </div>
                     <div>
                       {state.balance['diko'] > 0 ||
@@ -881,7 +901,7 @@ export const Stake = () => {
               </div>
             </section>
 
-            <section className="mt-8">
+            <section className="relative mt-8 overflow-hidden">
               <header className="pb-5 border-b border-gray-200">
                 <h3 className="text-lg leading-6 text-gray-900 font-headings">
                   Liquidity Provider Tokens
@@ -921,10 +941,10 @@ export const Stake = () => {
                 </div>
               ) : null}
 
-              <div className="mt-4">
+              <div className="flex flex-col mt-4">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                    <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
+                    <div className="overflow-hidden border border-gray-200 rounded-lg">
                       <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                           <tr>
@@ -976,7 +996,6 @@ export const Stake = () => {
                           pendingRewards={lpDikoUsdaPendingRewards}
                           stakedAmount={lpDikoUsdaStakedAmount}
                           apy={dikoUsdaLpApy}
-                          emissionsStarted={emissionsStarted}
                           poolInfo={dikoUsdaPoolInfo}
                           setShowStakeLpModal={setShowStakeLp1Modal}
                           setShowUnstakeLpModal={setShowUnstakeLp1Modal}
@@ -994,7 +1013,6 @@ export const Stake = () => {
                           pendingRewards={lpStxUsdaPendingRewards}
                           stakedAmount={lpStxUsdaStakedAmount}
                           apy={stxUsdaLpApy}
-                          emissionsStarted={emissionsStarted}
                           poolInfo={stxUsdaPoolInfo}
                           setShowStakeLpModal={setShowStakeLp2Modal}
                           setShowUnstakeLpModal={setShowUnstakeLp2Modal}
@@ -1012,7 +1030,6 @@ export const Stake = () => {
                           pendingRewards={lpStxDikoPendingRewards}
                           stakedAmount={lpStxDikoStakedAmount}
                           apy={stxDikoLpApy}
-                          emissionsStarted={emissionsStarted}
                           poolInfo={stxDikoPoolInfo}
                           setShowStakeLpModal={setShowStakeLp3Modal}
                           setShowUnstakeLpModal={setShowUnstakeLp3Modal}
