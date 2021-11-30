@@ -249,7 +249,7 @@ export const Stake = () => {
 
       const userStakedDikoCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-stake-pool-diko-v1-1',
+        contractName: 'arkadiko-stake-pool-diko-v1-2',
         functionName: 'get-stake-of',
         functionArgs: [
           contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
@@ -360,7 +360,7 @@ export const Stake = () => {
 
       const dikoCooldownInfo = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-stake-pool-diko-v1-1',
+        contractName: 'arkadiko-stake-pool-diko-v1-2',
         functionName: 'get-cooldown-info-of',
         functionArgs: [standardPrincipalCV(stxAddress || '')],
         senderAddress: stxAddress || '',
@@ -410,7 +410,7 @@ export const Stake = () => {
 
       const stDikoToDikoCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-stake-pool-diko-v1-1',
+        contractName: 'arkadiko-stake-pool-diko-v1-2',
         functionName: 'diko-for-stdiko',
         functionArgs: [
           contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
@@ -439,7 +439,7 @@ export const Stake = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-stake-pool-diko-v1-1',
+      contractName: 'arkadiko-stake-pool-diko-v1-2',
       functionName: 'start-cooldown',
       functionArgs: [],
       onFinish: data => {
@@ -529,7 +529,7 @@ export const Stake = () => {
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-usda-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
@@ -554,7 +554,7 @@ export const Stake = () => {
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-usda-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
@@ -579,7 +579,7 @@ export const Stake = () => {
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-diko-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
