@@ -3,6 +3,8 @@ import { PoolRow } from './pool-row';
 import axios from 'axios';
 import * as Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
+import { Pools } from './pools';
+import { Prices } from './prices';
 
 
 export const Home: React.FC = () => {
@@ -32,7 +34,6 @@ export const Home: React.FC = () => {
   useEffect(() => {
     const fetchDikoPrices = async () => {
       const response = await axios.get(`${apiUrl}/api/v1/pools/2/prices`);
-      console.log(response.data)
       setPrices(response.data.prices);
     };
 
@@ -118,7 +119,6 @@ export const Home: React.FC = () => {
       color: '#6366f1'
     }]
   };
-  console.log(prices)
 
   return (
     <>
@@ -132,57 +132,18 @@ export const Home: React.FC = () => {
               <h3 className="text-lg leading-6 text-gray-900 font-headings">DIKO price</h3>
             </div>
           </header>
-          <div className="mt-4 border-b border-gray-200 shadow sm:rounded-lg">
+          <div className="mt-4 border border-gray-200 rounded-lg">
             <HighchartsReact
-              containerProps = {{ className: 'sm:rounded-lg' }}
+              containerProps={{ className: 'sm:rounded-lg' }}
               highcharts={Highcharts}
               options={options}
             />
           </div>
         </section>
 
-        <section className="mt-8">
-          <header className="pb-5 border-b border-gray-200 sm:flex sm:justify-between sm:items-end">
-            <div>
-              <h3 className="text-lg leading-6 text-gray-900 font-headings">Pools</h3>
-            </div>
-          </header>
-          <div className="mt-4">
-            {pools.length > 0 ? (
-              <div className="flex flex-col">
-                <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                  <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                    <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                              Pool
-                            </th>
-                            <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                              TVL
-                            </th>
-                            <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                              Volume 24H
-                            </th>
-                            <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                              Volume 7D
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {pools}       
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ): (
-              <span>Loading...</span>
-            )}
-          </div>
-        </section>
+        <Pools pools={pools} />
+
+        <Prices />
       </div>
     </>
   );
