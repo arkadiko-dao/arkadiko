@@ -105,20 +105,20 @@ export const Prices: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
+                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                       {loadingPrices ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
                         <span>${stxPrice / 1000000}</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
+                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                       {loadingPrices ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
                         <>
-                        <span>{stxBlockUpdate} </span>
-                        <span className="text-gray-500">({stxBlockAgoUpdate} blocks ago)</span>
+                        <span>{stxBlockUpdate}</span>{' '}
+                        <span className="text-gray-400">({stxBlockAgoUpdate} blocks ago)</span>
                         </>
                       )}
                     </td>
@@ -139,20 +139,20 @@ export const Prices: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
+                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                       {loadingPrices ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
                         <span>${dikoPrice}</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
+                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                       {loadingPrices ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
                         <>
-                        <span>{dikoBlockUpdate} </span>
-                        <span className="text-gray-500">({dikoBlockAgoUpdate} blocks ago)</span>
+                          <span>{dikoBlockUpdate}</span>{' '}
+                          <span className="text-gray-400">({dikoBlockAgoUpdate} blocks ago)</span>
                         </>
                       )}
                     </td>
@@ -173,20 +173,20 @@ export const Prices: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
+                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                       {loadingPrices ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
                         <span>${xbtcPrice / 1000000}</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
+                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                       {loadingPrices ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
                         <>
-                        <span>{xbtcBlockUpdate} </span>
-                        <span className="text-gray-500">({xbtcBlockAgoUpdate} blocks ago)</span>
+                        <span>{xbtcBlockUpdate}</span>{' '}
+                        <span className="text-gray-400">({xbtcBlockAgoUpdate} blocks ago)</span>
                         </>
                       )}
                     </td>
@@ -207,20 +207,20 @@ export const Prices: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
+                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                       {loadingPrices ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
                         <span>${usdaPrice / 1000000}</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
+                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                       {loadingPrices ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
                         <>
-                        <span>{usdaBlockUpdate} </span>
-                        <span className="text-gray-500">({usdaBlockAgoUpdate} blocks ago)</span>
+                        <span>{usdaBlockUpdate}</span>{' '}
+                        <span className="text-gray-400">({usdaBlockAgoUpdate} blocks ago)</span>
                         </>
                       )}
                     </td>
