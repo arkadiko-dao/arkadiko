@@ -7,6 +7,7 @@ module.exports = {
       './src/**/*.html',
       './src/**/*.tsx',
       './components/**/*.tsx',
+      './../web/components/**/*.tsx'
     ],
   },
   darkMode: false, // or 'media' or 'class'
@@ -19,12 +20,7 @@ module.exports = {
     },
   },
   variants: {
-    extend: {
-      backgroundColor: ['checked'],
-      borderColor: ['checked']
-    },
+    extend: {},
   },
-  plugins: [
-    require('@tailwindcss/forms')
-  ],
+  plugins: [],
 }
