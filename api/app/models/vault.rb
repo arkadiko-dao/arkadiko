@@ -13,4 +13,9 @@
 #  updated_at        :datetime         not null
 #
 class Vault < ApplicationRecord
+  validates :vault_id, presence: true
+  validates :collateral_amount, presence: true
+  validates :debt, presence: true
+
+  has_many :vault_events, dependent: :destroy
 end
