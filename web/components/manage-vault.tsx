@@ -291,7 +291,7 @@ export const ManageVault = ({ match }) => {
       functionName: 'burn',
       functionArgs: [
         uintCV(match.params.id),
-        uintCV(parseFloat(usdToBurn) * 1000000),
+        uintCV(parseFloat(usdToBurn - stabilityFee) * 1000000),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
         contractPrincipalCV(
@@ -968,7 +968,7 @@ export const ManageVault = ({ match }) => {
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
                     Choose how much USDA you want to burn. Burning will include a stability fee of{' '}
-                    {stabilityFee / 1000000} USDA, so take this into account.
+                    <span className="font-semibold">{stabilityFee / 1000000} USDA</span>, so take this into account.
                   </p>
 
                   <div className="mt-6">
