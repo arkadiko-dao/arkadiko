@@ -868,7 +868,7 @@ export const Stake = () => {
                                           <Tooltip
                                             placement="left"
                                             className="mr-2"
-                                            label={`You don't have any DIKO to stake.`}
+                                            label={`You don't have any available DIKO to stake in your wallet.`}
                                           >
                                             <div className="flex items-center w-full">
                                               <ArrowCircleDownIcon
