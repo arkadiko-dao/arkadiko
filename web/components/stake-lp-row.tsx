@@ -176,7 +176,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
               </Disclosure.Button>
             </td>
           </tr>
-          <Disclosure.Panel as="tr">
+          <Disclosure.Panel as="tr" className="bg-gray-50">
             <td className="px-6 py-4 text-sm whitespace-nowrap">
               <RouterLink
                 to={getLpRoute}
@@ -196,7 +196,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
               ) : (
                 <button
                   type="button"
-                  className="inline-flex items-center px-4 py-2 text-sm leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                  className="inline-flex items-center px-4 py-2 text-sm leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
                   disabled={balance == 0}
                   onClick={() => setShowStakeLpModal(true)}
                 >
