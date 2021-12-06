@@ -117,6 +117,10 @@ class StakePoolDikoV1 {
     return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "get-total-staked", [], this.deployer.address);
   }
 
+  getLastRewardBlock() {
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "get-last-reward-add-block", [], this.deployer.address);
+  }
+
   getDikoForStDiko(amount: number, stDikoSupply: number) {
     return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-1", "diko-for-stdiko", [
       types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
