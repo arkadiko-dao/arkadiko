@@ -459,11 +459,11 @@ class StakeUI {
   }
 
   getStakeAmounts(user: Account) {
-    return this.chain.callReadOnlyFn("arkadiko-ui-stake-v1-2", "get-stake-amounts", [types.principal(user.address)], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-ui-stake-v1-3", "get-stake-amounts", [types.principal(user.address)], this.deployer.address);
   }
 
   getStakeTotals() {
-    return this.chain.callReadOnlyFn("arkadiko-ui-stake-v1-2", "get-stake-totals", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-ui-stake-v1-3", "get-stake-totals", [], this.deployer.address);
   }
   
 }
