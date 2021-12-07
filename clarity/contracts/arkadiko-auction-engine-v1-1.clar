@@ -192,7 +192,7 @@
         auction-type: "collateral",
         collateral-amount: uamount,
         collateral-token: (get collateral-token vault),
-        collateral-address: (unwrap-panic (contract-call? coll-type get-token-address (get collateral-token vault))),
+        collateral-address: (unwrap-panic (contract-call? coll-type get-token-address (get collateral-type vault))),
         debt-to-raise: (+ extra-debt vault-debt),
         discount: discount,
         vault-id: vault-id,
