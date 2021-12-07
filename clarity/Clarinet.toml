@@ -184,6 +184,10 @@ path = "contracts/arkadiko-vault-manager-trait-v1.clar"
 depends_on = ["arkadiko-oracle-trait-v1", "arkadiko-vault-manager-trait-v1"]
 path = "contracts/arkadiko-auction-engine-trait-v1.clar"
 
+[contracts.arkadiko-auction-engine-trait-v2]
+depends_on = ["arkadiko-oracle-trait-v1", "arkadiko-vault-manager-trait-v1", "arkadiko-collateral-types-trait-v1"]
+path = "contracts/arkadiko-auction-engine-trait-v2.clar"
+
 [contracts.arkadiko-collateral-types-trait-v1]
 depends_on = []
 path = "contracts/arkadiko-collateral-types-trait-v1.clar"
