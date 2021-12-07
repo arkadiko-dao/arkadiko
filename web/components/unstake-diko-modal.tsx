@@ -17,7 +17,11 @@ import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { Alert } from './ui/alert';
 
-export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmount }) => {
+export const UnstakeDikoModal = ({
+  showUnstakeModal,
+  setShowUnstakeModal,
+  stakedAmount,
+}) => {
   const [state, setState] = useContext(AppContext);
   const [errors, setErrors] = useState<string[]>([]);
   const [stakeAmount, setStakeAmount] = useState('');
@@ -64,13 +68,13 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
   };
 
   const unstakeMaxAmount = () => {
-    setStakeAmount(stakedAmount / 1000000);
+    setStakeAmount(state.balance['stdiko'] / 1000000);
   };
 
   const onInputStakeChange = (event: any) => {
     const value = event.target.value;
     // trying to unstake
-    if (value > stakedAmount / 1000000) {
+    if (value > state.balance['stdiko'] / 1000000) {
       if (errors.length < 1) {
         setErrors(errors.concat(['You cannot unstake more than currently staking']));
       }
@@ -85,7 +89,7 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
   return (
     <Modal
       open={showUnstakeModal}
-      title="Unstake DIKO"
+      title="Unstake stDIKO"
       icon={<img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />}
       closeModal={() => setShowUnstakeModal(false)}
       buttonText="Unstake"
@@ -103,15 +107,20 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
 
       <p className="mt-3 text-sm text-center text-gray-500">
         You are currently staking{' '}
+        {microToReadable(state.balance['stdiko']).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 6,
+        })}{' '}
+        stDIKO which equals to{' '}
         {microToReadable(stakedAmount).toLocaleString(undefined, {
           minimumFractionDigits: 2,
           maximumFractionDigits: 6,
         })}{' '}
-        stDIKO.
+        DIKO.
       </p>
       <div className="mt-6">
         <InputAmount
-          balance={microToReadable(stakedAmount).toLocaleString()}
+          balance={microToReadable(state.balance['stdiko']).toLocaleString()}
           token="stDIKO"
           inputName="unstakeDiko"
           inputId="unstakeAmount"

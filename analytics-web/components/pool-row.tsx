@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { stacksNetwork as network } from '@common/utils';
 import { callReadOnlyFunction, stringAsciiCV, cvToJSON } from '@stacks/transactions';
 import axios from 'axios';
+import { tokenList } from '../../web/components/token-swap-list';
+import { Placeholder } from '../../web/components/ui/placeholder';
 
 // create utils + oracle price fetch
-const tokenToName = (token:string) => {
+const tokenToName = (token: string) => {
   if (token === 'wrapped-stx-token') {
     return 'STX';
   } else if (token === 'arkadiko-token') {
@@ -45,6 +47,9 @@ export const PoolRow: React.FC = ({ id, pool }) => {
   const nameX = tokenToName(pool['token_x_name']);
   const nameY = tokenToName(pool['token_y_name']);
 
+  const tokenLogoX = tokenList.find(token => token['name'] === nameX);
+  const tokenLogoY = tokenList.find(token => token['name'] === nameY);
+
   useEffect(() => {
     const fetchTVL = async () => {
       const priceX = await getPrice(nameX) / 1000000;
@@ -80,26 +85,40 @@ export const PoolRow: React.FC = ({ id, pool }) => {
 
   return (
     <tr className="bg-white">
-      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-        {nameX}/{nameY}
+      <td className="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
+        <div className="flex flex-wrap items-center flex-1 sm:flex-nowrap">
+          <div className="flex flex-shrink-0 mr-2 -space-x-2 overflow-hidden">
+            <img
+              className="flex-shrink-0 inline-block w-8 h-8 rounded-full ring-2 ring-white"
+              src={tokenLogoX?.logo}
+              alt=""
+            />
+            <img
+              className="flex-shrink-0 inline-block w-8 h-8 rounded-full ring-2 ring-white"
+              src={tokenLogoY?.logo}
+              alt=""
+            />
+          </div>
+          {nameX}/{nameY}
+        </div>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+      <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
         {isLoading ? (
-          <span>Loading...</span>
+          <Placeholder className="py-2" width={Placeholder.width.HALF} />
           ) : (
           <span>${tvl}</span>
         )}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+      <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
         {isLoading ? (
-          <span>Loading...</span>
+          <Placeholder className="py-2" width={Placeholder.width.HALF} />
           ) : (
           <span>${volume24}</span>
         )}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+      <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
         {isLoading ? (
-          <span>Loading...</span>
+          <Placeholder className="py-2" width={Placeholder.width.HALF} />
           ) : (
           <span>${volume7}</span>
         )}
