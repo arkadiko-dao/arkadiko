@@ -209,7 +209,7 @@ Clarinet.test({
 
     // Notify liquidator
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidator-v1-1", "notify-risky-vault", [
+      Tx.contractCall("arkadiko-liquidator-v2-1", "notify-risky-vault", [
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-auction-engine-v2-1')),
         types.uint(1),

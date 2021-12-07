@@ -1,6 +1,6 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-const CONTRACT_NAME = 'arkadiko-liquidator-v1-1';
+const CONTRACT_NAME = 'arkadiko-liquidator-v2-1';
 const FUNCTION_NAME = 'notify-risky-vault';
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
