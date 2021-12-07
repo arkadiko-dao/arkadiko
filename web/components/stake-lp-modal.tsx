@@ -137,7 +137,7 @@ export const StakeLpModal = ({
       ) : null}
 
       <p className="mt-3 text-sm text-center text-gray-500">
-        Stake your {tokenName} LP tokens at {apy}% (estimated APY) and start earning rewards now.
+        Stake your {tokenName} LP tokens at {apy}% (estimated APR) and start earning rewards now.
       </p>
       <div className="mt-6">
         <InputAmount

@@ -23,7 +23,7 @@ Dao
 
 import { 
 StakeRegistry,
-StakePoolDiko,
+StakePoolDikoV1,
 StakePoolStxUsda,
 } from './models/arkadiko-tests-stake.ts';
 
@@ -302,7 +302,7 @@ name: "stake-pool-wstx-usda - stake DIKO rewards",
     let stDikoToken = new StDikoToken(chain, deployer);
     let stxUsdaToken = new StxUsdaPoolToken(chain, deployer);
     let stakeRegistry = new StakeRegistry(chain, deployer);
-    let stakePoolDiko = new StakePoolDiko(chain, deployer);
+    let stakePoolDiko = new StakePoolDikoV1(chain, deployer);
 
     // Create swap pair to get LP tokens
     let result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
@@ -343,7 +343,7 @@ name: "stake-pool-wstx-usda - stake DIKO rewards",
 
     // Stake of user in DIKO pool
     result = stakePoolDiko.getStakeOf(deployer, 4134.2337);
-    result.expectOk().expectUintWithDecimals(14198.372913);
+    result.expectOk().expectUintWithDecimals(14198.378799);
 
   }
 });

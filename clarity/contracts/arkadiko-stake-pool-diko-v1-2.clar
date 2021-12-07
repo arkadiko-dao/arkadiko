@@ -23,7 +23,7 @@
 (define-constant POOL-TOKEN .arkadiko-token)
 
 ;; Variables
-(define-data-var last-reward-add-block uint block-height)
+(define-data-var last-reward-add-block uint u999999999)
 
 ;; ---------------------------------------------------------
 ;; Migration
@@ -247,7 +247,7 @@
 (define-public (add-rewards-to-pool (registry-trait <stake-registry-trait>))
   (let (
     (rewards-to-add (calculate-pending-rewards-for-pool registry-trait))
-    (deactivated-block (unwrap-panic (contract-call? registry-trait get-pool-deactivated-block .arkadiko-stake-pool-diko-v1-1)))
+    (deactivated-block (unwrap-panic (contract-call? registry-trait get-pool-deactivated-block .arkadiko-stake-pool-diko-v1-2)))
   )
     (asserts! (is-eq (contract-of registry-trait) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-WRONG-REGISTRY)
     (asserts! (> block-height (var-get last-reward-add-block)) (ok u0))
@@ -270,7 +270,7 @@
 ;; This is an approximation as the rewards per block change every block
 (define-private (calculate-pending-rewards-for-pool (registry-trait <stake-registry-trait>))
   (let (
-    (rewards-per-block (unwrap-panic (contract-call? registry-trait get-rewards-per-block-for-pool .arkadiko-stake-pool-diko-v1-1)))
+    (rewards-per-block (unwrap-panic (contract-call? registry-trait get-rewards-per-block-for-pool .arkadiko-stake-pool-diko-v1-2)))
     (last-block-info (get-last-block-height registry-trait))
     (block-diff (if (> (get height last-block-info) (var-get last-reward-add-block))
       (- (get height last-block-info) (var-get last-reward-add-block))
@@ -290,7 +290,7 @@
 ;; Return current block height, or block height when pool was deactivated
 (define-private (get-last-block-height (registry-trait <stake-registry-trait>))
   (let (
-    (deactivated-block (unwrap-panic (contract-call? registry-trait get-pool-deactivated-block .arkadiko-stake-pool-diko-v1-1)))
+    (deactivated-block (unwrap-panic (contract-call? registry-trait get-pool-deactivated-block .arkadiko-stake-pool-diko-v1-2)))
     (pool-active (is-eq deactivated-block u0))
   )
     (if (is-eq pool-active true)

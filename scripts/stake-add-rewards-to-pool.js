@@ -1,24 +1,20 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const tx = require('@stacks/transactions');
-const BN = require('bn.js');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
+const BN = require('bn.js');
 
-async function burn() {
+async function transact() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-governance-v2-1",
-    functionName: "add-contract-address",
+    contractName: 'arkadiko-stake-pool-diko-v1-1',
+    functionName: 'add-rewards-to-pool',
     functionArgs: [
-      tx.stringAsciiCV("arkadiko-stake-lp-rewards"),
-      tx.standardPrincipalCV(CONTRACT_ADDRESS),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-lp-rewards'),
-      tx.trueCV(),
-      tx.trueCV()
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-registry-v1-1')
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
-    fee: new BN(5000000, 1),
+    fee: new BN(300000, 10),
     postConditionMode: 1,
     network
   };
@@ -26,6 +22,6 @@ async function burn() {
   const transaction = await tx.makeContractCall(txOptions);
   const result = tx.broadcastTransaction(transaction, network);
   await utils.processing(result, transaction.txid(), 0);
-}
+};
 
-burn();
+transact();

@@ -182,25 +182,6 @@ export const Mint = () => {
     await broadcastTransaction(transaction, network);
   };
 
-  const addTestnetStx = async () => {
-    let url;
-    if (env === 'testnet') {
-      url = `https://stacks-node-api.testnet.stacks.co/extended/v1/debug/faucet?address=${address}`;
-    } else {
-      url = `https://stacks-node-api.regtest.stacks.co/extended/v1/debug/faucet?address=${address}`;
-    }
-    await fetch(url, {
-      method: 'POST',
-    });
-    setState(prevState => ({
-      ...prevState,
-      showTxModal: true,
-      currentTxStatus: 'requesting faucet tokens...',
-      currentTxMessage:
-        'Please refresh this page manually after 5 minutes. Your balance should be updated.',
-    }));
-  };
-
   const claimPendingRewards = async () => {
     await doContractCall({
       network,
@@ -228,22 +209,20 @@ export const Mint = () => {
             <div
               className="absolute w-full h-full"
               style={{ backgroundImage: 'url(/assets/stacks-pattern.png)', backgroundSize: '20%' }}
-            ></div>
-            <div className="absolute bottom-0 right-0 z-10 p-2 mb-2 mr-2 bg-indigo-600 rounded-full">
-              <a href="https://stacking.club/" target="_blank" rel="noopener noreferrer">
-                <svg
-                  className="w-4 h-4"
-                  viewBox="0 0 120 121"
-                  xmlns="http://www.w3.org/2000/svg"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M108.897 120.001L83.4366 81.4259H120V66.872H0V81.4428H36.5512L11.1027 120.001H30.0887L60.0001 74.6811L89.9113 120.001H108.897ZM120 52.7468V38.0464H84.1795L109.29 0H90.3043L59.9997 45.9149L29.6957 0H10.7099L35.8527 38.0805H0V52.7468H120Z"
-                    fill="white"
-                  />
-                </svg>
-              </a>
-            </div>
+            />
+            <a className="absolute bottom-0 right-0 z-10 p-2 mb-2 mr-2 bg-indigo-600 rounded-full" href="https://stacking.club/" target="_blank" rel="noopener noreferrer">
+              <svg
+                className="w-4 h-4"
+                viewBox="0 0 120 121"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M108.897 120.001L83.4366 81.4259H120V66.872H0V81.4428H36.5512L11.1027 120.001H30.0887L60.0001 74.6811L89.9113 120.001H108.897ZM120 52.7468V38.0464H84.1795L109.29 0H90.3043L59.9997 45.9149L29.6957 0H10.7099L35.8527 38.0805H0V52.7468H120Z"
+                  fill="white"
+                />
+              </svg>
+            </a>
 
             <dl className="relative grid grid-cols-1 overflow-hidden bg-indigo-100 bg-opacity-50 border border-indigo-200 divide-y divide-indigo-200 rounded-lg shadow-sm md:grid-cols-4 md:divide-y-0 md:divide-x">
               <div className="px-4 py-5 sm:p-6">
@@ -340,12 +319,57 @@ export const Mint = () => {
             </div>
           </header>
 
-          <div className="mt-4">
-            {vaults.length &&
-            Object.keys(collateralTypes).length === state.definedCollateralTypes.length ? (
-              <VaultGroup vaults={vaults} />
-            ) : loadingVaults === true ? (
-              <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
+          {vaults.length &&
+          Object.keys(collateralTypes).length === state.definedCollateralTypes.length ? (
+            <VaultGroup vaults={vaults} />
+          ) : loadingVaults === true ? (
+            <div className="min-w-full mt-4 overflow-hidden overflow-x-auto align-middle rounded-lg sm:shadow">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead>
+                  <tr>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50"
+                    >
+                      <Placeholder color={Placeholder.color.GRAY} />
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="bg-white">
+                    <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+                      <Placeholder />
+                    </td>
+                  </tr>
+                  <tr className="bg-white">
+                    <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+                      <Placeholder />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <EmptyState
+              Icon={ArchiveIcon}
+              title="You currently have no open vaults."
+              description="Start creating a new vault by choosing the appropriate collateral type below."
+            />
+          )}
+        </section>
+
+        <section className="mt-8">
+          <header className="pb-5 border-b border-gray-200">
+            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">
+              Create vault
+            </h3>
+          </header>
+
+          <div className="flex flex-col mt-4">
+            {Object.keys(collateralTypes).length > 0 ? (
+              <CollateralType types={collateralTypes} />
+            ) : (
+              <div className="min-w-full mt-4 overflow-hidden overflow-x-auto align-middle rounded-lg sm:shadow">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead>
                     <tr>
@@ -371,31 +395,7 @@ export const Mint = () => {
                   </tbody>
                 </table>
               </div>
-            ) : (
-              <EmptyState
-                Icon={ArchiveIcon}
-                title="You currently have no open vaults."
-                description="Start creating a new vault by choosing the appropriate collateral type below."
-              />
-            )}
-          </div>
-        </section>
-
-        <section className="mt-8">
-          <header className="pb-5 border-b border-gray-200">
-            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">
-              Create vault
-            </h3>
-          </header>
-
-          <div className="flex flex-col mt-4">
-            <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
-              {Object.keys(collateralTypes).length > 0 ? (
-                <CollateralType types={collateralTypes} />
-              ) : (
-                <Placeholder className="py-2" width={Placeholder.width.HALF} />
               )}
-            </div>
           </div>
         </section>
 
@@ -414,19 +414,6 @@ export const Mint = () => {
                     Get 5000 STX from mocknet
                   </button>
                 </div>
-              ) : env === 'testnet' ? (
-                <div className="flex items-center justify-end mb-4">
-                  <span className="px-2 py-1 text-xs text-gray-800">
-                    {env.replace(/^\w/, c => c.toUpperCase())} actions:
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => addTestnetStx()}
-                    className="inline-flex items-center px-3 py-2 text-sm font-normal leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    Get STX from {env}
-                  </button>
-                </div>
               ) : null}
             </div>
           </header>
@@ -434,7 +421,7 @@ export const Mint = () => {
           <div className="flex flex-col mt-4">
             <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
               <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                <div className="overflow-hidden shadow sm:rounded-lg">
+                <div className="overflow-hidden border border-gray-200 rounded-lg">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>

@@ -26,6 +26,10 @@ path = "contracts/arkadiko-governance-v1-1.clar"
 depends_on = ["arkadiko-token", "stdiko-token", "sip-010-trait-ft-standard", "arkadiko-stake-pool-diko-trait-v1"]
 path = "contracts/tests/arkadiko-governance-tv1-1.clar"
 
+[contracts.arkadiko-governance-v2-1]
+depends_on = ["arkadiko-token", "stdiko-token", "sip-010-trait-ft-standard", "arkadiko-stake-pool-diko-trait-v1"]
+path = "contracts/arkadiko-governance-v2-1.clar"
+
 [contracts.arkadiko-token]
 depends_on = ["sip-010-trait-ft-standard", "arkadiko-dao-token-trait-v1"]
 path = "contracts/arkadiko-token.clar"
@@ -181,6 +185,10 @@ path = "contracts/arkadiko-stake-pool-diko-trait-v1.clar"
 depends_on = ["arkadiko-stake-pool-trait-v1", "arkadiko-stake-pool-diko-trait-v1", "arkadiko-token", "stdiko-token", "sip-010-trait-ft-standard", "arkadiko-stake-registry-v1-1"]
 path = "contracts/arkadiko-stake-pool-diko-v1-1.clar"
 
+[contracts.arkadiko-stake-pool-diko-v1-2]
+depends_on = ["arkadiko-stake-pool-trait-v1", "arkadiko-stake-pool-diko-trait-v1", "arkadiko-token", "stdiko-token", "sip-010-trait-ft-standard", "arkadiko-stake-registry-v1-1"]
+path = "contracts/arkadiko-stake-pool-diko-v1-2.clar"
+
 [contracts.arkadiko-stake-pool-diko-slash-v1-1]
 depends_on = ["arkadiko-stake-pool-diko-v1-1"]
 path = "contracts/arkadiko-stake-pool-diko-slash-v1-1.clar"
@@ -273,9 +281,9 @@ path = "contracts/arkadiko-stake-lp-rewards.clar"
 depends_on = ["arkadiko-stake-registry-v1-1", "arkadiko-stake-pool-diko-v1-1", "arkadiko-stake-lp-rewards"]
 path = "contracts/arkadiko-stake-lp-rewards-2.clar"
 
-[contracts.arkadiko-ui-stake-v1-2]
+[contracts.arkadiko-ui-stake-v1-3]
 depends_on = ["arkadiko-stake-registry-v1-1", "arkadiko-stake-pool-diko-usda-v1-1"]
-path = "contracts/arkadiko-ui-stake-v1-2.clar"
+path = "contracts/arkadiko-ui-stake-v1-3.clar"
 
 # Tokensoft xBTC
 [contracts.restricted-token-trait]

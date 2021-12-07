@@ -1,7 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Container } from './home';
-import { SwitchVerticalIcon, InformationCircleIcon, CogIcon } from '@heroicons/react/solid';
+import {
+  SwitchVerticalIcon,
+  InformationCircleIcon,
+  SwitchHorizontalIcon,
+} from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { microToReadable } from '@common/vault-utils';
@@ -22,7 +26,6 @@ import { getBalance } from '@components/app';
 import { classNames } from '@common/class-names';
 import { Placeholder } from './ui/placeholder';
 import { SwapLoadingPlaceholder } from './swap-loading-placeholder';
-import { Alert } from './ui/alert';
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
@@ -40,9 +43,9 @@ export const Swap: React.FC = () => {
   const [priceImpact, setPriceImpact] = useState('0');
   const [lpFee, setLpFee] = useState('0');
   const [foundPair, setFoundPair] = useState(true);
-  const defaultFee = 0.4;
   const [loadingData, setLoadingData] = useState(true);
   const [insufficientBalance, setInsufficientBalance] = useState(false);
+  const [exchangeRateSwitched, setExchangeRateSwitched] = useState(false);
 
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -110,6 +113,7 @@ export const Swap: React.FC = () => {
       setTokenXAmount(0.0);
       setTokenYAmount(0.0);
       setLoadingData(true);
+      setExchangeRateSwitched(false);
 
       const tokenXContract = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
       const tokenYContract = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
@@ -120,7 +124,6 @@ export const Swap: React.FC = () => {
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
         const basePrice = Number((balanceX / balanceY).toFixed(2));
-        // const price = parseFloat(basePrice) + (parseFloat(basePrice) * 0.01);
         setCurrentPrice(basePrice);
         setInverseDirection(false);
         setFoundPair(true);
@@ -172,12 +175,12 @@ export const Swap: React.FC = () => {
       const newBalanceY = balanceY + inputWithoutFees;
       const newBalanceX = (balanceY * balanceX) / newBalanceY;
       tokenYAmount = balanceX - newBalanceX;
-      priceImpact = (newBalanceY/newBalanceX) / (balanceY/balanceX) - 1.0
+      priceImpact = newBalanceY / newBalanceX / (balanceY / balanceX) - 1.0;
     } else {
       const newBalanceX = balanceX + inputWithoutFees;
       const newBalanceY = (balanceX * balanceY) / newBalanceX;
       tokenYAmount = balanceY - newBalanceY;
-      priceImpact = (newBalanceX/newBalanceY) / (balanceX/balanceY) - 1.0
+      priceImpact = newBalanceX / newBalanceY / (balanceX / balanceY) - 1.0;
     }
 
     setMinimumReceived(tokenYAmount * slippage);
@@ -220,6 +223,10 @@ export const Swap: React.FC = () => {
     setTokenXAmount(0.0);
     setTokenYAmount(0.0);
     setLoadingData(true);
+  };
+
+  const switchExchangeRate = () => {
+    setExchangeRateSwitched(!exchangeRateSwitched);
   };
 
   const setDefaultSlippage = () => {
@@ -467,9 +474,31 @@ export const Swap: React.FC = () => {
                     {loadingData ? (
                       <Placeholder className="justify-end pt-3" width={Placeholder.width.THIRD} />
                     ) : (
-                      <p className="mt-2 text-sm font-semibold text-right text-gray-400">
-                        1 {tokenY.name} = ≈{currentPrice} {tokenX.name}
-                      </p>
+                      <div className="flex items-center justify-end mt-2">
+                        <p className="text-sm font-semibold text-right text-gray-400">
+                          {exchangeRateSwitched ? (
+                            <>
+                              1 {tokenX.name} ≈{' '}
+                              {(1 / currentPrice).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 6,
+                              })}{' '}
+                              {tokenY.name}
+                            </>
+                          ) : (
+                            <>
+                              1 {tokenY.name} ≈ {currentPrice} {tokenX.name}
+                            </>
+                          )}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={switchExchangeRate}
+                          className="ml-2 text-gray-400 hover:text-indigo-700"
+                        >
+                          <SwitchHorizontalIcon className="w-5 h-5" aria-hidden="true" />
+                        </button>
+                      </div>
                     )}
 
                     {state.userData ? (
@@ -522,7 +551,7 @@ export const Swap: React.FC = () => {
           </div>
           <div className="w-full max-w-md p-4 pt-8 -mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
             <dl className="space-y-1">
-              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                   Minimum Received
                   <div className="ml-2">
@@ -538,7 +567,7 @@ export const Swap: React.FC = () => {
                     </Tooltip>
                   </div>
                 </dt>
-                <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
+                <dd className="inline-flex justify-end mt-0 mt-1 text-sm font-semibold text-indigo-900">
                   {loadingData ? (
                     <Placeholder className="justify-end" width={Placeholder.width.HALF} />
                   ) : (
@@ -554,7 +583,7 @@ export const Swap: React.FC = () => {
                   )}
                 </dd>
               </div>
-              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                   Price Impact
                   <div className="ml-2">
@@ -570,7 +599,7 @@ export const Swap: React.FC = () => {
                     </Tooltip>
                   </div>
                 </dt>
-                <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
+                <dd className="inline-flex justify-end mt-0 mt-1 text-sm font-semibold text-indigo-900">
                   {loadingData ? (
                     <Placeholder className="justify-end" width={Placeholder.width.THIRD} />
                   ) : (
@@ -580,7 +609,7 @@ export const Swap: React.FC = () => {
                   )}
                 </dd>
               </div>
-              <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
                   Liquidity Provider fee
                   <div className="ml-2">
@@ -596,7 +625,7 @@ export const Swap: React.FC = () => {
                     </Tooltip>
                   </div>
                 </dt>
-                <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:justify-end sm:inline-flex">
+                <dd className="inline-flex justify-end mt-0 mt-1 text-sm font-semibold text-indigo-900">
                   {loadingData ? (
                     <Placeholder className="justify-end" width={Placeholder.width.HALF} />
                   ) : (

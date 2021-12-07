@@ -12,3 +12,7 @@
 7. Run `Blockchain.first.scan_transactions`. THIS TAKES HOURS AND SCANS ALL ARKADIKO SWAP MAINNET CONTRACTS. I'll check if I can make an easy to import SQL dump or something.
 8. Run `yarn` and `yarn dev` in `analytics-web` folder
 9. You should see the app on localhost:9000.
+
+# Deploy to Heroku
+
+Run `git subtree push --prefix api heroku master` from the root directory of the git repo.
