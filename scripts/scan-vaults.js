@@ -64,11 +64,11 @@ async function getLiquidationRatio(collateralType) {
 async function liquidateVault(vaultId, nonce) {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-liquidator-v1-1",
+    contractName: "arkadiko-liquidator-v2-1",
     functionName: "notify-risky-vault",
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-freddie-v1-1'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-auction-engine-v1-1'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-auction-engine-v2-1'),
       tx.uintCV(vaultId),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v1-1'),
     ],

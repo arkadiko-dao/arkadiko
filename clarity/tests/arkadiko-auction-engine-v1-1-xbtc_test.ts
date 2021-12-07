@@ -225,7 +225,7 @@ Clarinet.test({
 
     call = dikoToken.balanceOf(deployer.address);
     call.result.expectOk().expectUintWithDecimals(890000);
-    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-auction-engine-v1-1"));
+    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-auction-engine-v2-1"));
     call.result.expectOk().expectUintWithDecimals(0);
 
     // New auction opened with DIKO as collateral token
@@ -287,7 +287,7 @@ Clarinet.test({
     bid['redeemed'].expectBool(true); 
 
     // Auction engine and SIP10 should not have any DIKO
-    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-auction-engine-v1-1"));
+    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-auction-engine-v2-1"));
     call.result.expectOk().expectUintWithDecimals(0);
     call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-sip10-reserve-v1-1"));
     call.result.expectOk().expectUintWithDecimals(0);
@@ -324,7 +324,7 @@ Clarinet.test({
     result = vaultAuction.bid(wallet_1, 100);
     result.expectOk().expectBool(true);
 
-    let call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v1-1'));
+    let call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v2-1'));
     call.result.expectOk().expectUintWithDecimals(100);
 
     call = await usdaToken.balanceOf(wallet_1.address);
@@ -334,7 +334,7 @@ Clarinet.test({
     result = vaultAuction.bid(deployer, 110);
     result.expectOk().expectBool(true);
 
-    call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v1-1'));
+    call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v2-1'));
     call.result.expectOk().expectUintWithDecimals(110);
 
     call = await usdaToken.balanceOf(wallet_1.address);

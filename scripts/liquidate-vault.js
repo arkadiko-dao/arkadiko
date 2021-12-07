@@ -15,7 +15,7 @@ const txOptions = {
   functionName: FUNCTION_NAME,
   functionArgs: [
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-freddie-v1-1'),
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-auction-engine-v1-1'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-auction-engine-v2-1'),
     tx.uintCV(vaultId),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v1-1'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v1-1')

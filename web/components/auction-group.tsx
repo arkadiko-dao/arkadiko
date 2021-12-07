@@ -80,7 +80,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeig
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-auction-engine-v1-1',
+      contractName: 'arkadiko-auction-engine-v2-1',
       functionName: 'bid',
       functionArgs: [
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-freddie-v1-1'),
