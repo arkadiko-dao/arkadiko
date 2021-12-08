@@ -291,7 +291,7 @@ export const ManageVault = ({ match }) => {
       functionName: 'burn',
       functionArgs: [
         uintCV(match.params.id),
-        uintCV((parseFloat(usdToBurn) * 1000000) - stabilityFee),
+        uintCV(Number((parseFloat(usdToBurn) * 1000000) - (1.5 * stabilityFee))),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
         contractPrincipalCV(
