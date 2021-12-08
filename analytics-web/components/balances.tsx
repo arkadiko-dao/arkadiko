@@ -37,6 +37,12 @@ export const Balances = () => {
         'Can see, vote and submit a new proposal. A proposal will just update the DAO with new contracts.',
     },
     {
+      address: `${contractAddress}.arkadiko-governance-v2-1`,
+      name: 'Governance v2',
+      description:
+        'Can see, vote and submit a new proposal. A proposal will just update the DAO with new contracts.',
+    },
+    {
       address: `${contractAddress}.arkadiko-stacker-v1-1`,
       name: 'Stacker v1',
       description: 'Stacker initiates stacking for the STX reserve. Stacks the STX tokens in PoX.',
@@ -57,13 +63,18 @@ export const Balances = () => {
       description: 'Stacker initiates stacking for the STX reserve. Stacks the STX tokens in PoX.',
     },
     {
-      address: `${contractAddress}.arkadiko-stacker-payer-v1-1`,
-      name: 'Stacker Payer v1',
+      address: `${contractAddress}.arkadiko-claim-yield-v2-1`,
+      name: 'Claim Yield v2',
       description: 'Pays rewards after PoX cycle is over.',
     },
     {
       address: `${contractAddress}.arkadiko-stake-pool-diko-v1-1`,
       name: 'Stake Pool DIKO v1',
+      description: 'DIKO Stake Pool - Stake DIKO to get stDIKO.',
+    },
+    {
+      address: `${contractAddress}.arkadiko-stake-pool-diko-v1-2`,
+      name: 'Stake Pool DIKO v1.2',
       description: 'DIKO Stake Pool - Stake DIKO to get stDIKO.',
     },
     {
