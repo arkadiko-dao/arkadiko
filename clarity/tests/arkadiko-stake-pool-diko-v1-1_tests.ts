@@ -13,6 +13,7 @@ import {
 
 import { 
   StakeRegistry,
+  StakePoolDikoV1,
   StakePoolDiko
 } from './models/arkadiko-tests-stake.ts';
 
@@ -23,12 +24,46 @@ import {
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
+// ---------------------------------------------------------
+// Helper function
+// ---------------------------------------------------------
+
+function addNewDikoStakePool(chain: Chain, deployer: Account) {
+  let stakeRegistry = new StakeRegistry(chain, deployer);
+  let stakePoolDiko = new StakePoolDiko(chain, deployer);
+
+  // Add new pool to DAO
+  let block = chain.mineBlock([
+    Tx.contractCall("arkadiko-governance-v2-1", "add-contract-address", [
+      types.ascii("arkadiko-stake-pool-diko-v1-2"),
+      types.principal(deployer.address),
+      types.principal(Utils.qualifiedName("arkadiko-stake-pool-diko-v1-2")),
+      types.bool(true),
+      types.bool(true)
+    ], deployer.address)
+  ]);
+  block.receipts[0].result.expectOk().expectBool(true);
+
+  // Update stake registry
+  let result = stakeRegistry.setPoolData('arkadiko-stake-pool-diko-v1-1', 'DIKO', 0, 0, 0);
+  result.expectOk().expectBool(true);  
+
+  result = stakeRegistry.setPoolData('arkadiko-stake-pool-diko-v1-2', "DIKO V1.2", 0, 0, 100000);
+  result.expectOk().expectBool(true);  
+
+  // Set last reward block
+  result = stakePoolDiko.setLastRewardBlock(4);
+  result.expectOk().expectBool(true);  
+}
+
+// ---------------------------------------------------------
+// Staking
+// ---------------------------------------------------------
 
 Clarinet.test({
-name: "stake-registry: add pool and get pool info",
+name: "diko-staking: add pool and get pool info",
 async fn(chain: Chain, accounts: Map<string, Account>) {
   let deployer = accounts.get("deployer")!;
-  let wallet_1 = accounts.get("wallet_1")!;
 
   let stakeRegistry = new StakeRegistry(chain, deployer);
 
@@ -39,7 +74,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 });
 
 Clarinet.test({
-name: "stake-registry: stake and unstake",
+name: "diko-staking: stake and unstake",
 async fn(chain: Chain, accounts: Map<string, Account>) {
   let deployer = accounts.get("deployer")!;
   let wallet_1 = accounts.get("wallet_1")!;
@@ -48,6 +83,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let stakePoolDiko = new StakePoolDiko(chain, deployer);
   let dikoToken = new DikoToken(chain, deployer);
   let stDikoToken = new StDikoToken(chain, deployer);
+
+  addNewDikoStakePool(chain, deployer);
 
   // Check DIKO and stDIKO balance before staking
   let call = dikoToken.balanceOf(wallet_1.address);
@@ -61,13 +98,13 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   call.result.expectOk().expectUintWithDecimals(1);
   
   // Staked total
-  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
+  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
   call.result.expectOk().expectUint(0);
 
   // Stake funds (100 DIKO)
   let result = stakeRegistry.stake(
     wallet_1, 
-    'arkadiko-stake-pool-diko-v1-1',
+    'arkadiko-stake-pool-diko-v1-2',
     'arkadiko-token',
     100
   );
@@ -80,14 +117,14 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   call.result.expectOk().expectUintWithDecimals(100);   
 
   // Total in pool (staked 100 + rewards for 1 block 62.639906)
-  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
+  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
   call.result.expectOk().expectUintWithDecimals(162.639906);
 
   // Advance 3 block
   chain.mineEmptyBlock(3);
 
   // Total in pool (staked 100 + rewards for 1 block 62.639906)
-  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
+  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
   call.result.expectOk().expectUintWithDecimals(162.639906);
 
   // Add rewards to pool manually
@@ -98,7 +135,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Check total tokens
   // 100 DIKO staked + (5 blocks * 62.639906) = ~313 rewards
-  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
+  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
   call.result.expectOk().expectUintWithDecimals(413.199530);
 
   // Amount of DIKO staked for wallet_1 (initial stake + auto-compounded rewards)
@@ -116,7 +153,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Unstake funds fails because cooldown not started
   result = stakeRegistry.unstake(
     wallet_1, 
-    'arkadiko-stake-pool-diko-v1-1',
+    'arkadiko-stake-pool-diko-v1-2',
     'arkadiko-token',
     100
   );
@@ -124,14 +161,14 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Start cooldown period
   result = stakePoolDiko.startCooldown(wallet_1);
-  result.expectOk().expectUint(1447);
+  result.expectOk().expectUint(1451);
 
   chain.mineEmptyBlock(1450);
 
   // Unstake funds
   result = stakeRegistry.unstake(
     wallet_1, 
-    'arkadiko-stake-pool-diko-v1-1',
+    'arkadiko-stake-pool-diko-v1-2',
     'arkadiko-token',
     100
   );
@@ -145,38 +182,39 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   call.result.expectOk().expectUint(0);   
 
   // Staked total
-  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
+  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
   call.result.expectOk().expectUint(0);
 }
 });
 
 Clarinet.test({
-name: "staking - Stake and calculate rewards",
+name: "diko-staking: stake and calculate rewards",
 async fn(chain: Chain, accounts: Map<string, Account>) {
   let deployer = accounts.get("deployer")!;
   let wallet_1 = accounts.get("wallet_1")!;
-  let wallet_2 = accounts.get("wallet_2")!;
 
   let dikoToken = new DikoToken(chain, deployer);
   let stDikoToken = new StDikoToken(chain, deployer);
   let stakeRegistry = new StakeRegistry(chain, deployer);
   let stakePoolDiko = new StakePoolDiko(chain, deployer);
 
+  addNewDikoStakePool(chain, deployer);
+
   // Initial stake should be 0
-  let call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
+  let call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
   call.result.expectOk().expectUint(0);
 
   // Stake
   let result = stakeRegistry.stake(
     wallet_1, 
-    'arkadiko-stake-pool-diko-v1-1',
+    'arkadiko-stake-pool-diko-v1-2',
     'arkadiko-token',
     100
   );
   result.expectOk().expectUintWithDecimals(100);
 
   // Initial stake + 62 rewards for 1 block
-  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
+  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
   call.result.expectOk().expectUintWithDecimals(162.639906);
   
   // Still only 100 stDIKO for 1 staker
@@ -192,7 +230,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // 200 staked / 2.24 = ~89
   result = stakeRegistry.stake(
     wallet_1, 
-    'arkadiko-stake-pool-diko-v1-1',
+    'arkadiko-stake-pool-diko-v1-2',
     'arkadiko-token',
     200
   );
@@ -201,7 +239,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Total staked 100 + 200 = 300
   // Plus 2 blocks rewards at 62 rewards per block
   // 300 + (62*2) = ~425
-  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
+  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
   call.result.expectOk().expectUintWithDecimals(425.279812);
 
   // Total stDIKO supply is ~188
@@ -212,32 +250,34 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Total DIKO = 300 + (62*3) = ~486
   // Wallet_1 should get 53% of ~486 = ~258
   call = stakePoolDiko.getDikoForStDiko(100, 188.778487);
-  call.result.expectOk().expectUintWithDecimals(258.461320);   
+  call.result.expectOk().expectUintWithDecimals(258.461504);   
 
   // Start cooldown period
   result = stakePoolDiko.startCooldown(wallet_1);
-  result.expectOk().expectUint(1443);
+  result.expectOk().expectUint(1447);
 
   chain.mineEmptyBlock(1450);
 
   // Unstake funds
   result = stakeRegistry.unstake(
     wallet_1, 
-    'arkadiko-stake-pool-diko-v1-1',
+    'arkadiko-stake-pool-diko-v1-2',
     'arkadiko-token',
     100
   );
-  result.expectOk().expectUintWithDecimals(48405.069781);
+  result.expectOk().expectUintWithDecimals(48405.104191);
 }
 });
 
 Clarinet.test({
-  name: "stake-registry: cooldown redeem period",
+  name: "diko-staking: cooldown redeem period",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
   
     let stakePoolDiko = new StakePoolDiko(chain, deployer);
+
+    addNewDikoStakePool(chain, deployer);
 
     // Cooldown not started yet
     let call = stakePoolDiko.walletCanRedeem(wallet_1);
@@ -245,7 +285,7 @@ Clarinet.test({
   
     // Start cooldown
     let result = stakePoolDiko.startCooldown(wallet_1);
-    result.expectOk().expectUint(1441); 
+    result.expectOk().expectUint(1445); 
 
     chain.mineEmptyBlock(1439);
   
@@ -275,19 +315,20 @@ Clarinet.test({
 });
 
 Clarinet.test({
-name: "staking - get current stake of user",
+name: "diko-staking: get current stake of user",
 async fn(chain: Chain, accounts: Map<string, Account>) {
   let deployer = accounts.get("deployer")!;
   let wallet_1 = accounts.get("wallet_1")!;
-  let wallet_2 = accounts.get("wallet_2")!;
 
   let stakeRegistry = new StakeRegistry(chain, deployer);
   let stakePoolDiko = new StakePoolDiko(chain, deployer);
 
+  addNewDikoStakePool(chain, deployer);
+
   // Stake
   let result = stakeRegistry.stake(
     wallet_1, 
-    'arkadiko-stake-pool-diko-v1-1',
+    'arkadiko-stake-pool-diko-v1-2',
     'arkadiko-token',
     100
   );
@@ -319,11 +360,13 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 });
 
 Clarinet.test({
-  name: "staking - multiple stakers in same block",
+  name: "diko-staking: multiple stakers in same block",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
     let wallet_2 = accounts.get("wallet_2")!;
+
+    addNewDikoStakePool(chain, deployer);
 
     // Stake funds
     let block = chain.mineBlock([
@@ -331,7 +374,7 @@ Clarinet.test({
       // Stake DIKO from wallet_1
       Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2')),
         types.principal(Utils.qualifiedName('arkadiko-token')),
         types.uint(100000000) 
       ], wallet_1.address),
@@ -339,7 +382,7 @@ Clarinet.test({
       // Stake DIKO from wallet_2
       Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2')),
         types.principal(Utils.qualifiedName('arkadiko-token')),
         types.uint(200000000) 
       ], wallet_2.address),
@@ -352,13 +395,13 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "staking - Replace pool through new registry",
+  name: "diko-staking: replace pool through new registry",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
 
     let stakeRegistry = new StakeRegistry(chain, deployer);
-    let stakePoolDiko = new StakePoolDiko(chain, deployer);
+    let stakePoolDiko = new StakePoolDikoV1(chain, deployer);
     let governance = new Governance(chain, deployer);
     let dao = new Dao(chain, deployer);
 
@@ -484,13 +527,13 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "staking - Shut down pool because of critical bug",
+  name: "diko-staking: shut down pool because of critical bug",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
 
     let stakeRegistry = new StakeRegistry(chain, deployer);
-    let stakePoolDiko = new StakePoolDiko(chain, deployer);
+    let stakePoolDiko = new StakePoolDikoV1(chain, deployer);
     let governance = new Governance(chain, deployer);
     let dao = new Dao(chain, deployer);
 
@@ -581,7 +624,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "staking - Reward distribution over time",
+  name: "diko-staking: reward distribution over time",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -590,11 +633,13 @@ Clarinet.test({
     let stakePoolDiko = new StakePoolDiko(chain, deployer);
     let dikoToken = new DikoToken(chain, deployer);
 
+    addNewDikoStakePool(chain, deployer);
+
     // Stake DIKO as wallet_1
     // Only 1, so total pool balance is mostly rewards
     stakeRegistry.stake(
       wallet_1, 
-      'arkadiko-stake-pool-diko-v1-1',
+      'arkadiko-stake-pool-diko-v1-2',
       'arkadiko-token',
       (1 / 1000000)
     );
@@ -609,7 +654,7 @@ Clarinet.test({
       result.expectOk();
 
       // Check pool balance which should now include rewards
-      let call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
+      let call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
       
       // Print rewards, for docs
       // console.log(call.result.expectOk())
@@ -631,3 +676,420 @@ Clarinet.test({
   }
 });
 
+// ---------------------------------------------------------
+// Rounding bug V1
+// ---------------------------------------------------------
+
+Clarinet.test({
+  name: "diko-staking: rounding bug v1-1",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+  
+    let stakeRegistry = new StakeRegistry(chain, deployer);
+    let stakePoolDiko = new StakePoolDikoV1(chain, deployer);
+    let dikoToken = new DikoToken(chain, deployer);
+    let stDikoToken = new StDikoToken(chain, deployer);
+
+    // At start the ratio is 1
+    let call = stakePoolDiko.getDikoStdikoRatio();
+    call.result.expectOk().expectUintWithDecimals(1);
+    
+    // Stake funds
+    let result = stakeRegistry.stake(
+      deployer, 
+      'arkadiko-stake-pool-diko-v1-1',
+      'arkadiko-token',
+      100000
+    );
+    result.expectOk().expectUintWithDecimals(100000);
+  
+    // Stake funds (1 DIKO)
+    result = stakeRegistry.stake(
+      wallet_1, 
+      'arkadiko-stake-pool-diko-v1-1',
+      'arkadiko-token',
+      1
+    );
+    result.expectOk().expectUintWithDecimals(0.998749);
+  
+    // Advance 3 block
+    chain.mineEmptyBlock(3);
+
+    // stDIKO supply
+    call = stDikoToken.totalSupply();
+    call.result.expectOk().expectUintWithDecimals(100000.998749);   
+  
+    // result = stakePoolDiko.getStakeOf(deployer, 100000.998749);
+    // result.expectOk().expectUintWithDecimals(100375.835667);  
+
+    // // BUG: Should get at least 1
+    // result = stakePoolDiko.getStakeOf(wallet_1, 100000.998749);
+    // result.expectOk().expectUintWithDecimals(0.903955);   
+    
+  }
+});
+
+Clarinet.test({
+  name: "diko-staking: rounding bug v1-1 solved in v1-2",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+  
+    let stakeRegistry = new StakeRegistry(chain, deployer);
+    let stakePoolDiko = new StakePoolDiko(chain, deployer);
+    let dikoToken = new DikoToken(chain, deployer);
+    let stDikoToken = new StDikoToken(chain, deployer);
+
+    addNewDikoStakePool(chain, deployer);
+
+    // At start the ratio is 1
+    let call = stakePoolDiko.getDikoStdikoRatio();
+    call.result.expectOk().expectUintWithDecimals(1);
+    
+    // Stake funds
+    let result = stakeRegistry.stake(
+      deployer, 
+      'arkadiko-stake-pool-diko-v1-2',
+      'arkadiko-token',
+      100000
+    );
+    result.expectOk().expectUintWithDecimals(100000);
+  
+    // Stake funds (1 DIKO)
+    result = stakeRegistry.stake(
+      wallet_1, 
+      'arkadiko-stake-pool-diko-v1-2',
+      'arkadiko-token',
+      1
+    );
+    result.expectOk().expectUintWithDecimals(0.998749);
+
+    // DIKO / stDIKO
+    call = stakePoolDiko.getDikoStdikoRatio();
+    call.result.expectOk().expectUintWithDecimals(1.001252);  
+
+    // stDIKO supply
+    call = stDikoToken.totalSupply();
+    call.result.expectOk().expectUintWithDecimals(100000.998749);   
+  
+    result = stakePoolDiko.getStakeOf(deployer, 100000.998749);
+    result.expectOk().expectUintWithDecimals(100187.919092);  
+
+    // BUG: Should get at least 1
+    result = stakePoolDiko.getStakeOf(wallet_1, 100000.998749);
+    result.expectOk().expectUintWithDecimals(1.001251);   
+    
+  }
+});
+
+// ---------------------------------------------------------
+// Migration
+// ---------------------------------------------------------
+
+Clarinet.test({
+  name: "diko-staking: migrate diko pool",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+  
+    let stakeRegistry = new StakeRegistry(chain, deployer);
+    let stakePoolDikoV1 = new StakePoolDikoV1(chain, deployer);
+    let stakePoolDiko = new StakePoolDiko(chain, deployer);
+    let dikoToken = new DikoToken(chain, deployer);
+    let governance = new Governance(chain, deployer);
+    let stDikoToken = new StDikoToken(chain, deployer);
+
+    // Staked total
+    let call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    // Stake funds (100 DIKO)
+    let result = stakeRegistry.stake(
+      wallet_1, 
+      'arkadiko-stake-pool-diko-v1-1',
+      'arkadiko-token',
+      100
+    );
+    result.expectOk().expectUintWithDecimals(100);
+
+    // Staked total
+    // 100 staked + 62.639906 rewards
+    call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
+    call.result.expectOk().expectUintWithDecimals(162.639906);
+
+    call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    // stDIKO supply
+    call = stDikoToken.totalSupply();
+    call.result.expectOk().expectUintWithDecimals(100); 
+
+    // stDIKO user balance
+    call = stDikoToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(100); 
+
+    // Stake of user V1
+    // 100 staked + 2 * 62.639906 rewards = 225.279812
+    result = stakePoolDikoV1.getStakeOf(wallet_1, 100);
+    result.expectOk().expectUintWithDecimals(225.279812);
+
+    // Advance 10 blocks
+    chain.mineEmptyBlock(10);
+
+    // Staked total
+    call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
+    call.result.expectOk().expectUintWithDecimals(162.639906);
+
+    call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    // STEP 1 - Proposal to add new pool to DAO
+    let contractChange1 = Governance.contractChange("stake-pool-diko", Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'), true, true);
+    result = governance.createProposal(
+      wallet_1, 
+      13, 
+      "New DIKO stake pool",
+      "https://discuss.arkadiko.finance/git",
+      [contractChange1]
+    );
+    result.expectOk().expectBool(true);
+
+    // Vote for proposal
+    result = governance.voteForProposal(deployer, 1, 10);
+    result.expectOk().expectUint(3200);
+
+    // Advance
+    chain.mineEmptyBlock(1500);
+
+    // STEP 2 - Add pending rewards to pool V1
+    // Advanced 1514 blocks
+    // 1514 * 62.639906 = 94836.817684
+    result = stakePoolDikoV1.addRewardsToPool();
+    result.expectOk().expectUintWithDecimals(94836.817684);
+
+    // Initial rewards + new pending rewards
+    // 162.639906 + 94836.817684 = 94999.45759
+    call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
+    call.result.expectOk().expectUintWithDecimals(94999.457590);
+
+    // Stake of user V1
+    // Advanced 1516 blocks
+    // 100 staked + 1516 * 62.639906 rewards = 95062.097496
+    result = stakePoolDikoV1.getStakeOf(wallet_1, 100);
+    result.expectOk().expectUintWithDecimals(95062.097496);
+
+    // STEP 3 - End proposal
+    result = governance.endProposal(1);
+    result.expectOk().expectUint(3200);
+
+    // Can not stake in V1
+    result = stakeRegistry.stake(
+      wallet_1, 
+      'arkadiko-stake-pool-diko-v1-1',
+      'arkadiko-token',
+      100
+    );
+    result.expectErr().expectUint(100401);
+
+    // Can not stake in V2
+    result = stakeRegistry.stake(
+      wallet_1, 
+      'arkadiko-stake-pool-diko-v1-2',
+      'arkadiko-token',
+      100
+    );
+    result.expectErr().expectUint(19002);
+
+    // STEP 4 - Migrate DIKO
+    result = stakePoolDiko.migrateDiko();
+    result.expectOk().expectUintWithDecimals(94999.457590);
+
+    // Last reward block for pool V1
+    call = stakePoolDikoV1.getLastRewardBlock();
+    call.result.expectUint(1515);
+    
+    // STEP 5 - Set last reward block
+    result = stakePoolDiko.setLastRewardBlock(1515);
+    result.expectOk().expectBool(true);  
+
+    // STEP 6 - Add new pool to stake registry
+    result = stakeRegistry.setPoolData('arkadiko-stake-pool-diko-v1-2', "DIKO V1.2", 0, 0, 100000);
+    result.expectOk().expectBool(true);
+
+    // Stake of user V2
+    // Advanced 1523 blocks
+    // 100 staked + 1523 * 62.639906 rewards = 95500.576838
+    result = stakePoolDiko.getStakeOf(wallet_1, 100);
+    result.expectOk().expectUintWithDecimals(95500.576838);
+
+    // Rewards for 8 blocks
+    // Last reward block set to 1515, now at 1523
+    // (1523 - 1515) = 9 blocks
+    // 9 * 62.639906 = 563.759154
+    result = stakePoolDiko.addRewardsToPool();
+    result.expectOk().expectUintWithDecimals(563.759154);
+
+    // Staked total
+    call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    // Migrated + rewards for 9 blocks
+    // 94936.817684 + (10 blocks * 62.639906 rewards) = 95563.216744
+    call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
+    call.result.expectOk().expectUintWithDecimals(95563.216744);
+
+    // Return DIKO to members
+    result = governance.returnVotes(1, deployer, "arkadiko-token");
+    result.expectOk();
+
+    // Start cooldown
+    result = stakePoolDikoV1.startCooldown(wallet_1);
+    result.expectOk().expectUint(2966);
+
+    result = stakePoolDiko.startCooldown(wallet_1);
+    result.expectOk().expectUint(2967);
+
+    chain.mineEmptyBlock(1450);
+
+    // Can not unstake in V1
+    result = stakeRegistry.unstake(
+      wallet_1, 
+      'arkadiko-stake-pool-diko-v1-1',
+      'arkadiko-token',
+      100
+    );
+    result.expectErr().expectUint(100401);
+
+    // Unstake funds V2
+    result = stakeRegistry.unstake(
+      wallet_1, 
+      'arkadiko-stake-pool-diko-v1-2',
+      'arkadiko-token',
+      100
+    );
+    result.expectOk().expectUintWithDecimals(184951.566604);
+  }
+});
+
+Clarinet.test({
+  name: "diko-staking: migrate diko pool (pools without rewards)",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+  
+    let stakeRegistry = new StakeRegistry(chain, deployer);
+    let stakePoolDikoV1 = new StakePoolDikoV1(chain, deployer);
+    let stakePoolDiko = new StakePoolDiko(chain, deployer);
+    let dikoToken = new DikoToken(chain, deployer);
+    let governance = new Governance(chain, deployer);
+
+    let result = stakeRegistry.setPoolData('arkadiko-stake-pool-diko-v1-1', 'DIKO', 0, 0, 0);
+    result.expectOk().expectBool(true);  
+
+    // Staked total
+    let call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    // Stake funds (100 DIKO)
+    result = stakeRegistry.stake(
+      wallet_1, 
+      'arkadiko-stake-pool-diko-v1-1',
+      'arkadiko-token',
+      100
+    );
+    result.expectOk().expectUintWithDecimals(100);
+
+    // Advance 10 blocks
+    chain.mineEmptyBlock(10);
+
+    // Staked total
+    call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
+    call.result.expectOk().expectUintWithDecimals(100);
+
+    call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    // STEP 1 - Proposal to add new pool to DAO
+    let contractChange1 = Governance.contractChange("stake-pool-diko", Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'), true, true);
+    result = governance.createProposal(
+      wallet_1, 
+      13, 
+      "Disable mint/burn DIKO pool V1",
+      "https://discuss.arkadiko.finance/git",
+      [contractChange1]
+    );
+    result.expectOk().expectBool(true);
+
+    // Vote for proposal
+    result = governance.voteForProposal(deployer, 1, 10);
+    result.expectOk().expectUint(3200);
+
+    // Advance
+    chain.mineEmptyBlock(1500);
+
+    // STEP 2 - Add pending rewards to pool V1
+    result = stakePoolDikoV1.addRewardsToPool();
+    result.expectOk().expectUintWithDecimals(0);
+
+    // STEP 3 - End proposal
+    result = governance.endProposal(1);
+    result.expectOk().expectUint(3200);
+
+    // STEP 4 - Migrate DIKO
+    result = stakePoolDiko.migrateDiko();
+    result.expectOk().expectUintWithDecimals(100);
+
+    // STEP 5 - Set last reward block
+    result = stakePoolDiko.setLastRewardBlock(16);
+    result.expectOk().expectBool(true);  
+
+    // STEP 6 - Add new pool to stake registry
+    result = stakeRegistry.setPoolData('arkadiko-stake-pool-diko-v1-2', "DIKO V1.2", 0, 0, 0);
+    result.expectOk().expectBool(true);
+
+    // Staked total
+    call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
+    call.result.expectOk().expectUintWithDecimals(100);
+
+    // Return DIKO to members
+    result = governance.returnVotes(1, deployer, "arkadiko-token");
+    result.expectOk();
+
+    // Start cooldown
+    result = stakePoolDikoV1.startCooldown(wallet_1);
+    result.expectOk().expectUint(2961);
+
+    result = stakePoolDiko.startCooldown(wallet_1);
+    result.expectOk().expectUint(2962);
+
+    chain.mineEmptyBlock(1450);
+
+    // Can not unstake in V1
+    result = stakeRegistry.unstake(
+      wallet_1, 
+      'arkadiko-stake-pool-diko-v1-1',
+      'arkadiko-token',
+      100
+    );
+    result.expectErr().expectUint(100401);
+
+    // Unstake funds V2
+    result = stakeRegistry.unstake(
+      wallet_1, 
+      'arkadiko-stake-pool-diko-v1-2',
+      'arkadiko-token',
+      100
+    );
+    result.expectOk().expectUintWithDecimals(100);
+  }
+});

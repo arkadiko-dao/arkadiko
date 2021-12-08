@@ -66,7 +66,7 @@ export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
       functionName: 'stake',
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
         amount,
       ],
