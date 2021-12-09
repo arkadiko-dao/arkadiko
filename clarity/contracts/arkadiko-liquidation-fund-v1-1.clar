@@ -303,7 +303,7 @@
   (begin
     (asserts! (is-eq tx-sender (var-get fund-controller)) (err ERR-NOT-AUTHORIZED))
 
-    (as-contract (contract-call? .arkadiko-auction-engine-v1-1 bid
+    (as-contract (contract-call? .arkadiko-auction-engine-v2-1 bid
       vault-manager
       oracle
       coll-type
@@ -326,7 +326,7 @@
   (begin
     (asserts! (is-eq tx-sender (var-get fund-controller)) (err ERR-NOT-AUTHORIZED))
 
-    (as-contract (contract-call? .arkadiko-auction-engine-v1-1 redeem-lot-collateral
+    (as-contract (contract-call? .arkadiko-auction-engine-v2-1 redeem-lot-collateral
       vault-manager
       ft
       reserve
