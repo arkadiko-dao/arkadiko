@@ -132,6 +132,7 @@ export const Mint = () => {
           const vault = await fetchVault(vaultId.value);
           const data = vault.value;
           arr.push({
+            key: data['id'].value,
             id: data['id'].value,
             owner: data['owner'].value,
             collateral: data['collateral'].value,
