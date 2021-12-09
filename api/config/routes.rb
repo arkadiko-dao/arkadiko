@@ -7,5 +7,6 @@ Rails.application.routes.draw do
       end
     end
     resources :vaults, only: [:index]
+    resources :tokens, only: [:show]
   end
 end
