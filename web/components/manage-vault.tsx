@@ -938,7 +938,20 @@ export const ManageVault = ({ match }) => {
                             </Tooltip>
                           </p>
                         </div>
-                        {isVaultOwner && !loadingVaultData ? (
+                        {isVaultOwner &&
+                        !loadingVaultData &&
+                        Number(
+                          availableCoinsToMint(
+                            price,
+                            collateralLocked(),
+                            outstandingDebt(),
+                            collateralType?.collateralToDebtRatio,
+                            vault?.collateralToken
+                          ).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 6,
+                          })
+                        ) > 0 ? (
                           <button
                             type="button"
                             className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
