@@ -174,17 +174,20 @@ export const VaultMintModal: React.FC<Props> = ({ match, showMintModal, setShowM
     >
       <p className="text-sm text-center text-gray-500">
         Choose how much extra USDA you want to mint. You can mint a maximum of{' '}
-        {availableCoinsToMint(
-          price,
-          collateralLocked(),
-          outstandingDebt(),
-          collateralType?.collateralToDebtRatio,
-          vault?.collateralToken
-        ).toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 6,
-        })}{' '}
-        USDA.
+        <span className="font-semibold">
+          {availableCoinsToMint(
+            price,
+            collateralLocked(),
+            outstandingDebt(),
+            collateralType?.collateralToDebtRatio,
+            vault?.collateralToken
+          ).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 6,
+          })}{' '}
+          USDA
+        </span>
+        .
       </p>
 
       <div className="mt-6">

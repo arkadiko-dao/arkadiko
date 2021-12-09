@@ -182,7 +182,10 @@ export const VaultWithdrawModal: React.FC<Props> = ({
     >
       <p className="text-sm text-center text-gray-500">
         Choose how much collateral you want to withdraw. You can withdraw a maximum of{' '}
-        {maximumCollateralToWithdraw} {vault?.collateralToken.toUpperCase()}.
+        <span className="font-semibold">
+          {maximumCollateralToWithdraw} {vault?.collateralToken.toUpperCase()}
+        </span>
+        .
       </p>
       <p className="text-sm text-center text-gray-500">
         We will automatically harvest any DIKO you are eligible for when withdrawing.
