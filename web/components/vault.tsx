@@ -54,6 +54,7 @@ export const Vault: React.FC<VaultProps> = ({
   auctionEnded,
   leftoverCollateral,
   collateralData,
+  stackedTokens,
   showAsTable = true,
 }) => {
   const { doContractCall } = useConnect();
@@ -178,7 +179,7 @@ export const Vault: React.FC<VaultProps> = ({
             <span className="text-gray-900">
               {isLiquidated ? (
                 auctionEnded ? (
-                  leftoverCollateral > 0 ? (
+                  leftoverCollateral > 0 && stackedTokens === 0 ? (
                     <button
                       type="button"
                       className="text-indigo-600 hover:text-indigo-900"
@@ -297,7 +298,7 @@ export const Vault: React.FC<VaultProps> = ({
           <div className="px-4 py-5 border-t border-b border-gray-200">
             {isLiquidated ? (
               auctionEnded ? (
-                leftoverCollateral > 0 ? (
+                leftoverCollateral > 0 && stackedTokens === 0 ? (
                   <button 
                     type="button"
                     className="block w-full px-4 py-2 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -305,9 +306,8 @@ export const Vault: React.FC<VaultProps> = ({
                     >
                       Withdraw Leftover Collateral
                   </button>
-
                 ) : (
-                  <span>Vault liquidated & closed</span>
+                  <span>Vault liquidated</span>
                 )
               ) : (
                 <span>Auctioning Collateral...</span>
