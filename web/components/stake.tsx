@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useContext, useState } from 'react';
 import { AppContext } from '@common/context';
+import { Helmet } from 'react-helmet';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import { stacksNetwork as network, getRPCClient } from '@common/utils';
@@ -33,7 +34,6 @@ import {
 } from '@heroicons/react/solid';
 import { Placeholder } from './ui/placeholder';
 import { Tooltip } from '@blockstack/ui';
-import Tippy from '@tippyjs/react';
 import { Alert } from './ui/alert';
 
 export const Stake = () => {
@@ -633,7 +633,11 @@ export const Stake = () => {
   };
 
   return (
-    <div>
+    <>
+      <Helmet>
+        <title>Stake</title>
+      </Helmet>
+
       <StakeDikoModal
         showStakeModal={showStakeModal}
         setShowStakeModal={setShowStakeModal}
@@ -1139,6 +1143,6 @@ export const Stake = () => {
       ) : (
         <Redirect to={{ pathname: '/' }} />
       )}
-    </div>
+    </>
   );
 };

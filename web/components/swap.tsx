@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { Helmet } from "react-helmet";
 import { AppContext } from '@common/context';
 import { Container } from './home';
 import {
@@ -316,6 +317,10 @@ export const Swap: React.FC = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Swap</title>
+      </Helmet>
+      
       <Container>
         <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
           <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import { Container } from './home';
 import { SmartContractBalance } from './smart-contract-balance';
 
@@ -102,64 +103,70 @@ export const Balances = () => {
   });
 
   return (
-    <Container>
-      <main className="relative flex-1 py-12">
-        <section>
-          <header className="pb-5 border-b border-gray-200 sm:flex sm:justify-between sm:items-end">
-            <div>
-              <h3 className="text-lg leading-6 text-gray-900 font-headings">Arkadiko Balances</h3>
-              <p className="max-w-3xl mt-2 text-sm text-gray-500">
-                An overview of all Arkadiko smart contracts and their balances
-              </p>
-            </div>
-          </header>
+    <>
+      <Helmet>
+        <title>Balances</title>
+      </Helmet>
 
-          <div className="mt-4">
-            <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead>
-                  <tr>
-                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
-                      Contract Name
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
-                      STX Balance
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
-                      DIKO Balance
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
-                      USDA Balance
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
-                      wSTX Balance
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
-                      xSTX Balance
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
-                      stDIKO Balance
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
-                      wSTX/USDA LP Balance
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
-                      wSTX/DIKO LP Balance
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
-                      DIKO/USDA LP Balance
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
-                      Contract Full name
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">{contractBalances}</tbody>
-              </table>
+      <Container>
+        <main className="relative flex-1 py-12">
+          <section>
+            <header className="pb-5 border-b border-gray-200 sm:flex sm:justify-between sm:items-end">
+              <div>
+                <h3 className="text-lg leading-6 text-gray-900 font-headings">Arkadiko Balances</h3>
+                <p className="max-w-3xl mt-2 text-sm text-gray-500">
+                  An overview of all Arkadiko smart contracts and their balances
+                </p>
+              </div>
+            </header>
+
+            <div className="mt-4">
+              <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead>
+                    <tr>
+                      <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
+                        Contract Name
+                      </th>
+                      <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
+                        STX Balance
+                      </th>
+                      <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
+                        DIKO Balance
+                      </th>
+                      <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
+                        USDA Balance
+                      </th>
+                      <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
+                        wSTX Balance
+                      </th>
+                      <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
+                        xSTX Balance
+                      </th>
+                      <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
+                        stDIKO Balance
+                      </th>
+                      <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
+                        wSTX/USDA LP Balance
+                      </th>
+                      <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
+                        wSTX/DIKO LP Balance
+                      </th>
+                      <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
+                        DIKO/USDA LP Balance
+                      </th>
+                      <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
+                        Contract Full name
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">{contractBalances}</tbody>
+                </table>
+              </div>
             </div>
-          </div>
-        </section>
-      </main>
-    </Container>
+          </section>
+        </main>
+      </Container>
+    </>
   );
 };
