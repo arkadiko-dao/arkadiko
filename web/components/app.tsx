@@ -18,6 +18,7 @@ import { useLocation } from 'react-router-dom';
 import { initiateConnection } from '@common/websocket-tx-updater';
 import ScrollToTop from '@components/scroll-to-top';
 import { Redirect } from 'react-router-dom';
+import { Helmet } from "react-helmet";
 
 export const getBalance = async (address: string) => {
   const client = getRPCClient();
@@ -217,6 +218,10 @@ export const App: React.FC = () => {
     <Connect authOptions={authOptions}>
       <ThemeProvider theme={theme}>
         <AppContext.Provider value={[state, setState]}>
+          <Helmet
+            titleTemplate="Arkadiko Finance App - %s"
+            defaultTitle="Arkadiko Finance App"
+          />
           <div className="flex flex-col font-sans bg-white min-height-screen">
             {location.pathname.indexOf('/onboarding') != 0 ? (
               <Header signOut={signOut} setShowSidebar={setShowSidebar} />

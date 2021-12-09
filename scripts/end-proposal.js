@@ -16,8 +16,6 @@ const txOptions = {
   functionName: FUNCTION_NAME,
   functionArgs: [tx.uintCV(proposalId)],
   senderKey: process.env.STACKS_PRIVATE_KEY,
-  fee: new BN(250000, 10),
-  nonce: new BN(337, 10),
   postConditionMode: 1,
   network
 };

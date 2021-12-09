@@ -1,5 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { AppContext } from '@common/context';
+import { Helmet } from 'react-helmet';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import { stacksNetwork as network } from '@common/utils';
@@ -111,6 +112,10 @@ export const Governance = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Governance</title>
+      </Helmet>
+
       {state.userData ? (
         <Container>
           <main className="flex-1 py-12">

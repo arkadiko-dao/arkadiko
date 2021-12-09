@@ -15,6 +15,7 @@ import { resolveReserveName } from '@common/vault-utils';
 import { tokenTraits } from '@common/vault-utils';
 import { useSTXAddress } from '@common/use-stx-address';
 export interface VaultProps {
+  key: string;
   id: string;
   owner: string;
   collateral: number;
