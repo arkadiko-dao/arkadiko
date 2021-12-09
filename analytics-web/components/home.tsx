@@ -5,12 +5,13 @@ import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 import { Pools } from './pools';
 import { Prices } from './prices';
-
+import { Vaults } from './vaults';
 
 export const Home: React.FC = () => {
   const apiUrl = 'https://arkadiko-api.herokuapp.com';
   const [pools, setPools] = useState([]);
-  const [prices, setPrices] = useState([]);  
+  const [prices, setPrices] = useState([]);
+  const [vaultData, setVaultData] = useState({});
 
   useEffect(() => {
     const fetchPools = async () => {
@@ -27,10 +28,15 @@ export const Home: React.FC = () => {
       })
       setPools(array);
     };
-    
+    const fetchVaults = async () => {
+      const response = await axios.get(`${apiUrl}/api/v1/vaults`);
+      setVaultData(response.data);
+    };
+
     fetchPools();
+    fetchVaults();
   }, []);
-  
+
   useEffect(() => {
     const fetchDikoPrices = async () => {
       const response = await axios.get(`${apiUrl}/api/v1/pools/2/prices`);
@@ -158,6 +164,10 @@ export const Home: React.FC = () => {
         </section>
 
         <Pools pools={pools} />
+
+        {vaultData ? (
+          <Vaults vaultData={vaultData} />
+        ) : null}
 
         <Prices />
       </div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_25_173855) do
+ActiveRecord::Schema.define(version: 2021_12_02_073746) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -49,6 +49,34 @@ ActiveRecord::Schema.define(version: 2021_10_25_173855) do
     t.index ["function_name"], name: "index_swap_events_on_function_name"
     t.index ["pool_id"], name: "index_swap_events_on_pool_id"
     t.index ["sender"], name: "index_swap_events_on_sender"
+  end
+
+  create_table "vault_events", force: :cascade do |t|
+    t.string "function_name", null: false
+    t.string "transaction_id", null: false
+    t.datetime "event_at", null: false
+    t.string "sender", null: false
+    t.bigint "vault_id", null: false
+    t.bigint "amount", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_at"], name: "index_vault_events_on_event_at"
+    t.index ["function_name"], name: "index_vault_events_on_function_name"
+    t.index ["sender"], name: "index_vault_events_on_sender"
+    t.index ["vault_id"], name: "index_vault_events_on_vault_id"
+  end
+
+  create_table "vaults", force: :cascade do |t|
+    t.bigint "vault_id", null: false
+    t.bigint "collateral_amount", null: false
+    t.bigint "debt", null: false
+    t.boolean "stacking", default: false, null: false
+    t.string "stacker_name"
+    t.boolean "closed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stacker_name"], name: "index_vaults_on_stacker_name"
+    t.index ["vault_id"], name: "index_vaults_on_vault_id"
   end
 
 end
