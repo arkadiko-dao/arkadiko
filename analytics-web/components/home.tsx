@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { PoolRow } from './pool-row';
 import axios from 'axios';
-import * as Highcharts from 'highcharts';
+import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 import { Pools } from './pools';
 import { Prices } from './prices';
@@ -55,7 +55,13 @@ export const Home: React.FC = () => {
       spacingLeft: 24,
       style: {
         fontFamily: 'Montserrat'
-      }
+      },
+    },
+    navigator: {
+      enabled: false
+    },
+    scrollbar: {
+      enabled: false
     },
     tooltip: {
       backgroundColor: '#314155',
@@ -72,13 +78,22 @@ export const Home: React.FC = () => {
     xAxis: {
       
     },
-    yAxis: {
+    yAxis: [{
+      lineWidth: 1,
+      min: 0,
       title: {
-        text: 'Exchange rate'
+        text: 'Exchange rate',
+      },
+      labels: {
+        overflow: 'justify'
       }
-    },
+    },{
+      lineWidth: 1,
+      linkedTo: 0,
+      opposite: false
+    }],
     legend: {
-        enabled: false
+      enabled: false
     },
     plotOptions: {
       area: {
@@ -140,8 +155,9 @@ export const Home: React.FC = () => {
           </header>
           <div className="mt-4 border border-gray-200 rounded-lg">
             <HighchartsReact
-              containerProps={{ className: 'sm:rounded-lg' }}
               highcharts={Highcharts}
+              containerProps={{className:'rounded-lg'}}
+              constructorType={'stockChart'}
               options={options}
             />
           </div>
