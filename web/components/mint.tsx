@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import { Helmet } from 'react-helmet';
 import { stacksNetwork as network, getRPCClient } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import BN from 'bn.js';
@@ -203,6 +204,10 @@ export const Mint = () => {
 
   return (
     <div>
+      <Helmet>
+        <title>Vaults</title>
+      </Helmet>
+      
       <main className="py-12">
         <section>
           <div className="relative">
