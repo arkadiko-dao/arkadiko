@@ -8,7 +8,7 @@ import { Prices } from './prices';
 import { Vaults } from './vaults';
 
 export const Home: React.FC = () => {
-  const apiUrl = 'http://localhost:3000'; // 'https://arkadiko-api.herokuapp.com';
+  const apiUrl = 'https://arkadiko-api.herokuapp.com';
   const [pools, setPools] = useState([]);
   const [prices, setPrices] = useState([]);
   const [vaultData, setVaultData] = useState({});
@@ -39,8 +39,8 @@ export const Home: React.FC = () => {
 
   useEffect(() => {
     const fetchDikoPrices = async () => {
-      //const response = await axios.get(`${apiUrl}/api/v1/pools/2/prices`);
-      //setPrices(response.data.prices);
+      const response = await axios.get(`${apiUrl}/api/v1/pools/2/prices`);
+      setPrices(response.data.prices);
     };
 
     fetchDikoPrices();
@@ -165,7 +165,9 @@ export const Home: React.FC = () => {
 
         <Pools pools={pools} />
 
-        <Vaults vaultData={vaultData} />
+        {vaultData ? (
+          <Vaults vaultData={vaultData} />
+        ) : null}
 
         <Prices />
       </div>
