@@ -43,7 +43,7 @@ class Blockchain < ApplicationRecord
     end
   end
 
-  def import_vaults(offset:)
+  def import_vaults(offset: 6000)
     url = "#{STACKS_MAINNET_NODE_URL}/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-freddie-v1-1/transactions?limit=50&offset=#{offset}"
     puts url
     response = HTTParty.get(url)&.parsed_response['results']
@@ -60,69 +60,110 @@ class Blockchain < ApplicationRecord
           vault_created = HTTParty.get("https://stacks-node-api.mainnet.stacks.co/extended/v1/tx/#{res['tx_id']}").parsed_response
           params = vault_created['events'][-1]['contract_log']['value']['repr']
           id = params.split("(id ")[1].split(")")[0].gsub('u', '')
-          vaults[id] = {
-            'collateral_amount': args[0]['repr'].gsub('u', '').to_i,
-            'debt': args[1]['repr'].gsub('u', '').to_i,
-            'stacking': args[2]['repr'].split('(stack-pox ')[1] == "true))",
-            'stacker_name': params.split('(stacker-name ')[1].split(') (updated-at-block-height')[0]
-          }
-          puts vaults[id] if id == '2'
+          vault = Vault.find_or_initialize_by(vault_id: id)
+          vault.update(
+            collateral_amount: args[0]['repr'].gsub('u', '').to_i,
+            debt: args[1]['repr'].gsub('u', '').to_i,
+            stacking: args[2]['repr'].split('(stack-pox ')[1] == "true))",
+            stacker_name: params.split('(stacker-name ')[1].split(') (updated-at-block-height')[0]
+          )
+          event = vault.vault_events.find_or_initialize_by(
+            transaction_id: res['tx_id']
+          )
+          event.update(
+            function_name: function_name,
+            event_at: res['parent_burn_block_time_iso'],
+            sender: res['sender_address'],
+            amount: 0
+          )
         elsif function_name == 'deposit'
           id = args[0]['repr'].gsub('u', '')
-          next unless vaults[id]
-          next if res['block_height'] > 35965
-          vaults[id]['collateral_amount'.to_sym] += res['post_conditions'][0]['amount'].to_i
+          vault = Vault.find_by(vault_id: id)
+          next unless vault.present?
+
+          vault.update(collateral_amount: vault.collateral_amount + res['post_conditions'][0]['amount'].to_i)
+          event = vault.vault_events.find_or_initialize_by(
+            transaction_id: res['tx_id']
+          )
+          event.update(
+            function_name: function_name,
+            event_at: res['parent_burn_block_time_iso'],
+            sender: res['sender_address'],
+            amount: res['post_conditions'][0]['amount'].to_i
+          )
         elsif function_name == 'withdraw'
           id = args[0]['repr'].gsub('u', '')
-          next unless vaults[id]
-          next if res['block_height'] > 35965
-          vaults[id]['collateral_amount'.to_sym] -= args[1]['repr'].gsub('u', '').to_i
+          vault = Vault.find_by(vault_id: id)
+          next unless vault.present?
+
+          vault.update(collateral_amount: vault.collateral_amount - args[1]['repr'].gsub('u', '').to_i)
+          event = vault.vault_events.find_or_initialize_by(
+            transaction_id: res['tx_id']
+          )
+          event.update(
+            function_name: function_name,
+            event_at: res['parent_burn_block_time_iso'],
+            sender: res['sender_address'],
+            amount: args[1]['repr'].gsub('u', '').to_i
+          )
         elsif function_name == 'burn'
+          id = args[0]['repr'].gsub('u', '')
+          vault = Vault.find_by(vault_id: id)
+          next unless vault.present?
+
+          vault.update(debt: vault.debt - args[1]['repr'].gsub('u', '').to_i)
+          event = vault.vault_events.find_or_initialize_by(
+            transaction_id: res['tx_id']
+          )
+          event.update(
+            function_name: function_name,
+            event_at: res['parent_burn_block_time_iso'],
+            sender: res['sender_address'],
+            amount: args[1]['repr'].gsub('u', '').to_i
+          )
         elsif function_name == 'mint'
+          id = args[0]['repr'].gsub('u', '')
+          vault = Vault.find_by(vault_id: id)
+          next unless vault.present?
+
+          vault.update(debt: vault.debt + args[1]['repr'].gsub('u', '').to_i)
+          event = vault.vault_events.find_or_initialize_by(
+            transaction_id: res['tx_id']
+          )
+          event.update(
+            function_name: function_name,
+            event_at: res['parent_burn_block_time_iso'],
+            sender: res['sender_address'],
+            amount: args[1]['repr'].gsub('u', '').to_i
+          )
         elsif function_name == 'toggle-stacking'
           id = args[0]['repr'].gsub('u', '')
-          next unless vaults[id]
-          next if res['block_height'] > 35965
-          # vaults[id]['stacking'.to_sym] = !vaults[id]['stacking'.to_sym]
-          # NOTHING TO DO HERE YET
+          vault = Vault.find_by(vault_id: id)
+          next unless vault.present?
+
+          vault.update(stacking: !vault.stacking)
         elsif function_name == 'stack-collateral'
-          id = args[0]['repr'].gsub('u', '')
-          next unless vaults[id]
-          vaults[id]['stacking'.to_sym] = true
-          vaults[id]['stack_block_height'.to_sym] = res['block_height']
+          # do nothing
         elsif function_name == 'close-vault'
           id = args[0]['repr'].gsub('u', '')
-          vaults = vaults.except(id)
+          vault = Vault.find_by(vault_id: id)
+          next unless vault.present?
+
+          vault.update(closed_at: res['parent_burn_block_time_iso'])
+          event = vault.vault_events.find_or_initialize_by(
+            transaction_id: res['tx_id']
+          )
+          event.update(
+            function_name: function_name,
+            event_at: res['parent_burn_block_time_iso'],
+            sender: res['sender_address'],
+            amount: 0
+          )
         else
           puts "Function not recognised"
         end
       end
 
-      offset -= 50
-      url = "#{STACKS_MAINNET_NODE_URL}/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-freddie-v1-1/transactions?limit=50&offset=#{offset}"
-      response = HTTParty.get(url)&.parsed_response['results']
-    end
-
-    offset = 100
-    url = "https://stacks-node-api.mainnet.stacks.co/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-stacker-v1-1/transactions?limit=50&offset=#{offset}"
-    puts url
-    response = HTTParty.get(url)&.parsed_response['results']
-    while offset >= 0
-      response.reverse.each do |res|
-        next if res['contract_call'].nil?
-        next unless res['tx_status'] == 'success'
-        function_name = res['contract_call']['function_name']
-        args = res['contract_call']['function_args']
-        if function_name == 'enable-vault-withdrawals'
-          id = args[0]['repr'].gsub('u', '')
-          next if vaults[id]['stack_block_height'.to_sym] && vaults[id]['stack_block_height'.to_sym] > res['block_height']
-
-          vaults[id]['stacking'.to_sym] = !vaults[id]['stacking'.to_sym]
-        else
-          puts function_name.inspect
-        end
-      end
-      
       offset -= 50
       url = "#{STACKS_MAINNET_NODE_URL}/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-freddie-v1-1/transactions?limit=50&offset=#{offset}"
       response = HTTParty.get(url)&.parsed_response['results']

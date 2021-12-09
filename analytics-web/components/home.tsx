@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { PoolRow } from './pool-row';
 import axios from 'axios';
-import * as Highcharts from 'highcharts';
+import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 import { Pools } from './pools';
 import { Prices } from './prices';
-
+import { Vaults } from './vaults';
+import { MarketCap } from './market-cap';
 
 export const Home: React.FC = () => {
   const apiUrl = 'https://arkadiko-api.herokuapp.com';
   const [pools, setPools] = useState([]);
-  const [prices, setPrices] = useState([]);  
+  const [prices, setPrices] = useState([]);
+  const [lastDikoPrice, setLastDikoPrice] = useState(0);
+  const [vaultData, setVaultData] = useState({});
 
   useEffect(() => {
     const fetchPools = async () => {
@@ -27,14 +30,21 @@ export const Home: React.FC = () => {
       })
       setPools(array);
     };
-    
+    const fetchVaults = async () => {
+      const response = await axios.get(`${apiUrl}/api/v1/vaults`);
+      setVaultData(response.data);
+    };
+
     fetchPools();
+    fetchVaults();
   }, []);
-  
+
   useEffect(() => {
     const fetchDikoPrices = async () => {
       const response = await axios.get(`${apiUrl}/api/v1/pools/2/prices`);
-      setPrices(response.data.prices);
+      const prices = response.data.prices;
+      setPrices(prices);
+      setLastDikoPrice(prices[prices.length - 1][1]);
     };
 
     fetchDikoPrices();
@@ -49,7 +59,13 @@ export const Home: React.FC = () => {
       spacingLeft: 24,
       style: {
         fontFamily: 'Montserrat'
-      }
+      },
+    },
+    navigator: {
+      enabled: false
+    },
+    scrollbar: {
+      enabled: false
     },
     tooltip: {
       backgroundColor: '#314155',
@@ -66,13 +82,22 @@ export const Home: React.FC = () => {
     xAxis: {
       
     },
-    yAxis: {
+    yAxis: [{
+      lineWidth: 1,
+      min: 0,
       title: {
-        text: 'Exchange rate'
+        text: 'Exchange rate',
+      },
+      labels: {
+        overflow: 'justify'
       }
-    },
+    },{
+      lineWidth: 1,
+      linkedTo: 0,
+      opposite: false
+    }],
     legend: {
-        enabled: false
+      enabled: false
     },
     plotOptions: {
       area: {
@@ -134,14 +159,21 @@ export const Home: React.FC = () => {
           </header>
           <div className="mt-4 border border-gray-200 rounded-lg">
             <HighchartsReact
-              containerProps={{ className: 'sm:rounded-lg' }}
               highcharts={Highcharts}
+              containerProps={{className:'rounded-lg'}}
+              constructorType={'stockChart'}
               options={options}
             />
           </div>
         </section>
 
+        <MarketCap lastDikoPrice={lastDikoPrice} lastUsdaPrice={1.00} />
+
         <Pools pools={pools} />
+
+        {vaultData && vaultData.count > 0 ? (
+          <Vaults vaultData={vaultData} />
+        ) : null}
 
         <Prices />
       </div>

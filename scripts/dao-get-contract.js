@@ -9,8 +9,8 @@ async function getTokensToStack() {
   const lastVaultTx = await tx.callReadOnlyFunction({
     contractAddress: CONTRACT_ADDRESS,
     contractName: "arkadiko-dao",
-    functionName: "get-contract-can-mint-by-qualified-name",
-    functionArgs: [tx.contractPrincipalCV('SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR', 'arkadiko-swap-v2-1')],
+    functionName: "get-contract-address-by-name",
+    functionArgs: [tx.contractPrincipalCV('arkadiko-governance-v2-1')],
     senderAddress: CONTRACT_ADDRESS,
     network
   });

@@ -6,5 +6,7 @@ Rails.application.routes.draw do
         get 'prices'
       end
     end
+    resources :vaults, only: [:index]
+    resources :tokens, only: [:show]
   end
 end

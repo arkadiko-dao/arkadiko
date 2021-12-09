@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import { Helmet } from 'react-helmet';
 import { stacksNetwork as network, getRPCClient } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import BN from 'bn.js';
@@ -132,6 +133,7 @@ export const Mint = () => {
           const vault = await fetchVault(vaultId.value);
           const data = vault.value;
           arr.push({
+            key: data['id'].value,
             id: data['id'].value,
             owner: data['owner'].value,
             collateral: data['collateral'].value,
@@ -203,6 +205,10 @@ export const Mint = () => {
 
   return (
     <div>
+      <Helmet>
+        <title>Vaults</title>
+      </Helmet>
+      
       <main className="py-12">
         <section>
           <div className="relative">

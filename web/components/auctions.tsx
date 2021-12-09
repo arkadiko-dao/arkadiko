@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
+import { Helmet } from 'react-helmet';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import { useConnect } from '@stacks/connect-react';
@@ -186,6 +187,10 @@ export const Auctions: React.FC = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Auctions</title>
+      </Helmet>
+
       {state.userData ? (
         <Container>
           <main className="relative z-0 flex-1 pb-8 overflow-y-auto">
