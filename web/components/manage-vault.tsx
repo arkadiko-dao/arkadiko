@@ -436,7 +436,7 @@ export const ManageVault = ({ match }) => {
       functionName: 'mint',
       functionArgs: [
         uintCV(match.params.id),
-        uintCV(parseFloat(usdToMint) * 1000000),
+        uintCV(Number(parseFloat(usdToMint)).toFixed(6) * 1000000),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
