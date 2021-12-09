@@ -17,7 +17,6 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
   pendingRewards,
   stakedAmount,
   apy,
-  emissionsStarted,
   poolInfo,
   setShowStakeLpModal,
   setShowUnstakeLpModal,
@@ -31,20 +30,20 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
         <>
           <tr className="bg-white">
             <td className="px-6 py-4 text-sm whitespace-nowrap">
-              <div className="flex items-center">
-                <div className="flex -space-x-2 overflow-hidden">
+              <div className="flex flex-wrap items-center flex-1 sm:flex-nowrap">
+                <div className="flex flex-shrink-0 -space-x-2 overflow-hidden">
                   <img
-                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
+                    className="flex-shrink-0 inline-block w-8 h-8 rounded-full ring-2 ring-white"
                     src={tokenList[tokenListItemX].logo}
                     alt=""
                   />
                   <img
-                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
+                    className="flex-shrink-0 inline-block w-8 h-8 rounded-full ring-2 ring-white"
                     src={tokenList[tokenListItemY].logo}
                     alt=""
                   />
                 </div>
-                <p className="ml-4">
+                <p className="mt-2 sm:mt-0 sm:ml-4">
                   <span className="block text-gray-500">
                     <Tooltip
                       shouldWrapChildren={true}
@@ -61,10 +60,8 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
             <td className="px-6 py-4 text-sm text-indigo-600 whitespace-nowrap">
               {loadingData ? (
                 <Placeholder className="py-2" width={Placeholder.width.HALF} />
-              ) : emissionsStarted ? (
-                `${apy}%`
               ) : (
-                <span>Emissions not started</span>
+                `${apy}%`
               )}
             </td>
 
@@ -155,7 +152,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                 </>
               )}
             </td>
-            <td className="px-6 py-4 text-sm whitespace-nowrap">
+            <td className="px-6 py-4 text-sm font-semibold whitespace-nowrap">
               {loadingData ? (
                 <Placeholder className="py-2" width={Placeholder.width.HALF} />
               ) : (
@@ -164,7 +161,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 6,
                   })}{' '}
-                  DIKO
+                  <span className="text-sm font-normal">DIKO</span>
                 </>
               )}
             </td>
@@ -179,7 +176,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
               </Disclosure.Button>
             </td>
           </tr>
-          <Disclosure.Panel as="tr">
+          <Disclosure.Panel as="tr" className="bg-gray-50">
             <td className="px-6 py-4 text-sm whitespace-nowrap">
               <RouterLink
                 to={getLpRoute}
@@ -199,7 +196,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
               ) : (
                 <button
                   type="button"
-                  className="inline-flex items-center px-4 py-2 text-sm leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                  className="inline-flex items-center px-4 py-2 text-sm leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
                   disabled={balance == 0}
                   onClick={() => setShowStakeLpModal(true)}
                 >

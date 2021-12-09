@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet';
 import { Container } from './home';
 import { CreateVaultStepOne } from './create-vault-step-one';
 import { CreateVaultConfirm } from './create-vault-confirm';
@@ -19,20 +20,26 @@ export const NewVault = () => {
   }, []);
 
   return (
-    <Container>
-      <main className="py-12">
-        {step === 0 ? (
-          <CreateVaultStepOne setStep={setStep} setCoinAmounts={setCoinAmounts} />
-        ) : step === 1 ? (
-          <CreateVaultConfirm
-            setStep={setStep}
-            coinAmounts={coinAmounts}
-            setCoinAmounts={setCoinAmounts}
-          />
-        ) : (
-          <CreateVaultTransact coinAmounts={coinAmounts} />
-        )}
-      </main>
-    </Container>
+    <>
+      <Helmet>
+        <title>Create vault</title>
+      </Helmet>
+    
+      <Container>
+        <main className="py-12">
+          {step === 0 ? (
+            <CreateVaultStepOne setStep={setStep} setCoinAmounts={setCoinAmounts} />
+          ) : step === 1 ? (
+            <CreateVaultConfirm
+              setStep={setStep}
+              coinAmounts={coinAmounts}
+              setCoinAmounts={setCoinAmounts}
+            />
+          ) : (
+            <CreateVaultTransact coinAmounts={coinAmounts} />
+          )}
+        </main>
+      </Container>
+    </>
   );
 };

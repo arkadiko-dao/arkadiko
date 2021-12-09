@@ -4,27 +4,29 @@ const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
+const BN = require('bn.js');
 
 async function transact() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: 'arkadiko-governance-v1-1',
-    functionName: 'propose',
+    contractName: 'arkadiko-governance-v2-1',
+    functionName: 'propose-dao',
     functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-1'),
-      tx.uintCV(35840),
-      tx.stringUtf8CV('Upgrade Arkadiko Swap Contract'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/316'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
+      tx.uintCV(40650),
+      tx.stringUtf8CV('Upgrade Arkadiko Auction Engine Contract'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/396'),
       tx.listCV([
         tx.tupleCV({
-          'name': tx.stringAsciiCV("swap"),
+          'name': tx.stringAsciiCV("auction-engine"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-swap-v2-1"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-auction-engine-v2-1"),
           'can-mint': tx.trueCV(),
           'can-burn': tx.trueCV()
         })
       ])
     ],
+    fee: new BN(100000, 10),
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network

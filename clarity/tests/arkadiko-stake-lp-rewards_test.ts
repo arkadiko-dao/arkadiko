@@ -121,7 +121,7 @@ Clarinet.test({
 
     // Add new contract to DAO
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v1-1", "add-contract-address", [
+      Tx.contractCall("arkadiko-governance-v2-1", "add-contract-address", [
         types.ascii("arkadiko-stake-lp-rewards"),
         types.principal(deployer.address),
         types.principal(Utils.qualifiedName("arkadiko-stake-lp-rewards")),
@@ -170,7 +170,7 @@ Clarinet.test({
 
     // Add new contract to DAO
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v1-1", "add-contract-address", [
+      Tx.contractCall("arkadiko-governance-v2-1", "add-contract-address", [
         types.ascii("arkadiko-stake-lp-rewards"),
         types.principal(deployer.address),
         types.principal(Utils.qualifiedName("arkadiko-stake-lp-rewards")),
@@ -217,7 +217,7 @@ Clarinet.test({
 
     // Add new contract to DAO
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v1-1", "add-contract-address", [
+      Tx.contractCall("arkadiko-governance-v2-1", "add-contract-address", [
         types.ascii("arkadiko-stake-lp-rewards"),
         types.principal(deployer.address),
         types.principal(Utils.qualifiedName("arkadiko-stake-lp-rewards")),
@@ -276,14 +276,14 @@ Clarinet.test({
 
     // Add new contract to DAO
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v1-1", "add-contract-address", [
+      Tx.contractCall("arkadiko-governance-v2-1", "add-contract-address", [
         types.ascii("arkadiko-stake-lp-rewards"),
         types.principal(deployer.address),
         types.principal(Utils.qualifiedName("arkadiko-stake-lp-rewards")),
         types.bool(true),
         types.bool(true)
       ], deployer.address),
-      Tx.contractCall("arkadiko-governance-v1-1", "add-contract-address", [
+      Tx.contractCall("arkadiko-governance-v2-1", "add-contract-address", [
         types.ascii("arkadiko-stake-lp-rewards-2"),
         types.principal(deployer.address),
         types.principal(Utils.qualifiedName("arkadiko-stake-lp-rewards-2")),
@@ -342,14 +342,14 @@ Clarinet.test({
 
     // Add new contract to DAO
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v1-1", "add-contract-address", [
+      Tx.contractCall("arkadiko-governance-v2-1", "add-contract-address", [
         types.ascii("arkadiko-stake-lp-rewards"),
         types.principal(deployer.address),
         types.principal(Utils.qualifiedName("arkadiko-stake-lp-rewards")),
         types.bool(true),
         types.bool(true)
       ], deployer.address),
-      Tx.contractCall("arkadiko-governance-v1-1", "add-contract-address", [
+      Tx.contractCall("arkadiko-governance-v2-1", "add-contract-address", [
         types.ascii("arkadiko-stake-lp-rewards-2"),
         types.principal(deployer.address),
         types.principal(Utils.qualifiedName("arkadiko-stake-lp-rewards-2")),
@@ -396,14 +396,14 @@ Clarinet.test({
 
     // Add new contract to DAO
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v1-1", "add-contract-address", [
+      Tx.contractCall("arkadiko-governance-v2-1", "add-contract-address", [
         types.ascii("arkadiko-stake-lp-rewards"),
         types.principal(deployer.address),
         types.principal(Utils.qualifiedName("arkadiko-stake-lp-rewards")),
         types.bool(true),
         types.bool(true)
       ], deployer.address),
-      Tx.contractCall("arkadiko-governance-v1-1", "add-contract-address", [
+      Tx.contractCall("arkadiko-governance-v2-1", "add-contract-address", [
         types.ascii("arkadiko-stake-lp-rewards-2"),
         types.principal(deployer.address),
         types.principal(Utils.qualifiedName("arkadiko-stake-lp-rewards-2")),
@@ -458,14 +458,14 @@ Clarinet.test({
 
     // Add new contract to DAO
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v1-1", "add-contract-address", [
+      Tx.contractCall("arkadiko-governance-v2-1", "add-contract-address", [
         types.ascii("arkadiko-stake-lp-rewards"),
         types.principal(deployer.address),
         types.principal(Utils.qualifiedName("arkadiko-stake-lp-rewards")),
         types.bool(true),
         types.bool(true)
       ], deployer.address),
-      Tx.contractCall("arkadiko-governance-v1-1", "add-contract-address", [
+      Tx.contractCall("arkadiko-governance-v2-1", "add-contract-address", [
         types.ascii("arkadiko-stake-lp-rewards-2"),
         types.principal(deployer.address),
         types.principal(Utils.qualifiedName("arkadiko-stake-lp-rewards-2")),
@@ -515,14 +515,14 @@ Clarinet.test({
 
     // Add new contract to DAO
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v1-1", "add-contract-address", [
+      Tx.contractCall("arkadiko-governance-v2-1", "add-contract-address", [
         types.ascii("arkadiko-stake-lp-rewards"),
         types.principal(deployer.address),
         types.principal(Utils.qualifiedName("arkadiko-stake-lp-rewards")),
         types.bool(true),
         types.bool(true)
       ], deployer.address),
-      Tx.contractCall("arkadiko-governance-v1-1", "add-contract-address", [
+      Tx.contractCall("arkadiko-governance-v2-1", "add-contract-address", [
         types.ascii("arkadiko-stake-lp-rewards-2"),
         types.principal(deployer.address),
         types.principal(Utils.qualifiedName("arkadiko-stake-lp-rewards-2")),

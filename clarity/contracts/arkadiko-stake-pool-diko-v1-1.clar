@@ -5,7 +5,7 @@
 ;; When total stake changes, the cumm reward per stake is increased accordingly.
 ;; The cooldown mechanism makes sure there is a period of 10 days before the user can unstake. 
 ;; Unstaking must happen within 2 days after the 10 days cooldown period.
-;; @version 1.1
+;; @version 1.2
 
 (impl-trait .arkadiko-stake-pool-trait-v1.stake-pool-trait)
 (impl-trait .arkadiko-stake-pool-diko-trait-v1.stake-pool-diko-trait)
@@ -23,7 +23,35 @@
 (define-constant POOL-TOKEN .arkadiko-token)
 
 ;; Variables
-(define-data-var last-reward-add-block uint u0)
+(define-data-var last-reward-add-block uint block-height)
+
+;; ---------------------------------------------------------
+;; Migration
+;; ---------------------------------------------------------
+
+;; Set last rewards block
+(define-public (set-last-reward-add-block (new-value uint))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (var-set last-reward-add-block new-value)
+    (ok true)
+  )
+)
+
+;; Migrate DIKO from old to new contract
+(define-public (migrate-diko)
+  (let (
+    (diko-supply-v1 (unwrap-panic (contract-call? .arkadiko-token get-balance .arkadiko-stake-pool-diko-v1-1)))
+  )
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) ERR-NOT-AUTHORIZED)
+    
+    ;; Burn DIKO in pool V1, mint in V2
+    (try! (as-contract (contract-call? .arkadiko-dao burn-token .arkadiko-token diko-supply-v1 .arkadiko-stake-pool-diko-v1-1)))
+    (try! (as-contract (contract-call? .arkadiko-dao mint-token .arkadiko-token diko-supply-v1 (as-contract tx-sender))))
+
+    (ok diko-supply-v1)
+  )
+)
 
 ;; ---------------------------------------------------------
 ;; Cooldown
@@ -119,10 +147,10 @@
     (total-diko-supply (+ diko-supply rewards-to-add))
 
     ;; User stDIKO percentage
-    (stdiko-percentage (/ (* amount u1000000) stdiko-supply))
+    (stdiko-percentage (/ (* amount u1000000000000) stdiko-supply))
 
     ;; Amount of DIKO the user will receive
-    (diko-to-receive (/ (* stdiko-percentage total-diko-supply) u1000000))
+    (diko-to-receive (/ (* stdiko-percentage total-diko-supply) u1000000000000))
   )
     (ok diko-to-receive)
   )
@@ -295,9 +323,4 @@
 ;; Needed because of pool trait
 (define-public (get-pending-rewards (registry-trait <stake-registry-trait>) (staker principal))
   (ok u0)
-)
-
-;; Initialize the contract
-(begin
-  (var-set last-reward-add-block block-height)
 )

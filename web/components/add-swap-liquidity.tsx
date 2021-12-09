@@ -229,7 +229,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
 
   const calculateTokenXAmount = (value: number) => {
     setTokenXAmount(value / currentPrice);
-    if (currentPrice * value > balanceSelectedTokenX) {
+    if (value / currentPrice > balanceSelectedTokenX) {
       setInsufficientBalance(true);
     }
     const newTokens = ((totalTokens / 1000000) * value) / pooledY;
@@ -253,6 +253,8 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
     let tokenYParam = tokenYTrait;
     let tokenXName = tokenX['name'].toLowerCase();
     let tokenYName = tokenY['name'].toLowerCase();
+    let tokenXInput = tokenXAmount;
+    let tokenYInput = tokenYAmount;
     if (inverseDirection) {
       swapTrait =
         tokenTraits[`${tokenY['name'].toLowerCase()}${tokenX['name'].toLowerCase()}`]['name'];
@@ -260,6 +262,8 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
       tokenYParam = tokenXTrait;
       tokenXName = tokenY['name'].toLowerCase();
       tokenYName = tokenX['name'].toLowerCase();
+      tokenXInput = tokenYAmount;
+      tokenYInput = tokenXAmount;
     }
     const postConditions = [];
     if (tokenXParam == 'wrapped-stx-token') {
@@ -267,14 +271,14 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         makeStandardSTXPostCondition(
           stxAddress || '',
           FungibleConditionCode.Equal,
-          uintCV(parseInt(tokenXAmount * 1000000, 10)).value
+          uintCV(parseInt(tokenXInput * 1000000, 10)).value
         )
       );
       postConditions.push(
         makeStandardFungiblePostCondition(
           stxAddress || '',
           FungibleConditionCode.Equal,
-          uintCV(parseInt(tokenXAmount * 1000000, 10)).value,
+          uintCV(parseInt(tokenXInput * 1000000, 10)).value,
           createAssetInfo(contractAddress, tokenXParam, 'wstx')
         )
       );
@@ -283,7 +287,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         makeStandardFungiblePostCondition(
           stxAddress || '',
           FungibleConditionCode.LessEqual,
-          uintCV(parseInt(tokenXAmount * 1000000, 10)).value,
+          uintCV(parseInt(tokenXInput * 1000000, 10)).value,
           createAssetInfo(contractAddress, tokenXParam, tokenXName)
         )
       );
@@ -293,14 +297,14 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         makeStandardSTXPostCondition(
           stxAddress || '',
           FungibleConditionCode.Equal,
-          uintCV(parseInt(tokenYAmount * 1000000, 10)).value
+          uintCV(parseInt(tokenYInput * 1000000, 10)).value
         )
       );
       postConditions.push(
         makeStandardFungiblePostCondition(
           stxAddress || '',
           FungibleConditionCode.Equal,
-          uintCV(parseInt(tokenYAmount * 1000000, 10)).value,
+          uintCV(parseInt(tokenYInput * 1000000, 10)).value,
           createAssetInfo(contractAddress, tokenYParam, 'wstx')
         )
       );
@@ -309,7 +313,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         makeStandardFungiblePostCondition(
           stxAddress || '',
           FungibleConditionCode.LessEqual,
-          uintCV(parseInt(tokenYAmount * 1000000, 10)).value,
+          uintCV(parseInt(tokenYInput * 1000000, 10)).value,
           createAssetInfo(contractAddress, tokenYParam, tokenYName)
         )
       );
@@ -324,8 +328,8 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         contractPrincipalCV(contractAddress, tokenXParam),
         contractPrincipalCV(contractAddress, tokenYParam),
         contractPrincipalCV(contractAddress, swapTrait),
-        uintCV(parseInt(tokenXAmount * 1000000, 10)),
-        uintCV(parseInt(tokenYAmount * 1000000, 10)),
+        uintCV(parseInt(tokenXInput * 1000000, 10)),
+        uintCV(parseInt(tokenYInput * 1000000, 10)),
       ],
       postConditionMode: 0x01,
       onFinish: data => {
@@ -594,7 +598,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                             <Tooltip
                               className="z-10"
                               shouldWrapChildren={true}
-                              label={`The percentual share of LP tokens you own agains the whole pool supply`}
+                              label={`The percentual share of LP tokens you own against the whole pool supply`}
                             >
                               <InformationCircleIcon
                                 className="block w-4 h-4 text-indigo-400"

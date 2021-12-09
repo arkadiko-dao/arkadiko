@@ -31,6 +31,7 @@
     auction-type: (string-ascii 64),
     collateral-amount: uint,
     collateral-token: (string-ascii 12),
+    collateral-address: principal,
     debt-to-raise: uint,
     discount: uint,
     vault-id: uint,
@@ -48,6 +49,7 @@
     usda: uint,
     collateral-amount: uint,
     collateral-token: (string-ascii 12),
+    collateral-address: principal,
     owner: principal,
     redeemed: bool
   }
@@ -63,7 +65,7 @@
 )
 
 (define-data-var last-auction-id uint u0)
-(define-data-var auction-ids (list 1500 uint) (list u0))
+(define-data-var auction-ids (list 1000 uint) (list u0))
 (define-data-var lot-size uint u1000000000) ;; 1000 USDA
 (define-data-var auction-engine-shutdown-activated bool false)
 (define-data-var removing-auction-id uint u0)
@@ -75,6 +77,7 @@
       auction-type: "collateral",
       collateral-amount: u0,
       collateral-token: "",
+      collateral-address: (contract-call? .arkadiko-dao get-dao-owner),
       debt-to-raise: u0,
       discount: u0,
       vault-id: u0,
@@ -108,6 +111,7 @@
       usda: u0,
       collateral-amount: u0,
       collateral-token: "",
+      collateral-address: (contract-call? .arkadiko-dao get-dao-owner),
       owner: (contract-call? .arkadiko-dao get-dao-owner),
       redeemed: false
     }
@@ -162,7 +166,14 @@
 ;; @param vault-debt; the debt in the vault that is now considered bad debt since it is not sufficiently collateralised
 ;; @param discount; the discount to be given in an auction on the collateral to keepers
 ;; @post auction; a new auction will be created that runs for one day
-(define-public (start-auction (vault-id uint) (uamount uint) (extra-debt uint) (vault-debt uint) (discount uint))
+(define-public (start-auction
+  (vault-id uint)
+  (coll-type <collateral-types-trait>)
+  (uamount uint)
+  (extra-debt uint)
+  (vault-debt uint)
+  (discount uint)
+)
   (let ((vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id)))
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "liquidator"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-liquidated vault) true) (err ERR-AUCTION-NOT-ALLOWED))
@@ -181,6 +192,7 @@
         auction-type: "collateral",
         collateral-amount: uamount,
         collateral-token: (get collateral-token vault),
+        collateral-address: (unwrap-panic (contract-call? coll-type get-token-address (get collateral-type vault))),
         debt-to-raise: (+ extra-debt vault-debt),
         discount: discount,
         vault-id: vault-id,
@@ -193,7 +205,7 @@
       })
     )
       (map-set auctions { id: auction-id } auction )
-      (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u1500)))
+      (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u1000)))
       (var-set last-auction-id auction-id)
       (print { type: "auction", action: "created", data: auction })
       (ok true)
@@ -222,6 +234,7 @@
         auction-type: "debt",
         collateral-amount: (* debt-to-raise u1000000),
         collateral-token: "DIKO",
+        collateral-address: .arkadiko-token,
         debt-to-raise: debt-to-raise,
         discount: discount,
         vault-id: vault-id,
@@ -234,7 +247,7 @@
       })
     )
       (map-set auctions { id: auction-id } auction)
-      (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u1500)))
+      (var-set auction-ids (unwrap-panic (as-max-len? (append (var-get auction-ids) auction-id) u1000)))
       (var-set last-auction-id auction-id)
       (print { type: "auction", action: "created", data: auction })
     )
@@ -362,11 +375,12 @@
   (let (
     (last-bid (get-last-bid auction-id lot-index))
     (auction (get-auction-by-id auction-id))
+    (token-address (get collateral-address auction))
     (token-string (get collateral-token auction))
   )
     (asserts!
       (or
-        (is-eq (unwrap-panic (contract-call? ft get-symbol)) token-string)
+        (is-eq (contract-of ft) token-address)
         (is-eq "STX" token-string)
         (is-eq "xSTX" token-string)
       )
@@ -615,6 +629,7 @@
         usda: usda,
         collateral-amount: collateral-amount,
         collateral-token: (get collateral-token auction),
+        collateral-address: (get collateral-address auction),
         owner: tx-sender,
         redeemed: false
       }
@@ -679,7 +694,7 @@
 (define-private (remove-auction (auction-id uint))
   (begin
     (var-set removing-auction-id auction-id)
-    (var-set auction-ids (unwrap-panic (as-max-len? (filter remove-closed-auction (var-get auction-ids)) u1500)))
+    (var-set auction-ids (unwrap-panic (as-max-len? (filter remove-closed-auction (var-get auction-ids)) u1000)))
     (ok true)
   )
 )

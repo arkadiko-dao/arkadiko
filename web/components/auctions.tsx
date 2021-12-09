@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
+import { Helmet } from 'react-helmet';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import { useConnect } from '@stacks/connect-react';
@@ -36,7 +37,7 @@ export const Auctions: React.FC = () => {
     const auctionOpen = async auctionId => {
       const auctionOpenCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-auction-engine-v1-1',
+        contractName: 'arkadiko-auction-engine-v2-1',
         functionName: 'get-auction-open',
         functionArgs: [uintCV(auctionId)],
         senderAddress: stxAddress || '',
@@ -60,7 +61,7 @@ export const Auctions: React.FC = () => {
 
       const auctionIdsCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-auction-engine-v1-1',
+        contractName: 'arkadiko-auction-engine-v2-1',
         functionName: 'get-auction-ids',
         functionArgs: [],
         senderAddress: stxAddress || '',
@@ -71,7 +72,7 @@ export const Auctions: React.FC = () => {
       await asyncForEach(auctionIds, async (auctionId: number) => {
         const auction = await callReadOnlyFunction({
           contractAddress,
-          contractName: 'arkadiko-auction-engine-v1-1',
+          contractName: 'arkadiko-auction-engine-v2-1',
           functionName: 'get-auction-by-id',
           functionArgs: [uintCV(auctionId.value)],
           senderAddress: stxAddress || '',
@@ -96,7 +97,7 @@ export const Auctions: React.FC = () => {
       const getLastBid = async (auctionId: number, lotId: number) => {
         const lastBid = await callReadOnlyFunction({
           contractAddress,
-          contractName: 'arkadiko-auction-engine-v1-1',
+          contractName: 'arkadiko-auction-engine-v2-1',
           functionName: 'get-last-bid',
           functionArgs: [uintCV(auctionId), uintCV(lotId)],
           senderAddress: stxAddress || '',
@@ -108,7 +109,7 @@ export const Auctions: React.FC = () => {
 
       const lots = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-auction-engine-v1-1',
+        contractName: 'arkadiko-auction-engine-v2-1',
         functionName: 'get-winning-lots',
         functionArgs: [standardPrincipalCV(stxAddress || '')],
         senderAddress: stxAddress || '',
@@ -186,6 +187,10 @@ export const Auctions: React.FC = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Auctions</title>
+      </Helmet>
+
       {state.userData ? (
         <Container>
           <main className="relative z-0 flex-1 pb-8 overflow-y-auto">

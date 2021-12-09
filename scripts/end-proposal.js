@@ -1,6 +1,6 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-const CONTRACT_NAME = 'arkadiko-governance-v1-1';
+const CONTRACT_NAME = 'arkadiko-governance-v2-1';
 const FUNCTION_NAME = 'end-proposal';
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
@@ -16,7 +16,6 @@ const txOptions = {
   functionName: FUNCTION_NAME,
   functionArgs: [tx.uintCV(proposalId)],
   senderKey: process.env.STACKS_PRIVATE_KEY,
-  fee: new BN(250000, 10),
   postConditionMode: 1,
   network
 };

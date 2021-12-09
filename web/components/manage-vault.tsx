@@ -270,7 +270,7 @@ export const ManageVault = ({ match }) => {
 
   const callBurn = async () => {
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
-    let totalToBurn = Number(usdToBurn) + 2 * (stabilityFee / 1000000);
+    let totalToBurn = Number(usdToBurn) + (stabilityFee / 1000000);
     if (Number(totalToBurn) >= Number(state.balance['usda'] / 1000000)) {
       totalToBurn = Number(state.balance['usda'] / 1000000);
     }
@@ -291,7 +291,7 @@ export const ManageVault = ({ match }) => {
       functionName: 'burn',
       functionArgs: [
         uintCV(match.params.id),
-        uintCV(parseFloat(usdToBurn) * 1000000),
+        uintCV(Number((parseFloat(usdToBurn) * 1000000) - (1.5 * stabilityFee))),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
         contractPrincipalCV(
@@ -436,7 +436,7 @@ export const ManageVault = ({ match }) => {
       functionName: 'mint',
       functionArgs: [
         uintCV(match.params.id),
-        uintCV(parseFloat(usdToMint) * 1000000),
+        uintCV(Number(parseFloat(usdToMint)).toFixed(6) * 1000000),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
@@ -968,7 +968,7 @@ export const ManageVault = ({ match }) => {
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
                     Choose how much USDA you want to burn. Burning will include a stability fee of{' '}
-                    {stabilityFee / 1000000} USDA, so take this into account.
+                    <span className="font-semibold">{stabilityFee / 1000000} USDA</span>.
                   </p>
 
                   <div className="mt-6">
@@ -1273,13 +1273,15 @@ export const ManageVault = ({ match }) => {
                           >
                             Add as collateral
                           </button>
-                          <button
-                            type="button"
-                            className="inline-flex items-center px-3 py-2 ml-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            onClick={() => claimYieldPayDebt()}
-                          >
-                            Pay back debt
-                          </button>
+                          {false ? (
+                            <button
+                              type="button"
+                              className="inline-flex items-center px-3 py-2 ml-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                              onClick={() => claimYieldPayDebt()}
+                            >
+                              Pay back debt
+                            </button>
+                          ) : null}
                         </div>
                       ) : null}
                     </div>

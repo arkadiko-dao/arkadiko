@@ -1,5 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { AppContext } from '@common/context';
+import { Helmet } from 'react-helmet';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import { stacksNetwork as network } from '@common/utils';
@@ -23,13 +24,26 @@ export const Governance = () => {
     const getData = async () => {
       const proposals = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-governance-v1-1',
+        contractName: 'arkadiko-governance-v2-1',
         functionName: 'get-proposals',
         functionArgs: [],
         senderAddress: stxAddress || '',
         network: network,
       });
       const json = cvToJSON(proposals);
+      const data = json.value.value;
+
+      const proposalsV1 = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-governance-v1-1',
+        functionName: 'get-proposals',
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const jsonV1 = cvToJSON(proposalsV1);
+      const dataV1 = jsonV1.value.value;
+
       const serializedProposals: {
         id: string;
         title: string;
@@ -42,7 +56,6 @@ export const Governance = () => {
         startBlockHeight: number;
         endBlockHeight: number;
       }[] = [];
-      const data = json.value.value;
 
       data.forEach((element: object) => {
         if (element.value['id'].value != 0) {
@@ -60,6 +73,24 @@ export const Governance = () => {
           });
         }
       });
+
+      dataV1.forEach((element: object) => {
+        if (element.value['id'].value != 0) {
+          serializedProposals.push({
+            id: element.value['id'].value,
+            title: element.value['title'].value,
+            url: element.value['url'].value,
+            proposer: element.value['proposer'].value,
+            forVotes: element.value['yes-votes'].value,
+            against: element.value['no-votes'].value,
+            changes: extractChanges(element.value['contract-changes']),
+            isOpen: element.value['is-open'].value,
+            startBlockHeight: element.value['start-block-height'].value,
+            endBlockHeight: element.value['end-block-height'].value,
+          });
+        }
+      });
+
       setProposals(serializedProposals);
       setIsLoading(false);
     };
@@ -81,6 +112,10 @@ export const Governance = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Governance</title>
+      </Helmet>
+
       {state.userData ? (
         <Container>
           <main className="flex-1 py-12">
@@ -107,7 +142,7 @@ export const Governance = () => {
                 </header>
 
                 {isLoading ? (
-                  <div className="mt-5 overflow-hidden bg-white shadow sm:rounded-md">
+                  <div className="mt-5 overflow-hidden bg-white rounded-md shadow">
                     <div className="px-4 py-4 sm:px-6">
                       <div className="flex items-center justify-between">
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />

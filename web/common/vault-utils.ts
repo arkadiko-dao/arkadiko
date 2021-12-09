@@ -128,9 +128,9 @@ export const resolveReserveName = (collateralToken: string) => {
 
 export const contractsMap = {
   'vault-manager': 'arkadiko-freddie-v1-1',
-  'auction-engine': 'arkadiko-auction-engine-v1-1',
+  'auction-engine': 'arkadiko-auction-engine-v2-1',
   oracle: 'arkadiko-oracle-v1-1',
-  governance: 'arkadiko-governance-v1-1',
+  governance: 'arkadiko-governance-v2-1',
 };
 
 export const microToReadable = (amount: number | string, _decimals = 2) => {

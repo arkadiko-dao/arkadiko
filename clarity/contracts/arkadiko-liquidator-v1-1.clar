@@ -36,6 +36,7 @@
         (try!
           (contract-call? auction-engine start-auction
             vault-id
+            coll-type
             (get ustx-amount amounts)
             (get extra-debt amounts)
             (get vault-debt amounts)
