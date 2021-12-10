@@ -318,3 +318,6 @@ depends_on = ["sip-010-trait-ft-standard", "restricted-token-trait"]
 path = "contracts/tests/malicious-ft.clar"
 depends_on = ["sip-010-trait-ft-standard", "arkadiko-dao-token-trait-v1"]
 
+[contracts.arkadiko-add-xbtc]
+depends_on = []
+path = "contracts/arkadiko-add-xbtc.clar"

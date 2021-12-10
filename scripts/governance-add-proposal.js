@@ -10,11 +10,12 @@ async function transact() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
     contractName: 'arkadiko-governance-v2-1',
-    functionName: 'propose-dao',
+    functionName: 'propose',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
       tx.uintCV(40650),
-      tx.stringUtf8CV('Upgrade Arkadiko Auction Engine Contract'),
+      tx.uintCV(1000),
+      tx.stringUtf8CV('Add xBTC/STX, xBTC/USDA and xBTC as collateral type'),
       tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/396'),
       tx.listCV([
         tx.tupleCV({
@@ -26,7 +27,6 @@ async function transact() {
         })
       ])
     ],
-    fee: new BN(100000, 10),
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network
