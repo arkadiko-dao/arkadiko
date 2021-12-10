@@ -16,14 +16,14 @@ async function transact() {
       tx.uintCV(40650),
       tx.uintCV(1000),
       tx.stringUtf8CV('Add xBTC/STX, xBTC/USDA and xBTC as collateral type'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/396'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/399'),
       tx.listCV([
         tx.tupleCV({
-          'name': tx.stringAsciiCV("auction-engine"),
+          'name': tx.stringAsciiCV("add-xbtc"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-auction-engine-v2-1"),
-          'can-mint': tx.trueCV(),
-          'can-burn': tx.trueCV()
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-add-xbtc"),
+          'can-mint': tx.falseCV(),
+          'can-burn': tx.falseCV()
         })
       ])
     ],
