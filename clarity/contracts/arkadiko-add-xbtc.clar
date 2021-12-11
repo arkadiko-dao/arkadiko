@@ -7,7 +7,11 @@
 ;;  10% xBTC/STX
 ;;  40% STX/USDA
 (define-public (add-xbtc-stx)
-  (ok true)
+  (let (
+    (proposal (contract-call? .arkadiko-governance-v2-1 get-proposal-by-id u4))
+  )
+    (ok true)
+  )
 )
 
 ;; Phase 2:
