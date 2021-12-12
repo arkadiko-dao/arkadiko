@@ -68,6 +68,9 @@ export const Stake = () => {
   const [dikoUsdaPoolInfo, setDikoUsdaPoolInfo] = useState(0);
   const [missedLpRewards, setMissedLpRewards] = useState(0);
   const [stDikoToDiko, setStDikoToDiko] = useState(0);
+  const [dikoPrice, setDikoPrice] = useState(0);
+  const [stxPrice, setStxPrice] = useState(0);
+  const [usdaPrice, setUsdaPrice] = useState(0);
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -77,6 +80,16 @@ export const Stake = () => {
       window.location.reload();
     }
   }, [state.currentTxStatus]);
+
+  useEffect(() => {
+    const fetchPrices = async () => {
+      setStxPrice(await getPrice('STX'));
+      setDikoPrice(await getPrice('DIKO'));
+      setUsdaPrice(await getPrice('USDA'));
+    };
+
+    fetchPrices();
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -193,21 +206,17 @@ export const Stake = () => {
       let estimatedValueStaked = 0;
       let estimatedValueWallet = 0;
       if (tokenXName == 'STX') {
-        const stxPrice = await getPrice('STX');
         estimatedValueStaked = (stakedBalanceX / 1000000) * stxPrice * 2;
         estimatedValueWallet = (walletBalanceX / 1000000) * stxPrice * 2;
       } else if (tokenYName == 'STX') {
-        const stxPrice = await getPrice('STX');
         estimatedValueStaked = (stakedBalanceY / 1000000) * stxPrice * 2;
         estimatedValueWallet = (walletBalanceY / 1000000) * stxPrice * 2;
       } else if (tokenXName == 'USDA') {
-        const udsdaPrice = await getPrice('USDA');
-        estimatedValueStaked = (stakedBalanceX / 1000000) * udsdaPrice * 2;
-        estimatedValueWallet = (walletBalanceX / 1000000) * udsdaPrice * 2;
+        estimatedValueStaked = (stakedBalanceX / 1000000) * usdaPrice * 2;
+        estimatedValueWallet = (walletBalanceX / 1000000) * usdaPrice * 2;
       } else if (tokenYName == 'USDA') {
-        const udsdaPrice = await getPrice('USDA');
-        estimatedValueStaked = (stakedBalanceY / 1000000) * udsdaPrice * 2;
-        estimatedValueWallet = (walletBalanceY / 1000000) * udsdaPrice * 2;
+        estimatedValueStaked = (stakedBalanceY / 1000000) * usdaPrice * 2;
+        estimatedValueWallet = (walletBalanceY / 1000000) * usdaPrice * 2;
       }
 
       return {
@@ -226,7 +235,10 @@ export const Stake = () => {
       if (
         state.balance['dikousda'] == undefined ||
         state.balance['wstxusda'] == undefined ||
-        state.balance['wstxdiko'] == undefined
+        state.balance['wstxdiko'] == undefined ||
+        stxPrice === 0 ||
+        dikoPrice === 0 ||
+        usdaPrice === 0
       ) {
         return;
       }
@@ -339,22 +351,25 @@ export const Stake = () => {
       if (totalDikoUsdaStaked == 0) {
         totalDikoUsdaStaked = 10;
       }
+      const dikoDikoUsda = await lpTokenValue('arkadiko-stake-pool-diko-usda-v1-1', 0, totalDikoUsdaStaked);
       const dikoUsdaPoolRewards = totalStakingRewardsYear1 * 0.25;
-      const dikoUsdaApr = dikoUsdaPoolRewards / totalDikoUsdaStaked;
+      const dikoUsdaApr = dikoUsdaPoolRewards / (dikoDikoUsda['walletValue'] / Number(dikoPrice / 1000000));
       setDikoUsdaLpApy(Number((100 * dikoUsdaApr).toFixed(2)));
 
       if (totalStxUsdaStaked == 0) {
         totalStxUsdaStaked = 10;
       }
+      const dikoStxUsda = await lpTokenValue('arkadiko-stake-pool-wstx-usda-v1-1', 0, totalStxUsdaStaked);
       const stxUsdaPoolRewards = totalStakingRewardsYear1 * 0.5;
-      const stxUsdaApr = stxUsdaPoolRewards / totalStxUsdaStaked;
+      const stxUsdaApr = stxUsdaPoolRewards / (dikoStxUsda['walletValue'] / Number(dikoPrice / 1000000));
       setStxUsdaLpApy(Number((100 * stxUsdaApr).toFixed(2)));
 
       if (totalStxDikoStaked == 0) {
         totalStxDikoStaked = 10;
       }
+      const dikoStxDiko = await lpTokenValue('arkadiko-stake-pool-wstx-diko-v1-1', 0, totalStxDikoStaked);
       const stxDikoPoolRewards = totalStakingRewardsYear1 * 0.15;
-      const stxDikoApr = stxDikoPoolRewards / totalStxDikoStaked;
+      const stxDikoApr = stxDikoPoolRewards / (dikoStxDiko['walletValue'] / Number(dikoPrice / 1000000));
       setStxDikoLpApy(Number((100 * stxDikoApr).toFixed(2)));
 
       const dikoCooldownInfo = await callReadOnlyFunction({
@@ -431,7 +446,7 @@ export const Stake = () => {
     return () => {
       mounted = false;
     };
-  }, [state.balance]);
+  }, [state.balance, stxPrice, dikoPrice, usdaPrice]);
 
   const startDikoCooldown = async () => {
     await doContractCall({
