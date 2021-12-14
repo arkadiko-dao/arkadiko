@@ -30,7 +30,7 @@ export const VaultWithdrawModal: React.FC<Props> = ({
   vault,
   reserveName
 }) => {
-  const setState = useContext(AppContext);
+  const [_, setState] = useContext(AppContext);
   const [collateralToWithdraw, setCollateralToWithdraw] = useState('');
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';

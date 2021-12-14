@@ -477,6 +477,10 @@ export const ManageVault = ({ match }) => {
         showMintModal={showMintModal}
         setShowMintModal={setShowMintModal}
         match={match}
+        vault={vault}
+        reserveName={reserveName}
+        price={price}
+        collateralType={collateralType}
       />
 
       <VaultBurnModal
