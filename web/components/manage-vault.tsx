@@ -468,6 +468,9 @@ export const ManageVault = ({ match }) => {
         showWithdrawModal={showWithdrawModal}
         setShowWithdrawModal={setShowWithdrawModal}
         match={match}
+        maximumCollateralToWithdraw={maximumCollateralToWithdraw}
+        vault={vault}
+        reserveName={reserveName}
       />
 
       <VaultMintModal

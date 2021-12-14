@@ -24,7 +24,7 @@ interface Props {
 }
 
 export const VaultMintModal: React.FC<Props> = ({ match, showMintModal, setShowMintModal }) => {
-  const [state, setState] = useContext(AppContext);
+  const [_, setState] = useContext(AppContext);
   const [price, setPrice] = useState(0);
   const [vault, setVault] = useState<VaultProps>();
   const [usdToMint, setUsdToMint] = useState('');

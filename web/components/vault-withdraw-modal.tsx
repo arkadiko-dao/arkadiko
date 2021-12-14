@@ -1,145 +1,42 @@
-import React, { useContext, useState, useRef, useEffect } from 'react';
+import React, { useContext, useState, useRef } from 'react';
 import { Modal } from '@components/ui/modal';
 import { tokenList } from '@components/token-swap-list';
-import { AppContext, CollateralTypeProps } from '@common/context';
+import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import {
   AnchorMode,
   contractPrincipalCV,
-  stringAsciiCV,
-  cvToJSON,
-  uintCV,
-  callReadOnlyFunction,
+  uintCV
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { VaultProps } from './vault';
-import {
-  availableCollateralToWithdraw,
-  resolveReserveName,
-  tokenTraits,
-} from '@common/vault-utils';
-import { getPrice } from '@common/get-price';
+import { tokenTraits } from '@common/vault-utils';
 
 interface Props {
   showWithdrawModal: boolean;
   setShowWithdrawModal: (arg: boolean) => void;
+  maximumCollateralToWithdraw: number;
+  vault: VaultProps;
+  reserveName: string;
 }
 
 export const VaultWithdrawModal: React.FC<Props> = ({
   match,
   showWithdrawModal,
   setShowWithdrawModal,
+  maximumCollateralToWithdraw,
+  vault,
+  reserveName
 }) => {
   const setState = useContext(AppContext);
-  const [vault, setVault] = useState<VaultProps>();
-  const [price, setPrice] = useState(0);
-  const [collateralType, setCollateralType] = useState<CollateralTypeProps>();
   const [collateralToWithdraw, setCollateralToWithdraw] = useState('');
-  const [maximumCollateralToWithdraw, setMaximumCollateralToWithdraw] = useState(0);
-  const [reserveName, setReserveName] = useState('');
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const senderAddress = useSTXAddress();
   const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const fetchVault = async () => {
-      const serializedVault = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-freddie-v1-1',
-        functionName: 'get-vault-by-id',
-        functionArgs: [uintCV(match.params.id)],
-        senderAddress: senderAddress || '',
-        network: network,
-      });
-
-      const data = cvToJSON(serializedVault).value;
-
-      if (data['id'].value !== 0) {
-        setVault({
-          id: data['id'].value,
-          owner: data['owner'].value,
-          collateral: data['collateral'].value,
-          collateralType: data['collateral-type'].value,
-          collateralToken: data['collateral-token'].value,
-          isLiquidated: data['is-liquidated'].value,
-          auctionEnded: data['auction-ended'].value,
-          leftoverCollateral: data['leftover-collateral'].value,
-          debt: data['debt'].value,
-          stackedTokens: data['stacked-tokens'].value,
-          stackerName: data['stacker-name'].value,
-          revokedStacking: data['revoked-stacking'].value,
-          collateralData: {},
-        });
-        setReserveName(resolveReserveName(data['collateral-token'].value));
-
-        const price = await getPrice(data['collateral-token'].value);
-        setPrice(price);
-
-        const type = await callReadOnlyFunction({
-          contractAddress,
-          contractName: 'arkadiko-collateral-types-v1-1',
-          functionName: 'get-collateral-type-by-name',
-          functionArgs: [stringAsciiCV(data['collateral-type'].value)],
-          senderAddress: senderAddress || '',
-          network: network,
-        });
-
-        const json = cvToJSON(type.value);
-        setCollateralType({
-          name: json.value['name'].value,
-          token: json.value['token'].value,
-          tokenType: json.value['token-type'].value,
-          url: json.value['url'].value,
-          totalDebt: json.value['total-debt'].value,
-          collateralToDebtRatio: json.value['collateral-to-debt-ratio'].value,
-          liquidationPenalty: json.value['liquidation-penalty'].value / 100,
-          liquidationRatio: json.value['liquidation-ratio'].value,
-          maximumDebt: json.value['maximum-debt'].value,
-          stabilityFee: json.value['stability-fee'].value,
-          stabilityFeeApy: json.value['stability-fee-apy'].value,
-        });
-      }
-    };
-    fetchVault();
-  }, [match.params.id]);
-
-  useEffect(() => {
-    if (vault && collateralType?.collateralToDebtRatio) {
-      if (Number(vault.stackedTokens) === 0) {
-        setMaximumCollateralToWithdraw(
-          availableCollateralToWithdraw(
-            price,
-            collateralLocked(),
-            outstandingDebt(),
-            collateralType?.collateralToDebtRatio
-          )
-        );
-      } else {
-        setMaximumCollateralToWithdraw(0);
-      }
-    }
-  }, [collateralType?.collateralToDebtRatio, price]);
-
-  const outstandingDebt = () => {
-    if (vault) {
-      return vault.debt / 1000000;
-    }
-
-    return 0;
-  };
-
-  const collateralLocked = () => {
-    if (vault) {
-      const decimals = vault['collateralType'].toLowerCase().includes('stx') ? 1000000 : 100000000;
-      return vault['collateral'] / decimals;
-    }
-
-    return 0;
-  };
 
   const callWithdraw = async () => {
     if (parseFloat(collateralToWithdraw) > maximumCollateralToWithdraw) {
