@@ -124,6 +124,23 @@ export const VaultWithdrawModal: React.FC<Props> = ({
     }
   }, [collateralType?.collateralToDebtRatio, price]);
 
+  const outstandingDebt = () => {
+    if (vault) {
+      return vault.debt / 1000000;
+    }
+
+    return 0;
+  };
+
+  const collateralLocked = () => {
+    if (vault) {
+      const decimals = vault['collateralType'].toLowerCase().includes('stx') ? 1000000 : 100000000;
+      return vault['collateral'] / decimals;
+    }
+
+    return 0;
+  };
+
   const callWithdraw = async () => {
     if (parseFloat(collateralToWithdraw) > maximumCollateralToWithdraw) {
       return;
