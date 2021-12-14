@@ -184,6 +184,25 @@ export const Mint = () => {
     await broadcastTransaction(transaction, network);
   };
 
+  const claimPendingRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress: address,
+      contractName: 'arkadiko-vault-rewards-v1-1',
+      functionName: 'claim-pending-rewards',
+      functionArgs: [],
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
   return (
     <div>
       <Helmet>
@@ -287,6 +306,21 @@ export const Mint = () => {
                   </Tooltip>
                 </p>
               </div>
+              {pendingVaultRewards > 0 ? (
+                <button
+                  type="button"
+                  className="inline-flex items-center px-3 py-2 ml-4 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  onClick={() => claimPendingRewards()}
+                  disabled={pendingVaultRewards === 0}
+                >
+                  Claim{' '}
+                  {pendingVaultRewards.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 6,
+                  })}{' '}
+                  DIKO
+                </button>
+              ) : null}
             </div>
           </header>
 
