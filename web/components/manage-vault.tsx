@@ -26,7 +26,7 @@ import { getLiquidationPrice, availableCoinsToMint } from '@common/vault-utils';
 import { Redirect } from 'react-router-dom';
 import { resolveReserveName, tokenTraits } from '@common/vault-utils';
 import { getRPCClient } from '@common/utils';
-import { microToReadable } from '@common/vault-utils';
+import { microToReadable, availableCollateralToWithdraw } from '@common/vault-utils';
 import { addMinutes } from 'date-fns';
 import { Placeholder } from './ui/placeholder';
 import { Alert } from './ui/alert';
@@ -42,7 +42,7 @@ export const ManageVault = ({ match }) => {
   const [showMintModal, setShowMintModal] = useState(false);
   const [showBurnModal, setShowBurnModal] = useState(false);
   const [auctionEnded, setAuctionEnded] = useState(false);
-  const [maximumCollateralToWithdraw] = useState(0);
+  const [maximumCollateralToWithdraw, setMaximumCollateralToWithdraw] = useState(0);
   const [reserveName, setReserveName] = useState('');
   const [vault, setVault] = useState<VaultProps>();
   const [price, setPrice] = useState(0);
@@ -128,6 +128,23 @@ export const ManageVault = ({ match }) => {
     };
     fetchVault();
   }, [match.params.id]);
+
+  useEffect(() => {
+    if (vault && collateralType?.collateralToDebtRatio) {
+      if (Number(vault.stackedTokens) === 0) {
+        setMaximumCollateralToWithdraw(
+          availableCollateralToWithdraw(
+            price,
+            collateralLocked(),
+            outstandingDebt(),
+            collateralType?.collateralToDebtRatio
+          )
+        );
+      } else {
+        setMaximumCollateralToWithdraw(0);
+      }
+    }
+  }, [collateralType?.collateralToDebtRatio, price]);
 
   useEffect(() => {
     const fetchFees = async () => {

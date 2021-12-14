@@ -8,6 +8,7 @@ import {
   contractPrincipalCV,
   cvToJSON,
   uintCV,
+  createAssetInfo,
   callReadOnlyFunction,
   FungibleConditionCode,
   makeStandardFungiblePostCondition,
