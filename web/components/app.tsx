@@ -39,7 +39,7 @@ export const getBalance = async (address: string) => {
   const xbtcBalance = data.fungible_tokens[`${contractAddress}.tokensoft-token::tokensoft-token`];
 
   return {
-    stx: data.stx.balance,
+    stx: Number(data.stx.balance) - Number(data.stx.locked),
     xbtc: xbtcBalance ? xbtcBalance.balance : 0,
     usda: usdaBalance ? usdaBalance.balance : 0,
     diko: dikoBalance ? dikoBalance.balance : 0,

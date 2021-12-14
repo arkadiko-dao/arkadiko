@@ -17,7 +17,13 @@ import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { Alert } from './ui/alert';
 
-export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
+interface Props {
+  showStakeModal: boolean;
+  setShowStakeModal: (arg: boolean) => void;
+  apy: number;
+}
+
+export const StakeDikoModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal, apy }) => {
   const [state, setState] = useContext(AppContext);
   const [errors, setErrors] = useState<string[]>([]);
   const [stakeAmount, setStakeAmount] = useState('');
@@ -28,7 +34,7 @@ export const StakeDikoModal = ({ showStakeModal, setShowStakeModal, apy }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const stakeMaxAmount = () => {
-    setStakeAmount(state.balance['diko'] / 1000000);
+    setStakeAmount((state.balance['diko'] / 1000000).toString());
   };
 
   const onInputStakeChange = (event: any) => {
