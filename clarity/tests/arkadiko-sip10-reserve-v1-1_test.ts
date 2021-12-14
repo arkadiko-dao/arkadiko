@@ -209,9 +209,9 @@ Clarinet.test({
 
     // Notify liquidator
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidator-v1-1", "notify-risky-vault", [
+      Tx.contractCall("arkadiko-liquidator-v2-1", "notify-risky-vault", [
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-auction-engine-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-auction-engine-v2-1')),
         types.uint(1),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
@@ -225,7 +225,7 @@ Clarinet.test({
  
     // Make bids to close auction
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
+      Tx.contractCall("arkadiko-auction-engine-v2-1", "bid", [
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1')),
@@ -237,7 +237,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
 
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-auction-engine-v1-1", "bid", [
+      Tx.contractCall("arkadiko-auction-engine-v2-1", "bid", [
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1')),
@@ -285,7 +285,7 @@ Clarinet.test({
   
     // Wrong token
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-auction-engine-v1-1", "redeem-lot-collateral", [
+      Tx.contractCall("arkadiko-auction-engine-v2-1", "redeem-lot-collateral", [
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-token')),
         types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
@@ -298,7 +298,7 @@ Clarinet.test({
 
     // Wrong reserve
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-auction-engine-v1-1", "redeem-lot-collateral", [
+      Tx.contractCall("arkadiko-auction-engine-v2-1", "redeem-lot-collateral", [
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
         types.principal(Utils.qualifiedName('tokensoft-token')),
         types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),

@@ -111,4 +111,4 @@ rp(requestOptions).then(async (response) => {
   await setPrice(stxPrice, btcPrice);
 });
 
-// setPrice(0.5); // 0.5 USD
+// setPrice(1.05, 50000); // 0.5 USD

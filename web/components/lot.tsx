@@ -20,7 +20,7 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collatera
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-auction-engine-v1-1',
+      contractName: 'arkadiko-auction-engine-v2-1',
       functionName: 'redeem-lot-collateral',
       functionArgs: [
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-freddie-v1-1'),

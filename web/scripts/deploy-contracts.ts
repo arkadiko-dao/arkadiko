@@ -19,7 +19,8 @@ interface Contract {
 }
 
 const contracts: Contract[] = [
-  { name: 'arkadiko-ui-stake-v1-3' }
+  { name: 'arkadiko-liquidator-v2-1' },
+  { name: 'arkadiko-auction-engine-v2-1' }
 ];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');
@@ -39,7 +40,7 @@ const run = async () => {
   console.log(`Account nonce: ${account.nonce}`);
 
   const txResults: string[] = [];
-  // let index = 0;
+  let index = 0;
   for (const contract of contracts) {
     let exists: boolean;
     const contractId = `${address}.${contract.name}`;
@@ -65,15 +66,14 @@ const run = async () => {
       contractName: contract.name,
       codeBody: source.toString('utf8'),
       senderKey: privateKey,
-      nonce: new BN(342, 10),
-      fee: new BN(1000000, 10),
+      nonce: new BN(account.nonce + index, 10),
       network,
     });
 
     const result = await rpcClient.broadcastTX(tx.serialize());
 
     if (result.ok) {
-      // index += 1;
+      index += 1;
 
       const txId = (await result.text()).replace(/"/g, '');
       console.log(`${rpcClient.url}/extended/v1/tx/${txId}`);

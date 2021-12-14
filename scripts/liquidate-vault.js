@@ -1,6 +1,6 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-const CONTRACT_NAME = 'arkadiko-liquidator-v1-1';
+const CONTRACT_NAME = 'arkadiko-liquidator-v2-1';
 const FUNCTION_NAME = 'notify-risky-vault';
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
@@ -15,7 +15,7 @@ const txOptions = {
   functionName: FUNCTION_NAME,
   functionArgs: [
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-freddie-v1-1'),
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-auction-engine-v1-1'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-auction-engine-v2-1'),
     tx.uintCV(vaultId),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v1-1'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v1-1')
