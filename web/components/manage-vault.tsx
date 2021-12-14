@@ -462,6 +462,9 @@ export const ManageVault = ({ match }) => {
         showDepositModal={showDepositModal}
         setShowDepositModal={setShowDepositModal}
         match={match}
+        vault={vault}
+        reserveName={reserveName}
+        decimals={decimals}
       />
 
       <VaultWithdrawModal
@@ -489,6 +492,8 @@ export const ManageVault = ({ match }) => {
         outstandingDebt={outstandingDebt}
         stabilityFee={stabilityFee}
         match={match}
+        vault={vault}
+        reserveName={reserveName}
       />
 
       <main className="flex-1 py-12">

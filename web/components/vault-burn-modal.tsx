@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef, useEffect } from 'react';
+import React, { useContext, useState, useRef } from 'react';
 import { Modal } from '@components/ui/modal';
 import { tokenList } from '@components/token-swap-list';
 import { AppContext } from '@common/context';
@@ -6,10 +6,8 @@ import { InputAmount } from './input-amount';
 import {
   AnchorMode,
   contractPrincipalCV,
-  cvToJSON,
   uintCV,
   createAssetInfo,
-  callReadOnlyFunction,
   FungibleConditionCode,
   makeStandardFungiblePostCondition,
 } from '@stacks/transactions';
@@ -17,13 +15,15 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { VaultProps } from './vault';
-import { resolveReserveName, tokenTraits } from '@common/vault-utils';
+import { tokenTraits } from '@common/vault-utils';
 
 interface Props {
   showBurnModal: boolean;
   setShowBurnModal: (arg: boolean) => void;
   outstandingDebt: () => void;
   stabilityFee: number;
+  vault: VaultProps;
+  reserveName: string;
 }
 
 export const VaultBurnModal: React.FC<Props> = ({
@@ -32,51 +32,16 @@ export const VaultBurnModal: React.FC<Props> = ({
   setShowBurnModal,
   outstandingDebt,
   stabilityFee,
+  vault,
+  reserveName
 }) => {
   const [state, setState] = useContext(AppContext);
-  const [vault, setVault] = useState<VaultProps>();
   const [usdToBurn, setUsdToBurn] = useState('');
-  const [reserveName, setReserveName] = useState('');
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const senderAddress = useSTXAddress();
   const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const fetchVault = async () => {
-      const serializedVault = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-freddie-v1-1',
-        functionName: 'get-vault-by-id',
-        functionArgs: [uintCV(match.params.id)],
-        senderAddress: senderAddress || '',
-        network: network,
-      });
-
-      const data = cvToJSON(serializedVault).value;
-
-      if (data['id'].value !== 0) {
-        setVault({
-          id: data['id'].value,
-          owner: data['owner'].value,
-          collateral: data['collateral'].value,
-          collateralType: data['collateral-type'].value,
-          collateralToken: data['collateral-token'].value,
-          isLiquidated: data['is-liquidated'].value,
-          auctionEnded: data['auction-ended'].value,
-          leftoverCollateral: data['leftover-collateral'].value,
-          debt: data['debt'].value,
-          stackedTokens: data['stacked-tokens'].value,
-          stackerName: data['stacker-name'].value,
-          revokedStacking: data['revoked-stacking'].value,
-          collateralData: {},
-        });
-        setReserveName(resolveReserveName(data['collateral-token'].value));
-      }
-    };
-    fetchVault();
-  }, [match.params.id]);
 
   const callBurn = async () => {
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];

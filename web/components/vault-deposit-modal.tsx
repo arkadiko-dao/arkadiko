@@ -7,9 +7,7 @@ import { Alert } from './ui/alert';
 import {
   AnchorMode,
   contractPrincipalCV,
-  cvToJSON,
   uintCV,
-  callReadOnlyFunction,
   FungibleConditionCode,
   makeStandardSTXPostCondition,
 } from '@stacks/transactions';
@@ -18,63 +16,31 @@ import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import BN from 'bn.js';
 import { VaultProps } from './vault';
-import { resolveReserveName, tokenTraits } from '@common/vault-utils';
+import { tokenTraits } from '@common/vault-utils';
 
 interface Props {
   showDepositModal: boolean;
   setShowDepositModal: (arg: boolean) => void;
+  vault: VaultProps;
+  reserveName: string;
+  decimals: number;
 }
 
 export const VaultDepositModal: React.FC<Props> = ({
   match,
   showDepositModal,
   setShowDepositModal,
+  vault,
+  reserveName,
+  decimals
 }) => {
   const [state, setState] = useContext(AppContext);
-  const [vault, setVault] = useState<VaultProps>();
   const [extraCollateralDeposit, setExtraCollateralDeposit] = useState('');
-  const [reserveName, setReserveName] = useState('');
-  const decimals = 1000000;
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const senderAddress = useSTXAddress();
   const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const fetchVault = async () => {
-      const serializedVault = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-freddie-v1-1',
-        functionName: 'get-vault-by-id',
-        functionArgs: [uintCV(match.params.id)],
-        senderAddress: senderAddress || '',
-        network: network,
-      });
-
-      const data = cvToJSON(serializedVault).value;
-
-      if (data['id'].value !== 0) {
-        setVault({
-          id: data['id'].value,
-          owner: data['owner'].value,
-          collateral: data['collateral'].value,
-          collateralType: data['collateral-type'].value,
-          collateralToken: data['collateral-token'].value,
-          isLiquidated: data['is-liquidated'].value,
-          auctionEnded: data['auction-ended'].value,
-          leftoverCollateral: data['leftover-collateral'].value,
-          debt: data['debt'].value,
-          stackedTokens: data['stacked-tokens'].value,
-          stackerName: data['stacker-name'].value,
-          revokedStacking: data['revoked-stacking'].value,
-          collateralData: {},
-        });
-        setReserveName(resolveReserveName(data['collateral-token'].value));
-      }
-    };
-    fetchVault();
-  }, [match.params.id]);
 
   const addDeposit = async () => {
     if (!extraCollateralDeposit) {
