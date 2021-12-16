@@ -182,6 +182,28 @@ export const ManageVault = ({ match }) => {
       setLoadingPoxYieldData(false);
     };
 
+    const fetchCollateralToDebtRatio = async () => {
+      if (vault && vault['debt'] > 0) {
+        const collToDebt = await callReadOnlyFunction({
+          contractAddress,
+          contractName: 'arkadiko-freddie-v1-1',
+          functionName: 'calculate-current-collateral-to-debt-ratio',
+          functionArgs: [
+            uintCV(vault.id),
+            contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v1-1'),
+            contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v1-1'),
+            falseCV(),
+          ],
+          senderAddress: senderAddress || '',
+          network: network,
+        });
+        const json = cvToJSON(collToDebt);
+        if (json.value) {
+          setDebtRatio(json.value.value);
+        }
+      }
+    };
+
     const fetchStackerHeight = async () => {
       if (vault?.stackedTokens == 0 && vault?.revokedStacking) {
         setEnabledStacking(false);
@@ -250,9 +272,6 @@ export const ManageVault = ({ match }) => {
     };
 
     if (vault?.id) {
-      if (vault['debt'] > 0) {
-        setDebtRatio(getCollateralToDebtRatio(match.params.id)?.collateralToDebt);
-      }
       if (vault['collateralType'].toLowerCase().includes('stx')) {
         setCanStackCollateral(true);
       }
@@ -260,6 +279,7 @@ export const ManageVault = ({ match }) => {
       fetchFees();
       fetchStackerHeight();
       fetchYield();
+      fetchCollateralToDebtRatio();
     }
   }, [vault]);
 
