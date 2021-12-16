@@ -351,8 +351,8 @@ export const Swap: React.FC = () => {
                           className={classNames(
                             tab.current
                               ? 'bg-indigo-100 text-indigo-700'
-                              : 'text-gray-500 hover:text-gray-700',
-                            'px-3 py-2 text-lg font-headings rounded-md'
+                              : 'text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-50',
+                            'px-3 py-2 text-lg font-headings rounded-md transition ease-out duration-200'
                           )}
                           aria-current={tab.current ? 'page' : undefined}
                         >
@@ -375,7 +375,7 @@ export const Swap: React.FC = () => {
               ) : (
                 <>
                   <form>
-                    <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-800 dark:bg-zinc-700 dark:hover:border-zinc-900">
+                    <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-700 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200">
                       <div className="flex items-center p-4 pb-2">
                         <TokenSwapList selected={tokenX} setSelected={setupTokenX} />
 
@@ -429,12 +429,12 @@ export const Swap: React.FC = () => {
                     <button
                       type="button"
                       onClick={switchTokens}
-                      className="relative z-10 flex items-center justify-center w-8 h-8 -mt-4 -mb-4 -ml-4 text-gray-400 transform bg-white border border-gray-300 rounded-md dark:bg-zinc-700 left-1/2 hover:text-indigo-700 focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-indigo-500"
+                      className="relative z-10 flex items-center justify-center w-8 h-8 -mt-4 -mb-4 -ml-4 text-gray-400 transform bg-white border border-gray-300 rounded-md dark:bg-zinc-700 left-1/2 hover:text-indigo-700 focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-800 dark:hover:text-indigo-400"
                     >
                       <SwitchVerticalIcon className="w-5 h-5" aria-hidden="true" />
                     </button>
 
-                    <div className="mt-1 border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-800 dark:bg-zinc-700 dark:hover:border-zinc-900">
+                    <div className="mt-1 border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-700 dark:hover:border-zinc-900">
                       <div className="flex items-center p-4 pb-2">
                         <TokenSwapList selected={tokenY} setSelected={setupTokenY} />
 
@@ -480,7 +480,7 @@ export const Swap: React.FC = () => {
                       <Placeholder className="justify-end pt-3" width={Placeholder.width.THIRD} />
                     ) : (
                       <div className="flex items-center justify-end mt-2">
-                        <p className="text-sm font-semibold text-right text-gray-400 dark:text-zinc-100">
+                        <p className="text-sm font-semibold text-right text-gray-400 dark:text-zinc-200">
                           {exchangeRateSwitched ? (
                             <>
                               1 {tokenX.name} ≈{' '}
@@ -499,7 +499,7 @@ export const Swap: React.FC = () => {
                         <button
                           type="button"
                           onClick={switchExchangeRate}
-                          className="ml-2 text-gray-400 hover:text-indigo-700"
+                          className="ml-2 text-gray-400 hover:text-indigo-700 dark:hover:text-indigo-400"
                         >
                           <SwitchHorizontalIcon className="w-5 h-5" aria-hidden="true" />
                         </button>

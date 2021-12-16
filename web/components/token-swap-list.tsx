@@ -56,11 +56,11 @@ export const TokenSwapList: React.FC<Props> = ({ selected, setSelected, disabled
             <Listbox.Button
               className={`relative w-full py-2 pl-3 ${
                 disabled ? 'pr-3' : 'pr-10'
-              } text-left bg-white border border-gray-300 rounded-md shadow-sm cursor-default md:w-36 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+              } text-left bg-white border border-gray-300 rounded-md shadow-sm cursor-default md:w-36 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-zinc-800 dark:border-zinc-900`}
             >
               <span className="flex items-center">
-                <img src={selected.logo} alt="" className="shrink-0 w-6 h-6 rounded-full" />
-                <span className="block ml-3 truncate">{selected.name}</span>
+                <img src={selected.logo} alt="" className="w-6 h-6 rounded-full shrink-0" />
+                <span className="block ml-3 truncate dark:text-zinc-50">{selected.name}</span>
               </span>
               {!disabled ? (
                 <span className="absolute inset-y-0 right-0 flex items-center pr-2 ml-3 pointer-events-none">
@@ -78,7 +78,7 @@ export const TokenSwapList: React.FC<Props> = ({ selected, setSelected, disabled
             >
               <Listbox.Options
                 static
-                className="absolute z-20 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-56 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+                className="absolute z-20 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg dark:text-zinc-50 dark:bg-zinc-800 max-h-56 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
               >
                 {tokenList
                   .filter(token => token.listed)
@@ -99,12 +99,12 @@ export const TokenSwapList: React.FC<Props> = ({ selected, setSelected, disabled
                             <img
                               src={token.logo}
                               alt=""
-                              className="shrink-0 w-6 h-6 rounded-full"
+                              className="w-6 h-6 rounded-full shrink-0"
                             />
                             <span
                               className={classNames(
                                 selected ? 'font-semibold' : 'font-normal',
-                                'ml-3 block truncate'
+                                'ml-3 block truncate dark:text-zinc-50'
                               )}
                             >
                               {token.name}
