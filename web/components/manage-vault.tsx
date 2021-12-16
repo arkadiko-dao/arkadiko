@@ -19,7 +19,6 @@ import {
   falseCV,
 } from '@stacks/transactions';
 import { AppContext, CollateralTypeProps } from '@common/context';
-import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
 import { debtClass, VaultProps } from './vault';
 import { getPrice } from '@common/get-price';
 import { getLiquidationPrice, availableCoinsToMint } from '@common/vault-utils';
@@ -229,6 +228,11 @@ export const ManageVault = ({ match }) => {
       });
       const unlockBurnHeight = cvToJSON(call).value.value;
       setUnlockBurnHeight(unlockBurnHeight);
+      const client = getRPCClient();
+      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
+      const data = await response.json();
+      const currentBurnHeight = data['stable_burn_block_height'];
+
       if (Number(unlockBurnHeight) === 0) {
         setStartedStacking(false);
         if (Number(vault?.stackedTokens) === 0) {
@@ -244,19 +248,11 @@ export const ManageVault = ({ match }) => {
         if (vault?.revokedStacking) {
           setCanUnlockCollateral(true);
         }
-        if (Number(vault?.stackedTokens) === 0) {
+        if (Number(vault?.stackedTokens) === 0 && unlockBurnHeight < currentBurnHeight) {
           setCanWithdrawCollateral(true);
         } else {
           setCanWithdrawCollateral(false);
         }
-      }
-
-      const client = getRPCClient();
-      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
-      const data = await response.json();
-      const currentBurnHeight = data['stable_burn_block_height'];
-      if (unlockBurnHeight < currentBurnHeight) {
-        setCanWithdrawCollateral(true);
       }
 
       if (unlockBurnHeight < currentBurnHeight) {
