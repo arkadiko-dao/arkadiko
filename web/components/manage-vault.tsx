@@ -46,6 +46,7 @@ export const ManageVault = ({ match }) => {
   const [reserveName, setReserveName] = useState('');
   const [vault, setVault] = useState<VaultProps>();
   const [price, setPrice] = useState(0);
+  const [debtRatio, setDebtRatio] = useState(0);
   const [collateralType, setCollateralType] = useState<CollateralTypeProps>();
   const [isVaultOwner, setIsVaultOwner] = useState(false);
   const [stabilityFee, setStabilityFee] = useState(0);
@@ -249,6 +250,9 @@ export const ManageVault = ({ match }) => {
     };
 
     if (vault?.id) {
+      if (vault['debt'] > 0) {
+        setDebtRatio(getCollateralToDebtRatio(match.params.id)?.collateralToDebt);
+      }
       if (vault['collateralType'].toLowerCase().includes('stx')) {
         setCanStackCollateral(true);
       }
@@ -258,11 +262,6 @@ export const ManageVault = ({ match }) => {
       fetchYield();
     }
   }, [vault]);
-
-  let debtRatio = 0;
-  if (match.params.id) {
-    debtRatio = getCollateralToDebtRatio(match.params.id)?.collateralToDebt;
-  }
 
   useEffect(() => {
     if (state.currentTxStatus === 'success') {
