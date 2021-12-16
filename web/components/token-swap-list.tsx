@@ -59,7 +59,7 @@ export const TokenSwapList: React.FC<Props> = ({ selected, setSelected, disabled
               } text-left bg-white border border-gray-300 rounded-md shadow-sm cursor-default md:w-36 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
             >
               <span className="flex items-center">
-                <img src={selected.logo} alt="" className="flex-shrink-0 w-6 h-6 rounded-full" />
+                <img src={selected.logo} alt="" className="shrink-0 w-6 h-6 rounded-full" />
                 <span className="block ml-3 truncate">{selected.name}</span>
               </span>
               {!disabled ? (
@@ -99,7 +99,7 @@ export const TokenSwapList: React.FC<Props> = ({ selected, setSelected, disabled
                             <img
                               src={token.logo}
                               alt=""
-                              className="flex-shrink-0 w-6 h-6 rounded-full"
+                              className="shrink-0 w-6 h-6 rounded-full"
                             />
                             <span
                               className={classNames(

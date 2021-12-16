@@ -70,7 +70,7 @@ export const ViewProposal = ({ match }) => {
       const yesVotes = Number(data['yes-votes'].value);
       const noVotes = Number(data['no-votes'].value)
       const totalVotes = (yesVotes + noVotes) / 1000000;
-      
+
       let forVotesPercentage = ((yesVotes / totalVotes / 1000000) * 100) || 0;
       let againstVotesPercentage = ((noVotes / totalVotes / 1000000) * 100) || 0;
 
@@ -545,7 +545,7 @@ export const ViewProposal = ({ match }) => {
                 <h2 className="text-2xl font-bold leading-6 text-gray-900 font-headings">
                   Proposal #{match.params.id} - {proposal.title}
                 </h2>
-                <div className="flex flex-shrink-0 ml-2">
+                <div className="flex shrink-0 ml-2">
                   {proposal.isOpen ? (
                     <p className="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">
                       Open for Voting
@@ -587,7 +587,7 @@ export const ViewProposal = ({ match }) => {
                             <a
                               href={`${proposal.url}`}
                               target="_blank"
-                              className="text-sm font-medium text-indigo-700 rounded-sm hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                              className="text-sm font-medium text-indigo-700 dark:text-indigo-200 dark:focus:ring-indigo-300rounded-sm hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
                               {proposal.url}
                             </a>
@@ -612,7 +612,7 @@ export const ViewProposal = ({ match }) => {
                             <a
                               href={`https://explorer.stacks.co/address/${proposal.proposer}`}
                               target="_blank"
-                              className="text-sm font-medium text-indigo-700 rounded-sm hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                              className="text-sm font-medium text-indigo-700 dark:text-indigo-200 dark:focus:ring-indigo-300rounded-sm hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
                               {proposal.proposer}
                             </a>

@@ -151,12 +151,12 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
             </Disclosure.Button>
           </dt>
           <Disclosure.Panel as="dd" className="mt-2">
-            <div className="w-full p-4 mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
+            <div className="w-full p-4 mt-4 border border-indigo-200 rounded-lg shadow-sm dark:bg-indigo-200">
               <h4 className="text-xs text-indigo-700 uppercase font-headings">Pool share</h4>
 
               <dl className="mt-2 space-y-1">
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                     Available pool tokens
                     <div className="ml-2">
                       <Tooltip
@@ -165,7 +165,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                         label={`Indicates the total amount of LP tokens you have in your wallet`}
                       >
                         <InformationCircleIcon
-                          className="block w-4 h-4 text-indigo-400"
+                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
                           aria-hidden="true"
                         />
                       </Tooltip>
@@ -183,7 +183,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                 </div>
 
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                     Staked pool tokens
                     <div className="ml-2">
                       <Tooltip
@@ -192,7 +192,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                         label={`Indicates the total amount of LP tokens you have staked`}
                       >
                         <InformationCircleIcon
-                          className="block w-4 h-4 text-indigo-400"
+                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
                           aria-hidden="true"
                         />
                       </Tooltip>
@@ -210,7 +210,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
 
               <dl className="mt-4 space-y-1">
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                     Your pool share
                     <div className="ml-2">
                       <Tooltip
@@ -219,7 +219,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                         label={`The percentual share of LP tokens you own against the whole pool supply`}
                       >
                         <InformationCircleIcon
-                          className="block w-4 h-4 text-indigo-400"
+                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
                           aria-hidden="true"
                         />
                       </Tooltip>
@@ -235,7 +235,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                 </div>
 
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                     Pooled {tokenX.name}
                   </dt>
                   <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
@@ -253,7 +253,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                 </div>
 
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                     Pooled {tokenY.name}
                   </dt>
                   <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">

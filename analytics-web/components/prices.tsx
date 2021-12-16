@@ -32,7 +32,7 @@ export const Prices: React.FC = () => {
       setStxPrice(stxPrice['last-price'].value);
       setStxBlockUpdate(stxPrice['last-block'].value);
       setStxBlockAgoUpdate(currentBlock - stxPrice['last-block'].value)
-      
+
       const xbtcPrice = await getPriceInfo('xBTC');
       setXbtcPrice(xbtcPrice['last-price'].value);
       setXbtcBlockUpdate(xbtcPrice['last-block'].value);
@@ -93,7 +93,7 @@ export const Prices: React.FC = () => {
                   <tr className="bg-white">
                     <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="flex-shrink-0 w-10 h-10">
+                        <div className="shrink-0 w-10 h-10">
                           <img
                             className="w-10 h-10 rounded-full"
                             src={tokenList[2].logo}
@@ -127,7 +127,7 @@ export const Prices: React.FC = () => {
                   <tr className="bg-white">
                     <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="flex-shrink-0 w-10 h-10">
+                        <div className="shrink-0 w-10 h-10">
                           <img
                             className="w-10 h-10 rounded-full"
                             src={tokenList[1].logo}
@@ -161,7 +161,7 @@ export const Prices: React.FC = () => {
                   <tr className="bg-white">
                     <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="flex-shrink-0 w-10 h-10">
+                        <div className="shrink-0 w-10 h-10">
                           <img
                             className="w-10 h-10 rounded-full"
                             src={tokenList[3].logo}
@@ -195,7 +195,7 @@ export const Prices: React.FC = () => {
                   <tr className="bg-white">
                     <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="flex-shrink-0 w-10 h-10">
+                        <div className="shrink-0 w-10 h-10">
                           <img
                             className="w-10 h-10 rounded-full"
                             src={tokenList[0].logo}

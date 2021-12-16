@@ -8,7 +8,7 @@ export const SwapLoadingPlaceholder: React.FC = ({ tokenX, tokenY }) => {
   return (
     <>
       <div>
-        <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 h-[104px]">
+        <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 h-[104px] dark:border-zinc-800 dark:bg-zinc-700 dark:hover:border-zinc-900">
           <div className="flex items-center p-4 pb-2">
             <TokenSwapList selected={tokenX} setSelected={() => {}} disabled={true} />
           </div>
@@ -22,7 +22,7 @@ export const SwapLoadingPlaceholder: React.FC = ({ tokenX, tokenY }) => {
           <SwitchVerticalIcon className="w-5 h-5" aria-hidden="true" />
         </div>
 
-        <div className="mt-1 border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 h-[104px]">
+        <div className="mt-1 border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 h-[104px] dark:border-zinc-800 dark:bg-zinc-700 dark:hover:border-zinc-900">
           <div className="flex items-center p-4 pb-2">
             <TokenSwapList selected={tokenY} setSelected={() => {}} disabled={true} />
           </div>

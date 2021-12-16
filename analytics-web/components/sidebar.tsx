@@ -73,7 +73,7 @@ export const Sidebar: React.FC = ({ children }) => {
                 </div>
               </Transition.Child>
               <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
-                <RouterLink className="flex items-center flex-shrink-0 px-4" to="/">
+                <RouterLink className="flex items-center shrink-0 px-4" to="/">
                   <svg className="w-auto h-6 text-white lg:block sm:h-8" viewBox="0 0 60 46" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M19.03 1.54A2.68 2.68 0 0121.46 0h11.48c.95 0 1.82.49 2.3 1.29L59.62 41.6c.5.82.5 1.84.03 2.66a2.69 2.69 0 01-2.33 1.34h-12a2.7 2.7 0 01-1.9-.77 31.32 31.32 0 00-16.15-8.17c-6.8-1.09-14.81.4-22.7 8.17a2.71 2.71 0 01-3.42.3 2.62 2.62 0 01-.9-3.28L19.02 1.54zm7.1 3.75L46.86 40.3h5.74L31.42 5.3h-5.29zm10.89 28.89L21.75 8.37 9.55 34.55a29.17 29.17 0 0118.58-3.1c3.2.5 6.2 1.5 8.89 2.73z" /></svg>
 
                   <span className="inline-block ml-2 text-xl font-bold text-white align-middle font-headings">Arkadiko</span>
@@ -92,7 +92,7 @@ export const Sidebar: React.FC = ({ children }) => {
                       <item.icon
                         className={classNames(
                           item.current ? 'text-gray-300' : 'text-gray-400 group-hover:text-gray-300',
-                          'mr-4 flex-shrink-0 h-6 w-6'
+                          'mr-4 shrink-0 h-6 w-6'
                         )}
                         aria-hidden="true"
                       />
@@ -102,11 +102,11 @@ export const Sidebar: React.FC = ({ children }) => {
                 </nav>
               </div>
               {/* Ability to connect wallet for the user to check their own portfolio data/balances/etc. */}
-              {/* <div className="flex flex-shrink-0 p-4 bg-gray-700">
-                <a href="#" className="flex-shrink-0 block group">
+              {/* <div className="flex shrink-0 p-4 bg-gray-700">
+                <a href="#" className="shrink-0 block group">
                   <div className="flex items-center">
                     <div className="flex items-center justify-center w-12 h-12 bg-gray-800 rounded-full">
-                      <UserIcon className="flex-shrink-0 w-6 h-6 text-gray-300" aria-hidden="true" />
+                      <UserIcon className="shrink-0 w-6 h-6 text-gray-300" aria-hidden="true" />
                     </div>
                     <div className="ml-3">
                       <p className="text-base font-medium text-white">SPM45...ZVY56</p>
@@ -117,7 +117,7 @@ export const Sidebar: React.FC = ({ children }) => {
               </div> */}
             </div>
           </Transition.Child>
-          <div className="flex-shrink-0 w-14">{/* Force sidebar to shrink to fit close icon */}</div>
+          <div className="shrink-0 w-14">{/* Force sidebar to shrink to fit close icon */}</div>
         </Dialog>
       </Transition.Root>
 
@@ -126,7 +126,7 @@ export const Sidebar: React.FC = ({ children }) => {
         {/* Sidebar component, swap this element with another sidebar if you like */}
         <div className="flex flex-col flex-1 min-h-0 bg-gray-800">
           <div className="flex flex-col flex-1 pt-5 pb-4 overflow-y-auto">
-            <RouterLink className="flex items-center flex-shrink-0 px-4" to="/">
+            <RouterLink className="flex items-center shrink-0 px-4" to="/">
               <svg className="w-auto h-8 text-white lg:block sm:h-8" viewBox="0 0 60 46" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M19.03 1.54A2.68 2.68 0 0121.46 0h11.48c.95 0 1.82.49 2.3 1.29L59.62 41.6c.5.82.5 1.84.03 2.66a2.69 2.69 0 01-2.33 1.34h-12a2.7 2.7 0 01-1.9-.77 31.32 31.32 0 00-16.15-8.17c-6.8-1.09-14.81.4-22.7 8.17a2.71 2.71 0 01-3.42.3 2.62 2.62 0 01-.9-3.28L19.02 1.54zm7.1 3.75L46.86 40.3h5.74L31.42 5.3h-5.29zm10.89 28.89L21.75 8.37 9.55 34.55a29.17 29.17 0 0118.58-3.1c3.2.5 6.2 1.5 8.89 2.73z" /></svg>
               <div className="flex flex-col">
                 <div className="ml-4 text-lg font-bold leading-none text-white align-middle font-headings">Arkadiko</div>
@@ -146,7 +146,7 @@ export const Sidebar: React.FC = ({ children }) => {
                   <item.icon
                     className={classNames(
                       item.current ? 'text-gray-300' : 'text-gray-400 group-hover:text-gray-300',
-                      'mr-3 flex-shrink-0 h-6 w-6'
+                      'mr-3 shrink-0 h-6 w-6'
                     )}
                     aria-hidden="true"
                   />
@@ -156,11 +156,11 @@ export const Sidebar: React.FC = ({ children }) => {
             </nav>
           </div>
           {/* Ability to connect wallet for the user to check their own portfolio data/balances/etc. */}
-          {/* <div className="flex flex-shrink-0 p-4 bg-gray-700">
-            <a href="#" className="flex-shrink-0 block w-full group">
+          {/* <div className="flex shrink-0 p-4 bg-gray-700">
+            <a href="#" className="shrink-0 block w-full group">
               <div className="flex items-center">
                 <div className="flex items-center justify-center w-12 h-12 bg-gray-800 rounded-full">
-                  <UserIcon className="flex-shrink-0 w-6 h-6 text-gray-300" aria-hidden="true" />
+                  <UserIcon className="shrink-0 w-6 h-6 text-gray-300" aria-hidden="true" />
                 </div>
                 <div className="ml-3">
                   <p className="text-base font-medium text-white">SPM45...ZVY56</p>

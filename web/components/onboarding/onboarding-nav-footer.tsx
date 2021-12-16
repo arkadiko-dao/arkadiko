@@ -6,7 +6,7 @@ export const OnboardingNavFooter = ({ currentStep, goToPreviousStep, goToNextSte
       <div>
         <div className="px-3 py-3 mx-auto sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center justify-between">
-            <div className="flex-shrink-0 mt-2 sm:order-2 sm:mt-0 sm:w-auto">
+            <div className="shrink-0 mt-2 sm:order-2 sm:mt-0 sm:w-auto">
               {currentStep >= 1 ? (
                 <button
                   type="button"
@@ -17,7 +17,7 @@ export const OnboardingNavFooter = ({ currentStep, goToPreviousStep, goToNextSte
                 </button>
               ) : null}
             </div>
-            <div className="flex-shrink-0 order-3 mt-2 sm:order-2 sm:mt-0 sm:w-auto">
+            <div className="shrink-0 order-3 mt-2 sm:order-2 sm:mt-0 sm:w-auto">
               <button
                 type="button"
                 className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gray-800 border border-transparent rounded-md shadow-sm hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-2 00"

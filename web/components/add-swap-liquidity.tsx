@@ -556,13 +556,13 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                     </>
                   )}
 
-                  <div className="w-full p-4 mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
+                  <div className="w-full p-4 mt-4 border border-indigo-200 rounded-lg shadow-sm dark:bg-indigo-200">
                     <h4 className="text-xs text-indigo-700 uppercase font-headings">
                       Prices and pool share
                     </h4>
                     <dl className="mt-2 space-y-1">
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                           Your pool tokens
                           <div className="ml-2">
                             <Tooltip
@@ -571,7 +571,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                               label={`Indicates the total amount of LP tokens you own of the pair in this pool`}
                             >
                               <InformationCircleIcon
-                                className="block w-4 h-4 text-indigo-400"
+                                className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
                                 aria-hidden="true"
                               />
                             </Tooltip>
@@ -592,7 +592,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                         </dd>
                       </div>
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                           Your pool share
                           <div className="ml-2">
                             <Tooltip
@@ -601,7 +601,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                               label={`The percentual share of LP tokens you own against the whole pool supply`}
                             >
                               <InformationCircleIcon
-                                className="block w-4 h-4 text-indigo-400"
+                                className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
                                 aria-hidden="true"
                               />
                             </Tooltip>
@@ -622,7 +622,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                         </dd>
                       </div>
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                           Pooled {tokenX.name}
                         </dt>
                         <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
@@ -639,7 +639,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                         </dd>
                       </div>
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                           Pooled {tokenY.name}
                         </dt>
                         <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">

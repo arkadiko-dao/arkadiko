@@ -179,7 +179,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                 rel="noopener noreferrer"
               >
                 Need help with vaults?
-                <ExternalLinkIcon className="flex-shrink-0 block w-3 h-3 ml-2" aria-hidden="true" />
+                <ExternalLinkIcon className="shrink-0 block w-3 h-3 ml-2" aria-hidden="true" />
               </a>
             </div>
           </div>
@@ -253,10 +253,10 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                       </div>
                     )}
                     <div className="sm:col-start-6 sm:col-span-5">
-                      <div className="w-full border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
+                      <div className="w-full border border-indigo-200 rounded-lg shadow-sm dark:bg-indigo-200">
                         <dl className="sm:divide-y sm:divide-indigo-200">
                           <div className="p-3 sm:flex sm:items-center sm:flex-1 sm:flex-wrap sm:p-4">
-                            <dt className="inline-flex items-center flex-shrink-0 text-sm font-medium text-indigo-500 sm:mr-2">
+                            <dt className="inline-flex items-center shrink-0 text-sm font-medium text-indigo-500 sm:mr-2">
                               Collateral to Debt Ratio
                               <div className="ml-2">
                                 <Tooltip
@@ -276,7 +276,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                           </div>
 
                           <div className="p-3 sm:flex sm:items-center sm:flex-1 sm:flex-wrap sm:p-4">
-                            <dt className="inline-flex items-center flex-shrink-0 text-sm font-medium text-indigo-500 sm:mr-2">
+                            <dt className="inline-flex items-center shrink-0 text-sm font-medium text-indigo-500 sm:mr-2">
                               Liquidation Price
                               <div className="ml-2">
                                 <Tooltip
@@ -296,7 +296,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                           </div>
 
                           <div className="p-3 sm:flex sm:items-center sm:flex-1 sm:flex-wrap sm:p-4">
-                            <dt className="inline-flex items-center flex-shrink-0 text-sm font-medium text-indigo-500 sm:mr-2">
+                            <dt className="inline-flex items-center shrink-0 text-sm font-medium text-indigo-500 sm:mr-2">
                               Current {tokenName} Price
                             </dt>
                             <dd className="mt-1 text-sm text-indigo-900 sm:mt-0 sm:ml-auto">
@@ -305,7 +305,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                           </div>
 
                           <div className="p-3 sm:flex sm:items-center sm:flex-1 sm:flex-wrap sm:p-4">
-                            <dt className="inline-flex items-center flex-shrink-0 text-sm font-medium text-indigo-500 sm:mr-2">
+                            <dt className="inline-flex items-center shrink-0 text-sm font-medium text-indigo-500 sm:mr-2">
                               Stability Fee
                               <div className="ml-2">
                                 <Tooltip
@@ -325,7 +325,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                           </div>
 
                           <div className="p-3 sm:flex sm:items-center sm:flex-1 sm:flex-wrap sm:p-4">
-                            <dt className="inline-flex items-center flex-shrink-0 text-sm font-medium text-indigo-500 sm:mr-2">
+                            <dt className="inline-flex items-center shrink-0 text-sm font-medium text-indigo-500 sm:mr-2">
                               Liquidation Ratio
                               <div className="ml-2">
                                 <Tooltip
@@ -345,7 +345,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                           </div>
 
                           <div className="p-3 sm:flex sm:items-center sm:flex-1 sm:flex-wrap sm:p-4">
-                            <dt className="inline-flex items-center flex-shrink-0 text-sm font-medium text-indigo-500 sm:mr-2">
+                            <dt className="inline-flex items-center shrink-0 text-sm font-medium text-indigo-500 sm:mr-2">
                               Liquidation Penalty
                               <div className="ml-2">
                                 <Tooltip

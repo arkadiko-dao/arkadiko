@@ -273,7 +273,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                   </button>
                 </div>
 
-                <div className="w-full p-4 mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
+                <div className="w-full p-4 mt-4 border border-indigo-200 rounded-lg shadow-sm dark:bg-indigo-200">
                   <h4 className="text-xs font-normal text-indigo-700 uppercase font-headings">
                     Your position
                   </h4>
@@ -303,7 +303,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                       </dd>
                     </div>
                     <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                      <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                      <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                         {tokenX.name}
                       </dt>
                       <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
@@ -315,7 +315,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                       </dd>
                     </div>
                     <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                      <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                      <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                         {tokenY.name}
                       </dt>
                       <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
@@ -335,7 +335,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                       <div className="lg:flex lg:items-start lg:flex-1 lg:justify-between">
                         <label
                           htmlFor="removeLiquidityAmount"
-                          className="flex-shrink-0 block mr-4 text-base text-gray-700"
+                          className="shrink-0 block mr-4 text-base text-gray-700"
                         >
                           Amount to remove
                         </label>
@@ -416,7 +416,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                         <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                           <dt className="text-lg font-medium">
                             <div className="flex items-center">
-                              <div className="flex-shrink-0 w-8 h-8">
+                              <div className="shrink-0 w-8 h-8">
                                 <img className="w-8 h-8 rounded-full" src={tokenX.logo} alt="" />
                               </div>
                               <div className="ml-4">
@@ -439,7 +439,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                         <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                           <dt className="text-lg font-medium">
                             <div className="flex items-center">
-                              <div className="flex-shrink-0 w-8 h-8">
+                              <div className="shrink-0 w-8 h-8">
                                 <img className="w-8 h-8 rounded-full" src={tokenY.logo} alt="" />
                               </div>
                               <div className="ml-4">

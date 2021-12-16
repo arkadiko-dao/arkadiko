@@ -754,7 +754,7 @@ export const Stake = () => {
                   >
                     More on the Security Module
                     <ExternalLinkIcon
-                      className="flex-shrink-0 block w-3 h-3 ml-2"
+                      className="shrink-0 block w-3 h-3 ml-2"
                       aria-hidden="true"
                     />
                   </a>
@@ -794,7 +794,7 @@ export const Stake = () => {
                               label={`stDIKO's value is determined by dividing the total supply of DIKO in the pool by the total supply of stDIKO`}
                             >
                               <InformationCircleIcon
-                                className="flex-shrink-0 block w-4 h-4 ml-2 text-gray-400"
+                                className="shrink-0 block w-4 h-4 ml-2 text-gray-400"
                                 aria-hidden="true"
                               />
                             </Tooltip>
@@ -832,7 +832,7 @@ export const Stake = () => {
                           label={`The 10-day cooldown period is the time required prior to unstaking your tokens. Once it expires, there is a 2-day window to unstake your tokens.`}
                         >
                           <InformationCircleIcon
-                            className="flex-shrink-0 block w-5 h-5 ml-2 text-gray-400"
+                            className="shrink-0 block w-5 h-5 ml-2 text-gray-400"
                             aria-hidden="true"
                           />
                         </Tooltip>

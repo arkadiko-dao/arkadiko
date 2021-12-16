@@ -37,7 +37,7 @@ export const InputAmount = React.forwardRef<HTMLInputElement, InputAmountProps>(
             onChange={onInputChange}
             ref={ref}
           />
-          <div className="flex-shrink-0 ml-auto mr-2 text-sm">
+          <div className="shrink-0 ml-auto mr-2 text-sm">
             <div className="flex items-center min-w-0">
               <span className="text-gray-400 sm:text-sm">{token}</span>
               <div className="w-px h-3 mx-2 bg-gray-400"></div>

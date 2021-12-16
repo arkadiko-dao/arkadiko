@@ -31,14 +31,14 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
           <tr className="bg-white">
             <td className="px-6 py-4 text-sm whitespace-nowrap">
               <div className="flex flex-wrap items-center flex-1 sm:flex-nowrap">
-                <div className="flex flex-shrink-0 -space-x-2 overflow-hidden">
+                <div className="flex shrink-0 -space-x-2 overflow-hidden">
                   <img
-                    className="flex-shrink-0 inline-block w-8 h-8 rounded-full ring-2 ring-white"
+                    className="shrink-0 inline-block w-8 h-8 rounded-full ring-2 ring-white"
                     src={tokenList[tokenListItemX].logo}
                     alt=""
                   />
                   <img
-                    className="flex-shrink-0 inline-block w-8 h-8 rounded-full ring-2 ring-white"
+                    className="shrink-0 inline-block w-8 h-8 rounded-full ring-2 ring-white"
                     src={tokenList[tokenListItemY].logo}
                     alt=""
                   />
@@ -76,8 +76,8 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                     ${microToReadable(poolInfo.walletTokenXAmount).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 6,
-                    })} ${poolInfo.tokenX} 
-                    / 
+                    })} ${poolInfo.tokenX}
+                    /
                     ${microToReadable(poolInfo.walletTokenYAmount).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 6,
@@ -120,8 +120,8 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                     ${microToReadable(poolInfo.stakedTokenXAmount).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 6,
-                    })} ${poolInfo.tokenX} 
-                    / 
+                    })} ${poolInfo.tokenX}
+                    /
                     ${microToReadable(poolInfo.stakedTokenYAmount).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 6,

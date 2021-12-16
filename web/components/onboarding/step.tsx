@@ -50,7 +50,7 @@ export const Step: React.FC<StepProps> = ({
       >
         <div className="relative p-6 mx-auto">
           <div className="flex items-center">
-            <span className="flex flex-shrink-0 w-6 h-6 mr-3">
+            <span className="flex shrink-0 w-6 h-6 mr-3">
               <span className="relative inline-flex items-center justify-center w-6 h-6 text-sm font-semibold text-gray-800 bg-white rounded-full">
                 {stepNumber}
               </span>

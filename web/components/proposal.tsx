@@ -16,7 +16,7 @@ export const Proposal: React.FC<ProposalProps> = ({
         <div className="px-4 py-4 sm:px-6">
           <div className="flex items-center justify-between">
             <p className="text-base font-medium text-indigo-600 truncate"><span className="font-semibold text-gray-600">#{id}<span className="text-gray-400"> &middot; </span></span>{title}</p>
-            <div className="flex flex-shrink-0 ml-2">
+            <div className="flex shrink-0 ml-2">
               {isOpen ? (
                 <p className="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">
                   Open for Voting
@@ -32,7 +32,7 @@ export const Proposal: React.FC<ProposalProps> = ({
             <div className="sm:flex">
               <p className="flex items-center text-sm text-gray-500">
                 <UsersIcon
-                  className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
+                  className="shrink-0 mr-1.5 h-5 w-5 text-gray-400"
                   aria-hidden="true"
                 />
                 {proposer}
@@ -40,7 +40,7 @@ export const Proposal: React.FC<ProposalProps> = ({
             </div>
             <div className="flex items-center mt-2 text-sm text-gray-500 sm:mt-0">
               <CalendarIcon
-                className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
+                className="shrink-0 mr-1.5 h-5 w-5 text-gray-400"
                 aria-hidden="true"
               />
               <p>Closing on block height {endBlockHeight}</p>
