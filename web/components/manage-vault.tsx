@@ -218,6 +218,9 @@ export const ManageVault = ({ match }) => {
         return;
       } else {
         setStartedStacking(true);
+        if (vault?.revokedStacking) {
+          setCanUnlockCollateral(true);
+        }
         if (Number(vault?.stackedTokens) === 0) {
           setCanWithdrawCollateral(true);
         } else {
