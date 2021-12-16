@@ -32,7 +32,7 @@ import { Alert } from './ui/alert';
 
 export const ManageVault = ({ match }) => {
   const { doContractCall } = useConnect();
-  const senderAddress = useSTXAddress();
+  const senderAddress = 'SP3N6FS2TMC021WCAKBV4MGKCEZHD3HK6B2TJ23XJ'; // useSTXAddress();
   const [state, setState] = useContext(AppContext);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
@@ -248,7 +248,7 @@ export const ManageVault = ({ match }) => {
         if (vault?.revokedStacking && unlockBurnHeight < currentBurnHeight) {
           setCanUnlockCollateral(true);
         }
-        if (Number(vault?.stackedTokens) === 0 && unlockBurnHeight < currentBurnHeight) {
+        if (Number(vault?.stackedTokens) === 0 || unlockBurnHeight < currentBurnHeight) {
           setCanWithdrawCollateral(true);
         } else {
           setCanWithdrawCollateral(false);
