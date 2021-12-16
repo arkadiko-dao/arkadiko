@@ -599,7 +599,6 @@ export const ManageVault = ({ match }) => {
                         isVaultOwner &&
                         vault?.stackedTokens > 0 &&
                         !vault?.revokedStacking &&
-                        !canWithdrawCollateral &&
                         !loadingVaultData ? (
                           // user has indicated they want to stack their STX tokens
                           startedStacking ? (
@@ -873,8 +872,7 @@ export const ManageVault = ({ match }) => {
                     ) : canStackCollateral &&
                       isVaultOwner &&
                       vault?.stackedTokens > 0 &&
-                      !vault?.revokedStacking &&
-                      !canWithdrawCollateral ? (
+                      !vault?.revokedStacking ? (
                       // user has indicated they want to stack their STX tokens
                       <div className="mt-4">
                         <Alert>
