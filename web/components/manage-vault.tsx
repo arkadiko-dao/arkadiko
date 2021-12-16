@@ -6,6 +6,7 @@ import { VaultDepositModal } from '@components/vault-deposit-modal';
 import { VaultWithdrawModal } from '@components/vault-withdraw-modal';
 import { VaultMintModal } from '@components/vault-mint-modal';
 import { VaultBurnModal } from '@components/vault-burn-modal';
+import { VaultCloseModal } from '@components/vault-close-modal';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
@@ -40,6 +41,7 @@ export const ManageVault = ({ match }) => {
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [showMintModal, setShowMintModal] = useState(false);
   const [showBurnModal, setShowBurnModal] = useState(false);
+  const [showCloseModal, setShowCloseModal] = useState(false);
   const [auctionEnded, setAuctionEnded] = useState(false);
   const [maximumCollateralToWithdraw, setMaximumCollateralToWithdraw] = useState(0);
   const [reserveName, setReserveName] = useState('');
@@ -385,36 +387,6 @@ export const ManageVault = ({ match }) => {
     });
   };
 
-  const closeVault = async () => {
-    const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'close-vault',
-      postConditionMode: 0x01,
-      functionArgs: [
-        uintCV(match.params.id),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
-        contractPrincipalCV(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v1-1'
-        ),
-      ],
-      onFinish: data => {
-        console.log('finished closing vault!', data, data.txId);
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-      },
-      anchorMode: AnchorMode.Any,
-    });
-  };
-
   const claimYield = async () => {
     await doContractCall({
       network,
@@ -509,6 +481,14 @@ export const ManageVault = ({ match }) => {
         setShowBurnModal={setShowBurnModal}
         outstandingDebt={outstandingDebt}
         stabilityFee={stabilityFee}
+        match={match}
+        vault={vault}
+        reserveName={reserveName}
+      />
+
+      <VaultCloseModal
+        showCloseModal={showCloseModal}
+        setShowCloseModal={setShowCloseModal}
         match={match}
         vault={vault}
         reserveName={reserveName}
@@ -1040,7 +1020,7 @@ export const ManageVault = ({ match }) => {
                               </Tooltip>
                             </p>
                           </div>
-                          {isVaultOwner && canWithdrawCollateral && Number(vault?.stackedTokens) === 0 && Number(totalDebt) <= 0.1 ? (
+                          {!loadingVaultData && isVaultOwner && canWithdrawCollateral && Number(vault?.stackedTokens) === 0 && Number(totalDebt) <= 0.1 ? (
                             <button
                               type="button"
                               className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -1048,7 +1028,7 @@ export const ManageVault = ({ match }) => {
                             >
                               Withdraw Collateral & Close Vault
                             </button>
-                          ) : isVaultOwner ? (
+                          ) : !loadingVaultData && isVaultOwner ? (
                             <button
                               type="button"
                               className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -1056,6 +1036,12 @@ export const ManageVault = ({ match }) => {
                             >
                               Pay back
                             </button>
+                          ) : loadingVaultData ? (
+                            <Placeholder
+                              className="justify-end py-2"
+                              color={Placeholder.color.INDIGO}
+                              width={Placeholder.width.THIRD}
+                            />
                           ) : null}
                         </div>
                       </div>
