@@ -70,12 +70,12 @@ export const VaultCloseModal: React.FC<Props> = ({
       title="Close Vault"
       icon={<img className="w-10 h-10 rounded-full" src={tokenList[0].logo} alt="" />}
       closeModal={() => setShowCloseModal(false)}
-      buttonText="Cancel"
+      buttonText="Close Vault"
       buttonAction={() => closeVault()}
       initialFocus={inputRef}
     >
       <p className="text-sm text-center text-gray-500">
-        Are you sure you want to close this vault?
+        Are you sure you want to close your vault?
         This change is irreversible and any yield you are waiting for won't be received.
       </p>
     </Modal>

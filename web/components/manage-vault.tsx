@@ -24,7 +24,7 @@ import { debtClass, VaultProps } from './vault';
 import { getPrice } from '@common/get-price';
 import { getLiquidationPrice, availableCoinsToMint } from '@common/vault-utils';
 import { Redirect } from 'react-router-dom';
-import { resolveReserveName, tokenTraits } from '@common/vault-utils';
+import { resolveReserveName } from '@common/vault-utils';
 import { getRPCClient } from '@common/utils';
 import { microToReadable, availableCollateralToWithdraw } from '@common/vault-utils';
 import { addMinutes } from 'date-fns';
@@ -1020,15 +1020,15 @@ export const ManageVault = ({ match }) => {
                               </Tooltip>
                             </p>
                           </div>
-                          {!loadingVaultData && isVaultOwner && canWithdrawCollateral && Number(vault?.stackedTokens) === 0 && Number(totalDebt) <= 0.1 ? (
+                          {!loadingStackerData && isVaultOwner && canWithdrawCollateral && Number(vault?.stackedTokens) === 0 && Number(totalDebt) <= 0.1 ? (
                             <button
                               type="button"
                               className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => closeVault()}
+                              onClick={() => setShowCloseModal(true)}
                             >
                               Withdraw Collateral & Close Vault
                             </button>
-                          ) : !loadingVaultData && isVaultOwner ? (
+                          ) : !loadingStackerData && isVaultOwner ? (
                             <button
                               type="button"
                               className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -1036,7 +1036,7 @@ export const ManageVault = ({ match }) => {
                             >
                               Pay back
                             </button>
-                          ) : loadingVaultData ? (
+                          ) : loadingStackerData ? (
                             <Placeholder
                               className="justify-end py-2"
                               color={Placeholder.color.INDIGO}
