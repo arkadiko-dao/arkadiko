@@ -126,19 +126,19 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
           <dt className="text-lg">
             <Disclosure.Button className="flex items-start justify-between w-full text-left text-gray-400">
               <div className="flex items-center">
-                <div className="flex -space-x-2 overflow-hidden">
+                <div className="flex -space-x-2 shrink-0">
                   <img
-                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
+                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white dark:ring-zinc-800 shrink-0"
                     src={tokenX.logo}
                     alt=""
                   />
                   <img
-                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
+                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white dark:ring-zinc-800 shrink-0"
                     src={tokenY.logo}
                     alt=""
                   />
                 </div>
-                <p className="ml-2 text-base text-gray-800">
+                <p className="ml-3 text-base text-gray-800 dark:text-zinc-100">
                   {tokenX.name}/{tokenY.name}
                 </p>
               </div>
@@ -290,7 +290,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
 
             <div className="mt-4 sm:grid sm:grid-cols-2 sm:gap-2 sm:grid-flow-row-dense">
               <RouterLink
-                className="inline-flex justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-md shadow-sm bg-white-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="inline-flex justify-center px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 to={`swap/remove/${tokenX.name}/${tokenY.name}`}
               >
                 Remove

@@ -173,7 +173,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                 <QuestionMarkCircleIcon className="w-5 h-5 text-indigo-600" aria-hidden="true" />
               </div>
               <a
-                className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 border-transparent hover:border-indigo-300 hover:text-indigo-700"
+                className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200hover:text-indigo-700"
                 href="https://docs.arkadiko.finance/protocol/vaults"
                 target="_blank"
                 rel="noopener noreferrer"

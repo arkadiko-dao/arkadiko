@@ -25,10 +25,10 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
   getLpRoute,
 }) => {
   return (
-    <Disclosure as="tbody" className="bg-white">
+    <Disclosure as="tbody" className="bg-white dark:bg-zinc-800">
       {({ open }) => (
         <>
-          <tr className="bg-white">
+          <tr className="bg-white dark:bg-zinc-800">
             <td className="px-6 py-4 text-sm whitespace-nowrap">
               <div className="flex flex-wrap items-center flex-1 sm:flex-nowrap">
                 <div className="flex shrink-0 -space-x-2 overflow-hidden">

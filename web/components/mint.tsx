@@ -341,12 +341,12 @@ export const Mint = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="bg-white">
+                  <tr className="bg-white dark:bg-zinc-800">
                     <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
                       <Placeholder />
                     </td>
                   </tr>
-                  <tr className="bg-white">
+                  <tr className="bg-white dark:bg-zinc-800">
                     <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
                       <Placeholder />
                     </td>
@@ -387,12 +387,12 @@ export const Mint = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className="bg-white">
+                    <tr className="bg-white dark:bg-zinc-800">
                       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
                         <Placeholder />
                       </td>
                     </tr>
-                    <tr className="bg-white">
+                    <tr className="bg-white dark:bg-zinc-800">
                       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
                         <Placeholder />
                       </td>
@@ -451,7 +451,7 @@ export const Mint = () => {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      <tr className="bg-white">
+                      <tr className="bg-white dark:bg-zinc-800">
                         <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="shrink-0 w-10 h-10">
@@ -485,7 +485,7 @@ export const Mint = () => {
                         </td>
                       </tr>
 
-                      <tr className="bg-white">
+                      <tr className="bg-white dark:bg-zinc-800">
                         <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="shrink-0 w-10 h-10">
@@ -519,7 +519,7 @@ export const Mint = () => {
                         </td>
                       </tr>
 
-                      <tr className="bg-white">
+                      <tr className="bg-white dark:bg-zinc-800">
                         <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="shrink-0 w-10 h-10">
@@ -553,7 +553,7 @@ export const Mint = () => {
                         </td>
                       </tr>
 
-                      <tr className="bg-white">
+                      <tr className="bg-white dark:bg-zinc-800">
                         <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="shrink-0 w-10 h-10">

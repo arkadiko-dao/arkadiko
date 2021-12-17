@@ -28,7 +28,7 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
 
   return (
     <div className="min-w-full overflow-hidden overflow-x-auto align-middle border border-gray-200 rounded-lg">
-      <div className="bg-white">
+      <div className="bg-white dark:bg-zinc-800">
         <div className="py-12 mx-auto bg-white sm:py-6 max-w-7xl">
           {/* xs to lg */}
           <div className="max-w-2xl mx-auto space-y-16 lg:hidden">

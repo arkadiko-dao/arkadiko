@@ -206,7 +206,7 @@ export const Vault: React.FC<VaultProps> = ({
           </td>
         </tr>
       ) : (
-        <div role="listitem" className="mb-4 bg-white">
+        <div role="listitem" className="bg-white dark:bg-zinc-800">
           <table className="w-full">
             <thead>
               <tr>
@@ -299,7 +299,7 @@ export const Vault: React.FC<VaultProps> = ({
             {isLiquidated ? (
               auctionEnded ? (
                 leftoverCollateral > 0 && stackedTokens === 0 ? (
-                  <button 
+                  <button
                     type="button"
                     className="block w-full px-4 py-2 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     onClick={() => callWithdrawLeftoverCollateral()}

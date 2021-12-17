@@ -726,10 +726,10 @@ export const Stake = () => {
               </Alert>
             ) : null}
             <section>
-              <header className="pb-5 border-b border-gray-200 sm:flex sm:justify-between sm:items-end">
+              <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
                 <div>
-                  <h3 className="text-lg leading-6 text-gray-900 font-headings">DIKO</h3>
-                  <p className="max-w-3xl mt-2 text-sm text-gray-500">
+                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">DIKO</h3>
+                  <p className="max-w-3xl mt-2 text-sm text-gray-500 dark:text-zinc-400 dark:text-zinc-300">
                     When staking DIKO in the security module{' '}
                     <span className="font-semibold">you will receive stDIKO</span> which is a
                     representation of your share of the pool. DIKO in the pool is{' '}
@@ -739,7 +739,7 @@ export const Stake = () => {
                     stDIKO can be used to propose and vote in governance.
                   </p>
                 </div>
-                <div className="flex items-center">
+                <div className="flex items-center mt-2 sm:mt-0">
                   <div className="w-5.5 h-5.5 rounded-full bg-indigo-200 flex items-center justify-center">
                     <QuestionMarkCircleIcon
                       className="w-5 h-5 text-indigo-600"
@@ -747,40 +747,40 @@ export const Stake = () => {
                     />
                   </div>
                   <a
-                    className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 border-transparent hover:border-indigo-300 hover:text-indigo-700"
+                    className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
                     href="https://docs.arkadiko.finance/protocol/diko/security-module"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     More on the Security Module
                     <ExternalLinkIcon
-                      className="shrink-0 block w-3 h-3 ml-2"
+                      className="block w-3 h-3 ml-2 shrink-0"
                       aria-hidden="true"
                     />
                   </a>
                 </div>
               </header>
 
-              <div className="mt-4 bg-white divide-y divide-gray-200 rounded-md shadow">
+              <div className="mt-4 bg-white divide-y divide-gray-200 rounded-md shadow dark:bg-zinc-800">
                 <div className="px-4 py-5 space-y-6 divide-y divide-gray-200 sm:p-6">
-                  <div className="grid grid-flow-col grid-cols-1 gap-4 sm:grid-cols-[min-content,auto]">
+                  <div className="md:grid md:grid-flow-col gap-4 sm:grid-cols-[min-content,auto]">
                     <div className="self-center w-14">
                       <img className="w-12 h-12 rounded-full" src={tokenList[1].logo} alt="" />
                     </div>
-                    <div>
-                      <p className="mb-1 text-sm leading-6 text-gray-500">stDIKO</p>
+                    <div className="mt-3 md:mt-0">
+                      <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">stDIKO</p>
                       {loadingData ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
                         <div>
-                          <p className="text-lg font-semibold">
+                          <p className="text-lg font-semibold dark:text-white">
                             {microToReadable(state.balance['stdiko']).toLocaleString(undefined, {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 6,
                             })}
                           </p>
-                          <div className="flex items-center mt-1">
-                            <p className="text-xs text-gray-500">
+                          <div className="flex items-center md:mt-1">
+                            <p className="text-xs text-gray-500 dark:text-zinc-400">
                               1 stDIKO ≈{' '}
                               {stDikoToDiko.toLocaleString(undefined, {
                                 minimumFractionDigits: 2,
@@ -794,7 +794,7 @@ export const Stake = () => {
                               label={`stDIKO's value is determined by dividing the total supply of DIKO in the pool by the total supply of stDIKO`}
                             >
                               <InformationCircleIcon
-                                className="shrink-0 block w-4 h-4 ml-2 text-gray-400"
+                                className="block w-4 h-4 ml-2 text-gray-400 shrink-0"
                                 aria-hidden="true"
                               />
                             </Tooltip>
@@ -802,12 +802,12 @@ export const Stake = () => {
                         </div>
                       )}
                     </div>
-                    <div>
-                      <p className="mb-1 text-sm leading-6 text-gray-500">DIKO</p>
+                    <div className="mt-3 md:mt-0">
+                      <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">DIKO</p>
                       {loadingData ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
-                        <p className="text-lg font-semibold">
+                        <p className="text-lg font-semibold dark:text-white">
                           {microToReadable(stakedAmount).toLocaleString(undefined, {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 6,
@@ -815,16 +815,16 @@ export const Stake = () => {
                         </p>
                       )}
                     </div>
-                    <div>
-                      <p className="mb-1 text-sm leading-6 text-gray-500">Current APR</p>
+                    <div className="mt-3 md:mt-0">
+                      <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">Current APR</p>
                       {loadingData ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
-                        <p className="text-indigo-600">{apy}%</p>
+                        <p className="text-indigo-600 dark:text-indigo-200">{apy}%</p>
                       )}
                     </div>
-                    <div>
-                      <p className="flex items-center mb-1 text-sm leading-6 text-gray-500">
+                    <div className="mt-3 md:mt-0">
+                      <p className="flex items-center text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">
                         Cooldown status
                         <Tooltip
                           className="ml-2"
@@ -832,7 +832,7 @@ export const Stake = () => {
                           label={`The 10-day cooldown period is the time required prior to unstaking your tokens. Once it expires, there is a 2-day window to unstake your tokens.`}
                         >
                           <InformationCircleIcon
-                            className="shrink-0 block w-5 h-5 ml-2 text-gray-400"
+                            className="block w-5 h-5 ml-2 text-gray-400 shrink-0"
                             aria-hidden="true"
                           />
                         </Tooltip>
@@ -840,21 +840,21 @@ export const Stake = () => {
                       {loadingData ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
-                        <p className="text-base">{dikoCooldown}</p>
+                        <p className="text-base dark:text-white">{dikoCooldown}</p>
                       )}
                     </div>
                     <div className="self-center">
                       <Menu as="div" className="relative flex items-center justify-end">
                         {({ open }) => (
                           <>
-                            <Menu.Button className="inline-flex items-center justify-center text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75">
+                            <Menu.Button className="inline-flex items-center justify-center px-2 py-1 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-800 dark:text-indigo-300">
                               <span>Actions</span>
                               <ChevronUpIcon
                                 className={`${
                                   open
                                     ? ''
                                     : 'transform rotate-180 transition ease-in-out duration-300'
-                                } ml-2 w-5 h-5 text-indigo-500`}
+                                } ml-2 w-5 h-5`}
                               />
                             </Menu.Button>
                             <Transition
@@ -1012,11 +1012,11 @@ export const Stake = () => {
             </section>
 
             <section className="relative mt-8 overflow-hidden">
-              <header className="pb-5 border-b border-gray-200">
-                <h3 className="text-lg leading-6 text-gray-900 font-headings">
+              <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
+                <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">
                   Liquidity Provider Tokens
                 </h3>
-                <p className="max-w-3xl mt-2 text-sm text-gray-500">
+                <p className="max-w-3xl mt-2 text-sm text-gray-500 dark:text-zinc-400 dark:text-zinc-300">
                   Staking LP tokens allows you to earn further rewards. You might be more familiar
                   with the term “farming”.
                 </p>
@@ -1054,43 +1054,43 @@ export const Stake = () => {
               <div className="flex flex-col mt-4">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                    <div className="overflow-hidden border border-gray-200 rounded-lg">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+                    <div className="overflow-hidden border border-gray-200 rounded-lg dark:border-zinc-600">
+                      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                        <thead className="bg-gray-50 dark:bg-zinc-800 dark:bg-opacity-80">
                           <tr>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
                             >
                               LP Token
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
                             >
                               Current APR
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
                             >
                               Available
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
                             >
                               Staked
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
                             >
                               Rewards
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
                             >
                               <span className="sr-only">Actions</span>
                             </th>
