@@ -65,7 +65,7 @@ export const Mint = () => {
       setStxPrice(stxPrice['last-price'].value);
       setStxBlockUpdate(stxPrice['last-block'].value);
       setStxBlockAgoUpdate(currentBlock - stxPrice['last-block'].value)
-      
+
       const xbtcPrice = await getPriceInfo('xBTC');
       setXbtcPrice(xbtcPrice['last-price'].value);
       setXbtcBlockUpdate(xbtcPrice['last-block'].value);
@@ -208,7 +208,7 @@ export const Mint = () => {
       <Helmet>
         <title>Vaults</title>
       </Helmet>
-      
+
       <main className="py-12">
         <section>
           <div className="relative">
@@ -292,24 +292,18 @@ export const Mint = () => {
             </h3>
             <div className="flex items-center mt-3 sm:mt-0 sm:ml-4">
               <div className="flex flex-col items-end text-sm">
-                <p className="flex items-center">
-                  Unclaimed rewards
+                <p className="flex items-center text-gray-500">
+                  Vaults rewards are now over
                   <Tooltip
+                    placement="left"
                     shouldWrapChildren={true}
-                    label={`Vaults will receive DIKO rewards pro rata the collateral deposited. First 6 weeks only!`}
+                    label={`DIKO vaults rewards ended at block 41348. Don't worry, you can still stake and farm DIKO with LP tokens.`}
                   >
                     <InformationCircleIcon
                       className="w-5 h-5 ml-2 text-gray-400"
                       aria-hidden="true"
                     />
                   </Tooltip>
-                </p>
-                <p className="font-semibold">
-                  {pendingVaultRewards.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 6,
-                  })}{' '}
-                  DIKO
                 </p>
               </div>
               {pendingVaultRewards > 0 ? (
@@ -319,7 +313,12 @@ export const Mint = () => {
                   onClick={() => claimPendingRewards()}
                   disabled={pendingVaultRewards === 0}
                 >
-                  Claim rewards
+                  Claim{' '}
+                  {pendingVaultRewards.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 6,
+                  })}{' '}
+                  DIKO
                 </button>
               ) : null}
             </div>

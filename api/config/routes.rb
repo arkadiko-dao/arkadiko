@@ -4,6 +4,7 @@ Rails.application.routes.draw do
       member do
         get 'volume'
         get 'prices'
+        get 'export'
       end
     end
     resources :vaults, only: [:index]

@@ -34,4 +34,10 @@ class PoolsController < ApplicationController
       prices: @pool.fetch_prices
     }
   end
+
+  def export
+    @pool = Pool.find(params[:id])
+    prices = @pool.export_prices
+    render csv: prices
+  end
 end

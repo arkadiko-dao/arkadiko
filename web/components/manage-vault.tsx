@@ -1,8 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Modal, Tooltip } from '@blockstack/ui';
-import { XIcon } from '@heroicons/react/outline';
+import { Tooltip } from '@blockstack/ui';
 import { InformationCircleIcon } from '@heroicons/react/solid';
 import { Container } from './home';
+import { VaultDepositModal } from '@components/vault-deposit-modal';
+import { VaultWithdrawModal } from '@components/vault-withdraw-modal';
+import { VaultMintModal } from '@components/vault-mint-modal';
+import { VaultBurnModal } from '@components/vault-burn-modal';
+import { VaultCloseModal } from '@components/vault-close-modal';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
@@ -13,28 +17,16 @@ import {
   contractPrincipalCV,
   cvToJSON,
   callReadOnlyFunction,
-  makeStandardFungiblePostCondition,
-  createAssetInfo,
-  FungibleConditionCode,
-  makeStandardSTXPostCondition,
   falseCV,
 } from '@stacks/transactions';
 import { AppContext, CollateralTypeProps } from '@common/context';
-import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
 import { debtClass, VaultProps } from './vault';
 import { getPrice } from '@common/get-price';
-import {
-  getLiquidationPrice,
-  availableCollateralToWithdraw,
-  availableCoinsToMint,
-} from '@common/vault-utils';
+import { getLiquidationPrice, availableCoinsToMint } from '@common/vault-utils';
 import { Redirect } from 'react-router-dom';
-import { resolveReserveName, tokenTraits } from '@common/vault-utils';
-import BN from 'bn.js';
-import { tokenList } from '@components/token-swap-list';
-import { InputAmount } from './input-amount';
+import { resolveReserveName } from '@common/vault-utils';
 import { getRPCClient } from '@common/utils';
-import { microToReadable } from '@common/vault-utils';
+import { microToReadable, availableCollateralToWithdraw } from '@common/vault-utils';
 import { addMinutes } from 'date-fns';
 import { Placeholder } from './ui/placeholder';
 import { Alert } from './ui/alert';
@@ -49,15 +41,13 @@ export const ManageVault = ({ match }) => {
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [showMintModal, setShowMintModal] = useState(false);
   const [showBurnModal, setShowBurnModal] = useState(false);
-  const [extraCollateralDeposit, setExtraCollateralDeposit] = useState('');
+  const [showCloseModal, setShowCloseModal] = useState(false);
   const [auctionEnded, setAuctionEnded] = useState(false);
-  const [collateralToWithdraw, setCollateralToWithdraw] = useState('');
   const [maximumCollateralToWithdraw, setMaximumCollateralToWithdraw] = useState(0);
-  const [usdToMint, setUsdToMint] = useState('');
-  const [usdToBurn, setUsdToBurn] = useState('');
   const [reserveName, setReserveName] = useState('');
   const [vault, setVault] = useState<VaultProps>();
   const [price, setPrice] = useState(0);
+  const [debtRatio, setDebtRatio] = useState(0);
   const [collateralType, setCollateralType] = useState<CollateralTypeProps>();
   const [isVaultOwner, setIsVaultOwner] = useState(false);
   const [stabilityFee, setStabilityFee] = useState(0);
@@ -142,6 +132,23 @@ export const ManageVault = ({ match }) => {
   }, [match.params.id]);
 
   useEffect(() => {
+    if (vault && collateralType?.collateralToDebtRatio) {
+      if (Number(vault.stackedTokens) === 0) {
+        setMaximumCollateralToWithdraw(
+          availableCollateralToWithdraw(
+            price,
+            collateralLocked(),
+            outstandingDebt(),
+            collateralType?.collateralToDebtRatio
+          )
+        );
+      } else {
+        setMaximumCollateralToWithdraw(0);
+      }
+    }
+  }, [collateralType?.collateralToDebtRatio, price]);
+
+  useEffect(() => {
     const fetchFees = async () => {
       const feeCall = await callReadOnlyFunction({
         contractAddress,
@@ -176,6 +183,28 @@ export const ManageVault = ({ match }) => {
       setLoadingPoxYieldData(false);
     };
 
+    const fetchCollateralToDebtRatio = async () => {
+      if (vault && vault['debt'] > 0) {
+        const collToDebt = await callReadOnlyFunction({
+          contractAddress,
+          contractName: 'arkadiko-freddie-v1-1',
+          functionName: 'calculate-current-collateral-to-debt-ratio',
+          functionArgs: [
+            uintCV(vault.id),
+            contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v1-1'),
+            contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v1-1'),
+            falseCV(),
+          ],
+          senderAddress: senderAddress || '',
+          network: network,
+        });
+        const json = cvToJSON(collToDebt);
+        if (json.value) {
+          setDebtRatio(json.value.value);
+        }
+      }
+    };
+
     const fetchStackerHeight = async () => {
       if (vault?.stackedTokens == 0 && vault?.revokedStacking) {
         setEnabledStacking(false);
@@ -201,6 +230,11 @@ export const ManageVault = ({ match }) => {
       });
       const unlockBurnHeight = cvToJSON(call).value.value;
       setUnlockBurnHeight(unlockBurnHeight);
+      const client = getRPCClient();
+      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
+      const data = await response.json();
+      const currentBurnHeight = data['stable_burn_block_height'];
+
       if (Number(unlockBurnHeight) === 0) {
         setStartedStacking(false);
         if (Number(vault?.stackedTokens) === 0) {
@@ -213,19 +247,14 @@ export const ManageVault = ({ match }) => {
         return;
       } else {
         setStartedStacking(true);
-        if (Number(vault?.stackedTokens) === 0) {
+        if (vault?.revokedStacking && unlockBurnHeight < currentBurnHeight) {
+          setCanUnlockCollateral(true);
+        }
+        if (Number(vault?.stackedTokens) === 0 || unlockBurnHeight < currentBurnHeight) {
           setCanWithdrawCollateral(true);
         } else {
           setCanWithdrawCollateral(false);
         }
-      }
-
-      const client = getRPCClient();
-      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
-      const data = await response.json();
-      const currentBurnHeight = data['stable_burn_block_height'];
-      if (unlockBurnHeight < currentBurnHeight) {
-        setCanWithdrawCollateral(true);
       }
 
       if (unlockBurnHeight < currentBurnHeight) {
@@ -248,140 +277,15 @@ export const ManageVault = ({ match }) => {
       fetchFees();
       fetchStackerHeight();
       fetchYield();
+      fetchCollateralToDebtRatio();
     }
   }, [vault]);
-
-  useEffect(() => {
-    if (vault && collateralType?.collateralToDebtRatio) {
-      if (Number(vault.stackedTokens) === 0) {
-        setMaximumCollateralToWithdraw(
-          availableCollateralToWithdraw(
-            price,
-            collateralLocked(),
-            outstandingDebt(),
-            collateralType?.collateralToDebtRatio
-          )
-        );
-      } else {
-        setMaximumCollateralToWithdraw(0);
-      }
-    }
-  }, [collateralType?.collateralToDebtRatio, price]);
-
-  const callBurn = async () => {
-    const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
-    let totalToBurn = Number(usdToBurn) + (stabilityFee / 1000000);
-    if (Number(totalToBurn) >= Number(state.balance['usda'] / 1000000)) {
-      totalToBurn = Number(state.balance['usda'] / 1000000);
-    }
-    const postConditions = [
-      makeStandardFungiblePostCondition(
-        senderAddress || '',
-        FungibleConditionCode.LessEqual,
-        uintCV(parseInt(totalToBurn * 1000000, 10)).value,
-        createAssetInfo(contractAddress, 'usda-token', 'usda')
-      ),
-    ];
-
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'burn',
-      functionArgs: [
-        uintCV(match.params.id),
-        uintCV(parseInt((parseFloat(usdToBurn) * 1000000) - (1.5 * stabilityFee), 10)),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
-        contractPrincipalCV(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v1-1'
-        ),
-      ],
-      postConditions,
-      onFinish: data => {
-        console.log('finished burn!', data);
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-        setShowBurnModal(false);
-      },
-      anchorMode: AnchorMode.Any,
-    });
-  };
-  let debtRatio = 0;
-  if (match.params.id) {
-    debtRatio = getCollateralToDebtRatio(match.params.id)?.collateralToDebt;
-  }
 
   useEffect(() => {
     if (state.currentTxStatus === 'success') {
       window.location.reload();
     }
   }, [state.currentTxStatus]);
-
-  const addDeposit = async () => {
-    if (!extraCollateralDeposit) {
-      return;
-    }
-    const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
-
-    let postConditions: any[] = [];
-    if (vault['collateralToken'].toLowerCase() === 'stx') {
-      postConditions = [
-        makeStandardSTXPostCondition(
-          senderAddress || '',
-          FungibleConditionCode.Equal,
-          new BN(parseFloat(extraCollateralDeposit) * 1000000)
-        ),
-      ];
-    } else {
-      // postConditions = [
-      //   makeStandardFungiblePostCondition(
-      //     senderAddress || '',
-      //     FungibleConditionCode.Equal,
-      //     new BN(parseFloat(extraCollateralDeposit) * 1000000),
-      //     createAssetInfo(
-      //       "CONTRACT_ADDRESS",
-      //       token,
-      //       vault['collateralToken'].toUpperCase()
-      //     )
-      //   )
-      // ];
-    }
-
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'deposit',
-      functionArgs: [
-        uintCV(match.params.id),
-        uintCV(parseFloat(extraCollateralDeposit) * 1000000),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
-        contractPrincipalCV(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v1-1'
-        ),
-      ],
-      postConditions,
-      onFinish: data => {
-        console.log('finished deposit!', data);
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-        setShowDepositModal(false);
-      },
-      anchorMode: AnchorMode.Any,
-    });
-  };
 
   const liquidationPrice = () => {
     if (vault) {
@@ -412,49 +316,6 @@ export const ManageVault = ({ match }) => {
     }
 
     return 0;
-  };
-
-  const onInputChange = (event: { target: { value: any; name: any } }) => {
-    const value = event.target.value;
-    if (event.target.name === 'depositCollateral') {
-      setExtraCollateralDeposit(value);
-    } else if (event.target.name === 'mintDebt') {
-      setUsdToMint(value);
-    } else if (event.target.name === 'burnDebt') {
-      setUsdToBurn(value);
-    } else {
-      setCollateralToWithdraw(value);
-    }
-  };
-
-  const callMint = async () => {
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'mint',
-      functionArgs: [
-        uintCV(match.params.id),
-        uintCV(Number(parseFloat(usdToMint)).toFixed(6) * 1000000),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v1-1'
-        ),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1'),
-      ],
-      onFinish: data => {
-        console.log('finished mint!', data, data.txId);
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-        setShowMintModal(false);
-      },
-      anchorMode: AnchorMode.Any,
-    });
   };
 
   const callToggleStacking = async () => {
@@ -526,102 +387,6 @@ export const ManageVault = ({ match }) => {
     });
   };
 
-  const closeVault = async () => {
-    const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'close-vault',
-      postConditionMode: 0x01,
-      functionArgs: [
-        uintCV(match.params.id),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
-        contractPrincipalCV(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v1-1'
-        ),
-      ],
-      onFinish: data => {
-        console.log('finished closing vault!', data, data.txId);
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-      },
-      anchorMode: AnchorMode.Any,
-    });
-  };
-
-  const callWithdraw = async () => {
-    if (parseFloat(collateralToWithdraw) > maximumCollateralToWithdraw) {
-      return;
-    }
-
-    const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'withdraw',
-      functionArgs: [
-        uintCV(match.params.id),
-        uintCV(parseFloat(collateralToWithdraw) * 1000000),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
-        contractPrincipalCV(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v1-1'
-        ),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1'),
-      ],
-      postConditionMode: 0x01,
-      onFinish: data => {
-        console.log('finished withdraw!', data);
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-        setShowWithdrawModal(false);
-      },
-      anchorMode: AnchorMode.Any,
-    });
-  };
-
-  const depositMaxAmount = () => {
-    setExtraCollateralDeposit(state.balance['stx'] / 1000000 - 1);
-  };
-
-  const mintMaxAmount = () => {
-    setUsdToMint(
-      availableCoinsToMint(
-        price,
-        collateralLocked(),
-        outstandingDebt(),
-        collateralType?.collateralToDebtRatio,
-        vault?.collateralToken
-      ) * 0.98
-    );
-  };
-
-  const burnMaxAmount = () => {
-    let debtToPay = Number(outstandingDebt()) * 1000000 + Number(stabilityFee);
-    if (debtToPay > state.balance['usda']) {
-      const balance = Number(state.balance['usda']) / 1000000;
-      debtToPay = balance.toFixed(6);
-    }
-    setUsdToBurn(debtToPay);
-  };
-
-  const withdrawMaxAmount = () => {
-    return setCollateralToWithdraw(String(maximumCollateralToWithdraw));
-  };
-
   const claimYield = async () => {
     await doContractCall({
       network,
@@ -683,331 +448,51 @@ export const ManageVault = ({ match }) => {
     <Container>
       {auctionEnded && <Redirect to="/vaults" />}
 
-      <Modal isOpen={showDepositModal}>
-        <div className="flex px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-          <div
-            className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="modal-headline"
-          >
-            <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
-              <button
-                type="button"
-                className="text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                onClick={() => setShowDepositModal(false)}
-              >
-                <span className="sr-only">Close</span>
-                <XIcon className="w-6 h-6" aria-hidden="true" />
-              </button>
-            </div>
-            <div className="flex items-center justify-center mx-auto rounded-full">
-              <img className="w-10 h-10 rounded-full" src={tokenList[2].logo} alt="" />
-            </div>
-            <div>
-              <div className="mt-3 text-center sm:mt-5">
-                <h3
-                  className="text-lg font-medium leading-6 text-gray-900 font-headings"
-                  id="modal-headline"
-                >
-                  Deposit Extra Collateral
-                </h3>
-                <div className="mt-2">
-                  <p className="text-sm text-gray-500">
-                    Choose how much extra collateral you want to post. You have a balance of{' '}
-                    {state.balance[vault?.collateralToken.toLowerCase()] / decimals}{' '}
-                    {vault?.collateralToken.toUpperCase()}.
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    We will automatically harvest any DIKO you are eligible for when depositing.
-                  </p>
+      <VaultDepositModal
+        showDepositModal={showDepositModal}
+        setShowDepositModal={setShowDepositModal}
+        match={match}
+        vault={vault}
+        reserveName={reserveName}
+        decimals={decimals}
+      />
 
-                  <div className="mt-4">
-                    <Alert>
-                      <p className="text-left">
-                        When depositing in a vault that is already stacking, keep in mind that your
-                        extra collateral will be{' '}
-                        <span className="font-semibold">locked but not stacked</span>. You won't be
-                        able to stack these STX until the cooldown cycle!
-                      </p>
-                    </Alert>
-                  </div>
+      <VaultWithdrawModal
+        showWithdrawModal={showWithdrawModal}
+        setShowWithdrawModal={setShowWithdrawModal}
+        match={match}
+        maximumCollateralToWithdraw={maximumCollateralToWithdraw}
+        vault={vault}
+        reserveName={reserveName}
+      />
 
-                  <div className="mt-6">
-                    <InputAmount
-                      balance={(
-                        state.balance[vault?.collateralToken.toLowerCase()] / decimals
-                      ).toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 6,
-                      })}
-                      token={vault?.collateralToken.toUpperCase()}
-                      inputName="depositCollateral"
-                      inputId="depositExtraStxAmount"
-                      inputValue={extraCollateralDeposit}
-                      inputLabel="Deposit Extra Collateral"
-                      onInputChange={onInputChange}
-                      onClickMax={depositMaxAmount}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-              <button
-                type="button"
-                className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
-                onClick={() => addDeposit()}
-              >
-                Add deposit
-              </button>
-              <button
-                type="button"
-                className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
-                onClick={() => setShowDepositModal(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      </Modal>
+      <VaultMintModal
+        showMintModal={showMintModal}
+        setShowMintModal={setShowMintModal}
+        match={match}
+        vault={vault}
+        reserveName={reserveName}
+        price={price}
+        collateralType={collateralType}
+      />
 
-      <Modal isOpen={showWithdrawModal}>
-        <div className="flex px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-          <div
-            className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="modal-headline"
-          >
-            <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
-              <button
-                type="button"
-                className="text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                onClick={() => setShowWithdrawModal(false)}
-              >
-                <span className="sr-only">Close</span>
-                <XIcon className="w-6 h-6" aria-hidden="true" />
-              </button>
-            </div>
-            <div className="flex items-center justify-center mx-auto rounded-full">
-              <img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />
-            </div>
-            <div>
-              <div className="mt-3 text-center sm:mt-5">
-                <h3
-                  className="text-lg font-medium leading-6 text-gray-900 font-headings"
-                  id="modal-headline"
-                >
-                  Withdraw Collateral
-                </h3>
-                <div className="mt-2">
-                  <p className="text-sm text-gray-500">
-                    Choose how much collateral you want to withdraw. You can withdraw a maximum of{' '}
-                    {maximumCollateralToWithdraw} {vault?.collateralToken.toUpperCase()}.
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    We will automatically harvest any DIKO you are eligible for when withdrawing.
-                  </p>
+      <VaultBurnModal
+        showBurnModal={showBurnModal}
+        setShowBurnModal={setShowBurnModal}
+        outstandingDebt={outstandingDebt}
+        stabilityFee={stabilityFee}
+        match={match}
+        vault={vault}
+        reserveName={reserveName}
+      />
 
-                  <div className="mt-6">
-                    <InputAmount
-                      balance={maximumCollateralToWithdraw}
-                      token={vault?.collateralToken.toUpperCase()}
-                      inputName="withdrawCollateral"
-                      inputId="withdrawCollateralAmount"
-                      inputValue={collateralToWithdraw}
-                      inputLabel="Withdraw Collateral"
-                      onInputChange={onInputChange}
-                      onClickMax={withdrawMaxAmount}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-              <button
-                type="button"
-                className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
-                onClick={() => callWithdraw()}
-              >
-                Withdraw
-              </button>
-              <button
-                type="button"
-                className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
-                onClick={() => setShowWithdrawModal(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      </Modal>
-
-      <Modal isOpen={showMintModal}>
-        <div className="flex px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-          <div
-            className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="modal-headline"
-          >
-            <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
-              <button
-                type="button"
-                className="text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                onClick={() => setShowMintModal(false)}
-              >
-                <span className="sr-only">Close</span>
-                <XIcon className="w-6 h-6" aria-hidden="true" />
-              </button>
-            </div>
-            <div className="flex items-center justify-center mx-auto rounded-full">
-              <img className="w-10 h-10 rounded-full" src={tokenList[0].logo} alt="" />
-            </div>
-            <div>
-              <div className="mt-3 text-center sm:mt-5">
-                <h3
-                  className="text-lg font-medium leading-6 text-gray-900 font-headings"
-                  id="modal-headline"
-                >
-                  Mint extra USDA
-                </h3>
-                <div className="mt-2">
-                  <p className="text-sm text-gray-500">
-                    Choose how much extra USDA you want to mint. You can mint a maximum of{' '}
-                    {availableCoinsToMint(
-                      price,
-                      collateralLocked(),
-                      outstandingDebt(),
-                      collateralType?.collateralToDebtRatio,
-                      vault?.collateralToken
-                    ).toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                    })}{' '}
-                    USDA.
-                  </p>
-
-                  <div className="mt-6">
-                    <InputAmount
-                      balance={availableCoinsToMint(
-                        price,
-                        collateralLocked(),
-                        outstandingDebt(),
-                        collateralType?.collateralToDebtRatio,
-                        vault?.collateralToken
-                      ).toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 6,
-                      })}
-                      token="USDA"
-                      inputName="mintDebt"
-                      inputId="mintUSDAAmount"
-                      inputValue={usdToMint}
-                      inputLabel="Mint USDA"
-                      onInputChange={onInputChange}
-                      onClickMax={mintMaxAmount}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-              <button
-                type="button"
-                className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
-                onClick={() => callMint()}
-              >
-                Mint
-              </button>
-              <button
-                type="button"
-                className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
-                onClick={() => setShowMintModal(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      </Modal>
-
-      <Modal isOpen={showBurnModal}>
-        <div className="flex px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-          <div
-            className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="modal-headline"
-          >
-            <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
-              <button
-                type="button"
-                className="text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                onClick={() => setShowBurnModal(false)}
-              >
-                <span className="sr-only">Close</span>
-                <XIcon className="w-6 h-6" aria-hidden="true" />
-              </button>
-            </div>
-            <div className="flex items-center justify-center mx-auto rounded-full">
-              <img className="w-10 h-10 rounded-full" src={tokenList[0].logo} alt="" />
-            </div>
-            <div>
-              <div className="mt-3 text-center sm:mt-5">
-                <h3
-                  className="text-lg font-medium leading-6 text-gray-900 font-headings"
-                  id="modal-headline"
-                >
-                  Burn USDA
-                </h3>
-                <div className="mt-2">
-                  <p className="text-sm text-gray-500">
-                    Choose how much USDA you want to burn. Burning will include a stability fee of{' '}
-                    <span className="font-semibold">{stabilityFee / 1000000} USDA</span>.
-                  </p>
-
-                  <div className="mt-6">
-                    <InputAmount
-                      balance={(state.balance['usda'] / 1000000).toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 6,
-                      })}
-                      token="USDA"
-                      inputName="burnDebt"
-                      inputId="burnAmount"
-                      inputValue={usdToBurn}
-                      inputLabel="Burn USDA"
-                      onInputChange={onInputChange}
-                      onClickMax={burnMaxAmount}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-              <button
-                type="button"
-                className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
-                onClick={() => callBurn()}
-              >
-                Burn
-              </button>
-              <button
-                type="button"
-                className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
-                onClick={() => setShowBurnModal(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      </Modal>
+      <VaultCloseModal
+        showCloseModal={showCloseModal}
+        setShowCloseModal={setShowCloseModal}
+        match={match}
+        vault={vault}
+        reserveName={reserveName}
+      />
 
       <main className="flex-1 py-12">
         <section>
@@ -1114,7 +599,6 @@ export const ManageVault = ({ match }) => {
                         isVaultOwner &&
                         vault?.stackedTokens > 0 &&
                         !vault?.revokedStacking &&
-                        !canWithdrawCollateral &&
                         !loadingVaultData ? (
                           // user has indicated they want to stack their STX tokens
                           startedStacking ? (
@@ -1388,8 +872,7 @@ export const ManageVault = ({ match }) => {
                     ) : canStackCollateral &&
                       isVaultOwner &&
                       vault?.stackedTokens > 0 &&
-                      !vault?.revokedStacking &&
-                      !canWithdrawCollateral ? (
+                      !vault?.revokedStacking ? (
                       // user has indicated they want to stack their STX tokens
                       <div className="mt-4">
                         <Alert>
@@ -1480,7 +963,17 @@ export const ManageVault = ({ match }) => {
                             </Tooltip>
                           </p>
                         </div>
-                        {isVaultOwner && !loadingVaultData ? (
+                        {isVaultOwner &&
+                        !loadingVaultData &&
+                        Number(
+                          availableCoinsToMint(
+                            price,
+                            collateralLocked(),
+                            outstandingDebt(),
+                            collateralType?.collateralToDebtRatio,
+                            vault?.collateralToken
+                          )
+                        ) > 0 ? (
                           <button
                             type="button"
                             className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -1525,15 +1018,15 @@ export const ManageVault = ({ match }) => {
                               </Tooltip>
                             </p>
                           </div>
-                          {isVaultOwner && canWithdrawCollateral && Number(totalDebt) <= 0.1 ? (
+                          {!loadingStackerData && isVaultOwner && canWithdrawCollateral && Number(vault?.stackedTokens) === 0 && Number(totalDebt) <= 0.1 ? (
                             <button
                               type="button"
                               className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => closeVault()}
+                              onClick={() => setShowCloseModal(true)}
                             >
                               Withdraw Collateral & Close Vault
                             </button>
-                          ) : isVaultOwner ? (
+                          ) : !loadingStackerData && isVaultOwner ? (
                             <button
                               type="button"
                               className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -1541,6 +1034,12 @@ export const ManageVault = ({ match }) => {
                             >
                               Pay back
                             </button>
+                          ) : loadingStackerData ? (
+                            <Placeholder
+                              className="justify-end py-2"
+                              color={Placeholder.color.INDIGO}
+                              width={Placeholder.width.THIRD}
+                            />
                           ) : null}
                         </div>
                       </div>
