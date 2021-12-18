@@ -319,11 +319,11 @@ path = "contracts/tests/malicious-ft.clar"
 depends_on = ["sip-010-trait-ft-standard", "arkadiko-dao-token-trait-v1"]
 
 [contracts.arkadiko-add-xbtc-stx]
-depends_on = ["arkadiko-governance-v2-1", "arkadiko-swap-v2-1", "arkadiko-stake-registry-v1-1", "arkadiko-collateral-types-v1-1"]
+depends_on = ["arkadiko-governance-v2-1", "arkadiko-swap-v2-1", "arkadiko-stake-registry-v1-1", "tokensoft-token"]
 path = "contracts/arkadiko-add-xbtc-stx.clar"
 
 [contracts.arkadiko-add-xbtc-usda]
-depends_on = ["arkadiko-governance-v2-1", "arkadiko-swap-v2-1", "arkadiko-stake-registry-v1-1", "arkadiko-collateral-types-v1-1"]
+depends_on = ["arkadiko-governance-v2-1", "arkadiko-swap-v2-1", "arkadiko-stake-registry-v1-1", "tokensoft-token"]
 path = "contracts/arkadiko-add-xbtc-usda.clar"
 
 [contracts.arkadiko-add-xbtc-collateral-type]
