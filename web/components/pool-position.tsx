@@ -77,16 +77,17 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
     const resolvePair = async () => {
       const json3 = await fetchPair(tokenXTrait, tokenYTrait);
       if (json3['success']) {
+        const pairDetails = json3['value']['value']['value'];
         const stakedTokens = await fetchStakedTokens(
-          json3['value']['value']['value']['name'].value
+          pairDetails['name'].value
         );
         setStakedLpTokens(stakedTokens);
 
-        const balanceX = json3['value']['value']['value']['balance-x'].value;
-        const balanceY = json3['value']['value']['value']['balance-y'].value;
+        const balanceX = pairDetails['balance-x'].value;
+        const balanceY = pairDetails['balance-y'].value;
 
         const tokenPair = `${tokenX.nameInPair.toLowerCase()}${tokenY.nameInPair.toLowerCase()}`;
-        const totalTokens = json3['value']['value']['value']['shares-total'].value;
+        const totalTokens = pairDetails['shares-total'].value;
         const tokenXYBalance = Number(state.balance[tokenPair]) + Number(stakedTokens);
 
         // to make sure data is loaded properly
@@ -94,24 +95,19 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
           return;
         }
 
-        let totalShare = Number(((tokenXYBalance / totalTokens) * 100).toFixed(3));
-        if (!tokenXYBalance) {
-          totalShare = 0;
-        }
+        setTokenPair(tokenPair);
+
+        let totalShare = tokenXYBalance / totalTokens;
         if (totalShare > 100) {
           totalShare = 100;
         }
+        const totalBalanceX = balanceX * totalShare;
+        const totalBalanceY = balanceY * totalShare;
 
-        setTokenPair(tokenPair);
+        setPooledX(totalBalanceX / 1000000);
+        setPooledY(totalBalanceY / 1000000);
 
-        setPooledX(((balanceX / 1000000) * totalShare) / 100);
-        setPooledY(((balanceY / 1000000) * totalShare) / 100);
-
-        if (totalShare > 100) {
-          setTotalShare(100);
-        } else {
-          setTotalShare(totalShare);
-        }
+        setTotalShare(Number((totalShare * 100).toFixed(5)));
         setIsLoading(false);
       }
     };
