@@ -413,7 +413,10 @@ export const Stake = () => {
         setCanUnstake(true);
       } else {
         const blockDiff = redeemStartBlock - currentBlock;
-        let text = blockDiffToTimeLeft(blockDiff);
+        let text = 'about 10 minutes';
+        if (blockDiff > 0) {
+          text = blockDiffToTimeLeft(blockDiff);
+        }
         text += ' left';
         setDikoCooldown(text);
         setCooldownRunning(true);
