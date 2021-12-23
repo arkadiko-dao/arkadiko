@@ -13,7 +13,7 @@ export const Pool: React.FC = () => {
   return (
     <Container>
       <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
-        <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow dark:bg-zinc-800">
+        <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow dark:bg-zinc-900">
           <div className="flex flex-col p-4">
             <div className="mb-4">
               <div>
@@ -75,7 +75,7 @@ export const Pool: React.FC = () => {
               <span className="flex p-2 bg-gray-100 rounded-lg">
                 <CashIcon className="w-6 h-6 text-indigo-500" aria-hidden="true" />
               </span>
-              <p className="ml-4 text-sm text-gray-500 dark:text-zinc-300">
+              <p className="ml-4 text-sm text-gray-500 dark:text-zinc-400">
                 By adding liquidity, you will earn 0.25% on trades for this pool, proportional to
                 your share of liquidity. Earned fees are added back to the pool and claimable by
                 removing liquidity.

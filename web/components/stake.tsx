@@ -729,7 +729,7 @@ export const Stake = () => {
               <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
                 <div>
                   <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">DIKO</h3>
-                  <p className="max-w-3xl mt-2 text-sm text-gray-500 dark:text-zinc-400 dark:text-zinc-300">
+                  <p className="max-w-3xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
                     When staking DIKO in the security module{' '}
                     <span className="font-semibold">you will receive stDIKO</span> which is a
                     representation of your share of the pool. DIKO in the pool is{' '}
@@ -761,8 +761,8 @@ export const Stake = () => {
                 </div>
               </header>
 
-              <div className="mt-4 bg-white divide-y divide-gray-200 rounded-md shadow dark:bg-zinc-800">
-                <div className="px-4 py-5 space-y-6 divide-y divide-gray-200 sm:p-6">
+              <div className="mt-4 bg-white divide-y divide-gray-200 rounded-md shadow dark:divide-gray-600 dark:bg-zinc-900">
+                <div className="px-4 py-5 space-y-6 divide-y divide-gray-200 dark:divide-gray-700 sm:p-6">
                   <div className="md:grid md:grid-flow-col gap-4 sm:grid-cols-[min-content,auto]">
                     <div className="self-center w-14">
                       <img className="w-12 h-12 rounded-full" src={tokenList[1].logo} alt="" />
@@ -820,7 +820,7 @@ export const Stake = () => {
                       {loadingData ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
-                        <p className="text-indigo-600 dark:text-indigo-200">{apy}%</p>
+                        <p className="text-indigo-600 dark:text-indigo-400">{apy}%</p>
                       )}
                     </div>
                     <div className="mt-3 md:mt-0">
@@ -847,7 +847,7 @@ export const Stake = () => {
                       <Menu as="div" className="relative flex items-center justify-end">
                         {({ open }) => (
                           <>
-                            <Menu.Button className="inline-flex items-center justify-center px-2 py-1 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-800 dark:text-indigo-300">
+                            <Menu.Button className="inline-flex items-center justify-center px-2 py-1 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-900 dark:text-indigo-400">
                               <span>Actions</span>
                               <ChevronUpIcon
                                 className={`${
@@ -869,7 +869,7 @@ export const Stake = () => {
                             >
                               <Menu.Items
                                 static
-                                className="absolute top-0 z-10 w-48 mx-3 mt-6 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg right-3 ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                className="absolute top-0 z-10 w-48 mx-3 mt-6 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg dark:divide-gray-600 right-3 ring-1 ring-black ring-opacity-5 focus:outline-none"
                               >
                                 <div className="px-1 py-1">
                                   <Menu.Item>
@@ -1054,9 +1054,9 @@ export const Stake = () => {
               <div className="flex flex-col mt-4">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                    <div className="overflow-hidden border border-gray-200 rounded-lg dark:border-zinc-600">
-                      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
-                        <thead className="bg-gray-50 dark:bg-zinc-800 dark:bg-opacity-80">
+                    <div className="overflow-hidden border border-gray-200 rounded-lg dark:border-zinc-700">
+                      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
                           <tr>
                             <th
                               scope="col"

@@ -323,7 +323,7 @@ export const Swap: React.FC = () => {
 
       <Container>
         <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
-          <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow dark:bg-zinc-800">
+          <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow dark:bg-zinc-900">
             <div className="flex flex-col p-4">
               <div className="flex justify-between mb-4">
                 <div>
@@ -375,7 +375,7 @@ export const Swap: React.FC = () => {
               ) : (
                 <>
                   <form>
-                    <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-700 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200">
+                    <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-800 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200">
                       <div className="flex items-center p-4 pb-2">
                         <TokenSwapList selected={tokenX} setSelected={setupTokenX} />
 
@@ -395,7 +395,7 @@ export const Swap: React.FC = () => {
                           value={tokenXAmount || ''}
                           onChange={onInputChange}
                           min={0}
-                          className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right text-gray-800 truncate border-0 focus:outline-none focus:ring-0 bg-gray-50 dark:bg-zinc-700 dark:text-zinc-50"
+                          className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right text-gray-800 truncate border-0 focus:outline-none focus:ring-0 bg-gray-50 dark:bg-zinc-800 dark:text-zinc-50"
                         />
                       </div>
 
@@ -429,12 +429,12 @@ export const Swap: React.FC = () => {
                     <button
                       type="button"
                       onClick={switchTokens}
-                      className="relative z-10 flex items-center justify-center w-8 h-8 -mt-4 -mb-4 -ml-4 text-gray-400 transform bg-white border border-gray-300 rounded-md dark:bg-zinc-700 left-1/2 hover:text-indigo-700 focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-800 dark:hover:text-indigo-400"
+                      className="relative z-10 flex items-center justify-center w-8 h-8 -mt-4 -mb-4 -ml-4 text-gray-400 transform bg-white border border-gray-300 rounded-md dark:bg-zinc-900 left-1/2 hover:text-indigo-700 focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-800 dark:hover:text-indigo-400"
                     >
                       <SwitchVerticalIcon className="w-5 h-5" aria-hidden="true" />
                     </button>
 
-                    <div className="mt-1 border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-700 dark:hover:border-zinc-900">
+                    <div className="mt-1 border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-800 dark:hover:border-zinc-900">
                       <div className="flex items-center p-4 pb-2">
                         <TokenSwapList selected={tokenY} setSelected={setupTokenY} />
 
@@ -456,7 +456,7 @@ export const Swap: React.FC = () => {
                           })}
                           onChange={onInputChange}
                           disabled={true}
-                          className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right text-gray-800 truncate border-0 focus:outline-none focus:ring-0 bg-gray-50 dark:bg-zinc-700 dark:text-zinc-50"
+                          className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right text-gray-800 truncate border-0 focus:outline-none focus:ring-0 bg-gray-50 dark:bg-zinc-800 dark:text-zinc-50"
                         />
                       </div>
 
@@ -515,7 +515,7 @@ export const Swap: React.FC = () => {
                         onClick={() => swapTokens()}
                         className={classNames(
                           tokenYAmount === 0 || insufficientBalance || !foundPair
-                            ? 'bg-indigo-300 hover:bg-indigo-300 pointer-events-none'
+                            ? 'bg-indigo-400 hover:bg-indigo-400 dark:text-indigo-600 cursor-not-allowed dark:bg-indigo-200'
                             : 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer',
                           'w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
                         )}
@@ -543,7 +543,7 @@ export const Swap: React.FC = () => {
                   {foundPair ? (
                     <div className="w-full mt-3 text-center">
                       <RouterLink
-                        className="text-sm font-medium text-indigo-700 dark:text-indigo-200 dark:focus:ring-indigo-300rounded-sm hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        className="text-sm font-medium text-indigo-700 rounded-sm dark:text-indigo-200 dark:focus:ring-indigo-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         to={`swap/add/${tokenX.name}/${tokenY.name}`}
                       >
                         Add/remove liquidity on {tokenX.name}-{tokenY.name}
@@ -554,7 +554,7 @@ export const Swap: React.FC = () => {
               )}
             </div>
           </div>
-          <div className="w-full max-w-md p-4 pt-8 -mt-4 border border-indigo-200 rounded-lg shadow-sm dark:bg-indigo-200">
+          <div className="w-full max-w-md p-4 pt-8 -mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
             <dl className="space-y-1">
               <div className="grid grid-cols-2 gap-4">
                 <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">

@@ -47,7 +47,7 @@ export const SwapSettings: React.FC<Props> = ({
               <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                 <div className="relative p-4 bg-white">
                   <div className="inline-flex items-center">
-                    <h4 className="text-base font-medium leading-6 text-gray-900 font-headings">
+                    <h4 className="text-base font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
                       Slippage Tolerance
                     </h4>
                     <div className="ml-2">

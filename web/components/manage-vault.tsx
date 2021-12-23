@@ -498,8 +498,8 @@ export const ManageVault = ({ match }) => {
 
       <main className="flex-1 py-12">
         <section>
-          <header className="pb-5 border-b border-gray-200">
-            <h2 className="text-xl font-bold leading-6 text-gray-900 font-headings">
+          <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
+            <h2 className="text-xl font-bold leading-6 text-gray-900 font-headings dark:text-zinc-50">
               {loadingVaultData ? (
                 <Placeholder
                   className="py-2"
@@ -517,16 +517,16 @@ export const ManageVault = ({ match }) => {
           <div className="mt-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <div className="mt-4 bg-white divide-y divide-gray-200 shadow sm:rounded-md sm:overflow-hidden">
+                <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-900 dark:divide-gray-700 sm:rounded-md sm:overflow-hidden">
                   <div className="px-4 py-5 sm:p-6">
-                    <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings">
+                    <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
                       Supply
                     </h3>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-gray-500 dark:text-zinc-400">
                       Manage and deposit extra collateral.
                     </p>
                   </div>
-                  <div className="px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 sm:p-6">
+                  <div className="px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-gray-700 sm:p-6">
                     <div className="flex items-start justify-between">
                       {loadingVaultData ? (
                         <div className="flex flex-col flex-1">
@@ -543,13 +543,13 @@ export const ManageVault = ({ match }) => {
                         </div>
                       ) : (
                         <div>
-                          <p className="text-lg font-semibold leading-none">
+                          <p className="text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
                             {collateralLocked()}{' '}
                             <span className="text-sm font-normal">
                               {vault?.collateralToken.toUpperCase()}
                             </span>
                           </p>
-                          <p className="text-base font-normal leading-6 text-gray-500">
+                          <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                             {vault?.collateralToken.toUpperCase()} Locked
                           </p>
                         </div>
@@ -567,12 +567,12 @@ export const ManageVault = ({ match }) => {
                     </div>
                   </div>
                 </div>
-                <div className="mt-4 bg-white divide-y divide-gray-200 shadow sm:rounded-md sm:overflow-hidden">
+                <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-900 dark:divide-gray-700 sm:rounded-md sm:overflow-hidden">
                   <div className="px-4 py-5 sm:p-6">
                     <div className="flex items-start justify-between">
                       <div>
                         <div className="flex items-center">
-                          <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings">
+                          <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
                             Stacking
                           </h3>
                           {canStackCollateral && !loadingVaultData ? (
@@ -594,7 +594,7 @@ export const ManageVault = ({ match }) => {
                             </Tooltip>
                           ) : null}
                         </div>
-                        <p className="mt-1 text-sm text-gray-500">Update your stacking status.</p>
+                        <p className="mt-1 text-sm text-gray-500 dark:text-zinc-400">Update your stacking status.</p>
                       </div>
                       <div>
                         {canStackCollateral &&
@@ -680,21 +680,21 @@ export const ManageVault = ({ match }) => {
                       </div>
                     </div>
                   ) : canStackCollateral ? (
-                    <div className="px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 sm:p-6">
+                    <div className="px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-gray-700 sm:p-6">
                       <dl>
                         <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                          <dt className="inline-flex items-center text-sm font-medium text-gray-500">
+                          <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
                             {unlockBurnHeight == 0 ? (
-                              <p className="text-base font-normal leading-6 text-gray-500">
+                              <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                                 Will be stacked
                               </p>
                             ) : (
-                              <p className="text-base font-normal leading-6 text-gray-500">
+                              <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                                 Currently stacking
                               </p>
                             )}
                           </dt>
-                          <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
+                          <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                             <p className="text-lg font-semibold leading-none">
                               {microToReadable(vault?.stackedTokens)}{' '}
                               <span className="text-sm font-normal">
@@ -706,8 +706,8 @@ export const ManageVault = ({ match }) => {
                         <div className="mt-4 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
                           {stackingEndDate != '' ? (
                             <>
-                              <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                                <p className="text-base font-normal leading-6 text-gray-500">
+                              <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                                <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                                   End of stacking
                                 </p>
                                 <Tooltip
@@ -720,7 +720,7 @@ export const ManageVault = ({ match }) => {
                                   />
                                 </Tooltip>
                               </dt>
-                              <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
+                              <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                                 <p className="text-lg font-semibold leading-none">
                                   {stackingEndDate}
                                 </p>
@@ -728,12 +728,12 @@ export const ManageVault = ({ match }) => {
                             </>
                           ) : unlockBurnHeight == 0 ? (
                             <>
-                              <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                                <p className="text-base font-normal leading-6 text-gray-500">
+                              <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                                <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                                   Stacking starts in
                                 </p>
                               </dt>
-                              <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
+                              <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                                 <p className="text-lg font-semibold leading-none">
                                   {state.daysLeft} days
                                 </p>
@@ -747,7 +747,7 @@ export const ManageVault = ({ match }) => {
 
                   <div className="px-4 py-5 sm:p-6">
                     <div className="sm:flex sm:items-center: sm:justify-between">
-                      <h4 className="text-xl font-normal leading-6 text-gray-900 font-headings">
+                      <h4 className="text-xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
                         Yield
                       </h4>
 
@@ -775,12 +775,12 @@ export const ManageVault = ({ match }) => {
 
                     <dl className="mt-4">
                       <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                        <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                          <p className="text-base font-normal leading-6 text-gray-500">
+                        <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                          <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                             Available yield
                           </p>
                         </dt>
-                        <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
+                        <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                           {loadingPoxYieldData ? (
                             <Placeholder
                               className="justify-end py-2"
@@ -802,7 +802,7 @@ export const ManageVault = ({ match }) => {
 
                   <div className="px-4 py-5 sm:p-6">
                     <div className="sm:flex sm:items-center: sm:justify-between ">
-                      <h4 className="text-xl font-normal leading-6 text-gray-900 font-headings">
+                      <h4 className="text-xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
                         Withdrawal
                       </h4>
                       {isVaultOwner &&
@@ -833,12 +833,12 @@ export const ManageVault = ({ match }) => {
 
                     <dl className="mt-4">
                       <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                        <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                          <p className="text-base font-normal leading-6 text-gray-500">
+                        <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                          <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                             Able to withdraw
                           </p>
                         </dt>
-                        <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
+                        <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                           {loadingVaultData ? (
                             <Placeholder
                               className="justify-end py-2"
@@ -919,16 +919,16 @@ export const ManageVault = ({ match }) => {
                 </div>
               </div>
               <div>
-                <div className="mt-4 bg-white divide-y divide-gray-200 shadow sm:rounded-md sm:overflow-hidden">
+                <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-900 dark:divide-gray-700 sm:rounded-md sm:overflow-hidden">
                   <div className="px-4 py-5 sm:p-6">
-                    <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings">
+                    <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
                       Mint
                     </h3>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-gray-500 dark:text-zinc-400">
                       Manage your loan. Get extra USDA. Pay it back.
                     </p>
                   </div>
-                  <div className="relative px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 sm:p-6">
+                  <div className="relative px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-gray-700 sm:p-6">
                     <div>
                       <div className="flex items-start justify-between">
                         <div>
@@ -939,7 +939,7 @@ export const ManageVault = ({ match }) => {
                               width={Placeholder.width.THIRD}
                             />
                           ) : (
-                            <p className="text-lg font-semibold leading-none">
+                            <p className="text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
                               {availableCoinsToMint(
                                 price,
                                 collateralLocked(),
@@ -953,7 +953,7 @@ export const ManageVault = ({ match }) => {
                               <span className="text-sm font-normal">USDA</span>
                             </p>
                           )}
-                          <p className="flex items-center text-base font-normal leading-6 text-gray-500">
+                          <p className="flex items-center text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                             Available to mint
                             <Tooltip
                               className="ml-2"
@@ -998,7 +998,7 @@ export const ManageVault = ({ match }) => {
                                 width={Placeholder.width.THIRD}
                               />
                             ) : (
-                              <p className="text-lg font-semibold leading-none">
+                              <p className="text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
                                 {totalDebt.toLocaleString(undefined, {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 6,
@@ -1006,7 +1006,7 @@ export const ManageVault = ({ match }) => {
                                 <span className="text-sm font-normal">USDA</span>
                               </p>
                             )}
-                            <p className="flex items-center text-base font-normal leading-6 text-gray-500">
+                            <p className="flex items-center text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                               Outstanding USDA debt
                               <Tooltip
                                 className="ml-2"
@@ -1045,8 +1045,8 @@ export const ManageVault = ({ match }) => {
                     <div className="pt-6">
                       <dl>
                         <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                          <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                            <p className="text-base font-normal leading-6 text-gray-500">
+                          <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                            <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                               Collateral to Debt ratio
                             </p>
                             <Tooltip
@@ -1059,7 +1059,7 @@ export const ManageVault = ({ match }) => {
                               />
                             </Tooltip>
                           </dt>
-                          <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
+                          <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                             {loadingVaultData ? (
                               <Placeholder
                                 className="justify-end py-2"
@@ -1081,8 +1081,8 @@ export const ManageVault = ({ match }) => {
                         </div>
 
                         <div className="mt-4 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                          <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                            <p className="text-base font-normal leading-6 text-gray-500">
+                          <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                            <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                               Minimum Ratio (before liquidation)
                             </p>
                             <Tooltip
@@ -1095,7 +1095,7 @@ export const ManageVault = ({ match }) => {
                               />
                             </Tooltip>
                           </dt>
-                          <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
+                          <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                             {loadingVaultData ? (
                               <Placeholder
                                 className="justify-end py-2"
@@ -1112,8 +1112,8 @@ export const ManageVault = ({ match }) => {
                         </div>
 
                         <div className="mt-4 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                          <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                            <p className="text-base font-normal leading-6 text-gray-500">
+                          <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                            <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                               Liquidation penalty
                             </p>
                             <Tooltip
@@ -1126,7 +1126,7 @@ export const ManageVault = ({ match }) => {
                               />
                             </Tooltip>
                           </dt>
-                          <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
+                          <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                             {loadingVaultData ? (
                               <Placeholder
                                 className="justify-end py-2"

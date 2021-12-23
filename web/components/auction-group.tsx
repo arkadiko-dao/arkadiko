@@ -117,7 +117,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeig
         buttonText="Add Bid"
         buttonAction={() => addBid()}
       >
-        <p className="text-sm text-center text-gray-500">
+        <p className="text-sm text-center text-gray-500 dark:text-zinc-400">
           Bidding ${(preferredBid + 0.49).toFixed(0)} will close the lot and assign you the
           collateral.
         </p>
@@ -147,7 +147,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeig
 
       <div className="flex flex-col mt-2">
         <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
-          <table className="min-w-full divide-y divide-gray-200">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead>
               <tr>
                 <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50">
@@ -171,7 +171,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeig
                 <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50"></th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">{auctionItems}</tbody>
+            <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-gray-700">{auctionItems}</tbody>
           </table>
         </div>
       </div>

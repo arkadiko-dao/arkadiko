@@ -12,11 +12,11 @@ export const Proposal: React.FC<ProposalProps> = ({
 }) => {
   return (
     <li>
-      <RouterLink to={`governance/${id}`} exact className="block hover:bg-gray-50">
+      <RouterLink to={`governance/${id}`} exact className="block hover:bg-gray-50 dark:hover:bg-zinc-700">
         <div className="px-4 py-4 sm:px-6">
           <div className="flex items-center justify-between">
-            <p className="text-base font-medium text-indigo-600 truncate"><span className="font-semibold text-gray-600">#{id}<span className="text-gray-400"> &middot; </span></span>{title}</p>
-            <div className="flex shrink-0 ml-2">
+            <p className="text-base font-medium text-indigo-600 truncate dark:text-indigo-400"><span className="font-semibold text-gray-600 dark:text-gray-200">#{id}<span className="text-gray-400"> &middot; </span></span>{title}</p>
+            <div className="flex ml-2 shrink-0">
               {isOpen ? (
                 <p className="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">
                   Open for Voting
@@ -30,17 +30,17 @@ export const Proposal: React.FC<ProposalProps> = ({
           </div>
           <div className="mt-2 sm:flex sm:justify-between">
             <div className="sm:flex">
-              <p className="flex items-center text-sm text-gray-500">
+              <p className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                 <UsersIcon
-                  className="shrink-0 mr-1.5 h-5 w-5 text-gray-400"
+                  className="shrink-0 mr-1.5 h-5 w-5 text-gray-400 dark:text-gray-300"
                   aria-hidden="true"
                 />
                 {proposer}
               </p>
             </div>
-            <div className="flex items-center mt-2 text-sm text-gray-500 sm:mt-0">
+            <div className="flex items-center mt-2 text-sm text-gray-500 sm:mt-0 dark:text-gray-400">
               <CalendarIcon
-                className="shrink-0 mr-1.5 h-5 w-5 text-gray-400"
+                className="shrink-0 mr-1.5 h-5 w-5 text-gray-400 dark:text-gray-300"
                 aria-hidden="true"
               />
               <p>Closing on block height {endBlockHeight}</p>

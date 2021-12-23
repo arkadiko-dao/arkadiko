@@ -151,7 +151,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
             </Disclosure.Button>
           </dt>
           <Disclosure.Panel as="dd" className="mt-2">
-            <div className="w-full p-4 mt-4 border border-indigo-200 rounded-lg shadow-sm dark:bg-indigo-200">
+            <div className="w-full p-4 mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
               <h4 className="text-xs text-indigo-700 uppercase font-headings">Pool share</h4>
 
               <dl className="mt-2 space-y-1">

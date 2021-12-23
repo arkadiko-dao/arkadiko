@@ -380,7 +380,7 @@ export const ViewProposal = ({ match }) => {
               </div>
               <div className="mt-3 text-center sm:mt-5">
                 <h3
-                  className="text-lg font-medium leading-6 text-gray-900 font-headings"
+                  className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50"
                   id="modal-headline"
                 >
                   Vote for Proposal {match.params.id}
@@ -466,7 +466,7 @@ export const ViewProposal = ({ match }) => {
               </div>
               <div className="mt-3 text-center sm:mt-5">
                 <h3
-                  className="text-lg font-medium leading-6 text-gray-900 font-headings"
+                  className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50"
                   id="modal-headline"
                 >
                   Vote for Proposal {match.params.id}
@@ -526,7 +526,7 @@ export const ViewProposal = ({ match }) => {
 
       <main className="my-16">
         <section>
-          <header className="pb-5 border-b border-gray-200 sm:flex sm:items-center sm:justify-between">
+          <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:items-center sm:justify-between">
             {isLoading ? (
               <>
                 <Placeholder
@@ -542,7 +542,7 @@ export const ViewProposal = ({ match }) => {
               </>
             ) : (
               <>
-                <h2 className="text-2xl font-bold leading-6 text-gray-900 font-headings">
+                <h2 className="text-2xl font-bold leading-6 text-gray-900 font-headings dark:text-zinc-50">
                   Proposal #{match.params.id} - {proposal.title}
                 </h2>
                 <div className="flex shrink-0 ml-2">
@@ -564,12 +564,12 @@ export const ViewProposal = ({ match }) => {
             <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-x-4 lg:space-y-0">
               <div className="overflow-hidden bg-white rounded-lg shadow">
                 <div className="px-4 py-5 sm:px-6">
-                  <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">
+                  <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
                     Details
                   </h3>
                 </div>
                 <div className="px-4 py-5 border-t border-gray-200 sm:p-0">
-                  <dl className="sm:divide-y sm:divide-gray-200">
+                  <dl className="sm:divide-y sm:divide-gray-200 dark:divide-gray-700">
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                       <dt className="inline-flex items-center text-sm font-medium text-gray-500">
                         Link
@@ -749,7 +749,7 @@ export const ViewProposal = ({ match }) => {
                       width={Placeholder.width.HALF}
                     />
                   ) : (
-                    <p className="text-sm text-center text-gray-500">
+                    <p className="text-sm text-center text-gray-500 dark:text-zinc-400">
                       Total votes:{' '}
                       <span className="font-semibold text-gray-700">{proposal.totalVotes}</span>
                     </p>

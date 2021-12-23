@@ -38,10 +38,10 @@ export const debtClass = (liquidationRatio: number, ratio: number) => {
   } else if (Number(ratio) >= Number(liquidationRatio) + 30) {
     return 'text-orange-400';
   } else if (Number(ratio) > Number(liquidationRatio) + 10) {
-    return 'text-red-900';
+    return 'text-red-600';
   }
 
-  return 'text-red-900';
+  return 'text-gray-900 dark:text-zinc-100';
 };
 
 export const Vault: React.FC<VaultProps> = ({
@@ -93,7 +93,7 @@ export const Vault: React.FC<VaultProps> = ({
       return 'bg-red-300';
     }
 
-    return 'bg-white';
+    return 'bg-white dark:bg-zinc-900';
   };
 
   let debtRatio = 0;
@@ -138,26 +138,26 @@ export const Vault: React.FC<VaultProps> = ({
     <>
       {showAsTable ? (
         <tr className={`${debtBackgroundClass(debtRatio)}`}>
-          <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-            <span className="text-gray-900">
+          <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-zinc-400 whitespace-nowrap">
+            <span className="text-gray-900 dark:text-zinc-100">
               <RouterLink to={`vaults/${id}`} exact className="px-2.5 py-1.5">
                 {id}
               </RouterLink>
             </span>
           </td>
-          <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-            <span className="text-gray-900">{collateralType.toUpperCase()}</span>
+          <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-zinc-400 whitespace-nowrap">
+            <span className="text-gray-900 dark:text-zinc-100">{collateralType.toUpperCase()}</span>
           </td>
-          <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+          <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-zinc-400 whitespace-nowrap">
             <span className={`${debtClass(collateralData?.liquidationRatio, debtRatio)}`}>
               {debtRatio}% (&gt; {collateralData['liquidationRatio']}%)
             </span>
           </td>
-          <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-            <span className="text-gray-900">${stabilityFee / 1000000} USDA</span>
+          <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-zinc-400 whitespace-nowrap">
+            <span className="text-gray-900 dark:text-zinc-100">${stabilityFee / 1000000} USDA</span>
           </td>
-          <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-            <span className="text-gray-900">
+          <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-zinc-400 whitespace-nowrap">
+            <span className="text-gray-900 dark:text-zinc-100">
               $
               {(debt / 1000000).toLocaleString(undefined, {
                 minimumFractionDigits: 2,
@@ -166,8 +166,8 @@ export const Vault: React.FC<VaultProps> = ({
               USDA
             </span>
           </td>
-          <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-            <span className="text-gray-900">
+          <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-zinc-400 whitespace-nowrap">
+            <span className="text-gray-900 dark:text-zinc-100">
               {(collateral / decimals).toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 6,
@@ -175,8 +175,8 @@ export const Vault: React.FC<VaultProps> = ({
               {collateralToken.toUpperCase()}
             </span>
           </td>
-          <td className="px-6 py-4 text-sm text-left text-gray-900 whitespace-nowrap">
-            <span className="text-gray-900">
+          <td className="px-6 py-4 text-sm text-left text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+            <span className="text-gray-900 dark:text-zinc-100">
               {isLiquidated ? (
                 auctionEnded ? (
                   leftoverCollateral > 0 && stackedTokens === 0 ? (
@@ -197,7 +197,7 @@ export const Vault: React.FC<VaultProps> = ({
                 <RouterLink
                   to={`vaults/${id}`}
                   exact
-                  className="text-indigo-600 hover:text-indigo-900"
+                  className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400"
                 >
                   Manage
                 </RouterLink>
@@ -206,7 +206,7 @@ export const Vault: React.FC<VaultProps> = ({
           </td>
         </tr>
       ) : (
-        <div role="listitem" className="bg-white dark:bg-zinc-800">
+        <div role="listitem" className="bg-white dark:bg-zinc-900">
           <table className="w-full">
             <thead>
               <tr>
@@ -218,33 +218,33 @@ export const Vault: React.FC<VaultProps> = ({
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               <tr>
-                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500" scope="row">
+                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400" scope="row">
                   <div className="flex items-center">Vault ID</div>
                 </th>
                 <td className="py-5 pr-4">
-                  <span className="block text-sm text-right text-gray-700">{id}</span>
+                  <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">{id}</span>
                 </td>
               </tr>
 
-              <tr className="border-t border-gray-200">
-                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500" scope="row">
+              <tr className="border-t border-gray-200 dark:border-zinc-600">
+                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400" scope="row">
                   <div className="flex items-center">Collateral Type</div>
                 </th>
                 <td className="py-5 pr-4">
-                  <span className="block text-sm text-right text-gray-700">
+                  <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
                     {collateralType.toUpperCase()}
                   </span>
                 </td>
               </tr>
 
-              <tr className="border-t border-gray-200">
-                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500" scope="row">
+              <tr className="border-t border-gray-200 dark:border-zinc-600">
+                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400" scope="row">
                   Current Collateralization
                 </th>
                 <td className="py-5 pr-4">
-                  <span className="block text-sm text-right text-gray-700">
+                  <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
                     <span className={`${debtClass(collateralData?.liquidationRatio, debtRatio)}`}>
                       {debtRatio}% (&gt; {collateralData['liquidationRatio']}%)
                     </span>
@@ -252,23 +252,23 @@ export const Vault: React.FC<VaultProps> = ({
                 </td>
               </tr>
 
-              <tr className="border-t border-gray-200">
-                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500" scope="row">
+              <tr className="border-t border-gray-200 dark:border-zinc-600">
+                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400" scope="row">
                   Stability Fee Owed
                 </th>
                 <td className="py-5 pr-4">
-                  <span className="block text-sm text-right text-gray-700">
+                  <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
                     ${stabilityFee / 1000000} USDA
                   </span>
                 </td>
               </tr>
 
-              <tr className="border-t border-gray-200">
-                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500" scope="row">
+              <tr className="border-t border-gray-200 dark:border-zinc-600">
+                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400" scope="row">
                   USDA amount
                 </th>
                 <td className="py-5 pr-4">
-                  <span className="block text-sm text-right text-gray-700">
+                  <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
                     $
                     {(debt / 1000000).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
@@ -279,12 +279,12 @@ export const Vault: React.FC<VaultProps> = ({
                 </td>
               </tr>
 
-              <tr className="border-t border-gray-200">
-                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500" scope="row">
+              <tr className="border-t border-gray-200 dark:border-zinc-600">
+                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400" scope="row">
                   Collateral amount
                 </th>
                 <td className="py-5 pr-4">
-                  <span className="block text-sm text-right text-gray-700">
+                  <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
                     {(collateral / decimals).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 6,
@@ -295,7 +295,7 @@ export const Vault: React.FC<VaultProps> = ({
               </tr>
             </tbody>
           </table>
-          <div className="px-4 py-5 border-t border-b border-gray-200">
+          <div className="px-4 py-5 border-t border-b border-gray-200 dark:border-zinc-600">
             {isLiquidated ? (
               auctionEnded ? (
                 leftoverCollateral > 0 && stackedTokens === 0 ? (

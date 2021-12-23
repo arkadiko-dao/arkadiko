@@ -105,7 +105,7 @@ export const UnstakeDikoModal = ({
         </Alert>
       ) : null}
 
-      <p className="mt-3 text-sm text-center text-gray-500">
+      <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">
         You are currently staking{' '}
         {microToReadable(state.balance['stdiko']).toLocaleString(undefined, {
           minimumFractionDigits: 2,

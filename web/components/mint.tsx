@@ -230,52 +230,52 @@ export const Mint = () => {
               </svg>
             </a>
 
-            <dl className="relative grid grid-cols-1 overflow-hidden bg-indigo-100 bg-opacity-50 border border-indigo-200 divide-y divide-indigo-200 rounded-lg shadow-sm md:grid-cols-4 md:divide-y-0 md:divide-x">
+            <dl className="relative grid grid-cols-1 overflow-hidden bg-indigo-100 bg-opacity-50 border border-indigo-200 divide-y divide-indigo-200 rounded-lg shadow-sm md:grid-cols-4 md:divide-y-0 md:divide-x dark:bg-zinc-700 dark:bg-opacity-95 dark:border-zinc-600 dark:divide-zinc-600">
               <div className="px-4 py-5 sm:p-6">
-                <dt className="text-xs font-semibold text-indigo-800 uppercase">
+                <dt className="text-xs font-semibold text-indigo-800 uppercase dark:text-indigo-200">
                   Stacking Cycle #
                 </dt>
                 <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
                     <Placeholder className="py-2" width={Placeholder.width.THIRD} />
                   ) : (
-                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600 dark:text-indigo-100">
                       {state.cycleNumber}
                     </div>
                   )}
                 </dd>
               </div>
               <div className="px-4 py-5 sm:p-6">
-                <dt className="text-xs font-semibold text-indigo-800 uppercase">End date</dt>
+                <dt className="text-xs font-semibold text-indigo-800 uppercase dark:text-indigo-200">End date</dt>
                 <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
                     <Placeholder className="py-2" width={Placeholder.width.THIRD} />
                   ) : (
-                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600 dark:text-indigo-100">
                       {state.endDate}
                     </div>
                   )}
                 </dd>
               </div>
               <div className="px-4 py-5 sm:p-6">
-                <dt className="text-xs font-semibold text-indigo-800 uppercase">Days in cycle</dt>
+                <dt className="text-xs font-semibold text-indigo-800 uppercase dark:text-indigo-200">Days in cycle</dt>
                 <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
                     <Placeholder className="py-2" width={Placeholder.width.THIRD} />
                   ) : (
-                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600 dark:text-indigo-100">
                       {state.daysPassed}
                     </div>
                   )}
                 </dd>
               </div>
               <div className="px-4 py-5 sm:p-6">
-                <dt className="text-xs font-semibold text-indigo-800 uppercase">Days left</dt>
+                <dt className="text-xs font-semibold text-indigo-800 uppercase dark:text-indigo-200">Days left</dt>
                 <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   {loadingStackingData === true ? (
                     <Placeholder className="py-2" width={Placeholder.width.THIRD} />
                   ) : (
-                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600 dark:text-indigo-100">
                       {state.daysLeft}
                     </div>
                   )}
@@ -286,13 +286,13 @@ export const Mint = () => {
         </section>
 
         <section className="mt-12">
-          <header className="pb-5 border-b border-gray-200 sm:flex sm:items-center sm:justify-between">
-            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">
+          <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:items-center sm:justify-between">
+            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
               Your vaults
             </h3>
             <div className="flex items-center mt-3 sm:mt-0 sm:ml-4">
               <div className="flex flex-col items-end text-sm">
-                <p className="flex items-center text-gray-500">
+                <p className="flex items-center text-gray-500 dark:text-zinc-300">
                   Vaults rewards are now over
                   <Tooltip
                     placement="left"
@@ -329,24 +329,24 @@ export const Mint = () => {
             <VaultGroup vaults={vaults} />
           ) : loadingVaults === true ? (
             <div className="min-w-full mt-4 overflow-hidden overflow-x-auto align-middle rounded-lg sm:shadow">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead>
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
                   <tr>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50"
+                      className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                     >
                       <Placeholder color={Placeholder.color.GRAY} />
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="bg-white dark:bg-zinc-800">
+                  <tr className="bg-white dark:bg-zinc-900">
                     <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
                       <Placeholder />
                     </td>
                   </tr>
-                  <tr className="bg-white dark:bg-zinc-800">
+                  <tr className="bg-white dark:bg-zinc-900">
                     <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
                       <Placeholder />
                     </td>
@@ -364,8 +364,8 @@ export const Mint = () => {
         </section>
 
         <section className="mt-8">
-          <header className="pb-5 border-b border-gray-200">
-            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">
+          <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
+            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
               Create vault
             </h3>
           </header>
@@ -375,8 +375,8 @@ export const Mint = () => {
               <CollateralType types={collateralTypes} />
             ) : (
               <div className="min-w-full mt-4 overflow-hidden overflow-x-auto align-middle rounded-lg sm:shadow">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead>
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
                     <tr>
                       <th
                         scope="col"
@@ -387,12 +387,12 @@ export const Mint = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className="bg-white dark:bg-zinc-800">
+                    <tr className="bg-white dark:bg-zinc-900">
                       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
                         <Placeholder />
                       </td>
                     </tr>
-                    <tr className="bg-white dark:bg-zinc-800">
+                    <tr className="bg-white dark:bg-zinc-900">
                       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
                         <Placeholder />
                       </td>
@@ -405,12 +405,12 @@ export const Mint = () => {
         </section>
 
         <section className="mt-8">
-          <header className="pb-5 border-b border-gray-200 sm:flex sm:items-center sm:justify-between">
-            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">Assets</h3>
+          <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:items-center sm:justify-between">
+            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">Assets</h3>
             <div className="flex mt-3 sm:mt-0 sm:ml-4">
               {env == 'mocknet' ? (
                 <div className="flex items-center justify-end">
-                  <span className="px-2 py-1 text-xs text-gray-800">Mocknet actions:</span>
+                  <span className="px-2 py-1 text-xs text-gray-800 dark:text-zinc-100">Mocknet actions:</span>
                   <button
                     type="button"
                     onClick={() => addMocknetStx()}
@@ -426,35 +426,35 @@ export const Mint = () => {
           <div className="flex flex-col mt-4">
             <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
               <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                <div className="overflow-hidden border border-gray-200 rounded-lg">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                <div className="overflow-hidden border border-gray-200 rounded-lg dark:border-zinc-700">
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
                       <tr>
                         <th
                           scope="col"
-                          className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
                         >
                           Asset
                         </th>
                         <th
                           scope="col"
-                          className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
                         >
                           Last Oracle Price
                         </th>
                         <th
                           scope="col"
-                          className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
                         >
                           Updated Block Height
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      <tr className="bg-white dark:bg-zinc-800">
-                        <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                    <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-gray-700">
+                      <tr className="bg-white dark:bg-zinc-900">
+                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
                           <div className="flex items-center">
-                            <div className="shrink-0 w-10 h-10">
+                            <div className="w-10 h-10 shrink-0">
                               <img
                                 className="w-10 h-10 rounded-full"
                                 src={tokenList[2].logo}
@@ -462,33 +462,33 @@ export const Mint = () => {
                               />
                             </div>
                             <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">STX</div>
+                              <div className="text-sm font-medium text-gray-900 dark:text-zinc-100">STX</div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
                           {loadingPrices ? (
                             <Placeholder className="py-2" width={Placeholder.width.HALF} />
                           ) : (
                             <span>${stxPrice / 1000000}</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
                           {loadingPrices ? (
                             <Placeholder className="py-2" width={Placeholder.width.HALF} />
                           ) : (
                             <>
                             <span>{stxBlockUpdate} </span>
-                            <span className="text-gray-500">({stxBlockAgoUpdate} blocks ago)</span>
+                            <span className="text-gray-500 dark:text-zinc-300">({stxBlockAgoUpdate} blocks ago)</span>
                             </>
                           )}
                         </td>
                       </tr>
 
-                      <tr className="bg-white dark:bg-zinc-800">
-                        <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                      <tr className="bg-white dark:bg-zinc-900">
+                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
                           <div className="flex items-center">
-                            <div className="shrink-0 w-10 h-10">
+                            <div className="w-10 h-10 shrink-0">
                               <img
                                 className="w-10 h-10 rounded-full"
                                 src={tokenList[1].logo}
@@ -496,33 +496,33 @@ export const Mint = () => {
                               />
                             </div>
                             <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">DIKO</div>
+                              <div className="text-sm font-medium text-gray-900 dark:text-zinc-100">DIKO</div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
                           {loadingPrices ? (
                             <Placeholder className="py-2" width={Placeholder.width.HALF} />
                           ) : (
                             <span>${dikoPrice}</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
                           {loadingPrices ? (
                             <Placeholder className="py-2" width={Placeholder.width.HALF} />
                           ) : (
                             <>
                             <span>{dikoBlockUpdate} </span>
-                            <span className="text-gray-500">({dikoBlockAgoUpdate} blocks ago)</span>
+                            <span className="text-gray-500 dark:text-zinc-300">({dikoBlockAgoUpdate} blocks ago)</span>
                             </>
                           )}
                         </td>
                       </tr>
 
-                      <tr className="bg-white dark:bg-zinc-800">
-                        <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                      <tr className="bg-white dark:bg-zinc-900">
+                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
                           <div className="flex items-center">
-                            <div className="shrink-0 w-10 h-10">
+                            <div className="w-10 h-10 shrink-0">
                               <img
                                 className="w-10 h-10 rounded-full"
                                 src={tokenList[3].logo}
@@ -530,33 +530,33 @@ export const Mint = () => {
                               />
                             </div>
                             <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">xBTC</div>
+                              <div className="text-sm font-medium text-gray-900 dark:text-zinc-100">xBTC</div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
                           {loadingPrices ? (
                             <Placeholder className="py-2" width={Placeholder.width.HALF} />
                           ) : (
                             <span>${xbtcPrice / 1000000}</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
                           {loadingPrices ? (
                             <Placeholder className="py-2" width={Placeholder.width.HALF} />
                           ) : (
                             <>
                             <span>{xbtcBlockUpdate} </span>
-                            <span className="text-gray-500">({xbtcBlockAgoUpdate} blocks ago)</span>
+                            <span className="text-gray-500 dark:text-zinc-300">({xbtcBlockAgoUpdate} blocks ago)</span>
                             </>
                           )}
                         </td>
                       </tr>
 
-                      <tr className="bg-white dark:bg-zinc-800">
+                      <tr className="bg-white dark:bg-zinc-900">
                         <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                           <div className="flex items-center">
-                            <div className="shrink-0 w-10 h-10">
+                            <div className="w-10 h-10 shrink-0">
                               <img
                                 className="w-10 h-10 rounded-full"
                                 src={tokenList[0].logo}
@@ -564,24 +564,24 @@ export const Mint = () => {
                               />
                             </div>
                             <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">USDA</div>
+                              <div className="text-sm font-medium text-gray-900 dark:text-zinc-100">USDA</div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
                           {loadingPrices ? (
                             <Placeholder className="py-2" width={Placeholder.width.HALF} />
                           ) : (
                             <span>${usdaPrice / 1000000}</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
                           {loadingPrices ? (
                             <Placeholder className="py-2" width={Placeholder.width.HALF} />
                           ) : (
                             <>
                             <span>{usdaBlockUpdate} </span>
-                            <span className="text-gray-500">({usdaBlockAgoUpdate} blocks ago)</span>
+                            <span className="text-gray-500 dark:text-zinc-300">({usdaBlockAgoUpdate} blocks ago)</span>
                             </>
                           )}
                         </td>
