@@ -31,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
   const name = bnsName();
 
   return (
-    <Disclosure as="nav" className="relative sticky top-0 z-50 bg-white shadow dark:bg-zinc-700">
+    <Disclosure as="nav" className="relative sticky top-0 z-50 bg-white shadow dark:bg-zinc-800">
       {({ open }) => (
         <>
           <div className="px-4 px-6 mx-auto max-w-7xl lg:px-8">
@@ -169,7 +169,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                 )}
               </div>
               <div className="flex items-center -mr-2 lg:hidden">
-                <Disclosure.Button className="inline-flex items-center justify-center p-2 text-gray-400 rounded-md hover:text-gray-500 dark:text-white hover:bg-gray-100 ">
+                <Disclosure.Button className="inline-flex items-center justify-center p-2 text-gray-400 rounded-md hover:text-gray-500 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700">
                   <span className="sr-only">Open main menu</span>
                   {open ? (
                     <XIcon className="block w-6 h-6" aria-hidden="true" />
@@ -188,7 +188,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   <Disclosure.Button
                     as={RouterLink}
                     to="/swap"
-                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
+                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
                     activeClassName="border-indigo-500 text-gray-900">
                       Swap
                   </Disclosure.Button>
@@ -196,7 +196,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   <Disclosure.Button
                     as={RouterLink}
                     to="/vaults"
-                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
+                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
                     activeClassName="border-indigo-500 text-gray-900">
                       Vaults
                   </Disclosure.Button>
@@ -204,7 +204,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   <Disclosure.Button
                     as={RouterLink}
                     to="/stake"
-                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
+                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
                     activeClassName="border-indigo-500 text-gray-900">
                       Stake
                   </Disclosure.Button>
@@ -212,7 +212,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   <Disclosure.Button
                     as={RouterLink}
                     to="/auctions"
-                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
+                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
                     activeClassName="border-indigo-500 text-gray-900">
                       Auctions
                   </Disclosure.Button>
@@ -220,13 +220,13 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   <Disclosure.Button
                     as={RouterLink}
                     to="/governance"
-                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
+                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
                     activeClassName="border-indigo-500 text-gray-900">
                       Governance
                   </Disclosure.Button>
 
                   <a
-                    className="flex items-center py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
+                    className="flex items-center py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
                     href="https://docs.arkadiko.finance/"
                     target="_blank"
                   >
@@ -235,7 +235,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   </a>
 
                   <a
-                    className="flex items-center py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
+                    className="flex items-center py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
                     href="https://github.com/arkadiko-dao/arkadiko/blob/master/SECURITY.md"
                     target="_blank"
                   >
@@ -243,11 +243,11 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                     <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
                   </a>
                 </div>
-                <div className="pt-4 pb-3 border-t border-gray-200">
+                <div className="pt-4 pb-3 border-t border-gray-700">
                   <div className="space-y-1">
                     <button
                       type="button"
-                      className="block w-full px-4 py-2 text-base font-medium text-left text-gray-500 dark:text-white hover:text-gray-800 hover:bg-gray-100 sm:px-6"
+                      className="block w-full px-4 py-2 text-base font-medium text-left text-gray-500 dark:text-white hover:text-gray-800 hover:bg-gray-100 sm:px-6 dark:hover:bg-zinc-700"
                       onClick={() => {
                         setShowSidebar(true);
                       }}
@@ -266,7 +266,9 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                       Sign out
                     </button>
 
-                    <ColorThemeToggle />
+                    <ColorThemeToggle
+                      classes="block w-full px-4 py-2 sm:px-6"
+                    />
                   </div>
                 </div>
               </div>
@@ -274,7 +276,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
               <div>
                 <div className="pt-2 pb-3 space-y-1">
                   <a
-                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
+                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
                     href="https://docs.arkadiko.finance/"
                     target="_blank"
                   >
@@ -282,7 +284,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   </a>
 
                   <a
-                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
+                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
                     href="https://github.com/arkadiko-dao/arkadiko/blob/master/SECURITY.md"
                     target="_blank"
                   >
@@ -301,7 +303,9 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   ) : null}
                 </div>
 
-                <ColorThemeToggle />
+                <ColorThemeToggle
+                  classes="block w-full px-4 py-2 sm:px-6"
+                />
               </div>
             )}
           </Disclosure.Panel>
