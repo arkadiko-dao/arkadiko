@@ -1,6 +1,7 @@
-
 [project]
 name = "arkadiko"
+
+analysis = ["check_checker"]
 
 [contracts.arkadiko-dao-token-trait-v1]
 depends_on = []
