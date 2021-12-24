@@ -24,7 +24,7 @@ export const VaultGroup: React.FC<VaultGroupProps> = ({ vaults }) => {
   return (
     <>
       <div className="md:hidden">
-        <div role="list" className="mt-4 overflow-hidden border border-gray-200 divide-y divide-gray-200 rounded-lg dark:divide-gray-700 dark:border-zinc-700 md:hidden">
+        <div role="list" className="mt-4 overflow-hidden border border-gray-200 divide-y divide-gray-200 rounded-lg dark:divide-zinc-600 dark:border-zinc-700 md:hidden">
           {vaultItemsMobile}
         </div>
       </div>
@@ -34,7 +34,7 @@ export const VaultGroup: React.FC<VaultGroupProps> = ({ vaults }) => {
           <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
               <div className="overflow-hidden border border-gray-200 rounded-lg dark:border-zinc-700">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
                   <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
                     <tr>
                       <th
@@ -81,7 +81,7 @@ export const VaultGroup: React.FC<VaultGroupProps> = ({ vaults }) => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-gray-700">{vaultItems}</tbody>
+                  <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600">{vaultItems}</tbody>
                 </table>
               </div>
             </div>

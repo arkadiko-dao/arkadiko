@@ -41,7 +41,7 @@ export const ProposalGroup: React.FC<ProposalProps[]> = ({ proposals }) => {
 
   return (
     <div className="mt-5 overflow-hidden bg-white rounded-md shadow dark:bg-zinc-900">
-      <ul className="divide-y divide-gray-200 dark:divide-gray-700">{proposalItems}</ul>
+      <ul className="divide-y divide-gray-200 dark:divide-zinc-600">{proposalItems}</ul>
     </div>
   );
 };

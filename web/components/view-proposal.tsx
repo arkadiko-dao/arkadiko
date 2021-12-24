@@ -355,7 +355,7 @@ export const ViewProposal = ({ match }) => {
       <Modal isOpen={showVoteDikoModal}>
         <div className="flex px-4 pt-4 pb-20 text-center sm:block sm:p-0">
           <div
-            className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6"
+            className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg dark:bg-zinc-900 sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6"
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-headline"
@@ -545,7 +545,7 @@ export const ViewProposal = ({ match }) => {
                 <h2 className="text-2xl font-bold leading-6 text-gray-900 font-headings dark:text-zinc-50">
                   Proposal #{match.params.id} - {proposal.title}
                 </h2>
-                <div className="flex shrink-0 ml-2">
+                <div className="flex ml-2 shrink-0">
                   {proposal.isOpen ? (
                     <p className="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">
                       Open for Voting
@@ -562,20 +562,20 @@ export const ViewProposal = ({ match }) => {
 
           <div className="mt-4">
             <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-x-4 lg:space-y-0">
-              <div className="overflow-hidden bg-white rounded-lg shadow">
+              <div className="overflow-hidden bg-white rounded-lg shadow dark:bg-zinc-900">
                 <div className="px-4 py-5 sm:px-6">
                   <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
                     Details
                   </h3>
                 </div>
-                <div className="px-4 py-5 border-t border-gray-200 sm:p-0">
-                  <dl className="sm:divide-y sm:divide-gray-200 dark:divide-gray-700">
+                <div className="px-4 py-5 border-t border-gray-200 sm:p-0 dark:border-zinc-600">
+                  <dl className="sm:divide-y sm:divide-gray-200 dark:divide-zinc-600">
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="inline-flex items-center text-sm font-medium text-gray-500">
+                      <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
                         Link
                         <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
                       </dt>
-                      <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                      <dd className="mt-1 text-sm text-gray-900 dark:text-zinc-100 sm:mt-0 sm:col-span-2">
                         {isLoading ? (
                           <Placeholder
                             className="py-1"
@@ -596,11 +596,11 @@ export const ViewProposal = ({ match }) => {
                       </dd>
                     </div>
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="inline-flex items-center text-sm font-medium text-gray-500">
+                      <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
                         Proposer
                         <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
                       </dt>
-                      <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                      <dd className="mt-1 text-sm text-gray-900 dark:text-zinc-100 sm:mt-0 sm:col-span-2">
                         {isLoading ? (
                           <Placeholder
                             className="py-1"
@@ -621,8 +621,8 @@ export const ViewProposal = ({ match }) => {
                       </dd>
                     </div>
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="text-sm font-medium text-gray-500">Start date</dt>
-                      <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                      <dt className="text-sm font-medium text-gray-500 dark:text-zinc-400">Start date</dt>
+                      <dd className="mt-1 text-sm text-gray-900 dark:text-zinc-100 sm:mt-0 sm:col-span-2">
                         {isLoading ? (
                           <Placeholder
                             className="py-1"
@@ -635,8 +635,8 @@ export const ViewProposal = ({ match }) => {
                       </dd>
                     </div>
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="text-sm font-medium text-gray-500">End date</dt>
-                      <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                      <dt className="text-sm font-medium text-gray-500 dark:text-zinc-400">End date</dt>
+                      <dd className="mt-1 text-sm text-gray-900 dark:text-zinc-100 sm:mt-0 sm:col-span-2">
                         {isLoading ? (
                           <Placeholder
                             className="py-1"
@@ -660,15 +660,15 @@ export const ViewProposal = ({ match }) => {
                 </div>
               </div>
 
-              <div className="flex flex-col overflow-hidden bg-white rounded-lg shadow">
+              <div className="flex flex-col overflow-hidden bg-white rounded-lg shadow dark:bg-zinc-900">
                 <dl className="flex-1 sm:grid sm:grid-cols-2">
-                  <div className="flex flex-col justify-center p-6 text-center border-b border-gray-200 sm:border-0 sm:border-r">
+                  <div className="flex flex-col justify-center p-6 text-center border-b border-gray-200 dark:border-zinc-600 sm:border-0 sm:border-r">
                     <dt className="inline-flex items-center order-2 mx-auto mt-2 text-lg font-medium leading-6">
                       <span
                         className={classNames(
                           proposal.forVotes > proposal.against && !proposal.isOpen
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-transparent text-gray-500',
+                            ? 'bg-green-100 text-green-800 dark:bg-green-200'
+                            : 'bg-transparent text-gray-500 dark:text-zinc-200',
                           'inline-flex items-center px-3 mt-3 py-1.5 rounded-full'
                         )}
                       >
@@ -696,18 +696,18 @@ export const ViewProposal = ({ match }) => {
                           <p className="text-3xl font-bold text-indigo-600">
                             {proposal.forVotesPercentage}%
                           </p>
-                          <p className="mt-1 font-semibold">{proposal.forVotes / 1000000}</p>
+                          <p className="mt-1 font-semibold text-gray-600 dark:text-zinc-300">{proposal.forVotes / 1000000}</p>
                         </>
                       )}
                     </dd>
                   </div>
-                  <div className="flex flex-col justify-center p-6 text-center border-t border-gray-100 sm:border-0 sm:border-l">
+                  <div className="flex flex-col justify-center p-6 text-center border-t border-gray-100 dark:border-zinc-700 sm:border-0 sm:border-l">
                     <dt className="inline-flex items-center order-2 mx-auto mt-2 text-lg font-medium leading-6 text-gray-500">
                       <span
                         className={classNames(
                           proposal.against > proposal.forVotes && !proposal.isOpen
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-transparent text-gray-500',
+                            ? 'bg-red-100 text-red-800 dark:bg-red-200'
+                            : 'bg-transparent text-gray-500 dark:text-zinc-200',
                           'inline-flex items-center px-3 mt-3 py-1.5 rounded-full'
                         )}
                       >
@@ -735,13 +735,13 @@ export const ViewProposal = ({ match }) => {
                           <p className="text-3xl font-bold text-indigo-600">
                             {proposal.againstVotesPercentage}%
                           </p>
-                          <p className="mt-1 font-semibold">{proposal.against / 1000000}</p>
+                          <p className="mt-1 font-semibold text-gray-600 dark:text-zinc-300">{proposal.against / 1000000}</p>
                         </>
                       )}
                     </dd>
                   </div>
                 </dl>
-                <div className="p-5 bg-white border-t border-gray-200">
+                <div className="p-5 bg-white border-t border-gray-200 dark:bg-zinc-900 dark:border-zinc-600">
                   {isLoading ? (
                     <Placeholder
                       className="justify-center py-2"
@@ -751,7 +751,7 @@ export const ViewProposal = ({ match }) => {
                   ) : (
                     <p className="text-sm text-center text-gray-500 dark:text-zinc-400">
                       Total votes:{' '}
-                      <span className="font-semibold text-gray-700">{proposal.totalVotes}</span>
+                      <span className="font-semibold text-gray-700 dark:text-zinc-200">{proposal.totalVotes}</span>
                     </p>
                   )}
                 </div>

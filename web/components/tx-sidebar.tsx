@@ -108,7 +108,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                     </div>
                   </div>
                   <div className="relative flex-1 px-4 mt-6 sm:px-6">
-                    <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+                    <ul className="divide-y divide-gray-200 dark:divide-zinc-600">
                       {pendingTransactions}
                       {transactions}
                     </ul>

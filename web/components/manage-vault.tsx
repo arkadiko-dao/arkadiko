@@ -517,7 +517,7 @@ export const ManageVault = ({ match }) => {
           <div className="mt-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-900 dark:divide-gray-700 sm:rounded-md sm:overflow-hidden">
+                <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-900 dark:divide-zinc-600 sm:rounded-md sm:overflow-hidden">
                   <div className="px-4 py-5 sm:p-6">
                     <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
                       Supply
@@ -526,7 +526,7 @@ export const ManageVault = ({ match }) => {
                       Manage and deposit extra collateral.
                     </p>
                   </div>
-                  <div className="px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-gray-700 sm:p-6">
+                  <div className="px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600 sm:p-6">
                     <div className="flex items-start justify-between">
                       {loadingVaultData ? (
                         <div className="flex flex-col flex-1">
@@ -567,7 +567,7 @@ export const ManageVault = ({ match }) => {
                     </div>
                   </div>
                 </div>
-                <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-900 dark:divide-gray-700 sm:rounded-md sm:overflow-hidden">
+                <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-900 dark:divide-zinc-600 sm:rounded-md sm:overflow-hidden">
                   <div className="px-4 py-5 sm:p-6">
                     <div className="flex items-start justify-between">
                       <div>
@@ -680,7 +680,7 @@ export const ManageVault = ({ match }) => {
                       </div>
                     </div>
                   ) : canStackCollateral ? (
-                    <div className="px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-gray-700 sm:p-6">
+                    <div className="px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600 sm:p-6">
                       <dl>
                         <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
                           <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
@@ -919,7 +919,7 @@ export const ManageVault = ({ match }) => {
                 </div>
               </div>
               <div>
-                <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-900 dark:divide-gray-700 sm:rounded-md sm:overflow-hidden">
+                <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-900 dark:divide-zinc-600 sm:rounded-md sm:overflow-hidden">
                   <div className="px-4 py-5 sm:p-6">
                     <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
                       Mint
@@ -928,7 +928,7 @@ export const ManageVault = ({ match }) => {
                       Manage your loan. Get extra USDA. Pay it back.
                     </p>
                   </div>
-                  <div className="relative px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-gray-700 sm:p-6">
+                  <div className="relative px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600 sm:p-6">
                     <div>
                       <div className="flex items-start justify-between">
                         <div>

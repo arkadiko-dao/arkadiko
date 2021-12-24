@@ -762,7 +762,7 @@ export const Stake = () => {
               </header>
 
               <div className="mt-4 bg-white divide-y divide-gray-200 rounded-md shadow dark:divide-gray-600 dark:bg-zinc-900">
-                <div className="px-4 py-5 space-y-6 divide-y divide-gray-200 dark:divide-gray-700 sm:p-6">
+                <div className="px-4 py-5 space-y-6 divide-y divide-gray-200 dark:divide-zinc-600 sm:p-6">
                   <div className="md:grid md:grid-flow-col gap-4 sm:grid-cols-[min-content,auto]">
                     <div className="self-center w-14">
                       <img className="w-12 h-12 rounded-full" src={tokenList[1].logo} alt="" />
@@ -1055,7 +1055,7 @@ export const Stake = () => {
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                     <div className="overflow-hidden border border-gray-200 rounded-lg dark:border-zinc-700">
-                      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                      <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
                         <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
                           <tr>
                             <th

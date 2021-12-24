@@ -76,7 +76,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
 
         <div className="max-w-4xl mx-auto mt-4 shadow sm:rounded-md sm:overflow-hidden">
           <div className="px-4 py-5 space-y-6 bg-white dark:bg-zinc-900 sm:p-6">
-            <div className="space-y-8 divide-y divide-gray-200 dark:divide-gray-700">
+            <div className="space-y-8 divide-y divide-gray-200 dark:divide-zinc-600">
               <div className="space-y-4 divide-y divide-gray-100 dark:divide-gray-800">
                 <div className="pt-4 sm:flex sm:justify-between sm:items-baseline">
                   <div>

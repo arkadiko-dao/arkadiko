@@ -329,7 +329,7 @@ export const Mint = () => {
             <VaultGroup vaults={vaults} />
           ) : loadingVaults === true ? (
             <div className="min-w-full mt-4 overflow-hidden overflow-x-auto align-middle rounded-lg sm:shadow">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
                 <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
                   <tr>
                     <th
@@ -375,7 +375,7 @@ export const Mint = () => {
               <CollateralType types={collateralTypes} />
             ) : (
               <div className="min-w-full mt-4 overflow-hidden overflow-x-auto align-middle rounded-lg sm:shadow">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
                   <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
                     <tr>
                       <th
@@ -427,7 +427,7 @@ export const Mint = () => {
             <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
               <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                 <div className="overflow-hidden border border-gray-200 rounded-lg dark:border-zinc-700">
-                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
                     <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
                       <tr>
                         <th
@@ -450,7 +450,7 @@ export const Mint = () => {
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-gray-700">
+                    <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600">
                       <tr className="bg-white dark:bg-zinc-900">
                         <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
                           <div className="flex items-center">

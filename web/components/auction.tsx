@@ -103,33 +103,33 @@ export const Auction: React.FC<AuctionProps> = ({
   return (
     <tr className="bg-white dark:bg-zinc-900">
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900">
+        <span className="font-medium text-gray-900 dark:text-zinc-100">
           {id}.{lotId + 1}
         </span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900">
+        <span className="font-medium text-gray-900 dark:text-zinc-100">
           <span>
             {minimumCollateralAmount / 1000000} {collateralToken.toUpperCase()}
           </span>
         </span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900">${(discountedPrice / 100).toFixed(2)}</span>
+        <span className="font-medium text-gray-900 dark:text-zinc-100">${(discountedPrice / 100).toFixed(2)}</span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900">${(debtToRaise / 1000000).toFixed(4)}</span>
+        <span className="font-medium text-gray-900 dark:text-zinc-100">${(debtToRaise / 1000000).toFixed(4)}</span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900">${currentBid / 1000000}</span>
+        <span className="font-medium text-gray-900 dark:text-zinc-100">${currentBid / 1000000}</span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900">
+        <span className="font-medium text-gray-900 dark:text-zinc-100">
           {endsAt} (~{(((Number(endsAt) - stacksTipHeight) * 10) / 60).toFixed(2)} hours)
         </span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900">
+        <span className="font-medium text-gray-900 dark:text-zinc-100">
           <button
             type="button"
             onClick={() => setBidParams()}

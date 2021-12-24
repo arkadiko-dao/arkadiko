@@ -218,7 +218,7 @@ export const Vault: React.FC<VaultProps> = ({
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="divide-y divide-gray-200 dark:divide-zinc-600">
               <tr>
                 <th className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400" scope="row">
                   <div className="flex items-center">Vault ID</div>

@@ -194,8 +194,8 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                 ))}
               </Alert>
             ) : null}
-            <form className="space-y-8 divide-y divide-gray-200 dark:divide-gray-700">
-              <div className="space-y-8 divide-y divide-gray-200 dark:divide-gray-700">
+            <form className="space-y-8 divide-y divide-gray-200 dark:divide-zinc-600">
+              <div className="space-y-8 divide-y divide-gray-200 dark:divide-zinc-600">
                 <div>
                   <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-8">
                     {isLoading ? (
