@@ -480,7 +480,7 @@ export const Swap: React.FC = () => {
 
                     {loadingData ? (
                       <Placeholder className="justify-end pt-3" width={Placeholder.width.THIRD} />
-                    ) : (
+                    ) : foundPair ? (
                       <div className="flex items-center justify-end mt-2">
                         <p className="text-sm font-semibold text-right text-gray-400 dark:text-zinc-200">
                           {exchangeRateSwitched ? (
@@ -506,7 +506,7 @@ export const Swap: React.FC = () => {
                           <SwitchHorizontalIcon className="w-5 h-5" aria-hidden="true" />
                         </button>
                       </div>
-                    )}
+                    ) : null}
 
                     {state.userData ? (
                       <button
@@ -556,95 +556,97 @@ export const Swap: React.FC = () => {
               )}
             </div>
           </div>
-          <div className="w-full max-w-md p-4 pt-8 -mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
-            <dl className="space-y-1">
-              <div className="grid grid-cols-2 gap-4">
-                <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
-                  Minimum Received
-                  <div className="ml-2">
-                    <Tooltip
-                      className="z-10"
-                      shouldWrapChildren={true}
-                      label={`Your transaction will revert if there is a large, unfavorable price movement before it is confirmed`}
-                    >
-                      <InformationCircleIcon
-                        className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
-                        aria-hidden="true"
-                      />
-                    </Tooltip>
-                  </div>
-                </dt>
-                <dd className="inline-flex justify-end mt-0 mt-1 text-sm font-semibold text-indigo-900">
-                  {loadingData ? (
-                    <Placeholder className="justify-end" width={Placeholder.width.HALF} />
-                  ) : (
-                    <>
-                      <div className="mr-1 truncate">
-                        {minimumReceived.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 6,
-                        })}
-                      </div>
-                      {tokenY.name}
-                    </>
-                  )}
-                </dd>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
-                  Price Impact
-                  <div className="ml-2">
-                    <Tooltip
-                      className="z-10"
-                      shouldWrapChildren={true}
-                      label={`The difference between the market price and estimated price due to trade size`}
-                    >
-                      <InformationCircleIcon
-                        className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
-                        aria-hidden="true"
-                      />
-                    </Tooltip>
-                  </div>
-                </dt>
-                <dd className="inline-flex justify-end mt-0 mt-1 text-sm font-semibold text-indigo-900">
-                  {loadingData ? (
-                    <Placeholder className="justify-end" width={Placeholder.width.THIRD} />
-                  ) : (
-                    <>
-                      ≈<div className="mr-1 truncate">{priceImpact}</div>%
-                    </>
-                  )}
-                </dd>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
-                  Liquidity Provider fee
-                  <div className="ml-2">
-                    <Tooltip
-                      className="z-10"
-                      shouldWrapChildren={true}
-                      label={`A portion of each trade goes to liquidity providers as a protocol incentive`}
-                    >
-                      <InformationCircleIcon
-                        className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
-                        aria-hidden="true"
-                      />
-                    </Tooltip>
-                  </div>
-                </dt>
-                <dd className="inline-flex justify-end mt-0 mt-1 text-sm font-semibold text-indigo-900">
-                  {loadingData ? (
-                    <Placeholder className="justify-end" width={Placeholder.width.HALF} />
-                  ) : (
-                    <>
-                      <div className="mr-1 truncate">{lpFee}</div>
-                      {tokenX.name}
-                    </>
-                  )}
-                </dd>
-              </div>
-            </dl>
-          </div>
+          {foundPair ? (
+            <div className="w-full max-w-md p-4 pt-8 -mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
+              <dl className="space-y-1">
+                <div className="grid grid-cols-2 gap-4">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
+                    Minimum Received
+                    <div className="ml-2">
+                      <Tooltip
+                        className="z-10"
+                        shouldWrapChildren={true}
+                        label={`Your transaction will revert if there is a large, unfavorable price movement before it is confirmed`}
+                      >
+                        <InformationCircleIcon
+                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
+                          aria-hidden="true"
+                        />
+                      </Tooltip>
+                    </div>
+                  </dt>
+                  <dd className="inline-flex justify-end mt-0 mt-1 text-sm font-semibold text-indigo-900">
+                    {loadingData ? (
+                      <Placeholder className="justify-end" width={Placeholder.width.HALF} />
+                    ) : (
+                      <>
+                        <div className="mr-1 truncate">
+                          {minimumReceived.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 6,
+                          })}
+                        </div>
+                        {tokenY.name}
+                      </>
+                    )}
+                  </dd>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
+                    Price Impact
+                    <div className="ml-2">
+                      <Tooltip
+                        className="z-10"
+                        shouldWrapChildren={true}
+                        label={`The difference between the market price and estimated price due to trade size`}
+                      >
+                        <InformationCircleIcon
+                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
+                          aria-hidden="true"
+                        />
+                      </Tooltip>
+                    </div>
+                  </dt>
+                  <dd className="inline-flex justify-end mt-0 mt-1 text-sm font-semibold text-indigo-900">
+                    {loadingData ? (
+                      <Placeholder className="justify-end" width={Placeholder.width.THIRD} />
+                    ) : (
+                      <>
+                        ≈<div className="mr-1 truncate">{priceImpact}</div>%
+                      </>
+                    )}
+                  </dd>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
+                    Liquidity Provider fee
+                    <div className="ml-2">
+                      <Tooltip
+                        className="z-10"
+                        shouldWrapChildren={true}
+                        label={`A portion of each trade goes to liquidity providers as a protocol incentive`}
+                      >
+                        <InformationCircleIcon
+                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
+                          aria-hidden="true"
+                        />
+                      </Tooltip>
+                    </div>
+                  </dt>
+                  <dd className="inline-flex justify-end mt-0 mt-1 text-sm font-semibold text-indigo-900">
+                    {loadingData ? (
+                      <Placeholder className="justify-end" width={Placeholder.width.HALF} />
+                    ) : (
+                      <>
+                        <div className="mr-1 truncate">{lpFee}</div>
+                        {tokenX.name}
+                      </>
+                    )}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          ) : null}
         </main>
       </Container>
     </>
