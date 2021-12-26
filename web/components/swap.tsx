@@ -91,14 +91,14 @@ export const Swap: React.FC = () => {
   }, [state.currentTxStatus]);
 
   useEffect(() => {
-    const fetchPair = async (tokenXContract: string, tokenYContract: string) => {
+    const fetchPair = async (contractXAddress: string, tokenXContract: string, contractYAddress: string, tokenYContract: string) => {
       const details = await callReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',
         functionArgs: [
-          contractPrincipalCV(contractAddress, tokenXContract),
-          contractPrincipalCV(contractAddress, tokenYContract),
+          contractPrincipalCV(contractXAddress, tokenXContract),
+          contractPrincipalCV(contractYAddress, tokenYContract),
         ],
         senderAddress: stxAddress || contractAddress,
         network: network,
@@ -116,9 +116,11 @@ export const Swap: React.FC = () => {
       setLoadingData(true);
       setExchangeRateSwitched(false);
 
+      const tokenXAddress = tokenTraits[tokenX['name'].toLowerCase()]['address'];
       const tokenXContract = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
+      const tokenYAddress = tokenTraits[tokenX['name'].toLowerCase()]['address'];
       const tokenYContract = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
-      const json3 = await fetchPair(tokenXContract, tokenYContract);
+      const json3 = await fetchPair(tokenXAddress, tokenXContract, tokenYAddress, tokenYContract);
       console.log('Pair Details:', json3);
       if (json3['success']) {
         setCurrentPair(json3['value']['value']['value']);
@@ -130,7 +132,7 @@ export const Swap: React.FC = () => {
         setFoundPair(true);
         setLoadingData(false);
       } else if (Number(json3['value']['value']['value']) === 201) {
-        const json4 = await fetchPair(tokenYContract, tokenXContract);
+        const json4 = await fetchPair(tokenYAddress, tokenYContract, tokenXAddress, tokenXContract);
         if (json4['success']) {
           console.log('found pair...', json4);
           setCurrentPair(json4['value']['value']['value']);
