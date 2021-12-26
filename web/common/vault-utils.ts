@@ -1,3 +1,5 @@
+export const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+
 export const getLiquidationPrice = (
   liquidationRatio: number,
   coinsMinted: number,
@@ -53,66 +55,81 @@ export const availableCoinsToMint = (
   return 0;
 };
 
-type TokenTraits = Record<string, { name: string; swap: string }>;
+type TokenTraits = Record<string, { address: string; name: string; swap: string }>;
 
 export const tokenTraits: TokenTraits = {
   diko: {
+    address: contractAddress,
     name: 'arkadiko-token',
     swap: 'arkadiko-token',
   },
   stx: {
-    name: 'arkadiko-token',
+    address: contractAddress,
+    name: 'stacks-token',
     swap: 'wrapped-stx-token',
   },
   xstx: {
+    address: contractAddress,
     name: 'xstx-token',
     swap: 'xstx-token',
   },
   usda: {
+    address: contractAddress,
     name: 'usda-token',
     swap: 'usda-token',
   },
   xbtc: {
-    name: 'tokensoft-token',
-    swap: 'tokensoft-token',
+    address: 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR',
+    name: 'Wrapped-Bitcoin',
+    swap: 'wstx-xbtc',
   },
   dikousda: {
+    address: contractAddress,
     name: 'arkadiko-swap-token-diko-usda',
     swap: 'diko-usda',
   },
   usdadiko: {
+    address: contractAddress,
     name: 'arkadiko-swap-token-diko-usda',
     swap: 'diko-usda',
   },
   wstxusda: {
+    address: contractAddress,
     name: 'arkadiko-swap-token-wstx-usda',
     swap: 'wstx-usda',
   },
   usdawstx: {
+    address: contractAddress,
     name: 'arkadiko-swap-token-wstx-usda',
     swap: 'wstx-usda',
   },
   usdastx: {
+    address: contractAddress,
     name: 'arkadiko-swap-token-wstx-usda',
     swap: 'wstx-usda',
   },
   stxusda: {
+    address: contractAddress,
     name: 'arkadiko-swap-token-wstx-usda',
     swap: 'wstx-usda',
   },
   wstxdiko: {
+    address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
   },
   dikowstx: {
+    address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
   },
   dikostx: {
+    address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
   },
   stxdiko: {
+    address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
   },

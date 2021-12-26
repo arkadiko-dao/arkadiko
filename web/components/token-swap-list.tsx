@@ -30,7 +30,7 @@ export const tokenList = [
     name: 'Wrapped Bitcoin',
     nameInPair: 'xbtc',
     logo: '/assets/tokens/xbtc.svg',
-    listed: false,
+    listed: true,
   },
 ];
 
