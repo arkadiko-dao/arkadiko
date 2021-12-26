@@ -44,13 +44,16 @@ export const Stake = () => {
   const [showStakeLp1Modal, setShowStakeLp1Modal] = useState(false);
   const [showStakeLp2Modal, setShowStakeLp2Modal] = useState(false);
   const [showStakeLp3Modal, setShowStakeLp3Modal] = useState(false);
+  const [showStakeLp4Modal, setShowStakeLp4Modal] = useState(false);
   const [showUnstakeLp1Modal, setShowUnstakeLp1Modal] = useState(false);
   const [showUnstakeLp2Modal, setShowUnstakeLp2Modal] = useState(false);
   const [showUnstakeLp3Modal, setShowUnstakeLp3Modal] = useState(false);
+  const [showUnstakeLp4Modal, setShowUnstakeLp4Modal] = useState(false);
   const [apy, setApy] = useState(0);
   const [dikoUsdaLpApy, setDikoUsdaLpApy] = useState(0);
   const [stxUsdaLpApy, setStxUsdaLpApy] = useState(0);
   const [stxDikoLpApy, setStxDikoLpApy] = useState(0);
+  const [stxXbtcLpApy, setStxXbtcLpApy] = useState(0);
   const [stakedAmount, setStakedAmount] = useState(0);
   const [lpDikoUsdaStakedAmount, setLpDikoUsdaStakedAmount] = useState(0);
   const [lpStxUsdaStakedAmount, setLpStxUsdaStakedAmount] = useState(0);
@@ -68,6 +71,7 @@ export const Stake = () => {
   const [stxDikoPoolInfo, setStxDikoPoolInfo] = useState(0);
   const [stxUsdaPoolInfo, setStxUsdaPoolInfo] = useState(0);
   const [dikoUsdaPoolInfo, setDikoUsdaPoolInfo] = useState(0);
+  const [stxXbtcPoolInfo, setStxXbtcPoolInfo] = useState(0);
   const [missedLpRewards, setMissedLpRewards] = useState(0);
   const [stDikoToDiko, setStDikoToDiko] = useState(0);
   const [dikoPrice, setDikoPrice] = useState(0);
@@ -154,16 +158,24 @@ export const Stake = () => {
       let tokenYContract = 'usda-token';
       let tokenXName = 'DIKO';
       let tokenYName = 'USDA';
-      if (poolContract == 'arkadiko-stake-pool-wstx-diko-v1-1') {
+      let tokenXAddress = contractAddress;
+      let tokenYAddress = contractAddress;
+      if (poolContract === 'arkadiko-stake-pool-wstx-diko-v1-1') {
         tokenXContract = 'wrapped-stx-token';
         tokenYContract = 'arkadiko-token';
         tokenXName = 'STX';
         tokenYName = 'DIKO';
-      } else if (poolContract == 'arkadiko-stake-pool-wstx-usda-v1-1') {
+      } else if (poolContract === 'arkadiko-stake-pool-wstx-usda-v1-1') {
         tokenXContract = 'wrapped-stx-token';
         tokenYContract = 'usda-token';
         tokenXName = 'STX';
         tokenYName = 'USDA';
+      } else if (poolContract == 'arkadiko-stake-pool-wstx-xbtc-v1-1') {
+        tokenXContract = 'wrapped-stx-token';
+        tokenYAddress = 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR';
+        tokenYContract = 'xbtc';
+        tokenXName = 'STX';
+        tokenYName = 'xBTC';
       }
 
       // Get pair details
@@ -172,8 +184,8 @@ export const Stake = () => {
         contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',
         functionArgs: [
-          contractPrincipalCV(contractAddress, tokenXContract),
-          contractPrincipalCV(contractAddress, tokenYContract),
+          contractPrincipalCV(tokenXAddress, tokenXContract),
+          contractPrincipalCV(tokenYAddress, tokenYContract),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -246,9 +258,11 @@ export const Stake = () => {
         state.balance['dikousda'] == undefined ||
         state.balance['wstxusda'] == undefined ||
         state.balance['wstxdiko'] == undefined ||
+        state.balance['wstxxbtc'] == undefined ||
         stxPrice === 0 ||
         dikoPrice === 0 ||
-        usdaPrice === 0
+        usdaPrice === 0 ||
+        xBtcPrice === 0
       ) {
         return;
       }
@@ -313,9 +327,10 @@ export const Stake = () => {
       let totalDikoUsdaStaked = totalStakedData['stake-total-diko-usda'].value / 1000000;
       let totalStxUsdaStaked = totalStakedData['stake-total-wstx-usda'].value / 1000000;
       let totalStxDikoStaked = totalStakedData['stake-total-wstx-diko'].value / 1000000;
+      let totalStxXbtcStaked = totalStakedData['stake-total-wstx-xbtc'].value / 1000000;
 
       // LP value
-      const [dikoUsdaLpValue, stxUsdaLpValue, stxDikoLpValue] = await Promise.all([
+      const [dikoUsdaLpValue, stxUsdaLpValue, stxDikoLpValue, stxXbtcLpValue] = await Promise.all([
         lpTokenValue(
           'arkadiko-stake-pool-diko-usda-v1-1',
           userStakedData['stake-amount-diko-usda'].value,
@@ -331,23 +346,31 @@ export const Stake = () => {
           userStakedData['stake-amount-wstx-diko'].value,
           state.balance['wstxdiko']
         ),
+        lpTokenValue(
+          'arkadiko-stake-pool-wstx-xbtc-v1-1',
+          userStakedData['stake-amount-wstx-xbtc'].value,
+          state.balance['wstxxbtc']
+        ),
       ]);
 
       setDikoUsdaPoolInfo(dikoUsdaLpValue);
       setStxUsdaPoolInfo(stxUsdaLpValue);
       setStxDikoPoolInfo(stxDikoLpValue);
+      setStxXbtcPoolInfo(stxXbtcLpValue);
 
       // Pending rewards
-      const [dikoUsdaLpPendingRewards, stxUsdaLpPendingRewards, stxDikoLpPendingRewards] =
+      const [dikoUsdaLpPendingRewards, stxUsdaLpPendingRewards, stxDikoLpPendingRewards, stxXbtcLpPendingRewards] =
         await Promise.all([
           fetchLpPendingRewards('arkadiko-stake-pool-diko-usda-v1-1'),
           fetchLpPendingRewards('arkadiko-stake-pool-wstx-usda-v1-1'),
           fetchLpPendingRewards('arkadiko-stake-pool-wstx-diko-v1-1'),
+          fetchLpPendingRewards('arkadiko-stake-pool-wstx-xbtc-v1-1'),
         ]);
 
       setLpDikoUsdaPendingRewards(dikoUsdaLpPendingRewards);
       setLpStxUsdaPendingRewards(stxUsdaLpPendingRewards);
       setLpStxDikoPendingRewards(stxDikoLpPendingRewards);
+      setLpStxXbtcPendingRewards(stxXbtcLpPendingRewards);
 
       const totalStakingRewardsYear1 = 23500000;
 
@@ -370,7 +393,7 @@ export const Stake = () => {
         totalStxUsdaStaked = 10;
       }
       const dikoStxUsda = await lpTokenValue('arkadiko-stake-pool-wstx-usda-v1-1', 0, totalStxUsdaStaked);
-      const stxUsdaPoolRewards = totalStakingRewardsYear1 * 0.5;
+      const stxUsdaPoolRewards = totalStakingRewardsYear1 * 0.4;
       const stxUsdaApr = stxUsdaPoolRewards / (dikoStxUsda['walletValue'] / Number(dikoPrice / 1000000));
       setStxUsdaLpApy(Number((100 * stxUsdaApr).toFixed(2)));
 
@@ -381,6 +404,14 @@ export const Stake = () => {
       const stxDikoPoolRewards = totalStakingRewardsYear1 * 0.15;
       const stxDikoApr = stxDikoPoolRewards / (dikoStxDiko['walletValue'] / Number(dikoPrice / 1000000));
       setStxDikoLpApy(Number((100 * stxDikoApr).toFixed(2)));
+
+      if (totalStxXbtcStaked == 0) {
+        totalStxXbtcStaked = 10;
+      }
+      const dikoStxXbtc = await lpTokenValue('arkadiko-stake-pool-wstx-xbtc-v1-1', 0, totalStxXbtcStaked);
+      const stxXbtcPoolRewards = totalStakingRewardsYear1 * 0.1;
+      const stxXbtcApr = stxXbtcPoolRewards / (dikoStxXbtc['walletValue'] / Number(dikoPrice / 1000000));
+      setStxXbtcLpApy(Number((100 * stxXbtcApr).toFixed(2)));
 
       const dikoCooldownInfo = await callReadOnlyFunction({
         contractAddress,
@@ -571,6 +602,53 @@ export const Stake = () => {
     });
   };
 
+  const claimStxXbtcLpPendingRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-registry-v1-1',
+      functionName: 'claim-pending-rewards',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-xbtc-v1-1'),
+      ],
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
+  const stakeStxXbtcLpPendingRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-registry-v1-1',
+      functionName: 'stake-pending-rewards',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-xbtc-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
+        contractPrincipalCV(contractAddress, 'arkadiko-token'),
+      ],
+      postConditionMode: 0x01,
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
   const stakeStxUsdaLpPendingRewards = async () => {
     await doContractCall({
       network,
@@ -702,6 +780,22 @@ export const Stake = () => {
         tokenName={'STX/DIKO'}
       />
 
+      <StakeLpModal
+        showStakeModal={showStakeLp3Modal}
+        setShowStakeModal={setShowStakeLp3Modal}
+        apy={stxDikoLpApy}
+        balanceName={'wstxdiko'}
+        tokenName={'STX/DIKO'}
+      />
+
+      <StakeLpModal
+        showStakeModal={showStakeLp4Modal}
+        setShowStakeModal={setShowStakeLp4Modal}
+        apy={stxXbtcLpApy}
+        balanceName={'wstxxbtc'}
+        tokenName={'STX/xBTC'}
+      />
+
       <UnstakeLpModal
         showUnstakeModal={showUnstakeLp1Modal}
         setShowUnstakeModal={setShowUnstakeLp1Modal}
@@ -724,6 +818,14 @@ export const Stake = () => {
         stakedAmount={lpStxDikoStakedAmount}
         balanceName={'wstxdiko'}
         tokenName={'STX/DIKO'}
+      />
+
+      <UnstakeLpModal
+        showUnstakeModal={showUnstakeLp4Modal}
+        setShowUnstakeModal={setShowUnstakeLp4Modal}
+        stakedAmount={lpStxXbtcStakedAmount}
+        balanceName={'wstxxbtc'}
+        tokenName={'STX/xBTC'}
       />
 
       {state.userData ? (
@@ -1159,6 +1261,23 @@ export const Stake = () => {
                           claimLpPendingRewards={claimStxDikoLpPendingRewards}
                           stakeLpPendingRewards={stakeStxDikoLpPendingRewards}
                           getLpRoute={'/swap/add/STX/DIKO'}
+                        />
+
+                        {/* Arkadiko V1 STX xBTC LP Token */}
+                        <StakeLpRow
+                          loadingData={loadingData}
+                          tokenListItemX={2}
+                          tokenListItemY={3}
+                          balance={state.balance['wstxxbtc']}
+                          pendingRewards={lpStxXbtcPendingRewards}
+                          stakedAmount={lpStxXbtcStakedAmount}
+                          apy={stxXbtcLpApy}
+                          poolInfo={stxXbtcPoolInfo}
+                          setShowStakeLpModal={setShowStakeLp4Modal}
+                          setShowUnstakeLpModal={setShowUnstakeLp4Modal}
+                          claimLpPendingRewards={claimStxXbtcLpPendingRewards}
+                          stakeLpPendingRewards={stakeStxXbtcLpPendingRewards}
+                          getLpRoute={'/swap/add/STX/xBTC'}
                         />
                       </table>
                     </div>
