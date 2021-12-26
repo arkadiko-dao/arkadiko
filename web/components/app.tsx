@@ -36,7 +36,7 @@ export const getBalance = async (address: string) => {
     data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-usda::wstx-usda`];
   const lpStxDikoBalance =
     data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-diko::wstx-diko`];
-  const xbtcBalance = data.fungible_tokens[`${contractAddress}.tokensoft-token::tokensoft-token`];
+  const xbtcBalance = data.fungible_tokens[`SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin::xbtc`];
 
   return {
     stx: Number(data.stx.balance) - Number(data.stx.locked),
