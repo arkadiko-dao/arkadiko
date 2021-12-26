@@ -55,9 +55,11 @@ export const Stake = () => {
   const [lpDikoUsdaStakedAmount, setLpDikoUsdaStakedAmount] = useState(0);
   const [lpStxUsdaStakedAmount, setLpStxUsdaStakedAmount] = useState(0);
   const [lpStxDikoStakedAmount, setLpStxDikoStakedAmount] = useState(0);
+  const [lpStxXbtcStakedAmount, setLpStxXbtcStakedAmount] = useState(0);
   const [lpDikoUsdaPendingRewards, setLpDikoUsdaPendingRewards] = useState(0);
   const [lpStxUsdaPendingRewards, setLpStxUsdaPendingRewards] = useState(0);
   const [lpStxDikoPendingRewards, setLpStxDikoPendingRewards] = useState(0);
+  const [lpStxXbtcPendingRewards, setLpStxXbtcPendingRewards] = useState(0);
   const [dikoCooldown, setDikoCooldown] = useState('');
   const [canUnstake, setCanUnstake] = useState(false);
   const [cooldownRunning, setCooldownRunning] = useState(false);
@@ -71,6 +73,7 @@ export const Stake = () => {
   const [dikoPrice, setDikoPrice] = useState(0);
   const [stxPrice, setStxPrice] = useState(0);
   const [usdaPrice, setUsdaPrice] = useState(0);
+  const [xBtcPrice, setXbtcPrice] = useState(0);
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -86,6 +89,7 @@ export const Stake = () => {
       setStxPrice(await getPrice('STX'));
       setDikoPrice(await getPrice('DIKO'));
       setUsdaPrice(await getPrice('USDA'));
+      setXbtcPrice(await getPrice('xBTC'));
     };
 
     fetchPrices();
@@ -217,6 +221,12 @@ export const Stake = () => {
       } else if (tokenYName == 'USDA') {
         estimatedValueStaked = (stakedBalanceY / 1000000) * usdaPrice * 2;
         estimatedValueWallet = (walletBalanceY / 1000000) * usdaPrice * 2;
+      } else if (tokenXName === 'xBTC') {
+        estimatedValueStaked = (stakedBalanceX / 1000000) * xBtcPrice * 2;
+        estimatedValueWallet = (walletBalanceX / 1000000) * xBtcPrice * 2;
+      } else if (tokenYName === 'xBTC') {
+        estimatedValueStaked = (stakedBalanceY / 1000000) * xBtcPrice * 2;
+        estimatedValueWallet = (walletBalanceY / 1000000) * xBtcPrice * 2;
       }
 
       return {
