@@ -111,7 +111,7 @@ export const StakeLpModal = ({
       open={showStakeModal}
       title={`Stake ${tokenName} LP Tokens`}
       icon={
-        <div className="flex -space-x-2 overflow-hidden">
+        <div className="flex -space-x-2">
           <img
             className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
             src={tokenList[lpPairTokenX].logo}
@@ -136,7 +136,7 @@ export const StakeLpModal = ({
         </Alert>
       ) : null}
 
-      <p className="mt-3 text-sm text-center text-gray-500">
+      <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">
         Stake your {tokenName} LP tokens at {apy}% (estimated APR) and start earning rewards now.
       </p>
       <div className="mt-6">

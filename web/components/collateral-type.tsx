@@ -27,19 +27,19 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
   });
 
   return (
-    <div className="min-w-full overflow-hidden overflow-x-auto align-middle border border-gray-200 rounded-lg">
-      <div className="bg-white">
-        <div className="py-12 mx-auto bg-white sm:py-6 max-w-7xl">
+    <div className="min-w-full overflow-hidden overflow-x-auto align-middle border border-gray-200 rounded-lg dark:border-zinc-600">
+      <div className="bg-white dark:bg-zinc-900">
+        <div className="py-12 mx-auto bg-white dark:bg-zinc-900 sm:py-6 max-w-7xl">
           {/* xs to lg */}
           <div className="max-w-2xl mx-auto space-y-16 lg:hidden">
             {collateralItems.map((collateral, collateralIdx) => (
               <section key={collateral.tokenType}>
                 <div className="px-4 mb-8">
-                  <h2 className="text-lg font-medium leading-6 text-gray-900">
+                  <h2 className="text-lg font-medium leading-6 text-gray-400">
                     {collateral.tokenType} ({collateral.name})
                   </h2>
                   <p className="mt-4">
-                    <span className="text-4xl font-extrabold text-gray-900">
+                    <span className="text-4xl font-extrabold text-gray-400">
                       {collateral.liquidationRatio}
                     </span>{' '}
                     <span className="text-base font-medium text-gray-500">%</span>
@@ -70,7 +70,7 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-gray-200 dark:divide-zinc-600">
                     <tr className="border-t border-gray-200">
                       <th
                         className="px-4 py-5 text-sm font-normal text-left text-gray-500"
@@ -182,7 +182,7 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
               <thead>
                 <tr>
                   <th
-                    className="w-1/4 px-6 pb-4 text-sm font-medium text-left text-gray-900"
+                    className="w-1/4 px-6 pb-4 text-sm font-medium text-left text-gray-400"
                     scope="col"
                   >
                     <span>Collateral types</span>
@@ -190,7 +190,7 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
                   {collateralItems.map(collateral => (
                     <th
                       key={collateral.tokenType}
-                      className="w-1/4 px-6 pb-4 text-base font-normal leading-6 text-left text-gray-900"
+                      className="w-1/4 px-6 pb-4 text-base font-normal leading-6 text-left text-gray-400"
                       scope="col"
                     >
                       {collateral.tokenType} ({collateral.name})
@@ -198,13 +198,13 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
                   ))}
                 </tr>
               </thead>
-              <tbody className="border-t border-gray-200 divide-y divide-gray-200">
+              <tbody className="border-t border-gray-200 divide-y divide-gray-200 dark:border-gray-700 dark:divide-zinc-600">
                 <tr>
                   <th
                     className="p-6 text-sm font-normal text-left text-gray-500 align-center"
                     scope="row"
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center dark:text-zinc-400">
                       Liquidation Ratio
                       <Tooltip
                         className="ml-2"
@@ -222,10 +222,10 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
                     <td key={collateral.tokenType} className="h-full p-6 align-center">
                       <div className="relative table h-full">
                         <p>
-                          <span className="text-2xl font-semibold text-gray-900">
+                          <span className="text-2xl font-semibold text-gray-900 dark:text-zinc-100">
                             {collateral.liquidationRatio}
                           </span>{' '}
-                          <span className="text-lg text-gray-700">%</span>
+                          <span className="text-lg text-gray-700 dark:text-zinc-200">%</span>
                         </p>
                       </div>
                     </td>
@@ -234,7 +234,7 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
 
                 <tr>
                   <th className="px-6 py-5 text-sm font-normal text-left text-gray-500" scope="row">
-                    <div className="flex items-center">
+                    <div className="flex items-center dark:text-zinc-400">
                       Stability Fee
                       <Tooltip
                         className="ml-2"
@@ -250,7 +250,7 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
                   </th>
                   {collateralItems.map(collateral => (
                     <td key={collateral.tokenType} className="px-6 py-5">
-                      <span className="block text-sm text-gray-700">
+                      <span className="block text-sm text-gray-700 dark:text-zinc-100">
                         {collateral.stabilityFeeApy / 100}%
                       </span>
                     </td>
@@ -259,7 +259,7 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
 
                 <tr>
                   <th className="px-6 py-5 text-sm font-normal text-left text-gray-500" scope="row">
-                    <div className="flex items-center">
+                    <div className="flex items-center dark:text-zinc-400">
                       Liquidation Penalty
                       <Tooltip
                         className="ml-2"
@@ -275,7 +275,7 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
                   </th>
                   {collateralItems.map(collateral => (
                     <td key={collateral.tokenType} className="px-6 py-5">
-                      <span className="block text-sm text-gray-700">
+                      <span className="block text-sm text-gray-700 dark:text-zinc-100">
                         {collateral.liquidationPenalty}%
                       </span>
                     </td>
@@ -284,11 +284,11 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
 
                 <tr>
                   <th className="px-6 py-5 text-sm font-normal text-left text-gray-500" scope="row">
-                    <div className="flex items-center">Current Debt</div>
+                    <div className="flex items-center dark:text-zinc-400">Current Debt</div>
                   </th>
                   {collateralItems.map(collateral => (
                     <td key={collateral.tokenType} className="px-6 py-5">
-                      <span className="block text-sm text-gray-700">
+                      <span className="block text-sm text-gray-700 dark:text-zinc-100">
                         $
                         {(collateral.totalDebt / 1000000).toLocaleString(undefined, {
                           minimumFractionDigits: 2,
@@ -301,11 +301,11 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
 
                 <tr>
                   <th className="px-6 py-5 text-sm font-normal text-left text-gray-500" scope="row">
-                    <div className="flex items-center">Maximum Debt</div>
+                    <div className="flex items-center dark:text-zinc-400">Maximum Debt</div>
                   </th>
                   {collateralItems.map(collateral => (
                     <td key={collateral.tokenType} className="px-6 py-5">
-                      <span className="block text-sm text-gray-700">
+                      <span className="block text-sm text-gray-700 dark:text-zinc-100">
                         ${collateral.maximumDebt / 1000000000000} million
                       </span>
                     </td>
@@ -313,7 +313,7 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
                 </tr>
               </tbody>
               <tfoot>
-                <tr className="border-t border-gray-200">
+                <tr className="border-t border-gray-200 dark:border-gray-700">
                   <th className="sr-only" scope="row">
                     Choose your collateral
                   </th>

@@ -19,6 +19,7 @@ import { LotGroup } from '@components/lot-group';
 import { getRPCClient } from '@common/utils';
 import { DocumentSearchIcon, GiftIcon, CashIcon } from '@heroicons/react/outline';
 import { EmptyState } from './ui/empty-state';
+import { Placeholder } from "./ui/placeholder";
 
 export const Auctions: React.FC = () => {
   const { doContractCall } = useConnect();
@@ -193,13 +194,14 @@ export const Auctions: React.FC = () => {
 
       {state.userData ? (
         <Container>
-          <main className="relative z-0 flex-1 pb-8 overflow-y-auto">
-            <div className="mt-8">
-              <div className="max-w-6xl px-4 mx-auto sm:px-6 lg:px-8">
-                <h2 className="mt-8 text-lg font-medium leading-6 text-gray-900 font-headings">
-                  Trade xSTX for STX
-                </h2>
-
+          <main className="relative flex-1 py-12">
+            <section>
+              <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
+                <div>
+                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">Trade xSTX for STX</h3>
+                </div>
+              </header>
+              <div className="mt-4">
                 {state.balance['xstx'] > 0 ? (
                   <p className="mt-2">
                     There are {redeemableStx / 1000000} STX redeemable in the Arkadiko pool. <br />
@@ -216,12 +218,15 @@ export const Auctions: React.FC = () => {
                   <EmptyState Icon={CashIcon} title="You have no xSTX you can trade." />
                 )}
               </div>
+            </section>
 
-              <div className="max-w-6xl px-4 mx-auto sm:px-6 lg:px-8">
-                <h2 className="mt-8 text-lg font-medium leading-6 text-gray-900 font-headings">
-                  Your Winning Lots
-                </h2>
-
+            <section>
+              <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
+                <div>
+                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">Your Winning Lots</h3>
+                </div>
+              </header>
+              <div className="mt-4">
                 {lots.length > 0 ? (
                   <LotGroup lots={lots} />
                 ) : (
@@ -232,17 +237,20 @@ export const Auctions: React.FC = () => {
                   />
                 )}
               </div>
+            </section>
 
-              <div className="max-w-6xl px-4 mx-auto sm:px-6 lg:px-8">
-                <h2 className="mt-8 text-lg font-medium leading-6 text-gray-900 font-headings">
-                  Auctions
-                </h2>
-
-                <p>Current Block Height: {stacksTipHeight}</p>
+            <section>
+              <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
+                <div>
+                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">Auctions</h3>
+                </div>
+              </header>
+              <div className="mt-4">
+                <p className="mb-4 text-gray-900 dark:text-zinc-100">Current Block Height: {stacksTipHeight}</p>
                 {auctions.length > 0 ? (
                   <AuctionGroup auctions={auctions} stacksTipHeight={stacksTipHeight} />
                 ) : loadingAuctions ? (
-                  <p>Loading auctions...</p>
+                  <Placeholder />
                 ) : (
                   <EmptyState
                     Icon={DocumentSearchIcon}
@@ -250,7 +258,7 @@ export const Auctions: React.FC = () => {
                   />
                 )}
               </div>
-            </div>
+            </section>
           </main>
         </Container>
       ) : (

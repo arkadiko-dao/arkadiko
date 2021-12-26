@@ -25,26 +25,26 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
   getLpRoute,
 }) => {
   return (
-    <Disclosure as="tbody" className="bg-white">
+    <Disclosure as="tbody" className="bg-white dark:bg-zinc-900">
       {({ open }) => (
         <>
-          <tr className="bg-white">
+          <tr className="bg-white dark:bg-zinc-900">
             <td className="px-6 py-4 text-sm whitespace-nowrap">
               <div className="flex flex-wrap items-center flex-1 sm:flex-nowrap">
-                <div className="flex flex-shrink-0 -space-x-2 overflow-hidden">
+                <div className="flex -space-x-2 shrink-0">
                   <img
-                    className="flex-shrink-0 inline-block w-8 h-8 rounded-full ring-2 ring-white"
+                    className="inline-block w-8 h-8 rounded-full shrink-0 ring-2 ring-white dark:ring-zinc-800"
                     src={tokenList[tokenListItemX].logo}
                     alt=""
                   />
                   <img
-                    className="flex-shrink-0 inline-block w-8 h-8 rounded-full ring-2 ring-white"
+                    className="inline-block w-8 h-8 rounded-full shrink-0 ring-2 ring-white dark:ring-zinc-800"
                     src={tokenList[tokenListItemY].logo}
                     alt=""
                   />
                 </div>
                 <p className="mt-2 sm:mt-0 sm:ml-4">
-                  <span className="block text-gray-500">
+                  <span className="block text-gray-500 dark:text-zinc-400">
                     <Tooltip
                       shouldWrapChildren={true}
                       label={`ARKV1${tokenList[tokenListItemX].name}${tokenList[tokenListItemY].name}`}
@@ -57,7 +57,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                 </p>
               </div>
             </td>
-            <td className="px-6 py-4 text-sm text-indigo-600 whitespace-nowrap">
+            <td className="px-6 py-4 text-sm text-indigo-600 dark:text-indigo-400 whitespace-nowrap">
               {loadingData ? (
                 <Placeholder className="py-2" width={Placeholder.width.HALF} />
               ) : (
@@ -65,7 +65,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
               )}
             </td>
 
-            <td className="px-6 py-4 whitespace-nowrap">
+            <td className="px-6 py-4 whitespace-nowrap dark:text-white">
               {loadingData ? (
                 <Placeholder className="py-2" width={Placeholder.width.HALF} />
               ) : (
@@ -76,8 +76,8 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                     ${microToReadable(poolInfo.walletTokenXAmount).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 6,
-                    })} ${poolInfo.tokenX} 
-                    / 
+                    })} ${poolInfo.tokenX}
+                    /
                     ${microToReadable(poolInfo.walletTokenYAmount).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 6,
@@ -109,7 +109,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
               )}
             </td>
 
-            <td className="px-6 py-4 whitespace-nowrap">
+            <td className="px-6 py-4 whitespace-nowrap dark:text-white">
               {loadingData ? (
                 <Placeholder className="py-2" width={Placeholder.width.HALF} />
               ) : (
@@ -120,8 +120,8 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                     ${microToReadable(poolInfo.stakedTokenXAmount).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 6,
-                    })} ${poolInfo.tokenX} 
-                    / 
+                    })} ${poolInfo.tokenX}
+                    /
                     ${microToReadable(poolInfo.stakedTokenYAmount).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 6,
@@ -152,7 +152,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                 </>
               )}
             </td>
-            <td className="px-6 py-4 text-sm font-semibold whitespace-nowrap">
+            <td className="px-6 py-4 font-semibold whitespace-nowrap dark:text-white">
               {loadingData ? (
                 <Placeholder className="py-2" width={Placeholder.width.HALF} />
               ) : (
@@ -166,17 +166,17 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
               )}
             </td>
             <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
-              <Disclosure.Button className="flex justify-end w-full text-sm text-indigo-500 rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75">
+              <Disclosure.Button className="inline-flex items-center justify-center px-2 py-1 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-900 dark:text-indigo-400">
                 <span>Actions</span>
                 <ChevronUpIcon
                   className={`${
                     open ? '' : 'transform rotate-180 transition ease-in-out duration-300'
-                  } ml-2 w-5 h-5 text-indigo-500`}
+                  } ml-2 w-5 h-5`}
                 />
               </Disclosure.Button>
             </td>
           </tr>
-          <Disclosure.Panel as="tr" className="bg-gray-50">
+          <Disclosure.Panel as="tr" className="bg-gray-50 dark:bg-zinc-700">
             <td className="px-6 py-4 text-sm whitespace-nowrap">
               <RouterLink
                 to={getLpRoute}

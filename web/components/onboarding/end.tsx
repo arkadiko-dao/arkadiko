@@ -38,7 +38,7 @@ export const OnboardingEnd = () => {
                   href="https://discord.gg/7UB6JjjCNV"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex flex-col p-6 text-center border-b border-gray-100 rounded-t-lg hover:bg-indigo-50 sm:rounded-r-none sm:rounded-l-lg sm:border-0 sm:border-r"
+                  className="flex flex-col p-6 text-center border-b border-gray-100 rounded-t-lg hover:dark:bg-indigo-200 sm:rounded-r-none sm:rounded-l-lg sm:border-0 sm:border-r"
                 >
                   <p className="order-2 mt-4 text-sm leading-6 text-indigo-500">Discord</p>
                   <div className="order-1 text-5xl font-extrabold text-indigo-600">
@@ -66,7 +66,7 @@ export const OnboardingEnd = () => {
                   href="https://twitter.com/ArkadikoFinance/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex flex-col p-6 text-center border-t border-b border-gray-100 hover:bg-indigo-50 sm:border-0 sm:border-l sm:border-r"
+                  className="flex flex-col p-6 text-center border-t border-b border-gray-100 hover:dark:bg-indigo-200 sm:border-0 sm:border-l sm:border-r"
                 >
                   <p className="order-2 mt-4 text-sm leading-6 text-indigo-500">Twitter</p>
                   <div className="order-1 text-5xl font-extrabold text-indigo-600">

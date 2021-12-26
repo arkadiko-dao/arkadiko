@@ -87,14 +87,14 @@ export const PoolRow: React.FC = ({ id, pool }) => {
     <tr className="bg-white">
       <td className="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
         <div className="flex flex-wrap items-center flex-1 sm:flex-nowrap">
-          <div className="flex flex-shrink-0 mr-2 -space-x-2 overflow-hidden">
+          <div className="flex shrink-0 mr-2 -space-x-2 overflow-hidden">
             <img
-              className="flex-shrink-0 inline-block w-8 h-8 rounded-full ring-2 ring-white"
+              className="shrink-0 inline-block w-8 h-8 rounded-full ring-2 ring-white"
               src={tokenLogoX?.logo}
               alt=""
             />
             <img
-              className="flex-shrink-0 inline-block w-8 h-8 rounded-full ring-2 ring-white"
+              className="shrink-0 inline-block w-8 h-8 rounded-full ring-2 ring-white"
               src={tokenLogoY?.logo}
               alt=""
             />

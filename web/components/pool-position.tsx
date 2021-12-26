@@ -122,19 +122,19 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
           <dt className="text-lg">
             <Disclosure.Button className="flex items-start justify-between w-full text-left text-gray-400">
               <div className="flex items-center">
-                <div className="flex -space-x-2 overflow-hidden">
+                <div className="flex -space-x-2 shrink-0">
                   <img
-                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
+                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white dark:ring-zinc-800 shrink-0"
                     src={tokenX.logo}
                     alt=""
                   />
                   <img
-                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
+                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white dark:ring-zinc-800 shrink-0"
                     src={tokenY.logo}
                     alt=""
                   />
                 </div>
-                <p className="ml-2 text-base text-gray-800">
+                <p className="ml-3 text-base text-gray-800 dark:text-zinc-100">
                   {tokenX.name}/{tokenY.name}
                 </p>
               </div>
@@ -147,12 +147,12 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
             </Disclosure.Button>
           </dt>
           <Disclosure.Panel as="dd" className="mt-2">
-            <div className="w-full p-4 mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
+            <div className="w-full p-4 mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
               <h4 className="text-xs text-indigo-700 uppercase font-headings">Pool share</h4>
 
               <dl className="mt-2 space-y-1">
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                     Available pool tokens
                     <div className="ml-2">
                       <Tooltip
@@ -161,7 +161,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                         label={`Indicates the total amount of LP tokens you have in your wallet`}
                       >
                         <InformationCircleIcon
-                          className="block w-4 h-4 text-indigo-400"
+                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
                           aria-hidden="true"
                         />
                       </Tooltip>
@@ -179,7 +179,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                 </div>
 
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                     Staked pool tokens
                     <div className="ml-2">
                       <Tooltip
@@ -188,7 +188,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                         label={`Indicates the total amount of LP tokens you have staked`}
                       >
                         <InformationCircleIcon
-                          className="block w-4 h-4 text-indigo-400"
+                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
                           aria-hidden="true"
                         />
                       </Tooltip>
@@ -206,7 +206,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
 
               <dl className="mt-4 space-y-1">
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                     Your pool share
                     <div className="ml-2">
                       <Tooltip
@@ -215,7 +215,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                         label={`The percentual share of LP tokens you own against the whole pool supply`}
                       >
                         <InformationCircleIcon
-                          className="block w-4 h-4 text-indigo-400"
+                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
                           aria-hidden="true"
                         />
                       </Tooltip>
@@ -231,7 +231,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                 </div>
 
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                     Pooled {tokenX.name}
                   </dt>
                   <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
@@ -249,7 +249,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                 </div>
 
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                     Pooled {tokenY.name}
                   </dt>
                   <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
@@ -286,7 +286,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
 
             <div className="mt-4 sm:grid sm:grid-cols-2 sm:gap-2 sm:grid-flow-row-dense">
               <RouterLink
-                className="inline-flex justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-md shadow-sm bg-white-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="inline-flex justify-center px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 to={`swap/remove/${tokenX.name}/${tokenY.name}`}
               >
                 Remove
