@@ -17,7 +17,7 @@ export const Banner = () => {
               </span>
             </p>
           </div>
-          <div className="flex-shrink-0 w-full mt-2 sm:mt-0 sm:w-auto">
+          <div className="shrink-0 w-full mt-2 sm:mt-0 sm:w-auto">
             <a
               href="https://arkadikofinance.medium.com/arkadiko-swap-post-mortem-f38cef95ff28"
               className="flex items-center justify-center bg-yellow-100 px-2 py-1.5 rounded-md text-sm font-medium text-yellow-800 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yellow-50 focus:ring-yellow-600"

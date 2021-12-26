@@ -209,7 +209,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
   };
 
   const calculateTokenYAmount = (value: number) => {
-    setTokenYAmount(currentPrice * value);
+    setTokenYAmount(Number((currentPrice * value).toFixed(6)));
     if (currentPrice * value > balanceSelectedTokenY) {
       setInsufficientBalance(true);
     }
@@ -355,16 +355,16 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                     className="w-4 h-4 mr-2 text-gray-500 group-hover:text-gray-900"
                     aria-hidden="true"
                   />
-                  <span className="text-gray-600 hover:text-gray-900">Back to pool overview</span>
+                  <span className="text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-zinc-100">Back to pool overview</span>
                 </span>
               </RouterLink>
             </p>
-            <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow">
+            <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow dark:bg-zinc-900">
               <div className="flex flex-col p-4">
                 <div className="flex justify-between mb-4">
                   <div>
-                    <h2 className="text-xl leading-6 text-gray-900 font-headings">Liquidity</h2>
-                    <p className="inline-flex items-center mt-1 text-sm text-gray-600">
+                    <h2 className="text-xl leading-6 text-gray-900 font-headings dark:text-zinc-50">Liquidity</h2>
+                    <p className="inline-flex items-center mt-1 text-sm text-gray-600 dark:text-zinc-400">
                       Add liquidity to receive LP tokens
                       <Tooltip
                         className="z-10"
@@ -379,7 +379,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                     </p>
                   </div>
                 </div>
-                <div className="group p-0.5 rounded-lg flex w-full bg-gray-50 hover:bg-gray-100">
+                <div className="group p-0.5 rounded-lg flex w-full bg-gray-50 hover:bg-gray-100 dark:bg-zinc-300 dark:hover:bg-zinc-200">
                   <button
                     type="button"
                     className="p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md flex items-center justify-center flex-1 text-sm text-gray-600 font-medium focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus:outline-none focus-visible:ring-offset-gray-100 bg-white ring-1 ring-black ring-opacity-5"
@@ -395,10 +395,10 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                   >
                     <span className="p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md inline-flex items-center text-sm font-medium">
                       <MinusCircleIcon
-                        className="w-4 h-4 mr-2 text-gray-500 group-hover:text-gray-900"
+                        className="w-4 h-4 mr-2 text-gray-500 dark:text-zinc-700 group-hover:text-gray-900 dark:group-hover:text-zinc-900"
                         aria-hidden="true"
                       />
-                      <span className="text-gray-600 group-hover:text-gray-900">Remove</span>
+                      <span className="text-gray-600 dark:text-zinc-700 group-hover:text-gray-900 dark:group-hover:text-zinc-800">Remove</span>
                     </span>
                   </RouterLink>
                 </div>
@@ -406,7 +406,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                 <form className="mt-4">
                   {isLoading ? (
                     <>
-                      <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 h-[104px]">
+                      <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-800 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200 h-[104px]">
                         <div className="flex items-center p-4 pb-2">
                           <TokenSwapList selected={tokenX} disabled={true} />
                         </div>
@@ -423,7 +423,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                         <PlusIcon className="w-6 h-6 text-gray-500" aria-hidden="true" />
                       </div>
 
-                      <div className="mt-1 border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 h-[104px]">
+                      <div className="mt-1 border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-800 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200 h-[104px]">
                         <div className="flex items-center p-4 pb-2">
                           <TokenSwapList selected={tokenY} disabled={true} />
                         </div>
@@ -438,7 +438,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                     </>
                   ) : (
                     <>
-                      <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
+                      <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-800 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200">
                         <div className="flex items-center p-4 pb-2">
                           <TokenSwapList
                             selected={tokenX}
@@ -462,7 +462,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                             value={tokenXAmount || ''}
                             onChange={onInputXChange}
                             min={0}
-                            className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
+                            className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50 dark:bg-zinc-800 dark:text-zinc-50"
                             style={{ appearance: 'textfield' }}
                           />
                         </div>
@@ -498,7 +498,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                         <PlusIcon className="w-6 h-6 text-gray-500" aria-hidden="true" />
                       </div>
 
-                      <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
+                      <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-800 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200">
                         <div className="flex items-center p-4 pb-2">
                           <TokenSwapList
                             selected={tokenY}
@@ -522,7 +522,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                             value={tokenYAmount || ''}
                             onChange={onInputYChange}
                             min={0}
-                            className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
+                            className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50 dark:bg-zinc-800 dark:text-zinc-50"
                             style={{ appearance: 'textfield' }}
                           />
                         </div>
@@ -556,13 +556,13 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                     </>
                   )}
 
-                  <div className="w-full p-4 mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
+                  <div className="w-full p-4 mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
                     <h4 className="text-xs text-indigo-700 uppercase font-headings">
                       Prices and pool share
                     </h4>
                     <dl className="mt-2 space-y-1">
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                           Your pool tokens
                           <div className="ml-2">
                             <Tooltip
@@ -571,7 +571,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                               label={`Indicates the total amount of LP tokens you own of the pair in this pool`}
                             >
                               <InformationCircleIcon
-                                className="block w-4 h-4 text-indigo-400"
+                                className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
                                 aria-hidden="true"
                               />
                             </Tooltip>
@@ -592,7 +592,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                         </dd>
                       </div>
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                           Your pool share
                           <div className="ml-2">
                             <Tooltip
@@ -601,7 +601,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                               label={`The percentual share of LP tokens you own against the whole pool supply`}
                             >
                               <InformationCircleIcon
-                                className="block w-4 h-4 text-indigo-400"
+                                className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
                                 aria-hidden="true"
                               />
                             </Tooltip>
@@ -622,7 +622,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                         </dd>
                       </div>
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                           Pooled {tokenX.name}
                         </dt>
                         <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
@@ -639,7 +639,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                         </dd>
                       </div>
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                           Pooled {tokenY.name}
                         </dt>
                         <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
@@ -664,7 +664,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                     onClick={() => addLiquidity()}
                     className={classNames(
                       tokenYAmount === 0 || !foundPair
-                        ? 'bg-indigo-300 hover:bg-indigo-300 pointer-events-none'
+                        ? 'bg-indigo-400 hover:bg-indigo-400 dark:text-indigo-600 cursor-not-allowed dark:bg-indigo-200'
                         : 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer',
                       'w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
                     )}
@@ -684,7 +684,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                     <span className="flex p-2 bg-gray-100 rounded-lg">
                       <CashIcon className="w-6 h-6 text-indigo-500" aria-hidden="true" />
                     </span>
-                    <p className="ml-4 text-sm text-gray-500">
+                    <p className="ml-4 text-sm text-gray-500 dark:text-zinc-400">
                       By adding liquidity, you will earn 0.25% on trades for this pool, proportional
                       to your share of liquidity. Earned fees are added back to the pool and
                       claimable by removing liquidity.

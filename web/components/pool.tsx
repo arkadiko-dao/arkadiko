@@ -13,7 +13,7 @@ export const Pool: React.FC = () => {
   return (
     <Container>
       <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
-        <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow">
+        <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow dark:bg-zinc-900">
           <div className="flex flex-col p-4">
             <div className="mb-4">
               <div>
@@ -42,7 +42,7 @@ export const Pool: React.FC = () => {
                           className={classNames(
                             tab.current
                               ? 'bg-indigo-100 text-indigo-700'
-                              : 'text-gray-500 hover:text-gray-700',
+                              : 'text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-50',
                             'px-3 py-2 text-lg font-headings rounded-md'
                           )}
                           aria-current={tab.current ? 'page' : undefined}
@@ -57,16 +57,16 @@ export const Pool: React.FC = () => {
             </div>
 
             <div className="p-3">
-              <h3 className="text-xl leading-6 font-headings">Your liquidity positions</h3>
-              <dl className="mt-6 space-y-6 divide-y divide-gray-200">
+              <h3 className="text-xl leading-6 font-headings dark:text-zinc-50">Your liquidity positions</h3>
+              <dl className="mt-6 space-y-6">
                 <PoolPosition key="token1" indexTokenX={2} indexTokenY={0} />
               </dl>
 
-              <dl className="mt-6 space-y-6 divide-y divide-gray-200">
+              <dl className="mt-6 space-y-6">
                 <PoolPosition key="token2" indexTokenX={2} indexTokenY={1} />
               </dl>
 
-              <dl className="mt-6 space-y-6 divide-y divide-gray-200">
+              <dl className="mt-6 space-y-6">
                 <PoolPosition key="token3" indexTokenX={1} indexTokenY={0} />
               </dl>
             </div>
@@ -75,7 +75,7 @@ export const Pool: React.FC = () => {
               <span className="flex p-2 bg-gray-100 rounded-lg">
                 <CashIcon className="w-6 h-6 text-indigo-500" aria-hidden="true" />
               </span>
-              <p className="ml-4 text-sm text-gray-500">
+              <p className="ml-4 text-sm text-gray-500 dark:text-zinc-400">
                 By adding liquidity, you will earn 0.25% on trades for this pool, proportional to
                 your share of liquidity. Earned fees are added back to the pool and claimable by
                 removing liquidity.

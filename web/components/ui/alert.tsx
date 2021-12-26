@@ -62,7 +62,7 @@ export function Alert({ children, type = AlertType.INFO, title }: Props) {
       className={classNames('p-4 mb-6 border-l-4 rounded-tr-md rounded-br-md', alert.wrapperClass)}
     >
       <div className="flex">
-        <div className="flex-shrink-0">{alert.icon}</div>
+        <div className="shrink-0">{alert.icon}</div>
         <div className="flex-1 ml-3">
           {title ? (
             <h3 className={classNames('text-sm font-semibold', alert.titleClass)}>{title}</h3>

@@ -114,7 +114,7 @@ export const VaultMintModal: React.FC<Props> = ({
       buttonAction={() => callMint()}
       initialFocus={inputRef}
     >
-      <p className="text-sm text-center text-gray-500">
+      <p className="text-sm text-center text-gray-500 dark:text-zinc-400">
         Choose how much extra USDA you want to mint. You can mint a maximum of{' '}
         <span className="font-semibold">
           {availableCoinsToMint(

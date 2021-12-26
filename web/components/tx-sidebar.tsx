@@ -82,7 +82,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
               leaveTo="translate-x-full"
             >
               <div className="w-screen max-w-md">
-                <div className="flex flex-col h-full overflow-y-scroll bg-white shadow-xl">
+                <div className="flex flex-col h-full overflow-y-scroll bg-white dark:bg-zinc-900 shadow-xl">
                   <div className="px-4 py-6 bg-indigo-700 sm:px-6">
                     <div className="flex items-start justify-between">
                       <Dialog.Title className="text-lg text-white font-headings">
@@ -108,7 +108,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                     </div>
                   </div>
                   <div className="relative flex-1 px-4 mt-6 sm:px-6">
-                    <ul className="divide-y divide-gray-200">
+                    <ul className="divide-y divide-gray-200 dark:divide-zinc-600">
                       {pendingTransactions}
                       {transactions}
                     </ul>
