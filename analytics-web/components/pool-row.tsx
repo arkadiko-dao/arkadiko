@@ -69,8 +69,8 @@ export const PoolRow: React.FC = ({ id, pool }) => {
 
   useEffect(() => {
     const fetchTVL = async () => {
-      const priceX = await getPrice(nameX) / Math.pow(10, decimals(nameX));
-      const priceY = await getPrice(nameY) / Math.pow(10, decimals(nameY));
+      const priceX = await getPrice(nameX) / Math.pow(10, 6);
+      const priceY = await getPrice(nameY) / Math.pow(10, 6);
       setPriceX(priceX);
       setPriceY(priceY);
       const tvlX = pool['tvl_token_x'] * priceX / Math.pow(10, decimals(nameX));
