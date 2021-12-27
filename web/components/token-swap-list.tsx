@@ -3,6 +3,7 @@ import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
 import { classNames } from '@common/class-names';
 
+export const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 export const tokenList = [
   {
     id: 1,
@@ -10,6 +11,8 @@ export const tokenList = [
     nameInPair: 'usda',
     logo: '/assets/tokens/usda.svg',
     listed: true,
+    address: contractAddress,
+    decimals: 6
   },
   {
     id: 2,
@@ -17,6 +20,8 @@ export const tokenList = [
     nameInPair: 'diko',
     logo: '/assets/tokens/diko.svg',
     listed: true,
+    address: contractAddress,
+    decimals: 6
   },
   {
     id: 3,
@@ -24,13 +29,17 @@ export const tokenList = [
     nameInPair: 'wstx',
     logo: '/assets/tokens/stx.svg',
     listed: true,
+    address: contractAddress,
+    decimals: 6
   },
   {
     id: 4,
-    name: 'Wrapped Bitcoin',
+    name: 'xBTC',
     nameInPair: 'xbtc',
     logo: '/assets/tokens/xbtc.svg',
-    listed: false,
+    listed: true,
+    address: 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR',
+    decimals: 8
   },
 ];
 

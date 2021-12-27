@@ -1,3 +1,5 @@
+export const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+
 export const getLiquidationPrice = (
   liquidationRatio: number,
   coinsMinted: number,
@@ -53,66 +55,101 @@ export const availableCoinsToMint = (
   return 0;
 };
 
-type TokenTraits = Record<string, { name: string; swap: string }>;
+type TokenTraits = Record<string, { address: string; name: string; swap: string }>;
 
 export const tokenTraits: TokenTraits = {
   diko: {
+    address: contractAddress,
     name: 'arkadiko-token',
     swap: 'arkadiko-token',
   },
   stx: {
+    address: contractAddress,
     name: 'arkadiko-token',
     swap: 'wrapped-stx-token',
   },
   xstx: {
+    address: contractAddress,
     name: 'xstx-token',
     swap: 'xstx-token',
   },
   usda: {
+    address: contractAddress,
     name: 'usda-token',
     swap: 'usda-token',
   },
   xbtc: {
-    name: 'tokensoft-token',
-    swap: 'tokensoft-token',
+    address: 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR',
+    name: 'Wrapped-Bitcoin',
+    swap: 'Wrapped-Bitcoin',
   },
   dikousda: {
+    address: contractAddress,
     name: 'arkadiko-swap-token-diko-usda',
     swap: 'diko-usda',
   },
   usdadiko: {
+    address: contractAddress,
     name: 'arkadiko-swap-token-diko-usda',
     swap: 'diko-usda',
   },
   wstxusda: {
+    address: contractAddress,
     name: 'arkadiko-swap-token-wstx-usda',
     swap: 'wstx-usda',
   },
   usdawstx: {
+    address: contractAddress,
     name: 'arkadiko-swap-token-wstx-usda',
     swap: 'wstx-usda',
   },
   usdastx: {
+    address: contractAddress,
     name: 'arkadiko-swap-token-wstx-usda',
     swap: 'wstx-usda',
   },
   stxusda: {
+    address: contractAddress,
     name: 'arkadiko-swap-token-wstx-usda',
     swap: 'wstx-usda',
   },
   wstxdiko: {
+    address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
   },
   dikowstx: {
+    address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
   },
   dikostx: {
+    address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
   },
+  wstxxbtc: {
+    address: contractAddress,
+    name: 'arkadiko-swap-token-wstx-xbtc',
+    swap: 'wstx-xbtc',
+  },
+  stxxbtc: {
+    address: contractAddress,
+    name: 'arkadiko-swap-token-wstx-xbtc',
+    swap: 'wstx-xbtc',
+  },
+  xbtcstx: {
+    address: contractAddress,
+    name: 'arkadiko-swap-token-wstx-xbtc',
+    swap: 'wstx-xbtc',
+  },
+  xbtcwstx: {
+    address: contractAddress,
+    name: 'arkadiko-swap-token-wstx-xbtc',
+    swap: 'wstx-xbtc',
+  },
   stxdiko: {
+    address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
   },
@@ -133,6 +170,6 @@ export const contractsMap = {
   governance: 'arkadiko-governance-v2-1',
 };
 
-export const microToReadable = (amount: number | string, _decimals = 2) => {
-  return parseFloat(`${amount}`) / 1000000; //.toFixed(decimals);
+export const microToReadable = (amount: number | string, decimals: number = 6) => {
+  return parseFloat(`${amount}`) / Math.pow(10, decimals);
 };

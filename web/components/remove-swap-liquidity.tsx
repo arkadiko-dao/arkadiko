@@ -69,14 +69,14 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   }, [state.currentTxStatus]);
 
   useEffect(() => {
-    const fetchPair = async (tokenXContract: string, tokenYContract: string) => {
+    const fetchPair = async (tokenXAddress: string, tokenXContract: string, tokenYAddress: string, tokenYContract: string) => {
       const details = await callReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',
         functionArgs: [
-          contractPrincipalCV(contractAddress, tokenXContract),
-          contractPrincipalCV(contractAddress, tokenYContract),
+          contractPrincipalCV(tokenXAddress, tokenXContract),
+          contractPrincipalCV(tokenYAddress, tokenYContract),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -86,12 +86,13 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
     };
 
     const resolvePair = async () => {
-      const json3 = await fetchPair(tokenXTrait, tokenYTrait);
+      const json3 = await fetchPair(tokenX['address'], tokenXTrait, tokenY['address'], tokenYTrait);
       console.log('Pair Details:', json3);
       if (json3['success']) {
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
-        const basePrice = (balanceX / balanceY).toFixed(2);
+        const ratio = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']);
+        const basePrice = (ratio * balanceX / balanceY);
         const balance =
           state.balance[`${tokenX.nameInPair.toLowerCase()}${tokenY.nameInPair.toLowerCase()}`];
         const totalShares = json3['value']['value']['value']['shares-total'].value;
@@ -99,7 +100,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         if (balance !== undefined) {
           setFoundPair(true);
           setTokenXPrice(basePrice);
-          setTokenYPrice((balanceY / balanceX).toFixed(2));
+          setTokenYPrice((balanceY / balanceX / ratio));
           setInverseDirection(false);
           setBalance(balance);
           setBalanceX(balanceX * poolPercentage);
@@ -109,11 +110,12 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
           setIsLoading(false);
         }
       } else if (Number(json3['value']['value']['value']) === 201) {
-        const json4 = await fetchPair(tokenYTrait, tokenXTrait);
+        const json4 = await fetchPair(tokenY['address'], tokenYTrait, tokenX['address'], tokenXTrait);
         if (json4['success']) {
           console.log(json4);
           const balanceX = json4['value']['value']['value']['balance-x'].value;
           const balanceY = json4['value']['value']['value']['balance-y'].value;
+          const ratio = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']);
           const basePrice = (balanceX / balanceY).toFixed(2);
           const balance =
             state.balance[`${tokenY.nameInPair.toLowerCase()}${tokenX.nameInPair.toLowerCase()}`];
@@ -122,7 +124,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
           if (balance !== undefined) {
             setFoundPair(true);
             setTokenXPrice(basePrice);
-            setTokenYPrice((balanceY / balanceX).toFixed(2));
+            setTokenYPrice((balanceY / balanceX / ratio));
             setInverseDirection(true);
             setBalance(balance);
             setBalanceX(balanceX * poolPercentage);
@@ -194,8 +196,8 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
       contractName: 'arkadiko-swap-v2-1',
       functionName: 'reduce-position',
       functionArgs: [
-        contractPrincipalCV(contractAddress, tokenXParam),
-        contractPrincipalCV(contractAddress, tokenYParam),
+        contractPrincipalCV(tokenX['address'], tokenXParam),
+        contractPrincipalCV(tokenY['address'], tokenYParam),
         contractPrincipalCV(contractAddress, swapTrait),
         uintCV(percentageToRemove),
       ],
@@ -310,7 +312,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                         {isLoading ? (
                           <Placeholder className="justify-end" width={Placeholder.width.HALF} />
                         ) : (
-                          <>{microToReadable(balanceX)}</>
+                          <>{microToReadable(balanceX, tokenX['decimals'])}</>
                         )}
                       </dd>
                     </div>
@@ -322,7 +324,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                         {isLoading ? (
                           <Placeholder className="justify-end" width={Placeholder.width.HALF} />
                         ) : (
-                          <>{microToReadable(balanceY)}</>
+                          <>{microToReadable(balanceY, tokenY['decimals'])}</>
                         )}
                       </dd>
                     </div>
@@ -432,7 +434,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                                 width={Placeholder.width.HALF}
                               />
                             ) : (
-                              <>{microToReadable(tokenXToReceive)}</>
+                              <>{microToReadable(tokenXToReceive, tokenX['decimals'])}</>
                             )}
                           </dd>
                         </div>
@@ -455,7 +457,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                                 width={Placeholder.width.HALF}
                               />
                             ) : (
-                              <>{microToReadable(tokenYToReceive)}</>
+                              <>{microToReadable(tokenYToReceive, tokenY['decimals'])}</>
                             )}
                           </dd>
                         </div>
@@ -476,10 +478,16 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                     ) : (
                       <div className="mt-3 sm:mt-0 space-y-0.5 lg:text-right text-sm text-gray-500 dark:text-zinc-400">
                         <p>
-                          1 {tokenX.name} = {tokenYPrice} {tokenY.name}
+                          1 {tokenX.name} = {tokenYPrice.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 6,
+                          })} {tokenY.name}
                         </p>
                         <p>
-                          1 {tokenY.name} = {tokenXPrice} {tokenX.name}
+                          1 {tokenY.name} = {tokenXPrice.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 6,
+                          })} {tokenX.name}
                         </p>
                       </div>
                     )}

@@ -93,6 +93,11 @@ export const Balances = () => {
       description: 'Stake Pool - Stake wSTX-DIKO LP tokens.',
     },
     {
+      address: `${contractAddress}.arkadiko-stake-pool-wstx-xbtc-v1-1`,
+      name: 'Stake Pool wSTX/xBTC v1',
+      description: 'Stake Pool - Stake wSTX-xBTC LP tokens.',
+    },
+    {
       address: `${contractAddress}.arkadiko-swap-v2-1`,
       name: 'Swap v2',
       description: "Arkadiko's Decentralised Exchange.",

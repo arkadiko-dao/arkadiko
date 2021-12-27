@@ -22,7 +22,9 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
   const tokenX = tokenList[indexTokenX];
   const tokenY = tokenList[indexTokenY];
   const tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
+  const tokenXAddress = tokenTraits[tokenX['name'].toLowerCase()]['address'];
   const tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
+  const tokenYAddress = tokenTraits[tokenY['name'].toLowerCase()]['address'];
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const stxAddress = useSTXAddress();
 
@@ -35,14 +37,14 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPair = async (tokenXContract: string, tokenYContract: string) => {
+    const fetchPair = async (tokenXAddress: string, tokenXContract: string, tokenYAddress: string, tokenYContract: string) => {
       const details = await callReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',
         functionArgs: [
-          contractPrincipalCV(contractAddress, tokenXContract),
-          contractPrincipalCV(contractAddress, tokenYContract),
+          contractPrincipalCV(tokenXAddress, tokenXContract),
+          contractPrincipalCV(tokenYAddress, tokenYContract),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -58,6 +60,8 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
         poolContract = 'arkadiko-stake-pool-wstx-usda-v1-1';
       } else if (poolName == 'DIKO-USDA') {
         poolContract = 'arkadiko-stake-pool-diko-usda-v1-1';
+      } else if (poolName == 'wSTX-xBTC') {
+        poolContract = 'arkadiko-stake-pool-wstx-xbtc-v1-1';
       }
       if (poolContract == '') {
         return 0;
@@ -75,7 +79,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
     };
 
     const resolvePair = async () => {
-      const json3 = await fetchPair(tokenXTrait, tokenYTrait);
+      const json3 = await fetchPair(tokenXAddress, tokenXTrait, tokenYAddress, tokenYTrait);
       if (json3['success']) {
         const pairDetails = json3['value']['value']['value'];
         const stakedTokens = await fetchStakedTokens(
@@ -104,8 +108,8 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
         const totalBalanceX = balanceX * totalShare;
         const totalBalanceY = balanceY * totalShare;
 
-        setPooledX(totalBalanceX / 1000000);
-        setPooledY(totalBalanceY / 1000000);
+        setPooledX(totalBalanceX / Math.pow(10, tokenX['decimals']));
+        setPooledY(totalBalanceY / Math.pow(10, tokenY['decimals']));
 
         setTotalShare(Number((totalShare * 100).toFixed(5)));
         setIsLoading(false);

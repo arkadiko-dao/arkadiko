@@ -10,23 +10,23 @@ async function transact() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
     contractName: 'arkadiko-governance-v2-1',
-    functionName: 'propose-dao',
+    functionName: 'propose',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
       tx.uintCV(40650),
-      tx.stringUtf8CV('Upgrade Arkadiko Auction Engine Contract'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/396'),
+      tx.uintCV(1000),
+      tx.stringUtf8CV('Add xBTC/STX, xBTC/USDA and xBTC as collateral type'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/399'),
       tx.listCV([
         tx.tupleCV({
-          'name': tx.stringAsciiCV("auction-engine"),
+          'name': tx.stringAsciiCV("add-xbtc"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-auction-engine-v2-1"),
-          'can-mint': tx.trueCV(),
-          'can-burn': tx.trueCV()
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-add-xbtc"),
+          'can-mint': tx.falseCV(),
+          'can-burn': tx.falseCV()
         })
       ])
     ],
-    fee: new BN(100000, 10),
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network
