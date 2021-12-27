@@ -150,6 +150,6 @@ export const contractsMap = {
   governance: 'arkadiko-governance-v2-1',
 };
 
-export const microToReadable = (amount: number | string, _decimals = 2) => {
-  return parseFloat(`${amount}`) / 1000000; //.toFixed(decimals);
+export const microToReadable = (amount: number | string, decimals: number = 6) => {
+  return parseFloat(`${amount}`) / Math.pow(10, decimals);
 };

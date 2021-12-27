@@ -53,8 +53,17 @@ export const Swap: React.FC = () => {
   const { doContractCall, doOpenAuth } = useConnect();
 
   const setTokenBalances = () => {
-    setBalanceSelectedTokenX(microToReadable(state.balance[tokenX['name'].toLowerCase()]));
-    setBalanceSelectedTokenY(microToReadable(state.balance[tokenY['name'].toLowerCase()]));
+    const tokenXBalance = state.balance[tokenX['name'].toLowerCase()];
+    const tokenYBalance = state.balance[tokenY['name'].toLowerCase()];
+    let tokenXDecimals = 6;
+    let tokenYDecimals = 6;
+    if (tokenX['name'].toLowerCase() === 'xbtc') {
+      tokenXDecimals = 8;
+    } else if (tokenY['name'].toLowerCase() === 'xbtc') {
+      tokenYDecimals = 8;
+    }
+    setBalanceSelectedTokenX(microToReadable(tokenXBalance, tokenXDecimals));
+    setBalanceSelectedTokenY(microToReadable(tokenYBalance, tokenYDecimals));
   };
 
   useEffect(() => {
