@@ -38,6 +38,10 @@ export const UnstakeLpModal = ({
       contractName = 'arkadiko-stake-pool-wstx-diko-v1-1';
       tokenContract = 'arkadiko-swap-token-wstx-diko';
       ftContract = 'wstx-diko';
+    } else if (balanceName === 'wstxxbtc') {
+      contractName = 'arkadiko-stake-pool-wstx-xbtc-v1-1';
+      tokenContract = 'arkadiko-swap-token-wstx-xbtc';
+      ftContract = 'wstx-xbtc';
     }
 
     await doContractCall({

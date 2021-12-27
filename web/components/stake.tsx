@@ -93,7 +93,6 @@ export const Stake = () => {
       setStxPrice(await getPrice('STX'));
       setDikoPrice(await getPrice('DIKO'));
       setUsdaPrice(await getPrice('USDA'));
-      setXbtcPrice(await getPrice('xBTC'));
     };
 
     fetchPrices();
@@ -106,7 +105,8 @@ export const Stake = () => {
       if (
         state.balance['dikousda'] > 0 ||
         state.balance['wstxusda'] > 0 ||
-        state.balance['wstxdiko'] > 0
+        state.balance['wstxdiko'] > 0 ||
+        state.balance['wstxxbtc'] > 0
       ) {
         setHasUnstakedTokens(true);
       }
@@ -173,7 +173,7 @@ export const Stake = () => {
       } else if (poolContract == 'arkadiko-stake-pool-wstx-xbtc-v1-1') {
         tokenXContract = 'wrapped-stx-token';
         tokenYAddress = 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR';
-        tokenYContract = 'xbtc';
+        tokenYContract = 'Wrapped-Bitcoin';
         tokenXName = 'STX';
         tokenYName = 'xBTC';
       }
@@ -233,12 +233,6 @@ export const Stake = () => {
       } else if (tokenYName == 'USDA') {
         estimatedValueStaked = (stakedBalanceY / 1000000) * usdaPrice * 2;
         estimatedValueWallet = (walletBalanceY / 1000000) * usdaPrice * 2;
-      } else if (tokenXName === 'xBTC') {
-        estimatedValueStaked = (stakedBalanceX / 1000000) * xBtcPrice * 2;
-        estimatedValueWallet = (walletBalanceX / 1000000) * xBtcPrice * 2;
-      } else if (tokenYName === 'xBTC') {
-        estimatedValueStaked = (stakedBalanceY / 1000000) * xBtcPrice * 2;
-        estimatedValueWallet = (walletBalanceY / 1000000) * xBtcPrice * 2;
       }
 
       return {
@@ -261,8 +255,7 @@ export const Stake = () => {
         state.balance['wstxxbtc'] == undefined ||
         stxPrice === 0 ||
         dikoPrice === 0 ||
-        usdaPrice === 0 ||
-        xBtcPrice === 0
+        usdaPrice === 0
       ) {
         return;
       }
@@ -313,6 +306,17 @@ export const Stake = () => {
       setLpStxUsdaStakedAmount(userStakedData['stake-amount-wstx-usda'].value);
       setLpStxDikoStakedAmount(userStakedData['stake-amount-wstx-diko'].value);
 
+      const xbtcStakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-stake-pool-wstx-xbtc-v1-1',
+        functionName: 'get-stake-amount-of',
+        functionArgs: [standardPrincipalCV(stxAddress || '')],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const userXbtcStakedData = cvToJSON(xbtcStakedCall).value;
+      setLpStxXbtcStakedAmount(userXbtcStakedData);
+
       // Total staked
       const totalStakedCall = await callReadOnlyFunction({
         contractAddress,
@@ -327,7 +331,17 @@ export const Stake = () => {
       let totalDikoUsdaStaked = totalStakedData['stake-total-diko-usda'].value / 1000000;
       let totalStxUsdaStaked = totalStakedData['stake-total-wstx-usda'].value / 1000000;
       let totalStxDikoStaked = totalStakedData['stake-total-wstx-diko'].value / 1000000;
-      let totalStxXbtcStaked = totalStakedData['stake-total-wstx-xbtc'].value / 1000000;
+
+      const totalStakedXbtcCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-stake-pool-wstx-xbtc-v1-1',
+        functionName: 'get-total-staked',
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const totalStakedXbtcData = cvToJSON(totalStakedXbtcCall).value;
+      let totalStxXbtcStaked = totalStakedXbtcData / 1000000;
 
       // LP value
       const [dikoUsdaLpValue, stxUsdaLpValue, stxDikoLpValue, stxXbtcLpValue] = await Promise.all([
@@ -348,7 +362,7 @@ export const Stake = () => {
         ),
         lpTokenValue(
           'arkadiko-stake-pool-wstx-xbtc-v1-1',
-          userStakedData['stake-amount-wstx-xbtc'].value,
+          totalStxXbtcStaked,
           state.balance['wstxxbtc']
         ),
       ]);
