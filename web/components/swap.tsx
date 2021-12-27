@@ -83,6 +83,7 @@ export const Swap: React.FC = () => {
           dikousda: account.dikousda.toString(),
           wstxusda: account.wstxusda.toString(),
           wstxdiko: account.wstxdiko.toString(),
+          wstxxbtc: account.wstxxbtc.toString()
         },
       }));
     };
@@ -535,6 +536,8 @@ export const Swap: React.FC = () => {
                           ? 'No liquidity for this pair. Try another one.'
                           : balanceSelectedTokenX === 0 || insufficientBalance
                           ? 'Insufficient balance'
+                          : tokenX['name'].toLowerCase() === 'xbtc' || tokenY['name'].toLowerCase() === 'xbtc'
+                          ? 'Click link below to add liquidity on STX/xBTC'
                           : tokenYAmount === 0
                           ? 'Please enter an amount'
                           : 'Swap'}

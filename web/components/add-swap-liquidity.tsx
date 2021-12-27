@@ -64,11 +64,13 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
   const { doContractCall } = useConnect();
 
   const tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
+  const tokenXAddress = tokenTraits[tokenX['name'].toLowerCase()]['address'];
   const tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
+  const tokenYAddress = tokenTraits[tokenY['name'].toLowerCase()]['address'];
 
   const setTokenBalances = () => {
-    setBalanceSelectedTokenX(microToReadable(state.balance[tokenX['name'].toLowerCase()]));
-    setBalanceSelectedTokenY(microToReadable(state.balance[tokenY['name'].toLowerCase()]));
+    setBalanceSelectedTokenX(microToReadable(state.balance[tokenX['name'].toLowerCase()], tokenX['decimals']));
+    setBalanceSelectedTokenY(microToReadable(state.balance[tokenY['name'].toLowerCase()], tokenY['decimals']));
   };
 
   useEffect(() => {
@@ -102,14 +104,14 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
   };
 
   useEffect(() => {
-    const fetchPair = async (tokenXContract: string, tokenYContract: string) => {
+    const fetchPair = async (tokenXAddress: string, tokenXContract: string, tokenYAddress: string, tokenYContract: string) => {
       const details = await callReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',
         functionArgs: [
-          contractPrincipalCV(contractAddress, tokenXContract),
-          contractPrincipalCV(contractAddress, tokenYContract),
+          contractPrincipalCV(tokenXAddress, tokenXContract),
+          contractPrincipalCV(tokenYAddress, tokenYContract),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -121,19 +123,21 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
     const resolvePair = async () => {
       setTokenBalances();
 
-      const json3 = await fetchPair(tokenXTrait, tokenYTrait);
+      const json3 = await fetchPair(tokenXAddress, tokenXTrait, tokenYAddress, tokenYTrait);
       console.log('Pair Details:', json3);
       if (json3['success']) {
+        const ratio = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']);
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
-        const basePrice = (balanceY / balanceX).toFixed(2);
-        setPooledX(balanceX / 1000000);
-        setPooledY(balanceY / 1000000);
+        const basePrice = (balanceY / balanceX / ratio);
+        setPooledX(balanceX / Math.pow(10, tokenX['decimals']));
+        setPooledY(balanceY / Math.pow(10, tokenY['decimals']));
         setInverseDirection(false);
         setTokenPair(`${tokenX.name.toLowerCase()}${tokenY.name.toLowerCase()}`);
         setCurrentPrice(basePrice);
         const totalTokens = json3['value']['value']['value']['shares-total'].value;
         setTotalTokens(totalTokens);
+        console.log(state.balance, `${tokenX.name.toLowerCase()}${tokenY.name.toLowerCase()}`);
         const totalShare = Number(
           (
             (state.balance[`${tokenX.name.toLowerCase()}${tokenY.name.toLowerCase()}`] /
@@ -149,15 +153,16 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         setIsLoading(false);
         setFoundPair(true);
       } else if (Number(json3['value']['value']['value']) === 201) {
-        const json4 = await fetchPair(tokenYTrait, tokenXTrait);
+        const json4 = await fetchPair(tokenYAddress, tokenYTrait, tokenXAddress, tokenXTrait);
         if (json4['success']) {
           const balanceX = json4['value']['value']['value']['balance-x'].value;
           const balanceY = json4['value']['value']['value']['balance-y'].value;
-          setPooledX(balanceX / 1000000);
-          setPooledY(balanceY / 1000000);
+          setPooledX(balanceX / Math.pow(10, tokenX['decimals']));
+          setPooledY(balanceY / Math.pow(10, tokenY['decimals']));
           setInverseDirection(true);
           setTokenPair(`${tokenY.name.toLowerCase()}${tokenX.name.toLowerCase()}`);
-          const basePrice = (balanceX / balanceY).toFixed(2);
+          const ratio = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']);
+          const basePrice = (ratio * balanceX / balanceY);
           setCurrentPrice(basePrice);
           const totalTokens = json4['value']['value']['value']['shares-total'].value;
           setTotalTokens(totalTokens);
