@@ -47,12 +47,12 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
   return (
     <>
       <section>
-        <header className="pb-5 border-b border-gray-200 sm:flex sm:justify-between sm:items-end">
+        <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
           <div>
-            <h2 className="text-2xl font-bold leading-6 text-gray-900 font-headings">
+            <h2 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">
               Vault creation confirmation
             </h2>
-            <p className="max-w-4xl mt-2 text-sm text-gray-500">
+            <p className="max-w-4xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
               Overview of your vault's parameters
             </p>
           </div>
@@ -62,7 +62,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                 <QuestionMarkCircleIcon className="w-5 h-5 text-indigo-600" aria-hidden="true" />
               </div>
               <a
-                className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 border-transparent hover:border-indigo-300 hover:text-indigo-700"
+                className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
                 href="https://docs.arkadiko.finance/protocol/vaults"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -75,112 +75,112 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
         </header>
 
         <div className="max-w-4xl mx-auto mt-4 shadow sm:rounded-md sm:overflow-hidden">
-          <div className="px-4 py-5 space-y-6 bg-white sm:p-6">
-            <div className="space-y-8 divide-y divide-gray-200">
-              <div className="space-y-4 divide-y divide-gray-100">
+          <div className="px-4 py-5 space-y-6 bg-white dark:bg-zinc-900 sm:p-6">
+            <div className="space-y-8 divide-y divide-gray-200 dark:divide-zinc-600">
+              <div className="space-y-4 divide-y divide-gray-100 dark:divide-gray-800">
                 <div className="pt-4 sm:flex sm:justify-between sm:items-baseline">
                   <div>
-                    <h3 className="mb-2 text-lg font-medium leading-6 text-gray-900 font-headings">
+                    <h3 className="mb-2 text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
                       Depositing
                     </h3>
-                    <p className="text-sm text-gray-600 sm:max-w-2xl">
+                    <p className="text-sm text-gray-600 dark:text-zinc-400 sm:max-w-2xl">
                       The amount of {coinAmounts['token-name']} tokens that you are depositing into
                       your vault.
                     </p>
                   </div>
-                  <p className="mt-1 text-lg font-bold text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
+                  <p className="mt-1 text-lg font-bold text-gray-600 dark:text-zinc-400 whitespace-nowrap sm:mt-0 sm:ml-3">
                     {coinAmounts['amounts']['collateral']} {coinAmounts['token-name']}
                   </p>
                 </div>
 
                 <div className="pt-4 sm:flex sm:justify-between sm:items-baseline">
                   <div>
-                    <h3 className="mb-2 text-lg font-medium leading-6 text-gray-900 font-headings">
+                    <h3 className="mb-2 text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
                       Minting
                     </h3>
-                    <p className="text-sm text-gray-600 sm:max-w-2xl">
+                    <p className="text-sm text-gray-600 dark:text-zinc-400 sm:max-w-2xl">
                       The total amount of USDA that you want to mint.
                     </p>
                   </div>
-                  <p className="mt-1 text-lg font-bold text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
+                  <p className="mt-1 text-lg font-bold text-gray-600 dark:text-zinc-400 whitespace-nowrap sm:mt-0 sm:ml-3">
                     {coinAmounts['amounts']['usda']} USDA
                   </p>
                 </div>
 
                 <div className="pt-4 sm:flex sm:justify-between sm:items-baseline">
                   <div>
-                    <h3 className="mb-2 text-lg font-medium leading-6 text-gray-900 font-headings">
+                    <h3 className="mb-2 text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
                       Collateral to Debt Ratio
                     </h3>
-                    <p className="text-sm text-gray-600 sm:max-w-2xl">
+                    <p className="text-sm text-gray-600 dark:text-zinc-400 sm:max-w-2xl">
                       Indicates the amount of collateral you deposit in a vault versus the
                       stablecoin debt you are minting against it. Ideal values are over 250%.
                     </p>
                   </div>
-                  <p className="mt-1 text-lg font-bold text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
+                  <p className="mt-1 text-lg font-bold text-gray-600 dark:text-zinc-400 whitespace-nowrap sm:mt-0 sm:ml-3">
                     {coinAmounts['collateral-to-debt-ratio'].toFixed(2)}%
                   </p>
                 </div>
 
                 <div className="pt-4 sm:flex sm:justify-between sm:items-baseline">
                   <div>
-                    <h3 className="mb-2 text-lg font-medium leading-6 text-gray-900 font-headings">
+                    <h3 className="mb-2 text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
                       Liquidation Ratio
                     </h3>
-                    <p className="text-sm text-gray-600 sm:max-w-2xl">
+                    <p className="text-sm text-gray-600 dark:text-zinc-400 sm:max-w-2xl">
                       When the value of your vault versus the value of your debt dips below the set
                       liquidation ratio, your vault becomes eligible for auction. We advise a 200%+
                       ratio at all times, to be safe during periods of high market volatility.
                     </p>
                   </div>
-                  <p className="mt-1 text-lg font-bold text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
+                  <p className="mt-1 text-lg font-bold text-gray-600 dark:text-zinc-400 whitespace-nowrap sm:mt-0 sm:ml-3">
                     {coinAmounts['liquidation-ratio']}%
                   </p>
                 </div>
 
                 <div className="pt-4 sm:flex sm:justify-between sm:items-baseline">
                   <div>
-                    <h3 className="mb-2 text-lg font-medium leading-6 text-gray-900 font-headings">
+                    <h3 className="mb-2 text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
                       Liquidation Price
                     </h3>
-                    <p className="text-sm text-gray-600 sm:max-w-2xl">
+                    <p className="text-sm text-gray-600 dark:text-zinc-400 sm:max-w-2xl">
                       The price at which your vault gets tagged for auction.{' '}
                     </p>
                   </div>
-                  <p className="mt-1 text-lg font-bold text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
+                  <p className="mt-1 text-lg font-bold text-gray-600 dark:text-zinc-400 whitespace-nowrap sm:mt-0 sm:ml-3">
                     ${coinAmounts['liquidation-price']} / {coinAmounts['token-name']}
                   </p>
                 </div>
 
                 <div className="pt-4 sm:flex sm:justify-between sm:items-baseline">
                   <div>
-                    <h3 className="mb-2 text-lg font-medium leading-6 text-gray-900 font-headings">
+                    <h3 className="mb-2 text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
                       Liquidation Penalty
                     </h3>
-                    <p className="text-sm text-gray-600 sm:max-w-2xl">
+                    <p className="text-sm text-gray-600 dark:text-zinc-400 sm:max-w-2xl">
                       The liquidation penalty is the loss of value you experience when a Liquidator
                       needs to step in to clear your debt when your vault has been tagged for
                       auction.
                     </p>
                   </div>
-                  <p className="mt-1 text-lg font-bold text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
+                  <p className="mt-1 text-lg font-bold text-gray-600 dark:text-zinc-400 whitespace-nowrap sm:mt-0 sm:ml-3">
                     {coinAmounts['liquidation-penalty']}%
                   </p>
                 </div>
 
                 <div className="pt-4 sm:flex sm:justify-between sm:items-baseline">
                   <div>
-                    <h3 className="mb-2 text-lg font-medium leading-6 text-gray-900 font-headings">
+                    <h3 className="mb-2 text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
                       Stability Fee
                     </h3>
-                    <p className="text-sm text-gray-600 sm:max-w-2xl">
+                    <p className="text-sm text-gray-600 dark:text-zinc-400 sm:max-w-2xl">
                       This is the total cost of borrowing for a vault. A stability fee of{' '}
                       {coinAmounts['stability-fee-apy'] / 100}% means that any debt you create will
                       increase by {coinAmounts['stability-fee-apy'] / 100}% over the period of one
                       year. Think of it as yearly interest on your USDA loan.
                     </p>
                   </div>
-                  <p className="mt-1 text-lg font-bold text-gray-600 whitespace-nowrap sm:mt-0 sm:ml-3">
+                  <p className="mt-1 text-lg font-bold text-gray-600 dark:text-zinc-400 whitespace-nowrap sm:mt-0 sm:ml-3">
                     {coinAmounts['stability-fee-apy'] / 100}%
                   </p>
                 </div>
@@ -224,7 +224,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                         checked={coinAmounts['stack-pox']}
                         onChange={() => togglePox()}
                       />
-                      <span className="text-gray-900">
+                      <span className="text-gray-900 dark:text-zinc-100">
                         I want my STX tokens stacked to earn yield
                       </span>
                     </label>
@@ -237,7 +237,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                   <button
                     type="button"
                     onClick={() => setStep(0)}
-                    className="inline-flex justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-md shadow-sm bg-white-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    className="inline-flex justify-center px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   >
                     Back
                   </button>

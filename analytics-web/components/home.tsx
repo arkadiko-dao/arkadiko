@@ -51,6 +51,9 @@ export const Home: React.FC = () => {
   }, []);
 
   const options: Highcharts.Options = {
+    rangeSelector: {
+      selected: 0
+    },
     chart: {
       zoomType: 'x',
       spacingTop: 40,

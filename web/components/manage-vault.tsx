@@ -6,6 +6,7 @@ import { VaultDepositModal } from '@components/vault-deposit-modal';
 import { VaultWithdrawModal } from '@components/vault-withdraw-modal';
 import { VaultMintModal } from '@components/vault-mint-modal';
 import { VaultBurnModal } from '@components/vault-burn-modal';
+import { VaultCloseModal } from '@components/vault-close-modal';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
@@ -19,12 +20,11 @@ import {
   falseCV,
 } from '@stacks/transactions';
 import { AppContext, CollateralTypeProps } from '@common/context';
-import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
 import { debtClass, VaultProps } from './vault';
 import { getPrice } from '@common/get-price';
 import { getLiquidationPrice, availableCoinsToMint } from '@common/vault-utils';
 import { Redirect } from 'react-router-dom';
-import { resolveReserveName, tokenTraits } from '@common/vault-utils';
+import { resolveReserveName } from '@common/vault-utils';
 import { getRPCClient } from '@common/utils';
 import { microToReadable, availableCollateralToWithdraw } from '@common/vault-utils';
 import { addMinutes } from 'date-fns';
@@ -41,11 +41,13 @@ export const ManageVault = ({ match }) => {
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [showMintModal, setShowMintModal] = useState(false);
   const [showBurnModal, setShowBurnModal] = useState(false);
+  const [showCloseModal, setShowCloseModal] = useState(false);
   const [auctionEnded, setAuctionEnded] = useState(false);
   const [maximumCollateralToWithdraw, setMaximumCollateralToWithdraw] = useState(0);
   const [reserveName, setReserveName] = useState('');
   const [vault, setVault] = useState<VaultProps>();
   const [price, setPrice] = useState(0);
+  const [debtRatio, setDebtRatio] = useState(0);
   const [collateralType, setCollateralType] = useState<CollateralTypeProps>();
   const [isVaultOwner, setIsVaultOwner] = useState(false);
   const [stabilityFee, setStabilityFee] = useState(0);
@@ -181,6 +183,28 @@ export const ManageVault = ({ match }) => {
       setLoadingPoxYieldData(false);
     };
 
+    const fetchCollateralToDebtRatio = async () => {
+      if (vault && vault['debt'] > 0) {
+        const collToDebt = await callReadOnlyFunction({
+          contractAddress,
+          contractName: 'arkadiko-freddie-v1-1',
+          functionName: 'calculate-current-collateral-to-debt-ratio',
+          functionArgs: [
+            uintCV(vault.id),
+            contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v1-1'),
+            contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v1-1'),
+            falseCV(),
+          ],
+          senderAddress: senderAddress || '',
+          network: network,
+        });
+        const json = cvToJSON(collToDebt);
+        if (json.value) {
+          setDebtRatio(json.value.value);
+        }
+      }
+    };
+
     const fetchStackerHeight = async () => {
       if (vault?.stackedTokens == 0 && vault?.revokedStacking) {
         setEnabledStacking(false);
@@ -206,6 +230,11 @@ export const ManageVault = ({ match }) => {
       });
       const unlockBurnHeight = cvToJSON(call).value.value;
       setUnlockBurnHeight(unlockBurnHeight);
+      const client = getRPCClient();
+      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
+      const data = await response.json();
+      const currentBurnHeight = data['stable_burn_block_height'];
+
       if (Number(unlockBurnHeight) === 0) {
         setStartedStacking(false);
         if (Number(vault?.stackedTokens) === 0) {
@@ -218,19 +247,14 @@ export const ManageVault = ({ match }) => {
         return;
       } else {
         setStartedStacking(true);
-        if (Number(vault?.stackedTokens) === 0) {
+        if (vault?.revokedStacking && unlockBurnHeight < currentBurnHeight) {
+          setCanUnlockCollateral(true);
+        }
+        if (Number(vault?.stackedTokens) === 0 || unlockBurnHeight < currentBurnHeight) {
           setCanWithdrawCollateral(true);
         } else {
           setCanWithdrawCollateral(false);
         }
-      }
-
-      const client = getRPCClient();
-      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
-      const data = await response.json();
-      const currentBurnHeight = data['stable_burn_block_height'];
-      if (unlockBurnHeight < currentBurnHeight) {
-        setCanWithdrawCollateral(true);
       }
 
       if (unlockBurnHeight < currentBurnHeight) {
@@ -253,13 +277,9 @@ export const ManageVault = ({ match }) => {
       fetchFees();
       fetchStackerHeight();
       fetchYield();
+      fetchCollateralToDebtRatio();
     }
   }, [vault]);
-
-  let debtRatio = 0;
-  if (match.params.id) {
-    debtRatio = getCollateralToDebtRatio(match.params.id)?.collateralToDebt;
-  }
 
   useEffect(() => {
     if (state.currentTxStatus === 'success') {
@@ -357,36 +377,6 @@ export const ManageVault = ({ match }) => {
       functionName: 'enable-vault-withdrawals',
       functionArgs: [uintCV(match.params.id)],
       onFinish: data => {
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-      },
-      anchorMode: AnchorMode.Any,
-    });
-  };
-
-  const closeVault = async () => {
-    const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'close-vault',
-      postConditionMode: 0x01,
-      functionArgs: [
-        uintCV(match.params.id),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
-        contractPrincipalCV(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v1-1'
-        ),
-      ],
-      onFinish: data => {
-        console.log('finished closing vault!', data, data.txId);
         setState(prevState => ({
           ...prevState,
           currentTxId: data.txId,
@@ -496,10 +486,18 @@ export const ManageVault = ({ match }) => {
         reserveName={reserveName}
       />
 
+      <VaultCloseModal
+        showCloseModal={showCloseModal}
+        setShowCloseModal={setShowCloseModal}
+        match={match}
+        vault={vault}
+        reserveName={reserveName}
+      />
+
       <main className="flex-1 py-12">
         <section>
-          <header className="pb-5 border-b border-gray-200">
-            <h2 className="text-xl font-bold leading-6 text-gray-900 font-headings">
+          <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
+            <h2 className="text-xl font-bold leading-6 text-gray-900 font-headings dark:text-zinc-50">
               {loadingVaultData ? (
                 <Placeholder
                   className="py-2"
@@ -517,16 +515,16 @@ export const ManageVault = ({ match }) => {
           <div className="mt-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <div className="mt-4 bg-white divide-y divide-gray-200 shadow sm:rounded-md sm:overflow-hidden">
+                <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-900 dark:divide-zinc-600 sm:rounded-md sm:overflow-hidden">
                   <div className="px-4 py-5 sm:p-6">
-                    <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings">
+                    <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
                       Supply
                     </h3>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-gray-500 dark:text-zinc-400">
                       Manage and deposit extra collateral.
                     </p>
                   </div>
-                  <div className="px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 sm:p-6">
+                  <div className="px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600 sm:p-6">
                     <div className="flex items-start justify-between">
                       {loadingVaultData ? (
                         <div className="flex flex-col flex-1">
@@ -543,13 +541,13 @@ export const ManageVault = ({ match }) => {
                         </div>
                       ) : (
                         <div>
-                          <p className="text-lg font-semibold leading-none">
+                          <p className="text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
                             {collateralLocked()}{' '}
                             <span className="text-sm font-normal">
                               {vault?.collateralToken.toUpperCase()}
                             </span>
                           </p>
-                          <p className="text-base font-normal leading-6 text-gray-500">
+                          <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                             {vault?.collateralToken.toUpperCase()} Locked
                           </p>
                         </div>
@@ -567,12 +565,12 @@ export const ManageVault = ({ match }) => {
                     </div>
                   </div>
                 </div>
-                <div className="mt-4 bg-white divide-y divide-gray-200 shadow sm:rounded-md sm:overflow-hidden">
+                <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-900 dark:divide-zinc-600 sm:rounded-md sm:overflow-hidden">
                   <div className="px-4 py-5 sm:p-6">
                     <div className="flex items-start justify-between">
                       <div>
                         <div className="flex items-center">
-                          <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings">
+                          <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
                             Stacking
                           </h3>
                           {canStackCollateral && !loadingVaultData ? (
@@ -594,14 +592,13 @@ export const ManageVault = ({ match }) => {
                             </Tooltip>
                           ) : null}
                         </div>
-                        <p className="mt-1 text-sm text-gray-500">Update your stacking status.</p>
+                        <p className="mt-1 text-sm text-gray-500 dark:text-zinc-400">Update your stacking status.</p>
                       </div>
                       <div>
                         {canStackCollateral &&
                         isVaultOwner &&
                         vault?.stackedTokens > 0 &&
                         !vault?.revokedStacking &&
-                        !canWithdrawCollateral &&
                         !loadingVaultData ? (
                           // user has indicated they want to stack their STX tokens
                           startedStacking ? (
@@ -680,21 +677,21 @@ export const ManageVault = ({ match }) => {
                       </div>
                     </div>
                   ) : canStackCollateral ? (
-                    <div className="px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 sm:p-6">
+                    <div className="px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600 sm:p-6">
                       <dl>
                         <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                          <dt className="inline-flex items-center text-sm font-medium text-gray-500">
+                          <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
                             {unlockBurnHeight == 0 ? (
-                              <p className="text-base font-normal leading-6 text-gray-500">
+                              <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                                 Will be stacked
                               </p>
                             ) : (
-                              <p className="text-base font-normal leading-6 text-gray-500">
+                              <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                                 Currently stacking
                               </p>
                             )}
                           </dt>
-                          <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
+                          <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                             <p className="text-lg font-semibold leading-none">
                               {microToReadable(vault?.stackedTokens)}{' '}
                               <span className="text-sm font-normal">
@@ -706,8 +703,8 @@ export const ManageVault = ({ match }) => {
                         <div className="mt-4 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
                           {stackingEndDate != '' ? (
                             <>
-                              <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                                <p className="text-base font-normal leading-6 text-gray-500">
+                              <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                                <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                                   End of stacking
                                 </p>
                                 <Tooltip
@@ -720,7 +717,7 @@ export const ManageVault = ({ match }) => {
                                   />
                                 </Tooltip>
                               </dt>
-                              <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
+                              <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                                 <p className="text-lg font-semibold leading-none">
                                   {stackingEndDate}
                                 </p>
@@ -728,12 +725,12 @@ export const ManageVault = ({ match }) => {
                             </>
                           ) : unlockBurnHeight == 0 ? (
                             <>
-                              <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                                <p className="text-base font-normal leading-6 text-gray-500">
+                              <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                                <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                                   Stacking starts in
                                 </p>
                               </dt>
-                              <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
+                              <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                                 <p className="text-lg font-semibold leading-none">
                                   {state.daysLeft} days
                                 </p>
@@ -747,7 +744,7 @@ export const ManageVault = ({ match }) => {
 
                   <div className="px-4 py-5 sm:p-6">
                     <div className="sm:flex sm:items-center: sm:justify-between">
-                      <h4 className="text-xl font-normal leading-6 text-gray-900 font-headings">
+                      <h4 className="text-xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
                         Yield
                       </h4>
 
@@ -775,12 +772,12 @@ export const ManageVault = ({ match }) => {
 
                     <dl className="mt-4">
                       <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                        <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                          <p className="text-base font-normal leading-6 text-gray-500">
+                        <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                          <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                             Available yield
                           </p>
                         </dt>
-                        <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
+                        <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                           {loadingPoxYieldData ? (
                             <Placeholder
                               className="justify-end py-2"
@@ -802,7 +799,7 @@ export const ManageVault = ({ match }) => {
 
                   <div className="px-4 py-5 sm:p-6">
                     <div className="sm:flex sm:items-center: sm:justify-between ">
-                      <h4 className="text-xl font-normal leading-6 text-gray-900 font-headings">
+                      <h4 className="text-xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
                         Withdrawal
                       </h4>
                       {isVaultOwner &&
@@ -833,12 +830,12 @@ export const ManageVault = ({ match }) => {
 
                     <dl className="mt-4">
                       <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                        <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                          <p className="text-base font-normal leading-6 text-gray-500">
+                        <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                          <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                             Able to withdraw
                           </p>
                         </dt>
-                        <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
+                        <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                           {loadingVaultData ? (
                             <Placeholder
                               className="justify-end py-2"
@@ -875,8 +872,7 @@ export const ManageVault = ({ match }) => {
                     ) : canStackCollateral &&
                       isVaultOwner &&
                       vault?.stackedTokens > 0 &&
-                      !vault?.revokedStacking &&
-                      !canWithdrawCollateral ? (
+                      !vault?.revokedStacking ? (
                       // user has indicated they want to stack their STX tokens
                       <div className="mt-4">
                         <Alert>
@@ -919,16 +915,16 @@ export const ManageVault = ({ match }) => {
                 </div>
               </div>
               <div>
-                <div className="mt-4 bg-white divide-y divide-gray-200 shadow sm:rounded-md sm:overflow-hidden">
+                <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-900 dark:divide-zinc-600 sm:rounded-md sm:overflow-hidden">
                   <div className="px-4 py-5 sm:p-6">
-                    <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings">
+                    <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
                       Mint
                     </h3>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-gray-500 dark:text-zinc-400">
                       Manage your loan. Get extra USDA. Pay it back.
                     </p>
                   </div>
-                  <div className="relative px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 sm:p-6">
+                  <div className="relative px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600 sm:p-6">
                     <div>
                       <div className="flex items-start justify-between">
                         <div>
@@ -939,7 +935,7 @@ export const ManageVault = ({ match }) => {
                               width={Placeholder.width.THIRD}
                             />
                           ) : (
-                            <p className="text-lg font-semibold leading-none">
+                            <p className="text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
                               {availableCoinsToMint(
                                 price,
                                 collateralLocked(),
@@ -953,7 +949,7 @@ export const ManageVault = ({ match }) => {
                               <span className="text-sm font-normal">USDA</span>
                             </p>
                           )}
-                          <p className="flex items-center text-base font-normal leading-6 text-gray-500">
+                          <p className="flex items-center text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                             Available to mint
                             <Tooltip
                               className="ml-2"
@@ -976,10 +972,7 @@ export const ManageVault = ({ match }) => {
                             outstandingDebt(),
                             collateralType?.collateralToDebtRatio,
                             vault?.collateralToken
-                          ).toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 6,
-                          })
+                          )
                         ) > 0 ? (
                           <button
                             type="button"
@@ -1001,7 +994,7 @@ export const ManageVault = ({ match }) => {
                                 width={Placeholder.width.THIRD}
                               />
                             ) : (
-                              <p className="text-lg font-semibold leading-none">
+                              <p className="text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
                                 {totalDebt.toLocaleString(undefined, {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 6,
@@ -1009,7 +1002,7 @@ export const ManageVault = ({ match }) => {
                                 <span className="text-sm font-normal">USDA</span>
                               </p>
                             )}
-                            <p className="flex items-center text-base font-normal leading-6 text-gray-500">
+                            <p className="flex items-center text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                               Outstanding USDA debt
                               <Tooltip
                                 className="ml-2"
@@ -1025,15 +1018,15 @@ export const ManageVault = ({ match }) => {
                               </Tooltip>
                             </p>
                           </div>
-                          {isVaultOwner && canWithdrawCollateral && Number(totalDebt) <= 0.1 ? (
+                          {!loadingStackerData && isVaultOwner && canWithdrawCollateral && Number(vault?.stackedTokens) === 0 && Number(totalDebt) <= 0.1 ? (
                             <button
                               type="button"
                               className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => closeVault()}
+                              onClick={() => setShowCloseModal(true)}
                             >
                               Withdraw Collateral & Close Vault
                             </button>
-                          ) : isVaultOwner ? (
+                          ) : !loadingStackerData && isVaultOwner ? (
                             <button
                               type="button"
                               className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -1041,6 +1034,12 @@ export const ManageVault = ({ match }) => {
                             >
                               Pay back
                             </button>
+                          ) : loadingStackerData ? (
+                            <Placeholder
+                              className="justify-end py-2"
+                              color={Placeholder.color.INDIGO}
+                              width={Placeholder.width.THIRD}
+                            />
                           ) : null}
                         </div>
                       </div>
@@ -1048,8 +1047,8 @@ export const ManageVault = ({ match }) => {
                     <div className="pt-6">
                       <dl>
                         <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                          <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                            <p className="text-base font-normal leading-6 text-gray-500">
+                          <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                            <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                               Collateral to Debt ratio
                             </p>
                             <Tooltip
@@ -1062,7 +1061,7 @@ export const ManageVault = ({ match }) => {
                               />
                             </Tooltip>
                           </dt>
-                          <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
+                          <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                             {loadingVaultData ? (
                               <Placeholder
                                 className="justify-end py-2"
@@ -1084,8 +1083,8 @@ export const ManageVault = ({ match }) => {
                         </div>
 
                         <div className="mt-4 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                          <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                            <p className="text-base font-normal leading-6 text-gray-500">
+                          <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                            <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                               Minimum Ratio (before liquidation)
                             </p>
                             <Tooltip
@@ -1098,7 +1097,7 @@ export const ManageVault = ({ match }) => {
                               />
                             </Tooltip>
                           </dt>
-                          <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
+                          <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                             {loadingVaultData ? (
                               <Placeholder
                                 className="justify-end py-2"
@@ -1115,8 +1114,8 @@ export const ManageVault = ({ match }) => {
                         </div>
 
                         <div className="mt-4 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                          <dt className="inline-flex items-center text-sm font-medium text-gray-500">
-                            <p className="text-base font-normal leading-6 text-gray-500">
+                          <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                            <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                               Liquidation penalty
                             </p>
                             <Tooltip
@@ -1129,7 +1128,7 @@ export const ManageVault = ({ match }) => {
                               />
                             </Tooltip>
                           </dt>
-                          <dd className="mt-1 text-sm text-right text-gray-900 sm:mt-0">
+                          <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                             {loadingVaultData ? (
                               <Placeholder
                                 className="justify-end py-2"

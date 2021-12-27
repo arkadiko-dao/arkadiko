@@ -45,7 +45,7 @@ export function Modal({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Dialog.Overlay className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
+            <Dialog.Overlay className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75 dark:bg-zinc-600 dark:bg-opacity-80" />
           </Transition.Child>
 
           {/* This element is to trick the browser into centering the modal contents. */}
@@ -61,11 +61,11 @@ export function Modal({
             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
-            <div className="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+            <div className="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl dark:bg-zinc-900 sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
               <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
                 <button
                   type="button"
-                  className="text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="text-gray-400 bg-white rounded-md dark:bg-zinc-900 hover:text-gray-500 dark:hover:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   onClick={closeModal}
                 >
                   <span className="sr-only">Close</span>
@@ -81,7 +81,7 @@ export function Modal({
                 <div className="mt-3 sm:mt-5">
                   <Dialog.Title
                     as="h3"
-                    className="text-lg leading-6 text-center text-gray-900 font-headings"
+                    className="text-lg leading-6 text-center text-gray-900 dark:text-zinc-100 font-headings"
                   >
                     {title}
                   </Dialog.Title>

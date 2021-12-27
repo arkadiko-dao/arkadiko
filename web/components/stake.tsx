@@ -44,20 +44,25 @@ export const Stake = () => {
   const [showStakeLp1Modal, setShowStakeLp1Modal] = useState(false);
   const [showStakeLp2Modal, setShowStakeLp2Modal] = useState(false);
   const [showStakeLp3Modal, setShowStakeLp3Modal] = useState(false);
+  const [showStakeLp4Modal, setShowStakeLp4Modal] = useState(false);
   const [showUnstakeLp1Modal, setShowUnstakeLp1Modal] = useState(false);
   const [showUnstakeLp2Modal, setShowUnstakeLp2Modal] = useState(false);
   const [showUnstakeLp3Modal, setShowUnstakeLp3Modal] = useState(false);
+  const [showUnstakeLp4Modal, setShowUnstakeLp4Modal] = useState(false);
   const [apy, setApy] = useState(0);
   const [dikoUsdaLpApy, setDikoUsdaLpApy] = useState(0);
   const [stxUsdaLpApy, setStxUsdaLpApy] = useState(0);
   const [stxDikoLpApy, setStxDikoLpApy] = useState(0);
+  const [stxXbtcLpApy, setStxXbtcLpApy] = useState(0);
   const [stakedAmount, setStakedAmount] = useState(0);
   const [lpDikoUsdaStakedAmount, setLpDikoUsdaStakedAmount] = useState(0);
   const [lpStxUsdaStakedAmount, setLpStxUsdaStakedAmount] = useState(0);
   const [lpStxDikoStakedAmount, setLpStxDikoStakedAmount] = useState(0);
+  const [lpStxXbtcStakedAmount, setLpStxXbtcStakedAmount] = useState(0);
   const [lpDikoUsdaPendingRewards, setLpDikoUsdaPendingRewards] = useState(0);
   const [lpStxUsdaPendingRewards, setLpStxUsdaPendingRewards] = useState(0);
   const [lpStxDikoPendingRewards, setLpStxDikoPendingRewards] = useState(0);
+  const [lpStxXbtcPendingRewards, setLpStxXbtcPendingRewards] = useState(0);
   const [dikoCooldown, setDikoCooldown] = useState('');
   const [canUnstake, setCanUnstake] = useState(false);
   const [cooldownRunning, setCooldownRunning] = useState(false);
@@ -66,11 +71,13 @@ export const Stake = () => {
   const [stxDikoPoolInfo, setStxDikoPoolInfo] = useState(0);
   const [stxUsdaPoolInfo, setStxUsdaPoolInfo] = useState(0);
   const [dikoUsdaPoolInfo, setDikoUsdaPoolInfo] = useState(0);
+  const [stxXbtcPoolInfo, setStxXbtcPoolInfo] = useState(0);
   const [missedLpRewards, setMissedLpRewards] = useState(0);
   const [stDikoToDiko, setStDikoToDiko] = useState(0);
   const [dikoPrice, setDikoPrice] = useState(0);
   const [stxPrice, setStxPrice] = useState(0);
   const [usdaPrice, setUsdaPrice] = useState(0);
+  const [xBtcPrice, setXbtcPrice] = useState(0);
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -98,7 +105,8 @@ export const Stake = () => {
       if (
         state.balance['dikousda'] > 0 ||
         state.balance['wstxusda'] > 0 ||
-        state.balance['wstxdiko'] > 0
+        state.balance['wstxdiko'] > 0 ||
+        state.balance['wstxxbtc'] > 0
       ) {
         setHasUnstakedTokens(true);
       }
@@ -150,16 +158,27 @@ export const Stake = () => {
       let tokenYContract = 'usda-token';
       let tokenXName = 'DIKO';
       let tokenYName = 'USDA';
-      if (poolContract == 'arkadiko-stake-pool-wstx-diko-v1-1') {
+      let tokenXAddress = contractAddress;
+      let tokenYAddress = contractAddress;
+      let tokenXDecimals = 6;
+      let tokenYDecimals = 6;
+      if (poolContract === 'arkadiko-stake-pool-wstx-diko-v1-1') {
         tokenXContract = 'wrapped-stx-token';
         tokenYContract = 'arkadiko-token';
         tokenXName = 'STX';
         tokenYName = 'DIKO';
-      } else if (poolContract == 'arkadiko-stake-pool-wstx-usda-v1-1') {
+      } else if (poolContract === 'arkadiko-stake-pool-wstx-usda-v1-1') {
         tokenXContract = 'wrapped-stx-token';
         tokenYContract = 'usda-token';
         tokenXName = 'STX';
         tokenYName = 'USDA';
+      } else if (poolContract == 'arkadiko-stake-pool-wstx-xbtc-v1-1') {
+        tokenXContract = 'wrapped-stx-token';
+        tokenYAddress = 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR';
+        tokenYContract = 'Wrapped-Bitcoin';
+        tokenXName = 'STX';
+        tokenYName = 'xBTC';
+        tokenYDecimals = 8;
       }
 
       // Get pair details
@@ -168,8 +187,8 @@ export const Stake = () => {
         contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',
         functionArgs: [
-          contractPrincipalCV(contractAddress, tokenXContract),
-          contractPrincipalCV(contractAddress, tokenYContract),
+          contractPrincipalCV(tokenXAddress, tokenXContract),
+          contractPrincipalCV(tokenYAddress, tokenYContract),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -193,14 +212,16 @@ export const Stake = () => {
       const balanceX = pairDetails['balance-x'].value;
       const balanceY = pairDetails['balance-y'].value;
       const totalTokens = pairDetails['shares-total'].value;
+      const decimalRatioX = 1000000 / Math.pow(10, tokenXDecimals);
+      const decimalRatioY = 1000000 / Math.pow(10, tokenYDecimals);
 
       const stakedShare = lpTokenStakedAmount / totalTokens;
-      const stakedBalanceX = balanceX * stakedShare;
-      const stakedBalanceY = balanceY * stakedShare;
+      const stakedBalanceX = (balanceX * stakedShare) * decimalRatioX;
+      const stakedBalanceY = (balanceY * stakedShare) * decimalRatioY;
 
       const walletShare = lpTokenWalletAmount / totalTokens;
-      const walletBalanceX = balanceX * walletShare;
-      const walletBalanceY = balanceY * walletShare;
+      const walletBalanceX = (balanceX * walletShare) * decimalRatioX;
+      const walletBalanceY = (balanceY * walletShare) * decimalRatioY;
 
       // Estimate value
       let estimatedValueStaked = 0;
@@ -236,6 +257,7 @@ export const Stake = () => {
         state.balance['dikousda'] == undefined ||
         state.balance['wstxusda'] == undefined ||
         state.balance['wstxdiko'] == undefined ||
+        state.balance['wstxxbtc'] == undefined ||
         stxPrice === 0 ||
         dikoPrice === 0 ||
         usdaPrice === 0
@@ -289,6 +311,17 @@ export const Stake = () => {
       setLpStxUsdaStakedAmount(userStakedData['stake-amount-wstx-usda'].value);
       setLpStxDikoStakedAmount(userStakedData['stake-amount-wstx-diko'].value);
 
+      const xbtcStakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-stake-pool-wstx-xbtc-v1-1',
+        functionName: 'get-stake-amount-of',
+        functionArgs: [standardPrincipalCV(stxAddress || '')],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const userXbtcStakedData = cvToJSON(xbtcStakedCall).value;
+      setLpStxXbtcStakedAmount(userXbtcStakedData);
+
       // Total staked
       const totalStakedCall = await callReadOnlyFunction({
         contractAddress,
@@ -304,8 +337,19 @@ export const Stake = () => {
       let totalStxUsdaStaked = totalStakedData['stake-total-wstx-usda'].value / 1000000;
       let totalStxDikoStaked = totalStakedData['stake-total-wstx-diko'].value / 1000000;
 
+      const totalStakedXbtcCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-stake-pool-wstx-xbtc-v1-1',
+        functionName: 'get-total-staked',
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const totalStakedXbtcData = cvToJSON(totalStakedXbtcCall).value;
+      let totalStxXbtcStaked = totalStakedXbtcData / 1000000;
+
       // LP value
-      const [dikoUsdaLpValue, stxUsdaLpValue, stxDikoLpValue] = await Promise.all([
+      const [dikoUsdaLpValue, stxUsdaLpValue, stxDikoLpValue, stxXbtcLpValue] = await Promise.all([
         lpTokenValue(
           'arkadiko-stake-pool-diko-usda-v1-1',
           userStakedData['stake-amount-diko-usda'].value,
@@ -321,23 +365,31 @@ export const Stake = () => {
           userStakedData['stake-amount-wstx-diko'].value,
           state.balance['wstxdiko']
         ),
+        lpTokenValue(
+          'arkadiko-stake-pool-wstx-xbtc-v1-1',
+          userXbtcStakedData,
+          state.balance['wstxxbtc']
+        ),
       ]);
 
       setDikoUsdaPoolInfo(dikoUsdaLpValue);
       setStxUsdaPoolInfo(stxUsdaLpValue);
       setStxDikoPoolInfo(stxDikoLpValue);
+      setStxXbtcPoolInfo(stxXbtcLpValue);
 
       // Pending rewards
-      const [dikoUsdaLpPendingRewards, stxUsdaLpPendingRewards, stxDikoLpPendingRewards] =
+      const [dikoUsdaLpPendingRewards, stxUsdaLpPendingRewards, stxDikoLpPendingRewards, stxXbtcLpPendingRewards] =
         await Promise.all([
           fetchLpPendingRewards('arkadiko-stake-pool-diko-usda-v1-1'),
           fetchLpPendingRewards('arkadiko-stake-pool-wstx-usda-v1-1'),
           fetchLpPendingRewards('arkadiko-stake-pool-wstx-diko-v1-1'),
+          fetchLpPendingRewards('arkadiko-stake-pool-wstx-xbtc-v1-1'),
         ]);
 
       setLpDikoUsdaPendingRewards(dikoUsdaLpPendingRewards);
       setLpStxUsdaPendingRewards(stxUsdaLpPendingRewards);
       setLpStxDikoPendingRewards(stxDikoLpPendingRewards);
+      setLpStxXbtcPendingRewards(stxXbtcLpPendingRewards);
 
       const totalStakingRewardsYear1 = 23500000;
 
@@ -360,7 +412,7 @@ export const Stake = () => {
         totalStxUsdaStaked = 10;
       }
       const dikoStxUsda = await lpTokenValue('arkadiko-stake-pool-wstx-usda-v1-1', 0, totalStxUsdaStaked);
-      const stxUsdaPoolRewards = totalStakingRewardsYear1 * 0.5;
+      const stxUsdaPoolRewards = totalStakingRewardsYear1 * 0.4;
       const stxUsdaApr = stxUsdaPoolRewards / (dikoStxUsda['walletValue'] / Number(dikoPrice / 1000000));
       setStxUsdaLpApy(Number((100 * stxUsdaApr).toFixed(2)));
 
@@ -371,6 +423,14 @@ export const Stake = () => {
       const stxDikoPoolRewards = totalStakingRewardsYear1 * 0.15;
       const stxDikoApr = stxDikoPoolRewards / (dikoStxDiko['walletValue'] / Number(dikoPrice / 1000000));
       setStxDikoLpApy(Number((100 * stxDikoApr).toFixed(2)));
+
+      if (totalStxXbtcStaked == 0) {
+        totalStxXbtcStaked = 10;
+      }
+      const dikoStxXbtc = await lpTokenValue('arkadiko-stake-pool-wstx-xbtc-v1-1', 0, totalStxXbtcStaked);
+      const stxXbtcPoolRewards = totalStakingRewardsYear1 * 0.1;
+      const stxXbtcApr = stxXbtcPoolRewards / (dikoStxXbtc['walletValue'] / Number(dikoPrice / 1000000));
+      setStxXbtcLpApy(Number((100 * stxXbtcApr).toFixed(2)));
 
       const dikoCooldownInfo = await callReadOnlyFunction({
         contractAddress,
@@ -413,7 +473,10 @@ export const Stake = () => {
         setCanUnstake(true);
       } else {
         const blockDiff = redeemStartBlock - currentBlock;
-        let text = blockDiffToTimeLeft(blockDiff);
+        let text = 'about 10 minutes';
+        if (blockDiff > 0) {
+          text = blockDiffToTimeLeft(blockDiff);
+        }
         text += ' left';
         setDikoCooldown(text);
         setCooldownRunning(true);
@@ -543,6 +606,53 @@ export const Stake = () => {
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-usda-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
+        contractPrincipalCV(contractAddress, 'arkadiko-token'),
+      ],
+      postConditionMode: 0x01,
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
+  const claimStxXbtcLpPendingRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-registry-v1-1',
+      functionName: 'claim-pending-rewards',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-xbtc-v1-1'),
+      ],
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
+  const stakeStxXbtcLpPendingRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-registry-v1-1',
+      functionName: 'stake-pending-rewards',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-xbtc-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
@@ -689,6 +799,22 @@ export const Stake = () => {
         tokenName={'STX/DIKO'}
       />
 
+      <StakeLpModal
+        showStakeModal={showStakeLp3Modal}
+        setShowStakeModal={setShowStakeLp3Modal}
+        apy={stxDikoLpApy}
+        balanceName={'wstxdiko'}
+        tokenName={'STX/DIKO'}
+      />
+
+      <StakeLpModal
+        showStakeModal={showStakeLp4Modal}
+        setShowStakeModal={setShowStakeLp4Modal}
+        apy={stxXbtcLpApy}
+        balanceName={'wstxxbtc'}
+        tokenName={'STX/xBTC'}
+      />
+
       <UnstakeLpModal
         showUnstakeModal={showUnstakeLp1Modal}
         setShowUnstakeModal={setShowUnstakeLp1Modal}
@@ -713,6 +839,14 @@ export const Stake = () => {
         tokenName={'STX/DIKO'}
       />
 
+      <UnstakeLpModal
+        showUnstakeModal={showUnstakeLp4Modal}
+        setShowUnstakeModal={setShowUnstakeLp4Modal}
+        stakedAmount={lpStxXbtcStakedAmount}
+        balanceName={'wstxxbtc'}
+        tokenName={'STX/xBTC'}
+      />
+
       {state.userData ? (
         <Container>
           <main className="relative flex-1 py-12">
@@ -726,10 +860,10 @@ export const Stake = () => {
               </Alert>
             ) : null}
             <section>
-              <header className="pb-5 border-b border-gray-200 sm:flex sm:justify-between sm:items-end">
+              <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
                 <div>
-                  <h3 className="text-lg leading-6 text-gray-900 font-headings">DIKO</h3>
-                  <p className="max-w-3xl mt-2 text-sm text-gray-500">
+                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">DIKO</h3>
+                  <p className="max-w-3xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
                     When staking DIKO in the security module{' '}
                     <span className="font-semibold">you will receive stDIKO</span> which is a
                     representation of your share of the pool. DIKO in the pool is{' '}
@@ -739,7 +873,7 @@ export const Stake = () => {
                     stDIKO can be used to propose and vote in governance.
                   </p>
                 </div>
-                <div className="flex items-center">
+                <div className="flex items-center mt-2 sm:mt-0">
                   <div className="w-5.5 h-5.5 rounded-full bg-indigo-200 flex items-center justify-center">
                     <QuestionMarkCircleIcon
                       className="w-5 h-5 text-indigo-600"
@@ -747,40 +881,40 @@ export const Stake = () => {
                     />
                   </div>
                   <a
-                    className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 border-transparent hover:border-indigo-300 hover:text-indigo-700"
+                    className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
                     href="https://docs.arkadiko.finance/protocol/diko/security-module"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     More on the Security Module
                     <ExternalLinkIcon
-                      className="flex-shrink-0 block w-3 h-3 ml-2"
+                      className="block w-3 h-3 ml-2 shrink-0"
                       aria-hidden="true"
                     />
                   </a>
                 </div>
               </header>
 
-              <div className="mt-4 bg-white divide-y divide-gray-200 rounded-md shadow">
-                <div className="px-4 py-5 space-y-6 divide-y divide-gray-200 sm:p-6">
-                  <div className="grid grid-flow-col grid-cols-1 gap-4 sm:grid-cols-[min-content,auto]">
+              <div className="mt-4 bg-white divide-y divide-gray-200 rounded-md shadow dark:divide-gray-600 dark:bg-zinc-900">
+                <div className="px-4 py-5 space-y-6 divide-y divide-gray-200 dark:divide-zinc-600 sm:p-6">
+                  <div className="md:grid md:grid-flow-col gap-4 sm:grid-cols-[min-content,auto]">
                     <div className="self-center w-14">
                       <img className="w-12 h-12 rounded-full" src={tokenList[1].logo} alt="" />
                     </div>
-                    <div>
-                      <p className="mb-1 text-sm leading-6 text-gray-500">stDIKO</p>
+                    <div className="mt-3 md:mt-0">
+                      <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">stDIKO</p>
                       {loadingData ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
                         <div>
-                          <p className="text-lg font-semibold">
+                          <p className="text-lg font-semibold dark:text-white">
                             {microToReadable(state.balance['stdiko']).toLocaleString(undefined, {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 6,
                             })}
                           </p>
-                          <div className="flex items-center mt-1">
-                            <p className="text-xs text-gray-500">
+                          <div className="flex items-center md:mt-1">
+                            <p className="text-xs text-gray-500 dark:text-zinc-400">
                               1 stDIKO ≈{' '}
                               {stDikoToDiko.toLocaleString(undefined, {
                                 minimumFractionDigits: 2,
@@ -794,7 +928,7 @@ export const Stake = () => {
                               label={`stDIKO's value is determined by dividing the total supply of DIKO in the pool by the total supply of stDIKO`}
                             >
                               <InformationCircleIcon
-                                className="flex-shrink-0 block w-4 h-4 ml-2 text-gray-400"
+                                className="block w-4 h-4 ml-2 text-gray-400 shrink-0"
                                 aria-hidden="true"
                               />
                             </Tooltip>
@@ -802,12 +936,12 @@ export const Stake = () => {
                         </div>
                       )}
                     </div>
-                    <div>
-                      <p className="mb-1 text-sm leading-6 text-gray-500">DIKO</p>
+                    <div className="mt-3 md:mt-0">
+                      <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">DIKO</p>
                       {loadingData ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
-                        <p className="text-lg font-semibold">
+                        <p className="text-lg font-semibold dark:text-white">
                           {microToReadable(stakedAmount).toLocaleString(undefined, {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 6,
@@ -815,16 +949,16 @@ export const Stake = () => {
                         </p>
                       )}
                     </div>
-                    <div>
-                      <p className="mb-1 text-sm leading-6 text-gray-500">Current APR</p>
+                    <div className="mt-3 md:mt-0">
+                      <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">Current APR</p>
                       {loadingData ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
-                        <p className="text-indigo-600">{apy}%</p>
+                        <p className="text-indigo-600 dark:text-indigo-400">{apy}%</p>
                       )}
                     </div>
-                    <div>
-                      <p className="flex items-center mb-1 text-sm leading-6 text-gray-500">
+                    <div className="mt-3 md:mt-0">
+                      <p className="flex items-center text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">
                         Cooldown status
                         <Tooltip
                           className="ml-2"
@@ -832,7 +966,7 @@ export const Stake = () => {
                           label={`The 10-day cooldown period is the time required prior to unstaking your tokens. Once it expires, there is a 2-day window to unstake your tokens.`}
                         >
                           <InformationCircleIcon
-                            className="flex-shrink-0 block w-5 h-5 ml-2 text-gray-400"
+                            className="block w-5 h-5 ml-2 text-gray-400 shrink-0"
                             aria-hidden="true"
                           />
                         </Tooltip>
@@ -840,21 +974,21 @@ export const Stake = () => {
                       {loadingData ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
-                        <p className="text-base">{dikoCooldown}</p>
+                        <p className="text-base dark:text-white">{dikoCooldown}</p>
                       )}
                     </div>
                     <div className="self-center">
                       <Menu as="div" className="relative flex items-center justify-end">
                         {({ open }) => (
                           <>
-                            <Menu.Button className="inline-flex items-center justify-center text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75">
+                            <Menu.Button className="inline-flex items-center justify-center px-2 py-1 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-900 dark:text-indigo-400">
                               <span>Actions</span>
                               <ChevronUpIcon
                                 className={`${
                                   open
                                     ? ''
                                     : 'transform rotate-180 transition ease-in-out duration-300'
-                                } ml-2 w-5 h-5 text-indigo-500`}
+                                } ml-2 w-5 h-5`}
                               />
                             </Menu.Button>
                             <Transition
@@ -869,7 +1003,7 @@ export const Stake = () => {
                             >
                               <Menu.Items
                                 static
-                                className="absolute top-0 z-10 w-48 mx-3 mt-6 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg right-3 ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                className="absolute top-0 z-10 w-48 mx-3 mt-6 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg dark:divide-gray-600 right-3 ring-1 ring-black ring-opacity-5 focus:outline-none"
                               >
                                 <div className="px-1 py-1">
                                   <Menu.Item>
@@ -1012,11 +1146,11 @@ export const Stake = () => {
             </section>
 
             <section className="relative mt-8 overflow-hidden">
-              <header className="pb-5 border-b border-gray-200">
-                <h3 className="text-lg leading-6 text-gray-900 font-headings">
+              <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
+                <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">
                   Liquidity Provider Tokens
                 </h3>
-                <p className="max-w-3xl mt-2 text-sm text-gray-500">
+                <p className="max-w-3xl mt-2 text-sm text-gray-500 dark:text-zinc-400 dark:text-zinc-300">
                   Staking LP tokens allows you to earn further rewards. You might be more familiar
                   with the term “farming”.
                 </p>
@@ -1054,43 +1188,43 @@ export const Stake = () => {
               <div className="flex flex-col mt-4">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                    <div className="overflow-hidden border border-gray-200 rounded-lg">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+                    <div className="overflow-hidden border border-gray-200 rounded-lg dark:border-zinc-700">
+                      <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
+                        <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
                           <tr>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
                             >
                               LP Token
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
                             >
                               Current APR
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
                             >
                               Available
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
                             >
                               Staked
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
                             >
                               Rewards
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
                             >
                               <span className="sr-only">Actions</span>
                             </th>
@@ -1146,6 +1280,23 @@ export const Stake = () => {
                           claimLpPendingRewards={claimStxDikoLpPendingRewards}
                           stakeLpPendingRewards={stakeStxDikoLpPendingRewards}
                           getLpRoute={'/swap/add/STX/DIKO'}
+                        />
+
+                        {/* Arkadiko V1 STX xBTC LP Token */}
+                        <StakeLpRow
+                          loadingData={loadingData}
+                          tokenListItemX={2}
+                          tokenListItemY={3}
+                          balance={state.balance['wstxxbtc']}
+                          pendingRewards={lpStxXbtcPendingRewards}
+                          stakedAmount={lpStxXbtcStakedAmount}
+                          apy={stxXbtcLpApy}
+                          poolInfo={stxXbtcPoolInfo}
+                          setShowStakeLpModal={setShowStakeLp4Modal}
+                          setShowUnstakeLpModal={setShowUnstakeLp4Modal}
+                          claimLpPendingRewards={claimStxXbtcLpPendingRewards}
+                          stakeLpPendingRewards={stakeStxXbtcLpPendingRewards}
+                          getLpRoute={'/swap/add/STX/xBTC'}
                         />
                       </table>
                     </div>

@@ -52,4 +52,15 @@ class Pool < ApplicationRecord
 
     [added_x - removed_x, added_y - removed_y]
   end
+
+  def export_prices
+    prices = fetch_prices
+    headers = ["timestamp", "price_in_usda"]
+    CSV.generate do |csv|
+      csv << headers
+      prices.each do |price|
+        csv << [price[0], price[1]]
+      end
+    end
+  end
 end

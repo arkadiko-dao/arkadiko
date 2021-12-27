@@ -75,7 +75,7 @@ export const OnboardingNav = props => {
                           'px-6 py-5 flex items-start text-sm font-medium'
                         )}
                       >
-                        <span className="flex-shrink-0">
+                        <span className="shrink-0">
                           <span className="flex items-center justify-center w-10 h-10 bg-indigo-600 rounded-full">
                             <CheckIcon className="w-6 h-6 text-white" aria-hidden="true" />
                           </span>
@@ -100,7 +100,7 @@ export const OnboardingNav = props => {
                           'px-6 py-5 flex items-start text-sm font-medium'
                         )}
                       >
-                        <span className="flex-shrink-0">
+                        <span className="shrink-0">
                           <span className="flex items-center justify-center w-10 h-10 border-2 border-indigo-600 rounded-full">
                             <span className="text-indigo-600">{section.id}</span>
                           </span>
@@ -127,7 +127,7 @@ export const OnboardingNav = props => {
                           'px-6 py-5 flex items-start text-sm font-medium'
                         )}
                       >
-                        <span className="flex-shrink-0">
+                        <span className="shrink-0">
                           <span className="flex items-center justify-center w-10 h-10 border-2 border-gray-300 rounded-full">
                             <span className="text-gray-500">{section.id}</span>
                           </span>
@@ -175,7 +175,7 @@ export const OnboardingNav = props => {
       <div className="relative hidden sm:block bg-yellow-50">
         <div className="px-3 py-3 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <div className="flex items-center justify-center">
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <ExclamationIcon className="w-5 h-5 text-yellow-400" aria-hidden="true" />
             </div>
             <div className="ml-3">

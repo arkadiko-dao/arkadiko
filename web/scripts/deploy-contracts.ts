@@ -19,8 +19,7 @@ interface Contract {
 }
 
 const contracts: Contract[] = [
-  { name: 'arkadiko-liquidator-v2-1' },
-  { name: 'arkadiko-auction-engine-v2-1' }
+  { name: 'arkadiko-swap-token-wstx-xbtc' }
 ];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');

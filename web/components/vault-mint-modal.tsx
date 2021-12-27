@@ -1,15 +1,12 @@
-import React, { useContext, useState, useRef, useEffect } from 'react';
+import React, { useContext, useState, useRef } from 'react';
 import { Modal } from '@components/ui/modal';
 import { tokenList } from '@components/token-swap-list';
-import { AppContext, CollateralTypeProps } from '@common/context';
+import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import {
   AnchorMode,
   contractPrincipalCV,
-  cvToJSON,
-  stringAsciiCV,
-  uintCV,
-  callReadOnlyFunction,
+  uintCV
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
@@ -117,7 +114,7 @@ export const VaultMintModal: React.FC<Props> = ({
       buttonAction={() => callMint()}
       initialFocus={inputRef}
     >
-      <p className="text-sm text-center text-gray-500">
+      <p className="text-sm text-center text-gray-500 dark:text-zinc-400">
         Choose how much extra USDA you want to mint. You can mint a maximum of{' '}
         <span className="font-semibold">
           {availableCoinsToMint(

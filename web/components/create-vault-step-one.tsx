@@ -158,12 +158,12 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   return (
     <>
       <section>
-        <header className="pb-5 border-b border-gray-200 sm:flex sm:justify-between sm:items-end">
+        <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
           <div>
-            <h2 className="text-2xl font-bold leading-6 text-gray-900 font-headings">
+            <h2 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">
               Create a new vault
             </h2>
-            <p className="max-w-4xl mt-2 text-sm text-gray-500">
+            <p className="max-w-4xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
               Deposit {tokenName} and generate USDA
             </p>
           </div>
@@ -173,20 +173,20 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                 <QuestionMarkCircleIcon className="w-5 h-5 text-indigo-600" aria-hidden="true" />
               </div>
               <a
-                className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 border-transparent hover:border-indigo-300 hover:text-indigo-700"
+                className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
                 href="https://docs.arkadiko.finance/protocol/vaults"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 Need help with vaults?
-                <ExternalLinkIcon className="flex-shrink-0 block w-3 h-3 ml-2" aria-hidden="true" />
+                <ExternalLinkIcon className="block w-3 h-3 ml-2 shrink-0" aria-hidden="true" />
               </a>
             </div>
           </div>
         </header>
 
         <div className="mt-4 shadow sm:rounded-md sm:overflow-hidden">
-          <div className="px-4 py-5 space-y-6 bg-white sm:p-6">
+          <div className="px-4 py-5 space-y-6 bg-white dark:bg-zinc-900 sm:p-6">
             {errors.length > 0 ? (
               <Alert type={Alert.type.ERROR}>
                 {errors.map(txt => (
@@ -194,24 +194,32 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                 ))}
               </Alert>
             ) : null}
-            <form className="space-y-8 divide-y divide-gray-200">
-              <div className="space-y-8 divide-y divide-gray-200">
+            <form className="space-y-8 divide-y divide-gray-200 dark:divide-zinc-600">
+              <div className="space-y-8 divide-y divide-gray-200 dark:divide-zinc-600">
                 <div>
                   <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-8">
                     {isLoading ? (
-                      <>
-                        <Placeholder className="py-2" width={Placeholder.width.FULL} />
-                        <Placeholder className="py-2" width={Placeholder.width.FULL} />
-                        <Placeholder className="py-2" width={Placeholder.width.FULL} />
-                        <Placeholder className="py-2" width={Placeholder.width.FULL} />
-                      </>
+                      <div className="space-y-16 sm:col-span-3">
+                        <div>
+                          <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.FULL} />
+                          <Placeholder className="py-2" width={Placeholder.width.THIRD} />
+                        </div>
+                        <div>
+                          <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.FULL} />
+                          <Placeholder className="py-2" width={Placeholder.width.THIRD} />
+                        </div>
+                        <div>
+                          <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.FULL} />
+                          <Placeholder className="py-2" width={Placeholder.width.THIRD} />
+                        </div>
+                      </div>
                     ) : (
                       <div className="space-y-6 sm:col-span-3">
                         <div>
-                          <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">
+                          <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
                             How much {tokenName} do you want to collateralize?
                           </h3>
-                          <p className="mt-2 text-sm text-gray-500">
+                          <p className="mt-2 text-sm">
                             The amount of {tokenName} you deposit determines how much USDA you can
                             generate.
                           </p>
@@ -230,10 +238,10 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                           </div>
                         </div>
                         <div>
-                          <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">
+                          <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
                             How much USDA would you like to mint?
                           </h3>
-                          <p className="mt-2 text-sm text-gray-500">
+                          <p className="mt-2 text-sm">
                             Mint an amount that is safely above the liquidation ratio.
                           </p>
 
@@ -253,10 +261,10 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                       </div>
                     )}
                     <div className="sm:col-start-6 sm:col-span-5">
-                      <div className="w-full border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
-                        <dl className="sm:divide-y sm:divide-indigo-200">
+                      <div className="w-full border border-indigo-200 rounded-lg shadow-sm dark:border-indigo-300 bg-indigo-50 dark:bg-indigo-200">
+                        <dl className="sm:divide-y sm:divide-indigo-200 dark:divide-indigo-300">
                           <div className="p-3 sm:flex sm:items-center sm:flex-1 sm:flex-wrap sm:p-4">
-                            <dt className="inline-flex items-center flex-shrink-0 text-sm font-medium text-indigo-500 sm:mr-2">
+                            <dt className="inline-flex items-center text-sm font-medium text-indigo-500 shrink-0 sm:mr-2">
                               Collateral to Debt Ratio
                               <div className="ml-2">
                                 <Tooltip
@@ -276,7 +284,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                           </div>
 
                           <div className="p-3 sm:flex sm:items-center sm:flex-1 sm:flex-wrap sm:p-4">
-                            <dt className="inline-flex items-center flex-shrink-0 text-sm font-medium text-indigo-500 sm:mr-2">
+                            <dt className="inline-flex items-center text-sm font-medium text-indigo-500 shrink-0 sm:mr-2">
                               Liquidation Price
                               <div className="ml-2">
                                 <Tooltip
@@ -296,7 +304,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                           </div>
 
                           <div className="p-3 sm:flex sm:items-center sm:flex-1 sm:flex-wrap sm:p-4">
-                            <dt className="inline-flex items-center flex-shrink-0 text-sm font-medium text-indigo-500 sm:mr-2">
+                            <dt className="inline-flex items-center text-sm font-medium text-indigo-500 shrink-0 sm:mr-2">
                               Current {tokenName} Price
                             </dt>
                             <dd className="mt-1 text-sm text-indigo-900 sm:mt-0 sm:ml-auto">
@@ -305,7 +313,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                           </div>
 
                           <div className="p-3 sm:flex sm:items-center sm:flex-1 sm:flex-wrap sm:p-4">
-                            <dt className="inline-flex items-center flex-shrink-0 text-sm font-medium text-indigo-500 sm:mr-2">
+                            <dt className="inline-flex items-center text-sm font-medium text-indigo-500 shrink-0 sm:mr-2">
                               Stability Fee
                               <div className="ml-2">
                                 <Tooltip
@@ -325,7 +333,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                           </div>
 
                           <div className="p-3 sm:flex sm:items-center sm:flex-1 sm:flex-wrap sm:p-4">
-                            <dt className="inline-flex items-center flex-shrink-0 text-sm font-medium text-indigo-500 sm:mr-2">
+                            <dt className="inline-flex items-center text-sm font-medium text-indigo-500 shrink-0 sm:mr-2">
                               Liquidation Ratio
                               <div className="ml-2">
                                 <Tooltip
@@ -345,7 +353,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                           </div>
 
                           <div className="p-3 sm:flex sm:items-center sm:flex-1 sm:flex-wrap sm:p-4">
-                            <dt className="inline-flex items-center flex-shrink-0 text-sm font-medium text-indigo-500 sm:mr-2">
+                            <dt className="inline-flex items-center text-sm font-medium text-indigo-500 shrink-0 sm:mr-2">
                               Liquidation Penalty
                               <div className="ml-2">
                                 <Tooltip

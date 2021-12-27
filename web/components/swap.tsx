@@ -53,8 +53,10 @@ export const Swap: React.FC = () => {
   const { doContractCall, doOpenAuth } = useConnect();
 
   const setTokenBalances = () => {
-    setBalanceSelectedTokenX(microToReadable(state.balance[tokenX['name'].toLowerCase()]));
-    setBalanceSelectedTokenY(microToReadable(state.balance[tokenY['name'].toLowerCase()]));
+    const tokenXBalance = state.balance[tokenX['name'].toLowerCase()];
+    const tokenYBalance = state.balance[tokenY['name'].toLowerCase()];
+    setBalanceSelectedTokenX(microToReadable(tokenXBalance, tokenX['decimals']));
+    setBalanceSelectedTokenY(microToReadable(tokenYBalance, tokenY['decimals']));
   };
 
   useEffect(() => {
@@ -81,6 +83,7 @@ export const Swap: React.FC = () => {
           dikousda: account.dikousda.toString(),
           wstxusda: account.wstxusda.toString(),
           wstxdiko: account.wstxdiko.toString(),
+          wstxxbtc: account.wstxxbtc.toString()
         },
       }));
     };
@@ -91,14 +94,14 @@ export const Swap: React.FC = () => {
   }, [state.currentTxStatus]);
 
   useEffect(() => {
-    const fetchPair = async (tokenXContract: string, tokenYContract: string) => {
+    const fetchPair = async (contractXAddress: string, tokenXContract: string, contractYAddress: string, tokenYContract: string) => {
       const details = await callReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',
         functionArgs: [
-          contractPrincipalCV(contractAddress, tokenXContract),
-          contractPrincipalCV(contractAddress, tokenYContract),
+          contractPrincipalCV(contractXAddress, tokenXContract),
+          contractPrincipalCV(contractYAddress, tokenYContract),
         ],
         senderAddress: stxAddress || contractAddress,
         network: network,
@@ -116,28 +119,32 @@ export const Swap: React.FC = () => {
       setLoadingData(true);
       setExchangeRateSwitched(false);
 
+      const tokenXAddress = tokenTraits[tokenX['name'].toLowerCase()]['address'];
       const tokenXContract = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
+      const tokenYAddress = tokenTraits[tokenY['name'].toLowerCase()]['address'];
       const tokenYContract = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
-      const json3 = await fetchPair(tokenXContract, tokenYContract);
+      const json3 = await fetchPair(tokenXAddress, tokenXContract, tokenYAddress, tokenYContract);
       console.log('Pair Details:', json3);
       if (json3['success']) {
         setCurrentPair(json3['value']['value']['value']);
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
-        const basePrice = Number((balanceX / balanceY).toFixed(2));
+        const ratio = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']);
+        const basePrice = Number((ratio * balanceX / balanceY).toFixed(2));
         setCurrentPrice(basePrice);
         setInverseDirection(false);
         setFoundPair(true);
         setLoadingData(false);
       } else if (Number(json3['value']['value']['value']) === 201) {
-        const json4 = await fetchPair(tokenYContract, tokenXContract);
+        const json4 = await fetchPair(tokenYAddress, tokenYContract, tokenXAddress, tokenXContract);
         if (json4['success']) {
           console.log('found pair...', json4);
           setCurrentPair(json4['value']['value']['value']);
           setInverseDirection(true);
           const balanceX = json4['value']['value']['value']['balance-x'].value;
           const balanceY = json4['value']['value']['value']['balance-y'].value;
-          const basePrice = Number((balanceY / balanceX).toFixed(2));
+          const ratio = Math.pow(10, tokenX['decimals']) / Math.pow(10, tokenY['decimals']);
+          const basePrice = Number((balanceY / (ratio * balanceX)));
           setCurrentPrice(basePrice);
           setFoundPair(true);
           setLoadingData(false);
@@ -164,20 +171,21 @@ export const Swap: React.FC = () => {
       return;
     }
 
-    const balanceX = currentPair['balance-x'].value / 1000000;
-    const balanceY = currentPair['balance-y'].value / 1000000;
-
     const inputWithoutFees = Number(tokenXAmount) * 0.997;
 
     let tokenYAmount = 0;
     let priceImpact = 0;
     const slippage = (100 - slippageTolerance) / 100;
     if (inverseDirection) {
+      const balanceX = currentPair['balance-x'].value / Math.pow(10, tokenY['decimals']);
+      const balanceY = currentPair['balance-y'].value / Math.pow(10, tokenX['decimals']);
       const newBalanceY = balanceY + inputWithoutFees;
       const newBalanceX = (balanceY * balanceX) / newBalanceY;
       tokenYAmount = balanceX - newBalanceX;
       priceImpact = newBalanceY / newBalanceX / (balanceY / balanceX) - 1.0;
     } else {
+      const balanceX = currentPair['balance-x'].value / Math.pow(10, tokenX['decimals']);
+      const balanceY = currentPair['balance-y'].value / Math.pow(10, tokenY['decimals']);
       const newBalanceX = balanceX + inputWithoutFees;
       const newBalanceY = (balanceX * balanceY) / newBalanceX;
       tokenYAmount = balanceY - newBalanceY;
@@ -199,7 +207,7 @@ export const Swap: React.FC = () => {
       })
     );
 
-    if (Number(tokenXAmount) * 1000000 > state.balance[tokenX['name'].toLowerCase()]) {
+    if (Number(tokenXAmount) * Math.pow(10, tokenX['decimals']) > state.balance[tokenX['name'].toLowerCase()]) {
       setInsufficientBalance(true);
     }
   };
@@ -264,8 +272,8 @@ export const Swap: React.FC = () => {
     let tokenNameY = tokenY['name'];
     const tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
     const tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
-    let principalX = contractPrincipalCV(contractAddress, tokenXTrait);
-    let principalY = contractPrincipalCV(contractAddress, tokenYTrait);
+    let principalX = contractPrincipalCV(tokenX['address'], tokenXTrait);
+    let principalY = contractPrincipalCV(tokenY['address'], tokenYTrait);
     const postConditionMode = 0x01;
     if (inverseDirection) {
       contractName = 'swap-y-for-x';
@@ -277,7 +285,7 @@ export const Swap: React.FC = () => {
       tokenNameY = tmpName;
     }
 
-    const amount = uintCV(tokenXAmount * 1000000);
+    const amount = uintCV(tokenXAmount * Math.pow(10, tokenX['decimals']));
     await doContractCall({
       network,
       contractAddress,
@@ -288,7 +296,7 @@ export const Swap: React.FC = () => {
         principalX,
         principalY,
         amount,
-        uintCV((parseFloat(minimumReceived) * 1000000).toFixed(0)),
+        uintCV((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
       ],
       postConditionMode,
       onFinish: data => {
@@ -320,10 +328,10 @@ export const Swap: React.FC = () => {
       <Helmet>
         <title>Swap</title>
       </Helmet>
-      
+
       <Container>
         <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
-          <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow">
+          <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow dark:bg-zinc-900">
             <div className="flex flex-col p-4">
               <div className="flex justify-between mb-4">
                 <div>
@@ -351,8 +359,8 @@ export const Swap: React.FC = () => {
                           className={classNames(
                             tab.current
                               ? 'bg-indigo-100 text-indigo-700'
-                              : 'text-gray-500 hover:text-gray-700',
-                            'px-3 py-2 text-lg font-headings rounded-md'
+                              : 'text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-50',
+                            'px-3 py-2 text-lg font-headings rounded-md transition ease-out duration-200'
                           )}
                           aria-current={tab.current ? 'page' : undefined}
                         >
@@ -375,7 +383,7 @@ export const Swap: React.FC = () => {
               ) : (
                 <>
                   <form>
-                    <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
+                    <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-800 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200">
                       <div className="flex items-center p-4 pb-2">
                         <TokenSwapList selected={tokenX} setSelected={setupTokenX} />
 
@@ -395,14 +403,14 @@ export const Swap: React.FC = () => {
                           value={tokenXAmount || ''}
                           onChange={onInputChange}
                           min={0}
-                          className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right text-gray-800 truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
+                          className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right text-gray-800 truncate border-0 focus:outline-none focus:ring-0 bg-gray-50 dark:bg-zinc-800 dark:text-zinc-50"
                         />
                       </div>
 
                       <div className="flex items-center justify-end p-4 pt-0 text-sm">
                         <div className="flex items-center justify-between w-full">
                           <div className="flex items-center justify-start">
-                            <p className="text-gray-500">
+                            <p className="text-gray-500 dark:text-zinc-50">
                               Balance:{' '}
                               {balanceSelectedTokenX.toLocaleString(undefined, {
                                 minimumFractionDigits: 2,
@@ -429,12 +437,12 @@ export const Swap: React.FC = () => {
                     <button
                       type="button"
                       onClick={switchTokens}
-                      className="relative z-10 flex items-center justify-center w-8 h-8 -mt-4 -mb-4 -ml-4 text-gray-400 transform bg-white border border-gray-300 rounded-md left-1/2 hover:text-indigo-700 focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-indigo-500"
+                      className="relative z-10 flex items-center justify-center w-8 h-8 -mt-4 -mb-4 -ml-4 text-gray-400 transform bg-white border border-gray-300 rounded-md dark:bg-zinc-900 left-1/2 hover:text-indigo-700 focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-800 dark:hover:text-indigo-400"
                     >
                       <SwitchVerticalIcon className="w-5 h-5" aria-hidden="true" />
                     </button>
 
-                    <div className="mt-1 border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200">
+                    <div className="mt-1 border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-800 dark:hover:border-zinc-900">
                       <div className="flex items-center p-4 pb-2">
                         <TokenSwapList selected={tokenY} setSelected={setupTokenY} />
 
@@ -456,14 +464,14 @@ export const Swap: React.FC = () => {
                           })}
                           onChange={onInputChange}
                           disabled={true}
-                          className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right text-gray-800 truncate border-0 focus:outline-none focus:ring-0 bg-gray-50"
+                          className="flex-1 p-0 m-0 ml-4 text-xl font-semibold text-right text-gray-800 truncate border-0 focus:outline-none focus:ring-0 bg-gray-50 dark:bg-zinc-800 dark:text-zinc-50"
                         />
                       </div>
 
                       <div className="flex items-center justify-end p-4 pt-0 text-sm">
                         <div className="flex items-center justify-between w-full">
                           <div className="flex items-center justify-start">
-                            <p className="text-gray-500">
+                            <p className="text-gray-500 dark:text-zinc-50">
                               Balance:{' '}
                               {balanceSelectedTokenY.toLocaleString(undefined, {
                                 minimumFractionDigits: 2,
@@ -478,9 +486,9 @@ export const Swap: React.FC = () => {
 
                     {loadingData ? (
                       <Placeholder className="justify-end pt-3" width={Placeholder.width.THIRD} />
-                    ) : (
+                    ) : foundPair ? (
                       <div className="flex items-center justify-end mt-2">
-                        <p className="text-sm font-semibold text-right text-gray-400">
+                        <p className="text-sm font-semibold text-right text-gray-400 dark:text-zinc-200">
                           {exchangeRateSwitched ? (
                             <>
                               1 {tokenX.name} ≈{' '}
@@ -492,19 +500,22 @@ export const Swap: React.FC = () => {
                             </>
                           ) : (
                             <>
-                              1 {tokenY.name} ≈ {currentPrice} {tokenX.name}
+                              1 {tokenY.name} ≈ {currentPrice.toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 6,
+                              })} {tokenX.name}
                             </>
                           )}
                         </p>
                         <button
                           type="button"
                           onClick={switchExchangeRate}
-                          className="ml-2 text-gray-400 hover:text-indigo-700"
+                          className="ml-2 text-gray-400 hover:text-indigo-700 dark:hover:text-indigo-400"
                         >
                           <SwitchHorizontalIcon className="w-5 h-5" aria-hidden="true" />
                         </button>
                       </div>
-                    )}
+                    ) : null}
 
                     {state.userData ? (
                       <button
@@ -515,7 +526,7 @@ export const Swap: React.FC = () => {
                         onClick={() => swapTokens()}
                         className={classNames(
                           tokenYAmount === 0 || insufficientBalance || !foundPair
-                            ? 'bg-indigo-300 hover:bg-indigo-300 pointer-events-none'
+                            ? 'bg-indigo-400 hover:bg-indigo-400 dark:text-indigo-600 cursor-not-allowed dark:bg-indigo-200'
                             : 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer',
                           'w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
                         )}
@@ -543,7 +554,7 @@ export const Swap: React.FC = () => {
                   {foundPair ? (
                     <div className="w-full mt-3 text-center">
                       <RouterLink
-                        className="text-sm font-medium text-indigo-700 rounded-sm hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        className="text-sm font-medium text-indigo-700 rounded-sm dark:text-indigo-200 dark:focus:ring-indigo-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         to={`swap/add/${tokenX.name}/${tokenY.name}`}
                       >
                         Add/remove liquidity on {tokenX.name}-{tokenY.name}
@@ -554,95 +565,97 @@ export const Swap: React.FC = () => {
               )}
             </div>
           </div>
-          <div className="w-full max-w-md p-4 pt-8 -mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
-            <dl className="space-y-1">
-              <div className="grid grid-cols-2 gap-4">
-                <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
-                  Minimum Received
-                  <div className="ml-2">
-                    <Tooltip
-                      className="z-10"
-                      shouldWrapChildren={true}
-                      label={`Your transaction will revert if there is a large, unfavorable price movement before it is confirmed`}
-                    >
-                      <InformationCircleIcon
-                        className="block w-4 h-4 text-indigo-400"
-                        aria-hidden="true"
-                      />
-                    </Tooltip>
-                  </div>
-                </dt>
-                <dd className="inline-flex justify-end mt-0 mt-1 text-sm font-semibold text-indigo-900">
-                  {loadingData ? (
-                    <Placeholder className="justify-end" width={Placeholder.width.HALF} />
-                  ) : (
-                    <>
-                      <div className="mr-1 truncate">
-                        {minimumReceived.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 6,
-                        })}
-                      </div>
-                      {tokenY.name}
-                    </>
-                  )}
-                </dd>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
-                  Price Impact
-                  <div className="ml-2">
-                    <Tooltip
-                      className="z-10"
-                      shouldWrapChildren={true}
-                      label={`The difference between the market price and estimated price due to trade size`}
-                    >
-                      <InformationCircleIcon
-                        className="block w-4 h-4 text-indigo-400"
-                        aria-hidden="true"
-                      />
-                    </Tooltip>
-                  </div>
-                </dt>
-                <dd className="inline-flex justify-end mt-0 mt-1 text-sm font-semibold text-indigo-900">
-                  {loadingData ? (
-                    <Placeholder className="justify-end" width={Placeholder.width.THIRD} />
-                  ) : (
-                    <>
-                      ≈<div className="mr-1 truncate">{priceImpact}</div>%
-                    </>
-                  )}
-                </dd>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
-                  Liquidity Provider fee
-                  <div className="ml-2">
-                    <Tooltip
-                      className="z-10"
-                      shouldWrapChildren={true}
-                      label={`A portion of each trade goes to liquidity providers as a protocol incentive`}
-                    >
-                      <InformationCircleIcon
-                        className="block w-4 h-4 text-indigo-400"
-                        aria-hidden="true"
-                      />
-                    </Tooltip>
-                  </div>
-                </dt>
-                <dd className="inline-flex justify-end mt-0 mt-1 text-sm font-semibold text-indigo-900">
-                  {loadingData ? (
-                    <Placeholder className="justify-end" width={Placeholder.width.HALF} />
-                  ) : (
-                    <>
-                      <div className="mr-1 truncate">{lpFee}</div>
-                      {tokenX.name}
-                    </>
-                  )}
-                </dd>
-              </div>
-            </dl>
-          </div>
+          {foundPair ? (
+            <div className="w-full max-w-md p-4 pt-8 -mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
+              <dl className="space-y-1">
+                <div className="grid grid-cols-2 gap-4">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
+                    Minimum Received
+                    <div className="ml-2">
+                      <Tooltip
+                        className="z-10"
+                        shouldWrapChildren={true}
+                        label={`Your transaction will revert if there is a large, unfavorable price movement before it is confirmed`}
+                      >
+                        <InformationCircleIcon
+                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
+                          aria-hidden="true"
+                        />
+                      </Tooltip>
+                    </div>
+                  </dt>
+                  <dd className="inline-flex justify-end mt-0 mt-1 text-sm font-semibold text-indigo-900">
+                    {loadingData ? (
+                      <Placeholder className="justify-end" width={Placeholder.width.HALF} />
+                    ) : (
+                      <>
+                        <div className="mr-1 truncate">
+                          {minimumReceived.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 6,
+                          })}
+                        </div>
+                        {tokenY.name}
+                      </>
+                    )}
+                  </dd>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
+                    Price Impact
+                    <div className="ml-2">
+                      <Tooltip
+                        className="z-10"
+                        shouldWrapChildren={true}
+                        label={`The difference between the market price and estimated price due to trade size`}
+                      >
+                        <InformationCircleIcon
+                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
+                          aria-hidden="true"
+                        />
+                      </Tooltip>
+                    </div>
+                  </dt>
+                  <dd className="inline-flex justify-end mt-0 mt-1 text-sm font-semibold text-indigo-900">
+                    {loadingData ? (
+                      <Placeholder className="justify-end" width={Placeholder.width.THIRD} />
+                    ) : (
+                      <>
+                        ≈<div className="mr-1 truncate">{priceImpact}</div>%
+                      </>
+                    )}
+                  </dd>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
+                    Liquidity Provider fee
+                    <div className="ml-2">
+                      <Tooltip
+                        className="z-10"
+                        shouldWrapChildren={true}
+                        label={`A portion of each trade goes to liquidity providers as a protocol incentive`}
+                      >
+                        <InformationCircleIcon
+                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
+                          aria-hidden="true"
+                        />
+                      </Tooltip>
+                    </div>
+                  </dt>
+                  <dd className="inline-flex justify-end mt-0 mt-1 text-sm font-semibold text-indigo-900">
+                    {loadingData ? (
+                      <Placeholder className="justify-end" width={Placeholder.width.HALF} />
+                    ) : (
+                      <>
+                        <div className="mr-1 truncate">{lpFee}</div>
+                        {tokenX.name}
+                      </>
+                    )}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          ) : null}
         </main>
       </Container>
     </>

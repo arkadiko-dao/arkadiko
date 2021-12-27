@@ -38,6 +38,10 @@ export const UnstakeLpModal = ({
       contractName = 'arkadiko-stake-pool-wstx-diko-v1-1';
       tokenContract = 'arkadiko-swap-token-wstx-diko';
       ftContract = 'wstx-diko';
+    } else if (balanceName === 'wstxxbtc') {
+      contractName = 'arkadiko-stake-pool-wstx-xbtc-v1-1';
+      tokenContract = 'arkadiko-swap-token-wstx-xbtc';
+      ftContract = 'wstx-xbtc';
     }
 
     await doContractCall({
@@ -94,7 +98,7 @@ export const UnstakeLpModal = ({
       open={showUnstakeModal}
       title={`Unstake ${tokenName} LP Tokens`}
       icon={
-        <div className="flex -space-x-2 overflow-hidden">
+        <div className="flex -space-x-2">
           <img
             className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
             src={tokenList[lpPairTokenX].logo}
@@ -121,7 +125,7 @@ export const UnstakeLpModal = ({
         </Alert>
       ) : null}
 
-      <p className="mt-3 text-sm text-center text-gray-500">
+      <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">
         You are currently staking{' '}
         {microToReadable(stakedAmount).toLocaleString(undefined, {
           minimumFractionDigits: 2,

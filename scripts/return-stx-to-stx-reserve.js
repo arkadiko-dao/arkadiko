@@ -11,7 +11,7 @@ const txOptions = {
   contractName: CONTRACT_NAME,
   functionName: FUNCTION_NAME,
   functionArgs: [
-    tx.uintCV(50000000000),
+    tx.uintCV(12000000000000),
   ],
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,

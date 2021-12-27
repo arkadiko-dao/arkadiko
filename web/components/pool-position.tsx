@@ -22,7 +22,9 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
   const tokenX = tokenList[indexTokenX];
   const tokenY = tokenList[indexTokenY];
   const tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
+  const tokenXAddress = tokenTraits[tokenX['name'].toLowerCase()]['address'];
   const tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
+  const tokenYAddress = tokenTraits[tokenY['name'].toLowerCase()]['address'];
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const stxAddress = useSTXAddress();
 
@@ -35,14 +37,14 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPair = async (tokenXContract: string, tokenYContract: string) => {
+    const fetchPair = async (tokenXAddress: string, tokenXContract: string, tokenYAddress: string, tokenYContract: string) => {
       const details = await callReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',
         functionArgs: [
-          contractPrincipalCV(contractAddress, tokenXContract),
-          contractPrincipalCV(contractAddress, tokenYContract),
+          contractPrincipalCV(tokenXAddress, tokenXContract),
+          contractPrincipalCV(tokenYAddress, tokenYContract),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -58,6 +60,8 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
         poolContract = 'arkadiko-stake-pool-wstx-usda-v1-1';
       } else if (poolName == 'DIKO-USDA') {
         poolContract = 'arkadiko-stake-pool-diko-usda-v1-1';
+      } else if (poolName == 'wSTX-xBTC') {
+        poolContract = 'arkadiko-stake-pool-wstx-xbtc-v1-1';
       }
       if (poolContract == '') {
         return 0;
@@ -75,18 +79,19 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
     };
 
     const resolvePair = async () => {
-      const json3 = await fetchPair(tokenXTrait, tokenYTrait);
+      const json3 = await fetchPair(tokenXAddress, tokenXTrait, tokenYAddress, tokenYTrait);
       if (json3['success']) {
+        const pairDetails = json3['value']['value']['value'];
         const stakedTokens = await fetchStakedTokens(
-          json3['value']['value']['value']['name'].value
+          pairDetails['name'].value
         );
         setStakedLpTokens(stakedTokens);
 
-        const balanceX = json3['value']['value']['value']['balance-x'].value;
-        const balanceY = json3['value']['value']['value']['balance-y'].value;
+        const balanceX = pairDetails['balance-x'].value;
+        const balanceY = pairDetails['balance-y'].value;
 
         const tokenPair = `${tokenX.nameInPair.toLowerCase()}${tokenY.nameInPair.toLowerCase()}`;
-        const totalTokens = json3['value']['value']['value']['shares-total'].value;
+        const totalTokens = pairDetails['shares-total'].value;
         const tokenXYBalance = Number(state.balance[tokenPair]) + Number(stakedTokens);
 
         // to make sure data is loaded properly
@@ -94,24 +99,19 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
           return;
         }
 
-        let totalShare = Number(((tokenXYBalance / totalTokens) * 100).toFixed(3));
-        if (!tokenXYBalance) {
-          totalShare = 0;
-        }
+        setTokenPair(tokenPair);
+
+        let totalShare = tokenXYBalance / totalTokens;
         if (totalShare > 100) {
           totalShare = 100;
         }
+        const totalBalanceX = balanceX * totalShare;
+        const totalBalanceY = balanceY * totalShare;
 
-        setTokenPair(tokenPair);
+        setPooledX(totalBalanceX / Math.pow(10, tokenX['decimals']));
+        setPooledY(totalBalanceY / Math.pow(10, tokenY['decimals']));
 
-        setPooledX(((balanceX / 1000000) * totalShare) / 100);
-        setPooledY(((balanceY / 1000000) * totalShare) / 100);
-
-        if (totalShare > 100) {
-          setTotalShare(100);
-        } else {
-          setTotalShare(totalShare);
-        }
+        setTotalShare(Number((totalShare * 100).toFixed(5)));
         setIsLoading(false);
       }
     };
@@ -126,19 +126,19 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
           <dt className="text-lg">
             <Disclosure.Button className="flex items-start justify-between w-full text-left text-gray-400">
               <div className="flex items-center">
-                <div className="flex -space-x-2 overflow-hidden">
+                <div className="flex -space-x-2 shrink-0">
                   <img
-                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
+                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white dark:ring-zinc-800 shrink-0"
                     src={tokenX.logo}
                     alt=""
                   />
                   <img
-                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
+                    className="inline-block w-8 h-8 rounded-full ring-2 ring-white dark:ring-zinc-800 shrink-0"
                     src={tokenY.logo}
                     alt=""
                   />
                 </div>
-                <p className="ml-2 text-base text-gray-800">
+                <p className="ml-3 text-base text-gray-800 dark:text-zinc-100">
                   {tokenX.name}/{tokenY.name}
                 </p>
               </div>
@@ -151,12 +151,12 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
             </Disclosure.Button>
           </dt>
           <Disclosure.Panel as="dd" className="mt-2">
-            <div className="w-full p-4 mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50">
+            <div className="w-full p-4 mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
               <h4 className="text-xs text-indigo-700 uppercase font-headings">Pool share</h4>
 
               <dl className="mt-2 space-y-1">
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                     Available pool tokens
                     <div className="ml-2">
                       <Tooltip
@@ -165,7 +165,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                         label={`Indicates the total amount of LP tokens you have in your wallet`}
                       >
                         <InformationCircleIcon
-                          className="block w-4 h-4 text-indigo-400"
+                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
                           aria-hidden="true"
                         />
                       </Tooltip>
@@ -183,7 +183,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                 </div>
 
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                     Staked pool tokens
                     <div className="ml-2">
                       <Tooltip
@@ -192,7 +192,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                         label={`Indicates the total amount of LP tokens you have staked`}
                       >
                         <InformationCircleIcon
-                          className="block w-4 h-4 text-indigo-400"
+                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
                           aria-hidden="true"
                         />
                       </Tooltip>
@@ -210,7 +210,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
 
               <dl className="mt-4 space-y-1">
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                     Your pool share
                     <div className="ml-2">
                       <Tooltip
@@ -219,7 +219,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                         label={`The percentual share of LP tokens you own against the whole pool supply`}
                       >
                         <InformationCircleIcon
-                          className="block w-4 h-4 text-indigo-400"
+                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
                           aria-hidden="true"
                         />
                       </Tooltip>
@@ -235,7 +235,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                 </div>
 
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                     Pooled {tokenX.name}
                   </dt>
                   <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
@@ -253,7 +253,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                 </div>
 
                 <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500">
+                  <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                     Pooled {tokenY.name}
                   </dt>
                   <dd className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
@@ -290,7 +290,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
 
             <div className="mt-4 sm:grid sm:grid-cols-2 sm:gap-2 sm:grid-flow-row-dense">
               <RouterLink
-                className="inline-flex justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-md shadow-sm bg-white-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="inline-flex justify-center px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 to={`swap/remove/${tokenX.name}/${tokenY.name}`}
               >
                 Remove

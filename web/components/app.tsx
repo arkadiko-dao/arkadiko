@@ -36,7 +36,9 @@ export const getBalance = async (address: string) => {
     data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-usda::wstx-usda`];
   const lpStxDikoBalance =
     data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-diko::wstx-diko`];
-  const xbtcBalance = data.fungible_tokens[`${contractAddress}.tokensoft-token::tokensoft-token`];
+  const lpStxXbtcBalance =
+    data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-xbtc::wstx-xbtc`];
+  const xbtcBalance = data.fungible_tokens[`SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin::wrapped-bitcoin`];
 
   return {
     stx: Number(data.stx.balance) - Number(data.stx.locked),
@@ -48,6 +50,7 @@ export const getBalance = async (address: string) => {
     dikousda: lpDikoUsdaBalance ? lpDikoUsdaBalance.balance : 0,
     wstxusda: lpStxUsdaBalance ? lpStxUsdaBalance.balance : 0,
     wstxdiko: lpStxDikoBalance ? lpStxDikoBalance.balance : 0,
+    wstxxbtc: lpStxXbtcBalance ? lpStxXbtcBalance.balance : 0
   };
 };
 
@@ -85,6 +88,7 @@ export const App: React.FC = () => {
         dikousda: account.dikousda.toString(),
         wstxusda: account.wstxusda.toString(),
         wstxdiko: account.wstxdiko.toString(),
+        wstxxbtc: account.wstxxbtc.toString()
       },
     }));
   };
@@ -222,7 +226,7 @@ export const App: React.FC = () => {
             titleTemplate="Arkadiko Finance App - %s"
             defaultTitle="Arkadiko Finance App"
           />
-          <div className="flex flex-col font-sans bg-white min-height-screen">
+          <div className="flex flex-col font-sans bg-white dark:bg-zinc-800 min-height-screen">
             {location.pathname.indexOf('/onboarding') != 0 ? (
               <Header signOut={signOut} setShowSidebar={setShowSidebar} />
             ) : null}

@@ -14,7 +14,8 @@ import {
   UsdaToken,
   DikoToken,
   DikoUsdaPoolToken,
-  StxUsdaPoolToken
+  StxUsdaPoolToken,
+  XbtcToken
 } from './models/arkadiko-tests-tokens.ts';
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
@@ -22,9 +23,97 @@ import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 const dikoTokenAddress = 'arkadiko-token';
 const usdaTokenAddress = 'usda-token';
+const xbtcTokenAddress = 'tokensoft-token';
 const dikoUsdaPoolAddress = 'arkadiko-swap-token-diko-usda';
 const wstxUsdaPoolAddress = 'arkadiko-swap-token-wstx-usda';
+const wstxXbtcPoolAddress = 'arkadiko-swap-token-wstx-xbtc';
 const wstxTokenAddress = 'wrapped-stx-token';
+
+Clarinet.test({
+  name: "swap: create STX/xBTC pair, add and remove liquidity",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let swap = new Swap(chain, deployer);
+
+    // Create pair
+    let result = swap.createPair(deployer, wstxTokenAddress, xbtcTokenAddress, wstxXbtcPoolAddress, "wSTX-xBTC", 852, 0.040894, 6, 8);
+    result.expectOk().expectBool(true);
+
+    // Check initial balances
+    let call = await swap.getBalances(wstxTokenAddress, xbtcTokenAddress);
+    call.result.expectOk().expectList()[0].expectUintWithDecimals(852);
+    call.result.expectOk().expectList()[1].expectUint(4089400);
+
+    // Check total supply
+    // Sqr(500 * 100) = 223
+    call = await swap.getTotalSupply(wstxTokenAddress, xbtcTokenAddress);
+    call.result.expectOk().expectUint(59026848);
+
+    // Add extra lquidity
+    result = swap.addToPosition(deployer, wstxTokenAddress, xbtcTokenAddress, wstxXbtcPoolAddress, 852, 0);
+    result.expectOk().expectBool(true);
+
+    // Check new balances (both tokens should have increased, price remains the same)
+    call = await swap.getBalances(wstxTokenAddress, xbtcTokenAddress);
+    call.result.expectOk().expectList()[0].expectUintWithDecimals(1704);
+    call.result.expectOk().expectList()[1].expectUint(8178800);
+
+    // Check if tracked balances is the same as tokens owned by contract
+    call = chain.callReadOnlyFn("tokensoft-token", "get-balance", [types.principal(Utils.qualifiedName('arkadiko-swap-v2-1'))], deployer.address);
+    call.result.expectOk().expectUint(8178800);
+    call = chain.callReadOnlyFn("wrapped-stx-token", "get-balance", [types.principal(Utils.qualifiedName('arkadiko-swap-v2-1'))], deployer.address);
+    call.result.expectOk().expectUint(1704000000);
+
+    // Remove other 90% of liquidity
+    result = swap.reducePosition(deployer, wstxTokenAddress, xbtcTokenAddress, wstxXbtcPoolAddress, 100);
+    result.expectOk().expectList()[0].expectUintWithDecimals(1704);
+    result.expectOk().expectList()[1].expectUint(8178800);
+
+    // Balances again at 0
+    call = await swap.getBalances(wstxTokenAddress, xbtcTokenAddress);
+    call.result.expectOk().expectList()[0].expectUint(0);
+    call.result.expectOk().expectList()[1].expectUint(0);
+
+    // Check total supply
+    call = await swap.getTotalSupply(wstxTokenAddress, xbtcTokenAddress);
+    call.result.expectOk().expectUintWithDecimals(0);
+  },
+});
+
+Clarinet.test({
+  name: "swap: swap STX/xBTC tokens",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let swap = new Swap(chain, deployer);
+
+    // Create pair
+    let result = swap.createPair(deployer, wstxTokenAddress, xbtcTokenAddress, wstxXbtcPoolAddress, "wSTX-xBTC", 852, 0.040894, 6, 8);
+    result.expectOk().expectBool(true);
+
+    // Swap
+    result = swap.swapXForY(deployer, wstxTokenAddress, xbtcTokenAddress, 10, 0, 6, 8);
+    result.expectOk().expectList()[0].expectUintWithDecimals(10);
+    // K = 852 * 0.040894 = 34.841688
+    // y = K / 862 = 0.0404195916473
+    // So user would get: 0.040894 - 0.0404195916473 = 0.0004744083527
+    // Minus 0.3% fees
+    result.expectOk().expectList()[1].expectUint(47300);
+
+    // Swap back
+    result = swap.swapYForX(deployer, wstxTokenAddress, xbtcTokenAddress, 0.00047, 0, 6, 8);
+    // K = Total Balance X * Total Balance Y
+    // Total Balance Y = 0.040891
+    // K = 862 * (0.040894 - 0.000473)
+    // K = 34.842902
+
+    // X = Total Balance X - K / (Total Balance Y)
+    // X = 862 - (34.842902 / 0.040891)
+    // X = 9.90780367318
+    // Without 0.03% fees: 9.87...
+    result.expectOk().expectList()[0].expectUint(9878420); 
+    result.expectOk().expectList()[1].expectUint(47000);
+  },
+});
 
 Clarinet.test({
   name: "swap: create pair, add and remove liquidity",

@@ -112,7 +112,7 @@ export const VaultBurnModal: React.FC<Props> = ({
       buttonAction={() => callBurn()}
       initialFocus={inputRef}
     >
-      <p className="text-sm text-center text-gray-500">
+      <p className="text-sm text-center text-gray-500 dark:text-zinc-400">
         Choose how much USDA you want to burn. Burning will include a stability fee of{' '}
         <span className="font-semibold">{stabilityFee / 1000000} USDA</span>.
       </p>

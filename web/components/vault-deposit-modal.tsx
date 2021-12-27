@@ -121,7 +121,7 @@ export const VaultDepositModal: React.FC<Props> = ({
       buttonAction={() => addDeposit()}
       initialFocus={inputRef}
     >
-      <p className="text-sm text-center text-gray-500">
+      <p className="text-sm text-center text-gray-500 dark:text-zinc-400">
         Choose how much extra collateral you want to post. You have a balance of{' '}
         <span className="font-semibold">
           {state.balance[vault?.collateralToken.toLowerCase()] / decimals}{' '}
@@ -129,7 +129,7 @@ export const VaultDepositModal: React.FC<Props> = ({
         </span>
         .
       </p>
-      <p className="text-sm text-center text-gray-500">
+      <p className="text-sm text-center text-gray-500 dark:text-zinc-400">
         We will automatically harvest any DIKO you are eligible for when depositing.
       </p>
 

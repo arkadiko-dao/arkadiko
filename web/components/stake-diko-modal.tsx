@@ -55,7 +55,7 @@ export const StakeDikoModal: React.FC<Props> = ({ showStakeModal, setShowStakeMo
   };
 
   const stakeDiko = async () => {
-    const amount = uintCV(Number(stakeAmount) * 1000000);
+    const amount = uintCV(Number(parseFloat(stakeAmount).toFixed(6)) * 1000000);
     const postConditions = [
       makeStandardFungiblePostCondition(
         stxAddress || '',
@@ -107,7 +107,7 @@ export const StakeDikoModal: React.FC<Props> = ({ showStakeModal, setShowStakeMo
         </Alert>
       ) : null}
 
-      <p className="mt-3 text-sm text-center text-gray-500">
+      <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">
         Stake DIKO tokens at {apy}% (estimated APR) and start earning rewards now.
       </p>
       <div className="mt-4">
