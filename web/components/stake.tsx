@@ -160,6 +160,8 @@ export const Stake = () => {
       let tokenYName = 'USDA';
       let tokenXAddress = contractAddress;
       let tokenYAddress = contractAddress;
+      let tokenXDecimals = 6;
+      let tokenYDecimals = 6;
       if (poolContract === 'arkadiko-stake-pool-wstx-diko-v1-1') {
         tokenXContract = 'wrapped-stx-token';
         tokenYContract = 'arkadiko-token';
@@ -176,6 +178,7 @@ export const Stake = () => {
         tokenYContract = 'Wrapped-Bitcoin';
         tokenXName = 'STX';
         tokenYName = 'xBTC';
+        tokenYDecimals = 8;
       }
 
       // Get pair details
@@ -209,14 +212,16 @@ export const Stake = () => {
       const balanceX = pairDetails['balance-x'].value;
       const balanceY = pairDetails['balance-y'].value;
       const totalTokens = pairDetails['shares-total'].value;
+      const decimalRatioX = 1000000 / Math.pow(10, tokenXDecimals);
+      const decimalRatioY = 1000000 / Math.pow(10, tokenYDecimals);
 
       const stakedShare = lpTokenStakedAmount / totalTokens;
-      const stakedBalanceX = balanceX * stakedShare;
-      const stakedBalanceY = balanceY * stakedShare;
+      const stakedBalanceX = (balanceX * stakedShare) * decimalRatioX;
+      const stakedBalanceY = (balanceY * stakedShare) * decimalRatioY;
 
       const walletShare = lpTokenWalletAmount / totalTokens;
-      const walletBalanceX = balanceX * walletShare;
-      const walletBalanceY = balanceY * walletShare;
+      const walletBalanceX = (balanceX * walletShare) * decimalRatioX;
+      const walletBalanceY = (balanceY * walletShare) * decimalRatioY;
 
       // Estimate value
       let estimatedValueStaked = 0;
