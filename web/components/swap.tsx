@@ -55,15 +55,8 @@ export const Swap: React.FC = () => {
   const setTokenBalances = () => {
     const tokenXBalance = state.balance[tokenX['name'].toLowerCase()];
     const tokenYBalance = state.balance[tokenY['name'].toLowerCase()];
-    let tokenXDecimals = 6;
-    let tokenYDecimals = 6;
-    if (tokenX['name'].toLowerCase() === 'xbtc') {
-      tokenXDecimals = 8;
-    } else if (tokenY['name'].toLowerCase() === 'xbtc') {
-      tokenYDecimals = 8;
-    }
-    setBalanceSelectedTokenX(microToReadable(tokenXBalance, tokenXDecimals));
-    setBalanceSelectedTokenY(microToReadable(tokenYBalance, tokenYDecimals));
+    setBalanceSelectedTokenX(microToReadable(tokenXBalance, tokenX['decimals']));
+    setBalanceSelectedTokenY(microToReadable(tokenYBalance, tokenY['decimals']));
   };
 
   useEffect(() => {
@@ -175,8 +168,8 @@ export const Swap: React.FC = () => {
       return;
     }
 
-    const balanceX = currentPair['balance-x'].value / 1000000;
-    const balanceY = currentPair['balance-y'].value / 1000000;
+    const balanceX = currentPair['balance-x'].value / Math.pow(10, tokenX['decimals']);
+    const balanceY = currentPair['balance-y'].value / Math.pow(10, tokenY['decimals']);
 
     const inputWithoutFees = Number(tokenXAmount) * 0.997;
 
@@ -210,7 +203,7 @@ export const Swap: React.FC = () => {
       })
     );
 
-    if (Number(tokenXAmount) * 1000000 > state.balance[tokenX['name'].toLowerCase()]) {
+    if (Number(tokenXAmount) * Math.pow(10, tokenX['decimals']) > state.balance[tokenX['name'].toLowerCase()]) {
       setInsufficientBalance(true);
     }
   };
@@ -288,7 +281,7 @@ export const Swap: React.FC = () => {
       tokenNameY = tmpName;
     }
 
-    const amount = uintCV(tokenXAmount * 1000000);
+    const amount = uintCV(tokenXAmount * Math.pow(10, tokenX['decimals']));
     await doContractCall({
       network,
       contractAddress,
@@ -299,7 +292,7 @@ export const Swap: React.FC = () => {
         principalX,
         principalY,
         amount,
-        uintCV((parseFloat(minimumReceived) * 1000000).toFixed(0)),
+        uintCV((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
       ],
       postConditionMode,
       onFinish: data => {

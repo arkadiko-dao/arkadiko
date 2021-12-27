@@ -10,6 +10,7 @@ export const tokenList = [
     nameInPair: 'usda',
     logo: '/assets/tokens/usda.svg',
     listed: true,
+    decimals: 6
   },
   {
     id: 2,
@@ -17,6 +18,7 @@ export const tokenList = [
     nameInPair: 'diko',
     logo: '/assets/tokens/diko.svg',
     listed: true,
+    decimals: 6
   },
   {
     id: 3,
@@ -24,6 +26,7 @@ export const tokenList = [
     nameInPair: 'wstx',
     logo: '/assets/tokens/stx.svg',
     listed: true,
+    decimals: 6
   },
   {
     id: 4,
@@ -31,6 +34,7 @@ export const tokenList = [
     nameInPair: 'xbtc',
     logo: '/assets/tokens/xbtc.svg',
     listed: true,
+    decimals: 8
   },
 ];
 
