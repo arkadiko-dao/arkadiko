@@ -81,7 +81,7 @@ export const tokenTraits: TokenTraits = {
   xbtc: {
     address: 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR',
     name: 'Wrapped-Bitcoin',
-    swap: 'wstx-xbtc',
+    swap: 'Wrapped-Bitcoin',
   },
   dikousda: {
     address: contractAddress,
@@ -127,6 +127,16 @@ export const tokenTraits: TokenTraits = {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
+  },
+  wstxxbtc: {
+    address: contractAddress,
+    name: 'arkadiko-swap-token-wstx-xbtc',
+    swap: 'wstx-xbtc',
+  },
+  xbtcwstx: {
+    address: contractAddress,
+    name: 'arkadiko-swap-token-wstx-xbtc',
+    swap: 'wstx-xbtc',
   },
   stxdiko: {
     address: contractAddress,

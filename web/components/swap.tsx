@@ -120,7 +120,7 @@ export const Swap: React.FC = () => {
 
       const tokenXAddress = tokenTraits[tokenX['name'].toLowerCase()]['address'];
       const tokenXContract = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
-      const tokenYAddress = tokenTraits[tokenX['name'].toLowerCase()]['address'];
+      const tokenYAddress = tokenTraits[tokenY['name'].toLowerCase()]['address'];
       const tokenYContract = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
       const json3 = await fetchPair(tokenXAddress, tokenXContract, tokenYAddress, tokenYContract);
       console.log('Pair Details:', json3);
@@ -128,7 +128,8 @@ export const Swap: React.FC = () => {
         setCurrentPair(json3['value']['value']['value']);
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
-        const basePrice = Number((balanceX / balanceY).toFixed(2));
+        const ratio = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']);
+        const basePrice = Number((ratio * balanceX / balanceY).toFixed(2));
         setCurrentPrice(basePrice);
         setInverseDirection(false);
         setFoundPair(true);
@@ -141,7 +142,8 @@ export const Swap: React.FC = () => {
           setInverseDirection(true);
           const balanceX = json4['value']['value']['value']['balance-x'].value;
           const balanceY = json4['value']['value']['value']['balance-y'].value;
-          const basePrice = Number((balanceY / balanceX).toFixed(2));
+          const ratio = Math.pow(10, tokenX['decimals']) / Math.pow(10, tokenY['decimals']);
+          const basePrice = Number((balanceY / (ratio * balanceX)));
           setCurrentPrice(basePrice);
           setFoundPair(true);
           setLoadingData(false);
@@ -268,8 +270,8 @@ export const Swap: React.FC = () => {
     let tokenNameY = tokenY['name'];
     const tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
     const tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
-    let principalX = contractPrincipalCV(contractAddress, tokenXTrait);
-    let principalY = contractPrincipalCV(contractAddress, tokenYTrait);
+    let principalX = contractPrincipalCV(tokenX['address'], tokenXTrait);
+    let principalY = contractPrincipalCV(tokenY['address'], tokenYTrait);
     const postConditionMode = 0x01;
     if (inverseDirection) {
       contractName = 'swap-y-for-x';
@@ -496,7 +498,10 @@ export const Swap: React.FC = () => {
                             </>
                           ) : (
                             <>
-                              1 {tokenY.name} ≈ {currentPrice} {tokenX.name}
+                              1 {tokenY.name} ≈ {currentPrice.toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 6,
+                              })} {tokenX.name}
                             </>
                           )}
                         </p>

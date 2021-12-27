@@ -23,6 +23,8 @@ const createPair = async () => {
       tx.uintCV(new BN(852000000)), // 852 STX at 4800 sats/STX
       tx.uintCV(new BN(4089440)) // 4M sats 
     ],
+    nonce: new BN(408, 10),
+    fee: new BN(500000, 10),
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network
