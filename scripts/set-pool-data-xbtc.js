@@ -11,10 +11,10 @@ const txOptions = {
   functionName: 'set-pool-data',
   functionArgs: [
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
-    tx.stringAsciiCV('wSTX-USDA LP'),
+    tx.stringAsciiCV('wSTX-xBTC LP'),
     tx.uintCV(0),
     tx.uintCV(0),
-    tx.uintCV(400000)
+    tx.uintCV(100000)
   ],
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,

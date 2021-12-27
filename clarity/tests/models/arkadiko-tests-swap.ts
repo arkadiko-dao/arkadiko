@@ -87,15 +87,15 @@ class Swap {
     return block.receipts[0].result;
   }
 
-  createPair(user: Account, tokenX: string, tokenY: string, pool: string, name: string, balanceX: number, balanceY: number) {
+  createPair(user: Account, tokenX: string, tokenY: string, pool: string, name: string, balanceX: number, balanceY: number, decimalsX: number = 6, decimalsY: number = 6) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-swap-v2-1", "create-pair", [
         types.principal(Utils.qualifiedName(tokenX)),
         types.principal(Utils.qualifiedName(tokenY)),
         types.principal(Utils.qualifiedName(pool)),
         types.ascii(name),
-        types.uint(balanceX * 1000000),
-        types.uint(balanceY * 1000000)
+        types.uint(balanceX * Math.pow(10, decimalsX)),
+        types.uint(balanceY * Math.pow(10, decimalsY))
       ], user.address),
     ]);
     return block.receipts[0].result;
@@ -126,25 +126,25 @@ class Swap {
     return block.receipts[0].result;
   }
 
-  swapXForY(user: Account, tokenX: string, tokenY: string, dx: number, dyMin: number) {
+  swapXForY(user: Account, tokenX: string, tokenY: string, dx: number, dyMin: number, decimalsX: number = 6, decimalsY: number = 6) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-swap-v2-1", "swap-x-for-y", [
         types.principal(Utils.qualifiedName(tokenX)),
         types.principal(Utils.qualifiedName(tokenY)),
-        types.uint(dx * 1000000), // 200
-        types.uint(dyMin * 1000000), // 38 (should get ~40)
+        types.uint(dx * Math.pow(10, decimalsX)), // 200
+        types.uint(dyMin * Math.pow(10, decimalsY)), // 38 (should get ~40)
       ], user.address),
     ]);
     return block.receipts[0].result;
   }
 
-  swapYForX(user: Account, tokenX: string, tokenY: string, dy: number, dxMin: number) {
+  swapYForX(user: Account, tokenX: string, tokenY: string, dy: number, dxMin: number, decimalsX: number = 6, decimalsY: number = 6) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-swap-v2-1", "swap-y-for-x", [
         types.principal(Utils.qualifiedName(tokenX)),
         types.principal(Utils.qualifiedName(tokenY)),
-        types.uint(dy * 1000000), // 200
-        types.uint(dxMin * 1000000), // 38 (should get ~40)
+        types.uint(dy * Math.pow(10, decimalsY)), // 200
+        types.uint(dxMin * Math.pow(10, decimalsX)), // 38 (should get ~40)
       ], user.address),
     ]);
     return block.receipts[0].result;
