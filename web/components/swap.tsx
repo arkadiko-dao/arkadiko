@@ -520,11 +520,11 @@ export const Swap: React.FC = () => {
                       <button
                         type="button"
                         disabled={
-                          loadingData || insufficientBalance || tokenYAmount === 0 || !foundPair
+                          loadingData || insufficientBalance || tokenYAmount === 0 || !foundPair || (tokenX['name'].toLowerCase() === 'xbtc' || tokenY['name'].toLowerCase() === 'xbtc')
                         }
                         onClick={() => swapTokens()}
                         className={classNames(
-                          tokenYAmount === 0 || insufficientBalance || !foundPair
+                          tokenYAmount === 0 || insufficientBalance || !foundPair || (tokenX['name'].toLowerCase() === 'xbtc' || tokenY['name'].toLowerCase() === 'xbtc')
                             ? 'bg-indigo-400 hover:bg-indigo-400 dark:text-indigo-600 cursor-not-allowed dark:bg-indigo-200'
                             : 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer',
                           'w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
