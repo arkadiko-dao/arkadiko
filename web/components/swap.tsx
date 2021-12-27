@@ -171,20 +171,21 @@ export const Swap: React.FC = () => {
       return;
     }
 
-    const balanceX = currentPair['balance-x'].value / Math.pow(10, tokenX['decimals']);
-    const balanceY = currentPair['balance-y'].value / Math.pow(10, tokenY['decimals']);
-
     const inputWithoutFees = Number(tokenXAmount) * 0.997;
 
     let tokenYAmount = 0;
     let priceImpact = 0;
     const slippage = (100 - slippageTolerance) / 100;
     if (inverseDirection) {
+      const balanceX = currentPair['balance-x'].value / Math.pow(10, tokenY['decimals']);
+      const balanceY = currentPair['balance-y'].value / Math.pow(10, tokenX['decimals']);
       const newBalanceY = balanceY + inputWithoutFees;
       const newBalanceX = (balanceY * balanceX) / newBalanceY;
       tokenYAmount = balanceX - newBalanceX;
       priceImpact = newBalanceY / newBalanceX / (balanceY / balanceX) - 1.0;
     } else {
+      const balanceX = currentPair['balance-x'].value / Math.pow(10, tokenX['decimals']);
+      const balanceY = currentPair['balance-y'].value / Math.pow(10, tokenY['decimals']);
       const newBalanceX = balanceX + inputWithoutFees;
       const newBalanceY = (balanceX * balanceY) / newBalanceX;
       tokenYAmount = balanceY - newBalanceY;
