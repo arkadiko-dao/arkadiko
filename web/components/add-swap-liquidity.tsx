@@ -329,11 +329,11 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
       contractName: 'arkadiko-swap-v2-1',
       functionName: 'add-to-position',
       functionArgs: [
-        contractPrincipalCV(contractAddress, tokenXParam),
-        contractPrincipalCV(contractAddress, tokenYParam),
+        contractPrincipalCV(tokenX['address'], tokenXParam),
+        contractPrincipalCV(tokenY['address'], tokenYParam),
         contractPrincipalCV(contractAddress, swapTrait),
-        uintCV(parseInt(tokenXInput * 1000000, 10)),
-        uintCV(parseInt(tokenYInput * 1000000, 10)),
+        uintCV(parseInt(tokenXInput * Math.pow(10, tokenX['decimals']), 10)),
+        uintCV(parseInt(tokenYInput * Math.pow(10, tokenY['decimals']), 10)),
       ],
       postConditionMode: 0x01,
       onFinish: data => {
