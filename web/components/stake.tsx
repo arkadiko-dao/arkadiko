@@ -362,7 +362,7 @@ export const Stake = () => {
         ),
         lpTokenValue(
           'arkadiko-stake-pool-wstx-xbtc-v1-1',
-          totalStxXbtcStaked,
+          userXbtcStakedData,
           state.balance['wstxxbtc']
         ),
       ]);
