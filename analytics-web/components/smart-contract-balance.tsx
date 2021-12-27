@@ -13,6 +13,7 @@ export const SmartContractBalance = ({ address, description, name }) => {
   const [wstxDikoBalance, setWstxDikoBalance] = useState(0.0);
   const [wstxUsdaBalance, setWstxUsdaBalance] = useState(0.0);
   const [dikoUsdaBalance, setDikoUsdaBalance] = useState(0.0);
+  const [wstxXbtcBalance, setWstxXbtcBalance] = useState(0.0);
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
@@ -80,6 +81,14 @@ export const SmartContractBalance = ({ address, description, name }) => {
       } else {
         setDikoUsdaBalance(0.0);
       }
+
+      const wstxXbtcBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-xbtc::wstx-xbtc`];
+      if (wstxXbtcBalance) {
+        setWstxXbtcBalance(wstxXbtcBalance.balance / 1000000);
+      } else {
+        setWstxXbtcBalance(0.0);
+      }
+
       const xbtcBalance = data.fungible_tokens[`SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin::wrapped-bitcoin`];
       if (xbtcBalance) {
         setXbtcBalance(xbtcBalance.balance / 100000000);
@@ -135,7 +144,7 @@ export const SmartContractBalance = ({ address, description, name }) => {
               <span className="text-sm font-normal">USDA</span>
             </p>
           ) : null}
-          {stxBalance ? (
+          {xBtcBalance ? (
             <p className="text-lg font-semibold text-gray-800">
               {xBtcBalance.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
@@ -196,6 +205,15 @@ export const SmartContractBalance = ({ address, description, name }) => {
                 maximumFractionDigits: 6,
               })}{' '}
               <span className="text-sm font-normal">DIKO/USDA</span>
+            </p>
+          ) : null}
+          {wstxXbtcBalance ? (
+            <p className="text-lg font-semibold text-gray-800">
+              {wstxXbtcBalance.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 6,
+              })}{' '}
+              <span className="text-sm font-normal">wSTX/xBTC</span>
             </p>
           ) : null}
         </div>
