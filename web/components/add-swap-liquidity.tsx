@@ -137,7 +137,6 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         setCurrentPrice(basePrice);
         const totalTokens = json3['value']['value']['value']['shares-total'].value;
         setTotalTokens(totalTokens);
-        console.log(state.balance, `${tokenX.name.toLowerCase()}${tokenY.name.toLowerCase()}`);
         const totalShare = Number(
           (
             (state.balance[`${tokenX.name.toLowerCase()}${tokenY.name.toLowerCase()}`] /

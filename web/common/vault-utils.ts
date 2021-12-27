@@ -133,6 +133,16 @@ export const tokenTraits: TokenTraits = {
     name: 'arkadiko-swap-token-wstx-xbtc',
     swap: 'wstx-xbtc',
   },
+  stxxbtc: {
+    address: contractAddress,
+    name: 'arkadiko-swap-token-wstx-xbtc',
+    swap: 'wstx-xbtc',
+  },
+  xbtcstx: {
+    address: contractAddress,
+    name: 'arkadiko-swap-token-wstx-xbtc',
+    swap: 'wstx-xbtc',
+  },
   xbtcwstx: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-xbtc',
