@@ -13,9 +13,26 @@ const tokenToName = (token: string) => {
     return 'DIKO';
   } else if (token === 'usda-token') {
     return 'USDA';
+  } else if (token === 'Wrapped-Bitcoin') {
+    return 'xBTC';
+  } else {
+    return '';
   }
-  return '';
 };
+
+const decimals = (token: string) => {
+  if (token === 'STX') {
+    return 6;
+  } else if (token === 'DIKO') {
+    return 6;
+  } else if (token === 'USDA') {
+    return 6;
+  } else if (token === 'xBTC') {
+    return 8;
+  } else {
+    return 6;
+  }
+}
 
 const getPrice = async (symbol: string) => {
   if (symbol === 'USDA') {
@@ -52,13 +69,13 @@ export const PoolRow: React.FC = ({ id, pool }) => {
 
   useEffect(() => {
     const fetchTVL = async () => {
-      const priceX = await getPrice(nameX) / 1000000;
-      const priceY = await getPrice(nameY) / 1000000;
+      const priceX = await getPrice(nameX) / Math.pow(10, 6);
+      const priceY = await getPrice(nameY) / Math.pow(10, 6);
       setPriceX(priceX);
       setPriceY(priceY);
-      const tvlX = pool['tvl_token_x'] * priceX;
-      const tvlY = pool['tvl_token_y'] * priceY;
-      setTvl(((tvlX + tvlY) / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+      const tvlX = pool['tvl_token_x'] * priceX / Math.pow(10, decimals(nameX));
+      const tvlY = pool['tvl_token_y'] * priceY / Math.pow(10, decimals(nameY));
+      setTvl((tvlX + tvlY).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
       setIsLoading(false);
     }
 
@@ -68,15 +85,15 @@ export const PoolRow: React.FC = ({ id, pool }) => {
   useEffect(() => {
     const fetchVolume24 = async () => {
       const response = await axios.get(`${apiUrl}/api/v1/pools/${pool.id}/volume?period=24`);
-      const volumeX = priceX * response.data.volume[0];
-      const volumeY = priceY * response.data.volume[1];
-      setVolume24(((volumeX + volumeY) / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+      const volumeX = priceX * response.data.volume[0] / Math.pow(10, decimals(nameX));
+      const volumeY = priceY * response.data.volume[1] / Math.pow(10, decimals(nameY));
+      setVolume24((volumeX + volumeY).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     };
     const fetchVolume7 = async () => {
       const response = await axios.get(`${apiUrl}/api/v1/pools/${pool.id}/volume?period=7`);
-      const volumeX = priceX * response.data.volume[0];
-      const volumeY = priceY * response.data.volume[1];
-      setVolume7(((volumeX + volumeY) / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+      const volumeX = priceX * response.data.volume[0] / Math.pow(10, decimals(nameX));
+      const volumeY = priceY * response.data.volume[1] / Math.pow(10, decimals(nameY));
+      setVolume7((volumeX + volumeY).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     };
 
     fetchVolume24();

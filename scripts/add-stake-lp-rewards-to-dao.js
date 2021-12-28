@@ -11,14 +11,14 @@ async function burn() {
     contractName: "arkadiko-governance-v2-1",
     functionName: "add-contract-address",
     functionArgs: [
-      tx.stringAsciiCV("arkadiko-stake-lp-rewards"),
-      tx.standardPrincipalCV(CONTRACT_ADDRESS),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-lp-rewards'),
+      tx.stringAsciiCV("stake-pool-wstx-xbtc"),
+      tx.standardPrincipalCV('SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR'),
+      tx.contractPrincipalCV('SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR', 'arkadiko-stake-pool-wstx-xbtc-v1-1'),
       tx.trueCV(),
       tx.trueCV()
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
-    fee: new BN(5000000, 1),
+    fee: new BN(2000000, 1),
     postConditionMode: 1,
     network
   };

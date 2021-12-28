@@ -743,7 +743,7 @@ export const ManageVault = ({ match }) => {
                   ) : null}
 
                   <div className="px-4 py-5 sm:p-6">
-                    <div className="sm:flex sm:items-center: sm:justify-between">
+                    <div className="flex items-center justify-between">
                       <h4 className="text-xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
                         Yield
                       </h4>
@@ -798,7 +798,7 @@ export const ManageVault = ({ match }) => {
                   </div>
 
                   <div className="px-4 py-5 sm:p-6">
-                    <div className="sm:flex sm:items-center: sm:justify-between ">
+                    <div className="flex items-center justify-between">
                       <h4 className="text-xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
                         Withdrawal
                       </h4>
@@ -877,13 +877,13 @@ export const ManageVault = ({ match }) => {
                       <div className="mt-4">
                         <Alert>
                           {startedStacking ? (
-                            <p className="text-sm text-blue-700">
+                            <p>
                               You cannot withdraw your collateral since it is stacked until Bitcoin
                               block {unlockBurnHeight}. Unstack your collateral to unlock it for
                               withdrawal.
                             </p>
                           ) : (
-                            <p className="text-sm text-blue-700">
+                            <p>
                               The next stacking cycle has not started yet. You can still choose to
                               opt-out of stacking your STX tokens. If you do so, you will not earn a
                               yield on your vault.
@@ -897,11 +897,9 @@ export const ManageVault = ({ match }) => {
                       vault?.revokedStacking ? (
                       <div className="mt-4">
                         <Alert>
-                          <div className="md:flex md:justify-between">
-                            <p className="text-sm text-blue-700">
-                              You have unstacked your collateral, you can choose to stack again.
-                            </p>
-                          </div>
+                          <p>
+                            You have unstacked your collateral, you can choose to stack again.
+                          </p>
                         </Alert>
                       </div>
                     ) : canStackCollateral && isVaultOwner ? (
