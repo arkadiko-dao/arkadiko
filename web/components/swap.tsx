@@ -225,6 +225,14 @@ export const Swap: React.FC = () => {
     }
   };
 
+  const onSelectChange = (event: { target: { name: any; value: any } }) => {
+    const value = event.target.value;
+
+    if (value === 'Pool') {
+      window.location.href = '/pool';
+    }
+  };
+
   const switchTokens = () => {
     const tmpTokenX = tokenX;
     setTokenX(tokenY);
@@ -344,6 +352,7 @@ export const Swap: React.FC = () => {
                       name="tabs"
                       className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                       defaultValue={tabs.find(tab => tab.current)?.name}
+                      onChange={onSelectChange}
                     >
                       {tabs.map(tab => (
                         <option key={tab.name}>{tab.name}</option>
