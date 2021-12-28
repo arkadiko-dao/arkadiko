@@ -85,15 +85,15 @@ export const PoolRow: React.FC = ({ id, pool }) => {
   useEffect(() => {
     const fetchVolume24 = async () => {
       const response = await axios.get(`${apiUrl}/api/v1/pools/${pool.id}/volume?period=24`);
-      const volumeX = priceX * response.data.volume[0];
-      const volumeY = priceY * response.data.volume[1];
-      setVolume24(((volumeX + volumeY) / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+      const volumeX = priceX * response.data.volume[0] / Math.pow(10, decimals(nameX));
+      const volumeY = priceY * response.data.volume[1] / Math.pow(10, decimals(nameY));
+      setVolume24((volumeX + volumeY).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     };
     const fetchVolume7 = async () => {
       const response = await axios.get(`${apiUrl}/api/v1/pools/${pool.id}/volume?period=7`);
-      const volumeX = priceX * response.data.volume[0];
-      const volumeY = priceY * response.data.volume[1];
-      setVolume7(((volumeX + volumeY) / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+      const volumeX = priceX * response.data.volume[0] / Math.pow(10, decimals(nameX));
+      const volumeY = priceY * response.data.volume[1] / Math.pow(10, decimals(nameY));
+      setVolume7((volumeX + volumeY).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     };
 
     fetchVolume24();
