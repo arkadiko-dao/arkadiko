@@ -743,7 +743,7 @@ export const ManageVault = ({ match }) => {
                   ) : null}
 
                   <div className="px-4 py-5 sm:p-6">
-                    <div className="sm:flex sm:items-center: sm:justify-between">
+                    <div className="flex items-center justify-between">
                       <h4 className="text-xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
                         Yield
                       </h4>
@@ -798,7 +798,7 @@ export const ManageVault = ({ match }) => {
                   </div>
 
                   <div className="px-4 py-5 sm:p-6">
-                    <div className="sm:flex sm:items-center: sm:justify-between ">
+                    <div className="flex items-center justify-between">
                       <h4 className="text-xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
                         Withdrawal
                       </h4>
@@ -898,8 +898,8 @@ export const ManageVault = ({ match }) => {
                       <div className="mt-4">
                         <Alert>
                           <p>
-                              You have unstacked your collateral, you can choose to stack again.
-                            </p>
+                            You have unstacked your collateral, you can choose to stack again.
+                          </p>
                         </Alert>
                       </div>
                     ) : canStackCollateral && isVaultOwner ? (

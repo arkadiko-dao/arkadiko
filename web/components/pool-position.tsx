@@ -288,7 +288,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
               </Alert>
             </div>
 
-            <div className="mt-4 sm:grid sm:grid-cols-2 sm:gap-2 sm:grid-flow-row-dense">
+            <div className="grid grid-flow-row-dense grid-cols-2 gap-2 mt-4">
               <RouterLink
                 className="inline-flex justify-center px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 to={`swap/remove/${tokenX.name}/${tokenY.name}`}
