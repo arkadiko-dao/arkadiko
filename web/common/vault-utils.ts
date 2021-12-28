@@ -83,6 +83,11 @@ export const tokenTraits: TokenTraits = {
     name: 'Wrapped-Bitcoin',
     swap: 'Wrapped-Bitcoin',
   },
+  welsh: {
+    address: 'SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G',
+    name: 'welshcorgicoin-token',
+    swap: 'welshcorgicoin-token',
+  },
   dikousda: {
     address: contractAddress,
     name: 'arkadiko-swap-token-diko-usda',
