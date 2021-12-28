@@ -13,9 +13,9 @@ async function transact() {
     functionName: 'propose',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
-      tx.uintCV(40650),
-      tx.uintCV(1000),
-      tx.stringUtf8CV('Add xBTC/STX, xBTC/USDA and xBTC as collateral type'),
+      tx.uintCV(43100),
+      tx.uintCV(900),
+      tx.stringUtf8CV('Add STX/WELSH Pair'),
       tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/399'),
       tx.listCV([
         tx.tupleCV({
