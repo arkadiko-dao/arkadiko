@@ -42,10 +42,10 @@ export const tokenList = [
     decimals: 8
   },
   {
-    id: 4,
+    id: 5,
     name: 'WELSH',
     nameInPair: 'welsh',
-    logo: '/assets/tokens/xbtc.svg',
+    logo: '/assets/tokens/welsh.png',
     listed: true,
     address: 'SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G',
     decimals: 6
