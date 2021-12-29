@@ -245,7 +245,7 @@ export const ManageVault = ({ match }) => {
         return;
       } else {
         setStartedStacking(true);
-        if (unlockBurnHeight > currentBurnHeight) {
+        if (unlockBurnHeight < currentBurnHeight) {
           setCanUnlockCollateral(true);
         }
         if (Number(vault?.stackedTokens) === 0 || unlockBurnHeight < currentBurnHeight) {
