@@ -599,26 +599,16 @@ export const ManageVault = ({ match }) => {
                         isVaultOwner &&
                         vault?.stackedTokens > 0 &&
                         !vault?.revokedStacking &&
+                        !startedStacking &&
                         !loadingVaultData ? (
-                          // user has indicated they want to stack their STX tokens
-                          startedStacking ? (
-                            <button
-                              type="button"
-                              className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => callToggleStacking()}
-                            >
-                              Unstack
-                            </button>
-                          ) : (
-                            // cycle not started, offer to opt-out
-                            <button
-                              type="button"
-                              className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => callToggleStacking()}
-                            >
-                              Do not stack
-                            </button>
-                          )
+                          // cycle not started, offer to opt-out
+                          <button
+                            type="button"
+                            className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            onClick={() => callToggleStacking()}
+                          >
+                            Unstack
+                          </button>
                         ) : canStackCollateral &&
                           isVaultOwner &&
                           vault?.stackedTokens > 0 &&
