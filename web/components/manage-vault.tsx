@@ -898,7 +898,7 @@ export const ManageVault = ({ match }) => {
                       <div className="mt-4">
                         <Alert>
                           <p>
-                            You have unstacked your collateral, you can choose to stack again.
+                            You have unstacked your collateral. It is still stacking in PoX. Once your cooldown cycle hits, you can unlock the collateral.
                           </p>
                         </Alert>
                       </div>
