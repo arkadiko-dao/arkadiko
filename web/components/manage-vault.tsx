@@ -240,14 +240,12 @@ export const ManageVault = ({ match }) => {
         if (Number(vault?.stackedTokens) === 0) {
           setCanWithdrawCollateral(true);
         }
-        if (vault?.revokedStacking) {
-          setCanUnlockCollateral(true);
-        }
+        setCanUnlockCollateral(true);
         setLoadingStackerData(false);
         return;
       } else {
         setStartedStacking(true);
-        if (vault?.revokedStacking && unlockBurnHeight < currentBurnHeight) {
+        if (unlockBurnHeight < currentBurnHeight) {
           setCanUnlockCollateral(true);
         }
         if (Number(vault?.stackedTokens) === 0 || unlockBurnHeight < currentBurnHeight) {
@@ -360,22 +358,22 @@ export const ManageVault = ({ match }) => {
 
   const unlockCollateral = async () => {
     const name = vault?.stackerName;
-    let contractName = 'arkadiko-stacker-v1-1';
+    let stackerId = 1;
     if (name === 'stacker-2') {
-      contractName = 'arkadiko-stacker-2-v1-1';
+      stackerId = 2;
     } else if (name === 'stacker-3') {
-      contractName = 'arkadiko-stacker-3-v1-1';
+      stackerId = 3;
     } else if (name === 'stacker-4') {
-      contractName = 'arkadiko-stacker-4-v1-1';
+      stackerId = 4;
     }
 
     await doContractCall({
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName,
-      functionName: 'enable-vault-withdrawals',
-      functionArgs: [uintCV(match.params.id)],
+      contractName: 'arkadiko-pox-unstack-unlock-v1-1',
+      functionName: 'unstack-and-unlock',
+      functionArgs: [uintCV(match.params.id), uintCV(stackerId)],
       onFinish: data => {
         setState(prevState => ({
           ...prevState,
@@ -683,7 +681,11 @@ export const ManageVault = ({ match }) => {
                           </dt>
                           <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                             <p className="text-lg font-semibold leading-none">
-                              {microToReadable(vault?.stackedTokens)}{' '}
+                              {enabledStacking ? (
+                                <span>{microToReadable(vault?.collateral)}{' '}</span>
+                              ) : (
+                                <span>0{' '}</span>
+                              )}
                               <span className="text-sm font-normal">
                                 {vault?.collateralToken.toUpperCase()}
                               </span>
@@ -691,7 +693,7 @@ export const ManageVault = ({ match }) => {
                           </dd>
                         </div>
                         <div className="mt-4 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                          {stackingEndDate != '' ? (
+                          {enabledStacking && stackingEndDate != '' ? (
                             <>
                               <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
                                 <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
