@@ -871,8 +871,8 @@ export const ManageVault = ({ match }) => {
                           {startedStacking ? (
                             <p>
                               You cannot withdraw your collateral since it is stacked until Bitcoin
-                              block {unlockBurnHeight}. Unstack your collateral to unlock it for
-                              withdrawal.
+                              block {unlockBurnHeight}. After this block gets mined, you will need to
+                              manually unlock your vault to get access to your collateral.
                             </p>
                           ) : (
                             <p>
