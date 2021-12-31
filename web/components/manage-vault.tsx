@@ -622,7 +622,7 @@ export const ManageVault = ({ match }) => {
                               Restack
                             </button>
                           ) : null
-                        ) : canStackCollateral && isVaultOwner && !loadingVaultData ? (
+                        ) : canStackCollateral && vault?.stackedTokens === 0 && isVaultOwner && !loadingVaultData ? (
                           // user is not stacking
                           isVaultOwner ? (
                             <button
