@@ -27,6 +27,7 @@ export const UnstakeLpModal = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const unstake = async () => {
+    const amount = uintCV(Number(parseFloat(stakeAmount).toFixed(6)) * 1000000);
     let contractName = 'arkadiko-stake-pool-diko-usda-v1-1';
     let tokenContract = 'arkadiko-swap-token-diko-usda';
     let ftContract = 'diko-usda';
@@ -54,7 +55,7 @@ export const UnstakeLpModal = ({
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, contractName),
         contractPrincipalCV(contractAddress, tokenContract),
-        uintCV(Number(stakeAmount) * 1000000),
+        amount,
       ],
       postConditionMode: 0x01,
       onFinish: data => {

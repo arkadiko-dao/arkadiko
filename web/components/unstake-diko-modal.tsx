@@ -32,11 +32,12 @@ export const UnstakeDikoModal = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const unstakeDiko = async () => {
+    const amount = uintCV(Number(parseFloat(stakeAmount).toFixed(6)) * 1000000);
     const postConditions = [
       makeStandardFungiblePostCondition(
         stxAddress || '',
         FungibleConditionCode.LessEqual,
-        uintCV(Number(stakeAmount) * 1000000).value,
+        amount.value,
         createAssetInfo(contractAddress, 'stdiko-token', 'stdiko')
       ),
     ];
@@ -51,7 +52,7 @@ export const UnstakeDikoModal = ({
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
-        uintCV(Number(stakeAmount) * 1000000),
+        amount,
       ],
       postConditionMode: 0x01,
       onFinish: data => {
