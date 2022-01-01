@@ -77,7 +77,6 @@ export const Stake = () => {
   const [dikoPrice, setDikoPrice] = useState(0);
   const [stxPrice, setStxPrice] = useState(0);
   const [usdaPrice, setUsdaPrice] = useState(0);
-  const [xBtcPrice, setXbtcPrice] = useState(0);
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -789,14 +788,6 @@ export const Stake = () => {
         apy={stxUsdaLpApy}
         balanceName={'wstxusda'}
         tokenName={'STX/USDA'}
-      />
-
-      <StakeLpModal
-        showStakeModal={showStakeLp3Modal}
-        setShowStakeModal={setShowStakeLp3Modal}
-        apy={stxDikoLpApy}
-        balanceName={'wstxdiko'}
-        tokenName={'STX/DIKO'}
       />
 
       <StakeLpModal
