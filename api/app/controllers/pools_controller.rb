@@ -42,7 +42,7 @@ class PoolsController < ApplicationController
       format.csv do
         response.headers['Content-Type'] = 'text/csv'
         response.headers['Content-Disposition'] = 'attachment; filename=export.csv'
-        render prices
+        send_data prices
       end
     end
   end
