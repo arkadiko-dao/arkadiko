@@ -55,7 +55,7 @@ export const StakeLpModal = ({
   };
 
   const stake = async () => {
-    const amount = uintCV(Number(parseFloat(stakeAmount).toFixed(6)) * 1000000);
+    const amount = uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0)));
     let contractName = 'arkadiko-stake-pool-diko-usda-v1-1';
     let tokenContract = 'arkadiko-swap-token-diko-usda';
     let ftContract = 'diko-usda';

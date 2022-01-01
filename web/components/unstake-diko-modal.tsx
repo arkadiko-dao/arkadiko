@@ -32,7 +32,7 @@ export const UnstakeDikoModal = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const unstakeDiko = async () => {
-    const amount = uintCV(Number(parseFloat(stakeAmount).toFixed(6)) * 1000000);
+    const amount = uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0)));
     const postConditions = [
       makeStandardFungiblePostCondition(
         stxAddress || '',

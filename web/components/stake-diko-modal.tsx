@@ -55,7 +55,7 @@ export const StakeDikoModal: React.FC<Props> = ({ showStakeModal, setShowStakeMo
   };
 
   const stakeDiko = async () => {
-    const amount = uintCV(Number(parseFloat(stakeAmount).toFixed(6)) * 1000000);
+    const amount = uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0)));
     const postConditions = [
       makeStandardFungiblePostCondition(
         stxAddress || '',
