@@ -153,6 +153,16 @@ export const tokenTraits: TokenTraits = {
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
   },
+  xbtcusda: {
+    address: contractAddress,
+    name: 'arkadiko-swap-token-xbtc-usda',
+    swap: 'xbtc-usda',
+  },
+  usdaxbtc: {
+    address: contractAddress,
+    name: 'arkadiko-swap-token-xbtc-usda',
+    swap: 'xbtc-usda',
+  },
 };
 
 export const resolveReserveName = (collateralToken: string) => {
