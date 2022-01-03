@@ -13,6 +13,7 @@ interface UserBalance {
   wstxusda: number;
   wstxdiko: number;
   wstxxbtc: number;
+  xbtcusda: number;
 }
 
 export type UserBalanceKeys = keyof UserBalance;
@@ -56,6 +57,7 @@ export const defaultBalance = () => {
     wstxusda: 0,
     wstxdiko: 0,
     wstxxbtc: 0,
+    xbtcusda: 0
   };
 };
 

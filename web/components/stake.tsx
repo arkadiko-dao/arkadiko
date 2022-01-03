@@ -45,10 +45,12 @@ export const Stake = () => {
   const [showStakeLp2Modal, setShowStakeLp2Modal] = useState(false);
   const [showStakeLp3Modal, setShowStakeLp3Modal] = useState(false);
   const [showStakeLp4Modal, setShowStakeLp4Modal] = useState(false);
+  const [showStakeLp5Modal, setShowStakeLp5Modal] = useState(false);
   const [showUnstakeLp1Modal, setShowUnstakeLp1Modal] = useState(false);
   const [showUnstakeLp2Modal, setShowUnstakeLp2Modal] = useState(false);
   const [showUnstakeLp3Modal, setShowUnstakeLp3Modal] = useState(false);
   const [showUnstakeLp4Modal, setShowUnstakeLp4Modal] = useState(false);
+  const [showUnstakeLp5Modal, setShowUnstakeLp5Modal] = useState(false);
   const [apy, setApy] = useState(0);
   const [dikoUsdaLpApy, setDikoUsdaLpApy] = useState(0);
   const [stxUsdaLpApy, setStxUsdaLpApy] = useState(0);
@@ -59,10 +61,12 @@ export const Stake = () => {
   const [lpStxUsdaStakedAmount, setLpStxUsdaStakedAmount] = useState(0);
   const [lpStxDikoStakedAmount, setLpStxDikoStakedAmount] = useState(0);
   const [lpStxXbtcStakedAmount, setLpStxXbtcStakedAmount] = useState(0);
+  const [lpXbtcUsdaStakedAmount, setLpXbtcUsdaStakedAmount] = useState(0);
   const [lpDikoUsdaPendingRewards, setLpDikoUsdaPendingRewards] = useState(0);
   const [lpStxUsdaPendingRewards, setLpStxUsdaPendingRewards] = useState(0);
   const [lpStxDikoPendingRewards, setLpStxDikoPendingRewards] = useState(0);
   const [lpStxXbtcPendingRewards, setLpStxXbtcPendingRewards] = useState(0);
+  const [lpXbtcUsdaPendingRewards, setLpXbtcUsdaPendingRewards] = useState(0);
   const [dikoCooldown, setDikoCooldown] = useState('');
   const [canUnstake, setCanUnstake] = useState(false);
   const [cooldownRunning, setCooldownRunning] = useState(false);
@@ -72,6 +76,7 @@ export const Stake = () => {
   const [stxUsdaPoolInfo, setStxUsdaPoolInfo] = useState(0);
   const [dikoUsdaPoolInfo, setDikoUsdaPoolInfo] = useState(0);
   const [stxXbtcPoolInfo, setStxXbtcPoolInfo] = useState(0);
+  const [xbtcUsdaPoolInfo, setXbtcUsdaPoolInfo] = useState(0);
   const [missedLpRewards, setMissedLpRewards] = useState(0);
   const [stDikoToDiko, setStDikoToDiko] = useState(0);
   const [dikoPrice, setDikoPrice] = useState(0);
@@ -257,6 +262,7 @@ export const Stake = () => {
         state.balance['wstxusda'] == undefined ||
         state.balance['wstxdiko'] == undefined ||
         state.balance['wstxxbtc'] == undefined ||
+        state.balance['xbtcusda'] == undefined ||
         stxPrice === 0 ||
         dikoPrice === 0 ||
         usdaPrice === 0
