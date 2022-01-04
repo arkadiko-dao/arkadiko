@@ -448,7 +448,7 @@ export const Stake = () => {
         totalStxUsdaStaked = 10;
       }
       const dikoStxUsda = await lpTokenValue('arkadiko-stake-pool-wstx-usda-v1-1', 0, totalStxUsdaStaked);
-      const stxUsdaPoolRewards = totalStakingRewardsYear1 * 0.3;
+      const stxUsdaPoolRewards = totalStakingRewardsYear1 * 0.35;
       const stxUsdaApr = stxUsdaPoolRewards / (dikoStxUsda['walletValue'] / Number(dikoPrice / 1000000));
       setStxUsdaLpApy(Number((100 * stxUsdaApr).toFixed(2)));
 
