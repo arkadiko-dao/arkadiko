@@ -71,6 +71,10 @@ export const StakeLpModal = ({
       contractName = 'arkadiko-stake-pool-wstx-xbtc-v1-1';
       tokenContract = 'arkadiko-swap-token-wstx-xbtc';
       ftContract = 'wstx-xbtc';
+    } else if (balanceName === 'xbtcusda') {
+      contractName = 'arkadiko-stake-pool-xbtc-usda-v1-1';
+      tokenContract = 'arkadiko-swap-token-xbtc-usda';
+      ftContract = 'xbtc-usda';
     }
     const postConditions = [
       makeStandardFungiblePostCondition(
