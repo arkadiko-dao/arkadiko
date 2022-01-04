@@ -14,10 +14,9 @@ const txOptions = {
     tx.stringAsciiCV('wSTX-USDA LP'),
     tx.uintCV(0),
     tx.uintCV(0),
-    tx.uintCV(400000)
+    tx.uintCV(350000)
   ],
-  nonce: new BN(410, 10),
-  fee: new BN(500002, 10),
+  fee: new BN(500000, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network
