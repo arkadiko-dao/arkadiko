@@ -131,7 +131,7 @@ export const Swap: React.FC = () => {
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
         const ratio = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']);
-        const basePrice = Number((ratio * balanceX / balanceY).toFixed(2));
+        const basePrice = Number((ratio * balanceX / balanceY));
         setCurrentPrice(basePrice);
         setInverseDirection(false);
         setFoundPair(true);
@@ -173,7 +173,6 @@ export const Swap: React.FC = () => {
     }
 
     const inputWithoutFees = Number(tokenXAmount) * 0.997;
-
     let tokenYAmount = 0;
     let priceImpact = 0;
     const slippage = (100 - slippageTolerance) / 100;
