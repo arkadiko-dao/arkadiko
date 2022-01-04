@@ -185,9 +185,9 @@ export const Stake = () => {
         tokenYName = 'xBTC';
         tokenYDecimals = 8;
       } else if (poolContract == 'arkadiko-stake-pool-xbtc-usda-v1-1') {
-        tokenXContract = 'usda-token';
         tokenXAddress = 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR';
         tokenXContract = 'Wrapped-Bitcoin';
+        tokenYContract = 'usda-token';
         tokenXName = 'xBTC';
         tokenYName = 'USDA';
       }
