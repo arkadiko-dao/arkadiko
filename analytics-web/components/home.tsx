@@ -162,7 +162,7 @@ export const Home: React.FC = () => {
       <div className="px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
         <section className="mt-8">
           <header className="pb-5 border-b border-gray-200 sm:flex sm:justify-between sm:items-end">
-            <h3 className="text-lg leading-6 text-gray-900 font-headings">... price</h3>
+            <h3 className="text-lg leading-6 text-gray-900 font-headings">{tokenPrice.name} price</h3>
             <div className="w-full max-w-[180px]">
               <TokenPriceSelect
                 tokenPrices={tokenPrices}
