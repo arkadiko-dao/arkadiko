@@ -1397,6 +1397,23 @@ export const Stake = () => {
                           stakeLpPendingRewards={stakeStxXbtcLpPendingRewards}
                           getLpRoute={'/swap/add/STX/xBTC'}
                         />
+
+                        {/* Arkadiko V1 xBTC USDA LP Token */}
+                        <StakeLpRow
+                          loadingData={loadingData}
+                          tokenListItemX={3}
+                          tokenListItemY={0}
+                          balance={state.balance['xbtcusda']}
+                          pendingRewards={lpXbtcUsdaPendingRewards}
+                          stakedAmount={lpXbtcUsdaStakedAmount}
+                          apy={xbtcUsdaLpApy}
+                          poolInfo={xbtcUsdaPoolInfo}
+                          setShowStakeLpModal={setShowStakeLp5Modal}
+                          setShowUnstakeLpModal={setShowUnstakeLp5Modal}
+                          claimLpPendingRewards={claimXbtcUsdaLpPendingRewards}
+                          stakeLpPendingRewards={stakeXbtcUsdaLpPendingRewards}
+                          getLpRoute={'/swap/add/xBTC/USDA'}
+                        />
                       </table>
                     </div>
                   </div>
