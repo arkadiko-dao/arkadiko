@@ -7,6 +7,7 @@ import { Pools } from './pools';
 import { Prices } from './prices';
 import { Vaults } from './vaults';
 import { MarketCap } from './market-cap';
+import { TokenPriceSelect } from './token-price-select';
 
 export const Home: React.FC = () => {
   const apiUrl = 'https://arkadiko-api.herokuapp.com';
@@ -14,6 +15,11 @@ export const Home: React.FC = () => {
   const [prices, setPrices] = useState([]);
   const [lastDikoPrice, setLastDikoPrice] = useState(0);
   const [vaultData, setVaultData] = useState({});
+  const tokenPrices = [
+    { id: 1, name: 'DIKO/USDA' },
+    { id: 2, name: 'WELSH/STX' },
+  ];
+  const [tokenPrice, setTokenPrice] = useState(tokenPrices[0]);
 
   useEffect(() => {
     const fetchPools = async () => {
@@ -83,7 +89,7 @@ export const Home: React.FC = () => {
       text: null
     },
     xAxis: {
-      
+
     },
     yAxis: [{
       lineWidth: 1,
@@ -118,7 +124,7 @@ export const Home: React.FC = () => {
         },
         marker: {
           radius: 1,
-          fillColor: '#4f46e5', //indigo-600 
+          fillColor: '#4f46e5', //indigo-600
           lineWidth: 1,
           lineColor: '#4f46e5', //indigo-600
           states: {
@@ -156,8 +162,13 @@ export const Home: React.FC = () => {
       <div className="px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
         <section className="mt-8">
           <header className="pb-5 border-b border-gray-200 sm:flex sm:justify-between sm:items-end">
-            <div>
-              <h3 className="text-lg leading-6 text-gray-900 font-headings">DIKO price</h3>
+            <h3 className="text-lg leading-6 text-gray-900 font-headings">... price</h3>
+            <div className="w-full max-w-[180px]">
+              <TokenPriceSelect
+                tokenPrices={tokenPrices}
+                selected={tokenPrice}
+                setSelected={setTokenPrice}
+              />
             </div>
           </header>
           <div className="mt-4 border border-gray-200 rounded-lg">
