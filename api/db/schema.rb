@@ -59,8 +59,11 @@ ActiveRecord::Schema.define(version: 2022_01_05_195430) do
     t.bigint "last_price", default: 0, null: false
     t.bigint "price_last_updated", default: 0, null: false
     t.bigint "total_staked", default: 0, null: false
+    t.bigint "decimals", default: 6, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["address", "name"], name: "index_tokens_on_address_and_name"
+    t.index ["symbol"], name: "index_tokens_on_symbol"
   end
 
   create_table "vault_events", force: :cascade do |t|

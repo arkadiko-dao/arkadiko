@@ -9,5 +9,6 @@ Rails.application.routes.draw do
     end
     resources :vaults, only: [:index]
     resources :tokens, only: [:show]
+    resources :pages, only: [:stake]
   end
 end
