@@ -7,6 +7,7 @@ class CreateTokens < ActiveRecord::Migration[5.2]
       t.bigint :total_supply, null: false, default: 0
       t.bigint :last_price, null: false, default: 0
       t.bigint :price_last_updated, null: false, default: 0
+      t.bigint :total_staked, null: false, default: 0
 
       t.timestamps
     end

@@ -58,6 +58,7 @@ ActiveRecord::Schema.define(version: 2022_01_05_195430) do
     t.bigint "total_supply", default: 0, null: false
     t.bigint "last_price", default: 0, null: false
     t.bigint "price_last_updated", default: 0, null: false
+    t.bigint "total_staked", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

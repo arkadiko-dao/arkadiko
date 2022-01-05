@@ -38,44 +38,59 @@ Pool.create!(
 Token.create!(
   address: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR',
   name: 'wrapped-stx-token'
-  symbol: 'wSTX',
-  total_supply: 0,
-  last_price: 0,
-  price_last_updated: 0
+  symbol: 'wSTX'
 )
 
 Token.create!(
   address: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR',
   name: 'arkadiko-token'
-  symbol: 'DIKO',
-  total_supply: 0,
-  last_price: 0,
-  price_last_updated: 0
+  symbol: 'DIKO'
 )
 
 Token.create!(
   address: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR',
   name: 'usda-token'
-  symbol: 'USDA',
-  total_supply: 0,
-  last_price: 0,
-  price_last_updated: 0
+  symbol: 'USDA'
 )
 
 Token.create!(
   address: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR',
   name: 'stdiko-token'
-  symbol: 'stDIKO',
-  total_supply: 0,
-  last_price: 0,
-  price_last_updated: 0
+  symbol: 'stDIKO'
 )
 
 Token.create!(
   address: 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR',
   name: 'Wrapped-Bitcoin'
-  symbol: 'xBTC',
-  total_supply: 0,
-  last_price: 0,
-  price_last_updated: 0
+  symbol: 'xBTC'
+)
+
+Token.create!(
+  address: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR',
+  name: 'arkadiko-swap-token-diko-usda'
+  symbol: 'ARKV1DIKOUSDA'
+)
+
+Token.create!(
+  address: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR',
+  name: 'arkadiko-swap-token-wstx-usda'
+  symbol: 'ARKV1WSTXUSDA'
+)
+
+Token.create!(
+  address: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR',
+  name: 'arkadiko-swap-token-wstx-diko'
+  symbol: 'ARKV1WSTXDIKO'
+)
+
+Token.create!(
+  address: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR',
+  name: 'arkadiko-swap-token-wstx-xbtc'
+  symbol: 'ARKV1WSTXXBTC'
+)
+
+Token.create!(
+  address: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR',
+  name: 'arkadiko-swap-token-xbtc-usda'
+  symbol: 'ARKV1XBTCUSDA'
 )

@@ -9,6 +9,7 @@
 #  total_supply       :bigint           default(0), not null
 #  last_price         :bigint           default(0), not null
 #  price_last_updated :bigint           default(0), not null
+#  total_staked       :bigint           default(0), not null
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #
