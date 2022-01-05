@@ -35,6 +35,7 @@ import {
 import { Placeholder } from './ui/placeholder';
 import { Tooltip } from '@blockstack/ui';
 import { Alert } from './ui/alert';
+import { getPair } from '@common/api';
 
 export const Stake = () => {
   const [state, setState] = useContext(AppContext);
