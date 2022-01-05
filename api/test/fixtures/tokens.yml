@@ -3,12 +3,12 @@
 # Table name: tokens
 #
 #  id                 :bigint           not null, primary key
-#  address            :string
-#  name               :string
-#  symbol             :string
-#  total_supply       :bigint
-#  last_price         :bigint
-#  price_last_updated :bigint
+#  address            :string           not null
+#  name               :string           not null
+#  symbol             :string           not null
+#  total_supply       :bigint           default(0), not null
+#  last_price         :bigint           default(0), not null
+#  price_last_updated :bigint           default(0), not null
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #

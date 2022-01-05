@@ -15,3 +15,7 @@ export const getPair = async (tokenXAddress: string, tokenXName: string, tokenYA
   const pools = await fetchPools();
   return pools;
 }
+
+export const getStakeData = async () => {
+  const apiUrl = 'https://arkadiko-api.herokuapp.com';
+};

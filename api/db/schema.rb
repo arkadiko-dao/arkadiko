@@ -52,12 +52,12 @@ ActiveRecord::Schema.define(version: 2022_01_05_195430) do
   end
 
   create_table "tokens", force: :cascade do |t|
-    t.string "address"
-    t.string "name"
-    t.string "symbol"
-    t.bigint "total_supply"
-    t.bigint "last_price"
-    t.bigint "price_last_updated"
+    t.string "address", null: false
+    t.string "name", null: false
+    t.string "symbol", null: false
+    t.bigint "total_supply", default: 0, null: false
+    t.bigint "last_price", default: 0, null: false
+    t.bigint "price_last_updated", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

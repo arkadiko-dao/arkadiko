@@ -1,12 +1,12 @@
 class CreateTokens < ActiveRecord::Migration[5.2]
   def change
     create_table :tokens do |t|
-      t.string :address
-      t.string :name
-      t.string :symbol
-      t.bigint :total_supply
-      t.bigint :last_price
-      t.bigint :price_last_updated
+      t.string :address, null: false
+      t.string :name, null: false
+      t.string :symbol, null: false
+      t.bigint :total_supply, null: false, default: 0
+      t.bigint :last_price, null: false, default: 0
+      t.bigint :price_last_updated, null: false, default: 0
 
       t.timestamps
     end
