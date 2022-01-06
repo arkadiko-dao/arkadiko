@@ -146,7 +146,7 @@ export const Swap: React.FC = () => {
         if (json4['success']) {
           console.log('found pair...', json4);
           setCurrentPair(json4['value']['value']['value']);
-          setPairEnabled(json3['value']['value']['value']['enabled']['value']);
+          setPairEnabled(json4['value']['value']['value']['enabled']['value']);
           setInverseDirection(true);
           const balanceX = json4['value']['value']['value']['balance-x'].value;
           const balanceY = json4['value']['value']['value']['balance-y'].value;
