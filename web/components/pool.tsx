@@ -71,7 +71,7 @@ export const Pool: React.FC = () => {
               </dl>
 
               <dl className="mt-6 space-y-6">
-                <PoolPosition key="token3" indexTokenX={2} indexTokenY={3} />
+                <PoolPosition key="token4" indexTokenX={2} indexTokenY={3} />
               </dl>
             </div>
 
