@@ -583,7 +583,7 @@ export const Swap: React.FC = () => {
               )}
             </div>
           </div>
-          {foundPair ? (
+          {foundPair && pairEnabled ? (
             <div className="w-full max-w-md p-4 pt-8 -mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
               <dl className="space-y-1">
                 <div className="grid grid-cols-2 gap-4">
