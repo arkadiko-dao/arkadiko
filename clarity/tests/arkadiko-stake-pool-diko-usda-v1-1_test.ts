@@ -1091,91 +1091,91 @@ Clarinet.test({
   }
 });
 
-Clarinet.test({
-  name: "staking - Reward distribution over time with multiple stakers",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
-    let wallet_2 = accounts.get("wallet_2")!;
+// Clarinet.test({
+//   name: "staking - Reward distribution over time with multiple stakers",
+//   async fn(chain: Chain, accounts: Map<string, Account>) {
+//     let deployer = accounts.get("deployer")!;
+//     let wallet_1 = accounts.get("wallet_1")!;
+//     let wallet_2 = accounts.get("wallet_2")!;
 
-    let oracleManager = new OracleManager(chain, deployer);
-    let swap = new Swap(chain, deployer);
-    let vaultManager = new VaultManager(chain, deployer);
-    let stakeRegistry = new StakeRegistry(chain, deployer);
-    let stakePoolDikoUsda = new StakePoolDikoUsda(chain, deployer);
-    let stakePoolStxUsda = new StakePoolStxUsda(chain, deployer);
-    let stakePoolStxDiko = new StakePoolStxDiko(chain, deployer);
+//     let oracleManager = new OracleManager(chain, deployer);
+//     let swap = new Swap(chain, deployer);
+//     let vaultManager = new VaultManager(chain, deployer);
+//     let stakeRegistry = new StakeRegistry(chain, deployer);
+//     let stakePoolDikoUsda = new StakePoolDikoUsda(chain, deployer);
+//     let stakePoolStxUsda = new StakePoolStxUsda(chain, deployer);
+//     let stakePoolStxDiko = new StakePoolStxDiko(chain, deployer);
 
-    // Mint USDA for wallet_2
-    let result = oracleManager.updatePrice("STX", 200);
-    result = vaultManager.createVault(wallet_2, "STX-A", 1500, 1300);
+//     // Mint USDA for wallet_2
+//     let result = oracleManager.updatePrice("STX", 200);
+//     result = vaultManager.createVault(wallet_2, "STX-A", 1500, 1300);
 
-    // Get LP tokens
-    result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
-    result.expectOk().expectBool(true);
-    result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
-    result.expectOk().expectBool(true);
-    result = swap.createPair(deployer, wstxTokenAddress, dikoTokenAddress, wstxDikoPoolAddress, "wSTX-DIKO", 500, 100);
-    result.expectOk().expectBool(true);
+//     // Get LP tokens
+//     result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 500, 100);
+//     result.expectOk().expectBool(true);
+//     result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
+//     result.expectOk().expectBool(true);
+//     result = swap.createPair(deployer, wstxTokenAddress, dikoTokenAddress, wstxDikoPoolAddress, "wSTX-DIKO", 500, 100);
+//     result.expectOk().expectBool(true);
 
-    result = swap.addToPosition(wallet_2, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 500, 100);
-    result.expectOk().expectBool(true);
-    result = swap.addToPosition(wallet_2, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, 500, 100);
-    result.expectOk().expectBool(true);
-    result = swap.addToPosition(wallet_2, wstxTokenAddress, dikoTokenAddress, wstxDikoPoolAddress, 500, 100);
-    result.expectOk().expectBool(true);
+//     result = swap.addToPosition(wallet_2, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, 500, 100);
+//     result.expectOk().expectBool(true);
+//     result = swap.addToPosition(wallet_2, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, 500, 100);
+//     result.expectOk().expectBool(true);
+//     result = swap.addToPosition(wallet_2, wstxTokenAddress, dikoTokenAddress, wstxDikoPoolAddress, 500, 100);
+//     result.expectOk().expectBool(true);
 
-    // Stake funds
-    result = stakeRegistry.stake(wallet_2, "arkadiko-stake-pool-diko-usda-v1-1", "arkadiko-swap-token-diko-usda", 50)
-    result.expectOk().expectUintWithDecimals(50)
-    result = stakeRegistry.stake(wallet_2, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 50)
-    result.expectOk().expectUintWithDecimals(50)
-    result = stakeRegistry.stake(wallet_2, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 50)
-    result.expectOk().expectUintWithDecimals(50)
+//     // Stake funds
+//     result = stakeRegistry.stake(wallet_2, "arkadiko-stake-pool-diko-usda-v1-1", "arkadiko-swap-token-diko-usda", 50)
+//     result.expectOk().expectUintWithDecimals(50)
+//     result = stakeRegistry.stake(wallet_2, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 50)
+//     result.expectOk().expectUintWithDecimals(50)
+//     result = stakeRegistry.stake(wallet_2, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 50)
+//     result.expectOk().expectUintWithDecimals(50)
 
-    for (let index = 0; index < 390; index++) {
+//     for (let index = 0; index < 390; index++) {
 
-      // Advance 1 week
-      chain.mineEmptyBlock(142 * 7);
+//       // Advance 1 week
+//       chain.mineEmptyBlock(142 * 7);
 
-      // Increase cumm reward per stake
-      stakePoolDikoUsda.increaseCumulativeRewardPerStake();
-      stakePoolStxUsda.increaseCumulativeRewardPerStake();
-      stakePoolStxDiko.increaseCumulativeRewardPerStake();
+//       // Increase cumm reward per stake
+//       stakePoolDikoUsda.increaseCumulativeRewardPerStake();
+//       stakePoolStxUsda.increaseCumulativeRewardPerStake();
+//       stakePoolStxDiko.increaseCumulativeRewardPerStake();
 
-      // Check pending rewards
-      let callLp1 = stakeRegistry.getPendingRewards(wallet_2, "arkadiko-stake-pool-diko-usda-v1-1");
-      let callLp2 = stakeRegistry.getPendingRewards(wallet_2, "arkadiko-stake-pool-wstx-usda-v1-1");
-      let callLp3 = stakeRegistry.getPendingRewards(wallet_2, "arkadiko-stake-pool-wstx-diko-v1-1");
+//       // Check pending rewards
+//       let callLp1 = stakeRegistry.getPendingRewards(wallet_2, "arkadiko-stake-pool-diko-usda-v1-1");
+//       let callLp2 = stakeRegistry.getPendingRewards(wallet_2, "arkadiko-stake-pool-wstx-usda-v1-1");
+//       let callLp3 = stakeRegistry.getPendingRewards(wallet_2, "arkadiko-stake-pool-wstx-diko-v1-1");
 
-      switch (index)
-      {
-        // pool gets 25% of total rewards
-        case 53: callLp1.result.expectOk().expectUintWithDecimals(6323498.514900); break;
-        case 106: callLp1.result.expectOk().expectUintWithDecimals(9378424.136950); break;
-        case 371: callLp1.result.expectOk().expectUintWithDecimals(12802138.822650); break;
-        default: break;
-      }
+//       switch (index)
+//       {
+//         // pool gets 25% of total rewards
+//         case 53: callLp1.result.expectOk().expectUintWithDecimals(6323498.514900); break;
+//         case 106: callLp1.result.expectOk().expectUintWithDecimals(9378424.136950); break;
+//         case 371: callLp1.result.expectOk().expectUintWithDecimals(12802138.822650); break;
+//         default: break;
+//       }
 
-      switch (index)
-      {
-        // pool gets 15% of total rewards
-        case 53: callLp3.result.expectOk().expectUintWithDecimals(3794005.135800); break;
-        case 106: callLp3.result.expectOk().expectUintWithDecimals(5627007.472150); break;
-        case 371: callLp3.result.expectOk().expectUintWithDecimals(7681274.830850); break;
-        default: break;
-      }
+//       switch (index)
+//       {
+//         // pool gets 15% of total rewards
+//         case 53: callLp3.result.expectOk().expectUintWithDecimals(3794005.135800); break;
+//         case 106: callLp3.result.expectOk().expectUintWithDecimals(5627007.472150); break;
+//         case 371: callLp3.result.expectOk().expectUintWithDecimals(7681274.830850); break;
+//         default: break;
+//       }
 
-      switch (index)
-      {
-        // pool gets 50% of total rewards
-        case 53: callLp2.result.expectOk().expectUintWithDecimals(12646840.463200); break;
-        case 106: callLp2.result.expectOk().expectUintWithDecimals(18756770.019450); break;
-        case 371: callLp2.result.expectOk().expectUintWithDecimals(25604263.759200); break;
-        default: break;
-      }
+//       switch (index)
+//       {
+//         // pool gets 50% of total rewards
+//         case 53: callLp2.result.expectOk().expectUintWithDecimals(12646840.463200); break;
+//         case 106: callLp2.result.expectOk().expectUintWithDecimals(18756770.019450); break;
+//         case 371: callLp2.result.expectOk().expectUintWithDecimals(25604263.759200); break;
+//         default: break;
+//       }
 
-    }
+//     }
     
-  }
-});
+//   }
+// });
