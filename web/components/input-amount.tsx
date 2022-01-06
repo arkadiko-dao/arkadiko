@@ -36,6 +36,7 @@ export const InputAmount = React.forwardRef<HTMLInputElement, InputAmountProps>(
             value={inputValue}
             onChange={onInputChange}
             ref={ref}
+            autoFocus={true}
           />
           <div className="ml-auto mr-2 text-sm shrink-0">
             <div className="flex items-center min-w-0">

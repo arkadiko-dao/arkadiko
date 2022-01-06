@@ -831,6 +831,5 @@ Clarinet.test({
         default: break;
       }
     }
-    
   }
 });

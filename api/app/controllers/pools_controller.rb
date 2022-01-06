@@ -38,6 +38,12 @@ class PoolsController < ApplicationController
   def export
     @pool = Pool.find(params[:id])
     prices = @pool.export_prices
-    render csv: prices
+    respond_with do |format|
+      format.csv do
+        response.headers['Content-Type'] = 'text/csv'
+        response.headers['Content-Disposition'] = 'attachment; filename=export.csv'
+        send_data prices
+      end
+    end
   end
 end

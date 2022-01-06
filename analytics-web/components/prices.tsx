@@ -135,7 +135,7 @@ export const Prices: React.FC = () => {
                           />
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">DIKO</div>
+                          <div className="text-sm font-medium text-gray-900">DIKO/USDA</div>
                         </div>
                       </div>
                     </td>
@@ -143,7 +143,7 @@ export const Prices: React.FC = () => {
                       {loadingPrices ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
-                        <span>${dikoPrice}</span>
+                        <span>{dikoPrice}</span>
                       )}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">

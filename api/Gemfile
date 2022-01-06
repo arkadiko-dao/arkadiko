@@ -10,6 +10,7 @@ gem 'kaminari'
 gem 'httparty'
 gem "active_model_serializers", "~> 0.10.12"
 gem 'rack-cors'
+gem 'responders'
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 # gem 'jbuilder', '~> 2.5'
