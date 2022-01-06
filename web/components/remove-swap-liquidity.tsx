@@ -93,9 +93,8 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         const balanceY = json3['value']['value']['value']['balance-y'].value;
         const ratio = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']);
         const basePrice = (ratio * balanceX / balanceY);
-        const balance =
-          state.balance[`${tokenX.nameInPair.toLowerCase()}${tokenY.nameInPair.toLowerCase()}`];
         const totalShares = json3['value']['value']['value']['shares-total'].value;
+        const balance = state.balance[`${tokenX.nameInPair.toLowerCase()}${tokenY.nameInPair.toLowerCase()}`];
         const poolPercentage = balance / totalShares;
         if (balance !== undefined) {
           setFoundPair(true);
@@ -117,9 +116,8 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
           const balanceY = json4['value']['value']['value']['balance-y'].value;
           const ratio = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']);
           const basePrice = (balanceX / balanceY).toFixed(2);
-          const balance =
-            state.balance[`${tokenY.nameInPair.toLowerCase()}${tokenX.nameInPair.toLowerCase()}`];
           const totalShares = json4['value']['value']['value']['shares-total'].value;
+          const balance = state.balance[`${tokenX.nameInPair.toLowerCase()}${tokenY.nameInPair.toLowerCase()}`];
           const poolPercentage = balance / totalShares;
           if (balance !== undefined) {
             setFoundPair(true);
@@ -137,7 +135,9 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
       }
     };
 
-    resolvePair();
+    if (tokenX && tokenY && state.balance) {
+      resolvePair();
+    }
   }, [tokenX, tokenY, state.balance]);
 
   const onInputChange = (event: { target: { name: any; value: any } }) => {

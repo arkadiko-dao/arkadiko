@@ -83,6 +83,11 @@ export const tokenTraits: TokenTraits = {
     name: 'Wrapped-Bitcoin',
     swap: 'Wrapped-Bitcoin',
   },
+  welsh: {
+    address: 'SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G',
+    name: 'welshcorgicoin-token',
+    swap: 'welshcorgicoin-token',
+  },
   dikousda: {
     address: contractAddress,
     name: 'arkadiko-swap-token-diko-usda',
@@ -163,6 +168,26 @@ export const tokenTraits: TokenTraits = {
     name: 'arkadiko-swap-token-xbtc-usda',
     swap: 'xbtc-usda',
   },
+  wstxwelsh: {
+    address: contractAddress,
+    name: 'arkadiko-swap-token-wstx-welsh',
+    swap: 'wstx-welsh',
+  },
+  stxwelsh: {
+    address: contractAddress,
+    name: 'arkadiko-swap-token-wstx-welsh',
+    swap: 'wstx-welsh',
+  },
+  welshwstx: {
+    address: contractAddress,
+    name: 'arkadiko-swap-token-wstx-welsh',
+    swap: 'wstx-welsh',
+  },
+  welshstx: {
+    address: contractAddress,
+    name: 'arkadiko-swap-token-wstx-welsh',
+    swap: 'wstx-welsh',
+  }
 };
 
 export const resolveReserveName = (collateralToken: string) => {
