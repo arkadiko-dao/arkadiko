@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_02_073746) do
+ActiveRecord::Schema.define(version: 2022_01_05_195430) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -49,6 +49,21 @@ ActiveRecord::Schema.define(version: 2021_12_02_073746) do
     t.index ["function_name"], name: "index_swap_events_on_function_name"
     t.index ["pool_id"], name: "index_swap_events_on_pool_id"
     t.index ["sender"], name: "index_swap_events_on_sender"
+  end
+
+  create_table "tokens", force: :cascade do |t|
+    t.string "address", null: false
+    t.string "name", null: false
+    t.string "symbol", null: false
+    t.bigint "total_supply", default: 0, null: false
+    t.bigint "last_price", default: 0, null: false
+    t.bigint "price_last_updated", default: 0, null: false
+    t.bigint "total_staked", default: 0, null: false
+    t.bigint "decimals", default: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["address", "name"], name: "index_tokens_on_address_and_name"
+    t.index ["symbol"], name: "index_tokens_on_symbol"
   end
 
   create_table "vault_events", force: :cascade do |t|
