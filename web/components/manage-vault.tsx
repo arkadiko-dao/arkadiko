@@ -240,14 +240,12 @@ export const ManageVault = ({ match }) => {
         if (Number(vault?.stackedTokens) === 0) {
           setCanWithdrawCollateral(true);
         }
-        if (vault?.revokedStacking) {
-          setCanUnlockCollateral(true);
-        }
+        setCanUnlockCollateral(true);
         setLoadingStackerData(false);
         return;
       } else {
         setStartedStacking(true);
-        if (vault?.revokedStacking && unlockBurnHeight < currentBurnHeight) {
+        if (unlockBurnHeight < currentBurnHeight) {
           setCanUnlockCollateral(true);
         }
         if (Number(vault?.stackedTokens) === 0 || unlockBurnHeight < currentBurnHeight) {
@@ -261,7 +259,7 @@ export const ManageVault = ({ match }) => {
         setStackingEndDate('');
       } else {
         const stackingBlocksLeft = unlockBurnHeight - currentBurnHeight;
-        const stackingMinutesLeft = stackingBlocksLeft * 10 + 20160 + 1440; // + 2 weeks cooldown + 1 day
+        const stackingMinutesLeft = stackingBlocksLeft * 10 + 1440; // stacking blocks left * 10 minutes/block + 1 day
         const currentDate = new Date();
         const endDate = addMinutes(currentDate, stackingMinutesLeft);
         setStackingEndDate(endDate.toDateString());
@@ -360,22 +358,22 @@ export const ManageVault = ({ match }) => {
 
   const unlockCollateral = async () => {
     const name = vault?.stackerName;
-    let contractName = 'arkadiko-stacker-v1-1';
+    let stackerId = 1;
     if (name === 'stacker-2') {
-      contractName = 'arkadiko-stacker-2-v1-1';
+      stackerId = 2;
     } else if (name === 'stacker-3') {
-      contractName = 'arkadiko-stacker-3-v1-1';
+      stackerId = 3;
     } else if (name === 'stacker-4') {
-      contractName = 'arkadiko-stacker-4-v1-1';
+      stackerId = 4;
     }
 
     await doContractCall({
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName,
-      functionName: 'enable-vault-withdrawals',
-      functionArgs: [uintCV(match.params.id)],
+      contractName: 'arkadiko-pox-unstack-unlock-v1-1',
+      functionName: 'unstack-and-unlock',
+      functionArgs: [uintCV(match.params.id), uintCV(stackerId)],
       onFinish: data => {
         setState(prevState => ({
           ...prevState,
@@ -599,26 +597,16 @@ export const ManageVault = ({ match }) => {
                         isVaultOwner &&
                         vault?.stackedTokens > 0 &&
                         !vault?.revokedStacking &&
+                        !startedStacking &&
                         !loadingVaultData ? (
-                          // user has indicated they want to stack their STX tokens
-                          startedStacking ? (
-                            <button
-                              type="button"
-                              className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => callToggleStacking()}
-                            >
-                              Unstack
-                            </button>
-                          ) : (
-                            // cycle not started, offer to opt-out
-                            <button
-                              type="button"
-                              className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => callToggleStacking()}
-                            >
-                              Do not stack
-                            </button>
-                          )
+                          // cycle not started, offer to opt-out
+                          <button
+                            type="button"
+                            className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            onClick={() => callToggleStacking()}
+                          >
+                            Unstack
+                          </button>
                         ) : canStackCollateral &&
                           isVaultOwner &&
                           vault?.stackedTokens > 0 &&
@@ -634,7 +622,7 @@ export const ManageVault = ({ match }) => {
                               Restack
                             </button>
                           ) : null
-                        ) : canStackCollateral && isVaultOwner && !loadingVaultData ? (
+                        ) : canStackCollateral && vault?.stackedTokens == 0 && isVaultOwner && !loadingVaultData ? (
                           // user is not stacking
                           isVaultOwner ? (
                             <button
@@ -693,7 +681,11 @@ export const ManageVault = ({ match }) => {
                           </dt>
                           <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                             <p className="text-lg font-semibold leading-none">
-                              {microToReadable(vault?.stackedTokens)}{' '}
+                              {enabledStacking ? (
+                                <span>{microToReadable(vault?.collateral)}{' '}</span>
+                              ) : (
+                                <span>0{' '}</span>
+                              )}
                               <span className="text-sm font-normal">
                                 {vault?.collateralToken.toUpperCase()}
                               </span>
@@ -701,7 +693,7 @@ export const ManageVault = ({ match }) => {
                           </dd>
                         </div>
                         <div className="mt-4 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                          {stackingEndDate != '' ? (
+                          {enabledStacking && stackingEndDate != '' ? (
                             <>
                               <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
                                 <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
@@ -743,7 +735,7 @@ export const ManageVault = ({ match }) => {
                   ) : null}
 
                   <div className="px-4 py-5 sm:p-6">
-                    <div className="sm:flex sm:items-center: sm:justify-between">
+                    <div className="flex items-center justify-between">
                       <h4 className="text-xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
                         Yield
                       </h4>
@@ -798,7 +790,7 @@ export const ManageVault = ({ match }) => {
                   </div>
 
                   <div className="px-4 py-5 sm:p-6">
-                    <div className="sm:flex sm:items-center: sm:justify-between ">
+                    <div className="flex items-center justify-between">
                       <h4 className="text-xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
                         Withdrawal
                       </h4>
@@ -877,13 +869,13 @@ export const ManageVault = ({ match }) => {
                       <div className="mt-4">
                         <Alert>
                           {startedStacking ? (
-                            <p className="text-sm text-blue-700">
+                            <p>
                               You cannot withdraw your collateral since it is stacked until Bitcoin
-                              block {unlockBurnHeight}. Unstack your collateral to unlock it for
-                              withdrawal.
+                              block {unlockBurnHeight}. After this block gets mined, you will need to
+                              manually unlock your vault to get access to your collateral.
                             </p>
                           ) : (
-                            <p className="text-sm text-blue-700">
+                            <p>
                               The next stacking cycle has not started yet. You can still choose to
                               opt-out of stacking your STX tokens. If you do so, you will not earn a
                               yield on your vault.
@@ -897,11 +889,9 @@ export const ManageVault = ({ match }) => {
                       vault?.revokedStacking ? (
                       <div className="mt-4">
                         <Alert>
-                          <div className="md:flex md:justify-between">
-                            <p className="text-sm text-blue-700">
-                              You have unstacked your collateral, you can choose to stack again.
-                            </p>
-                          </div>
+                          <p>
+                            You have unstacked your collateral. It is still stacking in PoX until Bitcoin block {unlockBurnHeight}. Once your cooldown cycle hits, you can unlock the collateral.
+                          </p>
                         </Alert>
                       </div>
                     ) : canStackCollateral && isVaultOwner ? (

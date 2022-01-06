@@ -29,28 +29,28 @@ type Props = {
 
 const configMap: Record<AlertType, AlertTypeConfig> = {
   [AlertType.WARNING]: {
-    wrapperClass: 'border-yellow-400 bg-yellow-50',
-    icon: <ExclamationIcon className="w-5 h-5 text-yellow-400" aria-hidden="true" />,
-    titleClass: 'text-yellow-800',
-    contentClass: 'text-yellow-700',
+    wrapperClass: 'border-yellow-400 bg-yellow-50 dark:bg-yellow-200',
+    icon: <ExclamationIcon className="w-5 h-5 text-yellow-400 dark:text-yellow-600" aria-hidden="true" />,
+    titleClass: 'text-yellow-800 dark:text-yellow-900',
+    contentClass: 'text-yellow-700 dark:text-yellow-800',
   },
   [AlertType.ERROR]: {
-    wrapperClass: 'border-red-400 bg-red-50',
-    icon: <XCircleIcon className="w-5 h-5 text-red-400" aria-hidden="true" />,
-    titleClass: 'text-red-800',
-    contentClass: 'text-red-700',
+    wrapperClass: 'border-red-400 bg-red-50 dark:bg-red-200',
+    icon: <XCircleIcon className="w-5 h-5 text-red-400 dark:text-red-600" aria-hidden="true" />,
+    titleClass: 'text-red-800 dark:text-red-900',
+    contentClass: 'text-red-700 dark:text-red-800',
   },
   [AlertType.SUCCESS]: {
-    wrapperClass: 'border-green-400 bg-green-50',
-    icon: <CheckCircleIcon className="w-5 h-5 text-green-400" aria-hidden="true" />,
-    titleClass: 'text-green-800',
-    contentClass: 'text-green-700',
+    wrapperClass: 'border-green-400 bg-green-50 dark:bg-green-200',
+    icon: <CheckCircleIcon className="w-5 h-5 text-green-400 dark:text-green-600" aria-hidden="true" />,
+    titleClass: 'text-green-800 dark:text-green-900',
+    contentClass: 'text-green-700 dark:text-green-800',
   },
   [AlertType.INFO]: {
-    wrapperClass: 'border-blue-400 bg-blue-50',
-    icon: <InformationCircleIcon className="w-5 h-5 text-blue-400" aria-hidden="true" />,
-    titleClass: 'text-blue-800',
-    contentClass: 'text-blue-700',
+    wrapperClass: 'border-blue-400 bg-blue-50 dark:bg-blue-200',
+    icon: <InformationCircleIcon className="w-5 h-5 text-blue-400 dark:text-blue-600" aria-hidden="true" />,
+    titleClass: 'text-blue-800 dark:text-blue-900',
+    contentClass: 'text-blue-700 dark:text-blue-800',
   },
 };
 

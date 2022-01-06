@@ -44,7 +44,7 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
                     </span>{' '}
                     <span className="text-base font-medium text-gray-500">%</span>
                   </p>
-                  <div className="flex items-center mt-4 text-sm text-gray-500">
+                  <div className="flex items-center mt-4 text-sm text-gray-500 dark:text-zinc-400">
                     Liquidation Ratio
                     <Tooltip
                       className="ml-2"
@@ -71,9 +71,9 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-zinc-600">
-                    <tr className="border-t border-gray-200">
+                    <tr className="border-t border-gray-200 dark:border-zinc-600">
                       <th
-                        className="px-4 py-5 text-sm font-normal text-left text-gray-500"
+                        className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
                         scope="row"
                       >
                         <div className="flex items-center">
@@ -91,15 +91,15 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
                         </div>
                       </th>
                       <td className="py-5 pr-4">
-                        <span className="block text-sm text-right text-gray-700">
+                        <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
                           {collateral.stabilityFeeApy / 100}%
                         </span>
                       </td>
                     </tr>
 
-                    <tr className="border-t border-gray-200">
+                    <tr className="border-t border-gray-200 dark:border-zinc-600">
                       <th
-                        className="px-4 py-5 text-sm font-normal text-left text-gray-500"
+                        className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
                         scope="row"
                       >
                         <div className="flex items-center">
@@ -117,21 +117,21 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
                         </div>
                       </th>
                       <td className="py-5 pr-4">
-                        <span className="block text-sm text-right text-gray-700">
+                        <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
                           {collateral.liquidationPenalty}%
                         </span>
                       </td>
                     </tr>
 
-                    <tr className="border-t border-gray-200">
+                    <tr className="border-t border-gray-200 dark:border-zinc-600">
                       <th
-                        className="px-4 py-5 text-sm font-normal text-left text-gray-500"
+                        className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
                         scope="row"
                       >
                         Current Debt
                       </th>
                       <td className="py-5 pr-4">
-                        <span className="block text-sm text-right text-gray-700">
+                        <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
                           $
                           {(collateral.totalDebt / 1000000).toLocaleString(undefined, {
                             minimumFractionDigits: 2,
@@ -141,15 +141,15 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
                       </td>
                     </tr>
 
-                    <tr className="border-t border-gray-200">
+                    <tr className="border-t border-gray-200 dark:border-zinc-600">
                       <th
-                        className="px-4 py-5 text-sm font-normal text-left text-gray-500"
+                        className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
                         scope="row"
                       >
                         Maximum Debt
                       </th>
                       <td className="py-5 pr-4">
-                        <span className="block text-sm text-right text-gray-700">
+                        <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
                           ${collateral.maximumDebt / 1000000000000} million
                         </span>
                       </td>
@@ -160,7 +160,7 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
                 <div
                   className={classNames(
                     collateralIdx < collateralItems.length - 1 ? 'py-5 border-b' : 'pt-5',
-                    'border-t border-gray-200 px-4'
+                    'border-t border-gray-200 dark:border-zinc-600 px-4'
                   )}
                 >
                   <RouterLink
@@ -198,7 +198,7 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
                   ))}
                 </tr>
               </thead>
-              <tbody className="border-t border-gray-200 divide-y divide-gray-200 dark:border-gray-700 dark:divide-zinc-600">
+              <tbody className="border-t border-gray-200 divide-y divide-gray-200 dark:border-zinc-600 dark:border-gray-700 dark:divide-zinc-600">
                 <tr>
                   <th
                     className="p-6 text-sm font-normal text-left text-gray-500 align-center"
@@ -313,7 +313,7 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
                 </tr>
               </tbody>
               <tfoot>
-                <tr className="border-t border-gray-200 dark:border-gray-700">
+                <tr className="border-t border-gray-200 dark:border-zinc-600 dark:border-gray-700">
                   <th className="sr-only" scope="row">
                     Choose your collateral
                   </th>

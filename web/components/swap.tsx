@@ -84,7 +84,8 @@ export const Swap: React.FC = () => {
           dikousda: account.dikousda.toString(),
           wstxusda: account.wstxusda.toString(),
           wstxdiko: account.wstxdiko.toString(),
-          wstxxbtc: account.wstxxbtc.toString()
+          wstxxbtc: account.wstxxbtc.toString(),
+          xbtcusda: account.xbtcusda.toString()
         },
       }));
     };
@@ -131,7 +132,7 @@ export const Swap: React.FC = () => {
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
         const ratio = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']);
-        const basePrice = Number((ratio * balanceX / balanceY).toFixed(2));
+        const basePrice = Number((ratio * balanceX / balanceY));
         setCurrentPrice(basePrice);
         setInverseDirection(false);
         setFoundPair(true);
@@ -173,7 +174,6 @@ export const Swap: React.FC = () => {
     }
 
     const inputWithoutFees = Number(tokenXAmount) * 0.997;
-
     let tokenYAmount = 0;
     let priceImpact = 0;
     const slippage = (100 - slippageTolerance) / 100;
@@ -223,6 +223,14 @@ export const Swap: React.FC = () => {
       setTokenXAmount(value);
     } else {
       setTokenYAmount(value);
+    }
+  };
+
+  const onSelectChange = (event: { target: { name: any; value: any } }) => {
+    const value = event.target.value;
+
+    if (value === 'Pool') {
+      window.location.href = '/pool';
     }
   };
 
@@ -345,6 +353,7 @@ export const Swap: React.FC = () => {
                       name="tabs"
                       className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                       defaultValue={tabs.find(tab => tab.current)?.name}
+                      onChange={onSelectChange}
                     >
                       {tabs.map(tab => (
                         <option key={tab.name}>{tab.name}</option>

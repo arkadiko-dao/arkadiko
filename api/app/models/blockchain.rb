@@ -183,7 +183,10 @@ class Blockchain < ApplicationRecord
 
     puts 'Arkadiko transaction found'
     function_name = result['contract_call']['function_name']
-    return if function_name == 'migrate-add-liquidity' || function_name == 'toggle-pair-enabled' || function_name == 'toggle-swap-shutdown'
+    return if function_name == 'migrate-add-liquidity' ||
+      function_name == 'toggle-pair-enabled' ||
+      function_name == 'toggle-swap-shutdown' ||
+      function_name == 'collect-fees'
 
     contract_address = id.split('.')[0]
     contract_name = id.split('.')[1]

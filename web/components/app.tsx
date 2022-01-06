@@ -38,6 +38,8 @@ export const getBalance = async (address: string) => {
     data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-diko::wstx-diko`];
   const lpStxXbtcBalance =
     data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-xbtc::wstx-xbtc`];
+  const lpXbtcUsdaBalance =
+    data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-xbtc-usda::xbtc-usda`];
   const xbtcBalance = data.fungible_tokens[`SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin::wrapped-bitcoin`];
   const welshBalance = data.fungible_tokens[`SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G.welshcorgicoin-token::welshcorgicoin`];
 
@@ -52,7 +54,8 @@ export const getBalance = async (address: string) => {
     dikousda: lpDikoUsdaBalance ? lpDikoUsdaBalance.balance : 0,
     wstxusda: lpStxUsdaBalance ? lpStxUsdaBalance.balance : 0,
     wstxdiko: lpStxDikoBalance ? lpStxDikoBalance.balance : 0,
-    wstxxbtc: lpStxXbtcBalance ? lpStxXbtcBalance.balance : 0
+    wstxxbtc: lpStxXbtcBalance ? lpStxXbtcBalance.balance : 0,
+    xbtcusda: lpXbtcUsdaBalance ? lpXbtcUsdaBalance.balance : 0
   };
 };
 
@@ -91,7 +94,8 @@ export const App: React.FC = () => {
         dikousda: account.dikousda.toString(),
         wstxusda: account.wstxusda.toString(),
         wstxdiko: account.wstxdiko.toString(),
-        wstxxbtc: account.wstxxbtc.toString()
+        wstxxbtc: account.wstxxbtc.toString(),
+        xbtcusda: account.xbtcusda.toString()
       },
     }));
   };

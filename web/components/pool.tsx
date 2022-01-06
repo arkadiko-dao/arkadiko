@@ -10,6 +10,14 @@ export const Pool: React.FC = () => {
     { name: 'Pool', href: '/pool', current: true },
   ];
 
+  const onSelectChange = (event: { target: { name: any; value: any } }) => {
+    const value = event.target.value;
+
+    if (value === 'Swap') {
+      window.location.href = '/swap';
+    }
+  };
+
   return (
     <Container>
       <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
@@ -25,7 +33,8 @@ export const Pool: React.FC = () => {
                     id="tabs"
                     name="tabs"
                     className="block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                    defaultValue={tabs.find(tab => tab.current).name}
+                    defaultValue={tabs.find(tab => tab.current)?.name}
+                    onChange={onSelectChange}
                   >
                     {tabs.map(tab => (
                       <option key={tab.name}>{tab.name}</option>
@@ -35,21 +44,19 @@ export const Pool: React.FC = () => {
                 <div className="hidden sm:block">
                   <nav className="flex space-x-4" aria-label="Tabs">
                     {tabs.map(tab => (
-                      <h2>
-                        <a
-                          key={tab.name}
-                          href={tab.href}
-                          className={classNames(
-                            tab.current
-                              ? 'bg-indigo-100 text-indigo-700'
-                              : 'text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-50',
-                            'px-3 py-2 text-lg font-headings rounded-md'
-                          )}
-                          aria-current={tab.current ? 'page' : undefined}
-                        >
-                          {tab.name}
-                        </a>
-                      </h2>
+                      <a
+                        key={tab.name}
+                        href={tab.href}
+                        className={classNames(
+                          tab.current
+                            ? 'bg-indigo-100 text-indigo-700'
+                            : 'text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-50',
+                          'px-3 py-2 text-lg font-headings rounded-md'
+                        )}
+                        aria-current={tab.current ? 'page' : undefined}
+                      >
+                        {tab.name}
+                      </a>
                     ))}
                   </nav>
                 </div>
@@ -72,6 +79,14 @@ export const Pool: React.FC = () => {
 
               <dl className="mt-6 space-y-6">
                 <PoolPosition key="token4" indexTokenX={2} indexTokenY={3} />
+              </dl>
+
+              <dl className="mt-6 space-y-6">
+                <PoolPosition key="token5" indexTokenX={3} indexTokenY={0} />
+              </dl>
+
+              <dl className="mt-6 space-y-6">
+                <PoolPosition key="token6" indexTokenX={2} indexTokenY={4} />
               </dl>
             </div>
 

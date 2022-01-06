@@ -55,7 +55,7 @@ export const StakeLpModal = ({
   };
 
   const stake = async () => {
-    const amount = uintCV(Number(stakeAmount) * 1000000);
+    const amount = uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0)));
     let contractName = 'arkadiko-stake-pool-diko-usda-v1-1';
     let tokenContract = 'arkadiko-swap-token-diko-usda';
     let ftContract = 'diko-usda';
@@ -71,6 +71,10 @@ export const StakeLpModal = ({
       contractName = 'arkadiko-stake-pool-wstx-xbtc-v1-1';
       tokenContract = 'arkadiko-swap-token-wstx-xbtc';
       ftContract = 'wstx-xbtc';
+    } else if (balanceName === 'xbtcusda') {
+      contractName = 'arkadiko-stake-pool-xbtc-usda-v1-1';
+      tokenContract = 'arkadiko-swap-token-xbtc-usda';
+      ftContract = 'xbtc-usda';
     }
     const postConditions = [
       makeStandardFungiblePostCondition(
