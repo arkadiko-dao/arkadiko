@@ -17,8 +17,6 @@ require "rails/test_unit/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-Dotenv::Railtie.load
-
 module Api
   class Application < Rails::Application
     # Use the responders controller from the responders gem
