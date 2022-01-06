@@ -27,9 +27,9 @@ class TokensController < ApplicationController
   private
 
     def find_pool(token)
-      if token.symbol == 'diko'
+      if token.symbol == 'DIKO'
         Pool.find(2)
-      elsif token.symbol == 'stx'
+      elsif token.symbol == 'STX'
         Pool.find(1)
       end
     end
