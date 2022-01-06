@@ -84,6 +84,10 @@ export const Pool: React.FC = () => {
               <dl className="mt-6 space-y-6">
                 <PoolPosition key="token5" indexTokenX={3} indexTokenY={0} />
               </dl>
+
+              <dl className="mt-6 space-y-6">
+                <PoolPosition key="token6" indexTokenX={2} indexTokenY={4} />
+              </dl>
             </div>
 
             <div className="flex items-start flex-1 mt-8">

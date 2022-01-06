@@ -47,6 +47,8 @@ export const Swap: React.FC = () => {
   const [loadingData, setLoadingData] = useState(true);
   const [insufficientBalance, setInsufficientBalance] = useState(false);
   const [exchangeRateSwitched, setExchangeRateSwitched] = useState(false);
+  const [swapLink, setSwapLink] = useState('');
+  const [pairEnabled, setPairEnabled] = useState(false);
 
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -80,6 +82,7 @@ export const Swap: React.FC = () => {
           stx: account.stx.toString(),
           xstx: account.xstx.toString(),
           stdiko: account.stdiko.toString(),
+          welsh: account.welsh.toString(),
           dikousda: account.dikousda.toString(),
           wstxusda: account.wstxusda.toString(),
           wstxdiko: account.wstxdiko.toString(),
@@ -128,11 +131,13 @@ export const Swap: React.FC = () => {
       console.log('Pair Details:', json3);
       if (json3['success']) {
         setCurrentPair(json3['value']['value']['value']);
+        setPairEnabled(json3['value']['value']['value']['enabled']['value']);
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
         const ratio = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']);
         const basePrice = Number((ratio * balanceX / balanceY));
         setCurrentPrice(basePrice);
+        setSwapLink(`swap/add/${tokenX.name}/${tokenY.name}`);
         setInverseDirection(false);
         setFoundPair(true);
         setLoadingData(false);
@@ -141,6 +146,7 @@ export const Swap: React.FC = () => {
         if (json4['success']) {
           console.log('found pair...', json4);
           setCurrentPair(json4['value']['value']['value']);
+          setPairEnabled(json3['value']['value']['value']['enabled']['value']);
           setInverseDirection(true);
           const balanceX = json4['value']['value']['value']['balance-x'].value;
           const balanceY = json4['value']['value']['value']['balance-y'].value;
@@ -149,6 +155,7 @@ export const Swap: React.FC = () => {
           setCurrentPrice(basePrice);
           setFoundPair(true);
           setLoadingData(false);
+          setSwapLink(`swap/add/${tokenY.name}/${tokenX.name}`);
         } else {
           setFoundPair(false);
           setLoadingData(false);
@@ -530,11 +537,11 @@ export const Swap: React.FC = () => {
                       <button
                         type="button"
                         disabled={
-                          loadingData || insufficientBalance || tokenYAmount === 0 || !foundPair
+                          loadingData || insufficientBalance || tokenYAmount === 0 || !foundPair || !pairEnabled
                         }
                         onClick={() => swapTokens()}
                         className={classNames(
-                          tokenYAmount === 0 || insufficientBalance || !foundPair
+                          !pairEnabled || tokenYAmount === 0 || insufficientBalance || !foundPair
                             ? 'bg-indigo-400 hover:bg-indigo-400 dark:text-indigo-600 cursor-not-allowed dark:bg-indigo-200'
                             : 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer',
                           'w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
@@ -542,6 +549,8 @@ export const Swap: React.FC = () => {
                       >
                         {loadingData
                           ? 'Loading...'
+                          : !pairEnabled
+                          ? 'Pair not enabled. Check back soon.'
                           : !foundPair
                           ? 'No liquidity for this pair. Try another one.'
                           : balanceSelectedTokenX === 0 || insufficientBalance
@@ -564,7 +573,7 @@ export const Swap: React.FC = () => {
                     <div className="w-full mt-3 text-center">
                       <RouterLink
                         className="text-sm font-medium text-indigo-700 rounded-sm dark:text-indigo-200 dark:focus:ring-indigo-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        to={`swap/add/${tokenX.name}/${tokenY.name}`}
+                        to={swapLink}
                       >
                         Add/remove liquidity on {tokenX.name}-{tokenY.name}
                       </RouterLink>
@@ -574,7 +583,7 @@ export const Swap: React.FC = () => {
               )}
             </div>
           </div>
-          {foundPair ? (
+          {foundPair && pairEnabled ? (
             <div className="w-full max-w-md p-4 pt-8 -mt-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
               <dl className="space-y-1">
                 <div className="grid grid-cols-2 gap-4">

@@ -22,17 +22,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: "Check contract"
-        uses: docker://hirosystems/clarinet:latest
+        uses: docker://hirosystems/clarinet:0.21.2
         with:
           entrypoint: "bash"
           args: -c "cd clarity && clarinet check"
       - name: "Execute test suite"
-        uses: docker://hirosystems/clarinet:latest
+        uses: docker://hirosystems/clarinet:0.21.2
         with:
           entrypoint: "bash"
-          args: -c "cd clarity && clarinet test --coverage"
-      - name: "Export code coverage"
-        uses: codecov/codecov-action@v1
-        with:
-          files: ./coverage.lcov
-          verbose: true
+          args: -c "cd clarity && clarinet test"

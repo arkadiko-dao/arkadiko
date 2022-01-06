@@ -11,9 +11,8 @@ const txOptions = {
   functionName: 'toggle-pair-enabled',
   functionArgs: [
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wrapped-stx-token'),
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-token'),
+    tx.contractPrincipalCV('SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G', 'welshcorgicoin-token')
   ],
-  nonce: new BN(283, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network
