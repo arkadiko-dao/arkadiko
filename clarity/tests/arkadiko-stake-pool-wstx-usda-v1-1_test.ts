@@ -784,52 +784,52 @@ Clarinet.test({
   }
 });
 
-// Clarinet.test({
-//   name: "stake-pool-wstx-usda - Reward distribution over time",
-//   async fn(chain: Chain, accounts: Map<string, Account>) {
-//     let deployer = accounts.get("deployer")!;
-//     let wallet_1 = accounts.get("wallet_1")!;
+Clarinet.test({
+  name: "stake-pool-wstx-usda - Reward distribution over time",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
 
-//     let swap = new Swap(chain, deployer);
-//     let stakeRegistry = new StakeRegistry(chain, deployer);
-//     let stakePoolStxUsda = new StakePoolStxUsda(chain, deployer);
+    let swap = new Swap(chain, deployer);
+    let stakeRegistry = new StakeRegistry(chain, deployer);
+    let stakePoolStxUsda = new StakePoolStxUsda(chain, deployer);
 
-//     // Create swap pair to get LP tokens
-//     let result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
-//     result.expectOk().expectBool(true);
-//     result = swap.addToPosition(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, 500, 100);
-//     result.expectOk().expectBool(true);
+    // Create swap pair to get LP tokens
+    let result = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, "wSTX-USDA", 500, 100);
+    result.expectOk().expectBool(true);
+    result = swap.addToPosition(wallet_1, wstxTokenAddress, usdaTokenAddress, wstxUsdaPoolAddress, 500, 100);
+    result.expectOk().expectBool(true);
 
-//     // Stake funds
-//     stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 223.606797)
+    // Stake funds
+    stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 223.606797)
 
-//     for (let index = 0; index < 390; index++) {
+    for (let index = 0; index < 390; index++) {
 
-//       // Advance 1 week
-//       chain.mineEmptyBlock(144 * 7);
+      // Advance 1 week
+      chain.mineEmptyBlock(144 * 7);
 
-//       // Increase cumm reward per stake
-//       stakePoolStxUsda.increaseCumulativeRewardPerStake();
+      // Increase cumm reward per stake
+      stakePoolStxUsda.increaseCumulativeRewardPerStake();
 
-//       // Check pending rewards
-//       let call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-usda-v1-1");
+      // Check pending rewards
+      let call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-usda-v1-1");
       
-//       // Print rewards, for docs
-//       // console.log(call.result.expectOk())
+      // Print rewards, for docs
+      // console.log(call.result.expectOk())
 
-//       // Check pending rewards after each year
-//       switch (index)
-//       {
-//         // Pool only gets 25% from total rewards
-//         case 53: call.result.expectOk().expectUintWithDecimals(12637848.016506); break; // 50 mio total rewards
-//         case 106: call.result.expectOk().expectUintWithDecimals(18721123.986088); break; // 50 + (50/2) = 75 mio total rewards
-//         case 159: call.result.expectOk().expectUintWithDecimals(21723258.907984); break; 
-//         case 212: call.result.expectOk().expectUintWithDecimals(23205335.610585); break; 
-//         case 265: call.result.expectOk().expectUintWithDecimals(24011526.997248); break; 
-//         case 318: call.result.expectOk().expectUintWithDecimals(24760204.988807); break; 
-//         case 371: call.result.expectOk().expectUintWithDecimals(25508882.980367); break; 
-//         default: break;
-//       }
-//     }
-//   }
-// });
+      // Check pending rewards after each year
+      switch (index)
+      {
+        // Pool only gets 25% from total rewards
+        case 53: call.result.expectOk().expectUintWithDecimals(12637848.016506); break; // 50 mio total rewards
+        case 106: call.result.expectOk().expectUintWithDecimals(18721123.986088); break; // 50 + (50/2) = 75 mio total rewards
+        case 159: call.result.expectOk().expectUintWithDecimals(21723258.907984); break; 
+        case 212: call.result.expectOk().expectUintWithDecimals(23205335.610585); break; 
+        case 265: call.result.expectOk().expectUintWithDecimals(24011526.997248); break; 
+        case 318: call.result.expectOk().expectUintWithDecimals(24760204.988807); break; 
+        case 371: call.result.expectOk().expectUintWithDecimals(25508882.980367); break; 
+        default: break;
+      }
+    }
+  }
+});
