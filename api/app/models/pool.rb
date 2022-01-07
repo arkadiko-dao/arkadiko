@@ -51,7 +51,7 @@ class Pool < ApplicationRecord
     # TODO: fix performance
     events.map do |event|
       if token_x_name.include?('Wrapped-Bitcoin') || token_y_name.include?('Wrapped-Bitcoin')
-        [event['event_at'].to_i * 1000, (event['token_y_amount'].to_f / (event['token_x_amount'] / 100).to_f)]
+        [event['event_at'].to_i * 1000, (event['token_y_amount'].to_f / (event['token_x_amount'] * 100).to_f)]
       else
         [event['event_at'].to_i * 1000, (event['token_y_amount'].to_f / event['token_x_amount'].to_f)]
       end
