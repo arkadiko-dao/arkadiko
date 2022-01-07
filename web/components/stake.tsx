@@ -35,8 +35,10 @@ import {
 import { Placeholder } from './ui/placeholder';
 import { Tooltip } from '@blockstack/ui';
 import { Alert } from './ui/alert';
+import axios from 'axios';
 
 export const Stake = () => {
+  const apiUrl = 'https://arkadiko-api.herokuapp.com';
   const [state, setState] = useContext(AppContext);
   const stxAddress = useSTXAddress();
   const [showStakeModal, setShowStakeModal] = useState(false);
@@ -83,6 +85,8 @@ export const Stake = () => {
   const [dikoPrice, setDikoPrice] = useState(0);
   const [stxPrice, setStxPrice] = useState(0);
   const [usdaPrice, setUsdaPrice] = useState(0);
+  const [currentBlock, setCurrentBlock] = useState(0);
+  const [stDikoSupply, setStDikoSupply] = useState(0);
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -94,13 +98,17 @@ export const Stake = () => {
   }, [state.currentTxStatus]);
 
   useEffect(() => {
-    const fetchPrices = async () => {
-      setStxPrice(await getPrice('STX'));
-      setDikoPrice(await getPrice('DIKO'));
-      setUsdaPrice(await getPrice('USDA'));
+    const fetchStakeData = async () => {
+      const response = await axios.get(`${apiUrl}/api/v1/pages/stake`);
+      const data = response.data;
+      setStDikoSupply(data.stdiko.total_supply);
+      setCurrentBlock(data.block_height);
+      setDikoPrice(data.diko.last_price);
+      setStxPrice(data.wstx.last_price);
+      setUsdaPrice(data.usda.last_price);
     };
 
-    fetchPrices();
+    fetchStakeData();
   }, []);
 
   useEffect(() => {
@@ -273,27 +281,12 @@ export const Stake = () => {
         state.balance['xbtcusda'] == undefined ||
         stxPrice === 0 ||
         dikoPrice === 0 ||
-        usdaPrice === 0
+        usdaPrice === 0 ||
+        currentBlock === 0 ||
+        stDikoSupply
       ) {
         return;
       }
-
-      // Get current block height
-      const client = getRPCClient();
-      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
-      const data = await response.json();
-      const currentBlock = data['stacks_tip_height'];
-
-      // User staked DIKO
-      const stDikoCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'stdiko-token',
-        functionName: 'get-total-supply',
-        functionArgs: [],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const stDikoData = cvToJSON(stDikoCall).value.value;
 
       const userStakedDikoCall = await callReadOnlyFunction({
         contractAddress,
@@ -302,7 +295,7 @@ export const Stake = () => {
         functionArgs: [
           contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
           standardPrincipalCV(stxAddress || ''),
-          uintCV(stDikoData),
+          uintCV(stDikoSupply),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -543,7 +536,7 @@ export const Stake = () => {
         functionArgs: [
           contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
           uintCV(1000000 * 10),
-          uintCV(stDikoData),
+          uintCV(stDikoSupply),
         ],
         senderAddress: stxAddress || '',
         network: network,
