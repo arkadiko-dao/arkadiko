@@ -41,6 +41,15 @@ export const tokenList = [
     address: 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR',
     decimals: 8
   },
+  {
+    id: 5,
+    name: 'WELSH',
+    nameInPair: 'welsh',
+    logo: '/assets/tokens/welsh.png',
+    listed: true,
+    address: 'SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G',
+    decimals: 6
+  },
 ];
 
 type Token = {

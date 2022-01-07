@@ -16,12 +16,12 @@ const createPair = async () => {
     contractName: CONTRACT_NAME,
     functionName: FUNCTION_NAME,
     functionArgs: [
-      tx.contractPrincipalCV('SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR', 'Wrapped-Bitcoin'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'usda-token'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-swap-token-xbtc-usda'),
-      tx.stringAsciiCV('xBTC-USDA'),
-      tx.uintCV(new BN(287514)),
-      tx.uintCV(new BN(133694000))
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wrapped-stx-token'),
+      tx.contractPrincipalCV('SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G', 'welshcorgicoin-token'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-swap-token-wstx-welsh'),
+      tx.stringAsciiCV('wSTX-WELSH'),
+      tx.uintCV(new BN(180000)), // 0.18 STX
+      tx.uintCV(new BN(1000000000)) // 1000 WELSH
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     nonce: new BN(nonce),

@@ -39,7 +39,8 @@ export const ViewProposal = ({ match }) => {
   const [dikoVoted, setDikoVoted] = useState('');
   const [stdikoVoted, setStdikoVoted] = useState('');
 
-  const CONTRACT_NAME = match.params.id <= 2 ? 'arkadiko-governance-v1-1' : 'arkadiko-governance-v2-1';
+  const CONTRACT_NAME =
+    match.params.id <= 2 ? 'arkadiko-governance-v1-1' : 'arkadiko-governance-v2-1';
 
   useEffect(() => {
     if (state.currentTxStatus === 'success') {
@@ -68,11 +69,11 @@ export const ViewProposal = ({ match }) => {
       data = json.value;
 
       const yesVotes = Number(data['yes-votes'].value);
-      const noVotes = Number(data['no-votes'].value)
+      const noVotes = Number(data['no-votes'].value);
       const totalVotes = (yesVotes + noVotes) / 1000000;
 
-      let forVotesPercentage = ((yesVotes / totalVotes / 1000000) * 100) || 0;
-      let againstVotesPercentage = ((noVotes / totalVotes / 1000000) * 100) || 0;
+      let forVotesPercentage = (yesVotes / totalVotes / 1000000) * 100 || 0;
+      let againstVotesPercentage = (noVotes / totalVotes / 1000000) * 100 || 0;
 
       forVotesPercentage = Math.round(forVotesPercentage * 100) / 100;
       againstVotesPercentage = Math.round(againstVotesPercentage * 100) / 100;
@@ -621,7 +622,9 @@ export const ViewProposal = ({ match }) => {
                       </dd>
                     </div>
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="text-sm font-medium text-gray-500 dark:text-zinc-400">Start date</dt>
+                      <dt className="text-sm font-medium text-gray-500 dark:text-zinc-400">
+                        Start date
+                      </dt>
                       <dd className="mt-1 text-sm text-gray-900 dark:text-zinc-100 sm:mt-0 sm:col-span-2">
                         {isLoading ? (
                           <Placeholder
@@ -635,7 +638,9 @@ export const ViewProposal = ({ match }) => {
                       </dd>
                     </div>
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="text-sm font-medium text-gray-500 dark:text-zinc-400">End date</dt>
+                      <dt className="text-sm font-medium text-gray-500 dark:text-zinc-400">
+                        End date
+                      </dt>
                       <dd className="mt-1 text-sm text-gray-900 dark:text-zinc-100 sm:mt-0 sm:col-span-2">
                         {isLoading ? (
                           <Placeholder
@@ -666,7 +671,7 @@ export const ViewProposal = ({ match }) => {
                     <dt className="inline-flex items-center order-2 mx-auto mt-2 text-lg font-medium leading-6">
                       <span
                         className={classNames(
-                          proposal.forVotes > proposal.against && !proposal.isOpen
+                          Number(proposal.forVotes) > Number(proposal.against) && !proposal.isOpen
                             ? 'bg-green-100 text-green-800 dark:bg-green-200'
                             : 'bg-transparent text-gray-500 dark:text-zinc-200',
                           'inline-flex items-center px-3 mt-3 py-1.5 rounded-full'
@@ -674,7 +679,7 @@ export const ViewProposal = ({ match }) => {
                       >
                         <ThumbUpIcon
                           className={classNames(
-                            proposal.forVotes > proposal.against && !proposal.isOpen
+                            Number(proposal.forVotes) > Number(proposal.against) && !proposal.isOpen
                               ? 'text-green-800'
                               : 'text-gray-400',
                             'block w-6 h-6 mr-2'
@@ -696,7 +701,9 @@ export const ViewProposal = ({ match }) => {
                           <p className="text-3xl font-bold text-indigo-600">
                             {proposal.forVotesPercentage}%
                           </p>
-                          <p className="mt-1 font-semibold text-gray-600 dark:text-zinc-300">{proposal.forVotes / 1000000}</p>
+                          <p className="mt-1 font-semibold text-gray-600 dark:text-zinc-300">
+                            {proposal.forVotes / 1000000}
+                          </p>
                         </>
                       )}
                     </dd>
@@ -705,7 +712,7 @@ export const ViewProposal = ({ match }) => {
                     <dt className="inline-flex items-center order-2 mx-auto mt-2 text-lg font-medium leading-6 text-gray-500">
                       <span
                         className={classNames(
-                          proposal.against > proposal.forVotes && !proposal.isOpen
+                          Number(proposal.against) > Number(proposal.forVotes) && !proposal.isOpen
                             ? 'bg-red-100 text-red-800 dark:bg-red-200'
                             : 'bg-transparent text-gray-500 dark:text-zinc-200',
                           'inline-flex items-center px-3 mt-3 py-1.5 rounded-full'
@@ -713,7 +720,7 @@ export const ViewProposal = ({ match }) => {
                       >
                         <ThumbDownIcon
                           className={classNames(
-                            proposal.against > proposal.forVotes && !proposal.isOpen
+                            Number(proposal.against) > Number(proposal.forVotes) && !proposal.isOpen
                               ? 'text-red-800'
                               : 'text-gray-400',
                             'block w-6 h-6 mr-2'
@@ -735,7 +742,9 @@ export const ViewProposal = ({ match }) => {
                           <p className="text-3xl font-bold text-indigo-600">
                             {proposal.againstVotesPercentage}%
                           </p>
-                          <p className="mt-1 font-semibold text-gray-600 dark:text-zinc-300">{proposal.against / 1000000}</p>
+                          <p className="mt-1 font-semibold text-gray-600 dark:text-zinc-300">
+                            {proposal.against / 1000000}
+                          </p>
                         </>
                       )}
                     </dd>
@@ -751,7 +760,9 @@ export const ViewProposal = ({ match }) => {
                   ) : (
                     <p className="text-sm text-center text-gray-500 dark:text-zinc-400">
                       Total votes:{' '}
-                      <span className="font-semibold text-gray-700 dark:text-zinc-200">{proposal.totalVotes}</span>
+                      <span className="font-semibold text-gray-700 dark:text-zinc-200">
+                        {proposal.totalVotes}
+                      </span>
                     </p>
                   )}
                 </div>

@@ -241,4 +241,19 @@ class Blockchain < ApplicationRecord
       )
     end
   end
+
+  def update_oracle_prices
+    url = "#{STACKS_MAINNET_NODE_URL}/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-oracle-v1-1/transactions?limit=50&offset=0"
+    puts url
+    response = HTTParty.get(url)&.parsed_response['results']
+
+    response.first(6).reverse.each do |res|
+      next if res['contract_call'].nil?
+      next unless res['tx_status'] == 'success'
+
+      token_name = res['contract_call']['function_args'][0]['repr'].gsub("\"", '')
+      token_price = res['contract_call']['function_args'][1]['repr']
+      Token.find_by(symbol: token_name)&.update(last_price: token_price, price_last_updated: res['block_height'])
+    end
+  end
 end
