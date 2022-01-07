@@ -49,7 +49,7 @@ class Pool < ApplicationRecord
   def fetch_prices
     events = swap_events.order('event_at ASC').where("function_name IN (?)", ['swap-x-for-y', 'swap-y-for-x'])
     # TODO: fix performance
-    events.map{|event| [event['event_at'].to_i * 1000, (event['token_y_amount'].to_f / event['token_x_amount'].to_f).round(2)]}
+    events.map{|event| [event['event_at'].to_i * 1000, (event['token_y_amount'].to_f / event['token_x_amount'].to_f)]}
   end
 
   def tvl
