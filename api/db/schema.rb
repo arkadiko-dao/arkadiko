@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_05_195430) do
+ActiveRecord::Schema.define(version: 2022_01_07_085326) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,6 +33,16 @@ ActiveRecord::Schema.define(version: 2022_01_05_195430) do
     t.datetime "tvl_updated_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "token_y_id"
+    t.bigint "token_x_id"
+    t.bigint "swap_token_id"
+    t.bigint "balance_x"
+    t.bigint "balance_y"
+    t.bigint "shares_total"
+    t.boolean "enabled"
+    t.index ["swap_token_id"], name: "index_pools_on_swap_token_id"
+    t.index ["token_x_id"], name: "index_pools_on_token_x_id"
+    t.index ["token_y_id"], name: "index_pools_on_token_y_id"
   end
 
   create_table "swap_events", force: :cascade do |t|
@@ -94,4 +104,7 @@ ActiveRecord::Schema.define(version: 2022_01_05_195430) do
     t.index ["vault_id"], name: "index_vaults_on_vault_id"
   end
 
+  add_foreign_key "pools", "tokens", column: "swap_token_id"
+  add_foreign_key "pools", "tokens", column: "token_x_id"
+  add_foreign_key "pools", "tokens", column: "token_y_id"
 end

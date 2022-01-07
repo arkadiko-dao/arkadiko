@@ -6,6 +6,19 @@ class PagesController < ApplicationController
   # Fetch stDIKO supply
   # Fetch all pairs on pool
   def stake
-    render json: {}
+    block_height = Blockchain.first.last_block_height_imported
+    hsh = { block_height: block_height }
+    tokens = Token.where(symbol: [
+      'wSTX', 'DIKO', 'USDA', 'stDIKO',
+      'ARKV1WSTXXBTC', 'ARKV1XBTCUSDA',
+      'ARKV1WSTXDIKO', 'ARKV1WSTXUSDA',
+      'ARKV1DIKOUSDA'
+    ])
+    tokens.find_each do |token|
+      hsh[token.symbol.downcase] = token
+    end
+    pools = Pool.all
+
+    render json: hsh
   end
 end

@@ -14,10 +14,21 @@
 #  tvl_updated_at     :datetime
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
+#  token_y_id         :bigint
+#  token_x_id         :bigint
+#  swap_token_id      :bigint
+#  balance_x          :bigint
+#  balance_y          :bigint
+#  shares_total       :bigint
+#  enabled            :boolean
 #
 class Pool < ApplicationRecord
   validates :token_x_name, presence: true
   validates :token_y_name, presence: true
+
+  belongs_to :token_x, class_name: "Token"
+  belongs_to :token_y, class_name: "Token"
+  belongs_to :swap_token, class_name: "Token"
 
   has_many :swap_events
 
