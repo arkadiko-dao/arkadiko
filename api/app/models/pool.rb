@@ -50,7 +50,9 @@ class Pool < ApplicationRecord
     events = swap_events.order('event_at ASC').where("function_name IN (?)", ['swap-x-for-y', 'swap-y-for-x'])
     # TODO: fix performance
     events.map do |event|
-      if token_x_name.include?('Wrapped-Bitcoin') || token_y_name.include?('Wrapped-Bitcoin')
+      if token_x_name.include?('Wrapped-Bitcoin')
+        [event['event_at'].to_i * 1000, (event['token_y_amount'].to_f / (event['token_x_amount'] / 100).to_f)]
+      elsif token_y_name.include?('Wrapped-Bitcoin')
         [event['event_at'].to_i * 1000, (event['token_y_amount'].to_f / (event['token_x_amount'] * 100).to_f)]
       else
         [event['event_at'].to_i * 1000, (event['token_y_amount'].to_f / event['token_x_amount'].to_f)]
