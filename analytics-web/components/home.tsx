@@ -44,18 +44,21 @@ export const Home: React.FC = () => {
       const response = await axios.get(`${apiUrl}/api/v1/vaults`);
       setVaultData(response.data);
     };
+    const fetchDikoPrice = async () => {
+      const dikoResponse = await axios.get(`${apiUrl}/api/v1/pools/2/prices`);
+      const prices = dikoResponse.data.prices;
+      setLastDikoPrice(prices[prices.length - 1][1].toFixed(2));
+    }
 
     fetchPools();
     fetchVaults();
+    fetchDikoPrice();
   }, []);
 
   useEffect(() => {
     const fetchPrices = async () => {
       const response = await axios.get(`${apiUrl}/api/v1/pools/${tokenGraph.id}/prices`);
       const prices = response.data.prices;
-
-      const dikoResponse = await axios.get(`${apiUrl}/api/v1/pools/2/prices`);
-      setLastDikoPrice(dikoResponse.data.prices[prices.length - 1][1].toFixed(2));
 
       let decimals = 6;
       if (tokenGraph['name'].includes('xBTC')) {
