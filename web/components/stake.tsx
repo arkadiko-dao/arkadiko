@@ -106,6 +106,10 @@ export const Stake = () => {
     const fetchStakeData = async () => {
       const response = await axios.get(`${apiUrl}/api/v1/pages/stake`);
       const data = response.data;
+      // pools
+      
+
+      // stake data
       setStDikoSupply(data.stdiko.total_supply);
       setTotalDikoStaked(data.diko.total_staked / 1000000);
       setTotalDikoUsdaStaked(data.arkv1dikousda.total_staked / 1000000);
@@ -114,6 +118,8 @@ export const Stake = () => {
       setTotalStxXbtcStaked(data.arkv1wstxxbtc.total_staked / 1000000);
       setTotalXbtcUsdaStaked(data.arkv1xbtcusda.total_staked / 1000000);
       setCurrentBlock(data.block_height);
+
+      // prices
       setDikoPrice(data.diko.last_price);
       setStxPrice(data.wstx.last_price);
       setUsdaPrice(data.usda.last_price);
