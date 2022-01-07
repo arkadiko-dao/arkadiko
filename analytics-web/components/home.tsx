@@ -57,6 +57,10 @@ export const Home: React.FC = () => {
       const dikoResponse = await axios.get(`${apiUrl}/api/v1/pools/2/prices`);
       setLastDikoPrice(dikoResponse.data.prices[prices.length - 1][1].toFixed(2));
 
+      let decimals = 6;
+      if (tokenGraph['name'].includes('xBTC')) {
+        decimals = 8;
+      }
       setHighchartsOptions({
         rangeSelector: {
           selected: 0
@@ -78,7 +82,7 @@ export const Home: React.FC = () => {
           enabled: false
         },
         tooltip: {
-          valueDecimals: 6,
+          valueDecimals: decimals,
           backgroundColor: '#314155',
           borderWidth: 0,
           borderRadius: 8,
