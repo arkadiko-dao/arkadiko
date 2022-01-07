@@ -18,6 +18,9 @@ class PagesController < ApplicationController
       hsh[token.symbol.downcase] = token
     end
     pools = Pool.all
+    pools.find_each do |pool|
+      hsh["#{pool.token_x_name}/#{pool.token_y_name}"] = pool
+    end
 
     render json: hsh
   end
