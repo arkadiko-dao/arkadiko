@@ -15,6 +15,8 @@ const tokenToName = (token: string) => {
     return 'USDA';
   } else if (token === 'Wrapped-Bitcoin') {
     return 'xBTC';
+  } else if (token === 'welshcorgicoin-token') {
+    return 'WELSH';
   } else {
     return '';
   }
