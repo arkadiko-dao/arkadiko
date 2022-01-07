@@ -18,7 +18,7 @@ export const Home: React.FC = () => {
   const tokenPrices = [
     { id: 1, name: 'STX/USDA' },
     { id: 2, name: 'DIKO/USDA' },
-    { id: 3, name: 'DIKO/STX' },
+    { id: 3, name: 'STX/DIKO' },
     { id: 4, name: 'STX/xBTC' },
     { id: 5, name: 'xBTC/USDA' },
     { id: 6, name: 'STX/WELSH' },
