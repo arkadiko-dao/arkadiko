@@ -3,9 +3,7 @@ import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
 import { classNames } from '@common/class-names';
 
-
 export function TokenPriceSelect({ tokenPrices, selected, setSelected }: Props) {
-
   return (
     <Listbox value={selected} onChange={setSelected}>
       {({ open }) => (
@@ -27,7 +25,7 @@ export function TokenPriceSelect({ tokenPrices, selected, setSelected }: Props) 
               leaveTo="opacity-0"
             >
               <Listbox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                {tokenPrices.map((token) => (
+                {tokenPrices.map((token:any) => (
                   <Listbox.Option
                     key={token.id}
                     className={({ active }) =>

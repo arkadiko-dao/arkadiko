@@ -53,7 +53,9 @@ export const Home: React.FC = () => {
     const fetchPrices = async () => {
       const response = await axios.get(`${apiUrl}/api/v1/pools/${tokenGraph.id}/prices`);
       const prices = response.data.prices;
-      setLastDikoPrice(prices[prices.length - 1][1]);
+
+      const dikoResponse = await axios.get(`${apiUrl}/api/v1/pools/2/prices`);
+      setLastDikoPrice(dikoResponse.data.prices[prices.length - 1][1].toFixed(2));
 
       setHighchartsOptions({
         rangeSelector: {
@@ -76,6 +78,7 @@ export const Home: React.FC = () => {
           enabled: false
         },
         tooltip: {
+          valueDecimals: 6,
           backgroundColor: '#314155',
           borderWidth: 0,
           borderRadius: 8,
