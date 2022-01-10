@@ -81,6 +81,7 @@ export const Stake = () => {
   const [dikoUsdaPoolInfo, setDikoUsdaPoolInfo] = useState(0);
   const [stxXbtcPoolInfo, setStxXbtcPoolInfo] = useState(0);
   const [xbtcUsdaPoolInfo, setXbtcUsdaPoolInfo] = useState(0);
+  const [loadingDikoToStDiko, setLoadingDikoToStDiko] = useState(true);
   const [stDikoToDiko, setStDikoToDiko] = useState(0);
   const [dikoPrice, setDikoPrice] = useState(0);
   const [stxPrice, setStxPrice] = useState(0);
@@ -324,6 +325,26 @@ export const Stake = () => {
       return userStakedDikoData;
     };
 
+    const getDikoToStDiko = async () => {
+      const stDikoToDikoCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-stake-pool-diko-v1-2',
+        functionName: 'diko-for-stdiko',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          uintCV(1000000 * 10),
+          uintCV(stDikoSupply),
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const stDikoToDiko = cvToJSON(stDikoToDikoCall).value.value / 10;
+      setStDikoToDiko(Number(stDikoToDiko) / 1000000);
+      setLoadingDikoToStDiko(false);
+
+      return stDikoToDiko;
+    };
+
     const getData = async () => {
       if (
         state.balance['dikousda'] == undefined ||
@@ -339,7 +360,6 @@ export const Stake = () => {
       ) {
         return;
       }
-      console.log(state.balance);
 
       const totalStakingRewardsYear1 = 23500000;
       const dikoPoolRewards = totalStakingRewardsYear1 * 0.1;
@@ -373,11 +393,12 @@ export const Stake = () => {
       setLoadingApy(false);
 
       // User staked amounts
-      const [_, userStakedData, userXbtcStakedData, userXbtcUsdaStakedData] = await Promise.all([
+      const [_, userStakedData, userXbtcStakedData, userXbtcUsdaStakedData, stDiko] = await Promise.all([
         getStakedDiko(),
         getStakingData(),
         getXbtcStakingData(),
-        getXbtcUsdaStakingData()
+        getXbtcUsdaStakingData(),
+        getDikoToStDiko()
       ]);
 
       // LP value
@@ -480,22 +501,7 @@ export const Stake = () => {
         setDikoCooldown(text);
         setCooldownRunning(true);
       }
-
-      const stDikoToDikoCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-stake-pool-diko-v1-2',
-        functionName: 'diko-for-stdiko',
-        functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-          uintCV(1000000 * 10),
-          uintCV(stDikoSupply),
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const stDikoToDiko = cvToJSON(stDikoToDikoCall).value.value / 10;
-      setStDikoToDiko(Number(stDikoToDiko) / 1000000);
-      setLoadingData(false);
+      setLoadingData(false);      
     };
     if (mounted) {
       void checkUnstakedTokens();
@@ -915,7 +921,7 @@ export const Stake = () => {
                     </div>
                     <div className="mt-3 md:mt-0">
                       <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">stDIKO</p>
-                      {loadingData ? (
+                      {loadingDikoToStDiko ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
                         <div>
