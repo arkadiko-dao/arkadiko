@@ -451,6 +451,7 @@ export const Stake = () => {
       setLpStxDikoPendingRewards(stxDikoLpPendingRewards);
       setLpStxXbtcPendingRewards(stxXbtcLpPendingRewards);
       setLpXbtcUsdaPendingRewards(xbtcUsdaLpPendingRewards);
+      setLoadingData(false);      
 
       const dikoCooldownInfo = await callReadOnlyFunction({
         contractAddress,
@@ -501,7 +502,6 @@ export const Stake = () => {
         setDikoCooldown(text);
         setCooldownRunning(true);
       }
-      setLoadingData(false);      
     };
     if (mounted) {
       void checkUnstakedTokens();
