@@ -74,12 +74,12 @@ export const Stake = () => {
   const [cooldownRunning, setCooldownRunning] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const [hasUnstakedTokens, setHasUnstakedTokens] = useState(false);
+  const [poolInfo, setPoolInfo] = useState({});
   const [stxDikoPoolInfo, setStxDikoPoolInfo] = useState(0);
   const [stxUsdaPoolInfo, setStxUsdaPoolInfo] = useState(0);
   const [dikoUsdaPoolInfo, setDikoUsdaPoolInfo] = useState(0);
   const [stxXbtcPoolInfo, setStxXbtcPoolInfo] = useState(0);
   const [xbtcUsdaPoolInfo, setXbtcUsdaPoolInfo] = useState(0);
-  const [missedLpRewards, setMissedLpRewards] = useState(0);
   const [stDikoToDiko, setStDikoToDiko] = useState(0);
   const [dikoPrice, setDikoPrice] = useState(0);
   const [stxPrice, setStxPrice] = useState(0);
@@ -107,7 +107,13 @@ export const Stake = () => {
       const response = await axios.get(`${apiUrl}/api/v1/pages/stake`);
       const data = response.data;
       // pools
-      
+      let poolInfo = {};
+      poolInfo["wrapped-stx-token/usda-token"] = data["wrapped-stx-token/usda-token"];
+      poolInfo["arkadiko-token/usda-token"] = data["arkadiko-token/usda-token"];
+      poolInfo["wrapped-stx-token/arkadiko-token"] = data["wrapped-stx-token/arkadiko-token"];
+      poolInfo["wrapped-stx-token/Wrapped-Bitcoin"] = data["wrapped-stx-token/Wrapped-Bitcoin"];
+      poolInfo["Wrapped-Bitcoin/usda-token"] = data["Wrapped-Bitcoin/usda-token"];
+      setPoolInfo(poolInfo);
 
       // stake data
       setStDikoSupply(data.stdiko.total_supply);
@@ -140,28 +146,6 @@ export const Stake = () => {
       ) {
         setHasUnstakedTokens(true);
       }
-    };
-
-    const fetchMissedLpRewards = async () => {
-      const stakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-stake-lp-rewards',
-        functionName: 'get-diko-by-wallet',
-        functionArgs: [standardPrincipalCV(stxAddress || '')],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const value = Number(cvToJSON(stakedCall).value);
-
-      const stakedCall2 = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-stake-lp-rewards-2',
-        functionName: 'get-diko-by-wallet',
-        functionArgs: [standardPrincipalCV(stxAddress || '')],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      return value + Number(cvToJSON(stakedCall2).value);
     };
 
     const fetchLpPendingRewards = async (poolContract: string) => {
@@ -219,20 +203,8 @@ export const Stake = () => {
       }
 
       // Get pair details
-      const pairDetailsCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-swap-v2-1',
-        functionName: 'get-pair-details',
-        functionArgs: [
-          contractPrincipalCV(tokenXAddress, tokenXContract),
-          contractPrincipalCV(tokenYAddress, tokenYContract),
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const pairDetails = cvToJSON(pairDetailsCall).value.value.value;
-
-      if (!cvToJSON(pairDetailsCall)['success']) {
+      const pairDetails = poolInfo[`${tokenXContract}/${tokenYContract}`];
+      if (!pairDetails) {
         return {
           tokenX: tokenXName,
           tokenY: tokenYName,
@@ -246,9 +218,9 @@ export const Stake = () => {
       }
 
       // Calculate user balance
-      const balanceX = pairDetails['balance-x'].value;
-      const balanceY = pairDetails['balance-y'].value;
-      const totalTokens = pairDetails['shares-total'].value;
+      const balanceX = pairDetails['balance_x'];
+      const balanceY = pairDetails['balance_y'];
+      const totalTokens = pairDetails['shares_total'];
       const decimalRatioX = 1000000 / Math.pow(10, tokenXDecimals);
       const decimalRatioY = 1000000 / Math.pow(10, tokenYDecimals);
 
@@ -486,9 +458,6 @@ export const Stake = () => {
         setDikoCooldown(text);
         setCooldownRunning(true);
       }
-
-      const missedLpRewards = await fetchMissedLpRewards();
-      setMissedLpRewards(missedLpRewards / 1000000);
 
       const stDikoToDikoCall = await callReadOnlyFunction({
         contractAddress,
@@ -758,45 +727,6 @@ export const Stake = () => {
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
-      postConditionMode: 0x01,
-      onFinish: data => {
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-      },
-      anchorMode: AnchorMode.Any,
-    });
-  };
-
-  const claimMissingLpRewards = async () => {
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-lp-rewards-2',
-      functionName: 'claim-rewards',
-      functionArgs: [],
-      onFinish: data => {
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-      },
-      anchorMode: AnchorMode.Any,
-    });
-  };
-
-  const stakeMissingLpRewards = async () => {
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-lp-rewards-2',
-      functionName: 'stake-rewards',
-      functionArgs: [],
       postConditionMode: 0x01,
       onFinish: data => {
         setState(prevState => ({
@@ -1215,35 +1145,6 @@ export const Stake = () => {
                   with the term “farming”.
                 </p>
               </header>
-
-              {missedLpRewards != 0 ? (
-                <div className="mt-4">
-                  <Alert title="LP staking rewards have resumed">
-                    <p>You missed {missedLpRewards} DIKO during the pause.</p>
-                    <p className="mt-1">
-                      You have two options, you can either claim them or directly stake them.
-                    </p>
-                    <div className="mt-4">
-                      <div className="-mx-2 -my-1.5 flex">
-                        <button
-                          type="button"
-                          className="bg-blue-600 px-2 py-1.5 rounded-md text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
-                          onClick={() => stakeMissingLpRewards()}
-                        >
-                          Stake
-                        </button>
-                        <button
-                          type="button"
-                          className="ml-3 bg-blue-100 px-2 py-1.5 rounded-md text-sm font-medium text-blue-800 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-blue-50 focus:ring-blue-600 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
-                          onClick={() => claimMissingLpRewards()}
-                        >
-                          Claim
-                        </button>
-                      </div>
-                    </div>
-                  </Alert>
-                </div>
-              ) : null}
 
               <div className="flex flex-col mt-4">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
