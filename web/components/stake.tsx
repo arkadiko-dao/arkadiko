@@ -173,8 +173,6 @@ export const Stake = () => {
       let tokenYContract = 'usda-token';
       let tokenXName = 'DIKO';
       let tokenYName = 'USDA';
-      let tokenXAddress = contractAddress;
-      let tokenYAddress = contractAddress;
       let tokenXDecimals = 6;
       let tokenYDecimals = 6;
       if (poolContract === 'arkadiko-stake-pool-wstx-diko-v1-1') {
@@ -189,13 +187,11 @@ export const Stake = () => {
         tokenYName = 'USDA';
       } else if (poolContract == 'arkadiko-stake-pool-wstx-xbtc-v1-1') {
         tokenXContract = 'wrapped-stx-token';
-        tokenYAddress = 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR';
         tokenYContract = 'Wrapped-Bitcoin';
         tokenXName = 'STX';
         tokenYName = 'xBTC';
         tokenYDecimals = 8;
       } else if (poolContract == 'arkadiko-stake-pool-xbtc-usda-v1-1') {
-        tokenXAddress = 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR';
         tokenXContract = 'Wrapped-Bitcoin';
         tokenXDecimals = 8;
         tokenYContract = 'usda-token';
