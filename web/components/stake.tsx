@@ -258,6 +258,72 @@ export const Stake = () => {
       };
     };
 
+    const getStakingData = async () => {
+      const userStakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-ui-stake-v1-3',
+        functionName: 'get-stake-amounts',
+        functionArgs: [standardPrincipalCV(stxAddress || '')],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const userStakedData = cvToJSON(userStakedCall).value.value;
+      setLpDikoUsdaStakedAmount(userStakedData['stake-amount-diko-usda'].value);
+      setLpStxUsdaStakedAmount(userStakedData['stake-amount-wstx-usda'].value);
+      setLpStxDikoStakedAmount(userStakedData['stake-amount-wstx-diko'].value);
+
+      return userStakedData;
+    };
+
+    const getXbtcStakingData = async () => {
+      const xbtcStakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-stake-pool-wstx-xbtc-v1-1',
+        functionName: 'get-stake-amount-of',
+        functionArgs: [standardPrincipalCV(stxAddress || '')],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const userXbtcStakedData = cvToJSON(xbtcStakedCall).value;
+      setLpStxXbtcStakedAmount(userXbtcStakedData);
+
+      return userXbtcStakedData;
+    };
+
+    const getXbtcUsdaStakingData = async () => {
+      const xbtcUsdaStakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-stake-pool-xbtc-usda-v1-1',
+        functionName: 'get-stake-amount-of',
+        functionArgs: [standardPrincipalCV(stxAddress || '')],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const userXbtcUsdaStakedData = cvToJSON(xbtcUsdaStakedCall).value;
+      setLpXbtcUsdaStakedAmount(userXbtcUsdaStakedData);
+
+      return userXbtcUsdaStakedData;
+    };
+
+    const getStakedDiko = async () => {
+      const userStakedDikoCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-stake-pool-diko-v1-2',
+        functionName: 'get-stake-of',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          standardPrincipalCV(stxAddress || ''),
+          uintCV(stDikoSupply),
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const userStakedDikoData = cvToJSON(userStakedDikoCall).value.value;
+      setStakedAmount(userStakedDikoData);
+
+      return userStakedDikoData;
+    };
+
     const getData = async () => {
       if (
         state.balance['dikousda'] == undefined ||
@@ -273,6 +339,7 @@ export const Stake = () => {
       ) {
         return;
       }
+      console.log(state.balance);
 
       const totalStakingRewardsYear1 = 23500000;
       const dikoPoolRewards = totalStakingRewardsYear1 * 0.1;
@@ -305,56 +372,13 @@ export const Stake = () => {
       setXbtcUsdaLpApy(Number((100 * xbtcUsdaApr).toFixed(2)));
       setLoadingApy(false);
 
-      const userStakedDikoCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-stake-pool-diko-v1-2',
-        functionName: 'get-stake-of',
-        functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-          standardPrincipalCV(stxAddress || ''),
-          uintCV(stDikoSupply),
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const userStakedDikoData = cvToJSON(userStakedDikoCall).value.value;
-      setStakedAmount(userStakedDikoData);
-
       // User staked amounts
-      const userStakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-ui-stake-v1-3',
-        functionName: 'get-stake-amounts',
-        functionArgs: [standardPrincipalCV(stxAddress || '')],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const userStakedData = cvToJSON(userStakedCall).value.value;
-      setLpDikoUsdaStakedAmount(userStakedData['stake-amount-diko-usda'].value);
-      setLpStxUsdaStakedAmount(userStakedData['stake-amount-wstx-usda'].value);
-      setLpStxDikoStakedAmount(userStakedData['stake-amount-wstx-diko'].value);
-
-      const xbtcStakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-stake-pool-wstx-xbtc-v1-1',
-        functionName: 'get-stake-amount-of',
-        functionArgs: [standardPrincipalCV(stxAddress || '')],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const userXbtcStakedData = cvToJSON(xbtcStakedCall).value;
-      setLpStxXbtcStakedAmount(userXbtcStakedData);
-
-      const xbtcUsdaStakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-stake-pool-xbtc-usda-v1-1',
-        functionName: 'get-stake-amount-of',
-        functionArgs: [standardPrincipalCV(stxAddress || '')],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const userXbtcUsdaStakedData = cvToJSON(xbtcUsdaStakedCall).value;
-      setLpXbtcUsdaStakedAmount(userXbtcUsdaStakedData);
+      const [_, userStakedData, userXbtcStakedData, userXbtcUsdaStakedData] = await Promise.all([
+        getStakedDiko(),
+        getStakingData(),
+        getXbtcStakingData(),
+        getXbtcUsdaStakingData()
+      ]);
 
       // LP value
       const [dikoUsdaLpValue, stxUsdaLpValue, stxDikoLpValue, stxXbtcLpValue, xbtcUsdaLpValue] = await Promise.all([
