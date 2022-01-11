@@ -1,4 +1,6 @@
 class PoolsController < ApplicationController
+  before_action :check_api_key, only: [:update]
+
   def index
     @pools = Pool.all.page(params[:page] || 1).per(25)
 
@@ -13,6 +15,17 @@ class PoolsController < ApplicationController
     render json: {
       pool: @pool
     }
+  end
+
+  def update
+    pool = Pool.find(params[:id])
+    pool.balance_x = params[:balance_x] if params[:balance_x].present?
+    pool.balance_y = params[:balance_y] if params[:balance_y].present?
+    pool.shares_total = params[:shares_total] if params[:shares_total].present?
+    pool.enabled = params[:enabled] if params[:enabled].present?
+    pool.save
+
+    render json: pool
   end
 
   def volume
@@ -46,4 +59,10 @@ class PoolsController < ApplicationController
       end
     end
   end
+
+  private
+
+    def check_api_key
+      return head 403 unless params[:key] === ENV['API_KEY']
+    end
 end

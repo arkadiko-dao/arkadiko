@@ -496,7 +496,7 @@ export const Mint = () => {
                               />
                             </div>
                             <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900 dark:text-zinc-100">DIKO/USDA</div>
+                              <div className="text-sm font-medium text-gray-900 dark:text-zinc-100">DIKO</div>
                             </div>
                           </div>
                         </td>
@@ -504,7 +504,7 @@ export const Mint = () => {
                           {loadingPrices ? (
                             <Placeholder className="py-2" width={Placeholder.width.HALF} />
                           ) : (
-                            <span>{dikoPrice}</span>
+                            <span>{dikoPrice} USDA</span>
                           )}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">

@@ -14,10 +14,21 @@
 #  tvl_updated_at     :datetime
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
+#  token_y_id         :bigint
+#  token_x_id         :bigint
+#  swap_token_id      :bigint
+#  balance_x          :bigint
+#  balance_y          :bigint
+#  shares_total       :bigint
+#  enabled            :boolean
 #
 class Pool < ApplicationRecord
   validates :token_x_name, presence: true
   validates :token_y_name, presence: true
+
+  belongs_to :token_x, class_name: "Token"
+  belongs_to :token_y, class_name: "Token"
+  belongs_to :swap_token, class_name: "Token"
 
   has_many :swap_events
 
@@ -38,7 +49,15 @@ class Pool < ApplicationRecord
   def fetch_prices
     events = swap_events.order('event_at ASC').where("function_name IN (?)", ['swap-x-for-y', 'swap-y-for-x'])
     # TODO: fix performance
-    events.map{|event| [event['event_at'].to_i * 1000, (event['token_y_amount'].to_f / event['token_x_amount'].to_f).round(2)]}
+    events.map do |event|
+      if token_x_name.include?('Wrapped-Bitcoin')
+        [event['event_at'].to_i * 1000, (event['token_y_amount'].to_f / (event['token_x_amount'] / 100).to_f)]
+      elsif token_y_name.include?('Wrapped-Bitcoin')
+        [event['event_at'].to_i * 1000, (event['token_y_amount'].to_f / (event['token_x_amount'] * 100).to_f)]
+      else
+        [event['event_at'].to_i * 1000, (event['token_y_amount'].to_f / event['token_x_amount'].to_f)]
+      end
+    end
   end
 
   def tvl
