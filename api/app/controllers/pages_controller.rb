@@ -24,4 +24,9 @@ class PagesController < ApplicationController
 
     render json: hsh
   end
+
+  def swap
+    pools = Pool.all
+    render json: pools
+  end
 end

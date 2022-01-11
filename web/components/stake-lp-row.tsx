@@ -10,6 +10,7 @@ import { NavLink as RouterLink } from 'react-router-dom';
 interface StakeLpRowProps {}
 
 export const StakeLpRow: React.FC<StakeLpRowProps> = ({
+  loadingApy,
   loadingData,
   tokenListItemX,
   tokenListItemY,
@@ -58,7 +59,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
               </div>
             </td>
             <td className="px-6 py-4 text-sm text-indigo-600 dark:text-indigo-400 whitespace-nowrap">
-              {loadingData ? (
+              {loadingApy ? (
                 <Placeholder className="py-2" width={Placeholder.width.HALF} />
               ) : (
                 `${apy}%`
