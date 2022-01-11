@@ -110,11 +110,11 @@ export const Stake = () => {
       const data = response.data;
       // pools
       let poolInfo = {};
-      poolInfo["wrapped-stx-token/usda-token"] = data["wrapped-stx-token/usda-token"];
-      poolInfo["arkadiko-token/usda-token"] = data["arkadiko-token/usda-token"];
-      poolInfo["wrapped-stx-token/arkadiko-token"] = data["wrapped-stx-token/arkadiko-token"];
-      poolInfo["wrapped-stx-token/Wrapped-Bitcoin"] = data["wrapped-stx-token/Wrapped-Bitcoin"];
-      poolInfo["Wrapped-Bitcoin/usda-token"] = data["Wrapped-Bitcoin/usda-token"];
+      poolInfo['wrapped-stx-token/usda-token'] = data['wrapped-stx-token/usda-token'];
+      poolInfo['arkadiko-token/usda-token'] = data['arkadiko-token/usda-token'];
+      poolInfo['wrapped-stx-token/arkadiko-token'] = data['wrapped-stx-token/arkadiko-token'];
+      poolInfo['wrapped-stx-token/Wrapped-Bitcoin'] = data['wrapped-stx-token/Wrapped-Bitcoin'];
+      poolInfo['Wrapped-Bitcoin/usda-token'] = data['Wrapped-Bitcoin/usda-token'];
       setPoolInfo(poolInfo);
 
       // stake data
@@ -223,12 +223,12 @@ export const Stake = () => {
       const decimalRatioY = 1000000 / Math.pow(10, tokenYDecimals);
 
       const stakedShare = lpTokenStakedAmount / totalTokens;
-      const stakedBalanceX = (balanceX * stakedShare) * decimalRatioX;
-      const stakedBalanceY = (balanceY * stakedShare) * decimalRatioY;
+      const stakedBalanceX = balanceX * stakedShare * decimalRatioX;
+      const stakedBalanceY = balanceY * stakedShare * decimalRatioY;
 
       const walletShare = lpTokenWalletAmount / totalTokens;
-      const walletBalanceX = (balanceX * walletShare) * decimalRatioX;
-      const walletBalanceY = (balanceY * walletShare) * decimalRatioY;
+      const walletBalanceX = balanceX * walletShare * decimalRatioX;
+      const walletBalanceY = balanceY * walletShare * decimalRatioY;
 
       // Estimate value
       let estimatedValueStaked = 0;
@@ -366,69 +366,96 @@ export const Stake = () => {
       const dikoApr = dikoPoolRewards / totalDikoStaked;
       setApy(Number((100 * dikoApr).toFixed(2)));
 
-      const dikoDikoUsda = await lpTokenValue('arkadiko-stake-pool-diko-usda-v1-1', 0, totalDikoUsdaStaked);
+      const dikoDikoUsda = await lpTokenValue(
+        'arkadiko-stake-pool-diko-usda-v1-1',
+        0,
+        totalDikoUsdaStaked
+      );
       const dikoUsdaPoolRewards = totalStakingRewardsYear1 * 0.25;
-      const dikoUsdaApr = dikoUsdaPoolRewards / (dikoDikoUsda['walletValue'] / Number(dikoPrice / 1000000));
+      const dikoUsdaApr =
+        dikoUsdaPoolRewards / (dikoDikoUsda['walletValue'] / Number(dikoPrice / 1000000));
       setDikoUsdaLpApy(Number((100 * dikoUsdaApr).toFixed(2)));
 
-      const dikoStxUsda = await lpTokenValue('arkadiko-stake-pool-wstx-usda-v1-1', 0, totalStxUsdaStaked);
+      const dikoStxUsda = await lpTokenValue(
+        'arkadiko-stake-pool-wstx-usda-v1-1',
+        0,
+        totalStxUsdaStaked
+      );
       const stxUsdaPoolRewards = totalStakingRewardsYear1 * 0.35;
-      const stxUsdaApr = stxUsdaPoolRewards / (dikoStxUsda['walletValue'] / Number(dikoPrice / 1000000));
+      const stxUsdaApr =
+        stxUsdaPoolRewards / (dikoStxUsda['walletValue'] / Number(dikoPrice / 1000000));
       setStxUsdaLpApy(Number((100 * stxUsdaApr).toFixed(2)));
 
-      const dikoStxDiko = await lpTokenValue('arkadiko-stake-pool-wstx-diko-v1-1', 0, totalStxDikoStaked);
+      const dikoStxDiko = await lpTokenValue(
+        'arkadiko-stake-pool-wstx-diko-v1-1',
+        0,
+        totalStxDikoStaked
+      );
       const stxDikoPoolRewards = totalStakingRewardsYear1 * 0.15;
-      const stxDikoApr = stxDikoPoolRewards / (dikoStxDiko['walletValue'] / Number(dikoPrice / 1000000));
+      const stxDikoApr =
+        stxDikoPoolRewards / (dikoStxDiko['walletValue'] / Number(dikoPrice / 1000000));
       setStxDikoLpApy(Number((100 * stxDikoApr).toFixed(2)));
 
-      const dikoStxXbtc = await lpTokenValue('arkadiko-stake-pool-wstx-xbtc-v1-1', 0, totalStxXbtcStaked);
+      const dikoStxXbtc = await lpTokenValue(
+        'arkadiko-stake-pool-wstx-xbtc-v1-1',
+        0,
+        totalStxXbtcStaked
+      );
       const stxXbtcPoolRewards = totalStakingRewardsYear1 * 0.05;
-      const stxXbtcApr = stxXbtcPoolRewards / (dikoStxXbtc['walletValue'] / Number(dikoPrice / 1000000));
+      const stxXbtcApr =
+        stxXbtcPoolRewards / (dikoStxXbtc['walletValue'] / Number(dikoPrice / 1000000));
       setStxXbtcLpApy(Number((100 * stxXbtcApr).toFixed(2)));
 
-      const dikoXbtcUsda = await lpTokenValue('arkadiko-stake-pool-xbtc-usda-v1-1', 0, totalXbtcUsdaStaked);
+      const dikoXbtcUsda = await lpTokenValue(
+        'arkadiko-stake-pool-xbtc-usda-v1-1',
+        0,
+        totalXbtcUsdaStaked
+      );
       const xbtcUsdaPoolRewards = totalStakingRewardsYear1 * 0.1;
-      const xbtcUsdaApr = xbtcUsdaPoolRewards / (dikoXbtcUsda['walletValue'] / Number(dikoPrice / 1000000));
+      const xbtcUsdaApr =
+        xbtcUsdaPoolRewards / (dikoXbtcUsda['walletValue'] / Number(dikoPrice / 1000000));
       setXbtcUsdaLpApy(Number((100 * xbtcUsdaApr).toFixed(2)));
       setLoadingApy(false);
 
       // User staked amounts
-      const [_, userStakedData, userXbtcStakedData, userXbtcUsdaStakedData, stDiko] = await Promise.all([
-        getStakedDiko(),
-        getStakingData(),
-        getXbtcStakingData(),
-        getXbtcUsdaStakingData(),
-        getDikoToStDiko()
-      ]);
+      const [_, userStakedData, userXbtcStakedData, userXbtcUsdaStakedData, stDiko] =
+        await Promise.all([
+          getStakedDiko(),
+          getStakingData(),
+          getXbtcStakingData(),
+          getXbtcUsdaStakingData(),
+          getDikoToStDiko(),
+        ]);
 
       // LP value
-      const [dikoUsdaLpValue, stxUsdaLpValue, stxDikoLpValue, stxXbtcLpValue, xbtcUsdaLpValue] = await Promise.all([
-        lpTokenValue(
-          'arkadiko-stake-pool-diko-usda-v1-1',
-          userStakedData['stake-amount-diko-usda'].value,
-          state.balance['dikousda']
-        ),
-        lpTokenValue(
-          'arkadiko-stake-pool-wstx-usda-v1-1',
-          userStakedData['stake-amount-wstx-usda'].value,
-          state.balance['wstxusda']
-        ),
-        lpTokenValue(
-          'arkadiko-stake-pool-wstx-diko-v1-1',
-          userStakedData['stake-amount-wstx-diko'].value,
-          state.balance['wstxdiko']
-        ),
-        lpTokenValue(
-          'arkadiko-stake-pool-wstx-xbtc-v1-1',
-          userXbtcStakedData,
-          state.balance['wstxxbtc']
-        ),
-        lpTokenValue(
-          'arkadiko-stake-pool-xbtc-usda-v1-1',
-          userXbtcUsdaStakedData,
-          state.balance['xbtcusda']
-        )
-      ]);
+      const [dikoUsdaLpValue, stxUsdaLpValue, stxDikoLpValue, stxXbtcLpValue, xbtcUsdaLpValue] =
+        await Promise.all([
+          lpTokenValue(
+            'arkadiko-stake-pool-diko-usda-v1-1',
+            userStakedData['stake-amount-diko-usda'].value,
+            state.balance['dikousda']
+          ),
+          lpTokenValue(
+            'arkadiko-stake-pool-wstx-usda-v1-1',
+            userStakedData['stake-amount-wstx-usda'].value,
+            state.balance['wstxusda']
+          ),
+          lpTokenValue(
+            'arkadiko-stake-pool-wstx-diko-v1-1',
+            userStakedData['stake-amount-wstx-diko'].value,
+            state.balance['wstxdiko']
+          ),
+          lpTokenValue(
+            'arkadiko-stake-pool-wstx-xbtc-v1-1',
+            userXbtcStakedData,
+            state.balance['wstxxbtc']
+          ),
+          lpTokenValue(
+            'arkadiko-stake-pool-xbtc-usda-v1-1',
+            userXbtcUsdaStakedData,
+            state.balance['xbtcusda']
+          ),
+        ]);
 
       setDikoUsdaPoolInfo(dikoUsdaLpValue);
       setStxUsdaPoolInfo(stxUsdaLpValue);
@@ -437,21 +464,26 @@ export const Stake = () => {
       setXbtcUsdaPoolInfo(xbtcUsdaLpValue);
 
       // Pending rewards
-      const [dikoUsdaLpPendingRewards, stxUsdaLpPendingRewards, stxDikoLpPendingRewards, stxXbtcLpPendingRewards, xbtcUsdaLpPendingRewards] =
-        await Promise.all([
-          fetchLpPendingRewards('arkadiko-stake-pool-diko-usda-v1-1'),
-          fetchLpPendingRewards('arkadiko-stake-pool-wstx-usda-v1-1'),
-          fetchLpPendingRewards('arkadiko-stake-pool-wstx-diko-v1-1'),
-          fetchLpPendingRewards('arkadiko-stake-pool-wstx-xbtc-v1-1'),
-          fetchLpPendingRewards('arkadiko-stake-pool-xbtc-usda-v1-1')
-        ]);
+      const [
+        dikoUsdaLpPendingRewards,
+        stxUsdaLpPendingRewards,
+        stxDikoLpPendingRewards,
+        stxXbtcLpPendingRewards,
+        xbtcUsdaLpPendingRewards,
+      ] = await Promise.all([
+        fetchLpPendingRewards('arkadiko-stake-pool-diko-usda-v1-1'),
+        fetchLpPendingRewards('arkadiko-stake-pool-wstx-usda-v1-1'),
+        fetchLpPendingRewards('arkadiko-stake-pool-wstx-diko-v1-1'),
+        fetchLpPendingRewards('arkadiko-stake-pool-wstx-xbtc-v1-1'),
+        fetchLpPendingRewards('arkadiko-stake-pool-xbtc-usda-v1-1'),
+      ]);
 
       setLpDikoUsdaPendingRewards(dikoUsdaLpPendingRewards);
       setLpStxUsdaPendingRewards(stxUsdaLpPendingRewards);
       setLpStxDikoPendingRewards(stxDikoLpPendingRewards);
       setLpStxXbtcPendingRewards(stxXbtcLpPendingRewards);
       setLpXbtcUsdaPendingRewards(xbtcUsdaLpPendingRewards);
-      setLoadingData(false);      
+      setLoadingData(false);
 
       const dikoCooldownInfo = await callReadOnlyFunction({
         contractAddress,
@@ -880,7 +912,9 @@ export const Stake = () => {
             <section>
               <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
                 <div>
-                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">DIKO</h3>
+                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">
+                    DIKO
+                  </h3>
                   <p className="max-w-3xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
                     When staking DIKO in the security module{' '}
                     <span className="font-semibold">you will receive stDIKO</span> which is a
@@ -905,10 +939,7 @@ export const Stake = () => {
                     rel="noopener noreferrer"
                   >
                     More on the Security Module
-                    <ExternalLinkIcon
-                      className="block w-3 h-3 ml-2 shrink-0"
-                      aria-hidden="true"
-                    />
+                    <ExternalLinkIcon className="block w-3 h-3 ml-2 shrink-0" aria-hidden="true" />
                   </a>
                 </div>
               </header>
@@ -920,7 +951,9 @@ export const Stake = () => {
                       <img className="w-12 h-12 rounded-full" src={tokenList[1].logo} alt="" />
                     </div>
                     <div className="mt-3 md:mt-0">
-                      <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">stDIKO</p>
+                      <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">
+                        stDIKO
+                      </p>
                       {loadingDikoToStDiko ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
@@ -955,7 +988,9 @@ export const Stake = () => {
                       )}
                     </div>
                     <div className="mt-3 md:mt-0">
-                      <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">DIKO</p>
+                      <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">
+                        DIKO
+                      </p>
                       {loadingData ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
@@ -968,7 +1003,9 @@ export const Stake = () => {
                       )}
                     </div>
                     <div className="mt-3 md:mt-0">
-                      <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">Current APR</p>
+                      <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">
+                        Current APR
+                      </p>
                       {loadingData ? (
                         <Placeholder className="py-2" width={Placeholder.width.HALF} />
                       ) : (
