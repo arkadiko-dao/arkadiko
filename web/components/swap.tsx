@@ -435,7 +435,7 @@ export const Swap: React.FC = () => {
                               })}{' '}
                               {tokenX.name}
                             </p>
-                            {Math.floor(balanceSelectedTokenX) > 0 ? (
+                            {Math.ceil(balanceSelectedTokenX) > 0 ? (
                               <button
                                 type="button"
                                 onClick={() => setMaximum()}
