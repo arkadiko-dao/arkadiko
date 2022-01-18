@@ -35,11 +35,11 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
             {collateralItems.map((collateral, collateralIdx) => (
               <section key={collateral.tokenType}>
                 <div className="px-4 mb-8">
-                  <h2 className="text-lg font-medium leading-6 text-gray-400">
+                  <h2 className="text-lg font-medium leading-6 text-gray-700 dark:text-zinc-100">
                     {collateral.tokenType} ({collateral.name})
                   </h2>
                   <p className="mt-4">
-                    <span className="text-4xl font-extrabold text-gray-400">
+                    <span className="text-4xl font-extrabold text-gray-700 dark:text-zinc-100">
                       {collateral.liquidationRatio}
                     </span>{' '}
                     <span className="text-base font-medium text-gray-500">%</span>
