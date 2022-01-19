@@ -31,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
   const name = bnsName();
 
   return (
-    <Disclosure as="nav" className="relative sticky top-0 z-50 bg-white shadow dark:bg-zinc-800">
+    <Disclosure as="nav" className="relative sticky top-0 z-50 bg-white shadow dark:bg-zinc-900">
       {({ open }) => (
         <>
           <div className="px-4 px-6 mx-auto max-w-7xl lg:px-8">
@@ -243,7 +243,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                     <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
                   </a>
                 </div>
-                <div className="pt-4 pb-3 border-t border-gray-700">
+                <div className="pt-4 pb-3 border-t border-gray-300 dark:border-zinc-600">
                   <div className="space-y-1">
                     <button
                       type="button"
