@@ -30,4 +30,4 @@ jobs:
         uses: docker://hirosystems/clarinet:0.23.1
         with:
           entrypoint: "bash"
-          args: -c "cd clarity && CLARINET_DISABLE_HINTS=1 clarinet test"
+          args: -c "cd clarity && CLARINET_DISABLE_HINTS=1 clarinet test tests/arkadiko-freddie-v1-1_test.ts"
