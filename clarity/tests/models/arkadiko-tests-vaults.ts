@@ -208,10 +208,10 @@ class VaultManager {
     return block.receipts[0].result;
   }
 
-  releaseStackedStx() {
+  releaseStackedStx(vaultId: number = 1) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "release-stacked-stx", [
-        types.uint(1)
+        types.uint(vaultId)
       ], this.deployer.address)
     ]);
     return block.receipts[0].result;

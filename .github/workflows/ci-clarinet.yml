@@ -22,12 +22,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: "Check contract"
-        uses: docker://hirosystems/clarinet:0.21.2
+        uses: docker://hirosystems/clarinet:latest
         with:
           entrypoint: "bash"
           args: -c "cd clarity && clarinet check"
       - name: "Execute test suite"
-        uses: docker://hirosystems/clarinet:0.21.2
+        uses: docker://hirosystems/clarinet:latest
         with:
           entrypoint: "bash"
-          args: -c "cd clarity && clarinet test"
+          args: -c "cd clarity && CLARINET_DISABLE_HINTS=1 clarinet test"
