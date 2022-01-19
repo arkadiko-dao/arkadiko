@@ -299,6 +299,10 @@ path = "contracts/recovery/query-swap.clar"
 depends_on = []
 path = "contracts/sip-010-trait-ft-standard.clar"
 
+[contracts.arkadiko-liquidation-fund-v1-1]
+depends_on = ["sip-010-trait-ft-standard", "arkadiko-swap-token-wstx-usda", "arkadiko-swap-v2-1", "arkadiko-stake-pool-wstx-usda-v1-1"]
+path = "contracts/arkadiko-liquidation-fund-v1-1.clar"
+
 [contracts.arkadiko-stake-lp-rewards]
 depends_on = ["arkadiko-stake-registry-v1-1", "arkadiko-stake-pool-diko-v1-1"]
 path = "contracts/arkadiko-stake-lp-rewards.clar"
