@@ -27,7 +27,7 @@ import {
   VaultAuction 
 } from './models/arkadiko-tests-vaults.ts';
 
-import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
+import * as Utils from './models/arkadiko-tests-utils.ts';
 
 Clarinet.test({
   name: "liquidation-fund: stake and unstake in one transaction",
