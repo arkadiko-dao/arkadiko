@@ -35,58 +35,58 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
 
-    let liquidationFund = new LiquidationFund(chain, deployer);
+    // let liquidationFund = new LiquidationFund(chain, deployer);
     let swap = new Swap(chain, deployer);
 
     // Create STX/USDA pair
     let result = swap.createPair(deployer, "wrapped-stx-token", "usda-token", "arkadiko-swap-token-wstx-usda", "wSTX-USDA", 80000, 100000);
     result.expectOk().expectBool(true);
 
-    // Deposit
-    result = liquidationFund.depositStx(wallet_1, 100);
-    result.expectOk().expectUintWithDecimals(100);
+    // // Deposit
+    // result = liquidationFund.depositStx(wallet_1, 100);
+    // result.expectOk().expectUintWithDecimals(100);
 
-    // Check STX in contract
-    let call = liquidationFund.getStxBalance();
-    call.result.expectUintWithDecimals(100.000000);
+    // // Check STX in contract
+    // let call = liquidationFund.getStxBalance();
+    // call.result.expectUintWithDecimals(100.000000);
 
-    // Check stake 
-    call = chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-stake-amount-of", [types.principal(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"))], deployer.address);
-    call.result.expectUint(0);
+    // // Check stake 
+    // call = chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-stake-amount-of", [types.principal(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"))], deployer.address);
+    // call.result.expectUint(0);
 
-    // Stake
-    result = liquidationFund.doStxToStake(100);
-    result.expectOk().expectBool(true);
+    // // Stake
+    // result = liquidationFund.doStxToStake(100);
+    // result.expectOk().expectBool(true);
 
-    // Check STX in contract
-    // Kept some for slippage
-    call = liquidationFund.getStxBalance();
-    call.result.expectUintWithDecimals(2.612902);
+    // // Check STX in contract
+    // // Kept some for slippage
+    // call = liquidationFund.getStxBalance();
+    // call.result.expectUintWithDecimals(2.612902);
 
-    // Check stake 
-    call = chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-stake-amount-of", [types.principal(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"))], deployer.address);
-    call.result.expectUint(52947294);
+    // // Check stake 
+    // call = chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-stake-amount-of", [types.principal(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"))], deployer.address);
+    // call.result.expectUint(52947294);
 
-    // Unstake all
-    result = liquidationFund.doStakeToStx();
-    result.expectOk().expectBool(true);
+    // // Unstake all
+    // result = liquidationFund.doStakeToStx();
+    // result.expectOk().expectBool(true);
 
-    // Check STX in contract
-    // Lost 0.3% swap fees
-    call = liquidationFund.getStxBalance();
-    call.result.expectUintWithDecimals(99.700633);
+    // // Check STX in contract
+    // // Lost 0.3% swap fees
+    // call = liquidationFund.getStxBalance();
+    // call.result.expectUintWithDecimals(99.700633);
 
-    // Check stake 
-    call = chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-stake-amount-of", [types.principal(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"))], deployer.address);
-    call.result.expectUint(0);
+    // // Check stake 
+    // call = chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-stake-amount-of", [types.principal(Utils.qualifiedName("arkadiko-liquidation-fund-v1-1"))], deployer.address);
+    // call.result.expectUint(0);
 
-    // Withdraw STX
-    result = liquidationFund.withdraw(wallet_1, 99.700633, 0);
-    result.expectOk().expectUintWithDecimals(99.700633);
+    // // Withdraw STX
+    // result = liquidationFund.withdraw(wallet_1, 99.700633, 0);
+    // result.expectOk().expectUintWithDecimals(99.700633);
 
-    // Check STX in contract
-    call = liquidationFund.getStxBalance();
-    call.result.expectUintWithDecimals(0);
+    // // Check STX in contract
+    // call = liquidationFund.getStxBalance();
+    // call.result.expectUintWithDecimals(0);
   }
 });
 
