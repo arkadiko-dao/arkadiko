@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { stacksNetwork as network, getRPCClient } from '@common/utils';
+import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import BN from 'bn.js';
 import {
@@ -9,10 +9,11 @@ import {
   makeSTXTokenTransfer,
   privateKeyToString,
 } from '@stacks/transactions';
-import { getPriceInfo, getDikoAmmPrice } from '@common/get-price';
+import { getPriceInfo } from '@common/get-price';
 import { AppContext } from '@common/context';
 import { tokenList } from '@components/token-swap-list';
 import { Placeholder } from './ui/placeholder';
+import axios from 'axios';
 
 export const Prices = () => {
   const address = useSTXAddress();
@@ -31,35 +32,30 @@ export const Prices = () => {
   const [usdaBlockAgoUpdate, setUsdaBlockAgoUpdate] = useState(0.0);
   const [dikoBlockAgoUpdate, setDikoBlockAgoUpdate] = useState(0.0);
   const [loadingPrices, setLoadingPrices] = useState(true);
+  const apiUrl = 'https://arkadiko-api.herokuapp.com';
 
   useEffect(() => {
     const fetchPrices = async () => {
+      let response:any = await axios.get(`${apiUrl}/api/v1/pages/stake`);
+      response = response['data'];
+      const currentBlock = response['block_height'];
 
-      // Get current block height
-      const client = getRPCClient();
-      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
-      const data = await response.json();
-      const currentBlock = data['stacks_tip_height'];
-
-      const stxPrice = await getPriceInfo('STX');
-      setStxPrice(stxPrice['last-price'].value);
-      setStxBlockUpdate(stxPrice['last-block'].value);
-      setStxBlockAgoUpdate(currentBlock - stxPrice['last-block'].value)
+      setStxPrice(response['wstx']['last_price']);
+      setStxBlockUpdate(response['wstx']['price_last_updated']);
+      setStxBlockAgoUpdate(currentBlock - response['wstx']['price_last_updated']);
 
       const xbtcPrice = await getPriceInfo('xBTC');
       setXbtcPrice(xbtcPrice['last-price'].value);
       setXbtcBlockUpdate(xbtcPrice['last-block'].value);
       setXbtcBlockAgoUpdate(currentBlock - xbtcPrice['last-block'].value)
 
-      const dikoPrice = await getDikoAmmPrice();
-      setDikoPrice(dikoPrice);
+      setDikoPrice(response['diko']['last_price'] / 1000000);
       setDikoBlockUpdate(currentBlock);
-      setDikoBlockAgoUpdate(1)
+      setDikoBlockAgoUpdate(1);
 
-      const usdaPrice = await getPriceInfo('USDA');
-      setUsdaPrice(usdaPrice['last-price'].value);
-      setUsdaBlockUpdate(usdaPrice['last-block'].value);
-      setUsdaBlockAgoUpdate(currentBlock - usdaPrice['last-block'].value)
+      setUsdaPrice(response['usda']['last_price']);
+      setUsdaBlockUpdate(response['usda']['price_last_updated']);
+      setUsdaBlockAgoUpdate(currentBlock - response['usda']['price_last_updated']);
 
       setLoadingPrices(false);
     };
