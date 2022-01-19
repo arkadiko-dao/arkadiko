@@ -36,7 +36,7 @@ export const Prices = () => {
 
   useEffect(() => {
     const fetchPrices = async () => {
-      let response:any = await axios.get(`${apiUrl}/api/v1/pages/stake`);
+      let response: any = await axios.get(`${apiUrl}/api/v1/pages/stake`);
       response = response['data'];
       const currentBlock = response['block_height'];
 
@@ -47,7 +47,7 @@ export const Prices = () => {
       const xbtcPrice = await getPriceInfo('xBTC');
       setXbtcPrice(xbtcPrice['last-price'].value);
       setXbtcBlockUpdate(xbtcPrice['last-block'].value);
-      setXbtcBlockAgoUpdate(currentBlock - xbtcPrice['last-block'].value)
+      setXbtcBlockAgoUpdate(currentBlock - xbtcPrice['last-block'].value);
 
       setDikoPrice(response['diko']['last_price'] / 1000000);
       setDikoBlockUpdate(currentBlock);
@@ -69,7 +69,6 @@ export const Prices = () => {
       window.location.reload();
     }
   }, [state.currentTxStatus]);
-
 
   const addMocknetStx = async () => {
     const key = '753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601';
@@ -101,35 +100,37 @@ export const Prices = () => {
       unit: 'USDA',
       block: dikoBlockUpdate,
       blockAgo: dikoBlockAgoUpdate,
-     },
-     {
+    },
+    {
       token: 'xBTC',
       logo: tokenList[3].logo,
       price: xbtcPrice / 1000000,
       unit: '$',
       block: xbtcBlockUpdate,
       blockAgo: xbtcBlockAgoUpdate,
-     },
-     {
+    },
+    {
       token: 'USDA',
       logo: tokenList[0].logo,
       price: usdaPrice / 1000000,
       unit: '$',
       block: usdaBlockUpdate,
       blockAgo: usdaBlockAgoUpdate,
-     },
-
-  ]
+    },
+  ];
 
   return (
-
     <section className="mt-8">
       <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:items-center sm:justify-between">
-        <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">Assets</h3>
+        <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
+          Assets
+        </h3>
         <div className="flex mt-3 sm:mt-0 sm:ml-4">
           {env == 'mocknet' ? (
             <div className="flex items-center justify-end">
-              <span className="px-2 py-1 text-xs text-gray-800 dark:text-zinc-100">Mocknet actions:</span>
+              <span className="px-2 py-1 text-xs text-gray-800 dark:text-zinc-100">
+                Mocknet actions:
+              </span>
               <button
                 type="button"
                 onClick={() => addMocknetStx()}
@@ -146,16 +147,12 @@ export const Prices = () => {
         <div className="bg-white dark:bg-zinc-900">
           <div className="mx-auto bg-white dark:bg-zinc-900 sm:py-6 max-w-7xl">
             <div className="max-w-2xl mx-auto space-y-2 divide-y divide-gray-200 dark:divide-zinc-600">
-              {assets.map((asset) => (
+              {assets.map(asset => (
                 <section className="pt-4" key={asset.token}>
                   <div className="px-4">
                     <div className="flex items-center">
                       <div className="w-10 h-10 shrink-0">
-                        <img
-                          className="w-10 h-10 rounded-full"
-                          src={asset.logo}
-                          alt=""
-                        />
+                        <img className="w-10 h-10 rounded-full" src={asset.logo} alt="" />
                       </div>
                       <div className="ml-3">
                         <h2 className="text-xl font-medium font-semibold leading-6 text-gray-700 dark:text-zinc-100">
@@ -173,7 +170,7 @@ export const Prices = () => {
                         <p>
                           <span className="text-base font-medium text-gray-500">{asset.unit}</span>{' '}
                           <span className="text-4xl font-extrabold text-gray-700 dark:text-zinc-100">
-                          {asset.price}
+                            {asset.price}
                           </span>
                         </p>
                       )}
@@ -197,18 +194,21 @@ export const Prices = () => {
                           className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
                           scope="row"
                         >
-                          <div className="flex items-center">
-                            Updated Block Height
-                          </div>
+                          <div className="flex items-center">Updated Block Height</div>
                         </th>
                         <td className="py-5 pr-4">
                           {loadingPrices ? (
-                            <Placeholder className="py-2 w-[100px] ml-auto" width={Placeholder.width.FULL} />
+                            <Placeholder
+                              className="py-2 w-[100px] ml-auto"
+                              width={Placeholder.width.FULL}
+                            />
                           ) : (
                             <>
                               <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
                                 {asset.block}{' '}
-                                <span className="text-gray-500 dark:text-zinc-300">({asset.blockAgo} blocks ago)</span>
+                                <span className="text-gray-500 dark:text-zinc-300">
+                                  ({asset.blockAgo} blocks ago)
+                                </span>
                               </span>
                             </>
                           )}
@@ -251,44 +251,33 @@ export const Prices = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600">
-                  {assets.map((asset) => (
+                  {assets.map(asset => (
                     <tr key={asset.token} className="bg-white dark:bg-zinc-900">
                       <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="w-10 h-10 shrink-0">
-                            <img
-                              className="w-10 h-10 rounded-full"
-                              src={asset.logo}
-                              alt=""
-                            />
+                            <img className="w-10 h-10 rounded-full" src={asset.logo} alt="" />
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900 dark:text-zinc-100">{asset.token}</div>
+                            <div className="text-sm font-medium text-gray-900 dark:text-zinc-100">
+                              {asset.token}
+                            </div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
                         {loadingPrices ? (
                           <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                        ) : asset.unit == 'USDA' ? (
+                          <span>
+                            {asset.price}
+                            <span className="text-gray-500 dark:text-zinc-300">{asset.unit}</span>
+                          </span>
                         ) : (
-                          asset.unit == 'USDA' ?
-                          (
-                            <span>
-                              {asset.price}
-                              <span className="text-gray-500 dark:text-zinc-300">
-                                {asset.unit}
-                              </span>
-                            </span>
-                          )
-                          :
-                          (
-                            <span>
-                              <span className="text-gray-500 dark:text-zinc-300">
-                                {asset.unit}
-                              </span>
-                              {asset.price}
-                            </span>
-                          )
+                          <span>
+                            <span className="text-gray-500 dark:text-zinc-300">{asset.unit}</span>
+                            {asset.price}
+                          </span>
                         )}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
@@ -296,8 +285,10 @@ export const Prices = () => {
                           <Placeholder className="py-2" width={Placeholder.width.HALF} />
                         ) : (
                           <>
-                          <span>{asset.block} </span>
-                          <span className="text-gray-500 dark:text-zinc-300">({asset.blockAgo} blocks ago)</span>
+                            <span>{asset.block} </span>
+                            <span className="text-gray-500 dark:text-zinc-300">
+                              ({asset.blockAgo} blocks ago)
+                            </span>
                           </>
                         )}
                       </td>

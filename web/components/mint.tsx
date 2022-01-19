@@ -137,7 +137,12 @@ export const Mint = () => {
               className="absolute w-full h-full"
               style={{ backgroundImage: 'url(/assets/stacks-pattern.png)', backgroundSize: '20%' }}
             />
-            <a className="absolute bottom-0 right-0 z-10 p-2 mb-2 mr-2 bg-indigo-600 rounded-full" href="https://stacking.club/" target="_blank" rel="noopener noreferrer">
+            <a
+              className="absolute bottom-0 right-0 z-10 p-2 mb-2 mr-2 bg-indigo-600 rounded-full"
+              href="https://stacking.club/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <svg
                 className="w-4 h-4"
                 viewBox="0 0 120 121"
@@ -163,7 +168,9 @@ export const Mint = () => {
                 </dd>
               </div>
               <div className="px-4 py-5 sm:p-6">
-                <dt className="text-xs font-semibold text-indigo-800 uppercase dark:text-indigo-200">End date</dt>
+                <dt className="text-xs font-semibold text-indigo-800 uppercase dark:text-indigo-200">
+                  End date
+                </dt>
                 <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   <div className="flex items-baseline text-2xl font-semibold text-indigo-600 dark:text-indigo-100">
                     {state.endDate}
@@ -171,7 +178,9 @@ export const Mint = () => {
                 </dd>
               </div>
               <div className="px-4 py-5 sm:p-6">
-                <dt className="text-xs font-semibold text-indigo-800 uppercase dark:text-indigo-200">Days in cycle</dt>
+                <dt className="text-xs font-semibold text-indigo-800 uppercase dark:text-indigo-200">
+                  Days in cycle
+                </dt>
                 <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   <div className="flex items-baseline text-2xl font-semibold text-indigo-600 dark:text-indigo-100">
                     {state.daysPassed}
@@ -179,7 +188,9 @@ export const Mint = () => {
                 </dd>
               </div>
               <div className="px-4 py-5 sm:p-6">
-                <dt className="text-xs font-semibold text-indigo-800 uppercase dark:text-indigo-200">Days left</dt>
+                <dt className="text-xs font-semibold text-indigo-800 uppercase dark:text-indigo-200">
+                  Days left
+                </dt>
                 <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                   <div className="flex items-baseline text-2xl font-semibold text-indigo-600 dark:text-indigo-100">
                     {state.daysLeft}
@@ -305,7 +316,7 @@ export const Mint = () => {
                   </tbody>
                 </table>
               </div>
-              )}
+            )}
           </div>
         </section>
 
