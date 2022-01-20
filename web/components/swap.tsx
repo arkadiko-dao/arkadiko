@@ -12,8 +12,6 @@ import { NavLink as RouterLink } from 'react-router-dom';
 import { microToReadable } from '@common/vault-utils';
 import {
   AnchorMode,
-  callReadOnlyFunction,
-  cvToJSON,
   contractPrincipalCV,
   uintCV,
 } from '@stacks/transactions';
@@ -27,6 +25,7 @@ import { getBalance } from '@components/app';
 import { classNames } from '@common/class-names';
 import { Placeholder } from './ui/placeholder';
 import { SwapLoadingPlaceholder } from './swap-loading-placeholder';
+import axios from 'axios';
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
@@ -43,6 +42,7 @@ export const Swap: React.FC = () => {
   const [minimumReceived, setMinimumReceived] = useState(0);
   const [priceImpact, setPriceImpact] = useState('0');
   const [lpFee, setLpFee] = useState('0');
+  const [pairs, setPairs] = useState({});
   const [foundPair, setFoundPair] = useState(true);
   const [loadingData, setLoadingData] = useState(true);
   const [insufficientBalance, setInsufficientBalance] = useState(false);
@@ -50,9 +50,20 @@ export const Swap: React.FC = () => {
   const [swapLink, setSwapLink] = useState('');
   const [pairEnabled, setPairEnabled] = useState(false);
 
+  const apiUrl = 'https://arkadiko-api.herokuapp.com';
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall, doOpenAuth } = useConnect();
+
+  useEffect(() => {
+    const fetchPairs = async () => {
+      let response = await axios.get(`${apiUrl}/api/v1/pages/swap`);
+      response = response['data'];
+      setPairs(response);
+    }
+
+    fetchPairs();
+  }, []);
 
   const setTokenBalances = () => {
     const tokenXBalance = state.balance[tokenX['name'].toLowerCase()];
@@ -99,22 +110,6 @@ export const Swap: React.FC = () => {
   }, [state.currentTxStatus]);
 
   useEffect(() => {
-    const fetchPair = async (contractXAddress: string, tokenXContract: string, contractYAddress: string, tokenYContract: string) => {
-      const details = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-swap-v2-1',
-        functionName: 'get-pair-details',
-        functionArgs: [
-          contractPrincipalCV(contractXAddress, tokenXContract),
-          contractPrincipalCV(contractYAddress, tokenYContract),
-        ],
-        senderAddress: stxAddress || contractAddress,
-        network: network,
-      });
-
-      return cvToJSON(details);
-    };
-
     const resolvePair = async () => {
       if (state?.balance) {
         setTokenBalances();
@@ -124,17 +119,15 @@ export const Swap: React.FC = () => {
       setLoadingData(true);
       setExchangeRateSwitched(false);
 
-      const tokenXAddress = tokenTraits[tokenX['name'].toLowerCase()]['address'];
       const tokenXContract = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
-      const tokenYAddress = tokenTraits[tokenY['name'].toLowerCase()]['address'];
       const tokenYContract = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
-      const json3 = await fetchPair(tokenXAddress, tokenXContract, tokenYAddress, tokenYContract);
+      const json3 = pairs[`${tokenXContract}/${tokenYContract}`];
       console.log('Pair Details:', json3);
-      if (json3['success']) {
-        setCurrentPair(json3['value']['value']['value']);
-        setPairEnabled(json3['value']['value']['value']['enabled']['value']);
-        const balanceX = json3['value']['value']['value']['balance-x'].value;
-        const balanceY = json3['value']['value']['value']['balance-y'].value;
+      if (json3) {
+        setCurrentPair(json3);
+        setPairEnabled(json3['enabled']);
+        const balanceX = json3['balance_x'];
+        const balanceY = json3['balance_y'];
         const ratio = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']);
         const basePrice = Number((ratio * balanceX / balanceY));
         setCurrentPrice(basePrice);
@@ -142,32 +135,28 @@ export const Swap: React.FC = () => {
         setInverseDirection(false);
         setFoundPair(true);
         setLoadingData(false);
-      } else if (Number(json3['value']['value']['value']) === 201) {
-        const json4 = await fetchPair(tokenYAddress, tokenYContract, tokenXAddress, tokenXContract);
-        if (json4['success']) {
-          console.log('found pair...', json4);
-          setCurrentPair(json4['value']['value']['value']);
-          setPairEnabled(json4['value']['value']['value']['enabled']['value']);
-          setInverseDirection(true);
-          const balanceX = json4['value']['value']['value']['balance-x'].value;
-          const balanceY = json4['value']['value']['value']['balance-y'].value;
-          const ratio = Math.pow(10, tokenX['decimals']) / Math.pow(10, tokenY['decimals']);
-          const basePrice = Number((balanceY / (ratio * balanceX)));
-          setCurrentPrice(basePrice);
-          setFoundPair(true);
-          setLoadingData(false);
-          setSwapLink(`swap/add/${tokenY.name}/${tokenX.name}`);
-        } else {
-          setFoundPair(false);
-          setLoadingData(false);
-        }
+      } else if (pairs[`${tokenYContract}/${tokenXContract}`]) {
+        const json4 = pairs[`${tokenYContract}/${tokenXContract}`];
+        console.log('found pair...', json4);
+        setCurrentPair(json4);
+        setPairEnabled(json4['enabled']);
+        setInverseDirection(true);
+        const balanceX = json4['balance_x'];
+        const balanceY = json4['balance_y'];
+        const ratio = Math.pow(10, tokenX['decimals']) / Math.pow(10, tokenY['decimals']);
+        const basePrice = Number((balanceY / (ratio * balanceX)));
+        setCurrentPrice(basePrice);
+        setFoundPair(true);
+        setLoadingData(false);
+        setSwapLink(`swap/add/${tokenY.name}/${tokenX.name}`);
       } else {
         setFoundPair(false);
+        setLoadingData(false);
       }
     };
 
     resolvePair();
-  }, [tokenX, tokenY]);
+  }, [pairs, tokenX, tokenY]);
 
   useEffect(() => {
     if (currentPrice > 0) {
@@ -185,15 +174,15 @@ export const Swap: React.FC = () => {
     let priceImpact = 0;
     const slippage = (100 - slippageTolerance) / 100;
     if (inverseDirection) {
-      const balanceX = currentPair['balance-x'].value / Math.pow(10, tokenY['decimals']);
-      const balanceY = currentPair['balance-y'].value / Math.pow(10, tokenX['decimals']);
+      const balanceX = currentPair['balance_x'] / Math.pow(10, tokenY['decimals']);
+      const balanceY = currentPair['balance_y'] / Math.pow(10, tokenX['decimals']);
       const newBalanceY = balanceY + inputWithoutFees;
       const newBalanceX = (balanceY * balanceX) / newBalanceY;
       tokenYAmount = balanceX - newBalanceX;
       priceImpact = newBalanceY / newBalanceX / (balanceY / balanceX) - 1.0;
     } else {
-      const balanceX = currentPair['balance-x'].value / Math.pow(10, tokenX['decimals']);
-      const balanceY = currentPair['balance-y'].value / Math.pow(10, tokenY['decimals']);
+      const balanceX = currentPair['balance_x'] / Math.pow(10, tokenX['decimals']);
+      const balanceY = currentPair['balance_y'] / Math.pow(10, tokenY['decimals']);
       const newBalanceX = balanceX + inputWithoutFees;
       const newBalanceY = (balanceX * balanceY) / newBalanceX;
       tokenYAmount = balanceY - newBalanceY;
