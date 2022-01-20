@@ -29,7 +29,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
   const callCollateralizeAndMint = async () => {
     const decimals = coinAmounts['token-type'].toLowerCase().includes('stx') ? 1000000 : 100000000;
     const token = tokenTraits[coinAmounts['token-name'].toLowerCase()]['name'];
-    const amount = uintCV(parseInt(coinAmounts['amounts']['collateral'], 10) * decimals);
+    const amount = uintCV(parseInt(coinAmounts['amounts']['collateral'] * decimals, 10));
     const args = [
       amount,
       uintCV(parseInt(coinAmounts['amounts']['usda'], 10) * 1000000),
