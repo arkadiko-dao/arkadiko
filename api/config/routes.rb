@@ -12,6 +12,8 @@ Rails.application.routes.draw do
     resources :pages, only: :none do
       collection do
         get 'stake'
+        get 'swap'
+        get 'oracle'
       end
     end
   end
