@@ -29,4 +29,13 @@ class PagesController < ApplicationController
     pools = Pool.all
     render json: pools
   end
+
+  def oracle
+    hsh = {}
+    tokens = Token.where(symbol: ['wSTX', 'DIKO', 'USDA', 'xBTC'])
+    tokens.find_each do |token|
+      hsh[token.symbol.downcase] = token
+    end
+    render json: hsh
+  end
 end
