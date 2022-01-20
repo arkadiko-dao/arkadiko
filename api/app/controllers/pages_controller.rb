@@ -26,8 +26,14 @@ class PagesController < ApplicationController
   end
 
   def swap
+    block_height = Blockchain.first.last_block_height_imported
+    hsh = { block_height: block_height }
     pools = Pool.all
-    render json: pools
+    pools.find_each do |pool|
+      hsh["#{pool.token_x_name}/#{pool.token_y_name}"] = pool
+    end
+
+    render json: hsh
   end
 
   def oracle
