@@ -144,8 +144,8 @@ export const Swap: React.FC = () => {
           setCurrentPair(json4);
           setPairEnabled(json4['enabled']);
           setInverseDirection(true);
-          const balanceX = json4['balance_x'].value;
-          const balanceY = json4['balance_y'].value;
+          const balanceX = json4['balance_x'];
+          const balanceY = json4['balance_y'];
           const ratio = Math.pow(10, tokenX['decimals']) / Math.pow(10, tokenY['decimals']);
           const basePrice = Number((balanceY / (ratio * balanceX)));
           setCurrentPrice(basePrice);
@@ -180,15 +180,15 @@ export const Swap: React.FC = () => {
     let priceImpact = 0;
     const slippage = (100 - slippageTolerance) / 100;
     if (inverseDirection) {
-      const balanceX = currentPair['balance-x'].value / Math.pow(10, tokenY['decimals']);
-      const balanceY = currentPair['balance-y'].value / Math.pow(10, tokenX['decimals']);
+      const balanceX = currentPair['balance_x'] / Math.pow(10, tokenY['decimals']);
+      const balanceY = currentPair['balance_y'] / Math.pow(10, tokenX['decimals']);
       const newBalanceY = balanceY + inputWithoutFees;
       const newBalanceX = (balanceY * balanceX) / newBalanceY;
       tokenYAmount = balanceX - newBalanceX;
       priceImpact = newBalanceY / newBalanceX / (balanceY / balanceX) - 1.0;
     } else {
-      const balanceX = currentPair['balance-x'].value / Math.pow(10, tokenX['decimals']);
-      const balanceY = currentPair['balance-y'].value / Math.pow(10, tokenY['decimals']);
+      const balanceX = currentPair['balance_x'] / Math.pow(10, tokenX['decimals']);
+      const balanceY = currentPair['balance_y'] / Math.pow(10, tokenY['decimals']);
       const newBalanceX = balanceX + inputWithoutFees;
       const newBalanceY = (balanceX * balanceY) / newBalanceX;
       tokenYAmount = balanceY - newBalanceY;
