@@ -12,8 +12,6 @@ import { NavLink as RouterLink } from 'react-router-dom';
 import { microToReadable } from '@common/vault-utils';
 import {
   AnchorMode,
-  callReadOnlyFunction,
-  cvToJSON,
   contractPrincipalCV,
   uintCV,
 } from '@stacks/transactions';
