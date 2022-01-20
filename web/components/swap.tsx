@@ -139,25 +139,21 @@ export const Swap: React.FC = () => {
         setLoadingData(false);
       } else if (pairs[`${tokenYContract}/${tokenXContract}`]) {
         const json4 = pairs[`${tokenYContract}/${tokenXContract}`];
-        if (json4) {
-          console.log('found pair...', json4);
-          setCurrentPair(json4);
-          setPairEnabled(json4['enabled']);
-          setInverseDirection(true);
-          const balanceX = json4['balance_x'];
-          const balanceY = json4['balance_y'];
-          const ratio = Math.pow(10, tokenX['decimals']) / Math.pow(10, tokenY['decimals']);
-          const basePrice = Number((balanceY / (ratio * balanceX)));
-          setCurrentPrice(basePrice);
-          setFoundPair(true);
-          setLoadingData(false);
-          setSwapLink(`swap/add/${tokenY.name}/${tokenX.name}`);
-        } else {
-          setFoundPair(false);
-          setLoadingData(false);
-        }
+        console.log('found pair...', json4);
+        setCurrentPair(json4);
+        setPairEnabled(json4['enabled']);
+        setInverseDirection(true);
+        const balanceX = json4['balance_x'];
+        const balanceY = json4['balance_y'];
+        const ratio = Math.pow(10, tokenX['decimals']) / Math.pow(10, tokenY['decimals']);
+        const basePrice = Number((balanceY / (ratio * balanceX)));
+        setCurrentPrice(basePrice);
+        setFoundPair(true);
+        setLoadingData(false);
+        setSwapLink(`swap/add/${tokenY.name}/${tokenX.name}`);
       } else {
         setFoundPair(false);
+        setLoadingData(false);
       }
     };
 
