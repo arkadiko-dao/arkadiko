@@ -8,10 +8,12 @@ import {
   ContractCallTransaction,
 } from '@blockstack/stacks-blockchain-api-types';
 import { ContractTransaction } from '@components/contract-transaction';
+import { Placeholder } from './ui/placeholder';
 
 export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
   const address = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const [isLoading, setIsLoading] = useState(true);
   const [transactions, setTransactions] = useState<JSX.Element[]>();
   const [pendingTransactions, setPendingTransactions] = useState<JSX.Element[]>();
 
@@ -20,6 +22,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
 
     const fetchTransations = async () => {
       if (mounted && address) {
+        setIsLoading(true);
         const txs = await getAccountTransactions(address || '', contractAddress || '');
         let index = 0;
         const txMap = txs.map((tx: ContractCallTransaction) => {
@@ -40,14 +43,17 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
           return <ContractTransaction key={index} transaction={tx} status="pending" />;
         });
         setPendingTransactions(pendingMap);
+        setIsLoading(false);
       }
     };
 
-    fetchTransations();
+    if (showSidebar) {
+      fetchTransations();
+    }
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [showSidebar]);
 
   return (
     <Transition show={showSidebar} as={Fragment}>
@@ -107,12 +113,20 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                       </p>
                     </div>
                   </div>
-                  <div className="relative flex-1 px-4 mt-6 sm:px-6">
-                    <ul className="divide-y divide-gray-200 dark:divide-zinc-600">
-                      {pendingTransactions}
-                      {transactions}
-                    </ul>
-                  </div>
+                  {isLoading ? (
+                    <div className="relative flex-1 px-4 mt-6 sm:px-6">
+                      <Placeholder className="justify-end py-2" width={Placeholder.width.FULL} />
+                      <Placeholder className="justify-end py-2" width={Placeholder.width.FULL} />
+                      <Placeholder className="justify-end py-2" width={Placeholder.width.FULL} />
+                    </div>
+                  ) : (
+                    <div className="relative flex-1 px-4 mt-6 sm:px-6">
+                      <ul className="divide-y divide-gray-200 dark:divide-zinc-600">
+                        {pendingTransactions}
+                        {transactions}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
             </Transition.Child>
