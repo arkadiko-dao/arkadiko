@@ -9,7 +9,6 @@ import {
   makeSTXTokenTransfer,
   privateKeyToString,
 } from '@stacks/transactions';
-import { getPriceInfo } from '@common/get-price';
 import { AppContext } from '@common/context';
 import { tokenList } from '@components/token-swap-list';
 import { Placeholder } from './ui/placeholder';
@@ -36,7 +35,7 @@ export const Prices = () => {
 
   useEffect(() => {
     const fetchPrices = async () => {
-      let response: any = await axios.get(`${apiUrl}/api/v1/pages/stake`);
+      let response: any = await axios.get(`${apiUrl}/api/v1/pages/oracle`);
       response = response['data'];
       const currentBlock = response['block_height'];
 
@@ -44,14 +43,13 @@ export const Prices = () => {
       setStxBlockUpdate(response['wstx']['price_last_updated']);
       setStxBlockAgoUpdate(currentBlock - response['wstx']['price_last_updated']);
 
-      const xbtcPrice = await getPriceInfo('xBTC');
-      setXbtcPrice(xbtcPrice['last-price'].value);
-      setXbtcBlockUpdate(xbtcPrice['last-block'].value);
-      setXbtcBlockAgoUpdate(currentBlock - xbtcPrice['last-block'].value);
+      setXbtcPrice(response['xbtc']['last_price']);
+      setXbtcBlockUpdate(response['xbtc']['price_last_updated']);
+      setXbtcBlockAgoUpdate(currentBlock - response['xbtc']['price_last_updated']);
 
       setDikoPrice(response['diko']['last_price'] / 1000000);
-      setDikoBlockUpdate(currentBlock);
-      setDikoBlockAgoUpdate(1);
+      setDikoBlockUpdate(response['diko']['price_last_updated']);
+      setDikoBlockAgoUpdate(currentBlock - response['diko']['price_last_updated']);
 
       setUsdaPrice(response['usda']['last_price']);
       setUsdaBlockUpdate(response['usda']['price_last_updated']);
