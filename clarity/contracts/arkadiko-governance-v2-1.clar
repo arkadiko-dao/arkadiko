@@ -188,7 +188,7 @@
     )
     (asserts! (>= start-block-height block-height) (err ERR-BLOCK-HEIGHT-PASSED))
 
-    ;; Requires 1% of the supply 
+    ;; Requires 0.25% of the supply 
     (asserts! (>= (* proposer-total-balance u25) supply) (err ERR-NOT-ENOUGH-BALANCE))
     ;; Mutate
     (map-set proposals
