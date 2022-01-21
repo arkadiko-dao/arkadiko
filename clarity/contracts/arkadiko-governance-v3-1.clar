@@ -13,7 +13,6 @@
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u34)
 (define-constant ERR-BLOCK-HEIGHT-NOT-REACHED u35)
 (define-constant ERR-BLOCK-HEIGHT-PASSED u36)
-(define-constant ERR-NOT-ENOUGH-PARTICIPATION u37)
 (define-constant ERR-NOT-AUTHORIZED u3401)
 (define-constant STATUS-OK u3200)
 
@@ -38,7 +37,7 @@
 )
 
 (define-data-var governance-shutdown-activated bool false)
-(define-data-var proposal-count uint u7)
+(define-data-var proposal-count uint u0)
 (define-data-var proposal-ids (list 100 uint) (list u0))
 (define-map votes-by-member { proposal-id: uint, member: principal } { vote-count: uint })
 (define-map tokens-by-member { proposal-id: uint, member: principal, token: principal } { amount: uint })
@@ -152,7 +151,7 @@
     (end-block-height
       (if (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner))
         (+ start-block-height (max-of u250 vote-length))
-        (+ start-block-height u720)
+        (+ start-block-height u1440)
       )
     )
 
@@ -189,7 +188,7 @@
     (asserts! (>= start-block-height block-height) (err ERR-BLOCK-HEIGHT-PASSED))
 
     ;; Requires 1% of the supply 
-    (asserts! (>= (* proposer-total-balance u25) supply) (err ERR-NOT-ENOUGH-BALANCE))
+    (asserts! (>= (* proposer-total-balance u100) supply) (err ERR-NOT-ENOUGH-BALANCE))
     ;; Mutate
     (map-set proposals
       { id: proposal-id }
@@ -328,11 +327,7 @@
 ;; @param proposal-id; proposal to execute
 ;; @post uint; returns 3200 when executed
 (define-public (end-proposal (proposal-id uint))
-  (let (
-    (proposal (get-proposal-by-id proposal-id))
-    (diko-init-balance (unwrap-panic (contract-call? .arkadiko-token get-balance .arkadiko-diko-init)))
-    (supply (- (unwrap-panic (contract-call? .arkadiko-token get-total-supply)) diko-init-balance))
-  )
+  (let ((proposal (get-proposal-by-id proposal-id)))
     (asserts!
       (and
         (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
@@ -343,7 +338,6 @@
     (asserts! (not (is-eq (get id proposal) u0)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-open proposal) true) (err ERR-NOT-AUTHORIZED))
     (asserts! (>= block-height (get end-block-height proposal)) (err ERR-BLOCK-HEIGHT-NOT-REACHED))
-    (asserts! (>= (* (+ (get no-votes proposal) (get yes-votes proposal)) u5) supply) (err ERR-NOT-ENOUGH-PARTICIPATION))
 
     (map-set proposals
       { id: proposal-id }
