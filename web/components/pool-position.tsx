@@ -35,92 +35,100 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
   const [totalShare, setTotalShare] = useState(0);
   const [stakedLpTokens, setStakedLpTokens] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchPair = async (tokenXAddress: string, tokenXContract: string, tokenYAddress: string, tokenYContract: string) => {
-      const details = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-swap-v2-1',
-        functionName: 'get-pair-details',
-        functionArgs: [
-          contractPrincipalCV(tokenXAddress, tokenXContract),
-          contractPrincipalCV(tokenYAddress, tokenYContract),
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      return cvToJSON(details);
-    };
+  const fetchPair = async (tokenXAddress: string, tokenXContract: string, tokenYAddress: string, tokenYContract: string) => {
+    const details = await callReadOnlyFunction({
+      contractAddress,
+      contractName: 'arkadiko-swap-v2-1',
+      functionName: 'get-pair-details',
+      functionArgs: [
+        contractPrincipalCV(tokenXAddress, tokenXContract),
+        contractPrincipalCV(tokenYAddress, tokenYContract),
+      ],
+      senderAddress: stxAddress || '',
+      network: network,
+    });
+    return cvToJSON(details);
+  };
 
-    const fetchStakedTokens = async (poolName: string) => {
-      let poolContract = '';
-      if (poolName == 'wSTX-DIKO') {
-        poolContract = 'arkadiko-stake-pool-wstx-diko-v1-1';
-      } else if (poolName == 'wSTX-USDA') {
-        poolContract = 'arkadiko-stake-pool-wstx-usda-v1-1';
-      } else if (poolName == 'DIKO-USDA') {
-        poolContract = 'arkadiko-stake-pool-diko-usda-v1-1';
-      } else if (poolName == 'wSTX-xBTC') {
-        poolContract = 'arkadiko-stake-pool-wstx-xbtc-v1-1';
+  const fetchStakedTokens = async (poolName: string) => {
+    let poolContract = '';
+    if (poolName == 'wSTX-DIKO') {
+      poolContract = 'arkadiko-stake-pool-wstx-diko-v1-1';
+    } else if (poolName == 'wSTX-USDA') {
+      poolContract = 'arkadiko-stake-pool-wstx-usda-v1-1';
+    } else if (poolName == 'DIKO-USDA') {
+      poolContract = 'arkadiko-stake-pool-diko-usda-v1-1';
+    } else if (poolName == 'wSTX-xBTC') {
+      poolContract = 'arkadiko-stake-pool-wstx-xbtc-v1-1';
+    } else if (poolName === 'xBTC-USDA') {
+      poolContract = 'arkadiko-stake-pool-xbtc-usda-v1-1';
+    }
+    if (poolContract == '') {
+      return 0;
+    }
+
+    const userLpDikoUsdaStakedCall = await callReadOnlyFunction({
+      contractAddress,
+      contractName: poolContract,
+      functionName: 'get-stake-amount-of',
+      functionArgs: [standardPrincipalCV(stxAddress || '')],
+      senderAddress: stxAddress || '',
+      network: network,
+    });
+    return cvToJSON(userLpDikoUsdaStakedCall).value;
+  };
+
+  const resolvePair = async () => {
+    const json3 = await fetchPair(tokenXAddress, tokenXTrait, tokenYAddress, tokenYTrait);
+    if (json3['success']) {
+      const pairDetails = json3['value']['value']['value'];
+      const stakedTokens = await fetchStakedTokens(
+        pairDetails['name'].value
+      );
+      setStakedLpTokens(stakedTokens);
+
+      const balanceX = pairDetails['balance-x'].value;
+      const balanceY = pairDetails['balance-y'].value;
+
+      const tokenPair = `${tokenX.nameInPair.toLowerCase()}${tokenY.nameInPair.toLowerCase()}`;
+      const totalTokens = pairDetails['shares-total'].value;
+      const tokenXYBalance = Number(state.balance[tokenPair]) + Number(stakedTokens);
+
+      // to make sure data is loaded properly
+      if (state.balance[tokenPair] == undefined) {
+        return;
       }
-      if (poolContract == '') {
-        return 0;
+
+      setTokenPair(tokenPair);
+
+      let totalShare = tokenXYBalance / totalTokens;
+      if (totalShare > 100) {
+        totalShare = 100;
       }
+      const totalBalanceX = balanceX * totalShare;
+      const totalBalanceY = balanceY * totalShare;
 
-      const userLpDikoUsdaStakedCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: poolContract,
-        functionName: 'get-stake-amount-of',
-        functionArgs: [standardPrincipalCV(stxAddress || '')],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      return cvToJSON(userLpDikoUsdaStakedCall).value;
-    };
+      setPooledX(totalBalanceX / Math.pow(10, tokenX['decimals']));
+      setPooledY(totalBalanceY / Math.pow(10, tokenY['decimals']));
+      console.log(totalBalanceX, totalBalanceY);
 
-    const resolvePair = async () => {
-      const json3 = await fetchPair(tokenXAddress, tokenXTrait, tokenYAddress, tokenYTrait);
-      if (json3['success']) {
-        const pairDetails = json3['value']['value']['value'];
-        const stakedTokens = await fetchStakedTokens(
-          pairDetails['name'].value
-        );
-        setStakedLpTokens(stakedTokens);
+      setTotalShare(Number((totalShare * 100).toFixed(5)));
+      setIsLoading(false);
+    }
+  };
 
-        const balanceX = pairDetails['balance-x'].value;
-        const balanceY = pairDetails['balance-y'].value;
-
-        const tokenPair = `${tokenX.nameInPair.toLowerCase()}${tokenY.nameInPair.toLowerCase()}`;
-        const totalTokens = pairDetails['shares-total'].value;
-        const tokenXYBalance = Number(state.balance[tokenPair]) + Number(stakedTokens);
-
-        // to make sure data is loaded properly
-        if (state.balance[tokenPair] == undefined) {
-          return;
-        }
-
-        setTokenPair(tokenPair);
-
-        let totalShare = tokenXYBalance / totalTokens;
-        if (totalShare > 100) {
-          totalShare = 100;
-        }
-        const totalBalanceX = balanceX * totalShare;
-        const totalBalanceY = balanceY * totalShare;
-
-        setPooledX(totalBalanceX / Math.pow(10, tokenX['decimals']));
-        setPooledY(totalBalanceY / Math.pow(10, tokenY['decimals']));
-
-        setTotalShare(Number((totalShare * 100).toFixed(5)));
-        setIsLoading(false);
-      }
-    };
-
-    resolvePair();
-  }, [tokenX, tokenY, state.balance]);
+  const loadData = async () => {
+    const open = !isOpen;
+    setIsOpen(open);
+    if (open && isLoading) {
+      resolvePair();
+    }
+  };
 
   return (
-    <Disclosure as="div" key={''} className="">
+    <Disclosure as="div" key={''} className="" onClick={() => loadData()}>
       {({ open }) => (
         <>
           <dt className="text-lg">
