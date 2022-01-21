@@ -253,7 +253,7 @@ export const Swap: React.FC = () => {
     if (tokenX['name'].toLowerCase() === 'stx') {
       setTokenXAmount(Math.floor(balanceSelectedTokenX) - 1);
     } else {
-      setTokenXAmount(Math.floor(balanceSelectedTokenX));
+      setTokenXAmount(balanceSelectedTokenX);
     }
   };
 
