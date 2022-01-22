@@ -4,7 +4,7 @@ import { StacksMainnet, StacksTestnet } from '@stacks/network';
 const env = process.env.REACT_APP_NETWORK_ENV || 'testnet';
 
 // let coreApiUrl = 'https://mainnet.syvita.org';
-let coreApiUrl = 'https://stacks-node-api.mainnet.stacks.co/';
+let coreApiUrl = 'https://stacks-node-api.mainnet.stacks.co';
 if (env.includes('mocknet')) {
   coreApiUrl = `http://localhost:${process.env.LOCAL_STACKS_API_PORT}`;
   // coreApiUrl = 'https://dull-liger-41.loca.lt';
