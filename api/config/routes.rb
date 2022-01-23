@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   scope '/api/v1' do
+    resources :blockchains, only [:update, :show]
     resources :pools, only: [:index, :show, :update] do
       member do
         get 'volume'
