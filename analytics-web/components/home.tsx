@@ -6,6 +6,7 @@ import HighchartsReact from 'highcharts-react-official';
 import { Pools } from './pools';
 import { Prices } from './prices';
 import { Vaults } from './vaults';
+import { Tvl } from './tvl';
 import { MarketCap } from './market-cap';
 import { TokenPriceSelect } from './token-price-select';
 
@@ -173,6 +174,8 @@ export const Home: React.FC = () => {
         <h1 className="text-2xl text-gray-900 font-headings">Dashboard</h1>
       </div>
       <div className="px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
+        <Tvl />
+
         <section className="mt-8">
           <header className="pb-5 border-b border-gray-200 sm:flex sm:justify-between sm:items-end">
             <h3 className="text-lg leading-6 text-gray-900 font-headings">{tokenGraph.name} price</h3>
