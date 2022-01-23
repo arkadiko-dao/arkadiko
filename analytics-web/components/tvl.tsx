@@ -11,9 +11,14 @@ export const Tvl: React.FC = () => {
 
   useEffect(() => {
     const fetchTvl = async () => {
-      // let response: any = await axios.get(`${apiUrl}/api/v1/blockchains/1`);
-      // response = response['data'];
+      let response: any = await axios.get(`${apiUrl}/api/v1/blockchains/1`);
+      response = response['data'];
+      const swapTvl = response['swap_tvl'];
+      const vaultsTvl = response['vaults_tvl'];
 
+      setSwapTvl(swapTvl);
+      setVaultsTvl(vaultsTvl);
+      setTotalTvl(swapTvl + vaultsTvl);
       setLoadingTvl(false);
     };
 
@@ -33,8 +38,8 @@ export const Tvl: React.FC = () => {
           ) : (
             <p>
               <span className="text-base font-medium text-gray-500">$</span>{' '}
-              <span className="text-4xl font-extrabold text-gray-700 dark:text-zinc-100">
-                {totalTvl}
+              <span className="text-3xl font-extrabold text-gray-700 dark:text-zinc-100">
+                {totalTvl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </p>
           )}
@@ -51,8 +56,8 @@ export const Tvl: React.FC = () => {
           ) : (
             <p>
               <span className="text-base font-medium text-gray-500">$</span>{' '}
-              <span className="text-4xl font-extrabold text-gray-700 dark:text-zinc-100">
-                {vaultsTvl}
+              <span className="text-3xl font-extrabold text-gray-700 dark:text-zinc-100">
+                {vaultsTvl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </p>
           )}
@@ -69,8 +74,8 @@ export const Tvl: React.FC = () => {
           ) : (
             <p>
               <span className="text-base font-medium text-gray-500">$</span>{' '}
-              <span className="text-4xl font-extrabold text-gray-700 dark:text-zinc-100">
-                {swapTvl}
+              <span className="text-3xl font-extrabold text-gray-700 dark:text-zinc-100">
+                {swapTvl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </p>
           )}
