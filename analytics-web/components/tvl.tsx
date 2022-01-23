@@ -1,20 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Placeholder } from '../../web/components/ui/placeholder';
 
 export const Tvl: React.FC = () => {
-  const [loadingPrices, setLoadingPrices] = useState(true);
+  const [loadingTvl, setLoadingTvl] = useState(true);
+  const [totalTvl, setTotalTvl] = useState(0.0);
+  const [vaultsTvl, setVaultsTvl] = useState(0.0);
+  const [swapTvl, setSwapTvl] = useState(0.0);
   const apiUrl = 'https://arkadiko-api.herokuapp.com';
 
   useEffect(() => {
-    const fetchPrices = async () => {
+    const fetchTvl = async () => {
       let response: any = await axios.get(`${apiUrl}/api/v1/blockchains/1`);
       response = response['data'];
+      const swapTvl = response['swap_tvl'];
+      const vaultsTvl = response['vaults_tvl'];
 
-      setLoadingPrices(false);
+      setSwapTvl(swapTvl);
+      setVaultsTvl(vaultsTvl);
+      setTotalTvl(swapTvl + vaultsTvl);
+      setLoadingTvl(false);
     };
 
-    setLoadingPrices(true);
-    fetchPrices();
+    setLoadingTvl(true);
+    fetchTvl();
   }, []);
 
   return (
@@ -24,7 +33,16 @@ export const Tvl: React.FC = () => {
           Total TVL
         </dt>
         <dd className="mt-1 text-3xl font-semibold text-gray-900">
-          71,897
+          {loadingTvl ? (
+            <Placeholder className="justify-end py-2" width={Placeholder.width.FULL} />
+          ) : (
+            <p>
+              <span className="text-base font-medium text-gray-500">$</span>{' '}
+              <span className="text-3xl font-extrabold text-gray-700 dark:text-zinc-100">
+                {totalTvl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </p>
+          )}
         </dd>
       </div>
 
@@ -33,7 +51,16 @@ export const Tvl: React.FC = () => {
           Vaults TVL
         </dt>
         <dd className="mt-1 text-3xl font-semibold text-gray-900">
-          58.16%
+          {loadingTvl ? (
+            <Placeholder className="justify-end py-2" width={Placeholder.width.FULL} />
+          ) : (
+            <p>
+              <span className="text-base font-medium text-gray-500">$</span>{' '}
+              <span className="text-3xl font-extrabold text-gray-700 dark:text-zinc-100">
+                {vaultsTvl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </p>
+          )}
         </dd>
       </div>
 
@@ -42,7 +69,16 @@ export const Tvl: React.FC = () => {
           Swap TVL
         </dt>
         <dd className="mt-1 text-3xl font-semibold text-gray-900">
-          24.57%
+          {loadingTvl ? (
+            <Placeholder className="justify-end py-2" width={Placeholder.width.FULL} />
+          ) : (
+            <p>
+              <span className="text-base font-medium text-gray-500">$</span>{' '}
+              <span className="text-3xl font-extrabold text-gray-700 dark:text-zinc-100">
+                {swapTvl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </p>
+          )}
         </dd>
       </div>
     </dl>
