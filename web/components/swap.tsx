@@ -14,6 +14,10 @@ import {
   AnchorMode,
   contractPrincipalCV,
   uintCV,
+  makeStandardSTXPostCondition,
+  FungibleConditionCode,
+  makeContractFungiblePostCondition,
+  createAssetInfo
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
@@ -279,7 +283,18 @@ export const Swap: React.FC = () => {
     const tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
     let principalX = contractPrincipalCV(tokenX['address'], tokenXTrait);
     let principalY = contractPrincipalCV(tokenY['address'], tokenYTrait);
-    const postConditionMode = 0x01;
+    const amount = uintCV(tokenXAmount * Math.pow(10, tokenX['decimals']));
+
+    let postConditions = [
+      makeStandardSTXPostCondition(stxAddress || '', FungibleConditionCode.Equal, amount.value),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-swap-v2-1',
+        FungibleConditionCode.GreaterEqual,
+        (parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0),
+        createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
+      )
+    ];
     if (inverseDirection) {
       contractName = 'swap-y-for-x';
       const tmpPrincipal = principalX;
@@ -288,9 +303,10 @@ export const Swap: React.FC = () => {
       const tmpName = tokenNameX;
       tokenNameX = tokenNameY;
       tokenNameY = tmpName;
+    } else {
+
     }
 
-    const amount = uintCV(tokenXAmount * Math.pow(10, tokenX['decimals']));
     await doContractCall({
       network,
       contractAddress,
@@ -303,7 +319,7 @@ export const Swap: React.FC = () => {
         amount,
         uintCV((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
       ],
-      postConditionMode,
+      postConditions,
       onFinish: data => {
         console.log('finished swap!', data);
         setState(prevState => ({
