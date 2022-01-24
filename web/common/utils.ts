@@ -7,8 +7,10 @@ const selectedNetwork = localStorage.getItem('arkadiko-stacks-node');
 let coreApiUrl = 'https://stacks-node-api.mainnet.stacks.co';
 if (selectedNetwork) {
   const network = JSON.parse(selectedNetwork);
-  console.log('Arkadiko Stacks Node URL:', network['url']);
-  coreApiUrl = network['url'];
+  if (network['url']) {
+    console.log('Arkadiko Stacks Node URL:', network['url']);
+    coreApiUrl = network['url'];
+  }
 }
 if (env.includes('mocknet')) {
   coreApiUrl = `http://localhost:${process.env.LOCAL_STACKS_API_PORT}`;

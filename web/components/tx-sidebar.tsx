@@ -11,17 +11,14 @@ import { ContractTransaction } from '@components/contract-transaction';
 import { Placeholder } from './ui/placeholder';
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
 
-const networks = [
-  { name: 'Stacks', key: 'stacks', url: 'https://stacks-node-api.mainnet.stacks.co' },
-  { name: 'Syvita', key: 'syvita', url: 'https://mainnet.syvita.org' },
-];
-
 export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
   const address = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [isLoading, setIsLoading] = useState(true);
   const [transactions, setTransactions] = useState<JSX.Element[]>();
   const [pendingTransactions, setPendingTransactions] = useState<JSX.Element[]>();
+
+  const [networks, setNetworks] = useState([]);
   const [selectedNetwork, setSelectedNetwork] = useState(JSON.parse(localStorage.getItem('arkadiko-stacks-node')) || networks[0]);
   const [networkName, setNetworkName] = useState('');
   const [networkAddress, setNetworkAddress] = useState('');
@@ -39,11 +36,11 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
   };
 
   const addNewNetwork = () => {
-    let networks = JSON.parse(localStorage.getItem('arkadiko-stacks-nodes') || []);
+    let networks = JSON.parse(localStorage.getItem('arkadiko-stacks-nodes') || '[]');
     const network = {
       name: networkName,
-      networkAddress: networkAddress,
-      networkKey: networkKey
+      url: networkAddress,
+      key: networkKey
     };
     networks.push(network);
     localStorage.setItem('arkadiko-stacks-nodes', JSON.stringify(networks));
@@ -52,7 +49,6 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
 
   useEffect(() => {
     const network = JSON.parse(localStorage.getItem('arkadiko-stacks-node')) || networks[0];
-    console.log(network);
     if (showSidebar && selectedNetwork['url'] != network['url']) {
       localStorage.setItem('arkadiko-stacks-node', JSON.stringify(selectedNetwork));
       window.location.reload();
@@ -89,6 +85,18 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
       }
     };
 
+    const setAllNetworks = () => {
+      let networks = [
+        { name: 'Stacks', key: 'stacks', url: 'https://stacks-node-api.mainnet.stacks.co' },
+        { name: 'Syvita', key: 'syvita', url: 'https://mainnet.syvita.org' }
+      ];
+      console.log(localStorage.getItem('arkadiko-stacks-nodes') || '[]');
+      let addedNetworks = JSON.parse(localStorage.getItem('arkadiko-stacks-nodes') || '[]');
+      console.log(networks, addedNetworks);
+      setNetworks(networks.concat(addedNetworks));
+    };
+
+    setAllNetworks();
     if (showSidebar) {
       fetchTransations();
     }
@@ -181,7 +189,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                                 }
                               >
                                 {({ selected, active }) => (
-                                  <li>
+                                  <div>
                                     <span
                                       className={`${
                                         selected ? 'font-semibold' : 'font-normal'
@@ -197,7 +205,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                                         <CheckIcon className="w-5 h-5" aria-hidden="true" />
                                       </span>
                                     ) : null}
-                                  </li>
+                                  </div>
                                 )}
                               </Listbox.Option>
                             ))}
