@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { Dialog, Transition, Listbox } from '@headlessui/react';
+import { Disclosure, Dialog, Transition, Listbox } from '@headlessui/react';
 import { XIcon } from '@heroicons/react/outline';
 import { getAccountTransactions, getPendingTransactions } from '@common/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
@@ -170,6 +170,69 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                         </Transition>
                       </Listbox>
                     </div>
+                    <Disclosure>
+                      {() => (
+                        <>
+                          <Disclosure.Button className="flex items-center px-3 py-2 mt-4 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            <span>Add a network</span>
+                          </Disclosure.Button>
+                          <Disclosure.Panel className="p-4 mt-4 text-sm text-gray-700 bg-gray-100 rounded-md dark:bg-zinc-700 dark:text-zinc-100">
+                            Use this form to add a new instance of the Stacks Blockchain API. Make sure you review and trust the host before you add it.
+
+                            <form className="mt-4">
+                              <div className="flex flex-col">
+                                <label htmlFor="name" className="block text-sm font-medium text-gray-500 dark:text-gray-300">
+                                  Name
+                                </label>
+                                <div className="flex mt-1 rounded-md shadow-sm">
+                                  <input
+                                    type="text"
+                                    name="name"
+                                    id="name"
+                                    autoComplete="name"
+                                    className="flex-1 block w-full min-w-0 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="flex flex-col mt-3">
+                                <label htmlFor="address" className="block text-sm font-medium text-gray-500 dark:text-gray-300">
+                                  Address
+                                </label>
+                                <div className="flex mt-1 rounded-md shadow-sm">
+                                  <input
+                                    type="text"
+                                    name="address"
+                                    id="address"
+                                    autoComplete="address"
+                                    className="flex-1 block w-full min-w-0 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="flex flex-col mt-3">
+                                <label htmlFor="key" className="block text-sm font-medium text-gray-500 dark:text-gray-300">
+                                  Key
+                                </label>
+                                <div className="flex mt-1 rounded-md shadow-sm">
+                                  <input
+                                    type="text"
+                                    name="key"
+                                    id="key"
+                                    autoComplete="key"
+                                    className="flex-1 block w-full min-w-0 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                  />
+                                </div>
+                              </div>
+
+                              <button className="flex items-center px-3 py-2 mt-5 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Add network
+                              </button>
+                            </form>
+                          </Disclosure.Panel>
+                        </>
+                      )}
+                    </Disclosure>
                   </div>
 
                   <div className="px-4 py-6 mt-6 bg-indigo-700 sm:px-6">
