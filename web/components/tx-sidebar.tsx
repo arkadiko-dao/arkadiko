@@ -12,8 +12,8 @@ import { Placeholder } from './ui/placeholder';
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
 
 const networks = [
-  { id: 1, name: 'Stacks', url: 'https://stacks-node-api.mainnet.stacks.co' },
-  { id: 2, name: 'Syvita', url: 'https://mainnet.syvita.org' },
+  { name: 'Stacks', key: 'stacks', url: 'https://stacks-node-api.mainnet.stacks.co' },
+  { name: 'Syvita', key: 'syvita', url: 'https://mainnet.syvita.org' },
 ];
 
 export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
@@ -22,7 +22,42 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [transactions, setTransactions] = useState<JSX.Element[]>();
   const [pendingTransactions, setPendingTransactions] = useState<JSX.Element[]>();
-  const [selectedNetwork, setSelectedNetwork] = useState(networks[0]);
+  const [selectedNetwork, setSelectedNetwork] = useState(JSON.parse(localStorage.getItem('arkadiko-stacks-node')) || networks[0]);
+  const [networkName, setNetworkName] = useState('');
+  const [networkAddress, setNetworkAddress] = useState('');
+  const [networkKey, setNetworkKey] = useState('');
+
+  const onInputChange = (event: { target: { name: any; value: any } }) => {
+    const value = event.target.value;
+    if (event.target.name === 'networkName') {
+      setNetworkName(value);
+    } else if (event.target.name === 'networkAddress') {
+      setNetworkAddress(value);
+    } else if (event.target.name === 'networkKey') {
+      setNetworkKey(value);
+    }
+  };
+
+  const addNewNetwork = () => {
+    let networks = JSON.parse(localStorage.getItem('arkadiko-stacks-nodes') || []);
+    const network = {
+      name: networkName,
+      networkAddress: networkAddress,
+      networkKey: networkKey
+    };
+    networks.push(network);
+    localStorage.setItem('arkadiko-stacks-nodes', JSON.stringify(networks));
+    setSelectedNetwork(network);
+  };
+
+  useEffect(() => {
+    const network = JSON.parse(localStorage.getItem('arkadiko-stacks-node')) || networks[0];
+    console.log(network);
+    if (showSidebar && selectedNetwork['url'] != network['url']) {
+      localStorage.setItem('arkadiko-stacks-node', JSON.stringify(selectedNetwork));
+      window.location.reload();
+    }
+  }, [selectedNetwork]);
 
   useEffect(() => {
     let mounted = true;
@@ -138,7 +173,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                           <Listbox.Options className="absolute right-0 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg dark:text-zinc-50 dark:bg-zinc-900 max-h-56 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                             {networks.map(network => (
                               <Listbox.Option
-                                key={network.id}
+                                key={network.key}
                                 value={network}
                                 className={({ active }) =>
                                   `${active ? 'text-white bg-indigo-600' : 'text-gray-900'}
@@ -186,26 +221,28 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                                 </label>
                                 <div className="flex mt-1 rounded-md shadow-sm">
                                   <input
+                                    value={networkName}
+                                    onChange={onInputChange}
                                     type="text"
-                                    name="name"
-                                    id="name"
-                                    autoComplete="name"
-                                    className="flex-1 block w-full min-w-0 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    name="networkName"
+                                    id="networkName"
+                                    className="flex-1 block w-full min-w-0 text-black border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                   />
                                 </div>
                               </div>
 
                               <div className="flex flex-col mt-3">
                                 <label htmlFor="address" className="block text-sm font-medium text-gray-500 dark:text-gray-300">
-                                  Address
+                                  Address (include https://)
                                 </label>
                                 <div className="flex mt-1 rounded-md shadow-sm">
                                   <input
+                                    value={networkAddress}
+                                    onChange={onInputChange}
                                     type="text"
-                                    name="address"
-                                    id="address"
-                                    autoComplete="address"
-                                    className="flex-1 block w-full min-w-0 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    name="networkAddress"
+                                    id="networkAddress"
+                                    className="flex-1 block w-full min-w-0 text-black border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                   />
                                 </div>
                               </div>
@@ -216,16 +253,17 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                                 </label>
                                 <div className="flex mt-1 rounded-md shadow-sm">
                                   <input
+                                    value={networkKey}
+                                    onChange={onInputChange}
                                     type="text"
-                                    name="key"
-                                    id="key"
-                                    autoComplete="key"
-                                    className="flex-1 block w-full min-w-0 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    name="networkKey"
+                                    id="networkKey"
+                                    className="flex-1 block w-full min-w-0 text-black border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                   />
                                 </div>
                               </div>
 
-                              <button className="flex items-center px-3 py-2 mt-5 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                              <button onClick={() => addNewNetwork()} className="flex items-center px-3 py-2 mt-5 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                 Add network
                               </button>
                             </form>
