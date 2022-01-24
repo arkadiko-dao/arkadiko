@@ -90,9 +90,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
         { name: 'Stacks', key: 'stacks', url: 'https://stacks-node-api.mainnet.stacks.co' },
         { name: 'Syvita', key: 'syvita', url: 'https://mainnet.syvita.org' }
       ];
-      console.log(localStorage.getItem('arkadiko-stacks-nodes') || '[]');
       let addedNetworks = JSON.parse(localStorage.getItem('arkadiko-stacks-nodes') || '[]');
-      console.log(networks, addedNetworks);
       setNetworks(networks.concat(addedNetworks));
     };
 
@@ -195,7 +193,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                                         selected ? 'font-semibold' : 'font-normal'
                                       } block truncate dark:text-zinc-50`}
                                     >
-                                      {network.name}
+                                      {network.name} ({network.url})
                                     </span>
                                     {selected ? (
                                       <span
