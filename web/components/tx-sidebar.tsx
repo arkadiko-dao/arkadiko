@@ -121,7 +121,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                   <div className="relative px-4 my-6 sm:px-6">
                     <div className="relative w-72">
                       <Listbox value={selectedNetwork} onChange={setSelectedNetwork}>
-                        <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left bg-white rounded-md shadow-sm cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-zinc-800 dark:border-zinc-800">
+                        <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-300 rounded-md shadow-sm cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-zinc-800 dark:border-zinc-800">
                           <span className="block truncate dark:text-zinc-50">
                             {selectedNetwork.name}
                           </span>
