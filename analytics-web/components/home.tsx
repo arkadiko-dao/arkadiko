@@ -42,8 +42,8 @@ export const Home: React.FC = () => {
       setPools(array);
     };
     const fetchVaults = async () => {
-      const response = await axios.get(`${apiUrl}/api/v1/vaults`);
-      setVaultData(response.data);
+      // const response = await axios.get(`${apiUrl}/api/v1/vaults`);
+      setVaultData([]);
     };
     const fetchDikoPrice = async () => {
       const dikoResponse = await axios.get(`${apiUrl}/api/v1/pools/2/prices`);
