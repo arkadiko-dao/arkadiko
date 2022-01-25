@@ -14,6 +14,7 @@ export const SmartContractBalance = ({ address, description, name }) => {
   const [wstxUsdaBalance, setWstxUsdaBalance] = useState(0.0);
   const [dikoUsdaBalance, setDikoUsdaBalance] = useState(0.0);
   const [wstxXbtcBalance, setWstxXbtcBalance] = useState(0.0);
+  const [xbtcUsdaBalance, setXbtcUsdaBalance] = useState(0.0);
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
@@ -96,6 +97,12 @@ export const SmartContractBalance = ({ address, description, name }) => {
         setXbtcBalance(0.0);
       }
 
+      const xbtcUsdaBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-xbtc-usda::xbtc-usda`];
+      if (xbtcUsdaBalance) {
+        setXbtcUsdaBalance(xbtcUsdaBalance.balance / 1000000);
+      } else {
+        setXbtcUsdaBalance(0.0);
+      }
     };
     if (mounted) {
       void getData();
@@ -214,6 +221,15 @@ export const SmartContractBalance = ({ address, description, name }) => {
                 maximumFractionDigits: 6,
               })}{' '}
               <span className="text-sm font-normal">wSTX/xBTC</span>
+            </p>
+          ) : null}
+          {xbtcUsdaBalance ? (
+            <p className="text-lg font-semibold text-gray-800">
+              {xbtcUsdaBalance.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 6,
+              })}{' '}
+              <span className="text-sm font-normal">xBTC/USDA</span>
             </p>
           ) : null}
         </div>

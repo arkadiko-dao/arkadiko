@@ -6,6 +6,8 @@
 #  last_block_height_imported :bigint
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
+#  vaults_tvl                 :bigint
+#  swap_tvl                   :bigint
 #
 
 one:
