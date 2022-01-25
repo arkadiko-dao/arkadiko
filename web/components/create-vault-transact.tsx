@@ -29,6 +29,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
   const callCollateralizeAndMint = async () => {
     const decimals = coinAmounts['token-type'].toLowerCase().includes('stx') ? 1000000 : 100000000;
     const token = tokenTraits[coinAmounts['token-name'].toLowerCase()]['name'];
+    const tokenAddress = tokenTraits[coinAmounts['token-name'].toLowerCase()]['address'];
     const amount = uintCV(parseInt(coinAmounts['amounts']['collateral'] * decimals, 10));
     const args = [
       amount,
@@ -48,7 +49,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         resolveReserveName(coinAmounts['token-name'].toUpperCase())
       ),
-      contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
+      contractPrincipalCV(tokenAddress, token),
       contractPrincipalCV(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-collateral-types-v1-1'
