@@ -94,7 +94,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
 
     const setAllNetworks = () => {
       let addedNetworks = JSON.parse(localStorage.getItem('arkadiko-stacks-nodes') || '[]');
-      setNetworks(networks.concat(addedNetworks));
+      setNetworks(defaultNetworks.concat(addedNetworks));
     };
 
     setAllNetworks();
