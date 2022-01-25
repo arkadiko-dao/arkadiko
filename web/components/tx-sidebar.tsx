@@ -179,7 +179,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                           leaveFrom="opacity-100"
                           leaveTo="opacity-0"
                         >
-                          <Listbox.Options className="absolute right-0 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg dark:text-zinc-50 dark:bg-zinc-900 max-h-56 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                          <Listbox.Options className="absolute right-0 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg dark:text-zinc-50 dark:bg-zinc-800 max-h-56 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                             {networks.map(network => (
                               <Listbox.Option
                                 key={network.key}
