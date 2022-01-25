@@ -12,6 +12,7 @@ export const tokenList = [
     logo: '/assets/tokens/usda.svg',
     listed: true,
     address: contractAddress,
+    fullName: 'usda-token',
     decimals: 6
   },
   {
@@ -21,6 +22,7 @@ export const tokenList = [
     logo: '/assets/tokens/diko.svg',
     listed: true,
     address: contractAddress,
+    fullName: 'arkadiko-token',
     decimals: 6
   },
   {
@@ -30,6 +32,7 @@ export const tokenList = [
     logo: '/assets/tokens/stx.svg',
     listed: true,
     address: contractAddress,
+    fullName: 'wrapped-stx-token',
     decimals: 6
   },
   {
@@ -39,6 +42,7 @@ export const tokenList = [
     logo: '/assets/tokens/xbtc.svg',
     listed: true,
     address: 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR',
+    fullName: 'Wrapped-Bitcoin',
     decimals: 8
   },
   {
@@ -48,6 +52,7 @@ export const tokenList = [
     logo: '/assets/tokens/welsh.png',
     listed: true,
     address: 'SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G',
+    fullName: 'welshcorgicoin-token',
     decimals: 6
   },
 ];
