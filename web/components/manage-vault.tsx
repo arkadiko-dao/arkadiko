@@ -1007,7 +1007,7 @@ export const ManageVault = ({ match }) => {
                               </Tooltip>
                             </p>
                           </div>
-                          {!loadingStackerData && isVaultOwner && canWithdrawCollateral && Number(vault?.stackedTokens) === 0 && Number(totalDebt) <= 0.1 ? (
+                          {!loadingStackerData && isVaultOwner && canWithdrawCollateral && Number(vault?.stackedTokens) === 0 && Number(totalDebt) <= 0.6 ? (
                             <button
                               type="button"
                               className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
