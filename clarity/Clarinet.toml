@@ -303,14 +303,6 @@ path = "contracts/sip-010-trait-ft-standard.clar"
 depends_on = ["sip-010-trait-ft-standard", "arkadiko-swap-token-wstx-usda", "arkadiko-swap-v2-1", "arkadiko-stake-pool-wstx-usda-v1-1"]
 path = "contracts/arkadiko-liquidation-fund-v1-1.clar"
 
-[contracts.arkadiko-stake-lp-rewards]
-depends_on = ["arkadiko-stake-registry-v1-1", "arkadiko-stake-pool-diko-v1-1"]
-path = "contracts/arkadiko-stake-lp-rewards.clar"
-
-[contracts.arkadiko-stake-lp-rewards-2]
-depends_on = ["arkadiko-stake-registry-v1-1", "arkadiko-stake-pool-diko-v1-1", "arkadiko-stake-lp-rewards"]
-path = "contracts/arkadiko-stake-lp-rewards-2.clar"
-
 [contracts.arkadiko-ui-stake-v1-3]
 depends_on = ["arkadiko-stake-registry-v1-1", "arkadiko-stake-pool-diko-usda-v1-1", "arkadiko-stake-pool-diko-v1-2"]
 path = "contracts/arkadiko-ui-stake-v1-3.clar"
