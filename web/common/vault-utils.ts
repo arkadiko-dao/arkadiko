@@ -1,3 +1,10 @@
+import {
+  makeStandardSTXPostCondition,
+  FungibleConditionCode,
+  makeContractFungiblePostCondition,
+  createAssetInfo
+} from '@stacks/transactions';
+
 export const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
 export const getLiquidationPrice = (
@@ -207,4 +214,17 @@ export const contractsMap = {
 
 export const microToReadable = (amount: number | string, decimals: number = 6) => {
   return parseFloat(`${amount}`) / Math.pow(10, decimals);
+};
+
+export const buildSwapPostConditions = (sender: string, amountSent: bigint, amountReceived: number, tokenX: any, tokenY: any) => {
+  return [
+    makeStandardSTXPostCondition(sender, FungibleConditionCode.Equal, amountSent),
+    makeContractFungiblePostCondition(
+      contractAddress,
+      'arkadiko-swap-v2-1',
+      FungibleConditionCode.GreaterEqual,
+      (parseFloat(amountReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0),
+      createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
+    )
+  ];
 };

@@ -9,20 +9,15 @@ import {
 } from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
-import { microToReadable } from '@common/vault-utils';
 import {
   AnchorMode,
   contractPrincipalCV,
-  uintCV,
-  makeStandardSTXPostCondition,
-  FungibleConditionCode,
-  makeContractFungiblePostCondition,
-  createAssetInfo
+  uintCV
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
-import { tokenTraits } from '@common/vault-utils';
+import { microToReadable, tokenTraits, buildSwapPostConditions } from '@common/vault-utils';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { SwapSettings } from '@components/swap-settings';
 import { getBalance } from '@components/app';
@@ -285,16 +280,6 @@ export const Swap: React.FC = () => {
     let principalY = contractPrincipalCV(tokenY['address'], tokenYTrait);
     const amount = uintCV(tokenXAmount * Math.pow(10, tokenX['decimals']));
 
-    let postConditions = [
-      makeStandardSTXPostCondition(stxAddress || '', FungibleConditionCode.Equal, amount.value),
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-swap-v2-1',
-        FungibleConditionCode.GreaterEqual,
-        (parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0),
-        createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
-      )
-    ];
     if (inverseDirection) {
       contractName = 'swap-y-for-x';
       const tmpPrincipal = principalX;
@@ -303,9 +288,8 @@ export const Swap: React.FC = () => {
       const tmpName = tokenNameX;
       tokenNameX = tokenNameY;
       tokenNameY = tmpName;
-    } else {
-
     }
+    let postConditions = buildSwapPostConditions(stxAddress || '', amount.value, minimumReceived, tokenX, tokenY);
 
     await doContractCall({
       network,
