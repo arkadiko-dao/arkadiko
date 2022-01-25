@@ -11,7 +11,10 @@ import { ContractTransaction } from '@components/contract-transaction';
 import { Placeholder } from './ui/placeholder';
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
 
-const defaultNetwork = { name: 'Stacks', key: 'stacks', url: 'https://stacks-node-api.mainnet.stacks.co' };
+const defaultNetworks = [
+  { name: 'Stacks', key: 'stacks', url: 'https://stacks-node-api.mainnet.stacks.co' },
+  { name: 'Syvita', key: 'syvita', url: 'https://mainnet.syvita.org' },
+];
 
 export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
   const address = useSTXAddress();
@@ -22,7 +25,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
 
   const [networks, setNetworks] = useState([]);
   const [selectedNetwork, setSelectedNetwork] = useState(
-    JSON.parse(localStorage.getItem('arkadiko-stacks-node') || JSON.stringify(defaultNetwork))
+    JSON.parse(localStorage.getItem('arkadiko-stacks-node') || JSON.stringify(defaultNetworks[0]))
   );
   const [networkName, setNetworkName] = useState('');
   const [networkAddress, setNetworkAddress] = useState('');
@@ -90,10 +93,6 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
     };
 
     const setAllNetworks = () => {
-      let networks = [
-        { name: 'Stacks', key: 'stacks', url: 'https://stacks-node-api.mainnet.stacks.co' },
-        { name: 'Syvita', key: 'syvita', url: 'https://mainnet.syvita.org' },
-      ];
       let addedNetworks = JSON.parse(localStorage.getItem('arkadiko-stacks-nodes') || '[]');
       setNetworks(networks.concat(addedNetworks));
     };
