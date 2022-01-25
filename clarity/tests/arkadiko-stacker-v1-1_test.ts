@@ -441,538 +441,538 @@ Clarinet.test({
   }
 });
 
-// Clarinet.test({
-//   name: "stacker: payout vault while stacking in progress",
-//   async fn(chain: Chain, accounts: Map<string, Account>) {
-//     let deployer = accounts.get("deployer")!;
+Clarinet.test({
+  name: "stacker: payout vault while stacking in progress",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
 
-//     let oracleManager = new OracleManager(chain, deployer);
-//     let vaultManager = new VaultManager(chain, deployer);
-//     let stacker = new Stacker(chain, deployer);
-//     let stackerPayer = new StackerPayer(chain, deployer);
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+    let stackerPayer = new StackerPayer(chain, deployer);
 
-//     // Set price, create vault
-//     oracleManager.updatePrice("STX", 4);
-//     vaultManager.createVault(deployer, "STX-A", 21000000, 1000, true, true);
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 4);
+    vaultManager.createVault(deployer, "STX-A", 21000000, 1000, true, true);
 
-//     let call:any = stacker.getStxBalance();
-//     call.result.expectUintWithDecimals(0);
+    let call:any = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(0);
 
-//     let result = stacker.initiateStacking(1, 1);
-//     result.expectOk().expectUintWithDecimals(21000000)
+    let result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(21000000)
 
-//     call = stacker.getStxBalance();
-//     call.result.expectUintWithDecimals(21000000);
+    call = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(21000000);
 
-//     call = stacker.getStackingUnlockHeight();
-//     call.result.expectOk().expectUint(300);
+    call = stacker.getStackingUnlockHeight();
+    call.result.expectOk().expectUint(300);
 
-//     result = stackerPayer.setStackingStxReceived(1000);
-//     result.expectOk().expectBool(true)
+    result = stackerPayer.setStackingStxReceived(1000);
+    result.expectOk().expectBool(true)
 
-//     // Payout should fail as burn block height not reached yet
-//     result = stackerPayer.payout(1);
-//     result.expectErr().expectUint(222)
+    // Payout should fail as burn block height not reached yet
+    result = stackerPayer.payout(1);
+    result.expectErr().expectUint(222)
 
-//     call = vaultManager.getVaultById(1);
-//     let vault = call.result.expectTuple();
-//     vault['stacked-tokens'].expectUintWithDecimals(21000000);
-//     vault['collateral'].expectUintWithDecimals(21000000);
-//   }
-// });
+    call = vaultManager.getVaultById(1);
+    let vault = call.result.expectTuple();
+    vault['stacked-tokens'].expectUintWithDecimals(21000000);
+    vault['collateral'].expectUintWithDecimals(21000000);
+  }
+});
 
-// Clarinet.test({
-//   name: "stacker: payout without setting STX received",
-//   async fn(chain: Chain, accounts: Map<string, Account>) {
-//     let deployer = accounts.get("deployer")!;
+Clarinet.test({
+  name: "stacker: payout without setting STX received",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
 
-//     let oracleManager = new OracleManager(chain, deployer);
-//     let vaultManager = new VaultManager(chain, deployer);
-//     let stacker = new Stacker(chain, deployer);
-//     let stackerPayer = new StackerPayer(chain, deployer);
-//     let stxReserve = new StxReserve(chain, deployer);
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+    let stackerPayer = new StackerPayer(chain, deployer);
+    let stxReserve = new StxReserve(chain, deployer);
 
-//     // Set price, create vault
-//     oracleManager.updatePrice("STX", 4);
-//     vaultManager.createVault(deployer, "STX-A", 21000000, 1000, true, false);
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 4);
+    vaultManager.createVault(deployer, "STX-A", 21000000, 1000, true, false);
 
-//     let call:any = stxReserve.getTokensToStack("stacker");
-//     call.result.expectOk().expectUintWithDecimals(21000000); 
+    let call:any = stxReserve.getTokensToStack("stacker");
+    call.result.expectOk().expectUintWithDecimals(21000000); 
 
-//     let result = stacker.initiateStacking(1, 1);
-//     result.expectOk().expectUintWithDecimals(21000000);
+    let result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(21000000);
 
-//     call = stacker.getStxBalance();
-//     call.result.expectUintWithDecimals(21000000);
+    call = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(21000000);
 
-//     chain.mineEmptyBlock(300);
+    chain.mineEmptyBlock(300);
 
-//     // trigger payout - but there is 0 STX to pay out
-//     result = stackerPayer.payout(1);
-//     result.expectOk().expectBool(true);
+    // trigger payout - but there is 0 STX to pay out
+    result = stackerPayer.payout(1);
+    result.expectOk().expectBool(true);
 
-//     // Vault collateral has not changed
-//     call = vaultManager.getVaultById(1);
-//     let vault = call.result.expectTuple();
-//     vault['stacked-tokens'].expectUintWithDecimals(21000000);
-//     vault['collateral'].expectUintWithDecimals(21000000);
-//   }
-// });
+    // Vault collateral has not changed
+    call = vaultManager.getVaultById(1);
+    let vault = call.result.expectTuple();
+    vault['stacked-tokens'].expectUintWithDecimals(21000000);
+    vault['collateral'].expectUintWithDecimals(21000000);
+  }
+});
 
-// Clarinet.test({
-//   name: "stacker: vault rewards should auto-harvest after payout",
-//   async fn(chain: Chain, accounts: Map<string, Account>) {
-//     let deployer = accounts.get("deployer")!;
+Clarinet.test({
+  name: "stacker: vault rewards should auto-harvest after payout",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
 
-//     let oracleManager = new OracleManager(chain, deployer);
-//     let vaultManager = new VaultManager(chain, deployer);
-//     let stacker = new Stacker(chain, deployer);
-//     let stackerPayer = new StackerPayer(chain, deployer);
-//     let stxReserve = new StxReserve(chain, deployer);
-//     let dikoToken = new DikoToken(chain, deployer);
-//     let vaultRewards = new VaultRewards(chain, deployer);
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+    let stackerPayer = new StackerPayer(chain, deployer);
+    let stxReserve = new StxReserve(chain, deployer);
+    let dikoToken = new DikoToken(chain, deployer);
+    let vaultRewards = new VaultRewards(chain, deployer);
 
-//     // Set price, create vault
-//     oracleManager.updatePrice("STX", 4);
-//     vaultManager.createVault(deployer, "STX-A", 21000000, 1000, true, false);
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 4);
+    vaultManager.createVault(deployer, "STX-A", 21000000, 1000, true, false);
 
-//     let call:any = stxReserve.getTokensToStack("stacker");
-//     call.result.expectOk().expectUintWithDecimals(21000000);
+    let call:any = stxReserve.getTokensToStack("stacker");
+    call.result.expectOk().expectUintWithDecimals(21000000);
 
-//     let result = stacker.initiateStacking(1, 1);
-//     result.expectOk().expectUintWithDecimals(21000000)
+    let result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(21000000)
   
-//     call = stacker.getStxBalance();
-//     call.result.expectUintWithDecimals(21000000);
+    call = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(21000000);
 
-//     // Rewards after 2 blocks
-//     call = vaultRewards.getPendingRewards(deployer);
-//     call.result.expectOk().expectUintWithDecimals(630)
+    // Rewards after 2 blocks
+    call = vaultRewards.getPendingRewards(deployer);
+    call.result.expectOk().expectUintWithDecimals(630)
 
-//     chain.mineEmptyBlock(300);
+    chain.mineEmptyBlock(300);
 
-//     // Rewards after 302 blocks
-//     call = vaultRewards.getPendingRewards(deployer);
-//     call.result.expectOk().expectUintWithDecimals(96621)
+    // Rewards after 302 blocks
+    call = vaultRewards.getPendingRewards(deployer);
+    call.result.expectOk().expectUintWithDecimals(96621)
 
-//     // Initial DIKO balance
-//     call = dikoToken.balanceOf(deployer.address);
-//     call.result.expectOk().expectUintWithDecimals(890000);   
+    // Initial DIKO balance
+    call = dikoToken.balanceOf(deployer.address);
+    call.result.expectOk().expectUintWithDecimals(890000);   
 
-//     // Collateral info
-//     call = vaultRewards.getCollateralOf(deployer);
-//     let collateralInfo = call.result.expectTuple();
-//     collateralInfo['cumm-reward-per-collateral'].expectUint(0);
-//     collateralInfo['collateral'].expectUintWithDecimals(21000000);
+    // Collateral info
+    call = vaultRewards.getCollateralOf(deployer);
+    let collateralInfo = call.result.expectTuple();
+    collateralInfo['cumm-reward-per-collateral'].expectUint(0);
+    collateralInfo['collateral'].expectUintWithDecimals(21000000);
     
-//     // Payout should restart vault rewards
-//     result = stackerPayer.setStackingStxReceived(1000);
-//     result.expectOk().expectBool(true)
-//     result = stackerPayer.payout(1);
-//     result.expectOk().expectBool(true)
+    // Payout should restart vault rewards
+    result = stackerPayer.setStackingStxReceived(1000);
+    result.expectOk().expectBool(true)
+    result = stackerPayer.payout(1);
+    result.expectOk().expectBool(true)
 
-//     // Auto harvested DIKO
-//     call = dikoToken.balanceOf(deployer.address);
-//     call.result.expectOk().expectUintWithDecimals(986957);   
+    // Auto harvested DIKO
+    call = dikoToken.balanceOf(deployer.address);
+    call.result.expectOk().expectUintWithDecimals(986957);   
 
-//     // Pending rewards only for 1 block
-//     call = vaultRewards.getPendingRewards(deployer);
-//     call.result.expectOk().expectUintWithDecimals(315.015);
+    // Pending rewards only for 1 block
+    call = vaultRewards.getPendingRewards(deployer);
+    call.result.expectOk().expectUintWithDecimals(315.015);
 
-//     // Reward info - cumm reward and collateral is now updated
-//     call = vaultRewards.getCollateralOf(deployer);
-//     collateralInfo = call.result.expectTuple();
-//     collateralInfo['cumm-reward-per-collateral'].expectUintWithDecimals(0.004617);
-//     collateralInfo['collateral'].expectUintWithDecimals(21001000);
+    // Reward info - cumm reward and collateral is now updated
+    call = vaultRewards.getCollateralOf(deployer);
+    collateralInfo = call.result.expectTuple();
+    collateralInfo['cumm-reward-per-collateral'].expectUintWithDecimals(0.004617);
+    collateralInfo['collateral'].expectUintWithDecimals(21001000);
 
-//     // Vault info is updated
-//     call = vaultManager.getVaultById(1);
-//     let vault = call.result.expectTuple();
-//     vault['stacked-tokens'].expectUintWithDecimals(21001000);
-//     vault['collateral'].expectUintWithDecimals(21001000);
-//   }
-// });
+    // Vault info is updated
+    call = vaultManager.getVaultById(1);
+    let vault = call.result.expectTuple();
+    vault['stacked-tokens'].expectUintWithDecimals(21001000);
+    vault['collateral'].expectUintWithDecimals(21001000);
+  }
+});
 
-// Clarinet.test({
-//   name: "stacker: payout one vault on auto-payoff",
-//   async fn(chain: Chain, accounts: Map<string, Account>) {
-//     let deployer = accounts.get("deployer")!;
+Clarinet.test({
+  name: "stacker: payout one vault on auto-payoff",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
 
-//     let oracleManager = new OracleManager(chain, deployer);
-//     let vaultManager = new VaultManager(chain, deployer);
-//     let stacker = new Stacker(chain, deployer);
-//     let stackerPayer = new StackerPayer(chain, deployer);
-//     let stxReserve = new StxReserve(chain, deployer);
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+    let stackerPayer = new StackerPayer(chain, deployer);
+    let stxReserve = new StxReserve(chain, deployer);
 
-//     // Need wSTX-USDA liquidity to swap STX yield to USDA to payoff debt
-//     // We set 1 STX = 1 USDA
-//     let swap = new Swap(chain, deployer);
-//     let result = swap.createPair(deployer,
-//       'wrapped-stx-token',
-//       'usda-token',
-//       'arkadiko-swap-token-wstx-usda',
-//       "wSTX-USDA", 
-//       10000, 
-//       10000);
-//     result.expectOk().expectBool(true);
+    // Need wSTX-USDA liquidity to swap STX yield to USDA to payoff debt
+    // We set 1 STX = 1 USDA
+    let swap = new Swap(chain, deployer);
+    let result = swap.createPair(deployer,
+      'wrapped-stx-token',
+      'usda-token',
+      'arkadiko-swap-token-wstx-usda',
+      "wSTX-USDA", 
+      10000, 
+      10000);
+    result.expectOk().expectBool(true);
 
-//     // Set price, create vault
-//     oracleManager.updatePrice("STX", 4);
-//     vaultManager.createVault(deployer, "STX-A", 21000000, 1000, true, true);
-//     vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 4);
+    vaultManager.createVault(deployer, "STX-A", 21000000, 1000, true, true);
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
 
-//     // Only the STX from the first vault will be stacked
-//     let call:any = stxReserve.getTokensToStack("stacker");
-//     call.result.expectOk().expectUintWithDecimals(21000000);
+    // Only the STX from the first vault will be stacked
+    let call:any = stxReserve.getTokensToStack("stacker");
+    call.result.expectOk().expectUintWithDecimals(21000000);
 
-//     // Check initial vault data
-//     call = vaultManager.getVaultById(1);
-//     let vault = call.result.expectTuple();
-//     vault['stacked-tokens'].expectUintWithDecimals(21000000);
-//     vault['collateral'].expectUintWithDecimals(21000000);
-//     vault['debt'].expectUintWithDecimals(1000);
+    // Check initial vault data
+    call = vaultManager.getVaultById(1);
+    let vault = call.result.expectTuple();
+    vault['stacked-tokens'].expectUintWithDecimals(21000000);
+    vault['collateral'].expectUintWithDecimals(21000000);
+    vault['debt'].expectUintWithDecimals(1000);
 
-//     result = stacker.initiateStacking(1, 1);
-//     result.expectOk().expectUintWithDecimals(21000000);
+    result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(21000000);
 
-//     call = stacker.getStxBalance();
-//     call.result.expectUintWithDecimals(21000000);
+    call = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(21000000);
 
-//     chain.mineEmptyBlock(300);
+    chain.mineEmptyBlock(300);
 
-//     // now imagine we receive 100 STX for stacking
-//     // and then payout vault 1 (which was the only stacker)
-//     result = stackerPayer.setStackingStxReceived(100);
-//     result.expectOk().expectBool(true)
-//     result = stackerPayer.payout(1);
-//     result.expectOk().expectBool(true)
+    // now imagine we receive 100 STX for stacking
+    // and then payout vault 1 (which was the only stacker)
+    result = stackerPayer.setStackingStxReceived(100);
+    result.expectOk().expectBool(true)
+    result = stackerPayer.payout(1);
+    result.expectOk().expectBool(true)
 
-//     // Check vault data
-//     call = vaultManager.getVaultById(1);
-//     vault = call.result.expectTuple();
-//     vault['stacked-tokens'].expectUintWithDecimals(21000000);
-//     vault['collateral'].expectUintWithDecimals(21000000);
+    // Check vault data
+    call = vaultManager.getVaultById(1);
+    vault = call.result.expectTuple();
+    vault['stacked-tokens'].expectUintWithDecimals(21000000);
+    vault['collateral'].expectUintWithDecimals(21000000);
 
-//     // Initial debt was 1000 USDA. We got 100 STX from PoX and swaped it to USDA.
-//     // 1000 - 100 = ~900 debt left (a bit more because of slippage on swap)
-//     vault['debt'].expectUintWithDecimals(901.515541);
-//   }
-// });
+    // Initial debt was 1000 USDA. We got 100 STX from PoX and swaped it to USDA.
+    // 1000 - 100 = ~900 debt left (a bit more because of slippage on swap)
+    vault['debt'].expectUintWithDecimals(901.515541);
+  }
+});
 
-// Clarinet.test({
-//   name: "stacker: create vault without pox",
-//   async fn(chain: Chain, accounts: Map<string, Account>) {
-//     let deployer = accounts.get("deployer")!;
+Clarinet.test({
+  name: "stacker: create vault without pox",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
 
-//     let oracleManager = new OracleManager(chain, deployer);
-//     let vaultManager = new VaultManager(chain, deployer);
-//     let stxReserve = new StxReserve(chain, deployer);
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stxReserve = new StxReserve(chain, deployer);
 
-//     // Set price, create vault
-//     oracleManager.updatePrice("STX", 4);
-//     vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 4);
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
 
-//     // No tokens to stack as stack-pox option was not set
-//     let call:any = stxReserve.getTokensToStack("stacker");
-//     call.result.expectOk().expectUint(0);
-//   }
-// });
+    // No tokens to stack as stack-pox option was not set
+    let call:any = stxReserve.getTokensToStack("stacker");
+    call.result.expectOk().expectUint(0);
+  }
+});
 
-// Clarinet.test({
-//   name: "stacker: handle excess USDA for vault on auto-payoff",
-//   async fn(chain: Chain, accounts: Map<string, Account>) {
-//     let deployer = accounts.get("deployer")!;
-//     let wallet_1 = accounts.get("wallet_1")!;
+Clarinet.test({
+  name: "stacker: handle excess USDA for vault on auto-payoff",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
 
-//     let oracleManager = new OracleManager(chain, deployer);
-//     let vaultManager = new VaultManager(chain, deployer);
-//     let stacker = new Stacker(chain, deployer);
-//     let stackerPayer = new StackerPayer(chain, deployer);
-//     let usdaToken = new UsdaToken(chain, deployer);
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+    let stackerPayer = new StackerPayer(chain, deployer);
+    let usdaToken = new UsdaToken(chain, deployer);
 
-//     // Need wSTX-USDA liquidity to swap STX yield to USDA to payoff debt
-//     // We set 1 STX = 1 USDA
-//     let swap = new Swap(chain, deployer);
-//     let result = swap.createPair(deployer,
-//       'wrapped-stx-token',
-//       'usda-token',
-//       'arkadiko-swap-token-wstx-usda',
-//       "wSTX-USDA", 
-//       10000, 
-//       10000);
-//     result.expectOk().expectBool(true);
+    // Need wSTX-USDA liquidity to swap STX yield to USDA to payoff debt
+    // We set 1 STX = 1 USDA
+    let swap = new Swap(chain, deployer);
+    let result = swap.createPair(deployer,
+      'wrapped-stx-token',
+      'usda-token',
+      'arkadiko-swap-token-wstx-usda',
+      "wSTX-USDA", 
+      10000, 
+      10000);
+    result.expectOk().expectBool(true);
 
-//     // Set price, create vault
-//     oracleManager.updatePrice("STX", 4);
-//     vaultManager.createVault(wallet_1, "STX-A", 21000000, 1, true, true);
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 4);
+    vaultManager.createVault(wallet_1, "STX-A", 21000000, 1, true, true);
 
-//     // We need to make sure there is enough STX in the reserve to perform the auto payoff
-//     // On prod we will swap PoX yield to STX and transfer it to the reserve
-//     // Here we just create a second vault to ahve additional STX available in the reserve
-//     vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
+    // We need to make sure there is enough STX in the reserve to perform the auto payoff
+    // On prod we will swap PoX yield to STX and transfer it to the reserve
+    // Here we just create a second vault to ahve additional STX available in the reserve
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
 
-//     result = stacker.initiateStacking(1, 1);
-//     result.expectOk().expectUintWithDecimals(21000000);
+    result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(21000000);
 
-//     chain.mineEmptyBlock(300);
+    chain.mineEmptyBlock(300);
 
-//     // Initial + 1
-//     let call:any = usdaToken.balanceOf(wallet_1.address);
-//     call.result.expectOk().expectUintWithDecimals(1000001);   
+    // Initial + 1
+    let call:any = usdaToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(1000001);   
 
-//     // now imagine we receive 100 STX for stacking
-//     // and then payout vault 1 (which was the only stacker)
-//     result = stackerPayer.setStackingStxStacked(21000000);
-//     result.expectOk().expectBool(true)
-//     result = stackerPayer.setStackingStxReceived(100)
-//     result.expectOk().expectBool(true)
-//     result = stackerPayer.payout(1);
+    // now imagine we receive 100 STX for stacking
+    // and then payout vault 1 (which was the only stacker)
+    result = stackerPayer.setStackingStxStacked(21000000);
+    result.expectOk().expectBool(true)
+    result = stackerPayer.setStackingStxReceived(100)
+    result.expectOk().expectBool(true)
+    result = stackerPayer.payout(1);
 
-//     // Check vault data
-//     call = vaultManager.getVaultById(1);
-//     let vault = call.result.expectTuple();
-//     vault['stacked-tokens'].expectUintWithDecimals(21000000);
-//     vault['collateral'].expectUintWithDecimals(21000000);
-//     vault['debt'].expectUint(0); // PoX yield has paid back all dept
+    // Check vault data
+    call = vaultManager.getVaultById(1);
+    let vault = call.result.expectTuple();
+    vault['stacked-tokens'].expectUintWithDecimals(21000000);
+    vault['collateral'].expectUintWithDecimals(21000000);
+    vault['debt'].expectUint(0); // PoX yield has paid back all dept
 
-//     // Excess yield has been transferred to the user's wallet
-//     // User got ~97 USDA extra
-//     call = usdaToken.balanceOf(wallet_1.address);
-//     call.result.expectOk().expectUintWithDecimals(1000098.715803);
-//   }
-// });
+    // Excess yield has been transferred to the user's wallet
+    // User got ~97 USDA extra
+    call = usdaToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(1000098.715803);
+  }
+});
 
-// Clarinet.test({
-//   name: "stacker: toggle stacking for vault on auto-payoff",
-//   async fn(chain: Chain, accounts: Map<string, Account>) {
-//     let deployer = accounts.get("deployer")!;
+Clarinet.test({
+  name: "stacker: toggle stacking for vault on auto-payoff",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
 
-//     let oracleManager = new OracleManager(chain, deployer);
-//     let vaultManager = new VaultManager(chain, deployer);
-//     let stacker = new Stacker(chain, deployer);
-//     let stackerPayer = new StackerPayer(chain, deployer);
-//     let usdaToken = new UsdaToken(chain, deployer);
-//     let stxReserve = new StxReserve(chain, deployer);
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+    let stackerPayer = new StackerPayer(chain, deployer);
+    let usdaToken = new UsdaToken(chain, deployer);
+    let stxReserve = new StxReserve(chain, deployer);
 
-//     // Need wSTX-USDA liquidity to swap STX yield to USDA to payoff debt
-//     // We set 1 STX = 1 USDA
-//     let swap = new Swap(chain, deployer);
-//     let result = swap.createPair(deployer,
-//       'wrapped-stx-token',
-//       'usda-token',
-//       'arkadiko-swap-token-wstx-usda',
-//       "wSTX-USDA", 
-//       10000, 
-//       10000);
-//     result.expectOk().expectBool(true);
+    // Need wSTX-USDA liquidity to swap STX yield to USDA to payoff debt
+    // We set 1 STX = 1 USDA
+    let swap = new Swap(chain, deployer);
+    let result = swap.createPair(deployer,
+      'wrapped-stx-token',
+      'usda-token',
+      'arkadiko-swap-token-wstx-usda',
+      "wSTX-USDA", 
+      10000, 
+      10000);
+    result.expectOk().expectBool(true);
 
-//     // Set price, create vault
-//     oracleManager.updatePrice("STX", 4);
-//     vaultManager.createVault(deployer, "STX-A", 21000000, 1000, true, true);
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 4);
+    vaultManager.createVault(deployer, "STX-A", 21000000, 1000, true, true);
 
-//     // We need to make sure there is enough STX in the reserve to perform the auto payoff
-//     // On prod we will swap PoX yield to STX and transfer it to the reserve
-//     // Here we just create a second vault to ahve additional STX available in the reserve
-//     vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
+    // We need to make sure there is enough STX in the reserve to perform the auto payoff
+    // On prod we will swap PoX yield to STX and transfer it to the reserve
+    // Here we just create a second vault to ahve additional STX available in the reserve
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
 
-//     // STX from vault 1 and 2 stacked
-//     let call:any = stxReserve.getTokensToStack("stacker");
-//     call.result.expectOk().expectUintWithDecimals(21000000); 
+    // STX from vault 1 and 2 stacked
+    let call:any = stxReserve.getTokensToStack("stacker");
+    call.result.expectOk().expectUintWithDecimals(21000000); 
 
-//     // Check initial vault data
-//     call = vaultManager.getVaultById(1);
-//     let vault = call.result.expectTuple();
-//     vault['stacked-tokens'].expectUintWithDecimals(21000000);
-//     vault['collateral'].expectUintWithDecimals(21000000);
-//     vault['debt'].expectUintWithDecimals(1000);
+    // Check initial vault data
+    call = vaultManager.getVaultById(1);
+    let vault = call.result.expectTuple();
+    vault['stacked-tokens'].expectUintWithDecimals(21000000);
+    vault['collateral'].expectUintWithDecimals(21000000);
+    vault['debt'].expectUintWithDecimals(1000);
 
-//     result = stacker.initiateStacking(1, 1);
-//     result.expectOk().expectUintWithDecimals(21000000);
+    result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(21000000);
 
-//     call = stacker.getStxBalance();
-//     call.result.expectUintWithDecimals(21000000);
+    call = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(21000000);
 
-//     chain.mineEmptyBlock(300);
+    chain.mineEmptyBlock(300);
 
-//     // Turn off stacking
-//     result = vaultManager.toggleStacking(deployer, 1);
-//     result.expectOk().expectBool(true);
+    // Turn off stacking
+    result = vaultManager.toggleStacking(deployer, 1);
+    result.expectOk().expectBool(true);
 
-//     // now imagine we receive 1 STX for stacking
-//     // and then payout vault 1 (which was the only stacker)
-//     result = stackerPayer.setStackingStxReceived(1);
-//     result.expectOk().expectBool(true);
-//     result = stackerPayer.payout(1);
-//     result.expectOk().expectBool(true);
+    // now imagine we receive 1 STX for stacking
+    // and then payout vault 1 (which was the only stacker)
+    result = stackerPayer.setStackingStxReceived(1);
+    result.expectOk().expectBool(true);
+    result = stackerPayer.payout(1);
+    result.expectOk().expectBool(true);
 
-//     // Check vault data
-//     call = vaultManager.getVaultById(1);
-//     vault = call.result.expectTuple();
-//     vault['stacked-tokens'].expectUint(0);
-//   }
-// });
+    // Check vault data
+    call = vaultManager.getVaultById(1);
+    vault = call.result.expectTuple();
+    vault['stacked-tokens'].expectUint(0);
+  }
+});
 
-// Clarinet.test({
-//   name: "stacker: yield is not enough to pay off stability in USDA",
-//   async fn(chain: Chain, accounts: Map<string, Account>) {
-//     let deployer = accounts.get("deployer")!;
-//     let wallet_1 = accounts.get("wallet_1")!;
+Clarinet.test({
+  name: "stacker: yield is not enough to pay off stability in USDA",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
 
-//     let oracleManager = new OracleManager(chain, deployer);
-//     let vaultManager = new VaultManager(chain, deployer);
-//     let stacker = new Stacker(chain, deployer);
-//     let stackerPayer = new StackerPayer(chain, deployer);
-//     let usdaToken = new UsdaToken(chain, deployer);
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+    let stackerPayer = new StackerPayer(chain, deployer);
+    let usdaToken = new UsdaToken(chain, deployer);
 
-//     // Need wSTX-USDA liquidity to swap STX yield to USDA to payoff debt
-//     // We set 1 STX = 1 USDA
-//     let swap = new Swap(chain, deployer);
-//     let result = swap.createPair(deployer,
-//       'wrapped-stx-token',
-//       'usda-token',
-//       'arkadiko-swap-token-wstx-usda',
-//       "wSTX-USDA", 
-//       10000, 
-//       10000);
-//     result.expectOk().expectBool(true);
+    // Need wSTX-USDA liquidity to swap STX yield to USDA to payoff debt
+    // We set 1 STX = 1 USDA
+    let swap = new Swap(chain, deployer);
+    let result = swap.createPair(deployer,
+      'wrapped-stx-token',
+      'usda-token',
+      'arkadiko-swap-token-wstx-usda',
+      "wSTX-USDA", 
+      10000, 
+      10000);
+    result.expectOk().expectBool(true);
 
-//     // Set price, create vault
-//     oracleManager.updatePrice("STX", 400);
-//     vaultManager.createVault(wallet_1, "STX-A", 12100000, 10000, true, true);
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 400);
+    vaultManager.createVault(wallet_1, "STX-A", 12100000, 10000, true, true);
 
-//     // We need to make sure there is enough STX in the reserve to perform the auto payoff
-//     // On prod we will swap PoX yield to STX and transfer it to the reserve
-//     // Here we just create a second vault to ahve additional STX available in the reserve
-//     vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
+    // We need to make sure there is enough STX in the reserve to perform the auto payoff
+    // On prod we will swap PoX yield to STX and transfer it to the reserve
+    // Here we just create a second vault to ahve additional STX available in the reserve
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
 
-//     result = stacker.initiateStacking(1, 1);
-//     result.expectOk().expectUintWithDecimals(12100000);
+    result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(12100000);
 
-//     chain.mineEmptyBlock(300);
+    chain.mineEmptyBlock(300);
 
-//     // Initial + 1
-//     let call:any = usdaToken.balanceOf(wallet_1.address);
-//     call.result.expectOk().expectUintWithDecimals(1010000);
+    // Initial + 1
+    let call:any = usdaToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(1010000);
 
-//     // Check vault data
-//     call = vaultManager.getVaultById(1);
-//     let vault = call.result.expectTuple();
-//     vault['stacked-tokens'].expectUintWithDecimals(12100000);
-//     vault['collateral'].expectUintWithDecimals(12100000);
-//     vault['debt'].expectUint(10000000000); // 1000 USDA
+    // Check vault data
+    call = vaultManager.getVaultById(1);
+    let vault = call.result.expectTuple();
+    vault['stacked-tokens'].expectUintWithDecimals(12100000);
+    vault['collateral'].expectUintWithDecimals(12100000);
+    vault['debt'].expectUint(10000000000); // 1000 USDA
     
-//     // now imagine we receive 1 STX for stacking
-//     // and then payout vault 1 (which was the only stacker)
-//     result = stacker.requestStxForPayout(21000);
-//     result.expectOk().expectBool(true);
-//     result = stackerPayer.setStackingStxStacked(21000000);
-//     result.expectOk().expectBool(true)
-//     result = stackerPayer.setStackingStxReceived(1); // 1 STX token in yield (1 * 10^6)
-//     result.expectOk().expectBool(true)
-//     result = stackerPayer.payout(1);
-//     result.expectOk().expectBool(true)
+    // now imagine we receive 1 STX for stacking
+    // and then payout vault 1 (which was the only stacker)
+    result = stacker.requestStxForPayout(21000);
+    result.expectOk().expectBool(true);
+    result = stackerPayer.setStackingStxStacked(21000000);
+    result.expectOk().expectBool(true)
+    result = stackerPayer.setStackingStxReceived(1); // 1 STX token in yield (1 * 10^6)
+    result.expectOk().expectBool(true)
+    result = stackerPayer.payout(1);
+    result.expectOk().expectBool(true)
 
-//     // Check vault data
-//     call = vaultManager.getVaultById(1);
-//     vault = call.result.expectTuple();
-//     vault['stacked-tokens'].expectUintWithDecimals(12100000);
-//     vault['collateral'].expectUintWithDecimals(12100000);
-//     vault['debt'].expectUint(10000000000); // PoX yield has paid back nothing
-//   }
-// });
+    // Check vault data
+    call = vaultManager.getVaultById(1);
+    vault = call.result.expectTuple();
+    vault['stacked-tokens'].expectUintWithDecimals(12100000);
+    vault['collateral'].expectUintWithDecimals(12100000);
+    vault['debt'].expectUint(10000000000); // PoX yield has paid back nothing
+  }
+});
 
-// Clarinet.test({
-//   name: "stacker: return STX to the reserve when deprecating stacker contract",
-//   async fn(chain: Chain, accounts: Map<string, Account>) {
-//     let deployer = accounts.get("deployer")!;
-//     let wallet_1 = accounts.get("wallet_1")!;
+Clarinet.test({
+  name: "stacker: return STX to the reserve when deprecating stacker contract",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
 
-//     let oracleManager = new OracleManager(chain, deployer);
-//     let vaultManager = new VaultManager(chain, deployer);
-//     let stacker = new Stacker(chain, deployer);
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
 
-//     // Need wSTX-USDA liquidity to swap STX yield to USDA to payoff debt
-//     // We set 1 STX = 1 USDA
-//     let swap = new Swap(chain, deployer);
-//     let result = swap.createPair(deployer,
-//       'wrapped-stx-token',
-//       'usda-token',
-//       'arkadiko-swap-token-wstx-usda',
-//       "wSTX-USDA", 
-//       10000, 
-//       10000);
-//     result.expectOk().expectBool(true);
+    // Need wSTX-USDA liquidity to swap STX yield to USDA to payoff debt
+    // We set 1 STX = 1 USDA
+    let swap = new Swap(chain, deployer);
+    let result = swap.createPair(deployer,
+      'wrapped-stx-token',
+      'usda-token',
+      'arkadiko-swap-token-wstx-usda',
+      "wSTX-USDA", 
+      10000, 
+      10000);
+    result.expectOk().expectBool(true);
 
-//     // Set price, create vault
-//     oracleManager.updatePrice("STX", 400);
-//     vaultManager.createVault(wallet_1, "STX-A", 12100000, 10000, true, true);
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 400);
+    vaultManager.createVault(wallet_1, "STX-A", 12100000, 10000, true, true);
 
-//     // We need to make sure there is enough STX in the reserve to perform the auto payoff
-//     // On prod we will swap PoX yield to STX and transfer it to the reserve
-//     // Here we just create a second vault to ahve additional STX available in the reserve
-//     vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
+    // We need to make sure there is enough STX in the reserve to perform the auto payoff
+    // On prod we will swap PoX yield to STX and transfer it to the reserve
+    // Here we just create a second vault to ahve additional STX available in the reserve
+    vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
 
-//     result = stacker.initiateStacking(1, 1);
-//     result.expectOk().expectUintWithDecimals(12100000);
+    result = stacker.initiateStacking(1, 1);
+    result.expectOk().expectUintWithDecimals(12100000);
 
-//     chain.mineEmptyBlock(300);
+    chain.mineEmptyBlock(300);
 
-//     let call = stacker.getStxBalance();
-//     call.result.expectUintWithDecimals(12100000);
-//     stacker.returnStx(12100000);
-//     call = stacker.getStxBalance();
-//     call.result.expectUintWithDecimals(0);
-//   }
-// });
+    let call = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(12100000);
+    stacker.returnStx(12100000);
+    call = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(0);
+  }
+});
 
-// Clarinet.test({
-//   name: "stacker: add extra deposit to stacking amount",
-//   async fn(chain: Chain, accounts: Map<string, Account>) {
-//     let deployer = accounts.get("deployer")!;
-//     let wallet_1 = accounts.get("wallet_1")!;
+Clarinet.test({
+  name: "stacker: add extra deposit to stacking amount",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
 
-//     let oracleManager = new OracleManager(chain, deployer);
-//     let vaultManager = new VaultManager(chain, deployer);
-//     let stacker = new Stacker(chain, deployer);
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
 
-//     // Set price, create vault
-//     oracleManager.updatePrice("STX", 2);
-//     vaultManager.createVault(deployer, "STX-A", 1000, 100, true, true);
-//     vaultManager.createVault(wallet_1, "STX-A", 21000000, 1000, true, true);
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 2);
+    vaultManager.createVault(deployer, "STX-A", 1000, 100, true, true);
+    vaultManager.createVault(wallet_1, "STX-A", 21000000, 1000, true, true);
 
-//     // Check vault data
-//     let call = vaultManager.getVaultById(1);
-//     let vault:any = call.result.expectTuple();
-//     vault['stacked-tokens'].expectUintWithDecimals(1000);
-//     vault['collateral-token'].expectAscii("STX");  
+    // Check vault data
+    let call = vaultManager.getVaultById(1);
+    let vault:any = call.result.expectTuple();
+    vault['stacked-tokens'].expectUintWithDecimals(1000);
+    vault['collateral-token'].expectAscii("STX");  
     
-//     // Initiate stacking
-//     let result = stacker.initiateStacking(10, 1);
-//     result.expectOk().expectUintWithDecimals(21001000);
+    // Initiate stacking
+    let result = stacker.initiateStacking(10, 1);
+    result.expectOk().expectUintWithDecimals(21001000);
 
-//     // Advance until end of stacking
-//     chain.mineEmptyBlock(300);
+    // Advance until end of stacking
+    chain.mineEmptyBlock(300);
 
-//     // Deposit extra
-//     result = vaultManager.deposit(deployer, 1, 500);
-//     result.expectOk().expectBool(true);
+    // Deposit extra
+    result = vaultManager.deposit(deployer, 1, 500);
+    result.expectOk().expectBool(true);
 
-//     // Turn off stacking
-//     result = vaultManager.toggleStacking(deployer, 1);
-//     result.expectOk().expectBool(true);
+    // Turn off stacking
+    result = vaultManager.toggleStacking(deployer, 1);
+    result.expectOk().expectBool(true);
 
-//     // Enable vault withdrawal
-//     result = vaultManager.enableVaultWithdrawals(1);
-//     result.expectOk().expectBool(true);
+    // Enable vault withdrawal
+    result = vaultManager.enableVaultWithdrawals(1);
+    result.expectOk().expectBool(true);
 
-//     // Stack again
-//     result = vaultManager.stackCollateral(deployer, 1);
-//     result.expectOk().expectBool(true);
+    // Stack again
+    result = vaultManager.stackCollateral(deployer, 1);
+    result.expectOk().expectBool(true);
     
-//     // Check vault data
-//     call = vaultManager.getVaultById(1);
-//     vault = call.result.expectTuple();
-//     vault['stacked-tokens'].expectUintWithDecimals(1500);
+    // Check vault data
+    call = vaultManager.getVaultById(1);
+    vault = call.result.expectTuple();
+    vault['stacked-tokens'].expectUintWithDecimals(1500);
     
-//   }
-// });
+  }
+});
