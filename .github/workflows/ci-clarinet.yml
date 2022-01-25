@@ -18,14 +18,10 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v2
-      - name: "Check contract"
-        uses: docker://hirosystems/clarinet:latest
-        with:
-          entrypoint: "bash"
-          args: -c "cd clarity && clarinet check"
       - name: "Execute test suite"
         uses: docker://hirosystems/clarinet:latest
         with:
