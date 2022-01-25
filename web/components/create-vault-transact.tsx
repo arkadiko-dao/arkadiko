@@ -63,13 +63,12 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
         makeStandardSTXPostCondition(address || '', FungibleConditionCode.Equal, amount.value),
       ];
     } else {
-      postConditionMode = 0x01;
       postConditions = [
         makeStandardFungiblePostCondition(
           address || '',
           FungibleConditionCode.LessEqual,
-          200000000,
-          createAssetInfo(contractAddress, 'tokensoft-token', 'xbtc')
+          amount.value,
+          createAssetInfo('SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR', 'Wrapped-Bitcoin', 'wrapped-bitcoin')
         ),
       ];
     }
