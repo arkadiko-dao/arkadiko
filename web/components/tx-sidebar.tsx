@@ -11,6 +11,8 @@ import { ContractTransaction } from '@components/contract-transaction';
 import { Placeholder } from './ui/placeholder';
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
 
+const defaultNetwork = { name: 'Stacks', key: 'stacks', url: 'https://stacks-node-api.mainnet.stacks.co' };
+
 export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
   const address = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -20,7 +22,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
 
   const [networks, setNetworks] = useState([]);
   const [selectedNetwork, setSelectedNetwork] = useState(
-    JSON.parse(localStorage.getItem('arkadiko-stacks-node')) || networks[0]
+    JSON.parse(localStorage.getItem('arkadiko-stacks-node') || JSON.stringify(defaultNetwork))
   );
   const [networkName, setNetworkName] = useState('');
   const [networkAddress, setNetworkAddress] = useState('');
