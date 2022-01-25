@@ -19,7 +19,9 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
   const [pendingTransactions, setPendingTransactions] = useState<JSX.Element[]>();
 
   const [networks, setNetworks] = useState([]);
-  const [selectedNetwork, setSelectedNetwork] = useState(JSON.parse(localStorage.getItem('arkadiko-stacks-node')) || networks[0]);
+  const [selectedNetwork, setSelectedNetwork] = useState(
+    JSON.parse(localStorage.getItem('arkadiko-stacks-node')) || networks[0]
+  );
   const [networkName, setNetworkName] = useState('');
   const [networkAddress, setNetworkAddress] = useState('');
   const [networkKey, setNetworkKey] = useState('');
@@ -40,7 +42,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
     const network = {
       name: networkName,
       url: networkAddress,
-      key: networkKey
+      key: networkKey,
     };
     networks.push(network);
     localStorage.setItem('arkadiko-stacks-nodes', JSON.stringify(networks));
@@ -88,7 +90,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
     const setAllNetworks = () => {
       let networks = [
         { name: 'Stacks', key: 'stacks', url: 'https://stacks-node-api.mainnet.stacks.co' },
-        { name: 'Syvita', key: 'syvita', url: 'https://mainnet.syvita.org' }
+        { name: 'Syvita', key: 'syvita', url: 'https://mainnet.syvita.org' },
       ];
       let addedNetworks = JSON.parse(localStorage.getItem('arkadiko-stacks-nodes') || '[]');
       setNetworks(networks.concat(addedNetworks));
@@ -218,11 +220,14 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                             <span>Add a network</span>
                           </Disclosure.Button>
                           <Disclosure.Panel className="p-4 mt-4 text-sm text-gray-700 bg-gray-100 rounded-md dark:bg-zinc-700 dark:text-zinc-100">
-                            Use this form to add a new instance of the Stacks Blockchain API. Make sure you review and trust the host before you add it.
-
+                            Use this form to add a new instance of the Stacks Blockchain API. Make
+                            sure you review and trust the host before you add it.
                             <form className="mt-4">
                               <div className="flex flex-col">
-                                <label htmlFor="name" className="block text-sm font-medium text-gray-500 dark:text-gray-300">
+                                <label
+                                  htmlFor="name"
+                                  className="block text-sm font-medium text-gray-500 dark:text-gray-300"
+                                >
                                   Name
                                 </label>
                                 <div className="flex mt-1 rounded-md shadow-sm">
@@ -238,7 +243,10 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                               </div>
 
                               <div className="flex flex-col mt-3">
-                                <label htmlFor="address" className="block text-sm font-medium text-gray-500 dark:text-gray-300">
+                                <label
+                                  htmlFor="address"
+                                  className="block text-sm font-medium text-gray-500 dark:text-gray-300"
+                                >
                                   Address (include https://)
                                 </label>
                                 <div className="flex mt-1 rounded-md shadow-sm">
@@ -254,7 +262,10 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                               </div>
 
                               <div className="flex flex-col mt-3">
-                                <label htmlFor="key" className="block text-sm font-medium text-gray-500 dark:text-gray-300">
+                                <label
+                                  htmlFor="key"
+                                  className="block text-sm font-medium text-gray-500 dark:text-gray-300"
+                                >
                                   Key
                                 </label>
                                 <div className="flex mt-1 rounded-md shadow-sm">
@@ -269,7 +280,10 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                                 </div>
                               </div>
 
-                              <button onClick={() => addNewNetwork()} className="flex items-center px-3 py-2 mt-5 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                              <button
+                                onClick={() => addNewNetwork()}
+                                className="flex items-center px-3 py-2 mt-5 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                              >
                                 Add network
                               </button>
                             </form>
