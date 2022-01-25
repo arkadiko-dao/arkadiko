@@ -26,4 +26,4 @@ jobs:
         uses: docker://hirosystems/clarinet:latest
         with:
           entrypoint: "bash"
-          args: -c "cd clarity && CLARINET_DISABLE_HINTS=1 clarinet test"
+          args: -c "cd clarity && CLARINET_DISABLE_HINTS=1 clarinet test --coverage --manifest-path=./Clarinet.toml"
