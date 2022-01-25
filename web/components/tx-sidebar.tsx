@@ -65,7 +65,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
   useEffect(() => {
     let mounted = true;
 
-    const fetchTransations = async () => {
+    const fetchTransactions = async () => {
       if (mounted && address) {
         setIsLoading(true);
         const txs = await getAccountTransactions(address || '', contractAddress || '');
@@ -99,7 +99,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
 
     setAllNetworks();
     if (showSidebar) {
-      fetchTransations();
+      fetchTransactions();
     }
     return () => {
       mounted = false;
