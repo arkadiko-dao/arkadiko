@@ -7,7 +7,7 @@ const BN = require('bn.js');
 
 async function transact() {
   const list = tx.listCV([
-    tx.tupleCV({ 'key': tx.stringAsciiCV('maximum-debt'), 'new-value': tx.uintCV(50000000000) })    
+    tx.tupleCV({ 'key': tx.stringAsciiCV('maximum-debt'), 'new-value': tx.uintCV(5000000000) })
   ]);
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
