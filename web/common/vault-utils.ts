@@ -5,7 +5,7 @@ export const getLiquidationPrice = (
   coinsMinted: number,
   stxCollateral: number
 ) => {
-  return ((liquidationRatio * coinsMinted) / (stxCollateral * 100)).toFixed(2);
+  return ((liquidationRatio * coinsMinted) / (stxCollateral * 100)).toFixed(4);
 };
 
 export const getCollateralToDebtRatio = (
@@ -35,12 +35,8 @@ export const availableCoinsToMint = (
   price: number,
   stxCollateral: number,
   currentCoinsMinted: number,
-  collateralToDebt: number,
-  collateralType: string
+  collateralToDebt: number
 ) => {
-  if (collateralType?.toLowerCase().includes('btc')) {
-    stxCollateral = stxCollateral * 100;
-  }
   const maximumCoinsToMint = (stxCollateral * price) / 10000 / collateralToDebt;
   if (currentCoinsMinted < maximumCoinsToMint) {
     return maximumCoinsToMint - currentCoinsMinted;

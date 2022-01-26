@@ -933,8 +933,7 @@ export const ManageVault = ({ match }) => {
                                 price,
                                 collateralLocked(),
                                 outstandingDebt(),
-                                collateralType?.collateralToDebtRatio,
-                                vault?.collateralToken
+                                collateralType?.collateralToDebtRatio
                               ).toLocaleString(undefined, {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 6,
@@ -963,8 +962,7 @@ export const ManageVault = ({ match }) => {
                             price,
                             collateralLocked(),
                             outstandingDebt(),
-                            collateralType?.collateralToDebtRatio,
-                            vault?.collateralToken
+                            collateralType?.collateralToDebtRatio
                           )
                         ) > 0 ? (
                           <button
