@@ -25,7 +25,7 @@ export const availableCollateralToWithdraw = (
   // 200 = (stxCollateral * 111) / 5
   const minimumStxCollateral = (collateralToDebt * coinsMinted) / (price / 10000);
   if (currentStxCollateral - minimumStxCollateral > 0) {
-    return (currentStxCollateral - minimumStxCollateral).toFixed(2);
+    return (currentStxCollateral - minimumStxCollateral).toFixed(8);
   }
 
   return 0;

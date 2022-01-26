@@ -563,79 +563,81 @@ export const ManageVault = ({ match }) => {
                   </div>
                 </div>
                 <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-900 dark:divide-zinc-600 sm:rounded-md sm:overflow-hidden">
-                  <div className="px-4 py-5 sm:p-6">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="flex items-center">
-                          <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
-                            Stacking
-                          </h3>
-                          {canStackCollateral && !loadingVaultData ? (
-                            <Tooltip
-                              className="ml-2"
-                              shouldWrapChildren={true}
-                              label={`Stacking is ${enabledStacking ? 'enabled' : 'disabled'}`}
-                            >
-                              <span className="relative flex w-3 h-3 ml-2">
-                                {enabledStacking ? (
-                                  <span className="absolute inline-flex w-full h-full bg-green-400 rounded-full opacity-75 animate-ping"></span>
-                                ) : null}
-                                <span
-                                  className={`relative inline-flex rounded-full h-3 w-3 ${
-                                    enabledStacking ? 'bg-green-500' : 'bg-red-500'
-                                  }`}
-                                ></span>
-                              </span>
-                            </Tooltip>
-                          ) : null}
+                  {canStackCollateral ? (
+                    <div className="px-4 py-5 sm:p-6">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <div className="flex items-center">
+                            <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
+                              Stacking
+                            </h3>
+                            {canStackCollateral && !loadingVaultData ? (
+                              <Tooltip
+                                className="ml-2"
+                                shouldWrapChildren={true}
+                                label={`Stacking is ${enabledStacking ? 'enabled' : 'disabled'}`}
+                              >
+                                <span className="relative flex w-3 h-3 ml-2">
+                                  {enabledStacking ? (
+                                    <span className="absolute inline-flex w-full h-full bg-green-400 rounded-full opacity-75 animate-ping"></span>
+                                  ) : null}
+                                  <span
+                                    className={`relative inline-flex rounded-full h-3 w-3 ${
+                                      enabledStacking ? 'bg-green-500' : 'bg-red-500'
+                                    }`}
+                                  ></span>
+                                </span>
+                              </Tooltip>
+                            ) : null}
+                          </div>
+                          <p className="mt-1 text-sm text-gray-500 dark:text-zinc-400">Update your stacking status.</p>
                         </div>
-                        <p className="mt-1 text-sm text-gray-500 dark:text-zinc-400">Update your stacking status.</p>
-                      </div>
-                      <div>
-                        {canStackCollateral &&
-                        isVaultOwner &&
-                        vault?.stackedTokens > 0 &&
-                        !vault?.revokedStacking &&
-                        !startedStacking &&
-                        !loadingVaultData ? (
-                          // cycle not started, offer to opt-out
-                          <button
-                            type="button"
-                            className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            onClick={() => callToggleStacking()}
-                          >
-                            Unstack
-                          </button>
-                        ) : canStackCollateral &&
+                        <div>
+                          {canStackCollateral &&
                           isVaultOwner &&
                           vault?.stackedTokens > 0 &&
-                          vault?.revokedStacking &&
+                          !vault?.revokedStacking &&
+                          !startedStacking &&
                           !loadingVaultData ? (
-                          // user has unstacked collateral, offer to stack again
-                          isVaultOwner ? (
+                            // cycle not started, offer to opt-out
                             <button
                               type="button"
                               className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                               onClick={() => callToggleStacking()}
                             >
-                              Restack
+                              Unstack
                             </button>
-                          ) : null
-                        ) : canStackCollateral && vault?.stackedTokens == 0 && isVaultOwner && !loadingVaultData ? (
-                          // user is not stacking
-                          isVaultOwner ? (
-                            <button
-                              type="button"
-                              className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => stackCollateral()}
-                            >
-                              Stack
-                            </button>
-                          ) : null
-                        ) : null}
+                          ) : canStackCollateral &&
+                            isVaultOwner &&
+                            vault?.stackedTokens > 0 &&
+                            vault?.revokedStacking &&
+                            !loadingVaultData ? (
+                            // user has unstacked collateral, offer to stack again
+                            isVaultOwner ? (
+                              <button
+                                type="button"
+                                className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                onClick={() => callToggleStacking()}
+                              >
+                                Restack
+                              </button>
+                            ) : null
+                          ) : canStackCollateral && vault?.stackedTokens == 0 && isVaultOwner && !loadingVaultData ? (
+                            // user is not stacking
+                            isVaultOwner ? (
+                              <button
+                                type="button"
+                                className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                onClick={() => stackCollateral()}
+                              >
+                                Stack
+                              </button>
+                            ) : null
+                          ) : null}
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  ) : null}
                   {loadingStackerData || loadingVaultData ? (
                     <div className="px-4 py-5 sm:p-6">
                       <div className="flex justify-between flex-1">
