@@ -38,7 +38,7 @@
 )
   (let ((price (unwrap-panic (contract-call? oracle fetch-price token))))
     (if (> debt u0)
-      (ok (/ (/ (* ucollateral (get last-price price)) debt) u10000))
+      (ok (/ (/ (* ucollateral (get last-price price)) debt) (/ (get decimals price) u100)))
       (err u0)
     )
   )
