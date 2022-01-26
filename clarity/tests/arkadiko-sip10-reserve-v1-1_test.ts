@@ -40,11 +40,13 @@ Clarinet.test({
     let result = oracleManager.updatePrice("xBTC", 40000, 100000000);
     result.expectOk().expectUint(40000000000);
 
-    result = vaultManager.createVault(deployer, "XBTC-A", 1, 1, false, false, 'arkadiko-sip10-reserve-v1-1', 'tokensoft-token');
-    result.expectOk().expectUintWithDecimals(1);
+    // create a vault with 0.1 xbtc and 1000 USDA debt
+    // 0.1 xbtc = $4K. $1K debt/$4K collateral = 25% LTV (~400 collateralization ratio)
+    result = vaultManager.createVault(deployer, "XBTC-A", 10, 1000, false, false, 'arkadiko-sip10-reserve-v1-1', 'tokensoft-token');
+    result.expectOk().expectUintWithDecimals(1000);
 
     let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
-    call.result.expectOk().expectUint(40000);
+    call.result.expectOk().expectUint(399);
   }
 });
 
