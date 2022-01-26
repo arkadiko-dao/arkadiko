@@ -36,9 +36,15 @@
   (ucollateral uint)
   (oracle <oracle-trait>)
 )
-  (let ((price (unwrap-panic (contract-call? oracle fetch-price token))))
+  (let (
+    (price (unwrap-panic (contract-call? oracle fetch-price token)))
+    (decimals (if (> (get decimals price) u0)
+      (get decimals price)
+      u1000000
+    ))
+  )
     (if (> debt u0)
-      (ok (/ (/ (* ucollateral (get last-price price)) debt) (/ (get decimals price) u100)))
+      (ok (/ (/ (* ucollateral (get last-price price)) debt) (/ decimals u100)))
       (err u0)
     )
   )
