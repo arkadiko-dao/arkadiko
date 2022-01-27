@@ -47,6 +47,12 @@ Clarinet.test({
 
     let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
     call.result.expectOk().expectUint(399);
+
+    result = vaultManager.mint(deployer, 1, 10000, 'arkadiko-sip10-reserve-v1-1');
+    result.expectErr().expectUint(49);
+
+    result = vaultManager.mint(deployer, 1, 100, 'arkadiko-sip10-reserve-v1-1');
+    result.expectOk().expectBool(true);
   }
 });
 
