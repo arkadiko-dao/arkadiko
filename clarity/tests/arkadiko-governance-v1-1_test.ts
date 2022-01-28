@@ -575,6 +575,12 @@ Clarinet.test({
     call = governance.getMemberVoteTokens(6, wallet_1, "stdiko-token");
     call.result.expectTuple()["amount"].expectUintWithDecimals(11);
 
+    result = governance.voteForProposal(wallet_2, 6, 15000, "arkadiko-token");
+    result.expectOk().expectUint(3200);
+
+    result = governance.voteForProposal(deployer, 6, 150000, "arkadiko-token");
+    result.expectOk().expectUint(3200);
+
     // Advance
     chain.mineEmptyBlock(1500);
 
@@ -639,6 +645,12 @@ Clarinet.test({
     // Advance
     chain.mineEmptyBlock(1500);
 
+    result = governance.voteForProposal(wallet_2, 6, 15000, "arkadiko-token");
+    result.expectOk().expectUint(3200);
+
+    result = governance.voteForProposal(deployer, 6, 150000, "arkadiko-token");
+    result.expectOk().expectUint(3200);
+
     // End proposal
     result = governance.endProposal(6);
     result.expectOk().expectUint(3200);
@@ -684,6 +696,12 @@ Clarinet.test({
     result = governance.voteForProposal(wallet_1, 6, 10);
     result.expectOk().expectUint(3200);
 
+    result = governance.voteForProposal(wallet_2, 6, 15000, "arkadiko-token");
+    result.expectOk().expectUint(3200);
+
+    result = governance.voteForProposal(deployer, 6, 150000, "arkadiko-token");
+    result.expectOk().expectUint(3200);
+
     // Advance
     chain.mineEmptyBlock(1500);
 
@@ -701,7 +719,7 @@ Clarinet.test({
     contractChange = Governance.contractChange("oracle", Utils.qualifiedName('malicious-oracle'), false, false);
     result = governance.createProposal(
       wallet_1, 
-      1504, 
+      1506,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -711,9 +729,15 @@ Clarinet.test({
     result = governance.voteForProposal(wallet_1, 7, 10);
     result.expectOk().expectUint(3200);
 
+    result = governance.voteForProposal(wallet_2, 7, 15000, "arkadiko-token");
+    result.expectOk().expectUint(3200);
+
+    result = governance.voteForProposal(deployer, 7, 150000, "arkadiko-token");
+    result.expectOk().expectUint(3200);
+
     chain.mineEmptyBlock(1500);
 
-    result = governance.endProposal(2);
+    result = governance.endProposal(7);
     result.expectOk().expectUint(3200);
 
     // DAO is not updated
@@ -777,6 +801,12 @@ Clarinet.test({
 
     // Advance
     chain.mineEmptyBlock(1500);
+
+    result = governance.voteForProposal(wallet_2, 6, 15000, "arkadiko-token");
+    result.expectOk().expectUint(3200);
+
+    result = governance.voteForProposal(deployer, 6, 150000, "arkadiko-token");
+    result.expectOk().expectUint(3200);
 
     // End proposal
     result = governance.endProposal(6);
@@ -932,7 +962,10 @@ Clarinet.test({
     );
     result.expectOk().expectBool(true);
 
-    result = governance.voteForProposal(wallet_1, 6, 100);
+    result = governance.voteForProposal(wallet_1, 6, 10000);
+    result.expectOk().expectUint(3200);
+
+    result = governance.voteForProposal(deployer, 6, 150000, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
     // Turn emergency switch on
@@ -971,26 +1004,29 @@ Clarinet.test({
     );
     result.expectOk().expectBool(true);
 
-    result = governance.voteForProposal(wallet_1, 6, 100);
+    result = governance.voteForProposal(wallet_1, 6, 10000);
+    result.expectOk().expectUint(3200);
+
+    result = governance.voteForProposal(deployer, 6, 150000, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
     chain.mineEmptyBlock(1500);
 
-    result = governance.endProposal(1);
+    result = governance.endProposal(6);
     result.expectOk().expectUint(3200);
 
     // Turn emergency switch on
     result = governance.toggleShutdown();
     result.expectOk().expectBool(true);
 
-    result = governance.returnVotes(1, wallet_1, "arkadiko-token");
+    result = governance.returnVotes(6, wallet_1, "arkadiko-token");
     result.expectErr().expectUint(34);
 
     // Turn emergency switch off
     result = governance.toggleShutdown();
     result.expectOk().expectBool(true);
 
-    result = governance.returnVotes(1, wallet_1, "arkadiko-token");
+    result = governance.returnVotes(6, wallet_1, "arkadiko-token");
     result.expectOk().expectBool(true);
   }
 });

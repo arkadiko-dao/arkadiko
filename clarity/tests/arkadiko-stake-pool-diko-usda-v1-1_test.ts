@@ -832,7 +832,7 @@ Clarinet.test({
     );
     result.expectOk().expectBool(true);
 
-    let call:any = governance.getProposalByID(1);
+    let call:any = governance.getProposalByID(6);
     call.result.expectTuple()["is-open"].expectBool(true);
     call.result.expectTuple()["start-block-height"].expectUint(10);
     
@@ -840,7 +840,10 @@ Clarinet.test({
     chain.mineEmptyBlock(10);
 
     // Vote for wallet_1
-    result = governance.voteForProposal(deployer, 1, 10);
+    result = governance.voteForProposal(deployer, 1, 10000);
+    result.expectOk().expectUint(3200);
+
+    result = governance.voteForProposal(deployer, 6, 150000, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
     // Advance
