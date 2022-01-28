@@ -16,10 +16,11 @@
 ;; variables
 (define-data-var auction-engine-shutdown-activated bool false)
 (define-data-var total-commitments uint u0)
+(define-data-var last-auction-id uint u0)
 
 (define-map usda-commitment
   { user: principal }
-  { uamount: uint }
+  { uamount: uint, first-commitment: uint }
 )
 (define-map auctions
   { id: uint }
@@ -66,7 +67,8 @@
 (define-read-only (get-commitment-by-user (user principal))
   (default-to
     {
-      uamount: u0
+      uamount: u0,
+      first-commitment: u0
     }
     (map-get? usda-commitment { user: user })
   )
@@ -84,10 +86,14 @@
 (define-public (deposit (uamount uint))
   (let (
     (commitment (get-commitment-by-user tx-sender))
+    (first-commitment (if (> (get uamount commitment) u0)
+      (get first-commitment commitment)
+      block-height
+    ))
   )
     (try! (contract-call? .usda-token transfer uamount tx-sender (as-contract tx-sender)))
     (var-set total-commitments (+ (var-get total-commitments) uamount))
-    (map-set usda-commitment { user: tx-sender } { uamount: (+ (get uamount commitment) uamount) })
+    (map-set usda-commitment { user: tx-sender } { uamount: (+ (get uamount commitment) uamount), first-commitment: first-commitment })
     (ok true)
   )
 )
@@ -121,7 +127,6 @@
         collateral-token: (get collateral-token vault),
         collateral-address: (unwrap-panic (contract-call? coll-type get-token-address (get collateral-type vault))),
         debt-to-raise: (+ extra-debt vault-debt),
-        total-commitments: (var-get total-commitments),
         discount: discount,
         ended-at: block-height, ;; TODO - do not set if not enough USDA to buy all debt
         total-collateral-sold: u0,
@@ -145,12 +150,44 @@
   )
 )
 
-(define-public (redeem-tokens (auction-id principal))
+(define-public (redeem-tokens
+  (vault-manager <vault-manager-trait>)
+  (ft <ft-trait>)
+  (reserve <vault-trait>)
+  (coll-type <collateral-types-trait>)
+  (auction-id uint)
+)
   (let (
     (auction (get-auction-by-id auction-id))
+    (token-address (get collateral-address auction))
+    (token-string (get collateral-token auction))
+    (commitment (at-block (get-block-info? id-header-hash (get ended-at auction)) (get-commitment-by-user tx-sender)))
+    (total-commitments (at-block (get-block-info? id-header-hash (get ended-at auction)) (var-get total-commitments)))
+    (share (/ (get uamount commitment) total-commitments))
+    (tokens (/ (* share (get total-collateral-sold auction)) u10000))
   )
-    ;; TODO - asserts auction ended
-    (at-block (get-block-info? id-header-hash (get ended-at auction)) (get-commitment-by-user tx-sender))
+    (asserts! (is-eq (unwrap-panic (get-auction-open auction-id)) false) (err ERR-AUCTION-NOT-CLOSED))
+    (asserts!
+      (or
+        (is-eq (contract-of ft) token-address)
+        (is-eq "STX" token-string)
+        (is-eq "xSTX" token-string)
+      )
+      (err ERR-TOKEN-TYPE-MISMATCH)
+    )
+    (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get auction-engine-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
+    )
+
+    (if (> tokens u0)
+      (try! (contract-call? vault-manager redeem-auction-collateral ft token-string reserve tokens tx-sender))
+      false
+    )
     (ok true)
   )
 )
