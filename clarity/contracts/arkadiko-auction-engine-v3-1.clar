@@ -15,6 +15,7 @@
 (define-constant ERR-CANNOT-WITHDRAW u21)
 (define-constant ERR-ALREADY-REDEEMED u22)
 (define-constant ERR-WITHDRAWAL-AMOUNT-EXCEEDED u23)
+(define-constant ERR-NOT-AUTHORIZED u2403)
 
 ;; variables
 (define-data-var auction-engine-shutdown-activated bool false)
@@ -180,15 +181,15 @@
         collateral-amount: uamount,
         collateral-token: (get collateral-token vault),
         collateral-address: (unwrap-panic (contract-call? coll-type get-token-address (get collateral-type vault))),
-        debt-to-raise: (+ extra-debt vault-debt),
-        discount: discount,
+        debt-to-raise: vault-debt,
+        discount: (unwrap-panic (contract-call? coll-type get-liquidation-penalty (get collateral-type vault))),
         total-debt-raised: u0
       })
     )
       (map-set auctions { id: auction-id } auction)
       (print { type: "auction", action: "created", data: auction })
-      (if (>= (var-get total-commitments) (+ extra-debt vault-debt))
-        (try! (burn-usda auction-id oracle (+ extra-debt vault-debt)))
+      (if (>= (var-get total-commitments) vault-debt)
+        (try! (burn-usda auction-id oracle vault-debt))
         (if (> (var-get total-commitments) u0)
           (try! (burn-usda auction-id oracle (var-get total-commitments)))
           false
@@ -246,17 +247,9 @@
 (define-public (get-collateral-amount (oracle <oracle-trait>) (debt uint) (discount uint))
   (let (
     (collateral-price (unwrap-panic (contract-call? oracle fetch-price (collateral-token (get collateral-token auction)))))
-    (discounted-price (/ (- (* u100 price) discount) u1000000))
+    (discounted-price (/ (- (* u100 price) discount) (get decimals oracle)))
   )
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
-    (asserts!
-      (and
-        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
-        (is-eq (var-get auction-engine-shutdown-activated) false)
-      )
-      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
-    )
-
     (ok (/ debt discounted-price))
   )
 )
@@ -278,10 +271,11 @@
     (total-commitments (at-block (get-block-info? id-header-hash (get ended-at auction)) (var-get total-commitments)))
     (share (/ (get uamount commitment) total-commitments))
     (tokens (/ (* share (get total-collateral-sold auction)) u10000))
+    (usda-used (/ (* share (get total-debt-raised auction)) u10000))
   )
     (asserts! (not (unwrap-panic (get-auction-open auction-id))) (err ERR-AUCTION-NOT-CLOSED))
     (asserts! (not (get redeemed redemption)) (err ERR-ALREADY-REDEEMED))
-    (asserts! (< (get last-withdrawal current-commitment) (var-get last-liquidation)) (err ERR-ALREADY-REDEEMED)) ;; TODO - update error
+    (asserts! (< (get last-withdrawal current-commitment) (var-get last-liquidation)) (err ERR-NOT-AUTHORIZED))
     (asserts!
       (or
         (is-eq (contract-of ft) token-address)
@@ -302,7 +296,8 @@
     (if (> tokens u0)
       (begin
         (try! (contract-call? vault-manager redeem-auction-collateral ft token-string reserve tokens tx-sender))
-        (map-set usda-commitment { user: tx-sender } { uamount: u0, last-collateral-redeemed: block-height }) ;; TODO - update uamount
+        (map-set usda-commitment { user: tx-sender } { uamount: (- (get uamount current-commitment) usda-used), last-collateral-redeemed: block-height })
+        (map-set auction-redemptions { user: tx-sender, auction-id: auction-id } { redeemed: true })
       )
       false
     )
