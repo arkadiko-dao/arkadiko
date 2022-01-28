@@ -14,6 +14,8 @@
 (define-constant ERR-BLOCK-HEIGHT-NOT-REACHED u35)
 (define-constant ERR-BLOCK-HEIGHT-PASSED u36)
 (define-constant ERR-NOT-ENOUGH-PARTICIPATION u37)
+(define-constant ERR-WRONG-POOL u38)
+(define-constant ERR-VOTING-CLOSED u39)
 (define-constant ERR-NOT-AUTHORIZED u3401)
 (define-constant STATUS-OK u3200)
 
@@ -38,7 +40,7 @@
 )
 
 (define-data-var governance-shutdown-activated bool false)
-(define-data-var proposal-count uint u7)
+(define-data-var proposal-count uint u5)
 (define-data-var proposal-ids (list 100 uint) (list u0))
 (define-map votes-by-member { proposal-id: uint, member: principal } { vote-count: uint })
 (define-map tokens-by-member { proposal-id: uint, member: principal, token: principal } { amount: uint })
@@ -246,14 +248,14 @@
         (contract-of stake-pool-diko)
         (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-pool-diko"))
       )
-      (err ERR-NOT-AUTHORIZED)
+      (err ERR-WRONG-POOL)
     )
 
     ;; Can vote with DIKO and stDIKO
-    (asserts! (is-eq (is-token-accepted token) true) (err ERR-WRONG-TOKEN))
+    (asserts! (is-token-accepted token) (err ERR-WRONG-TOKEN))
     ;; Proposal should be open for voting
-    (asserts! (is-eq (get is-open proposal) true) (err ERR-NOT-AUTHORIZED))
-    ;; Vote should be casted after the start-block-height
+    (asserts! (get is-open proposal) (err ERR-VOTING-CLOSED))
+    ;; Vote should be cast after the start-block-height
     (asserts! (>= block-height (get start-block-height proposal)) (err ERR-NOT-AUTHORIZED))
     ;; Voter should be able to stake
     (try! (contract-call? token transfer amount tx-sender (as-contract tx-sender) none))
