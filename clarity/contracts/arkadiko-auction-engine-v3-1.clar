@@ -96,13 +96,9 @@
   (let (
     (auction (get-auction-by-id auction-id))
   )
-    (if
-      (or
-        (>= block-height (get ends-at auction))
-        (>= (get total-debt-burned auction) (get debt-to-raise auction))
-      )
-      (ok false)
-      (ok true)
+    (if (>= (get total-debt-burned auction) (get debt-to-raise auction))
+      false
+      true
     )
   )
 )
@@ -284,7 +280,7 @@
     (tokens (/ (* share (get total-collateral-sold auction)) u10000))
     (usda-used (/ (* share (get total-debt-burned auction)) u10000))
   )
-    (asserts! (not (unwrap-panic (get-auction-open auction-id))) (err ERR-AUCTION-NOT-CLOSED))
+    (asserts! (not (get-auction-open auction-id)) (err ERR-AUCTION-NOT-CLOSED))
     (asserts! (not (get redeemed redemption)) (err ERR-ALREADY-REDEEMED))
     (asserts! (< (get last-withdrawal current-commitment) (var-get last-liquidation)) (err ERR-NOT-AUTHORIZED))
     (asserts!

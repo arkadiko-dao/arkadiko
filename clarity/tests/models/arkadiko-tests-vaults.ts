@@ -353,7 +353,7 @@ class VaultLiquidatorV3 {
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], user.address),
     ]);
-    console.log(block.receipts[0].events);
+    // console.log(block.receipts[0].events);
     return block.receipts[0].result;
   }
 }
