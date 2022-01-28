@@ -193,13 +193,13 @@
     )
       (map-set auctions { id: auction-id } auction)
       (print { type: "auction", action: "created", data: auction })
-      ;; (if (>= (var-get total-commitments) vault-debt)
-      ;;   (try! (burn-usda auction-id oracle vault-debt))
-      ;;   (if (> (var-get total-commitments) u0)
-      ;;     (try! (burn-usda auction-id oracle (var-get total-commitments)))
-      ;;     false
-      ;;   )
-      ;; )
+      (if (>= (var-get total-commitments) vault-debt)
+        (try! (burn-usda auction-id oracle vault-debt))
+        (if (> (var-get total-commitments) u0)
+          (try! (burn-usda auction-id oracle (var-get total-commitments)))
+          false
+        )
+      )
 
       (var-set last-auction-id (+ (var-get last-auction-id) u1))
       (ok true)
@@ -207,23 +207,23 @@
   )
 )
 
-(define-private (burn-usda (auction-id uint) (oracle <oracle-trait>) (left-to-raise uint))
+(define-private (burn-usda (auction-id uint) (oracle <oracle-trait>) (left-to-burn uint))
   (let (
     (auction (get-auction-by-id auction-id))
   )
     (begin
       ;; buy up whatever is left in the fund
-      (try! (contract-call? .arkadiko-dao burn-token .usda-token left-to-raise (as-contract tx-sender)))
+      (try! (contract-call? .arkadiko-dao burn-token .usda-token left-to-burn (as-contract tx-sender)))
       (var-set last-liquidation block-height)
       (map-set auctions
         { id: auction-id }
         (merge auction {
           ends-at: block-height,
-          total-collateral-sold: (unwrap-panic (get-collateral-amount oracle auction-id left-to-raise)),
-          total-debt-burned: (+ (get total-debt-burned auction) left-to-raise)
+          total-collateral-sold: (unwrap-panic (get-collateral-amount oracle auction-id left-to-burn)),
+          total-debt-burned: (+ (get total-debt-burned auction) left-to-burn)
         })
       )
-      (var-set total-commitments (- (var-get total-commitments) left-to-raise))
+      (var-set total-commitments (- (var-get total-commitments) left-to-burn))
       (ok true)
     )
   )
@@ -254,7 +254,11 @@
   (let (
     (auction (get-auction-by-id auction-id))
     (collateral-price (unwrap-panic (contract-call? oracle fetch-price (get collateral-token auction))))
-    (discounted-price (/ (- (* u100 (get last-price collateral-price)) (get discount auction)) (get decimals collateral-price)))
+    (decimals (if (> (get decimals collateral-price) u0)
+      (get decimals collateral-price)
+      u1000000
+    ))
+    (discounted-price (/ (- (* u100 (get last-price collateral-price)) (get discount auction)) decimals))
   )
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
     (ok (/ (get debt-to-raise auction) discounted-price))

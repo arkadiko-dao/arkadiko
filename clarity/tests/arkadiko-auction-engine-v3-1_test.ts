@@ -35,6 +35,7 @@ Clarinet.test({ name: "auction engine: liquidate vault",
 
     // Initialize price of STX to $2 in the oracle
     let result = oracleManager.updatePrice("STX", 3);
+    result = oracleManager.updatePrice("xSTX", 3);
 
     // Create vault - 1500 STX, 1000 USDA
     result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
@@ -42,6 +43,7 @@ Clarinet.test({ name: "auction engine: liquidate vault",
 
     // Upate price to $1.0
     result = oracleManager.updatePrice("STX", 1);
+    result = oracleManager.updatePrice("xSTX", 1);
 
     // Deposit 10K USDA in the auction engine
     result = vaultAuction.deposit(wallet_1, 10000);
