@@ -182,24 +182,17 @@
         collateral-address: (unwrap-panic (contract-call? coll-type get-token-address (get collateral-type vault))),
         debt-to-raise: (+ extra-debt vault-debt),
         discount: discount,
-        total-collateral-sold: u0,
         total-debt-raised: u0
       })
     )
       (map-set auctions { id: auction-id } auction)
       (print { type: "auction", action: "created", data: auction })
       (if (>= (var-get total-commitments) (+ extra-debt vault-debt))
-        (begin
-          ;; buy up the whole vault, burn the USDA
-          (try! (contract-call? .arkadiko-dao burn-token .usda-token (+ extra-debt vault-debt) (as-contract tx-sender)))
-          (var-set total-commitments (- (var-get total-commitments) (+ extra-debt vault-debt)))
-          (var-set last-liquidation block-height)
-          (map-set auctions
-            { id: auction-id }
-            (merge auction { ended-at: block-height, total-collateral-sold:  })
-          )
+        (try! (burn-usda auction-id oracle (+ extra-debt vault-debt)))
+        (if (> (var-get total-commitments) u0)
+          (try! (burn-usda auction-id oracle (var-get total-commitments)))
+          false
         )
-        false
       )
 
       (var-set last-auction-id (+ (var-get last-auction-id) u1))
@@ -208,44 +201,52 @@
   )
 )
 
-;; @desc calculate the discounted auction price on the (dollarcent) price of the collateral
-;; @param price; the current on-chain price
-;; @param auction-id; the ID of the auction in which the collateral will be sold
-(define-read-only (discounted-auction-price (price uint) (auction-id uint))
+(define-private (burn-usda (auction-id uint) (oracle <oracle-trait>) (left-to-raise uint))
   (let (
     (auction (get-auction-by-id auction-id))
-    (discount (* price (get discount auction)))
   )
-    (ok (/ (- (* u100 price) discount) u1000000))
+    (begin
+      ;; buy up whatever is left in the fund
+      (try! (contract-call? .arkadiko-dao burn-token .usda-token left-to-raise (as-contract tx-sender)))
+      (var-set last-liquidation block-height)
+      (map-set auctions
+        { id: auction-id }
+        (merge auction {
+          ended-at: block-height,
+          total-collateral-sold: (get-collateral-amount oracle left-to-raise discount),
+          total-debt-raised: (+ (get total-debt-raised auction) left-to-raise)
+        })
+      )
+      (var-set total-commitments (- (var-get total-commitments) left-to-raise))
+    )
   )
 )
 
-;; @desc calculates the minimum collateral amount to sell
+(define-public (finish-auction
+  (vault-id uint)
+  (oracle <oracle-trait>)
+)
+  (let (
+    (auction (get-auction-by-id auction-id))
+    (left-to-raise (- (get auction debt-to-raise) (get auction total-debt-raised)))
+  )
+    (if (>= left-to-raise (var-get total-commitments))
+      (try! (burn-usda auction-id oracle left-to-raise))
+      false
+    )
+    (ok true)
+  )
+)
+
+;; @desc calculates the collateral amount to sell
 ;; e.g. if we need to cover 10 USDA debt, and we have 20 STX at $1/STX,
 ;; we only need to auction off 10 STX excluding an additional discount
 ;; @param oracle; the oracle implementation that provides the on-chain price
 ;; @param auction-id; the ID of the auction for which the collateral amount should be calculated
-(define-public (get-minimum-collateral-amount (oracle <oracle-trait>) (auction-id uint))
+(define-public (get-collateral-amount (oracle <oracle-trait>) (debt uint) (discount uint))
   (let (
-    (auction (get-auction-by-id auction-id))
-    (collateral-amount-auction (get collateral-amount auction))
-    (collateral-sold (get total-collateral-sold auction))
-    (collateral-left
-      (if (> collateral-amount-auction collateral-sold)
-        (- collateral-amount-auction collateral-sold)
-        u0
-      )
-    )
-    (debt-to-raise (get debt-to-raise auction))
-    (total-debt-raised (get total-debt-raised auction))
-    (debt-left-to-raise
-      (if (> debt-to-raise total-debt-raised)
-        (- debt-to-raise total-debt-raised)
-        u0
-      )
-    )
     (collateral-price (unwrap-panic (contract-call? oracle fetch-price (collateral-token (get collateral-token auction)))))
-    (discounted-price (unwrap-panic (discounted-auction-price (get last-price collateral-price) auction-id)))
+    (discounted-price (/ (- (* u100 price) discount) u1000000))
   )
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
     (asserts!
@@ -255,6 +256,8 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
+
+    (ok (/ debt discounted-price))
   )
 )
 
