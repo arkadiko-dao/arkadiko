@@ -26,7 +26,6 @@ name: "diko-slash: execute slash through governance",
 async fn(chain: Chain, accounts: Map<string, Account>) {
   let deployer = accounts.get("deployer")!;
   let wallet_1 = accounts.get("wallet_1")!;
-  let wallet_2 = accounts.get("wallet_2")!;
 
   let stakeRegistry = new StakeRegistry(chain, deployer);
   let governance = new Governance(chain, deployer);
@@ -53,7 +52,10 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   result.expectOk().expectBool(true);
 
   // Vote for wallet_1
-  result = governance.voteForProposal(wallet_1, 1, 10);
+  result = governance.voteForProposal(deployer, 6, 100000);
+  result.expectOk().expectUint(3200);
+
+  result = governance.voteForProposal(wallet_1, 6, 100000);
   result.expectOk().expectUint(3200);
 
   // Advance

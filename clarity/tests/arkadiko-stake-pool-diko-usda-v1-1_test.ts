@@ -984,10 +984,10 @@ Clarinet.test({
     chain.mineEmptyBlock(10);
 
     // Vote for wallet_1
-    result = governance.voteForProposal(deployer, 6, 10000);
+    result = governance.voteForProposal(deployer, 6, 100000);
     result.expectOk().expectUint(3200);
 
-    result = governance.voteForProposal(wallet_1, 6, 10000);
+    result = governance.voteForProposal(wallet_1, 6, 100000);
     result.expectOk().expectUint(3200);
     
     // Advance
