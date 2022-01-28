@@ -78,7 +78,7 @@ depends_on = [
   "arkadiko-freddie-v1-1",
   "sip-010-trait-ft-standard",
   "arkadiko-vault-trait-v1",
-  "arkadiko-auction-engine-trait-v2"
+  "arkadiko-auction-engine-trait-v3"
 ]
 path = "contracts/arkadiko-auction-engine-v3-1.clar"
 
@@ -103,6 +103,10 @@ path = "contracts/arkadiko-liquidator-v1-1.clar"
 [contracts.arkadiko-liquidator-v2-1]
 depends_on = ["arkadiko-collateral-types-v1-1", "arkadiko-dao", "arkadiko-vault-manager-trait-v1", "arkadiko-auction-engine-trait-v2"]
 path = "contracts/arkadiko-liquidator-v2-1.clar"
+
+[contracts.arkadiko-liquidator-v3-1]
+depends_on = ["arkadiko-collateral-types-v1-1", "arkadiko-dao", "arkadiko-vault-manager-trait-v1", "arkadiko-auction-engine-trait-v3"]
+path = "contracts/arkadiko-liquidator-v3-1.clar"
 
 [contracts.arkadiko-sip10-reserve-v1-1]
 depends_on = [
@@ -197,6 +201,10 @@ path = "contracts/arkadiko-auction-engine-trait-v1.clar"
 [contracts.arkadiko-auction-engine-trait-v2]
 depends_on = ["arkadiko-oracle-trait-v1", "arkadiko-vault-manager-trait-v1", "arkadiko-collateral-types-trait-v1"]
 path = "contracts/arkadiko-auction-engine-trait-v2.clar"
+
+[contracts.arkadiko-auction-engine-trait-v3]
+depends_on = ["arkadiko-oracle-trait-v1", "arkadiko-vault-manager-trait-v1", "arkadiko-collateral-types-trait-v1"]
+path = "contracts/arkadiko-auction-engine-trait-v3.clar"
 
 [contracts.arkadiko-collateral-types-trait-v1]
 depends_on = []

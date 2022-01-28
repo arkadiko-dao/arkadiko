@@ -1,5 +1,5 @@
 (use-trait vault-manager-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
-(use-trait auction-engine-trait .arkadiko-auction-engine-trait-v2.auction-engine-trait)
+(use-trait auction-engine-trait .arkadiko-auction-engine-trait-v3.auction-engine-trait)
 (use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
 (use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
 
@@ -37,6 +37,7 @@
           (contract-call? auction-engine start-auction
             vault-id
             coll-type
+            oracle
             (get ustx-amount amounts)
             (get extra-debt amounts)
             (get vault-debt amounts)
