@@ -426,7 +426,7 @@ Clarinet.test({
     );
     result.expectOk().expectBool(true);
 
-    let call:any = governance.getProposalByID(1);
+    let call:any = governance.getProposalByID(6);
     call.result.expectTuple()["is-open"].expectBool(true);
     call.result.expectTuple()["start-block-height"].expectUint(10);
     
@@ -559,7 +559,7 @@ Clarinet.test({
     );
     result.expectOk().expectBool(true);
 
-    let call:any = governance.getProposalByID(1);
+    let call:any = governance.getProposalByID(6);
     call.result.expectTuple()["is-open"].expectBool(true);
     call.result.expectTuple()["start-block-height"].expectUint(10);
     

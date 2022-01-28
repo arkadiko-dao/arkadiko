@@ -316,7 +316,7 @@ Clarinet.test({
     result.expectOk().expectUint(3200);
 
     // Check if proposal updated
-    call = governance.getProposalByID(1);
+    call = governance.getProposalByID(6);
     call.result.expectTuple()["is-open"].expectBool(false);
 
     // Check if DAO updated

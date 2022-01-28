@@ -62,11 +62,11 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   chain.mineEmptyBlock(1500);
 
   // End proposal
-  result = governance.endProposal(1);
+  result = governance.endProposal(6);
   result.expectOk().expectUint(3200);
 
   // Check if proposal updated
-  let call:any = governance.getProposalByID(1);
+  let call:any = governance.getProposalByID(6);
   call.result.expectTuple()["is-open"].expectBool(false);
 
   // Check total DIKO pool balance (as rewards have auto compounded)
