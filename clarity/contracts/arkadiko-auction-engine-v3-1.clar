@@ -193,13 +193,13 @@
     )
       (map-set auctions { id: auction-id } auction)
       (print { type: "auction", action: "created", data: auction })
-      (if (>= (var-get total-commitments) vault-debt)
-        (try! (burn-usda auction-id oracle vault-debt))
-        (if (> (var-get total-commitments) u0)
-          (try! (burn-usda auction-id oracle (var-get total-commitments)))
-          false
-        )
-      )
+      ;; (if (>= (var-get total-commitments) vault-debt)
+      ;;   (try! (burn-usda auction-id oracle vault-debt))
+      ;;   (if (> (var-get total-commitments) u0)
+      ;;     (try! (burn-usda auction-id oracle (var-get total-commitments)))
+      ;;     false
+      ;;   )
+      ;; )
 
       (var-set last-auction-id (+ (var-get last-auction-id) u1))
       (ok true)

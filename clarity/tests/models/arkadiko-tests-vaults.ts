@@ -330,6 +330,58 @@ class VaultLiquidator {
 }
 export { VaultLiquidator };
 
+// ---------------------------------------------------------
+// Vault Liquidator V3
+// ---------------------------------------------------------
+
+class VaultLiquidatorV3 {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  notifyRiskyVault(user: Account, vaultId: number = 1) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidator-v3-1", "notify-risky-vault", [
+        types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-auction-engine-v3-1')),
+        types.uint(vaultId),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
+      ], user.address),
+    ]);
+    console.log(block, block.receipts);
+    return block.receipts[0].result;
+  }
+}
+export { VaultLiquidatorV3 };
+
+// ---------------------------------------------------------
+// Vault auction
+// ---------------------------------------------------------
+
+class VaultAuctionV3 {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  deposit(user: Account, amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-auction-engine-v3-1", "deposit", [
+        types.uint(amount * 1000000)
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+};
+export { VaultAuctionV3 };
 
 // ---------------------------------------------------------
 // Vault auction

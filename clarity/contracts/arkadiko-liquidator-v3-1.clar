@@ -31,7 +31,7 @@
     (asserts! (>= liquidation-ratio collateral-to-debt-ratio) (err ERR-NO-LIQUIDATION-REQUIRED))
     ;; Start auction
     (print "Vault is in danger. Time to liquidate.")
-    (let 
+    (let
       ((amounts (unwrap-panic (as-contract (contract-call? vault-manager liquidate vault-id coll-type)))))
         (try!
           (contract-call? auction-engine start-auction
