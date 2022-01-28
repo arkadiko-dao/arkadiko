@@ -902,14 +902,14 @@ Clarinet.test({
     result = governance.toggleShutdown();
     result.expectOk().expectBool(true);
 
-    result = governance.voteForProposal(wallet_1, 1, 100);
+    result = governance.voteForProposal(wallet_1, 6, 100);
     result.expectErr().expectUint(34);
 
     // Turn emergency switch off
     result = governance.toggleShutdown();
     result.expectOk().expectBool(true);
 
-    result = governance.voteForProposal(wallet_1, 1, 100);
+    result = governance.voteForProposal(wallet_1, 6, 100);
     result.expectOk().expectUint(3200);
   }
 });
@@ -932,7 +932,7 @@ Clarinet.test({
     );
     result.expectOk().expectBool(true);
 
-    result = governance.voteForProposal(wallet_1, 1, 100);
+    result = governance.voteForProposal(wallet_1, 6, 100);
     result.expectOk().expectUint(3200);
 
     // Turn emergency switch on
@@ -941,14 +941,14 @@ Clarinet.test({
 
     chain.mineEmptyBlock(1500);
 
-    result = governance.endProposal(1);
+    result = governance.endProposal(6);
     result.expectErr().expectUint(34);
 
     // Turn emergency switch off
     result = governance.toggleShutdown();
     result.expectOk().expectBool(true);
 
-    result = governance.endProposal(1);
+    result = governance.endProposal(6);
     result.expectOk().expectUint(3200);
   }
 });
@@ -971,7 +971,7 @@ Clarinet.test({
     );
     result.expectOk().expectBool(true);
 
-    result = governance.voteForProposal(wallet_1, 1, 100);
+    result = governance.voteForProposal(wallet_1, 6, 100);
     result.expectOk().expectUint(3200);
 
     chain.mineEmptyBlock(1500);
@@ -1078,9 +1078,9 @@ Clarinet.test({
     );
     result.expectOk().expectBool(true);
 
-    // End block has still taken 1440 blocks (~10 days) into account
-    let call:any = governance.getProposalByID(1);
-    call.result.expectTuple()["end-block-height"].expectUint(1441);
+    // End block has still taken 720 blocks (~10 days) into account
+    let call:any = governance.getProposalByID(6);
+    call.result.expectTuple()["end-block-height"].expectUint(721);
 
   }
 });
