@@ -37,6 +37,7 @@
           (contract-call? auction-engine start-auction
             vault-id
             coll-type
+            oracle
             (get ustx-amount amounts)
             (get extra-debt amounts)
             (get vault-debt amounts)

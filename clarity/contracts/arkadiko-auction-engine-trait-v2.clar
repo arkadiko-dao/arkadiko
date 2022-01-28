@@ -8,6 +8,6 @@
 (define-trait auction-engine-trait
   (
     (get-minimum-collateral-amount (<oracle-trait> uint) (response uint uint))
-    (start-auction (uint <collateral-types-trait> uint uint uint uint) (response bool uint))
+    (start-auction (uint <collateral-types-trait> <oracle-trait> uint uint uint uint) (response bool uint))
   )
 )

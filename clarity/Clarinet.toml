@@ -71,6 +71,17 @@ depends_on = [
 ]
 path = "contracts/arkadiko-auction-engine-v2-1.clar"
 
+[contracts.arkadiko-auction-engine-v3-1]
+depends_on = [
+  "arkadiko-oracle-v1-1",
+  "usda-token",
+  "arkadiko-freddie-v1-1",
+  "sip-010-trait-ft-standard",
+  "arkadiko-vault-trait-v1",
+  "arkadiko-auction-engine-trait-v2"
+]
+path = "contracts/arkadiko-auction-engine-v3-1.clar"
+
 [contracts.arkadiko-freddie-v1-1]
 depends_on = [
   "arkadiko-collateral-types-v1-1",

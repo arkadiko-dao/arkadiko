@@ -12,15 +12,23 @@
 ;; constants
 (define-constant blocks-per-day u144)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u213)
+(define-constant ERR-CANNOT-WITHDRAW u21)
+(define-constant ERR-ALREADY-REDEEMED u22)
+(define-constant ERR-WITHDRAWAL-AMOUNT-EXCEEDED u23)
 
 ;; variables
 (define-data-var auction-engine-shutdown-activated bool false)
-(define-data-var total-commitments uint u0)
+(define-data-var total-commitments uint u0) ;; total micro-amount of USDA committed to the auction engine
 (define-data-var last-auction-id uint u0)
+(define-data-var last-liquidation uint u0) ;; block height when last liquidation happened
 
+(define-map auction-redemptions
+  { user: principal, auction-id: uint }
+  { redeemed: bool }
+)
 (define-map usda-commitment
   { user: principal }
-  { uamount: uint, first-commitment: uint }
+  { uamount: uint, last-collateral-redeemed: uint, last-withdrawal: uint }
 )
 (define-map auctions
   { id: uint }
@@ -30,13 +38,10 @@
     collateral-amount: uint,
     collateral-token: (string-ascii 12),
     collateral-address: principal,
+    vault-id: uint,
     debt-to-raise: uint,
     discount: uint,
-    vault-id: uint,
-    lot-size: uint,
-    lots-sold: uint,
     total-collateral-sold: uint,
-    total-debt-raised: uint,
     total-debt-burned: uint,
     ends-at: uint
   }
@@ -50,13 +55,10 @@
       collateral-amount: u0,
       collateral-token: "",
       collateral-address: (contract-call? .arkadiko-dao get-dao-owner),
+      vault-id: u0,
       debt-to-raise: u0,
       discount: u0,
-      vault-id: u0,
-      lot-size: u0,
-      lots-sold: u0,
       total-collateral-sold: u0,
-      total-debt-raised: u0,
       total-debt-burned: u0,
       ends-at: u0,
     }
@@ -68,9 +70,36 @@
   (default-to
     {
       uamount: u0,
-      first-commitment: u0
+      last-collateral-redeemed: u0,
+      last-withdrawal: u0
     }
     (map-get? usda-commitment { user: user })
+  )
+)
+
+(define-read-only (get-auction-redemption-by-user (user principal) (auction-id uint))
+  (default-to
+    {
+      redeemed: false
+    }
+    (map-get? auction-redemptions { user: user, auction-id: auction-id })
+  )
+)
+
+;; @desc check if auction open (not enough debt raised + end block height not reached)
+;; @param auction-id; ID of the auction to be checked
+(define-read-only (get-auction-open (auction-id uint))
+  (let (
+    (auction (get-auction-by-id auction-id))
+  )
+    (if
+      (or
+        (>= block-height (get ends-at auction))
+        (>= (get total-debt-raised auction) (get debt-to-raise auction))
+      )
+      (ok false)
+      (ok true)
+    )
   )
 )
 
@@ -86,14 +115,38 @@
 (define-public (deposit (uamount uint))
   (let (
     (commitment (get-commitment-by-user tx-sender))
-    (first-commitment (if (> (get uamount commitment) u0)
-      (get first-commitment commitment)
-      block-height
+    (last-collateral-redeemed (if (> (get uamount commitment) u0)
+      (get last-collateral-redeemed commitment)
+      u0
+    ))
+    (last-withdraw (if (> (get uamount commitment) u0)
+      (get last-withdrawal commitment)
+      u0
     ))
   )
     (try! (contract-call? .usda-token transfer uamount tx-sender (as-contract tx-sender)))
     (var-set total-commitments (+ (var-get total-commitments) uamount))
-    (map-set usda-commitment { user: tx-sender } { uamount: (+ (get uamount commitment) uamount), first-commitment: first-commitment })
+    (map-set usda-commitment { user: tx-sender } {
+      uamount: (+ (get uamount commitment) uamount),
+      last-collateral-redeemed: last-collateral-redeemed,
+      last-withdrawal: last-withdrawal
+    })
+    (ok true)
+  )
+)
+
+;; you can only withdraw if you redeemed all your collateral, and thus your share of the pool is updated
+(define-public (withdraw (uamount uint))
+  (let (
+    (commitment (get-commitment-by-user tx-sender))
+  )
+    (asserts! (> (get last-collateral-redeemed commitment) last-liquidation) (err ERR-CANNOT-WITHDRAW))
+    (asserts! (>= (get uamount commitment) uamount) (err ERR-WITHDRAWAL-AMOUNT-EXCEEDED))
+    (map-set usda-commitment
+      { user: tx-sender }
+      (merge commitment { uamount: (- (get uamount commitment) uamount), last-withdrawal: block-height })
+    )
+    (var-set total-commitments (- (var-get total-commitments) uamount))
     (ok true)
   )
 )
@@ -101,6 +154,7 @@
 (define-public (start-auction
   (vault-id uint)
   (coll-type <collateral-types-trait>)
+  (oracle <oracle-trait>)
   (uamount uint)
   (extra-debt uint)
   (vault-debt uint)
@@ -128,24 +182,78 @@
         collateral-address: (unwrap-panic (contract-call? coll-type get-token-address (get collateral-type vault))),
         debt-to-raise: (+ extra-debt vault-debt),
         discount: discount,
-        ended-at: block-height, ;; TODO - do not set if not enough USDA to buy all debt
         total-collateral-sold: u0,
-        total-debt-raised: u0,
-        total-debt-burned: u0
+        total-debt-raised: u0
       })
     )
-      (map-set auctions { id: auction-id } auction )
+      (map-set auctions { id: auction-id } auction)
       (print { type: "auction", action: "created", data: auction })
       (if (>= (var-get total-commitments) (+ extra-debt vault-debt))
         (begin
-          ;; buy up the whole vault
-          ;; burn the USDA
+          ;; buy up the whole vault, burn the USDA
           (try! (contract-call? .arkadiko-dao burn-token .usda-token (+ extra-debt vault-debt) (as-contract tx-sender)))
           (var-set total-commitments (- (var-get total-commitments) (+ extra-debt vault-debt)))
+          (var-set last-liquidation block-height)
+          (map-set auctions
+            { id: auction-id }
+            (merge auction { ended-at: block-height, total-collateral-sold:  })
+          )
         )
         false
       )
+
+      (var-set last-auction-id (+ (var-get last-auction-id) u1))
       (ok true)
+    )
+  )
+)
+
+;; @desc calculate the discounted auction price on the (dollarcent) price of the collateral
+;; @param price; the current on-chain price
+;; @param auction-id; the ID of the auction in which the collateral will be sold
+(define-read-only (discounted-auction-price (price uint) (auction-id uint))
+  (let (
+    (auction (get-auction-by-id auction-id))
+    (discount (* price (get discount auction)))
+  )
+    (ok (/ (- (* u100 price) discount) u1000000))
+  )
+)
+
+;; @desc calculates the minimum collateral amount to sell
+;; e.g. if we need to cover 10 USDA debt, and we have 20 STX at $1/STX,
+;; we only need to auction off 10 STX excluding an additional discount
+;; @param oracle; the oracle implementation that provides the on-chain price
+;; @param auction-id; the ID of the auction for which the collateral amount should be calculated
+(define-public (get-minimum-collateral-amount (oracle <oracle-trait>) (auction-id uint))
+  (let (
+    (auction (get-auction-by-id auction-id))
+    (collateral-amount-auction (get collateral-amount auction))
+    (collateral-sold (get total-collateral-sold auction))
+    (collateral-left
+      (if (> collateral-amount-auction collateral-sold)
+        (- collateral-amount-auction collateral-sold)
+        u0
+      )
+    )
+    (debt-to-raise (get debt-to-raise auction))
+    (total-debt-raised (get total-debt-raised auction))
+    (debt-left-to-raise
+      (if (> debt-to-raise total-debt-raised)
+        (- debt-to-raise total-debt-raised)
+        u0
+      )
+    )
+    (collateral-price (unwrap-panic (contract-call? oracle fetch-price (collateral-token (get collateral-token auction)))))
+    (discounted-price (unwrap-panic (discounted-auction-price (get last-price collateral-price) auction-id)))
+  )
+    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
+    (asserts!
+      (and
+        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
+        (is-eq (var-get auction-engine-shutdown-activated) false)
+      )
+      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
   )
 )
@@ -159,14 +267,18 @@
 )
   (let (
     (auction (get-auction-by-id auction-id))
+    (redemption (get-auction-redemption-by-user tx-sender auction-id))
     (token-address (get collateral-address auction))
     (token-string (get collateral-token auction))
+    (current-commitment (get-commitment-by-user tx-sender))
     (commitment (at-block (get-block-info? id-header-hash (get ended-at auction)) (get-commitment-by-user tx-sender)))
     (total-commitments (at-block (get-block-info? id-header-hash (get ended-at auction)) (var-get total-commitments)))
     (share (/ (get uamount commitment) total-commitments))
     (tokens (/ (* share (get total-collateral-sold auction)) u10000))
   )
-    (asserts! (is-eq (unwrap-panic (get-auction-open auction-id)) false) (err ERR-AUCTION-NOT-CLOSED))
+    (asserts! (not (unwrap-panic (get-auction-open auction-id))) (err ERR-AUCTION-NOT-CLOSED))
+    (asserts! (not (get redeemed redemption)) (err ERR-ALREADY-REDEEMED))
+    (asserts! (< (get last-withdrawal current-commitment) (var-get last-liquidation)) (err ERR-ALREADY-REDEEMED)) ;; TODO - update error
     (asserts!
       (or
         (is-eq (contract-of ft) token-address)
@@ -185,27 +297,12 @@
     )
 
     (if (> tokens u0)
-      (try! (contract-call? vault-manager redeem-auction-collateral ft token-string reserve tokens tx-sender))
+      (begin
+        (try! (contract-call? vault-manager redeem-auction-collateral ft token-string reserve tokens tx-sender))
+        (map-set usda-commitment { user: tx-sender } { uamount: u0, last-collateral-redeemed: block-height }) ;; TODO - update uamount
+      )
       false
     )
     (ok true)
-  )
-)
-
-;; @desc redeem USDA to burn DIKO gov token from open market
-;; taken from auctions, paid by liquidation penalty on vaults
-;; @param usda-amount; the amount of USDA to be redeemed from the contract
-;; @post usda; all USDA tokens will have been transferred to DAO's payout address
-(define-public (redeem-usda (usda-amount uint))
-  (begin
-    (asserts!
-      (and
-        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
-        (is-eq (var-get auction-engine-shutdown-activated) false)
-      )
-      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
-    )
-
-    (as-contract (contract-call? .usda-token transfer usda-amount tx-sender (contract-call? .arkadiko-dao get-payout-address) none))
   )
 )
