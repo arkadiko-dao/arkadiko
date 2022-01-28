@@ -232,7 +232,11 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Vote for wallet_1
-    result = governance.voteForProposal(wallet_1, 6, 10);
+    result = governance.voteForProposal(wallet_1, 6, 100000);
+    result.expectOk().expectUint(3200);
+
+    // Vote for wallet_2
+    result = governance.voteForProposal(wallet_2, 6, 100000);
     result.expectOk().expectUint(3200);
 
     // Advance
@@ -289,14 +293,14 @@ Clarinet.test({
     call.result.expectTuple()["end-block-height"].expectUint(251);
 
     // Vote for wallet_1
-    result = governance.voteForProposal(wallet_1, 1, 10);
+    result = governance.voteForProposal(wallet_1, 6, 10);
     result.expectOk().expectUint(3200);
 
     // Advance
     chain.mineEmptyBlock(50);
 
     // Can not end yet, min vote length is 250 blocks
-    result = governance.endProposal(1);
+    result = governance.endProposal(6);
     result.expectErr().expectUint(35);
 
     // Advance

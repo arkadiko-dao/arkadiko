@@ -345,7 +345,7 @@
     (asserts! (not (is-eq (get id proposal) u0)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-open proposal) true) (err ERR-NOT-AUTHORIZED))
     (asserts! (>= block-height (get end-block-height proposal)) (err ERR-BLOCK-HEIGHT-NOT-REACHED))
-    (asserts! (>= (* (+ (get no-votes proposal) (get yes-votes proposal)) u5) supply) (err ERR-NOT-ENOUGH-PARTICIPATION))
+    (asserts! (>= (+ (get no-votes proposal) (get yes-votes proposal)) (/ (* u5 supply) u100)) (err ERR-NOT-ENOUGH-PARTICIPATION))
 
     (map-set proposals
       { id: proposal-id }
