@@ -59,7 +59,6 @@ Clarinet.test({ name: "auction engine: liquidate vault",
 
     // Check auction parameters
     let auction:any = await vaultAuction.getAuctionById(1);
-    console.log(auction.result);
     auction.result.expectTuple()['collateral-amount'].expectUintWithDecimals(1500);
     auction.result.expectTuple()['debt-to-raise'].expectUintWithDecimals(1000); // Raise 1000 USDA and give a 10% discount on the collateral
 
@@ -74,23 +73,25 @@ Clarinet.test({ name: "auction engine: liquidate vault",
     vault['is-liquidated'].expectBool(true);
     vault['auction-ended'].expectBool(true);
 
-    // call = await usdaToken.totalSupply();
-    // call.result.expectOk().expectUintWithDecimals(4000000.000010);
+    call = await usdaToken.totalSupply();
+    call.result.expectOk().expectUintWithDecimals(4000000.000010);
 
-    // // now check the wallet of contract - should have burned all required USDA, and have some left for burning gov tokens
-    // call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v2-1'));
-    // call.result.expectOk().expectUintWithDecimals(61); // 61 dollars left
+    // now check the wallet of contract - should have 9K USDA left
+    call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v3-1'));
+    call.result.expectOk().expectUintWithDecimals(9000);
 
-    // call = await xstxManager.balanceOf(deployer.address);
-    // call.result.expectOk().expectUint(0);
+    call = await xstxManager.balanceOf(deployer.address);
+    call.result.expectOk().expectUint(0);
 
-    // // now try withdrawing the xSTX tokens that are not mine
-    // result = vaultAuction.redeemLotCollateralXstx(wallet_1);
-    // result.expectErr().expectUint(2403);
+    chain.mineEmptyBlock(100);
 
-    // // now try withdrawing the xSTX tokens that are mine
-    // result = vaultAuction.redeemLotCollateralXstx(deployer);
-    // result.expectOk().expectBool(true);
+    // now try withdrawing the xSTX tokens that are not mine. It will not return anything.
+    result = vaultAuction.redeemTokens(deployer, 1);
+    result.expectOk().expectBool(true);
+
+    // now try withdrawing the xSTX tokens that are mine
+    result = vaultAuction.redeemTokens(wallet_1, 1);
+    result.expectOk().expectBool(true);
 
     // // now try withdrawing the xSTX tokens again
     // result = vaultAuction.redeemLotCollateralXstx(deployer);

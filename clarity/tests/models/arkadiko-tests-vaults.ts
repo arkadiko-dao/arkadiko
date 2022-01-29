@@ -398,6 +398,20 @@ class VaultAuctionV3 {
     ]);
     return block.receipts[0].result;
   }
+
+  redeemTokens(user: Account, auctionId: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-auction-engine-v3-1", "redeem-tokens", [
+        types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
+        types.principal(Utils.qualifiedName('xstx-token')),
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.uint(auctionId)
+      ], user.address)
+    ]);
+    console.log(block.receipts[0]);
+    return block.receipts[0].result;
+  }
 };
 export { VaultAuctionV3 };
 

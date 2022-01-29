@@ -18,6 +18,7 @@
 (define-constant ERR-AUCTION-NOT-ALLOWED u24)
 (define-constant ERR-AUCTION-NOT-CLOSED u25)
 (define-constant ERR-TOKEN-TYPE-MISMATCH u26)
+(define-constant ERR-NO-COMMITMENT u27)
 (define-constant ERR-NOT-AUTHORIZED u2403)
 
 ;; variables
@@ -322,6 +323,8 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
+    (print share)
+    (asserts! (> share u0) (ok true))
 
     (if (> tokens u0)
       (begin
