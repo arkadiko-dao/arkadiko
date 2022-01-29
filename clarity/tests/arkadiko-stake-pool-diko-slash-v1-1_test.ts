@@ -82,7 +82,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Foundation (still deployer in this case) should have received the funds
   call = dikoToken.balanceOf(deployer.address);
-  call.result.expectOk().expectUintWithDecimals(890048.791971);
+  call.result.expectOk().expectUintWithDecimals(790048.791971);
 
   // Check total DIKO pool balance
   // 70% of 162 DIKO = ~113
