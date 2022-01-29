@@ -48,7 +48,8 @@
     discount: uint,
     total-collateral-sold: uint,
     total-debt-burned: uint,
-    ends-at: uint
+    ends-at: uint,
+    total-commitments: uint
   }
 )
 
@@ -66,6 +67,7 @@
       total-collateral-sold: u0,
       total-debt-burned: u0,
       ends-at: u0,
+      total-commitments: u0
     }
     (map-get? auctions { id: id })
   )
@@ -186,7 +188,8 @@
         discount: (unwrap-panic (contract-call? coll-type get-liquidation-penalty (get collateral-type vault))),
         total-debt-burned: u0,
         total-collateral-sold: u0,
-        ends-at: u0
+        ends-at: u0,
+        total-commitments: (var-get total-commitments)
       })
     )
       (map-set auctions { id: auction-id } auction)
@@ -222,7 +225,6 @@
     })
   )
     (begin
-      ;; buy up whatever is left in the fund
       (try! (contract-call? .arkadiko-dao burn-token .usda-token left-to-burn (as-contract tx-sender)))
       (var-set last-liquidation block-height)
       (map-set auctions
@@ -299,10 +301,10 @@
     (token-string (get collateral-token auction))
     (current-commitment (get-commitment-by-user tx-sender))
     (commitment (at-block (unwrap-panic (get-block-info? id-header-hash (get ends-at auction))) (get-commitment-by-user tx-sender)))
-    (all-commitments (at-block (unwrap-panic (get-block-info? id-header-hash (get ends-at auction))) (var-get total-commitments)))
-    (share (/ (get uamount commitment) all-commitments))
-    (tokens (/ (* share (get total-collateral-sold auction)) u10000))
-    (usda-used (/ (* share (get total-debt-burned auction)) u10000))
+    (old-auction (at-block (unwrap-panic (get-block-info? id-header-hash (get ends-at auction))) (get-auction-by-id auction-id)))
+    (share (/ (* u100 (get uamount commitment)) (get total-commitments old-auction)))
+    (tokens (/ (* share (get total-collateral-sold auction)) u100))
+    (usda-used (/ (* share (get total-debt-burned auction)) u100))
   )
     (asserts! (not (get-auction-open auction-id)) (err ERR-AUCTION-NOT-CLOSED))
     (asserts! (not (get redeemed redemption)) (err ERR-ALREADY-REDEEMED))
@@ -323,7 +325,6 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-    (print share)
     (asserts! (> share u0) (ok true))
 
     (if (> tokens u0)

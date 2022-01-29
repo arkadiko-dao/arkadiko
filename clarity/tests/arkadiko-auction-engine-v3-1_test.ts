@@ -93,43 +93,43 @@ Clarinet.test({ name: "auction engine: liquidate vault",
     result = vaultAuction.redeemTokens(wallet_1, 1);
     result.expectOk().expectBool(true);
 
-    // // now try withdrawing the xSTX tokens again
-    // result = vaultAuction.redeemLotCollateralXstx(deployer);
-    // result.expectErr().expectUint(211);
+    // now try withdrawing the xSTX tokens again
+    result = vaultAuction.redeemTokens(wallet_1, 1);
+    result.expectErr().expectUint(22);
 
-    // call = await xstxManager.balanceOf(deployer.address);
-    // call.result.expectOk().expectUintWithDecimals(1075.268817);
+    call = await xstxManager.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(1111.111111);
 
-    // // At this point, no STX are redeemable yet
-    // call = await vaultManager.getStxRedeemable();
-    // call.result.expectOk().expectUint(0);
+    // At this point, no STX are redeemable yet
+    call = await vaultManager.getStxRedeemable();
+    call.result.expectOk().expectUint(0);
 
-    // // Release stacked STX and make them redeemable
-    // result = vaultManager.releaseStackedStx();
-    // result.expectOk().expectBool(true);
+    // Release stacked STX and make them redeemable
+    result = vaultManager.releaseStackedStx();
+    result.expectOk().expectBool(true);
 
-    // // Original vault had 1500 STX which is now redeemable
-    // call = await vaultManager.getStxRedeemable();
-    // call.result.expectOk().expectUintWithDecimals(1500);
+    // Original vault had 1500 STX which is now redeemable
+    call = await vaultManager.getStxRedeemable();
+    call.result.expectOk().expectUintWithDecimals(1500);
     
-    // // Redeem STX - too much
-    // result = vaultManager.redeemStx(deployer, 1694.444444);
-    // result.expectErr().expectUint(1); // Can not burn
+    // Redeem STX - too much
+    result = vaultManager.redeemStx(wallet_1, 1694);
+    result.expectErr().expectUint(1); // Can not burn & redeem STX
 
-    // // Redeem STX - 0
-    // result = vaultManager.redeemStx(deployer, 0);
-    // result.expectErr().expectUint(1); // Can not mint/burn 0
+    // Redeem STX - 0
+    result = vaultManager.redeemStx(wallet_1, 0);
+    result.expectErr().expectUint(1); // Can not mint/burn 0
 
-    // // Redeem STX - all
-    // result = vaultManager.redeemStx(deployer, 1041);
-    // result.expectOk().expectBool(true);
+    // Redeem STX - all
+    result = vaultManager.redeemStx(wallet_1, 1041);
+    result.expectOk().expectBool(true);
 
-    // // Balance
-    // call = await xstxManager.balanceOf(deployer.address);
-    // call.result.expectOk().expectUint(34268817); // just 0.34268817 left over
+    // Balance
+    call = await xstxManager.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(70.111111);
 
-    // // Withdraw leftover collateral
-    // result = vaultManager.withdrawLeftoverCollateral(deployer);
-    // result.expectOk().expectBool(true);
+    // Withdraw leftover collateral
+    result = vaultManager.withdrawLeftoverCollateral(deployer);
+    result.expectOk().expectBool(true);
   }
 });
