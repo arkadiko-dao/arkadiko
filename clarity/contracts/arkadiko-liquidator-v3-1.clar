@@ -38,6 +38,7 @@
             vault-id
             coll-type
             oracle
+            vault-manager
             (get ustx-amount amounts)
             (get extra-debt amounts)
             (get vault-debt amounts)

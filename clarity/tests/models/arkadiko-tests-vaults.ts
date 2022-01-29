@@ -372,6 +372,24 @@ class VaultAuctionV3 {
     this.deployer = deployer;
   }
 
+  getAuctionById(auctionId: number = 1, caller: Account = this.deployer) {
+    return this.chain.callReadOnlyFn(
+      "arkadiko-auction-engine-v3-1",
+      "get-auction-by-id",
+      [types.uint(auctionId)],
+      caller.address,
+    );
+  }
+
+  getAuctionOpen(auctionId: number = 1, caller: Account = this.deployer, ) {
+    return this.chain.callReadOnlyFn(
+      "arkadiko-auction-engine-v3-1",
+      "get-auction-open",
+      [types.uint(auctionId)],
+      caller.address,
+    );
+  }
+
   deposit(user: Account, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v3-1", "deposit", [

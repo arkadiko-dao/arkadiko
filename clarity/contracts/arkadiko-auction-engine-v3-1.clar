@@ -155,6 +155,7 @@
   (vault-id uint)
   (coll-type <collateral-types-trait>)
   (oracle <oracle-trait>)
+  (vault-manager <vault-manager-trait>)
   (uamount uint)
   (extra-debt uint)
   (vault-debt uint)
@@ -190,9 +191,9 @@
       (map-set auctions { id: auction-id } auction)
       (print { type: "auction", action: "created", data: auction })
       (if (>= (var-get total-commitments) vault-debt)
-        (try! (burn-usda auction-id oracle vault-debt))
+        (try! (burn-usda auction-id oracle coll-type vault-manager vault-debt))
         (if (> (var-get total-commitments) u0)
-          (try! (burn-usda auction-id oracle (var-get total-commitments)))
+          (try! (burn-usda auction-id oracle coll-type vault-manager (var-get total-commitments)))
           false
         )
       )
@@ -203,9 +204,21 @@
   )
 )
 
-(define-private (burn-usda (auction-id uint) (oracle <oracle-trait>) (left-to-burn uint))
+(define-private (burn-usda
+  (auction-id uint)
+  (oracle <oracle-trait>)
+  (coll-type <collateral-types-trait>)
+  (vault-manager <vault-manager-trait>)
+  (left-to-burn uint)
+)
   (let (
     (auction (get-auction-by-id auction-id))
+    (total-collateral-sold (+ (get total-collateral-sold auction) (unwrap-panic (get-collateral-amount oracle auction-id left-to-burn))))
+    (updated-auction {
+      ends-at: block-height,
+      total-collateral-sold: total-collateral-sold,
+      total-debt-burned: (+ (get total-debt-burned auction) left-to-burn)
+    })
   )
     (begin
       ;; buy up whatever is left in the fund
@@ -213,11 +226,17 @@
       (var-set last-liquidation block-height)
       (map-set auctions
         { id: auction-id }
-        (merge auction {
-          ends-at: block-height,
-          total-collateral-sold: (unwrap-panic (get-collateral-amount oracle auction-id left-to-burn)),
-          total-debt-burned: (+ (get total-debt-burned auction) left-to-burn)
-        })
+        (merge auction updated-auction)
+      )
+      (if (not (get-auction-open auction-id))
+        (try! (contract-call?
+          vault-manager
+          finalize-liquidation
+          (get vault-id auction)
+          (- (get collateral-amount auction) total-collateral-sold)
+          coll-type
+        ))
+        false
       )
       (var-set total-commitments (- (var-get total-commitments) left-to-burn))
       (ok true)
@@ -228,13 +247,15 @@
 (define-public (finish-auction
   (auction-id uint)
   (oracle <oracle-trait>)
+  (coll-type <collateral-types-trait>)
+  (vault-manager <vault-manager-trait>)
 )
   (let (
     (auction (get-auction-by-id auction-id))
     (left-to-raise (- (get debt-to-raise auction) (get total-debt-burned auction)))
   )
     (if (>= left-to-raise (var-get total-commitments))
-      (try! (burn-usda auction-id oracle left-to-raise))
+      (try! (burn-usda auction-id oracle coll-type vault-manager left-to-raise))
       false
     )
     (ok true)
@@ -254,10 +275,12 @@
       (get decimals collateral-price)
       u1000000
     ))
-    (discounted-price (/ (- (* u100 (get last-price collateral-price)) (get discount auction)) decimals))
+    (discount (get discount auction))
+    (price (get last-price collateral-price))
+    (discounted-price (- price (/ (* price discount) (/ decimals u100))))
   )
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
-    (ok (/ (get debt-to-raise auction) discounted-price))
+    (ok (/ (* (get debt-to-raise auction) decimals) discounted-price))
   )
 )
 

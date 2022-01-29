@@ -57,21 +57,22 @@ Clarinet.test({ name: "auction engine: liquidate vault",
     result = vaultLiquidator.notifyRiskyVault(deployer);
     result.expectOk().expectUint(5200);
 
-    // // Check auction parameters
-    // let auction:any = auctions[1];
-    // auction['collateral-amount'].expectUintWithDecimals(1500);
-    // auction['debt-to-raise'].expectUintWithDecimals(1030.000045); // 30% (from the 10% liquidation penalty) of 1000 USDA extra = 1030 USDA + stability fee
+    // Check auction parameters
+    let auction:any = await vaultAuction.getAuctionById(1);
+    console.log(auction.result);
+    auction.result.expectTuple()['collateral-amount'].expectUintWithDecimals(1500);
+    auction.result.expectTuple()['debt-to-raise'].expectUintWithDecimals(1000); // Raise 1000 USDA and give a 10% discount on the collateral
 
-    // // Auction closed
-    // call = await vaultAuction.getAuctionOpen(1, wallet_1);
-    // call.result.expectOk().expectBool(false);
+    // Auction closed
+    call = await vaultAuction.getAuctionOpen(1, wallet_1);
+    call.result.expectBool(false);
 
-    // // Auction info
-    // call = await vaultManager.getVaultById(1, wallet_1);
-    // let vault:any = call.result.expectTuple();
-    // vault['leftover-collateral'].expectUintWithDecimals(392.473071);
-    // vault['is-liquidated'].expectBool(true);
-    // vault['auction-ended'].expectBool(true);
+    // Auction info
+    call = await vaultManager.getVaultById(1, wallet_1);
+    let vault:any = call.result.expectTuple();
+    vault['leftover-collateral'].expectUintWithDecimals(388.888889);
+    vault['is-liquidated'].expectBool(true);
+    vault['auction-ended'].expectBool(true);
 
     // call = await usdaToken.totalSupply();
     // call.result.expectOk().expectUintWithDecimals(4000000.000010);
