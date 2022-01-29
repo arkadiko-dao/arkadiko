@@ -27,8 +27,8 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
   const [networks, setNetworks] = useState([]);
   const [selectedNetworkKey, setSelectedNetworkKey] = useState(
     JSON.parse(localStorage.getItem('arkadiko-stacks-node') || JSON.stringify(DEFAULT_NETWORKS[0])).key
-    );
-  const selectedNetwork = networks.find(network => network.key === selectedNetworkKey)
+  );
+  const selectedNetwork = networks.find(network => network.key === selectedNetworkKey);
 
   const [networkName, setNetworkName] = useState('');
   const [networkAddress, setNetworkAddress] = useState('');
