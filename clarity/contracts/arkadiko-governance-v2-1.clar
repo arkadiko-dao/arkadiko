@@ -334,6 +334,8 @@
     (proposal (get-proposal-by-id proposal-id))
     (diko-init-balance (unwrap-panic (contract-call? .arkadiko-token get-balance .arkadiko-diko-init)))
     (supply (- (unwrap-panic (contract-call? .arkadiko-token get-total-supply)) diko-init-balance))
+    (sum-of-votes (+ (get no-votes proposal) (get yes-votes proposal)))
+    (participation-threshold (/ (* u5 supply) u100))
   )
     (asserts!
       (and
@@ -345,12 +347,11 @@
     (asserts! (not (is-eq (get id proposal) u0)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-open proposal) true) (err ERR-NOT-AUTHORIZED))
     (asserts! (>= block-height (get end-block-height proposal)) (err ERR-BLOCK-HEIGHT-NOT-REACHED))
-    (asserts! (>= (+ (get no-votes proposal) (get yes-votes proposal)) (/ (* u5 supply) u100)) (err ERR-NOT-ENOUGH-PARTICIPATION))
 
     (map-set proposals
       { id: proposal-id }
       (merge proposal { is-open: false }))
-    (if (> (get yes-votes proposal) (get no-votes proposal))
+    (if (and (>= sum-of-votes participation-threshold) (> (get yes-votes proposal) (get no-votes proposal)))
       (try! (execute-proposal proposal-id))
       false
     )
