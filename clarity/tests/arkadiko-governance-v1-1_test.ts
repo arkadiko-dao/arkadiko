@@ -1114,9 +1114,47 @@ Clarinet.test({
     );
     result.expectOk().expectBool(true);
 
-    // End block has still taken 720 blocks (~10 days) into account
+    // End block has still taken 720 blocks (~5 days) into account
     let call:any = governance.getProposalByID(6);
     call.result.expectTuple()["end-block-height"].expectUint(721);
 
+  }
+});
+
+Clarinet.test({
+  name: "governance: vote fails when participation is smaller than 5%",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let governance = new Governance(chain, deployer);
+    let dao = new Dao(chain, deployer);
+
+    let call:any = dao.getContractAddressByName("oracle");
+    call.result.expectSome().expectPrincipal(deployer.address);
+    call = dao.getQualifiedNameByName("oracle");
+    call.result.expectSome().expectPrincipal(Utils.qualifiedName('arkadiko-oracle-v1-1'));
+
+    let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
+    let result = governance.createProposal(
+      wallet_1,
+      1,
+      "Test Title",
+      "https://discuss.arkadiko.finance/my/very/long/url/path",
+      [contractChange]
+    );
+    result.expectOk().expectBool(true);
+
+    result = governance.voteForProposal(wallet_1, 6, 10000);
+    result.expectOk().expectUint(3200);
+
+    chain.mineEmptyBlock(1500);
+
+    result = governance.endProposal(6);
+    result.expectOk().expectUint(3200);
+    call = governance.getProposalByID(6);
+    call.result.expectTuple()["is-open"].expectBool(false);
+
+    call = dao.getQualifiedNameByName("oracle");
+    call.result.expectSome().expectPrincipal(Utils.qualifiedName('arkadiko-oracle-v1-1'));
   }
 });
