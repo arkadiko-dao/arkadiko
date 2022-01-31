@@ -261,7 +261,7 @@ Clarinet.test({
     result.expectErr().expectUint(98); // wrong token error
 
     result = vaultManager.createVault(deployer, 'WRONG-A', 5, 1, true, true, 'arkadiko-sip10-reserve-v1-1', 'arkadiko-token')
-    result.expectErr().expectUint(410); // wrong token error
+    result.expectErr().expectUint(417); // wrong token error
 
     result = vaultManager.createVault(deployer, 'WRONG-A', 5, 1, true, true, 'arkadiko-stx-reserve-v1-1', 'arkadiko-token')
     result.expectErr().expectUint(410); // wrong token error

@@ -43,7 +43,7 @@
       u1000000
     ))
   )
-    (if (> debt u0)
+    (if (and (> debt u0) (> (get last-price price) u0))
       (ok (/ (/ (* ucollateral (get last-price price)) debt) (/ decimals u100)))
       (err u0)
     )
