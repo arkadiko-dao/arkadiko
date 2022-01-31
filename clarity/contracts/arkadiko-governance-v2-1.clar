@@ -186,7 +186,7 @@
         (contract-of stake-pool-diko)
         (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-pool-diko"))
       )
-      (err ERR-NOT-AUTHORIZED)
+      (err ERR-WRONG-POOL)
     )
     (asserts! (>= start-block-height block-height) (err ERR-BLOCK-HEIGHT-PASSED))
 
@@ -300,7 +300,7 @@
         (contract-of stake-pool-diko)
         (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-pool-diko"))
       )
-      (err ERR-NOT-AUTHORIZED)
+      (err ERR-WRONG-POOL)
     )
 
     ;; Can vote with DIKO and stDIKO
