@@ -18,15 +18,23 @@
   (collateralization-ratio uint)
   (oracle <oracle-trait>)
 )
-  (let ((price (unwrap-panic (contract-call? oracle fetch-price token))))
-    (let ((amount
-      (/
-        (* ucollateral-amount (get last-price price))
-        collateralization-ratio
-      ))
-    )
-      (ok amount)
-    )
+  (let (
+    (price (unwrap-panic (contract-call? oracle fetch-price token)))
+    (decimals (if (> (get decimals price) u0)
+      (get decimals price)
+      u1000000
+    ))
+    (amount (/
+      (* ucollateral-amount (get last-price price))
+      (* collateralization-ratio decimals)
+    ))
+  )
+    (print (get last-price price))
+    (print decimals)
+    (print ucollateral-amount)
+    (print collateralization-ratio)
+    (print amount)
+    (ok amount)
   )
 )
 

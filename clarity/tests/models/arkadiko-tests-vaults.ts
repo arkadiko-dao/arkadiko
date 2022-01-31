@@ -58,7 +58,7 @@ class VaultManager {
   createVault(
     user: Account, 
     collateralType: string, 
-    amount: number, 
+    amount: number,
     usda: number, 
     stack: boolean = true, 
     autoPayoff: boolean = true,
@@ -112,6 +112,7 @@ class VaultManager {
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], user.address),
     ]);
+    console.log(block.receipts[0]);
     return block.receipts[0].result;
   }
 
