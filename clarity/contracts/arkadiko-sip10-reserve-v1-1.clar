@@ -25,15 +25,10 @@
       u1000000
     ))
     (amount (/
-      (* ucollateral-amount (get last-price price))
+      (* u100 (* ucollateral-amount (get last-price price)))
       (* collateralization-ratio decimals)
     ))
   )
-    (print (get last-price price))
-    (print decimals)
-    (print ucollateral-amount)
-    (print collateralization-ratio)
-    (print amount)
     (ok amount)
   )
 )
