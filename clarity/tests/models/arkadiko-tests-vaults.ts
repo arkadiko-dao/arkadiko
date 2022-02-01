@@ -112,7 +112,6 @@ class VaultManager {
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], user.address),
     ]);
-    console.log(block.receipts[0]);
     return block.receipts[0].result;
   }
 
