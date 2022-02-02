@@ -11,22 +11,25 @@ import { ContractTransaction } from '@components/contract-transaction';
 import { Placeholder } from './ui/placeholder';
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
 
-const defaultNetworks = [
+const DEFAULT_NETWORKS = [
   { name: 'Stacks', key: 'stacks', url: 'https://stacks-node-api.mainnet.stacks.co' },
   { name: 'Syvita', key: 'syvita', url: 'https://mainnet.syvita.org' },
 ];
 
+const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+
 export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
   const address = useSTXAddress();
-  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [isLoading, setIsLoading] = useState(true);
   const [transactions, setTransactions] = useState<JSX.Element[]>();
   const [pendingTransactions, setPendingTransactions] = useState<JSX.Element[]>();
 
   const [networks, setNetworks] = useState([]);
-  const [selectedNetwork, setSelectedNetwork] = useState(
-    JSON.parse(localStorage.getItem('arkadiko-stacks-node') || JSON.stringify(defaultNetworks[0]))
+  const [selectedNetworkKey, setSelectedNetworkKey] = useState(
+    JSON.parse(localStorage.getItem('arkadiko-stacks-node') || JSON.stringify(DEFAULT_NETWORKS[0])).key
   );
+  const selectedNetwork = networks.find(network => network.key === selectedNetworkKey);
+
   const [networkName, setNetworkName] = useState('');
   const [networkAddress, setNetworkAddress] = useState('');
   const [networkKey, setNetworkKey] = useState('');
@@ -51,7 +54,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
     };
     networks.push(network);
     localStorage.setItem('arkadiko-stacks-nodes', JSON.stringify(networks));
-    setSelectedNetwork(network);
+    setSelectedNetworkKey(network);
   };
 
   useEffect(() => {
@@ -68,7 +71,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
     const fetchTransactions = async () => {
       if (mounted && address) {
         setIsLoading(true);
-        const txs = await getAccountTransactions(address || '', contractAddress || '');
+        const txs = await getAccountTransactions(address || '', CONTRACT_ADDRESS || '');
         let index = 0;
         const txMap = txs.map((tx: ContractCallTransaction) => {
           let status = 'error';
@@ -82,7 +85,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
         });
 
         setTransactions(txMap);
-        const pending = await getPendingTransactions(address || '', contractAddress || '');
+        const pending = await getPendingTransactions(address || '', CONTRACT_ADDRESS || '');
         const pendingMap = pending.map((tx: MempoolContractCallTransaction) => {
           index += 1;
           return <ContractTransaction key={index} transaction={tx} status="pending" />;
@@ -94,7 +97,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
 
     const setAllNetworks = () => {
       let addedNetworks = JSON.parse(localStorage.getItem('arkadiko-stacks-nodes') || '[]');
-      setNetworks(defaultNetworks.concat(addedNetworks));
+      setNetworks(DEFAULT_NETWORKS.concat(addedNetworks));
     };
 
     setAllNetworks();
@@ -164,10 +167,10 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                   </div>
                   <div className="relative px-4 my-6 sm:px-6">
                     <div className="relative w-72">
-                      <Listbox value={selectedNetwork} onChange={setSelectedNetwork}>
+                      <Listbox value={selectedNetworkKey} onChange={setSelectedNetworkKey}>
                         <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-300 rounded-md shadow-sm cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-zinc-800 dark:border-zinc-800">
                           <span className="block truncate dark:text-zinc-50">
-                            {selectedNetwork.name}
+                            {selectedNetwork?.name}
                           </span>
                           <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                             <SelectorIcon className="w-5 h-5 text-gray-400" aria-hidden="true" />
@@ -183,7 +186,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                             {networks.map(network => (
                               <Listbox.Option
                                 key={network.key}
-                                value={network}
+                                value={network.key}
                                 className={({ active }) =>
                                   `${active ? 'text-white bg-indigo-600' : 'text-gray-900'}
                                   cursor-default select-none relative py-2 pl-10 pr-4`
