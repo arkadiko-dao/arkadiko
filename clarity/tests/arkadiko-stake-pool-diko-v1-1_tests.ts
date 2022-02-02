@@ -559,7 +559,7 @@ Clarinet.test({
     );
     result.expectOk().expectBool(true);
 
-    let call:any = governance.getProposalByID(6);
+    let call:any = governance.getProposalByID(7);
     call.result.expectTuple()["is-open"].expectBool(true);
     call.result.expectTuple()["start-block-height"].expectUint(10);
     
@@ -573,7 +573,7 @@ Clarinet.test({
     chain.mineEmptyBlock(1500);
 
     // End proposal
-    result = governance.endProposal(1);
+    result = governance.endProposal(7);
     result.expectOk().expectUint(3200);
 
     // Check if DAO updated

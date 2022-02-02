@@ -40,7 +40,7 @@
 )
 
 (define-data-var governance-shutdown-activated bool false)
-(define-data-var proposal-count uint u5)
+(define-data-var proposal-count uint u6)
 (define-data-var proposal-ids (list 100 uint) (list u0))
 (define-map votes-by-member { proposal-id: uint, member: principal } { vote-count: uint })
 (define-map tokens-by-member { proposal-id: uint, member: principal, token: principal } { amount: uint })
