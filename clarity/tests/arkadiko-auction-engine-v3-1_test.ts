@@ -21,6 +21,14 @@ import {
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
+// Test Cases
+// Liquidate vault with enough USDA and 1 wallet
+// Liquidate vault with enough USDA and multiple wallets
+// Liquidate vault without enough USDA
+// Liquidate vault and withdraw USDA in the same block
+// Liquidate vault and deposit USDA in the same block
+// Liquidate vault with xBTC collateral
+
 Clarinet.test({ name: "auction engine: liquidate vault",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
