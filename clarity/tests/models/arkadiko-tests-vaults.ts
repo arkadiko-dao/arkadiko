@@ -412,6 +412,18 @@ class VaultAuctionV3 {
     // console.log(block.receipts[0]);
     return block.receipts[0].result;
   }
+
+  finishAuction(user: Account, auctionId: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-auction-engine-v3-1", "finish-auction", [
+        types.uint(auctionId),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1'))
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
 };
 export { VaultAuctionV3 };
 

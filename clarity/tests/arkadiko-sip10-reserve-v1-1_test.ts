@@ -16,7 +16,7 @@ import {
 import { 
   VaultManager,
   VaultLiquidator,
-  VaultAuction 
+  VaultAuctionV3
 } from './models/arkadiko-tests-vaults.ts';
 
 import { 
@@ -152,7 +152,7 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
     let vaultLiquidator = new VaultLiquidator(chain, deployer);
-    let vaultAuction = new VaultAuction(chain, deployer);
+    let vaultAuction = new VaultAuctionV3(chain, deployer);
     let governance = new Governance(chain, deployer);
  
     // Update xBTC and STX price
@@ -209,7 +209,7 @@ Clarinet.test({
 
     // Notify liquidator
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidator-v2-1", "notify-risky-vault", [
+      Tx.contractCall("arkadiko-liquidator-v3-1", "notify-risky-vault", [
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-auction-engine-v2-1')),
         types.uint(1),
@@ -217,38 +217,10 @@ Clarinet.test({
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], deployer.address),
     ]);
+    console.log(block.receipts);
     block.receipts[0].result.expectOk().expectUint(5200);
-
-    // Check if auction open
-    let call = await vaultAuction.getAuctionOpen(1, wallet_1);
-    call.result.expectOk().expectBool(true);
  
-    // Make bids to close auction
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-auction-engine-v2-1", "bid", [
-        types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1')),
-        types.uint(1),
-        types.uint(0),
-        types.uint(1000 * 1000000)
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
-
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-auction-engine-v2-1", "bid", [
-        types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1')),
-        types.uint(1),
-        types.uint(1),
-        types.uint(1000 * 1000000)
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
-
-    call = await vaultAuction.getAuctionOpen(1, wallet_1);
+    let call:any = await vaultAuction.getAuctionOpen(1, wallet_1);
     call.result.expectOk().expectBool(false);
 
     // Wrong token
@@ -285,7 +257,7 @@ Clarinet.test({
   
     // Wrong token
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-auction-engine-v2-1", "redeem-lot-collateral", [
+      Tx.contractCall("arkadiko-auction-engine-v3-1", "redeem-tokens", [
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-token')),
         types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
@@ -298,7 +270,7 @@ Clarinet.test({
 
     // Wrong reserve
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-auction-engine-v2-1", "redeem-lot-collateral", [
+      Tx.contractCall("arkadiko-auction-engine-v3-1", "redeem-tokens", [
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
         types.principal(Utils.qualifiedName('tokensoft-token')),
         types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),

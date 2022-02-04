@@ -257,7 +257,11 @@
     (auction (get-auction-by-id auction-id))
     (left-to-raise (- (get debt-to-raise auction) (get total-debt-burned auction)))
   )
-    (if (>= left-to-raise (var-get total-commitments))
+    (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
+
+    (if (and (>= left-to-raise (var-get total-commitments)) (> (var-get total-commitments) u0))
       (try! (burn-usda auction-id oracle coll-type vault-manager left-to-raise))
       false
     )
