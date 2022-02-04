@@ -485,6 +485,7 @@ Clarinet.test({
     result = vaultManager.createVault(deployer, "STX-A", 1000, 30);
     result.expectErr().expectUint(411);
   }
+  
 });
 
 Clarinet.test({

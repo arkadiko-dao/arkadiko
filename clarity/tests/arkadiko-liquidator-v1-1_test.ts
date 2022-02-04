@@ -16,23 +16,23 @@ import {
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 
-Clarinet.test({
-  name:
-    "liquidator: liquidating a healthy vault fails",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
+// Clarinet.test({
+//   name:
+//     "<DEPRECATED> liquidator: liquidating a healthy vault fails",
+//   async fn(chain: Chain, accounts: Map<string, Account>) {
+//     let deployer = accounts.get("deployer")!;
 
-    let oracleManager = new OracleManager(chain, deployer);
-    let vaultManager = new VaultManager(chain, deployer);
-    let vaultLiquidator = new VaultLiquidator(chain, deployer);
+//     let oracleManager = new OracleManager(chain, deployer);
+//     let vaultManager = new VaultManager(chain, deployer);
+//     let vaultLiquidator = new VaultLiquidator(chain, deployer);
 
-    let result = oracleManager.updatePrice("STX", 3);
-    result.expectOk().expectUintWithDecimals(3);
+//     let result = oracleManager.updatePrice("STX", 3);
+//     result.expectOk().expectUintWithDecimals(3);
 
-    result = vaultManager.createVault(deployer, "STX-A", 150, 100);
-    result.expectOk().expectUintWithDecimals(100);
+//     result = vaultManager.createVault(deployer, "STX-A", 150, 100);
+//     result.expectOk().expectUintWithDecimals(100);
 
-    result = vaultLiquidator.notifyRiskyVault(deployer, 1);
-    result.expectErr().expectUint(52);
-  }
-});
+//     result = vaultLiquidator.notifyRiskyVault(deployer, 1);
+//     result.expectErr().expectUint(52);
+//   }
+// });
