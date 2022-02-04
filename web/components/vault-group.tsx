@@ -8,23 +8,19 @@ interface VaultGroupProps {
 export const VaultGroup: React.FC<VaultGroupProps> = ({ vaults }) => {
   const [{ collateralTypes }, _] = useContext(AppContext);
   const vaultItems = vaults.map((vault: VaultProps) => (
-    <Vault
-      {...vault}
-      collateralData={collateralTypes[vault.collateralType]}
-    />
+    <Vault {...vault} collateralData={collateralTypes[vault.collateralType]} />
   ));
 
   const vaultItemsMobile = vaults.map((vault: VaultProps) => (
-    <Vault
-      {...vault}
-      collateralData={collateralTypes[vault.collateralType]}
-      showAsTable={false}
-    />
+    <Vault {...vault} collateralData={collateralTypes[vault.collateralType]} showAsTable={false} />
   ));
   return (
     <>
       <div className="md:hidden">
-        <div role="list" className="mt-4 overflow-hidden border border-gray-200 divide-y divide-gray-200 rounded-lg dark:divide-zinc-600 dark:border-zinc-700 md:hidden">
+        <div
+          role="list"
+          className="mt-4 overflow-hidden border border-gray-200 divide-y divide-gray-200 rounded-lg dark:divide-zinc-600 dark:border-zinc-700 md:hidden"
+        >
           {vaultItemsMobile}
         </div>
       </div>

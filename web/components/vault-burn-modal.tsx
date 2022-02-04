@@ -33,7 +33,7 @@ export const VaultBurnModal: React.FC<Props> = ({
   outstandingDebt,
   stabilityFee,
   vault,
-  reserveName
+  reserveName,
 }) => {
   const [state, setState] = useContext(AppContext);
   const [usdToBurn, setUsdToBurn] = useState('');
@@ -67,7 +67,7 @@ export const VaultBurnModal: React.FC<Props> = ({
       functionName: 'burn',
       functionArgs: [
         uintCV(match.params.id),
-        uintCV(parseInt((parseFloat(usdToBurn) * 1000000) - (1.5 * stabilityFee), 10)),
+        uintCV(parseInt(parseFloat(usdToBurn) * 1000000 - 1.5 * stabilityFee, 10)),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(tokenAddress, token),
         contractPrincipalCV(

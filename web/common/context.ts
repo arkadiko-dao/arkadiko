@@ -61,7 +61,7 @@ export const defaultBalance = () => {
     wstxdiko: undefined,
     wstxxbtc: undefined,
     xbtcusda: undefined,
-    wstxwelsh: undefined
+    wstxwelsh: undefined,
   };
 };
 

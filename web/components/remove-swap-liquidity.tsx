@@ -17,13 +17,6 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { tokenTraits } from '@common/vault-utils';
-import {
-  InformationCircleIcon,
-  PlusCircleIcon,
-  MinusCircleIcon,
-  ArrowLeftIcon,
-} from '@heroicons/react/solid';
-import { ArrowDownIcon } from '@heroicons/react/outline';
 import { tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
@@ -31,6 +24,7 @@ import { microToReadable } from '@common/vault-utils';
 import { classNames } from '@common/class-names';
 import BN from 'bn.js';
 import { Placeholder } from './ui/placeholder';
+import { StyledIcon } from './ui/styled-icon';
 
 export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -69,7 +63,12 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   }, [state.currentTxStatus]);
 
   useEffect(() => {
-    const fetchPair = async (tokenXAddress: string, tokenXContract: string, tokenYAddress: string, tokenYContract: string) => {
+    const fetchPair = async (
+      tokenXAddress: string,
+      tokenXContract: string,
+      tokenYAddress: string,
+      tokenYContract: string
+    ) => {
       const details = await callReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-swap-v2-1',
@@ -92,14 +91,15 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         const balanceX = json3['value']['value']['value']['balance-x'].value;
         const balanceY = json3['value']['value']['value']['balance-y'].value;
         const ratio = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']);
-        const basePrice = (ratio * balanceX / balanceY);
+        const basePrice = (ratio * balanceX) / balanceY;
         const totalShares = json3['value']['value']['value']['shares-total'].value;
-        const balance = state.balance[`${tokenX.nameInPair.toLowerCase()}${tokenY.nameInPair.toLowerCase()}`];
+        const balance =
+          state.balance[`${tokenX.nameInPair.toLowerCase()}${tokenY.nameInPair.toLowerCase()}`];
         const poolPercentage = balance / totalShares;
         if (balance !== undefined) {
           setFoundPair(true);
           setTokenXPrice(basePrice);
-          setTokenYPrice((balanceY / balanceX / ratio));
+          setTokenYPrice(balanceY / balanceX / ratio);
           setInverseDirection(false);
           setBalance(balance);
           setBalanceX(balanceX * poolPercentage);
@@ -109,7 +109,12 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
           setIsLoading(false);
         }
       } else if (Number(json3['value']['value']['value']) === 201) {
-        const json4 = await fetchPair(tokenY['address'], tokenYTrait, tokenX['address'], tokenXTrait);
+        const json4 = await fetchPair(
+          tokenY['address'],
+          tokenYTrait,
+          tokenX['address'],
+          tokenXTrait
+        );
         if (json4['success']) {
           console.log(json4);
           const balanceX = json4['value']['value']['value']['balance-x'].value;
@@ -117,12 +122,13 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
           const ratio = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']);
           const basePrice = (balanceX / balanceY).toFixed(2);
           const totalShares = json4['value']['value']['value']['shares-total'].value;
-          const balance = state.balance[`${tokenX.nameInPair.toLowerCase()}${tokenY.nameInPair.toLowerCase()}`];
+          const balance =
+            state.balance[`${tokenX.nameInPair.toLowerCase()}${tokenY.nameInPair.toLowerCase()}`];
           const poolPercentage = balance / totalShares;
           if (balance !== undefined) {
             setFoundPair(true);
             setTokenXPrice(basePrice);
-            setTokenYPrice((balanceY / balanceX / ratio));
+            setTokenYPrice(balanceY / balanceX / ratio);
             setInverseDirection(true);
             setBalance(balance);
             setBalanceX(balanceX * poolPercentage);
@@ -221,11 +227,14 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
             <p className="w-full max-w-lg mb-2">
               <RouterLink className="" to={`/pool`} exact>
                 <span className="p-1.5 rounded-md inline-flex items-center">
-                  <ArrowLeftIcon
-                    className="w-4 h-4 mr-2 text-gray-500 group-hover:text-gray-900"
-                    aria-hidden="true"
+                  <StyledIcon
+                    as="ArrowLeftIcon"
+                    size={4}
+                    className="mr-2 text-gray-500 group-hover:text-gray-900"
                   />
-                  <span className="text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-zinc-100">Back to pool overview</span>
+                  <span className="text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-zinc-100">
+                    Back to pool overview
+                  </span>
                 </span>
               </RouterLink>
             </p>
@@ -243,9 +252,10 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                         shouldWrapChildren={true}
                         label={`By removing liquidity, you take out assets you provided and will stop earning on each trade.`}
                       >
-                        <InformationCircleIcon
-                          className="block w-5 h-5 ml-2 text-gray-400"
-                          aria-hidden="true"
+                        <StyledIcon
+                          as="InformationCircleIcon"
+                          size={5}
+                          className="block mr-2 text-gray-400"
                         />
                       </Tooltip>
                     </p>
@@ -258,11 +268,14 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                     exact
                   >
                     <span className="p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md inline-flex items-center text-sm font-medium">
-                      <PlusCircleIcon
-                        className="w-4 h-4 mr-2 text-gray-500 dark:text-zinc-700 group-hover:text-gray-900 dark:group-hover:text-zinc-900"
-                        aria-hidden="true"
+                      <StyledIcon
+                        as="PlusCircleIcon"
+                        size={4}
+                        className="mr-2 text-gray-500 dark:text-zinc-700 group-hover:text-gray-900 dark:group-hover:text-zinc-900"
                       />
-                      <span className="text-gray-600 dark:text-zinc-700 group-hover:text-gray-900 dark:group-hover:text-zinc-800">Add</span>
+                      <span className="text-gray-600 dark:text-zinc-700 group-hover:text-gray-900 dark:group-hover:text-zinc-800">
+                        Add
+                      </span>
                     </span>
                   </RouterLink>
 
@@ -270,7 +283,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                     type="button"
                     className="ml-0.5 p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md flex items-center justify-center flex-1 text-sm text-gray-600 font-medium focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus:outline-none focus-visible:ring-offset-gray-100 bg-white ring-1 ring-black ring-opacity-5"
                   >
-                    <MinusCircleIcon className="w-4 h-4 mr-2 text-indigo-500" aria-hidden="true" />
+                    <StyledIcon as="MinusCircleIcon" size={4} className="mr-2 text-indigo-500" />
                     <span className="text-gray-900">Remove</span>
                   </button>
                 </div>
@@ -407,7 +420,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                   </div>
 
                   <div className="flex items-center justify-center my-3">
-                    <ArrowDownIcon className="w-6 h-6 text-gray-500" aria-hidden="true" />
+                    <StyledIcon as="ArrowDownIcon" size={6} className="text-gray-500" />
                   </div>
 
                   <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-900 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200">
@@ -422,7 +435,9 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                                 <img className="w-8 h-8 rounded-full" src={tokenX.logo} alt="" />
                               </div>
                               <div className="ml-4">
-                                <div className="text-base text-gray-900 dark:text-zinc-50">{tokenX.name}</div>
+                                <div className="text-base text-gray-900 dark:text-zinc-50">
+                                  {tokenX.name}
+                                </div>
                               </div>
                             </div>
                           </dt>
@@ -445,7 +460,9 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                                 <img className="w-8 h-8 rounded-full" src={tokenY.logo} alt="" />
                               </div>
                               <div className="ml-4">
-                                <div className="text-base text-gray-900 dark:text-zinc-50">{tokenY.name}</div>
+                                <div className="text-base text-gray-900 dark:text-zinc-50">
+                                  {tokenY.name}
+                                </div>
                               </div>
                             </div>
                           </dt>
@@ -478,16 +495,20 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                     ) : (
                       <div className="mt-3 sm:mt-0 space-y-0.5 lg:text-right text-sm text-gray-500 dark:text-zinc-400">
                         <p>
-                          1 {tokenX.name} = {tokenYPrice.toLocaleString(undefined, {
+                          1 {tokenX.name} ={' '}
+                          {tokenYPrice.toLocaleString(undefined, {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 6,
-                          })} {tokenY.name}
+                          })}{' '}
+                          {tokenY.name}
                         </p>
                         <p>
-                          1 {tokenY.name} = {tokenXPrice.toLocaleString(undefined, {
+                          1 {tokenY.name} ={' '}
+                          {tokenXPrice.toLocaleString(undefined, {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 6,
-                          })} {tokenX.name}
+                          })}{' '}
+                          {tokenX.name}
                         </p>
                       </div>
                     )}

@@ -22,19 +22,11 @@ import { tokenList } from '@components/token-swap-list';
 import { useConnect } from '@stacks/connect-react';
 import { StakeLpRow } from './stake-lp-row';
 import { Menu, Transition } from '@headlessui/react';
-import {
-  ArrowCircleDownIcon,
-  ArrowCircleUpIcon,
-  ChevronUpIcon,
-  ClockIcon,
-  QuestionMarkCircleIcon,
-  ExternalLinkIcon,
-  InformationCircleIcon,
-} from '@heroicons/react/solid';
 import { Placeholder } from './ui/placeholder';
 import { Tooltip } from '@blockstack/ui';
 import { Alert } from './ui/alert';
 import axios from 'axios';
+import { StyledIcon } from './ui/styled-icon';
 
 export const Stake = () => {
   const apiUrl = 'https://arkadiko-api.herokuapp.com';
@@ -109,7 +101,7 @@ export const Stake = () => {
       const response = await axios.get(`${apiUrl}/api/v1/pages/stake`);
       const data = response.data;
       // pools
-      let poolInfo = {};
+      const poolInfo = {};
       poolInfo['wrapped-stx-token/usda-token'] = data['wrapped-stx-token/usda-token'];
       poolInfo['arkadiko-token/usda-token'] = data['arkadiko-token/usda-token'];
       poolInfo['wrapped-stx-token/arkadiko-token'] = data['wrapped-stx-token/arkadiko-token'];
@@ -849,7 +841,7 @@ export const Stake = () => {
       setShowUnstakeModal: setShowUnstakeLp5Modal,
       stakedAmount: lpXbtcUsdaStakedAmount,
       apy: xbtcUsdaLpApy,
-    }
+    },
   ];
 
   return (
@@ -870,7 +862,7 @@ export const Stake = () => {
         stakedAmount={stakedAmount}
       />
 
-      {LP_DATA.map((lp) => (
+      {LP_DATA.map(lp => (
         <StakeLpModal
           key={lp.name}
           showStakeModal={lp.showStakeModal}
@@ -881,7 +873,7 @@ export const Stake = () => {
         />
       ))}
 
-      {LP_DATA.map((lp) => (
+      {LP_DATA.map(lp => (
         <UnstakeLpModal
           key={lp.name}
           showUnstakeModal={lp.showUnstakeModal}
@@ -924,10 +916,7 @@ export const Stake = () => {
                 </div>
                 <div className="flex items-center mt-2 sm:mt-0">
                   <div className="w-5.5 h-5.5 rounded-full bg-indigo-200 flex items-center justify-center">
-                    <QuestionMarkCircleIcon
-                      className="w-5 h-5 text-indigo-600"
-                      aria-hidden="true"
-                    />
+                    <StyledIcon as="QuestionMarkCircleIcon" size={5} className="text-indigo-600" />
                   </div>
                   <a
                     className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
@@ -936,7 +925,7 @@ export const Stake = () => {
                     rel="noopener noreferrer"
                   >
                     More on the Security Module
-                    <ExternalLinkIcon className="block w-3 h-3 ml-2 shrink-0" aria-hidden="true" />
+                    <StyledIcon as="ExternalLinkIcon" size={3} className="block ml-2" />
                   </a>
                 </div>
               </header>
@@ -975,9 +964,10 @@ export const Stake = () => {
                               shouldWrapChildren={true}
                               label={`stDIKO's value is determined by dividing the total supply of DIKO in the pool by the total supply of stDIKO`}
                             >
-                              <InformationCircleIcon
-                                className="block w-4 h-4 ml-2 text-gray-400 shrink-0"
-                                aria-hidden="true"
+                              <StyledIcon
+                                as="InformationCircleIcon"
+                                size={4}
+                                className="block ml-2 text-gray-400"
                               />
                             </Tooltip>
                           </div>
@@ -1017,9 +1007,10 @@ export const Stake = () => {
                           shouldWrapChildren={true}
                           label={`The 10-day cooldown period is the time required prior to unstaking your tokens. Once it expires, there is a 2-day window to unstake your tokens.`}
                         >
-                          <InformationCircleIcon
-                            className="block w-5 h-5 ml-2 text-gray-400 shrink-0"
-                            aria-hidden="true"
+                          <StyledIcon
+                            as="InformationCircleIcon"
+                            size={5}
+                            className="block ml-2 text-gray-400"
                           />
                         </Tooltip>
                       </p>
@@ -1035,12 +1026,14 @@ export const Stake = () => {
                           <>
                             <Menu.Button className="inline-flex items-center justify-center px-2 py-1 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-800 dark:text-indigo-400">
                               <span>Actions</span>
-                              <ChevronUpIcon
+                              <StyledIcon
+                                as="ChevronUpIcon"
+                                size={4}
                                 className={`${
                                   open
                                     ? ''
                                     : 'transform rotate-180 transition ease-in-out duration-300'
-                                } ml-2 w-5 h-5`}
+                                } ml-2`}
                               />
                             </Menu.Button>
                             <Transition
@@ -1076,18 +1069,20 @@ export const Stake = () => {
                                             label={`You don't have any available DIKO to stake in your wallet.`}
                                           >
                                             <div className="flex items-center w-full">
-                                              <ArrowCircleDownIcon
-                                                className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                                aria-hidden="true"
+                                              <StyledIcon
+                                                as="ArrowCircleDownIcon"
+                                                size={5}
+                                                className="block mr-3 text-gray-400 group-hover:text-white"
                                               />
                                               Stake
                                             </div>
                                           </Tooltip>
                                         ) : (
                                           <>
-                                            <ArrowCircleDownIcon
-                                              className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                              aria-hidden="true"
+                                            <StyledIcon
+                                              as="ArrowCircleDownIcon"
+                                              size={5}
+                                              className="block mr-3 text-gray-400 group-hover:text-white"
                                             />
                                             Stake
                                           </>
@@ -1114,9 +1109,10 @@ export const Stake = () => {
                                             label={`You don't have any staked DIKO.`}
                                           >
                                             <div className="flex items-center w-full">
-                                              <ArrowCircleUpIcon
-                                                className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                                aria-hidden="true"
+                                              <StyledIcon
+                                                as="ArrowCircleUpIcon"
+                                                size={5}
+                                                className="mr-3 text-gray-400 group-hover:text-white"
                                               />
                                               Unstake
                                             </div>
@@ -1128,18 +1124,20 @@ export const Stake = () => {
                                             label={`Either you haven't started the cooldown period, or the cooldown timer hasn't ended yet.`}
                                           >
                                             <div className="flex items-center w-full">
-                                              <ArrowCircleUpIcon
-                                                className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                                aria-hidden="true"
+                                              <StyledIcon
+                                                as="ArrowCircleUpIcon"
+                                                size={5}
+                                                className="mr-3 text-gray-400 group-hover:text-white"
                                               />
                                               Unstake
                                             </div>
                                           </Tooltip>
                                         ) : (
                                           <>
-                                            <ArrowCircleUpIcon
-                                              className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                              aria-hidden="true"
+                                            <StyledIcon
+                                              as="ArrowCircleUpIcon"
+                                              size={5}
+                                              className="mr-3 text-gray-400 group-hover:text-white"
                                             />
                                             Unstake
                                           </>
@@ -1166,18 +1164,20 @@ export const Stake = () => {
                                             label={`Cooldown is already in progress.`}
                                           >
                                             <div className="flex items-center w-full">
-                                              <ClockIcon
-                                                className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                                aria-hidden="true"
+                                              <StyledIcon
+                                                as="ClockIcon"
+                                                size={5}
+                                                className="mr-3 text-gray-400 group-hover:text-white"
                                               />
                                               Start cooldown
                                             </div>
                                           </Tooltip>
                                         ) : (
                                           <>
-                                            <ClockIcon
-                                              className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white"
-                                              aria-hidden="true"
+                                            <StyledIcon
+                                              as="ClockIcon"
+                                              size={5}
+                                              className="mr-3 text-gray-400 group-hover:text-white"
                                             />
                                             Start cooldown
                                           </>

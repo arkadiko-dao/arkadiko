@@ -19,7 +19,7 @@ import { LotGroup } from '@components/lot-group';
 import { getRPCClient } from '@common/utils';
 import { DocumentSearchIcon, GiftIcon, CashIcon } from '@heroicons/react/outline';
 import { EmptyState } from './ui/empty-state';
-import { Placeholder } from "./ui/placeholder";
+import { Placeholder } from './ui/placeholder';
 
 export const Auctions: React.FC = () => {
   const { doContractCall } = useConnect();
@@ -199,7 +199,9 @@ export const Auctions: React.FC = () => {
             <section>
               <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
                 <div>
-                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">Trade xSTX for STX</h3>
+                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">
+                    Trade xSTX for STX
+                  </h3>
                 </div>
               </header>
               <div className="mt-4">
@@ -224,7 +226,9 @@ export const Auctions: React.FC = () => {
             <section>
               <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
                 <div>
-                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">Your Winning Lots</h3>
+                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">
+                    Your Winning Lots
+                  </h3>
                 </div>
               </header>
               <div className="mt-4 mb-12">
@@ -245,11 +249,15 @@ export const Auctions: React.FC = () => {
             <section>
               <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
                 <div>
-                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">Auctions</h3>
+                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">
+                    Auctions
+                  </h3>
                 </div>
               </header>
               <div className="mt-4">
-                <p className="mb-4 text-gray-900 dark:text-zinc-100">Current Block Height: {stacksTipHeight}</p>
+                <p className="mb-4 text-gray-900 dark:text-zinc-100">
+                  Current Block Height: {stacksTipHeight}
+                </p>
                 {auctions.length > 0 ? (
                   <AuctionGroup auctions={auctions} stacksTipHeight={stacksTipHeight} />
                 ) : loadingAuctions ? (

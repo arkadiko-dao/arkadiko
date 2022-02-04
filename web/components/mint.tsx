@@ -18,6 +18,7 @@ import { Placeholder } from './ui/placeholder';
 import { Prices } from './prices';
 import { NavLink as RouterLink } from 'react-router-dom';
 
+
 export const Mint = () => {
   const address = useSTXAddress();
   const [state, setState] = useContext(AppContext);

@@ -16,13 +16,12 @@ import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
 import { AppContext } from '@common/context';
-import { ThumbUpIcon, ThumbDownIcon } from '@heroicons/react/outline';
-import { ExternalLinkIcon } from '@heroicons/react/solid';
 import { getRPCClient } from '@common/utils';
 import { ProposalProps } from './proposal-group';
 import BN from 'bn.js';
 import { Placeholder } from './ui/placeholder';
 import { classNames } from '@common/class-names';
+import { StyledIcon } from './ui/styled-icon';
 
 export const ViewProposal = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -574,7 +573,7 @@ export const ViewProposal = ({ match }) => {
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                       <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
                         Link
-                        <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
+                        <StyledIcon as="ExternalLinkIcon" size={4} className="block ml-2" />
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 dark:text-zinc-100 sm:mt-0 sm:col-span-2">
                         {isLoading ? (
@@ -599,7 +598,7 @@ export const ViewProposal = ({ match }) => {
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                       <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
                         Proposer
-                        <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
+                        <StyledIcon as="ExternalLinkIcon" size={4} className="block ml-2" />
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 dark:text-zinc-100 sm:mt-0 sm:col-span-2">
                         {isLoading ? (
@@ -677,14 +676,16 @@ export const ViewProposal = ({ match }) => {
                           'inline-flex items-center px-3 mt-3 py-1.5 rounded-full'
                         )}
                       >
-                        <ThumbUpIcon
+                        <StyledIcon
+                          as="ThumbUpIcon"
+                          solid={false}
+                          size={6}
                           className={classNames(
                             Number(proposal.forVotes) > Number(proposal.against) && !proposal.isOpen
                               ? 'text-green-800'
                               : 'text-gray-400',
-                            'block w-6 h-6 mr-2'
+                            'block mr-2'
                           )}
-                          aria-hidden="true"
                         />
                         Vote For
                       </span>
@@ -718,14 +719,16 @@ export const ViewProposal = ({ match }) => {
                           'inline-flex items-center px-3 mt-3 py-1.5 rounded-full'
                         )}
                       >
-                        <ThumbDownIcon
+                        <StyledIcon
+                          as="ThumbDownIcon"
+                          solid={false}
+                          size={6}
                           className={classNames(
                             Number(proposal.against) > Number(proposal.forVotes) && !proposal.isOpen
                               ? 'text-red-800'
                               : 'text-gray-400',
-                            'block w-6 h-6 mr-2'
+                            'block mr-2'
                           )}
-                          aria-hidden="true"
                         />
                         Vote Against
                       </span>

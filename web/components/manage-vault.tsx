@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Tooltip } from '@blockstack/ui';
-import { InformationCircleIcon, LockOpenIcon, ShieldCheckIcon, ExclamationIcon, ShieldExclamationIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/solid';
 import { Container } from './home';
 import { VaultDepositModal } from '@components/vault-deposit-modal';
 import { VaultWithdrawModal } from '@components/vault-withdraw-modal';
@@ -31,6 +30,7 @@ import { addMinutes } from 'date-fns';
 import { Placeholder } from './ui/placeholder';
 import { Alert } from './ui/alert';
 import { PoxTimeline } from '@components/pox-timeline';
+import { StyledIcon } from './ui/styled-icon';
 
 export const ManageVault = ({ match }) => {
   const { doContractCall } = useConnect();
@@ -530,7 +530,11 @@ export const ManageVault = ({ match }) => {
                     {/* TODO: Make component out of this */}
                     {debtClass(collateralType?.liquidationRatio, debtRatio) == 'text-green-500' ? (
                       <span className="overflow-hidden group inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-green-100 text-green-800 h-6">
-                        <ShieldCheckIcon className="flex-shrink-0 w-5 h-5 mr-2" />
+                        <StyledIcon
+                          as="ShieldCheckIcon"
+                          size={5}
+                          className="mr-2"
+                        />
                         Healthy
                         <span className="flex items-center flex-shrink-0 invisible w-0 h-0 group-hover:w-full group-hover:visible group-hover:h-6">
                           <svg className="w-1.5 h-1.5 mx-1 flex-shrink-0" fill="currentColor" viewBox="0 0 8 8">
@@ -541,7 +545,11 @@ export const ManageVault = ({ match }) => {
                       </span>
                     ) : debtClass(collateralType?.liquidationRatio, debtRatio) == 'text-orange-500' ? (
                       <span className="overflow-hidden group inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800 h-6">
-                        <ExclamationIcon className="flex-shrink-0 w-5 h-5 mr-2" />
+                        <StyledIcon
+                          as="ExclamationIcon"
+                          size={5}
+                          className="mr-2"
+                        />
                         Warning
                         <span className="flex items-center flex-shrink-0 invisible w-0 h-0 group-hover:w-full group-hover:visible group-hover:h-6">
                           <svg className="w-1.5 h-1.5 mx-1 flex-shrink-0" fill="currentColor" viewBox="0 0 8 8">
@@ -552,7 +560,11 @@ export const ManageVault = ({ match }) => {
                       </span>
                     ) : (
                       <span className="overflow-hidden group inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-red-100 text-red-800 h-6">
-                        <ShieldExclamationIcon className="flex-shrink-0 w-5 h-5 mr-2" />
+                        <StyledIcon
+                          as="ShieldExclamationIcon"
+                          size={5}
+                          className="mr-2"
+                        />
                         Danger
                         <span className="flex items-center flex-shrink-0 invisible w-0 h-0 group-hover:w-full group-hover:visible group-hover:h-6">
                           <svg className="w-1.5 h-1.5 mx-1 flex-shrink-0" fill="currentColor" viewBox="0 0 8 8">
@@ -585,9 +597,10 @@ export const ManageVault = ({ match }) => {
                           shouldWrapChildren={true}
                           label={`The amount of collateral you deposit in a vault versus the stablecoin debt you are minting against it`}
                         >
-                          <InformationCircleIcon
-                            className="block w-5 h-5 ml-2 text-gray-400"
-                            aria-hidden="true"
+                          <StyledIcon
+                            as="InformationCircleIcon"
+                            size={5}
+                            className="block ml-2 text-gray-400"
                           />
                         </Tooltip>
                       </dt>
@@ -621,9 +634,10 @@ export const ManageVault = ({ match }) => {
                           shouldWrapChildren={true}
                           label={`The collateral-to-debt ratio when your vault gets liquidated`}
                         >
-                          <InformationCircleIcon
-                            className="block w-5 h-5 ml-2 text-gray-400"
-                            aria-hidden="true"
+                          <StyledIcon
+                            as="InformationCircleIcon"
+                            size={5}
+                            className="block ml-2 text-gray-400"
                           />
                         </Tooltip>
                       </dt>
@@ -652,9 +666,10 @@ export const ManageVault = ({ match }) => {
                           shouldWrapChildren={true}
                           label={`The penalty you pay when your vault gets liquidated`}
                         >
-                          <InformationCircleIcon
-                            className="block w-5 h-5 ml-2 text-gray-400"
-                            aria-hidden="true"
+                          <StyledIcon
+                            as="InformationCircleIcon"
+                            size={5}
+                            className="block ml-2 text-gray-400"
                           />
                         </Tooltip>
                       </dt>
@@ -696,9 +711,10 @@ export const ManageVault = ({ match }) => {
                               shouldWrapChildren={true}
                               label={`When the price of ${vault?.collateralToken.toUpperCase()} increases compared to when you created a vault, your collateral is bigger in dollar value so you can mint more.`}
                             >
-                              <InformationCircleIcon
-                                className="block w-5 h-5 ml-2 text-gray-400"
-                                aria-hidden="true"
+                              <StyledIcon
+                                as="InformationCircleIcon"
+                                size={5}
+                                className="block ml-2 text-gray-400"
                               />
                             </Tooltip>
                           </p>
@@ -755,9 +771,10 @@ export const ManageVault = ({ match }) => {
                                   collateralType?.stabilityFeeApy / 100
                                 }% yearly stability fee.`}
                               >
-                                <InformationCircleIcon
-                                  className="block w-5 h-5 ml-2 text-gray-400"
-                                  aria-hidden="true"
+                                <StyledIcon
+                                  as="InformationCircleIcon"
+                                  size={5}
+                                  className="block ml-2 text-gray-400"
                                 />
                               </Tooltip>
                             </p>
@@ -777,7 +794,11 @@ export const ManageVault = ({ match }) => {
                               </p>
                             )}
                           </div>
-                          {!loadingStackerData && isVaultOwner && canWithdrawCollateral && Number(vault?.stackedTokens) === 0 && Number(totalDebt) <= 0.6 ? (
+                          {!loadingStackerData &&
+                          isVaultOwner &&
+                          canWithdrawCollateral &&
+                          Number(vault?.stackedTokens) === 0 &&
+                          Number(totalDebt) <= 0.6 ? (
                             <button
                               type="button"
                               className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -875,12 +896,20 @@ export const ManageVault = ({ match }) => {
                 {canStackCollateral && !loadingVaultData ? (
                   enabledStacking ? (
                     <span className="ml-3 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-green-100 text-green-800">
-                      <CheckCircleIcon className="flex-shrink-0 w-5 h-5 mr-2" />
+                      <StyledIcon
+                        as="CheckCircleIcon"
+                        size={5}
+                        className="mr-2"
+                      />
                       Enabled
                     </span>
                   ) : (
                     <span className="ml-3 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-red-100 text-red-800">
-                      <XCircleIcon className="flex-shrink-0 w-5 h-5 mr-2" />
+                      <StyledIcon
+                        as="XCircleIcon"
+                        size={5}
+                        className="mr-2"
+                      />
                       Disabled
                     </span>
                   )
@@ -1075,9 +1104,10 @@ export const ManageVault = ({ match }) => {
                           className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                           onClick={() => unlockCollateral()}
                           >
-                            <LockOpenIcon
-                              className="-ml-0.5 mr-2 h-4 w-4"
-                              aria-hidden="true"
+                            <StyledIcon
+                              as="LockOpenIcon"
+                              size={4}
+                              className="-ml-0.5 mr-2"
                             />
                             Unlock
                           </button>
@@ -1145,9 +1175,10 @@ export const ManageVault = ({ match }) => {
                                   shouldWrapChildren={true}
                                   label={`...`}
                                 >
-                                  <InformationCircleIcon
-                                    className="block w-5 h-5 ml-2 text-gray-400"
-                                    aria-hidden="true"
+                                  <StyledIcon
+                                    as="InformationCircleIcon"
+                                    size={5}
+                                    className="block ml-2 text-gray-400"
                                   />
                                 </Tooltip>
                               </>
@@ -1160,9 +1191,10 @@ export const ManageVault = ({ match }) => {
                                   shouldWrapChildren={true}
                                   label={`The amount of STX that is currently stacking or will be stacking after your cooldown cycle`}
                                 >
-                                  <InformationCircleIcon
-                                    className="block w-5 h-5 ml-2 text-gray-400"
-                                    aria-hidden="true"
+                                  <StyledIcon
+                                    as="InformationCircleIcon"
+                                    size={5}
+                                    className="block ml-2 text-gray-400"
                                   />
                                 </Tooltip>
                               </>
@@ -1192,9 +1224,10 @@ export const ManageVault = ({ match }) => {
                                 shouldWrapChildren={true}
                                 label={`The yield on your vault is given when stacking ends. If you opt-out of stacking, you can withdraw your funds when stacking ends.`}
                               >
-                                <InformationCircleIcon
-                                  className="block w-5 h-5 ml-2 text-gray-400"
-                                  aria-hidden="true"
+                                <StyledIcon
+                                  as="InformationCircleIcon"
+                                  size={5}
+                                  className="block ml-2 text-gray-400"
                                 />
                               </Tooltip>
                             </div>
@@ -1232,9 +1265,10 @@ export const ManageVault = ({ match }) => {
                                 shouldWrapChildren={true}
                                 label={`The amount of yield that your vault has earned so far`}
                               >
-                                <InformationCircleIcon
-                                  className="block w-5 h-5 ml-2 text-gray-400"
-                                  aria-hidden="true"
+                                <StyledIcon
+                                  as="InformationCircleIcon"
+                                  size={5}
+                                  className="block ml-2 text-gray-400"
                                 />
                               </Tooltip>
                             </p>
@@ -1286,9 +1320,10 @@ export const ManageVault = ({ match }) => {
                             shouldWrapChildren={true}
                             label={`The amount of collateral you are able to withdraw while keeping a healthy collateralization level`}
                           >
-                            <InformationCircleIcon
-                              className="block w-5 h-5 ml-2 text-gray-400"
-                              aria-hidden="true"
+                            <StyledIcon
+                              as="InformationCircleIcon"
+                              size={5}
+                              className="block ml-2 text-gray-400"
                             />
                           </Tooltip>
                         </p>

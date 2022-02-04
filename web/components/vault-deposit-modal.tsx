@@ -32,7 +32,7 @@ export const VaultDepositModal: React.FC<Props> = ({
   setShowDepositModal,
   vault,
   reserveName,
-  decimals
+  decimals,
 }) => {
   const [state, setState] = useContext(AppContext);
   const [extraCollateralDeposit, setExtraCollateralDeposit] = useState('');
