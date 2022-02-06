@@ -338,6 +338,14 @@
 
     (if (> tokens u0)
       (begin
+        (print (unwrap-panic (get-block-info? id-header-hash (- (get ended-at auction) u6))))
+        (print (unwrap-panic (get-block-info? id-header-hash (- (get ended-at auction) u0))))
+        (print block-height)
+        (print (get ended-at auction))
+        (print (get uamount commitment))
+        (print share)
+        (print tokens)
+        (print (var-get total-commitments))
         (try! (contract-call? vault-manager redeem-auction-collateral ft token-string reserve tokens tx-sender))
         (map-set usda-commitment { user: tx-sender } (merge current-commitment {
           uamount: (- (get uamount current-commitment) usda-used),

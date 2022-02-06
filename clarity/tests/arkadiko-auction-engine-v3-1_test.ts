@@ -26,7 +26,7 @@ import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 // Liquidate vault with enough USDA and multiple wallets
 // DONE: Liquidate vault without enough USDA
 // DONE: Liquidate vault and withdraw USDA in the same block
-// Liquidate vault and deposit USDA in the same block
+// DONE: Liquidate vault and deposit USDA in the same block
 // Liquidate vault with xBTC collateral
 
 Clarinet.test({ name: "auction engine: liquidate vault",
@@ -275,6 +275,8 @@ Clarinet.test({ name: "auction engine: liquidate and deposit in the same block",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+    let wallet_3 = accounts.get("wallet_3")!;
 
     let oracleManager = new OracleManager(chain, deployer);
     let usdaToken = new UsdaToken(chain, deployer);
@@ -312,7 +314,9 @@ Clarinet.test({ name: "auction engine: liquidate and deposit in the same block",
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], deployer.address),
-      Tx.contractCall("arkadiko-auction-engine-v3-1", "deposit", [types.uint(10000000000)], wallet_1.address)
+      Tx.contractCall("arkadiko-auction-engine-v3-1", "deposit", [types.uint(10000 * 1000000)], wallet_1.address),
+      Tx.contractCall("arkadiko-auction-engine-v3-1", "deposit", [types.uint(10000 * 1000000)], wallet_2.address),
+      Tx.contractCall("arkadiko-auction-engine-v3-1", "deposit", [types.uint(10000 * 1000000)], wallet_3.address)
     ]);
     block.receipts[0].result.expectOk().expectUint(5200);
     block.receipts[1].result.expectOk().expectBool(true);
@@ -333,7 +337,7 @@ Clarinet.test({ name: "auction engine: liquidate and deposit in the same block",
     vault['is-liquidated'].expectBool(true);
     vault['auction-ended'].expectBool(true);
 
-    result = vaultAuction.redeemTokens(wallet_1, 1);
+    result = vaultAuction.redeemTokens(wallet_2, 1);
     result.expectOk().expectBool(true);
 
     result = vaultAuction.withdraw(wallet_1, 8000);
