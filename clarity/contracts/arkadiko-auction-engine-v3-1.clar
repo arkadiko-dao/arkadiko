@@ -48,7 +48,7 @@
     discount: uint,
     total-collateral-sold: uint,
     total-debt-burned: uint,
-    ends-at: uint,
+    ended-at: uint,
     total-commitments: uint
   }
 )
@@ -66,7 +66,7 @@
       discount: u0,
       total-collateral-sold: u0,
       total-debt-burned: u0,
-      ends-at: u0,
+      ended-at: u0,
       total-commitments: u0
     }
     (map-get? auctions { id: id })
@@ -188,7 +188,7 @@
         discount: (unwrap-panic (contract-call? coll-type get-liquidation-penalty (get collateral-type vault))),
         total-debt-burned: u0,
         total-collateral-sold: u0,
-        ends-at: u0,
+        ended-at: u0,
         total-commitments: (var-get total-commitments)
       })
     )
@@ -219,7 +219,6 @@
     (auction (get-auction-by-id auction-id))
     (total-collateral-sold (+ (get total-collateral-sold auction) (unwrap-panic (get-collateral-amount oracle auction-id left-to-burn))))
     (updated-auction {
-      ends-at: block-height,
       total-collateral-sold: total-collateral-sold,
       total-debt-burned: (+ (get total-debt-burned auction) left-to-burn)
     })
@@ -232,13 +231,18 @@
         (merge auction updated-auction)
       )
       (if (not (get-auction-open auction-id))
-        (try! (contract-call?
-          vault-manager
-          finalize-liquidation
-          (get vault-id auction)
-          (- (get collateral-amount auction) total-collateral-sold)
-          coll-type
-        ))
+        (let (
+          (new-auction (get-auction-by-id auction-id))
+        )
+          (try! (contract-call?
+            vault-manager
+            finalize-liquidation
+            (get vault-id auction)
+            (- (get collateral-amount auction) total-collateral-sold)
+            coll-type
+          ))
+          (map-set auctions { id: auction-id } (merge new-auction { ended-at: block-height, total-commitments: (var-get total-commitments) }))
+        )
         false
       )
       (var-set total-commitments (- (var-get total-commitments) left-to-burn))
@@ -261,7 +265,7 @@
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
 
-    (if (and (>= left-to-raise (var-get total-commitments)) (> (var-get total-commitments) u0))
+    (if (and (>= (var-get total-commitments) left-to-raise) (> (var-get total-commitments) u0))
       (try! (burn-usda auction-id oracle coll-type vault-manager left-to-raise))
       false
     )
@@ -304,8 +308,8 @@
     (token-address (get collateral-address auction))
     (token-string (get collateral-token auction))
     (current-commitment (get-commitment-by-user tx-sender))
-    (commitment (at-block (unwrap-panic (get-block-info? id-header-hash (get ends-at auction))) (get-commitment-by-user tx-sender)))
-    (old-auction (at-block (unwrap-panic (get-block-info? id-header-hash (get ends-at auction))) (get-auction-by-id auction-id)))
+    (commitment (at-block (unwrap-panic (get-block-info? id-header-hash (get ended-at auction))) (get-commitment-by-user tx-sender)))
+    (old-auction (at-block (unwrap-panic (get-block-info? id-header-hash (get ended-at auction))) (get-auction-by-id auction-id)))
     (share (/ (* u100 (get uamount commitment)) (get total-commitments old-auction)))
     (tokens (/ (* share (get total-collateral-sold auction)) u100))
     (usda-used (/ (* share (get total-debt-burned auction)) u100))

@@ -166,10 +166,6 @@ Clarinet.test({ name: "auction engine: liquidate vault without enough USDA to li
     result = oracleManager.updatePrice("STX", 1);
     result = oracleManager.updatePrice("xSTX", 1);
 
-    // Deposit 10K USDA in the auction engine
-    // result = vaultAuction.deposit(wallet_1, 10000);
-    // result.expectOk().expectBool(true);
-
     // Check total USDA supply
     let call = await usdaToken.totalSupply();
     call.result.expectOk().expectUintWithDecimals(4001000.000010);
@@ -184,9 +180,9 @@ Clarinet.test({ name: "auction engine: liquidate vault without enough USDA to li
     // Check auction parameters
     let auction:any = await vaultAuction.getAuctionById(1);
     auction.result.expectTuple()['collateral-amount'].expectUintWithDecimals(1500);
-    auction.result.expectTuple()['debt-to-raise'].expectUintWithDecimals(1000); // Raise 1000 USDA and give a 10% discount on the collateral
+    auction.result.expectTuple()['debt-to-raise'].expectUintWithDecimals(1000);
 
-    // Auction closed
+    // Auction is open
     call = await vaultAuction.getAuctionOpen(1, wallet_1);
     call.result.expectBool(true);
 
@@ -198,6 +194,9 @@ Clarinet.test({ name: "auction engine: liquidate vault without enough USDA to li
     result.expectOk().expectBool(true);
 
     call = await vaultAuction.getAuctionOpen(1, wallet_1);
-    call.result.expectBool(true);
+    call.result.expectBool(false);
+
+    result = vaultAuction.redeemTokens(wallet_1, 1);
+    result.expectOk().expectBool(true);
   }
 });
