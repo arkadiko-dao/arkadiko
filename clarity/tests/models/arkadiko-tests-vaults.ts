@@ -399,6 +399,15 @@ class VaultAuctionV3 {
     return block.receipts[0].result;
   }
 
+  withdraw(user: Account, amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-auction-engine-v3-1", "withdraw", [
+        types.uint(amount * 1000000)
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
   redeemTokens(user: Account, auctionId: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v3-1", "redeem-tokens", [

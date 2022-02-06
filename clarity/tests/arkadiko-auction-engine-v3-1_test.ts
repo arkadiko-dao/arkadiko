@@ -22,10 +22,10 @@ import {
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 // Test Cases
-// Liquidate vault with enough USDA and 1 wallet
+// DONE: Liquidate vault with enough USDA and 1 wallet
 // Liquidate vault with enough USDA and multiple wallets
-// Liquidate vault without enough USDA
-// Liquidate vault and withdraw USDA in the same block
+// DONE: Liquidate vault without enough USDA
+// DONE: Liquidate vault and withdraw USDA in the same block
 // Liquidate vault and deposit USDA in the same block
 // Liquidate vault with xBTC collateral
 
@@ -197,6 +197,146 @@ Clarinet.test({ name: "auction engine: liquidate vault without enough USDA to li
     call.result.expectBool(false);
 
     result = vaultAuction.redeemTokens(wallet_1, 1);
+    result.expectOk().expectBool(true);
+  }
+});
+
+Clarinet.test({ name: "auction engine: liquidate and withdraw in the same block",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let usdaToken = new UsdaToken(chain, deployer);
+    let xstxManager = new XstxManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultLiquidator = new VaultLiquidatorV3(chain, deployer);
+    let vaultAuction = new VaultAuctionV3(chain, deployer);
+
+    // Initialize price of STX to $2 in the oracle
+    let result = oracleManager.updatePrice("STX", 3);
+    result = oracleManager.updatePrice("xSTX", 3);
+
+    // Create vault - 1500 STX, 1000 USDA
+    result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    // Upate price to $1.0
+    result = oracleManager.updatePrice("STX", 1);
+    result = oracleManager.updatePrice("xSTX", 1);
+
+    // Deposit 10K USDA in the auction engine
+    result = vaultAuction.deposit(wallet_1, 10000);
+    result.expectOk().expectBool(true);
+
+    // Check total USDA supply
+    let call = await usdaToken.totalSupply();
+    call.result.expectOk().expectUintWithDecimals(4001000.000010);
+
+    // Notify risky! Should burn all USDA from the vault.
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidator-v3-1", "notify-risky-vault", [
+        types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-auction-engine-v3-1')),
+        types.uint(1),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
+      ], deployer.address),
+      Tx.contractCall("arkadiko-auction-engine-v3-1", "withdraw", [types.uint(10000000000)], wallet_1.address)
+    ]);
+    block.receipts[0].result.expectOk().expectUint(5200);
+    block.receipts[1].result.expectErr().expectUint(21); // Cannot withdraw when your USDA is used and you have not collected
+
+    // Check auction parameters
+    let auction:any = await vaultAuction.getAuctionById(1);
+    auction.result.expectTuple()['collateral-amount'].expectUintWithDecimals(1500);
+    auction.result.expectTuple()['debt-to-raise'].expectUintWithDecimals(1000); // Raise 1000 USDA and give a 10% discount on the collateral
+
+    // Auction closed
+    call = await vaultAuction.getAuctionOpen(1, wallet_1);
+    call.result.expectBool(false);
+
+    // Auction info
+    call = await vaultManager.getVaultById(1, wallet_1);
+    let vault:any = call.result.expectTuple();
+    vault['leftover-collateral'].expectUintWithDecimals(388.888889);
+    vault['is-liquidated'].expectBool(true);
+    vault['auction-ended'].expectBool(true);
+
+    result = vaultAuction.redeemTokens(wallet_1, 1);
+    result.expectOk().expectBool(true);
+
+    result = vaultAuction.withdraw(wallet_1, 8000);
+    result.expectOk().expectBool(true);
+  }
+});
+
+Clarinet.test({ name: "auction engine: liquidate and deposit in the same block",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let usdaToken = new UsdaToken(chain, deployer);
+    let xstxManager = new XstxManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultLiquidator = new VaultLiquidatorV3(chain, deployer);
+    let vaultAuction = new VaultAuctionV3(chain, deployer);
+
+    // Initialize price of STX to $2 in the oracle
+    let result = oracleManager.updatePrice("STX", 3);
+    result = oracleManager.updatePrice("xSTX", 3);
+
+    // Create vault - 1500 STX, 1000 USDA
+    result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    // Upate price to $1.0
+    result = oracleManager.updatePrice("STX", 1);
+    result = oracleManager.updatePrice("xSTX", 1);
+
+    // Deposit 10K USDA in the auction engine
+    result = vaultAuction.deposit(wallet_1, 10000);
+    result.expectOk().expectBool(true);
+
+    // Check total USDA supply
+    let call = await usdaToken.totalSupply();
+    call.result.expectOk().expectUintWithDecimals(4001000.000010);
+
+    // Notify risky! Should burn all USDA from the vault.
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidator-v3-1", "notify-risky-vault", [
+        types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-auction-engine-v3-1')),
+        types.uint(1),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
+      ], deployer.address),
+      Tx.contractCall("arkadiko-auction-engine-v3-1", "deposit", [types.uint(10000000000)], wallet_1.address)
+    ]);
+    block.receipts[0].result.expectOk().expectUint(5200);
+    block.receipts[1].result.expectOk().expectBool(true);
+
+    // Check auction parameters
+    let auction:any = await vaultAuction.getAuctionById(1);
+    auction.result.expectTuple()['collateral-amount'].expectUintWithDecimals(1500);
+    auction.result.expectTuple()['debt-to-raise'].expectUintWithDecimals(1000); // Raise 1000 USDA and give a 10% discount on the collateral
+
+    // Auction closed
+    call = await vaultAuction.getAuctionOpen(1, wallet_1);
+    call.result.expectBool(false);
+
+    // Auction info
+    call = await vaultManager.getVaultById(1, wallet_1);
+    let vault:any = call.result.expectTuple();
+    vault['leftover-collateral'].expectUintWithDecimals(388.888889);
+    vault['is-liquidated'].expectBool(true);
+    vault['auction-ended'].expectBool(true);
+
+    result = vaultAuction.redeemTokens(wallet_1, 1);
+    result.expectOk().expectBool(true);
+
+    result = vaultAuction.withdraw(wallet_1, 8000);
     result.expectOk().expectBool(true);
   }
 });

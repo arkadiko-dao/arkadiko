@@ -241,6 +241,7 @@
             (- (get collateral-amount auction) total-collateral-sold)
             coll-type
           ))
+          (print (var-get total-commitments))
           (map-set auctions { id: auction-id } (merge new-auction { ended-at: block-height, total-commitments: (var-get total-commitments) }))
         )
         false
@@ -308,11 +309,11 @@
     (token-address (get collateral-address auction))
     (token-string (get collateral-token auction))
     (current-commitment (get-commitment-by-user tx-sender))
-    (commitment (at-block (unwrap-panic (get-block-info? id-header-hash (get ended-at auction))) (get-commitment-by-user tx-sender)))
-    (old-auction (at-block (unwrap-panic (get-block-info? id-header-hash (get ended-at auction))) (get-auction-by-id auction-id)))
+    (commitment (at-block (unwrap-panic (get-block-info? id-header-hash (- (get ended-at auction) u1))) (get-commitment-by-user tx-sender)))
+    (old-auction (at-block (unwrap-panic (get-block-info? id-header-hash (- (get ended-at auction) u1))) (get-auction-by-id auction-id)))
     (share (/ (* u100 (get uamount commitment)) (get total-commitments old-auction)))
-    (tokens (/ (* share (get total-collateral-sold auction)) u100))
-    (usda-used (/ (* share (get total-debt-burned auction)) u100))
+    (tokens (/ (* (min-of share u100) (get total-collateral-sold auction)) u100))
+    (usda-used (/ (* (min-of share u100) (get total-debt-burned auction)) u100))
   )
     (asserts! (not (get-auction-open auction-id)) (err ERR-AUCTION-NOT-CLOSED))
     (asserts! (not (get redeemed redemption)) (err ERR-ALREADY-REDEEMED))
@@ -347,5 +348,12 @@
       false
     )
     (ok true)
+  )
+)
+
+(define-private (min-of (x uint) (y uint))
+  (if (< x y)
+    x
+    y
   )
 )
