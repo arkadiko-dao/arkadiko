@@ -341,6 +341,12 @@ Clarinet.test({ name: "auction engine: liquidate and deposit in the same block",
     result.expectOk().expectBool(true);
 
     result = vaultAuction.withdraw(wallet_1, 8000);
+    result.expectErr().expectUint(21); // need to redeem tokens first
+
+    result = vaultAuction.redeemTokens(wallet_1, 1);
+    result.expectOk().expectBool(true);
+
+    result = vaultAuction.withdraw(wallet_1, 8000);
     result.expectOk().expectBool(true);
   }
 });

@@ -418,7 +418,7 @@ class VaultAuctionV3 {
         types.uint(auctionId)
       ], user.address)
     ]);
-    console.log(block.receipts[0]);
+    // console.log(block.receipts[0]);
     return block.receipts[0].result;
   }
 

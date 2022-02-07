@@ -310,10 +310,7 @@
     (token-string (get collateral-token auction))
     (current-commitment (get-commitment-by-user tx-sender))
     (commitment (at-block (unwrap-panic (get-block-info? id-header-hash (- (get ended-at auction) u1))) (get-commitment-by-user tx-sender)))
-    (old-auction (at-block (unwrap-panic (get-block-info? id-header-hash (- (get ended-at auction) u1))) (get-auction-by-id auction-id)))
-    (share (/ (* u100 (get uamount commitment)) (get total-commitments old-auction)))
-    (tokens (/ (* (min-of share u100) (get total-collateral-sold auction)) u100))
-    (usda-used (/ (* (min-of share u100) (get total-debt-burned auction)) u100))
+    (old-auction (at-block (unwrap-panic (get-block-info? id-header-hash (get ended-at auction))) (get-auction-by-id auction-id)))
   )
     (asserts! (not (get-auction-open auction-id)) (err ERR-AUCTION-NOT-CLOSED))
     (asserts! (not (get redeemed redemption)) (err ERR-ALREADY-REDEEMED))
@@ -334,28 +331,35 @@
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
-    (asserts! (> share u0) (ok true))
-
-    (if (> tokens u0)
-      (begin
-        (print (unwrap-panic (get-block-info? id-header-hash (- (get ended-at auction) u6))))
-        (print (unwrap-panic (get-block-info? id-header-hash (- (get ended-at auction) u0))))
-        (print block-height)
-        (print (get ended-at auction))
-        (print (get uamount commitment))
-        (print share)
-        (print tokens)
-        (print (var-get total-commitments))
-        (try! (contract-call? vault-manager redeem-auction-collateral ft token-string reserve tokens tx-sender))
-        (map-set usda-commitment { user: tx-sender } (merge current-commitment {
-          uamount: (- (get uamount current-commitment) usda-used),
-          last-collateral-redeemed: block-height
-        }))
-        (map-set auction-redemptions { user: tx-sender, auction-id: auction-id } { redeemed: true })
-      )
-      false
+    (asserts! (> (get total-commitments old-auction) u0) (err u1234))
+    (asserts! (> (get total-collateral-sold auction) u0) (err u23))
+    (asserts! (> (get total-debt-burned auction) u0) (err u445))
+    (let (
+      (share (/ (* u100 (get uamount commitment)) (get total-commitments old-auction)))
+      (tokens (/ (* (min-of share u100) (get total-collateral-sold auction)) u100))
+      (usda-used (/ (* (min-of share u100) (get total-debt-burned auction)) u100))
     )
-    (ok true)
+      (asserts! (> share u0) (ok true))
+      (if (> tokens u0)
+        (begin
+          (print (get-block-info? id-header-hash u0))
+          (print block-height)
+          (print (get ended-at auction))
+          (print (get uamount commitment))
+          (print share)
+          (print tokens)
+          (print (var-get total-commitments))
+          (try! (contract-call? vault-manager redeem-auction-collateral ft token-string reserve tokens tx-sender))
+          (map-set usda-commitment { user: tx-sender } (merge current-commitment {
+            uamount: (- (get uamount current-commitment) usda-used),
+            last-collateral-redeemed: block-height
+          }))
+          (map-set auction-redemptions { user: tx-sender, auction-id: auction-id } { redeemed: true })
+        )
+        false
+      )
+      (ok true)
+    )
   )
 )
 
