@@ -1,7 +1,7 @@
 ;; @contract Arkadiko governance
 ;; Can see, vote and submit a new proposal
 ;; A proposal will just update the DAO with new contracts.
-;; @version 1.1
+;; @version 3.1
 
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait stake-pool-diko-trait .arkadiko-stake-pool-diko-trait-v1.stake-pool-diko-trait)
@@ -40,7 +40,7 @@
 )
 
 (define-data-var governance-shutdown-activated bool false)
-(define-data-var proposal-count uint u5)
+(define-data-var proposal-count uint u6)
 (define-data-var proposal-ids (list 100 uint) (list u0))
 (define-map votes-by-member { proposal-id: uint, member: principal } { vote-count: uint })
 (define-map tokens-by-member { proposal-id: uint, member: principal, token: principal } { amount: uint })
