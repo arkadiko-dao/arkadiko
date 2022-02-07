@@ -389,11 +389,11 @@ class VaultAuction {
     );
   }
 
-  getDiscountedAuctionPrice(price: number, auctionId: number) {
+  getDiscountedAuctionPrice(price: number, decimals: number, auctionId: number) {
     return this.chain.callReadOnlyFn(
       "arkadiko-auction-engine-v2-1",
       "discounted-auction-price",
-      [types.uint(price * 1000000), types.uint(auctionId)],
+      [types.uint(price * 1000000), types.uint(decimals), types.uint(auctionId)],
       this.deployer.address
     );
   }
