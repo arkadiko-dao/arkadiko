@@ -799,6 +799,59 @@ export const Stake = () => {
     });
   };
 
+  const LP_DATA = [
+    {
+      name: 'dikousda',
+      tokenName: 'DIKO/USDA',
+      showStakeModal: showStakeLp1Modal,
+      setShowStakeModal: setShowStakeLp1Modal,
+      showUnstakeModal: showUnstakeLp1Modal,
+      setShowUnstakeModal: setShowUnstakeLp1Modal,
+      stakedAmount: lpDikoUsdaStakedAmount,
+      apy: dikoUsdaLpApy,
+    },
+    {
+      name: 'wstxusda',
+      tokenName: 'STX/USDA',
+      showStakeModal: showStakeLp2Modal,
+      setShowStakeModal: setShowStakeLp2Modal,
+      showUnstakeModal: showUnstakeLp2Modal,
+      setShowUnstakeModal: setShowUnstakeLp2Modal,
+      stakedAmount: lpStxUsdaStakedAmount,
+      apy: stxUsdaLpApy,
+    },
+    {
+      name: 'wstxdiko',
+      tokenName: 'STX/DIKO',
+      showStakeModal: showStakeLp3Modal,
+      setShowStakeModal: setShowStakeLp3Modal,
+      showUnstakeModal: showUnstakeLp3Modal,
+      setShowUnstakeModal: setShowUnstakeLp3Modal,
+      stakedAmount: lpStxDikoStakedAmount,
+      apy: stxDikoLpApy,
+    },
+    {
+      name: 'wstxxbtc',
+      tokenName: 'STX/xBTC',
+      showStakeModal: showStakeLp4Modal,
+      setShowStakeModal: setShowStakeLp4Modal,
+      showUnstakeModal: showUnstakeLp4Modal,
+      setShowUnstakeModal: setShowUnstakeLp4Modal,
+      stakedAmount: lpStxXbtcStakedAmount,
+      apy: stxXbtcLpApy,
+    },
+    {
+      name: 'xbtcusda',
+      tokenName: 'xBTC/USDA',
+      showStakeModal: showStakeLp5Modal,
+      setShowStakeModal: setShowStakeLp5Modal,
+      showUnstakeModal: showUnstakeLp5Modal,
+      setShowUnstakeModal: setShowUnstakeLp5Modal,
+      stakedAmount: lpXbtcUsdaStakedAmount,
+      apy: xbtcUsdaLpApy,
+    }
+  ];
+
   return (
     <>
       <Helmet>
@@ -817,85 +870,27 @@ export const Stake = () => {
         stakedAmount={stakedAmount}
       />
 
-      <StakeLpModal
-        showStakeModal={showStakeLp1Modal}
-        setShowStakeModal={setShowStakeLp1Modal}
-        apy={dikoUsdaLpApy}
-        balanceName={'dikousda'}
-        tokenName={'DIKO/USDA'}
-      />
+      {LP_DATA.map((lp) => (
+        <StakeLpModal
+          key={lp.name}
+          showStakeModal={lp.showStakeModal}
+          setShowStakeModal={lp.setShowStakeModal}
+          apy={lp.apy}
+          balanceName={lp.name}
+          tokenName={lp.tokenName}
+        />
+      ))}
 
-      <StakeLpModal
-        showStakeModal={showStakeLp2Modal}
-        setShowStakeModal={setShowStakeLp2Modal}
-        apy={stxUsdaLpApy}
-        balanceName={'wstxusda'}
-        tokenName={'STX/USDA'}
-      />
-
-      <StakeLpModal
-        showStakeModal={showStakeLp3Modal}
-        setShowStakeModal={setShowStakeLp3Modal}
-        apy={stxDikoLpApy}
-        balanceName={'wstxdiko'}
-        tokenName={'STX/DIKO'}
-      />
-
-      <StakeLpModal
-        showStakeModal={showStakeLp4Modal}
-        setShowStakeModal={setShowStakeLp4Modal}
-        apy={stxXbtcLpApy}
-        balanceName={'wstxxbtc'}
-        tokenName={'STX/xBTC'}
-      />
-
-      <StakeLpModal
-        showStakeModal={showStakeLp5Modal}
-        setShowStakeModal={setShowStakeLp5Modal}
-        apy={xbtcUsdaLpApy}
-        balanceName={'xbtcusda'}
-        tokenName={'xBTC/USDA'}
-      />
-
-      <UnstakeLpModal
-        showUnstakeModal={showUnstakeLp1Modal}
-        setShowUnstakeModal={setShowUnstakeLp1Modal}
-        stakedAmount={lpDikoUsdaStakedAmount}
-        balanceName={'dikousda'}
-        tokenName={'DIKO/USDA'}
-      />
-
-      <UnstakeLpModal
-        showUnstakeModal={showUnstakeLp2Modal}
-        setShowUnstakeModal={setShowUnstakeLp2Modal}
-        stakedAmount={lpStxUsdaStakedAmount}
-        balanceName={'wstxusda'}
-        tokenName={'STX/USDA'}
-      />
-
-      <UnstakeLpModal
-        showUnstakeModal={showUnstakeLp3Modal}
-        setShowUnstakeModal={setShowUnstakeLp3Modal}
-        stakedAmount={lpStxDikoStakedAmount}
-        balanceName={'wstxdiko'}
-        tokenName={'STX/DIKO'}
-      />
-
-      <UnstakeLpModal
-        showUnstakeModal={showUnstakeLp4Modal}
-        setShowUnstakeModal={setShowUnstakeLp4Modal}
-        stakedAmount={lpStxXbtcStakedAmount}
-        balanceName={'wstxxbtc'}
-        tokenName={'STX/xBTC'}
-      />
-
-      <UnstakeLpModal
-        showUnstakeModal={showUnstakeLp5Modal}
-        setShowUnstakeModal={setShowUnstakeLp5Modal}
-        stakedAmount={lpXbtcUsdaStakedAmount}
-        balanceName={'xbtcusda'}
-        tokenName={'xBTC/USDA'}
-      />
+      {LP_DATA.map((lp) => (
+        <UnstakeLpModal
+          key={lp.name}
+          showUnstakeModal={lp.showUnstakeModal}
+          setShowUnstakeModal={lp.setShowUnstakeModal}
+          stakedAmount={lp.stakedAmount}
+          balanceName={lp.name}
+          tokenName={lp.tokenName}
+        />
+      ))}
 
       {state.userData ? (
         <Container>

@@ -15,6 +15,7 @@ export const Governance = () => {
   const [state, _] = useContext(AppContext);
   const stxAddress = useSTXAddress();
   const [proposals, setProposals] = useState([]);
+  const [proposalsV1, setProposalsV1] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
@@ -43,6 +44,19 @@ export const Governance = () => {
       });
       const jsonV1 = cvToJSON(proposalsV1);
       const dataV1 = jsonV1.value.value;
+
+      const serializedProposalsV1: {
+        id: string;
+        title: string;
+        url: string;
+        proposer: string;
+        forVotes: number;
+        against: number;
+        changes: object[];
+        isOpen: boolean;
+        startBlockHeight: number;
+        endBlockHeight: number;
+      }[] = [];
 
       const serializedProposals: {
         id: string;
@@ -76,7 +90,7 @@ export const Governance = () => {
 
       dataV1.forEach((element: object) => {
         if (element.value['id'].value != 0) {
-          serializedProposals.push({
+          serializedProposalsV1.push({
             id: element.value['id'].value,
             title: element.value['title'].value,
             url: element.value['url'].value,
@@ -91,6 +105,7 @@ export const Governance = () => {
         }
       });
 
+      setProposalsV1(serializedProposalsV1);
       setProposals(serializedProposals);
       setIsLoading(false);
     };
@@ -157,7 +172,12 @@ export const Governance = () => {
                   </div>
                 </div>
               ) : proposals.length > 0 ? (
-                <ProposalGroup proposals={proposals} />
+                <>
+                  <ProposalGroup proposals={proposals} />
+
+                  <h4 className="mt-8 text-base leading-6 text-gray-900 font-headings dark:text-zinc-50">Governance V1</h4>
+                  <ProposalGroup proposals={proposalsV1} />
+                </>
               ) : (
                 <EmptyState
                   Icon={DocumentTextIcon}

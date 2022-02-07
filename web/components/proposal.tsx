@@ -43,7 +43,8 @@ export const Proposal: React.FC<ProposalProps> = ({
                 className="shrink-0 mr-1.5 h-5 w-5 text-gray-400 dark:text-gray-300"
                 aria-hidden="true"
               />
-              <p>Closing on block height {endBlockHeight}</p>
+              <p>
+              {isOpen ? (`Closing`) : (`Closed`)} on block height {endBlockHeight}</p>
             </div>
           </div>
         </div>
