@@ -175,14 +175,17 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Vote for wallet_1
-    result = governance.voteForProposal(wallet_1, 1, 10);
+    result = governance.voteForProposal(wallet_1, 7, 100000);
+    result.expectOk().expectUint(3200);
+
+    result = governance.voteForProposal(deployer, 7, 100000);
     result.expectOk().expectUint(3200);
 
     // Advance
     chain.mineEmptyBlock(1500);
 
     // End proposal
-    result = governance.endProposal(1);
+    result = governance.endProposal(7);
     result.expectOk().expectUint(3200);
 
     // Create vault with xBTC
@@ -401,14 +404,17 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Vote for wallet_1
-    result = governance.voteForProposal(wallet_1, 1, 10);
+    result = governance.voteForProposal(wallet_1, 7, 100000);
+    result.expectOk().expectUint(3200);
+
+    result = governance.voteForProposal(deployer, 7, 100000);
     result.expectOk().expectUint(3200);
 
     // Advance
     chain.mineEmptyBlock(1500);
 
     // End proposal
-    result = governance.endProposal(1);
+    result = governance.endProposal(7);
     result.expectOk().expectUint(3200);
 
     // Create vault with xBTC
