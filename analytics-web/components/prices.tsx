@@ -55,6 +55,40 @@ export const Prices: React.FC = () => {
     fetchPrices();
   }, []);
 
+  const assets = [
+    {
+      token: 'STX',
+      logo: tokenList[2].logo,
+      price: stxPrice / 1000000,
+      unit: '$',
+      block: stxBlockUpdate,
+      blockAgo: stxBlockAgoUpdate,
+    },
+    {
+      token: 'DIKO',
+      logo: tokenList[1].logo,
+      price: dikoPrice,
+      unit: 'USDA',
+      block: dikoBlockUpdate,
+      blockAgo: dikoBlockAgoUpdate,
+    },
+    {
+      token: 'xBTC',
+      logo: tokenList[3].logo,
+      price: xbtcPrice / 1000000,
+      unit: '$',
+      block: xbtcBlockUpdate,
+      blockAgo: xbtcBlockAgoUpdate,
+    },
+    {
+      token: 'USDA',
+      logo: tokenList[0].logo,
+      price: usdaPrice / 1000000,
+      unit: '$',
+      block: usdaBlockUpdate,
+      blockAgo: usdaBlockAgoUpdate,
+    },
+  ];
 
   return (
     <section className="mt-8">
@@ -62,169 +96,157 @@ export const Prices: React.FC = () => {
         <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings">Prices</h3>
       </header>
 
-      <div className="flex flex-col mt-4">
+      <div className="min-w-full mt-4 overflow-hidden overflow-x-auto align-middle border border-gray-200 rounded-lg dark:border-zinc-600 lg:hidden">
+        <div className="bg-white dark:bg-zinc-900">
+          <div className="mx-auto bg-white dark:bg-zinc-900 sm:py-6 max-w-7xl">
+            <div className="max-w-2xl mx-auto space-y-2 divide-y divide-gray-200 dark:divide-zinc-600">
+              {assets.map(asset => (
+                <section className="pt-4" key={asset.token}>
+                  <div className="px-4">
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 shrink-0">
+                        <img className="w-10 h-10 rounded-full" src={asset.logo} alt="" />
+                      </div>
+                      <div className="ml-3">
+                        <h2 className="text-xl font-medium font-semibold leading-6 text-gray-700 dark:text-zinc-100">
+                          {asset.token}
+                        </h2>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-4">
+                      <div className="flex items-center text-sm text-gray-500 dark:text-zinc-400">
+                        Last Oracle Price
+                      </div>
+                      {loadingPrices ? (
+                        <Placeholder className="justify-end py-2" width={Placeholder.width.HALF} />
+                      ) : (
+                        <p>
+                          <span className="text-base font-medium text-gray-500">{asset.unit}</span>{' '}
+                          <span className="text-4xl font-extrabold text-gray-700 dark:text-zinc-100">
+                            {asset.price}
+                          </span>
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <table className="w-full">
+                    <thead>
+                      <tr>
+                        <th className="sr-only" scope="col">
+                          Price
+                        </th>
+                        <th className="sr-only" scope="col">
+                          Data
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th
+                          className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                          scope="row"
+                        >
+                          <div className="flex items-center">Updated Block Height</div>
+                        </th>
+                        <td className="py-5 pr-4">
+                          {loadingPrices ? (
+                            <Placeholder
+                              className="py-2 w-[100px] ml-auto"
+                              width={Placeholder.width.FULL}
+                            />
+                          ) : (
+                            <>
+                              <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
+                                {asset.block}{' '}
+                                <span className="text-gray-500 dark:text-zinc-300">
+                                  ({asset.blockAgo} blocks ago)
+                                </span>
+                              </span>
+                            </>
+                          )}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </section>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col hidden mt-4 lg:block">
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <div className="overflow-hidden border border-gray-200 rounded-lg">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+            <div className="overflow-hidden border border-gray-200 rounded-lg dark:border-zinc-700">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
+                <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
                   <tr>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                      className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
                     >
                       Asset
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                      className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
                     >
                       Last Oracle Price
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                      className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
                     >
                       Updated Block Height
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  <tr className="bg-white">
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="shrink-0 w-10 h-10">
-                          <img
-                            className="w-10 h-10 rounded-full"
-                            src={tokenList[2].logo}
-                            alt=""
-                          />
+                <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600">
+                  {assets.map(asset => (
+                    <tr key={asset.token} className="bg-white dark:bg-zinc-900">
+                      <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 shrink-0">
+                            <img className="w-10 h-10 rounded-full" src={asset.logo} alt="" />
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900 dark:text-zinc-100">
+                              {asset.token}
+                            </div>
+                          </div>
                         </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">STX</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      {loadingPrices ? (
-                        <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                      ) : (
-                        <span>${stxPrice / 1000000}</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      {loadingPrices ? (
-                        <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                      ) : (
-                        <>
-                        <span>{stxBlockUpdate}</span>{' '}
-                        <span className="text-gray-400">({stxBlockAgoUpdate} blocks ago)</span>
-                        </>
-                      )}
-                    </td>
-                  </tr>
-
-                  <tr className="bg-white">
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="shrink-0 w-10 h-10">
-                          <img
-                            className="w-10 h-10 rounded-full"
-                            src={tokenList[1].logo}
-                            alt=""
-                          />
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">DIKO</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      {loadingPrices ? (
-                        <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                      ) : (
-                        <span>{dikoPrice} USDA</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      {loadingPrices ? (
-                        <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                      ) : (
-                        <>
-                          <span>{dikoBlockUpdate}</span>{' '}
-                          <span className="text-gray-400">({dikoBlockAgoUpdate} blocks ago)</span>
-                        </>
-                      )}
-                    </td>
-                  </tr>
-
-                  <tr className="bg-white">
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="shrink-0 w-10 h-10">
-                          <img
-                            className="w-10 h-10 rounded-full"
-                            src={tokenList[3].logo}
-                            alt=""
-                          />
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">xBTC</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      {loadingPrices ? (
-                        <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                      ) : (
-                        <span>${xbtcPrice / 1000000}</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      {loadingPrices ? (
-                        <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                      ) : (
-                        <>
-                        <span>{xbtcBlockUpdate}</span>{' '}
-                        <span className="text-gray-400">({xbtcBlockAgoUpdate} blocks ago)</span>
-                        </>
-                      )}
-                    </td>
-                  </tr>
-
-                  <tr className="bg-white">
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="shrink-0 w-10 h-10">
-                          <img
-                            className="w-10 h-10 rounded-full"
-                            src={tokenList[0].logo}
-                            alt=""
-                          />
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">USDA</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      {loadingPrices ? (
-                        <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                      ) : (
-                        <span>${usdaPrice / 1000000}</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      {loadingPrices ? (
-                        <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                      ) : (
-                        <>
-                        <span>{usdaBlockUpdate}</span>{' '}
-                        <span className="text-gray-400">({usdaBlockAgoUpdate} blocks ago)</span>
-                        </>
-                      )}
-                    </td>
-                  </tr>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                        {loadingPrices ? (
+                          <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                        ) : asset.unit == 'USDA' ? (
+                          <span>
+                            {asset.price}
+                            <span className="text-gray-500 dark:text-zinc-300">{asset.unit}</span>
+                          </span>
+                        ) : (
+                          <span>
+                            <span className="text-gray-500 dark:text-zinc-300">{asset.unit}</span>
+                            {asset.price}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                        {loadingPrices ? (
+                          <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                        ) : (
+                          <>
+                            <span>{asset.block} </span>
+                            <span className="text-gray-500 dark:text-zinc-300">
+                              ({asset.blockAgo} blocks ago)
+                            </span>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
