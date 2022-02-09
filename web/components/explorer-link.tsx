@@ -9,7 +9,7 @@ interface ExplorerLinkProps {
 export const ExplorerLink: React.FC<ExplorerLinkProps> = ({ txId, text, className }) => {
   let url = '#';
   if (txId) {
-    let id = txId['txid'].replace('"', '');
+    let id = txId.replace('"', '');
     if (!id.startsWith('0x') && !id.includes('.')) {
       id = `0x${id}`;
     }
