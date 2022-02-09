@@ -150,7 +150,7 @@ export const Vault: React.FC<VaultProps> = ({
           </td>
           <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-zinc-400 whitespace-nowrap">
             <span className={`${debtClass(collateralData?.liquidationRatio, debtRatio)}`}>
-              {debtRatio}% (&gt; {collateralData['liquidationRatio']}%)
+              {debtRatio}% (&gt; {collateralData?.liquidationRatio}%)
             </span>
           </td>
           <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-zinc-400 whitespace-nowrap">
@@ -246,7 +246,7 @@ export const Vault: React.FC<VaultProps> = ({
                 <td className="py-5 pr-4">
                   <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
                     <span className={`${debtClass(collateralData?.liquidationRatio, debtRatio)}`}>
-                      {debtRatio}% (&gt; {collateralData['liquidationRatio']}%)
+                      {debtRatio}% (&gt; {collateralData?.liquidationRatio}%)
                     </span>
                   </span>
                 </td>
