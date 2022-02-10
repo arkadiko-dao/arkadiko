@@ -13,15 +13,15 @@ async function transact() {
     functionName: 'propose',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
-      tx.uintCV(43100),
+      tx.uintCV(47175),
       tx.uintCV(900),
-      tx.stringUtf8CV('Add STX/WELSH Pair'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/408'),
+      tx.stringUtf8CV('Add new governance (v3)'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/421'),
       tx.listCV([
         tx.tupleCV({
-          'name': tx.stringAsciiCV("add-welsh"),
+          'name': tx.stringAsciiCV("governance"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-add-welsh"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-governance-v3-1"),
           'can-mint': tx.falseCV(),
           'can-burn': tx.falseCV()
         })

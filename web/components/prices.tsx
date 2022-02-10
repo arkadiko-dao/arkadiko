@@ -3,6 +3,7 @@ import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import BN from 'bn.js';
 import {
+  AnchorMode,
   broadcastTransaction,
   createStacksPrivateKey,
   standardPrincipalCV,
@@ -78,6 +79,7 @@ export const Prices = () => {
       amount: new BN(5000000000),
       senderKey: privateKeyToString(senderKey),
       network: network,
+      anchorMode: AnchorMode.Any,
     });
     await broadcastTransaction(transaction, network);
   };

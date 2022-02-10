@@ -26,7 +26,6 @@ name: "diko-slash: execute slash through governance",
 async fn(chain: Chain, accounts: Map<string, Account>) {
   let deployer = accounts.get("deployer")!;
   let wallet_1 = accounts.get("wallet_1")!;
-  let wallet_2 = accounts.get("wallet_2")!;
 
   let stakeRegistry = new StakeRegistry(chain, deployer);
   let governance = new Governance(chain, deployer);
@@ -53,18 +52,21 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   result.expectOk().expectBool(true);
 
   // Vote for wallet_1
-  result = governance.voteForProposal(wallet_1, 1, 10);
+  result = governance.voteForProposal(deployer, 7, 100000);
+  result.expectOk().expectUint(3200);
+
+  result = governance.voteForProposal(wallet_1, 7, 100000);
   result.expectOk().expectUint(3200);
 
   // Advance
   chain.mineEmptyBlock(1500);
 
   // End proposal
-  result = governance.endProposal(1);
+  result = governance.endProposal(7);
   result.expectOk().expectUint(3200);
 
   // Check if proposal updated
-  let call:any = governance.getProposalByID(1);
+  let call:any = governance.getProposalByID(7);
   call.result.expectTuple()["is-open"].expectBool(false);
 
   // Check total DIKO pool balance (as rewards have auto compounded)
@@ -80,7 +82,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Foundation (still deployer in this case) should have received the funds
   call = dikoToken.balanceOf(deployer.address);
-  call.result.expectOk().expectUintWithDecimals(890048.791971);
+  call.result.expectOk().expectUintWithDecimals(790048.791971);
 
   // Check total DIKO pool balance
   // 70% of 162 DIKO = ~113
