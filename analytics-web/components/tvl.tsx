@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Placeholder } from '../../web/components/ui/placeholder';
+import { Tooltip } from '@blockstack/ui';
+import { InformationCircleIcon } from '@heroicons/react/solid';
 
 export const Tvl: React.FC = () => {
   const [loadingTvl, setLoadingTvl] = useState(true);
@@ -26,61 +28,54 @@ export const Tvl: React.FC = () => {
     fetchTvl();
   }, []);
 
+  const stats = [
+    {
+      name: 'Total TVL',
+      stat: totalTvl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    },
+    {
+      name: 'Vaults TVL',
+      stat: vaultsTvl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    },
+    {
+      name: 'Swap TVL',
+      stat: swapTvl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      info: 'Dollar amount of all the tokens that are deposited as liquidity for swapping.'
+    },
+  ]
+
   return (
-    <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
-      <div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
-        <dt className="text-sm font-medium text-gray-500 truncate">
-          Total TVL
-        </dt>
-        <dd className="mt-1 text-3xl font-semibold text-gray-900">
-          {loadingTvl ? (
-            <Placeholder className="justify-end py-2" width={Placeholder.width.FULL} />
-          ) : (
-            <p>
-              <span className="text-base font-medium text-gray-500">$</span>{' '}
-              <span className="text-3xl font-extrabold text-gray-700 dark:text-zinc-100">
-                {totalTvl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </span>
-            </p>
-          )}
-        </dd>
-      </div>
+    <div>
+      <dl className="grid grid-cols-1 mt-5 overflow-hidden bg-white border border-gray-200 divide-y divide-gray-200 rounded-lg lg:grid-cols-3 lg:divide-y-0 lg:divide-x">
+        {stats.map((item) => (
+          <div key={item.name} className="px-4 py-5 sm:p-6">
+            <dt className="inline-flex items-center text-base font-normal text-gray-500">
+              {item.name}
 
-      <div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
-        <dt className="text-sm font-medium text-gray-500 truncate">
-          Vaults TVL
-        </dt>
-        <dd className="mt-1 text-3xl font-semibold text-gray-900">
-          {loadingTvl ? (
-            <Placeholder className="justify-end py-2" width={Placeholder.width.FULL} />
-          ) : (
-            <p>
-              <span className="text-base font-medium text-gray-500">$</span>{' '}
-              <span className="text-3xl font-extrabold text-gray-700 dark:text-zinc-100">
-                {vaultsTvl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </span>
-            </p>
-          )}
-        </dd>
-      </div>
-
-      <div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
-        <dt className="text-sm font-medium text-gray-500 truncate">
-          Swap TVL
-        </dt>
-        <dd className="mt-1 text-3xl font-semibold text-gray-900">
-          {loadingTvl ? (
-            <Placeholder className="justify-end py-2" width={Placeholder.width.FULL} />
-          ) : (
-            <p>
-              <span className="text-base font-medium text-gray-500">$</span>{' '}
-              <span className="text-3xl font-extrabold text-gray-700 dark:text-zinc-100">
-                {swapTvl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </span>
-            </p>
-          )}
-        </dd>
-      </div>
-    </dl>
+              {item.info ? (
+                <Tooltip
+                  label={item.info}
+                  shouldWrapChildren={true}
+                >
+                  <InformationCircleIcon
+                    className="block w-5 h-5 ml-2 text-gray-400"
+                    aria-hidden="true"
+                  />
+                </Tooltip>
+              ) : null}
+            </dt>
+            <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
+              {loadingTvl ? (
+                <Placeholder className="py-2" width={Placeholder.width.FULL} />
+              ) : (
+                <div className="text-2xl font-semibold text-indigo-600">
+                  <span className="text-sm">$</span>{' '} {item.stat}
+                </div>
+              )}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
   );
 };
