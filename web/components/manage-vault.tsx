@@ -233,7 +233,7 @@ export const ManageVault = ({ match }) => {
       const client = getRPCClient();
       const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
       const data = await response.json();
-      const currentBurnHeight = data['stable_burn_block_height'];
+      const currentBurnHeight = data['burn_block_height'];
 
       if (Number(unlockBurnHeight) === 0) {
         setStartedStacking(false);
