@@ -26,12 +26,14 @@ export const availableCollateralToWithdraw = (
   price: number,
   currentStxCollateral: number,
   coinsMinted: number,
-  collateralToDebt: number
+  collateralToDebt: number,
+  collateralToken: string
 ) => {
   // 200 = (stxCollateral * 111) / 5
   const minimumStxCollateral = (collateralToDebt * coinsMinted) / (price / 10000);
   if (currentStxCollateral - minimumStxCollateral > 0) {
-    return (currentStxCollateral - minimumStxCollateral).toFixed(2);
+    const decimals = collateralToken.toLocaleLowerCase().includes('xbtc') ? 8 : 6;
+    return (currentStxCollateral - minimumStxCollateral).toFixed(decimals);
   }
 
   return 0;

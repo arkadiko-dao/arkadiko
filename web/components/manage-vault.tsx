@@ -139,7 +139,8 @@ export const ManageVault = ({ match }) => {
             price,
             collateralLocked(),
             outstandingDebt(),
-            collateralType?.collateralToDebtRatio
+            collateralType?.collateralToDebtRatio,
+            vault?.collateralToken
           )
         );
       } else {
