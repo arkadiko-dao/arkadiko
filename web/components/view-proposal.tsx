@@ -40,7 +40,7 @@ export const ViewProposal = ({ match }) => {
   const [stdikoVoted, setStdikoVoted] = useState('');
 
   const CONTRACT_NAME =
-    match.params.id <= 2 ? 'arkadiko-governance-v1-1' : 'arkadiko-governance-v2-1';
+    match.params.id <= 2 ? 'arkadiko-governance-v1-1' : match.params.id <= 6 ? 'arkadiko-governance-v2-1' : 'arkadiko-governance-v3-1';
 
   useEffect(() => {
     if (state.currentTxStatus === 'success') {
