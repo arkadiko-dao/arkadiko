@@ -10,8 +10,8 @@ export const Balances = () => {
       description: 'Reserve of collateralized STX in Vaults.',
     },
     {
-      address: `${contractAddress}.arkadiko-sip10-reserve-v1-1`,
-      name: 'SIP10 Reserve v1',
+      address: `${contractAddress}.arkadiko-sip10-reserve-v2-1`,
+      name: 'SIP10 Reserve v2',
       description: 'Reserve of all SIP10 collateral types.',
     },
     {

@@ -186,7 +186,7 @@ export const resolveReserveName = (collateralToken: string) => {
   if (collateralToken.toLowerCase().startsWith('stx')) {
     return 'arkadiko-stx-reserve-v1-1';
   } else {
-    return 'arkadiko-sip10-reserve-v1-1'; // we have only two reserves: 1 for STX and 1 for all other SIP10 FTs
+    return 'arkadiko-sip10-reserve-v2-1'; // we have only two reserves: 1 for STX and 1 for all other SIP10 FTs
   }
 };
 
