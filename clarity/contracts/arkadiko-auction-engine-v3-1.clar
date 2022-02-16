@@ -1,5 +1,5 @@
 ;; @contract Auction Engine - Sells off vault collateral to raise USDA
-;; @version 1
+;; @version 3
 
 (impl-trait .arkadiko-auction-engine-trait-v2.auction-engine-trait)
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
