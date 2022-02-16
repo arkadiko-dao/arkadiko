@@ -44,6 +44,8 @@ export const VaultWithdrawModal: React.FC<Props> = ({
     }
 
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
+    const decimals = token === 'Wrapped-Bitcoin' ? 100000000 : 1000000;
+    const amount = uintCV(Number((parseFloat(collateralToWithdraw) * decimals).toFixed(0)));
     await doContractCall({
       network,
       contractAddress,
@@ -52,7 +54,7 @@ export const VaultWithdrawModal: React.FC<Props> = ({
       functionName: 'withdraw',
       functionArgs: [
         uintCV(match.params.id),
-        uintCV(parseFloat(collateralToWithdraw) * 1000000),
+        amount,
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
         contractPrincipalCV(
