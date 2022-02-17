@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import {
-  AnchorMode,
   callReadOnlyFunction,
   cvToJSON,
   standardPrincipalCV,
@@ -11,25 +10,20 @@ import {
 } from '@stacks/transactions';
 import { VaultGroup } from './vault-group';
 import { AppContext } from '@common/context';
-import { useConnect } from '@stacks/connect-react';
 import { CollateralType } from '@components/collateral-type';
 import { useEffect } from 'react';
 import { VaultProps } from './vault';
 import { EmptyState } from './ui/empty-state';
 import { ArchiveIcon } from '@heroicons/react/outline';
 import { Placeholder } from './ui/placeholder';
-import { InformationCircleIcon } from '@heroicons/react/solid';
-import { Tooltip } from '@blockstack/ui';
 import { Prices } from './prices';
 
 export const Mint = () => {
   const address = useSTXAddress();
   const [state, setState] = useContext(AppContext);
   const [{ vaults, collateralTypes }, _x] = useContext(AppContext);
-  const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [loadingVaults, setLoadingVaults] = useState(true);
-  const [pendingVaultRewards, setPendingVaultRewards] = useState(0);
 
   useEffect(() => {
     const fetchVault = async (vaultId: number) => {
@@ -84,17 +78,6 @@ export const Mint = () => {
         }
       });
 
-      const rewardCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-vault-rewards-v1-1',
-        functionName: 'get-pending-rewards',
-        functionArgs: [standardPrincipalCV(address || '')],
-        senderAddress: contractAddress || '',
-        network: network,
-      });
-      const reward = cvToJSON(rewardCall);
-      setPendingVaultRewards(reward.value.value / 1000000);
-
       setState(prevState => ({
         ...prevState,
         vaults: arr,
@@ -105,24 +88,6 @@ export const Mint = () => {
     fetchVaults();
   }, []);
 
-  const claimPendingRewards = async () => {
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: address,
-      contractName: 'arkadiko-vault-rewards-v1-1',
-      functionName: 'claim-pending-rewards',
-      functionArgs: [],
-      onFinish: data => {
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-      },
-      anchorMode: AnchorMode.Any,
-    });
-  };
 
   return (
     <div>
@@ -206,38 +171,6 @@ export const Mint = () => {
             <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
               Your vaults
             </h3>
-            <div className="flex items-center mt-3 sm:mt-0 sm:ml-4">
-              <div className="flex flex-col items-end text-sm">
-                <p className="flex items-center text-gray-500 dark:text-zinc-300">
-                  Vaults rewards are now over
-                  <Tooltip
-                    placement="left"
-                    shouldWrapChildren={true}
-                    label={`DIKO vaults rewards ended at block 41348. Don't worry, you can still stake and farm DIKO with LP tokens.`}
-                  >
-                    <InformationCircleIcon
-                      className="w-5 h-5 ml-2 text-gray-400"
-                      aria-hidden="true"
-                    />
-                  </Tooltip>
-                </p>
-              </div>
-              {pendingVaultRewards > 0 ? (
-                <button
-                  type="button"
-                  className="inline-flex items-center px-3 py-2 ml-4 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  onClick={() => claimPendingRewards()}
-                  disabled={pendingVaultRewards === 0}
-                >
-                  Claim{' '}
-                  {pendingVaultRewards.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 6,
-                  })}{' '}
-                  DIKO
-                </button>
-              ) : null}
-            </div>
           </header>
 
           {vaults.length &&
