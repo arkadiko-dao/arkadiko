@@ -1,5 +1,5 @@
 class PoxCalculator
-  def self.calculate_yields(names: ['stacker'], file: 'vaults-pox-24.json', ustx_stacked: 11_767_693_892_292, ustx_yield: 50_026_121_000)
+  def self.calculate_yields(names: ['stacker'], file: 'vaults-pox-25.json', ustx_stacked: 11_552_001_078_680, ustx_yield: 45_433_519_500)
     file = File.open("files/#{file}")
     data = JSON.load(file)
     vaults = {}
@@ -7,7 +7,7 @@ class PoxCalculator
     data.each do |vault|
       next unless names.include?(vault['stacker-name']['value'])
       next if vault['stacked-tokens']['value'] == 0
-      next if vault['id']['value'] == 0 || vault['id']['value'] > 1860
+      next if vault['id']['value'] == 0 # || vault['id']['value'] > 1860
 
       collateral = vault['collateral']['value']
       stacked = vault['stacked-tokens']['value']
