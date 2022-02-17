@@ -1201,8 +1201,7 @@ export const Stake = () => {
                   Liquidity Provider Tokens
                 </h3>
                 <p className="max-w-3xl mt-2 text-sm text-gray-500 dark:text-zinc-400 dark:text-zinc-300">
-                  Staking LP tokens allows you to earn further rewards. You might be more familiar
-                  with the term “farming”.
+                  Over time, DIKO rewards will accumulate which you can claim to your wallet or stake in the Security Module. Happy farming!
                 </p>
               </header>
 
