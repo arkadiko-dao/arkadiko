@@ -35,7 +35,7 @@
     "@stacks/connect-react": "^12.0.0",
     "@stacks/network": "^1.0.2",
     "@stacks/rpc-client": "^1.0.3",
-    "@stacks/transactions": "^2.0.1",
+    "@stacks/transactions": "^3.2.0",
     "@tailwindcss/forms": "^0.4.0",
     "@types/react-helmet": "^6.1.4",
     "autoprefixer": "^10.4.0",

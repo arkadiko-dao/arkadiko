@@ -9,21 +9,28 @@ const BN = require('bn.js');
 async function transact() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: 'arkadiko-governance-v2-1',
+    contractName: 'arkadiko-governance-v3-1',
     functionName: 'propose',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
-      tx.uintCV(47175),
-      tx.uintCV(900),
-      tx.stringUtf8CV('Add new governance (v3)'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/421'),
+      tx.uintCV(48225),
+      tx.uintCV(720),
+      tx.stringUtf8CV('Upgrade SIP10 Reserve'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/420'),
       tx.listCV([
         tx.tupleCV({
-          'name': tx.stringAsciiCV("governance"),
+          'name': tx.stringAsciiCV("sip10-reserve"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-governance-v3-1"),
-          'can-mint': tx.falseCV(),
-          'can-burn': tx.falseCV()
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-sip10-reserve-v2-1"),
+          'can-mint': tx.trueCV(),
+          'can-burn': tx.trueCV()
+        }),
+        tx.tupleCV({
+          'name': tx.stringAsciiCV("auction-engine"),
+          'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-auction-engine-v3-1"),
+          'can-mint': tx.trueCV(),
+          'can-burn': tx.trueCV()
         })
       ])
     ],

@@ -59,8 +59,8 @@ Clarinet.test({
 
     // Discounted auction price
     // Discount is 7%, so 18600
-    call = await vaultAuction.getDiscountedAuctionPrice(20000, 1);
-    call.result.expectOk().expectUint(1860000); // in cents
+    call = await vaultAuction.getDiscountedAuctionPrice(20000, 100000000, 1);
+    call.result.expectOk().expectUint(18600); // in cents
 
     // Min collateral amount
     // xBTC price is $20k with 7% discount it's $18.6k

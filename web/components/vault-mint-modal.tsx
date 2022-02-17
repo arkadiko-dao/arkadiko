@@ -93,8 +93,7 @@ export const VaultMintModal: React.FC<Props> = ({
         price,
         collateralLocked(),
         outstandingDebt(),
-        collateralType?.collateralToDebtRatio,
-        vault?.collateralToken
+        collateralType?.collateralToDebtRatio
       ) * 0.98
     );
   };
@@ -121,8 +120,7 @@ export const VaultMintModal: React.FC<Props> = ({
             price,
             collateralLocked(),
             outstandingDebt(),
-            collateralType?.collateralToDebtRatio,
-            vault?.collateralToken
+            collateralType?.collateralToDebtRatio
           ).toLocaleString(undefined, {
             minimumFractionDigits: 2,
             maximumFractionDigits: 6,
@@ -138,8 +136,7 @@ export const VaultMintModal: React.FC<Props> = ({
             price,
             collateralLocked(),
             outstandingDebt(),
-            collateralType?.collateralToDebtRatio,
-            vault?.collateralToken
+            collateralType?.collateralToDebtRatio
           ).toLocaleString(undefined, {
             minimumFractionDigits: 2,
             maximumFractionDigits: 6,

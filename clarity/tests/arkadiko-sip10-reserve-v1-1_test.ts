@@ -40,11 +40,19 @@ Clarinet.test({
     let result = oracleManager.updatePrice("xBTC", 40000, 100000000);
     result.expectOk().expectUint(40000000000);
 
-    result = vaultManager.createVault(deployer, "XBTC-A", 1, 1, false, false, 'arkadiko-sip10-reserve-v1-1', 'tokensoft-token');
-    result.expectOk().expectUintWithDecimals(1);
+    // create a vault with 0.1 xbtc and 1000 USDA debt
+    // 0.1 xbtc = $4K. $1K debt/$4K collateral = 25% LTV (~400 collateralization ratio)
+    result = vaultManager.createVault(deployer, "XBTC-A", 10, 1000, false, false, 'arkadiko-sip10-reserve-v1-1', 'tokensoft-token');
+    result.expectOk().expectUintWithDecimals(1000);
 
     let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
-    call.result.expectOk().expectUint(40000);
+    call.result.expectOk().expectUint(399);
+
+    result = vaultManager.mint(deployer, 1, 10000, 'arkadiko-sip10-reserve-v1-1');
+    result.expectErr().expectUint(49);
+
+    result = vaultManager.mint(deployer, 1, 100, 'arkadiko-sip10-reserve-v1-1');
+    result.expectOk().expectBool(true);
   }
 });
 
@@ -93,19 +101,25 @@ Clarinet.test({
 
     // Create vault 
     // Setting stack pox and auto payoff to true will have no effect
+    // Parameter 1000 = 1000 * 1000000 = 1,000,000,000 -> 10 xBTC
+    // 10 xBTC = 400,000 USDA
+    // 500 USDA minted
     result = vaultManager.createVault(deployer, "XBTC-A", 1000, 500, true, true, 'arkadiko-sip10-reserve-v1-1', 'tokensoft-token');
     result.expectOk().expectUintWithDecimals(500);
 
     // Deposit extra
+    // Deposit 0.1 btc extra, total 10.1 xBTC
     result = vaultManager.deposit(deployer, 1, 10, 'arkadiko-sip10-reserve-v1-1', 'tokensoft-token');
     result.expectOk().expectBool(true);
 
     // withdraw part
+    // Withdraw 0.02 xBTC, total 10.08 xBTC
     result = vaultManager.withdraw(deployer, 1, 2, 'arkadiko-sip10-reserve-v1-1', 'tokensoft-token');
     result.expectOk().expectBool(true);
 
     // mint
-    result = vaultManager.mint(deployer, 1, 2, 'arkadiko-sip10-reserve-v1-1');
+    // Mint 160K USDA extra
+    result = vaultManager.mint(deployer, 1, 160000, 'arkadiko-sip10-reserve-v1-1');
     result.expectOk().expectBool(true);
 
     // burn

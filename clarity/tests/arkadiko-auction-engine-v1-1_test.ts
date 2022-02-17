@@ -906,3 +906,44 @@ Clarinet.test({
     result.expectOk().expectBool(true);
   }
 });
+
+Clarinet.test({
+  name:
+    "auction engine: discounted auction price",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let usdaToken = new UsdaToken(chain, deployer);
+    let xstxManager = new XstxManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultLiquidator = new VaultLiquidator(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
+
+    // Initialize price of STX to $2 in the oracle
+    let result = oracleManager.updatePrice("STX", 3);
+
+    // Create vault - 1500 STX, 1000 USDA
+    result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    // Upate price to $1.0 and notify risky vault
+    result = oracleManager.updatePrice("STX", 1);
+    result = vaultLiquidator.notifyRiskyVault(deployer);
+    result.expectOk().expectUint(5200);
+
+    // Get new auction
+    let call = await vaultAuction.getAuctions(deployer);
+    let auctions = call.result.expectOk().expectList().map((e: String) => e.expectTuple());
+
+    // Auction with 7% discount
+    let auction:any = auctions[1];
+    auction['discount'].expectUint(7);
+
+    // Assume STX price $1 with 6 decimals
+    // $1 with 7% discount = $0.93
+    call = await vaultAuction.getDiscountedAuctionPrice(1, 1000000, 1);
+    call.result.expectOk().expectUint(93);
+  }
+});

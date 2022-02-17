@@ -45,6 +45,7 @@ export const VaultBurnModal: React.FC<Props> = ({
 
   const callBurn = async () => {
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
+    const tokenAddress = tokenTraits[vault['collateralToken'].toLowerCase()]['address'];
     let totalToBurn = Number(usdToBurn) + stabilityFee / 1000000;
     if (Number(totalToBurn) >= Number(state.balance['usda'] / 1000000)) {
       totalToBurn = Number(state.balance['usda'] / 1000000);
@@ -68,7 +69,7 @@ export const VaultBurnModal: React.FC<Props> = ({
         uintCV(match.params.id),
         uintCV(parseInt((parseFloat(usdToBurn) * 1000000) - (1.5 * stabilityFee), 10)),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
+        contractPrincipalCV(tokenAddress, token),
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
           'arkadiko-collateral-types-v1-1'

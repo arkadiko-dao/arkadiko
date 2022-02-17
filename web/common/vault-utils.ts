@@ -3,15 +3,9 @@ export const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 export const getLiquidationPrice = (
   liquidationRatio: number,
   coinsMinted: number,
-  stxCollateral: number,
-  collateralType: string
+  stxCollateral: number
 ) => {
-  if (collateralType.toLowerCase().includes('stx')) {
-    return ((liquidationRatio * coinsMinted) / (stxCollateral * 100)).toFixed(2);
-  } else {
-    // xBTC
-    return ((liquidationRatio * coinsMinted) / (stxCollateral * 1)).toFixed(2);
-  }
+  return ((liquidationRatio * coinsMinted) / (stxCollateral * 100)).toFixed(4);
 };
 
 export const getCollateralToDebtRatio = (
@@ -43,12 +37,8 @@ export const availableCoinsToMint = (
   price: number,
   stxCollateral: number,
   currentCoinsMinted: number,
-  collateralToDebt: number,
-  collateralType: string
+  collateralToDebt: number
 ) => {
-  if (collateralType?.toLowerCase().includes('btc')) {
-    stxCollateral = stxCollateral * 100;
-  }
   const maximumCoinsToMint = (stxCollateral * price) / 10000 / collateralToDebt;
   if (currentCoinsMinted < maximumCoinsToMint) {
     return maximumCoinsToMint - currentCoinsMinted;
@@ -196,7 +186,7 @@ export const resolveReserveName = (collateralToken: string) => {
   if (collateralToken.toLowerCase().startsWith('stx')) {
     return 'arkadiko-stx-reserve-v1-1';
   } else {
-    return 'arkadiko-sip10-reserve-v1-1'; // we have only two reserves: 1 for STX and 1 for all other SIP10 FTs
+    return 'arkadiko-sip10-reserve-v2-1'; // we have only two reserves: 1 for STX and 1 for all other SIP10 FTs
   }
 };
 

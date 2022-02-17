@@ -36,6 +36,7 @@ export const VaultCloseModal: React.FC<Props> = ({
 
   const closeVault = async () => {
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
+    const tokenAddress = tokenTraits[vault['collateralToken'].toLowerCase()]['address'];
     await doContractCall({
       network,
       contractAddress,
@@ -46,7 +47,7 @@ export const VaultCloseModal: React.FC<Props> = ({
       functionArgs: [
         uintCV(match.params.id),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
+        contractPrincipalCV(tokenAddress, token),
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
           'arkadiko-collateral-types-v1-1'

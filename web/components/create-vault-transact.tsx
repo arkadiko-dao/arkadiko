@@ -29,7 +29,8 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
   const callCollateralizeAndMint = async () => {
     const decimals = coinAmounts['token-type'].toLowerCase().includes('stx') ? 1000000 : 100000000;
     const token = tokenTraits[coinAmounts['token-name'].toLowerCase()]['name'];
-    const amount = uintCV(parseInt(coinAmounts['amounts']['collateral'], 10) * decimals);
+    const tokenAddress = tokenTraits[coinAmounts['token-name'].toLowerCase()]['address'];
+    const amount = uintCV(parseInt(coinAmounts['amounts']['collateral'] * decimals, 10));
     const args = [
       amount,
       uintCV(parseInt(coinAmounts['amounts']['usda'], 10) * 1000000),
@@ -48,7 +49,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         resolveReserveName(coinAmounts['token-name'].toUpperCase())
       ),
-      contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
+      contractPrincipalCV(tokenAddress, token),
       contractPrincipalCV(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-collateral-types-v1-1'
@@ -63,13 +64,12 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
         makeStandardSTXPostCondition(address || '', FungibleConditionCode.Equal, amount.value),
       ];
     } else {
-      postConditionMode = 0x01;
       postConditions = [
         makeStandardFungiblePostCondition(
           address || '',
           FungibleConditionCode.LessEqual,
-          200000000,
-          createAssetInfo(contractAddress, 'tokensoft-token', 'xbtc')
+          amount.value,
+          createAssetInfo('SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR', 'Wrapped-Bitcoin', 'wrapped-bitcoin')
         ),
       ];
     }

@@ -29,11 +29,12 @@ export const Auction: React.FC<AuctionProps> = ({
       const price = await getPrice(collateralToken);
       setPrice(price);
 
+      const decimals = collateralToken.toLowerCase().includes('xbtc') ? 100000000 : 1000000;
       const discountedPriceCall = await callReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-auction-engine-v2-1',
         functionName: 'discounted-auction-price',
-        functionArgs: [uintCV(price), uintCV(id)],
+        functionArgs: [uintCV(price), uintCV(decimals), uintCV(id)],
         senderAddress: stxAddress || '',
         network: network,
       });

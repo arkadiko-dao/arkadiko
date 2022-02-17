@@ -101,7 +101,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
       const { value } = event.target;
       setCoinAmount(value);
       const error = [`You cannot mint more than ${maximumToMint / 1000000} USDA`];
-      const funnyError = [`You need to mint at least a little bit of USDA ;)`];
+      const funnyError = [`You need to mint at least 5% LTV`];
       const filteredAry = errors.filter(e => e !== error[0] && e !== funnyError[0]);
       if (parseFloat(value) > maximumToMint / 1000000) {
         setErrors(filteredAry.concat(error));
@@ -131,19 +131,11 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   useEffect(() => {
     if (collateralAmount && coinAmount) {
       setLiquidationPrice(
-        getLiquidationPrice(
-          liquidationRatio,
-          parseInt(coinAmount, 10),
-          parseInt(collateralAmount, 10),
-          'stx'
-        )
+        getLiquidationPrice(liquidationRatio, parseFloat(coinAmount), parseFloat(collateralAmount))
       );
-      const ratio = getCollateralToDebtRatio(
-        price * 100,
-        parseInt(coinAmount, 10),
-        parseInt(collateralAmount, 10)
+      setCollateralToDebt(
+        getCollateralToDebtRatio(price * 100, parseFloat(coinAmount), parseFloat(collateralAmount))
       );
-      setCollateralToDebt(ratio);
     }
   }, [price, collateralAmount, coinAmount]);
 
