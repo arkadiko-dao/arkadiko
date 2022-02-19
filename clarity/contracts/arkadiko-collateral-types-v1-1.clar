@@ -2,6 +2,7 @@
 ;; @version 1
 
 (impl-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
+(use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
 
 (define-constant ERR-NOT-AUTHORIZED u17401)
 (define-constant OWNER tx-sender)
@@ -109,6 +110,52 @@
       )
       (ok debt)
     )
+  )
+)
+
+(define-read-only (calculate-stability-fee (current-usda-price uint) (current-stability-fee-apy uint))
+  (let (
+    (ideal-usda-price u1000000)
+    (basic-stability-fee u400)
+    (one-percent u1902587519) ;; one percent on yearly basis, calculated per block
+    (decimals u16)
+  )
+    (if (> current-usda-price ideal-usda-price)
+      (let (
+        (amount-over-peg (- current-usda-price ideal-usda-price))
+        (removed-basis-points (/ amount-over-peg u1000))
+      )
+        ;; over peg - need to decrease stability fees
+        (asserts (< basic-stability-fee removed-basis-points) (ok (list u0))) ;; can't go under 0%
+
+        (ok (list (- basic-stability-fee removed-basis-points)))
+      )
+      (let (
+        (amount-under-peg (- ideal-usda-price current-usda-price))
+        (added-basis-points (/ amount-under-peg u1000))
+        (new-stability-fee-apy (+ basic-stability-fee added-basis-points))
+      )
+        ;; under peg - need to increase stability fees
+        (asserts! (< new-stability-fee-apy u1500) (ok (list u1500))) ;; don't go over 15% APY
+
+        (ok (list new-stability-fee-apy))
+      )
+    )
+  )
+)
+
+(define-public (update-dynamic-stability-fee (oracle <oracle-trait>) (collateral-type (string-ascii 12)))
+  (let (
+    (price (unwrap-panic (contract-call? oracle fetch-price "USDA")))
+    (collateral-data (map-get? collateral-types { name: collateral-type }))
+  )
+    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
+
+    (map-set collateral-types
+      { name: collateral-type }
+      (merge collateral-data { stability-fee: u1, stability-fee-apy: u400, stability-fee-decimals: u16 })
+    )
+    (ok true)
   )
 )
 
