@@ -315,6 +315,11 @@ path = "contracts/arkadiko-ui-stake-v1-3.clar"
 depends_on = ["arkadiko-freddie-v1-1", "arkadiko-stacker-v1-1", "arkadiko-stacker-2-v1-1", "arkadiko-stacker-3-v1-1", "arkadiko-stacker-4-v1-1"]
 path = "contracts/arkadiko-pox-unstack-unlock-v1-1.clar"
 
+[contracts.arkadiko-liquidation-pool-v1-1]
+depends_on = ["sip-010-trait-ft-standard"]
+path = "contracts/arkadiko-liquidation-pool-v1-1.clar"
+
+
 # Tokensoft xBTC
 [contracts.restricted-token-trait]
 path = "contracts/xbtc/restricted-token-trait.clar"
