@@ -118,7 +118,7 @@ Clarinet.test({
     call = await liquidationPool.getTokenFragments("usda-token");
     call.result.expectTuple()["fragments-per-token"].expectUintWithDecimals(100);
     call.result.expectTuple()["total-fragments"].expectUintWithDecimals(1000000000000);
-    call.result.expectTuple()["start-block"].expectUint(0);
+    call.result.expectTuple()["last-updated-block"].expectUint(0);
 
     // Withdraw USDA and deposit reward token
     result = liquidationPool.withdraw(deployer, 6000);
@@ -134,12 +134,12 @@ Clarinet.test({
     call = await liquidationPool.getTokenFragments("usda-token");
     call.result.expectTuple()["fragments-per-token"].expectUintWithDecimals(250);
     call.result.expectTuple()["total-fragments"].expectUintWithDecimals(1000000000000);
-    call.result.expectTuple()["start-block"].expectUint(0);
+    call.result.expectTuple()["last-updated-block"].expectUint(0);
 
     call = await liquidationPool.getTokenFragments("arkadiko-token");
     call.result.expectTuple()["fragments-per-token"].expectUintWithDecimals(500);
     call.result.expectTuple()["total-fragments"].expectUintWithDecimals(1000000000000);
-    call.result.expectTuple()["start-block"].expectUint(2);
+    call.result.expectTuple()["last-updated-block"].expectUint(2);
 
     // Fragments
     call = await liquidationPool.getFragmentsOf(deployer.address, "usda-token");

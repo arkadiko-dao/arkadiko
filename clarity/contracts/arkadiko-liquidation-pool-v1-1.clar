@@ -17,7 +17,7 @@
     token: principal 
   } 
   {
-    start-block: uint,
+    last-updated-block: uint,
     total-fragments: uint,
     fragments-per-token: uint
   }
@@ -25,7 +25,7 @@
 
 (define-read-only (get-token-fragments (token principal))
   (default-to
-    { start-block: u0, total-fragments: u0, fragments-per-token: u100000000 }
+    { last-updated-block: u0, total-fragments: u0, fragments-per-token: u100000000 }
     (map-get? token-fragments { token: token })
   )
 )
@@ -47,8 +47,8 @@
   )
     (if (is-eq current-fragments u0)
       (let (
-        (start-block (get start-block (get-token-fragments token)))
-        (block-hash (unwrap-panic (get-block-info? id-header-hash start-block)))
+        (last-updated-block (get last-updated-block (get-token-fragments token)))
+        (block-hash (unwrap-panic (get-block-info? id-header-hash last-updated-block)))
         (usda-fragments (at-block block-hash (get-fragments-of-helper staker .usda-token)))
       )
         usda-fragments
@@ -131,22 +131,26 @@
 
 (define-public (deposit (amount uint) (token <ft-trait>))
   (let (
-    ;; Add token if needed
-    (added-token (unwrap-panic (add-token token)))
-
     (token-info (get-token-fragments (contract-of token)))
     (token-balance (unwrap-panic (contract-call? token get-balance (as-contract tx-sender))))
+
+    (block-hash (unwrap-panic (get-block-info? id-header-hash (- block-height u1))))
+    (usda-info (at-block block-hash (get-token-fragments .usda-token)))
+
     (new-token-balance (+ token-balance amount))
-    (new-fragments-per-token (/ (get total-fragments token-info) new-token-balance))
+    (new-fragments-per-token (/ (get total-fragments usda-info) new-token-balance))
   )
     ;; TODO - only for liquidation-fund
     
-
     ;; Transfer token
     (try! (contract-call? token transfer amount tx-sender (as-contract tx-sender) none))
 
     ;; Update fragments-per-token
-    (map-set token-fragments { token: (contract-of token) } (merge token-info { fragments-per-token: new-fragments-per-token }))
+    (map-set token-fragments { token: (contract-of token) } { 
+      last-updated-block: (- block-height u1),
+      total-fragments: (get total-fragments usda-info),
+      fragments-per-token: new-fragments-per-token,
+    })
 
     (ok amount)
   )
@@ -170,52 +174,5 @@
     (map-set token-fragments { token: (contract-of token) } (merge token-info { fragments-per-token: new-fragments-per-token }))
 
     (ok amount)
-  )
-)
-
-;; ---------------------------------------------------------
-;; Add new token
-;; ---------------------------------------------------------
-
-(define-private (add-token (token <ft-trait>))
-  (let (
-    (token-info (get-token-fragments (contract-of token)))
-    (token-balance (unwrap-panic (contract-call? token get-balance (as-contract tx-sender))))
-      (block-hash (unwrap-panic (get-block-info? id-header-hash (- block-height u1))))
-        (usda-info (at-block block-hash (get-token-fragments .usda-token)))
-  )
-    (map-set token-fragments { token: (contract-of token) } { 
-          start-block: (- block-height u1),
-          total-fragments: (get total-fragments usda-info),
-          fragments-per-token: u0,
-        })
-
-        (ok true)
-  
-  )
-)
-
-(define-private (add-token-old (token <ft-trait>))
-  (let (
-    (token-info (get-token-fragments (contract-of token)))
-  )
-    (if (is-eq (get start-block token-info) u0)
-
-      (let (
-        (block-hash (unwrap-panic (get-block-info? id-header-hash (- block-height u1))))
-        (usda-info (at-block block-hash (get-token-fragments .usda-token)))
-      )
-        (map-set token-fragments { token: (contract-of token) } { 
-          start-block: (- block-height u1),
-          total-fragments: (get total-fragments usda-info),
-          fragments-per-token: u0,
-        })
-
-        (ok true)
-      )
-
-      (ok false)
-    )
-  
   )
 )
