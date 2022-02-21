@@ -92,10 +92,10 @@ export const VaultBurnModal: React.FC<Props> = ({
   const burnMaxAmount = () => {
     let debtToPay = Number(outstandingDebt()) * 1000000 + Number(stabilityFee);
     if (debtToPay > state.balance['usda']) {
-      const balance = Number(state.balance['usda']) / 1000000;
+      const balance = Number(state.balance['usda']);
       debtToPay = balance.toFixed(6);
     }
-    setUsdToBurn(debtToPay);
+    setUsdToBurn((debtToPay / 1000000).toFixed(6));
   };
 
   const onInputChange = (event: { target: { value: any; name: any } }) => {
