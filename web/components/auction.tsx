@@ -32,7 +32,7 @@ export const Auction: React.FC<AuctionProps> = ({
       const decimals = collateralToken.toLowerCase().includes('xbtc') ? 100000000 : 1000000;
       const discountedPriceCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-auction-engine-v2-1',
+        contractName: 'arkadiko-auction-engine-v3-1',
         functionName: 'discounted-auction-price',
         functionArgs: [uintCV(price), uintCV(decimals), uintCV(id)],
         senderAddress: stxAddress || '',
@@ -51,7 +51,7 @@ export const Auction: React.FC<AuctionProps> = ({
     const getData = async () => {
       const minimumCollateralAmount = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-auction-engine-v2-1',
+        contractName: 'arkadiko-auction-engine-v3-1',
         functionName: 'get-minimum-collateral-amount',
         functionArgs: [
           contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v1-1'),
@@ -68,7 +68,7 @@ export const Auction: React.FC<AuctionProps> = ({
 
       const currentBid = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-auction-engine-v2-1',
+        contractName: 'arkadiko-auction-engine-v3-1',
         functionName: 'get-last-bid',
         functionArgs: [uintCV(id), uintCV(lotId)],
         senderAddress: stxAddress || '',
