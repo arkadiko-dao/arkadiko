@@ -270,6 +270,7 @@ Clarinet.test({
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
 
     let usdaToken = new UsdaToken(chain, deployer);
     let dikoToken = new DikoToken(chain, deployer);
@@ -370,6 +371,29 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(0);
     call = await liquidationPool.getTokensOf(wallet_1.address, "usda-token");
     call.result.expectOk().expectUintWithDecimals(0);
+
+
+    call = await liquidationPool.getStakerTokenBase(wallet_2.address, "arkadiko-token");
+    call.result.expectTuple()["base"].expectUintWithDecimals(0);
+
+    // Stake wallet_1
+    result = liquidationPool.stake(wallet_2, 5000);
+    result.expectOk().expectUintWithDecimals(5000);
+
+    call = await liquidationPool.getStakerTokenBase(wallet_2.address, "arkadiko-token");
+    call.result.expectTuple()["base"].expectUintWithDecimals(0);
+
+    // Deposit
+    result = liquidationPool.deposit(deployer, 3000, "arkadiko-token");
+    result.expectOk().expectUintWithDecimals(3000);
+
+
+    call = await liquidationPool.getTokensOf(wallet_2.address, "usda-token");
+    call.result.expectOk().expectUintWithDecimals(5000);
+
+    call = await liquidationPool.getTokensOf(wallet_2.address, "arkadiko-token");
+    call.result.expectOk().expectUintWithDecimals(3000);
+
 
 
   }
