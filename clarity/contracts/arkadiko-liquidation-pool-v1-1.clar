@@ -7,6 +7,7 @@
 ;; Constants
 
 ;; Variables
+(define-data-var total-staker-token-base uint u0)
 
 ;; ---------------------------------------------------------
 ;; Maps
@@ -17,62 +18,69 @@
     token: principal 
   } 
   {
-    last-updated-block: uint,
     total-fragments: uint,
     fragments-per-token: uint
   }
-)
-
-(define-read-only (get-token-fragments (token principal))
-  (default-to
-    { last-updated-block: u0, total-fragments: u0, fragments-per-token: u100000000 }
-    (map-get? token-fragments { token: token })
-  )
 )
 
 ;; 
 (define-map staker-fragments 
   { 
     staker: principal,
-    token: principal 
   } 
   {
     fragments: uint
   }
 )
 
-(define-read-only (get-fragments-of (staker principal) (token principal))
-  (let (
-    (current-fragments (get-fragments-of-helper staker token))
-  )
-    (if (is-eq current-fragments u0)
-      (let (
-        (last-updated-block (get last-updated-block (get-token-fragments token)))
-        (block-hash (unwrap-panic (get-block-info? id-header-hash last-updated-block)))
-        (usda-fragments (at-block block-hash (get-fragments-of-helper staker .usda-token)))
-      )
-        usda-fragments
-      )
-      current-fragments
-    )
+(define-map staker-token-base 
+  { 
+    staker: principal,
+    token: principal
+  } 
+  {
+    base: uint
+  }
+)
+
+(define-read-only (get-token-fragments (token principal))
+  (default-to
+    { total-fragments: u0, fragments-per-token: u10000000000 }
+    (map-get? token-fragments { token: token })
   )
 )
 
-(define-read-only (get-fragments-of-helper (staker principal) (token principal))
+(define-read-only (get-staker-fragments (staker principal))
   (default-to
-    u0
-    (get fragments (map-get? staker-fragments { staker: staker, token: token }))
+    { fragments: u0 }
+    (map-get? staker-fragments { staker: staker })
   )
 )
+
+(define-read-only (get-staker-token-base (staker principal) (token principal))
+  (default-to
+    { base: u0 }
+    (map-get? staker-token-base { staker: staker, token: token })
+  )
+)
+
+;; ---------------------------------------------------------
+;; Getters
+;; ---------------------------------------------------------
 
 (define-read-only (get-tokens-of (staker principal) (token principal))
   (let (
-    (token-info (unwrap-panic (map-get? token-fragments { token: token })))
-    (per-token (get fragments-per-token token-info))
-    (user-fragments (get-fragments-of staker token))
+    (per-token (get fragments-per-token (get-token-fragments token)))
+    (staker-base (get base (get-staker-token-base staker token)))
+    (user-fragments (get fragments (get-staker-fragments staker)))
+    (total-staker (/ user-fragments per-token))
   )
-    (ok (/ user-fragments per-token))
+    (ok (- total-staker staker-base))
   )
+)
+
+(define-read-only (get-fragments-of (staker principal))
+  (ok (get fragments (get-staker-fragments staker)))
 )
 
 ;; ---------------------------------------------------------
@@ -84,7 +92,7 @@
     (staker tx-sender)
     (token-info (get-token-fragments .usda-token))
 
-    (user-fragments (get-fragments-of staker .usda-token))
+    (user-fragments (unwrap-panic (get-fragments-of staker)))
     (add-user-fragments (* amount (get fragments-per-token token-info)))
     (new-user-fragments (+ user-fragments add-user-fragments))
     (new-total-fragments (+ (get total-fragments token-info) add-user-fragments))
@@ -93,21 +101,46 @@
     (try! (contract-call? .usda-token transfer amount staker (as-contract tx-sender) none))
 
     ;; Update user tokens
-    (map-set staker-fragments  { staker: staker, token: .usda-token } { fragments: new-user-fragments })
+    (map-set staker-fragments  { staker: staker } { fragments: new-user-fragments })
 
     ;; Update total fragments
     (map-set token-fragments { token: .usda-token } (merge token-info { total-fragments: new-total-fragments }))
 
+    ;; TODO - in separate contract
+    (unwrap-panic (register-for-token amount .arkadiko-token))
+
     (ok amount)
   )
 )
+
+(define-public (register-for-token (usda-amount uint) (token <ft-trait>))
+  (let (
+    (staker tx-sender)
+
+    (per-usda (get fragments-per-token (get-token-fragments .usda-token)))
+    (per-token (get fragments-per-token (get-token-fragments (contract-of token))))
+
+    (add-user-fragments (* usda-amount per-usda))
+    (add-user-base (/ add-user-fragments per-token))
+    (user-base (get base (get-staker-token-base staker (contract-of token))))
+    (new-base (+ user-base add-user-base))
+  )
+
+    (var-set total-staker-token-base (+ (var-get total-staker-token-base) add-user-base))
+
+    (map-set staker-token-base   { staker: staker, token: (contract-of token) } { base: new-base })
+
+    (ok new-base)
+  )
+)
+
 
 (define-public (unstake (amount uint) (token <ft-trait>))
   (let (
     (staker tx-sender)
     (token-info (get-token-fragments (contract-of token)))
 
-    (user-fragments (get-fragments-of staker (contract-of token)))
+    (user-fragments (unwrap-panic (get-fragments-of staker)))
     (remove-user-fragments (* amount (get fragments-per-token token-info)))
     (new-user-fragments (- user-fragments remove-user-fragments))
     (new-total-fragments (- (get total-fragments token-info) remove-user-fragments))
@@ -116,10 +149,12 @@
     (try! (as-contract (contract-call? token transfer amount (as-contract tx-sender) staker none)))
 
     ;; Update user tokens
-    (map-set staker-fragments  { staker: staker, token: .usda-token } { fragments: new-user-fragments })
+    (map-set staker-fragments  { staker: staker } { fragments: new-user-fragments })
 
     ;; Update total fragments
     (map-set token-fragments { token: .usda-token } (merge token-info { total-fragments: new-total-fragments }))
+
+    ;; TODO - unstake reward tokens
 
     (ok amount)
   )
@@ -132,12 +167,11 @@
 (define-public (deposit (amount uint) (token <ft-trait>))
   (let (
     (token-info (get-token-fragments (contract-of token)))
+    (usda-info (get-token-fragments .usda-token))
+
     (token-balance (unwrap-panic (contract-call? token get-balance (as-contract tx-sender))))
+    (new-token-balance (+ token-balance amount (var-get total-staker-token-base)))
 
-    (block-hash (unwrap-panic (get-block-info? id-header-hash (- block-height u1))))
-    (usda-info (at-block block-hash (get-token-fragments .usda-token)))
-
-    (new-token-balance (+ token-balance amount))
     (new-fragments-per-token (/ (get total-fragments usda-info) new-token-balance))
   )
     ;; TODO - only for liquidation-fund
@@ -147,7 +181,6 @@
 
     ;; Update fragments-per-token
     (map-set token-fragments { token: (contract-of token) } { 
-      last-updated-block: (- block-height u1),
       total-fragments: (get total-fragments usda-info),
       fragments-per-token: new-fragments-per-token,
     })
@@ -172,6 +205,8 @@
 
     ;; Update fragments-per-token
     (map-set token-fragments { token: (contract-of token) } (merge token-info { fragments-per-token: new-fragments-per-token }))
+
+    ;; TODO - update user base
 
     (ok amount)
   )

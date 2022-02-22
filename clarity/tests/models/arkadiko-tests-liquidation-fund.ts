@@ -201,10 +201,9 @@ class LiquidationPool {
     ], this.deployer.address);
   }
 
-  getFragmentsOf(account: string, token: string) {
+  getFragmentsOf(account: string) {
     return this.chain.callReadOnlyFn("arkadiko-liquidation-pool-v1-1", "get-fragments-of", [
       types.principal(account),
-      types.principal(Utils.qualifiedName(token))
     ], this.deployer.address);
   }
   
