@@ -194,6 +194,13 @@ class LiquidationPool {
     ], this.deployer.address);
   }
 
+  getStakerTokenBase(account: string, token: string) {
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-pool-v1-1", "get-staker-token-base", [
+      types.principal(account),
+      types.principal(Utils.qualifiedName(token))
+    ], this.deployer.address);
+  }
+
   getTokensOf(account: string, token: string) {
     return this.chain.callReadOnlyFn("arkadiko-liquidation-pool-v1-1", "get-tokens-of", [
       types.principal(account),
@@ -221,6 +228,15 @@ class LiquidationPool {
       Tx.contractCall("arkadiko-liquidation-pool-v1-1", "unstake", [
         types.uint(amount * 1000000),
         types.principal(Utils.qualifiedName("usda-token"))
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  claimToken(user: Account, token: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-pool-v1-1", "claim-token", [
+        types.principal(Utils.qualifiedName(token))
       ], user.address)
     ]);
     return block.receipts[0].result;
