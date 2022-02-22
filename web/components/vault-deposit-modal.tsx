@@ -133,7 +133,7 @@ export const VaultDepositModal: React.FC<Props> = ({
         We will automatically harvest any DIKO you are eligible for when depositing.
       </p>
 
-      <div className="mt-4">
+      <div className="my-4">
         <Alert>
           <p>
             When depositing in a vault that is already stacking, keep in mind that your extra
