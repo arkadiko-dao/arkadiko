@@ -71,7 +71,7 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collatera
         <span className="font-medium text-gray-900 dark:text-zinc-100">{usda / 1000000} USDA</span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        {true ? (
+        {false ? (
           <span>Redeem available after auction (within 1 day)</span>
         ) : (
           <button
