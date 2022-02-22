@@ -21,6 +21,7 @@ export interface AuctionProps {
   collateralToken: string;
   debt: string;
   endsAt: string;
+  vaultId: string;
 }
 
 export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeight }) => {
@@ -48,6 +49,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeig
       auctionType={auction['auctionType']}
       collateralToken={auction['collateralToken']}
       endsAt={auction['endsAt']}
+      vaultId={auction['vaultId']}
       stacksTipHeight={stacksTipHeight}
       setShowBidModal={setShowBidModal}
       setBidAuctionId={setBidAuctionId}
@@ -168,6 +170,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeig
                 <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400">
                   Ends at (block height)
                 </th>
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"></th>
                 <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"></th>
               </tr>
             </thead>

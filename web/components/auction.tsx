@@ -4,12 +4,14 @@ import { callReadOnlyFunction, contractPrincipalCV, cvToJSON, uintCV } from '@st
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { getPrice } from '@common/get-price';
+import { NavLink as RouterLink } from 'react-router-dom';
 
 export const Auction: React.FC<AuctionProps> = ({
   id,
   lotId,
   collateralToken,
   endsAt,
+  vaultId,
   stacksTipHeight,
   setShowBidModal,
   setBidAuctionId,
@@ -139,6 +141,9 @@ export const Auction: React.FC<AuctionProps> = ({
             Bid
           </button>
         </span>
+      </td>
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+        <RouterLink className="font-medium text-gray-900 dark:text-zinc-100" to={`/vaults/${vaultId}`}>View vault</RouterLink>
       </td>
     </tr>
   );

@@ -91,6 +91,7 @@ export const Auctions: React.FC = () => {
             collateralToken: data['collateral-token'].value,
             debt: '0',
             endsAt: data['ends-at'].value,
+            vaultId: data['vault-id'].value,
           });
         }
       });
@@ -226,9 +227,11 @@ export const Auctions: React.FC = () => {
                   <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">Your Winning Lots</h3>
                 </div>
               </header>
-              <div className="mt-4">
+              <div className="mt-4 mb-12">
                 {lots.length > 0 ? (
                   <LotGroup lots={lots} />
+                ) : loadingAuctions ? (
+                  <Placeholder />
                 ) : (
                   <EmptyState
                     Icon={GiftIcon}
