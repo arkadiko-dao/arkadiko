@@ -83,7 +83,7 @@ export const Auctions: React.FC = () => {
 
         const data = json.value;
         const isOpen = await auctionOpen(data['id'].value);
-        if (isOpen) {
+        if (isOpen && Number(data['collateral-amount'].value) > 0) {
           serializedAuctions.push({
             id: data['id'].value,
             lotId: data['lots-sold'].value,
