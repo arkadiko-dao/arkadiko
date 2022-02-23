@@ -1,6 +1,4 @@
 
-(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
-
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED (err u30401))
 
@@ -34,7 +32,15 @@
 ;; Getters
 ;; ---------------------------------------------------------
 
-(define-read-only (get-tokens-of (staker principal) (token principal))
+(define-read-only (get-total-fragments)
+  (ok (var-get total-fragments))
+)
+
+(define-read-only (get-fragments-per-token)
+  (ok (var-get fragments-per-token))
+)
+
+(define-read-only (get-tokens-of (staker principal))
   (let (
     (per-token (var-get fragments-per-token))
   )
@@ -49,6 +55,19 @@
   )
 )
 
+(define-read-only (get-shares-at (user principal) (block uint))
+  (let (
+    (block-hash (unwrap-panic (get-block-info? id-header-hash block)))
+
+    (user-fragments (get fragments (at-block block-hash (get-staker-fragments user))))
+    (fragments-total (unwrap-panic (at-block block-hash (get-total-fragments))))
+  )
+    (if (is-eq fragments-total u0)
+      (ok u0)
+      (ok (/ (* user-fragments u10000000000) fragments-total))
+    )
+  )
+)
 
 ;; ---------------------------------------------------------
 ;; Stake / unstake

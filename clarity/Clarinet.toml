@@ -316,8 +316,12 @@ depends_on = ["arkadiko-freddie-v1-1", "arkadiko-stacker-v1-1", "arkadiko-stacke
 path = "contracts/arkadiko-pox-unstack-unlock-v1-1.clar"
 
 [contracts.arkadiko-liquidation-pool-v1-1]
-depends_on = ["sip-010-trait-ft-standard"]
+depends_on = []
 path = "contracts/arkadiko-liquidation-pool-v1-1.clar"
+
+[contracts.arkadiko-liquidation-rewards-v1-1]
+depends_on = ["sip-010-trait-ft-standard"]
+path = "contracts/arkadiko-liquidation-rewards-v1-1.clar"
 
 
 # Tokensoft xBTC

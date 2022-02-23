@@ -188,13 +188,19 @@ class LiquidationPool {
     this.deployer = deployer;
   }
 
-  getTokensOf(account: string, token: string) {
+  getTokensOf(account: string) {
     return this.chain.callReadOnlyFn("arkadiko-liquidation-pool-v1-1", "get-tokens-of", [
       types.principal(account),
-      types.principal(Utils.qualifiedName(token))
     ], this.deployer.address);
   }
   
+  getSharesAt(account: string, block: number) {
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-pool-v1-1", "get-shares-at", [
+      types.principal(account),
+      types.uint(block)
+    ], this.deployer.address);
+  }
+
   stake(user: Account, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-liquidation-pool-v1-1", "stake", [
@@ -224,3 +230,54 @@ class LiquidationPool {
 
 }
 export { LiquidationPool };
+
+
+// ---------------------------------------------------------
+// Liquidation rewards
+// ---------------------------------------------------------
+
+class LiquidationRewards {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  getRewardData(rewardId: number) {
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-1", "get-reward-data", [
+      types.uint(rewardId),
+    ], this.deployer.address);
+  }
+
+  getRewardsOf(user: string, rewardId: number) {
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-1", "get-rewards-of", [
+      types.principal(user),
+      types.uint(rewardId),
+    ], this.deployer.address);
+  }
+  
+  addReward(shareBlock: number, token: string, totalAmount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "add-reward", [
+        types.uint(shareBlock),
+        types.principal(Utils.qualifiedName(token)),
+        types.uint(totalAmount * 1000000)
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  claimRewards(user: Account, rewardId: number, token: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "claim-rewards-of", [
+        types.uint(rewardId),
+        types.principal(Utils.qualifiedName(token)),
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+}
+export { LiquidationRewards };
