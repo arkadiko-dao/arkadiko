@@ -188,29 +188,10 @@ class LiquidationPool {
     this.deployer = deployer;
   }
 
-  getTokenFragments(token: string) {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-pool-v1-1", "get-token-fragments", [
-      types.principal(Utils.qualifiedName(token))
-    ], this.deployer.address);
-  }
-
-  getStakerTokenBase(account: string, token: string) {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-pool-v1-1", "get-staker-token-base", [
-      types.principal(account),
-      types.principal(Utils.qualifiedName(token))
-    ], this.deployer.address);
-  }
-
   getTokensOf(account: string, token: string) {
     return this.chain.callReadOnlyFn("arkadiko-liquidation-pool-v1-1", "get-tokens-of", [
       types.principal(account),
       types.principal(Utils.qualifiedName(token))
-    ], this.deployer.address);
-  }
-
-  getFragmentsOf(account: string) {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-pool-v1-1", "get-fragments-of", [
-      types.principal(account),
     ], this.deployer.address);
   }
   
@@ -227,26 +208,6 @@ class LiquidationPool {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-liquidation-pool-v1-1", "unstake", [
         types.uint(amount * 1000000),
-        types.principal(Utils.qualifiedName("usda-token"))
-      ], user.address)
-    ]);
-    return block.receipts[0].result;
-  }
-
-  claimToken(user: Account, token: string) {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-pool-v1-1", "claim-token", [
-        types.principal(Utils.qualifiedName(token))
-      ], user.address)
-    ]);
-    return block.receipts[0].result;
-  }
-
-  deposit(user: Account, amount: number, token: string) {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-pool-v1-1", "deposit", [
-        types.uint(amount * 1000000),
-        types.principal(Utils.qualifiedName(token))
       ], user.address)
     ]);
     return block.receipts[0].result;
@@ -256,7 +217,6 @@ class LiquidationPool {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-liquidation-pool-v1-1", "withdraw", [
         types.uint(amount * 1000000),
-        types.principal(Utils.qualifiedName("usda-token"))
       ], user.address)
     ]);
     return block.receipts[0].result;
