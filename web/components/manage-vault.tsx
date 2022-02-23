@@ -1023,7 +1023,7 @@ export const ManageVault = ({ match }) => {
                   <dl className="relative border divide-y rounded-lg shadow-sm bg-zinc-200/30 border-zinc-300">
                     <div className="px-4 py-3">
                       <dt className="text-xs font-semibold uppercase text-zinc-500">
-                        Bitcoin block height
+                        Current Bitcoin block height
                       </dt>
                       <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
                         <div className="justify-between font-semibold text-zinc-600">
