@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Tooltip } from '@blockstack/ui';
-import { InformationCircleIcon } from '@heroicons/react/solid';
+import { InformationCircleIcon, LockOpenIcon, ArrowSmDownIcon, ShieldCheckIcon, ExclamationIcon, ShieldExclamationIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/solid';
 import { Container } from './home';
 import { VaultDepositModal } from '@components/vault-deposit-modal';
 import { VaultWithdrawModal } from '@components/vault-withdraw-modal';
@@ -495,193 +495,723 @@ export const ManageVault = ({ match }) => {
       <main className="flex-1 py-12">
         <section>
           <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
-            <h2 className="text-xl font-bold leading-6 text-gray-900 font-headings dark:text-zinc-50">
-              {loadingVaultData ? (
-                <Placeholder
-                  className="py-2"
-                  color={Placeholder.color.GRAY}
-                  width={Placeholder.width.HALF}
-                />
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold leading-6 text-gray-900 font-headings dark:text-zinc-50">
+                {loadingVaultData ? (
+                  <Placeholder
+                    className="py-2"
+                    color={Placeholder.color.GRAY}
+                    width={Placeholder.width.HALF}
+                  />
+                ) : (
+                  <>
+                    {vault?.collateralToken.toUpperCase()}/USDA Vault #{match.params.id}
+                  </>
+                )}
+              </h2>
+
+              {/* TODO: Make component out of this */}
+              {debtClass(collateralType?.liquidationRatio, debtRatio) == 'text-green-400' ? (
+                <span className="overflow-hidden group inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-green-100 text-green-800 h-6">
+                  <ShieldCheckIcon className="flex-shrink-0 w-5 h-5 mr-2" />
+                  Healthy
+                  <span className="flex items-center flex-shrink-0 invisible w-0 h-0 group-hover:w-full group-hover:visible group-hover:h-6">
+                    <svg className="w-1.5 h-1.5 mx-1 flex-shrink-0" fill="currentColor" viewBox="0 0 8 8">
+                      <circle cx={4} cy={4} r={3} />
+                    </svg>
+                    <span className="flex-shrink-0">Low liquidation risk</span>
+                  </span>
+                </span>
+              ) : debtClass(collateralType?.liquidationRatio, debtRatio) == 'text-orange-400' ? (
+                <span className="overflow-hidden group inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800 h-6">
+                  <ExclamationIcon className="flex-shrink-0 w-5 h-5 mr-2" />
+                  Warning
+                  <span className="flex items-center flex-shrink-0 invisible w-0 h-0 group-hover:w-full group-hover:visible group-hover:h-6">
+                    <svg className="w-1.5 h-1.5 mx-1 flex-shrink-0" fill="currentColor" viewBox="0 0 8 8">
+                      <circle cx={4} cy={4} r={3} />
+                    </svg>
+                    <span className="flex-shrink-0">Medium liquidation risk</span>
+                  </span>
+                </span>
               ) : (
-                <>
-                  {vault?.collateralToken.toUpperCase()}/USDA Vault #{match.params.id}
-                </>
+                <span className="overflow-hidden group inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-red-100 text-red-800 h-6">
+                  <ShieldExclamationIcon className="flex-shrink-0 w-5 h-5 mr-2" />
+                  Danger
+                  <span className="flex items-center flex-shrink-0 invisible w-0 h-0 group-hover:w-full group-hover:visible group-hover:h-6">
+                    <svg className="w-1.5 h-1.5 mx-1 flex-shrink-0" fill="currentColor" viewBox="0 0 8 8">
+                      <circle cx={4} cy={4} r={3} />
+                    </svg>
+                    <span className="flex-shrink-0">High liquidation risk</span>
+                  </span>
+                </span>
               )}
-            </h2>
+            </div>
           </header>
 
-          <div className="mt-4">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-900 dark:divide-zinc-600 sm:rounded-md sm:overflow-hidden">
-                  <div className="px-4 py-5 sm:p-6">
-                    <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
-                      Supply
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-zinc-400">
-                      Manage and deposit extra collateral.
+          <div className="mt-4" id="liquidation-status-alert">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div className="flex flex-col bg-white divide-y divide-gray-200 rounded-md shadow dark:bg-zinc-900 dark:divide-zinc-600">
+                <div className="px-4 py-3">
+                  <h3 className="text-base font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">Vault details</h3>
+                </div>
+                <div className="flex flex-col h-full px-4 py-3">
+                  <dl>
+                    <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
+                      <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                        <p className="text-sm font-normal leading-6 text-gray-500 dark:text-zinc-400">
+                          Collateral to Debt ratio
+                        </p>
+                        <Tooltip
+                          shouldWrapChildren={true}
+                          label={`The amount of collateral you deposit in a vault versus the stablecoin debt you are minting against it`}
+                        >
+                          <InformationCircleIcon
+                            className="block w-5 h-5 ml-2 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        </Tooltip>
+                      </dt>
+                      <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
+                        {loadingVaultData ? (
+                          <Placeholder
+                            className="justify-end py-2"
+                            color={Placeholder.color.INDIGO}
+                            width={Placeholder.width.FULL}
+                          />
+                        ) : (
+                          <p
+                            className={`text-base font-semibold leading-none ${debtClass(
+                              collateralType?.liquidationRatio,
+                              debtRatio
+                            )}`}
+                          >
+                            {debtRatio}
+                            <span className="text-sm font-normal">%</span>
+                          </p>
+                        )}
+                      </dd>
+                    </div>
+
+                    <div className="mt-2 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
+                      <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                        <p className="text-sm font-normal leading-6 text-gray-500 dark:text-zinc-400">
+                          Minimum Ratio (before liquidation)
+                        </p>
+                        <Tooltip
+                          shouldWrapChildren={true}
+                          label={`The collateral-to-debt ratio when your vault gets liquidated`}
+                        >
+                          <InformationCircleIcon
+                            className="block w-5 h-5 ml-2 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        </Tooltip>
+                      </dt>
+                      <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
+                        {loadingVaultData ? (
+                          <Placeholder
+                            className="justify-end py-2"
+                            color={Placeholder.color.INDIGO}
+                            width={Placeholder.width.FULL}
+                          />
+                        ) : (
+                          <p className="text-lg font-semibold leading-none">
+                            {collateralType?.liquidationRatio}
+                            <span className="text-sm font-normal">%</span>
+                          </p>
+                        )}
+                      </dd>
+                    </div>
+
+                    <div className="mt-2 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
+                      <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                        <p className="text-sm font-normal leading-6 text-gray-500 dark:text-zinc-400">
+                          Liquidation penalty
+                        </p>
+                        <Tooltip
+                          shouldWrapChildren={true}
+                          label={`The penalty you pay when your vault gets liquidated`}
+                        >
+                          <InformationCircleIcon
+                            className="block w-5 h-5 ml-2 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        </Tooltip>
+                      </dt>
+                      <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
+                        {loadingVaultData ? (
+                          <Placeholder
+                            className="justify-end py-2"
+                            color={Placeholder.color.INDIGO}
+                            width={Placeholder.width.FULL}
+                          />
+                        ) : (
+                          <p className="text-lg font-semibold leading-none">
+                            {collateralType?.liquidationPenalty}
+                            <span className="text-sm font-normal">%</span>
+                          </p>
+                        )}
+                      </dd>
+                    </div>
+                  </dl>
+
+                  <div className="p-3 mt-auto rounded-md bg-gray-50">
+                    <p className="text-xs font-semibold leading-none text-gray-400 uppercase">Current {vault?.collateralToken} price</p>
+                    <p className="mt-1 text-sm font-semibold text-gray-900">
+                      ${price / 1000000}
                     </p>
                   </div>
-                  <div className="px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600 sm:p-6">
-                    <div className="flex items-start justify-between">
-                      {loadingVaultData ? (
-                        <div className="flex flex-col flex-1">
-                          <Placeholder
-                            className="py-1.5"
-                            color={Placeholder.color.INDIGO}
-                            width={Placeholder.width.HALF}
-                          />
-                          <Placeholder
-                            className="py-1.5"
-                            color={Placeholder.color.GRAY}
-                            width={Placeholder.width.THIRD}
-                          />
-                        </div>
-                      ) : (
-                        <div>
-                          <p className="text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
-                            {collateralLocked()}{' '}
-                            <span className="text-sm font-normal">
-                              {vault?.collateralToken.toUpperCase()}
-                            </span>
-                          </p>
-                          <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
-                            {vault?.collateralToken.toUpperCase()} Locked
-                          </p>
-                        </div>
-                      )}
-
-                      {isVaultOwner && !loadingVaultData ? (
-                        <button
-                          type="button"
-                          className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                          onClick={() => setShowDepositModal(true)}
-                        >
-                          Deposit
-                        </button>
-                      ) : null}
-                    </div>
-                  </div>
                 </div>
-                <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-900 dark:divide-zinc-600 sm:rounded-md sm:overflow-hidden">
-                  {canStackCollateral ? (
-                    <div className="px-4 py-5 sm:p-6">
+              </div>
+              <div className="sm:col-span-2">
+                <div className="bg-white rounded-md shadow dark:bg-zinc-900">
+                  <div className="flex flex-col px-4 py-5 sm:p-6">
+                    <div>
                       <div className="flex items-start justify-between">
                         <div>
-                          <div className="flex items-center">
-                            <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
-                              Stacking
-                            </h3>
-                            {canStackCollateral && !loadingVaultData ? (
+                          <p className="flex items-center text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
+                            Available to mint
+                            <Tooltip
+                              className="ml-2"
+                              shouldWrapChildren={true}
+                              label={`When the price of ${vault?.collateralToken.toUpperCase()} increases compared to when you created a vault, your collateral is bigger in dollar value so you can mint more.`}
+                            >
+                              <InformationCircleIcon
+                                className="block w-5 h-5 ml-2 text-gray-400"
+                                aria-hidden="true"
+                              />
+                            </Tooltip>
+                          </p>
+                          {loadingVaultData ? (
+                            <Placeholder
+                              className="py-2"
+                              color={Placeholder.color.INDIGO}
+                              width={Placeholder.width.THIRD}
+                            />
+                          ) : (
+                            <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
+                              {availableCoinsToMint(
+                                price,
+                                collateralLocked(),
+                                outstandingDebt(),
+                                collateralType?.collateralToDebtRatio
+                              ).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 6,
+                              })}{' '}
+                              <span className="text-sm font-normal">USDA</span>
+                            </p>
+                          )}
+                        </div>
+                        {isVaultOwner &&
+                        !loadingVaultData &&
+                        Number(
+                          availableCoinsToMint(
+                            price,
+                            collateralLocked(),
+                            outstandingDebt(),
+                            collateralType?.collateralToDebtRatio
+                          )
+                        ) > 0 ? (
+                          <button
+                            type="button"
+                            className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            onClick={() => setShowMintModal(true)}
+                          >
+                            Mint
+                          </button>
+                        ) : null}
+                      </div>
+
+                      <div className="mt-4">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <p className="flex items-center text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
+                              Outstanding USDA debt
                               <Tooltip
                                 className="ml-2"
                                 shouldWrapChildren={true}
-                                label={`Stacking is ${enabledStacking ? 'enabled' : 'disabled'}`}
+                                label={`Includes a ${
+                                  collateralType?.stabilityFeeApy / 100
+                                }% yearly stability fee.`}
                               >
-                                <span className="relative flex w-3 h-3 ml-2">
-                                  {enabledStacking ? (
-                                    <span className="absolute inline-flex w-full h-full bg-green-400 rounded-full opacity-75 animate-ping"></span>
-                                  ) : null}
-                                  <span
-                                    className={`relative inline-flex rounded-full h-3 w-3 ${
-                                      enabledStacking ? 'bg-green-500' : 'bg-red-500'
-                                    }`}
-                                  ></span>
-                                </span>
+                                <InformationCircleIcon
+                                  className="block w-5 h-5 ml-2 text-gray-400"
+                                  aria-hidden="true"
+                                />
                               </Tooltip>
-                            ) : null}
+                            </p>
+                            {loadingFeesData || loadingVaultData ? (
+                              <Placeholder
+                                className="py-2"
+                                color={Placeholder.color.INDIGO}
+                                width={Placeholder.width.THIRD}
+                              />
+                            ) : (
+                              <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
+                                {totalDebt.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 6,
+                                })}{' '}
+                                <span className="text-sm font-normal">USDA</span>
+                              </p>
+                            )}
                           </div>
-                          <p className="mt-1 text-sm text-gray-500 dark:text-zinc-400">Update your stacking status.</p>
-                        </div>
-                        <div>
-                          {canStackCollateral &&
-                          isVaultOwner &&
-                          vault?.stackedTokens > 0 &&
-                          !vault?.revokedStacking &&
-                          !startedStacking &&
-                          !loadingVaultData ? (
-                            // cycle not started, offer to opt-out
+                          {!loadingStackerData && isVaultOwner && canWithdrawCollateral && Number(vault?.stackedTokens) === 0 && Number(totalDebt) <= 0.6 ? (
                             <button
                               type="button"
                               className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => callToggleStacking()}
+                              onClick={() => setShowCloseModal(true)}
                             >
-                              Unstack
+                              Withdraw Collateral & Close Vault
                             </button>
-                          ) : canStackCollateral &&
-                            isVaultOwner &&
-                            vault?.stackedTokens > 0 &&
-                            vault?.revokedStacking &&
-                            !loadingVaultData ? (
-                            // user has unstacked collateral, offer to stack again
-                            isVaultOwner ? (
-                              <button
-                                type="button"
-                                className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                onClick={() => callToggleStacking()}
-                              >
-                                Restack
-                              </button>
-                            ) : null
-                          ) : canStackCollateral && vault?.stackedTokens == 0 && isVaultOwner && !loadingVaultData ? (
-                            // user is not stacking
-                            isVaultOwner ? (
-                              <button
-                                type="button"
-                                className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                onClick={() => stackCollateral()}
-                              >
-                                Stack
-                              </button>
-                            ) : null
+                          ) : !loadingStackerData && isVaultOwner ? (
+                            <button
+                              type="button"
+                              className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                              onClick={() => setShowBurnModal(true)}
+                            >
+                              Pay back
+                            </button>
+                          ) : loadingStackerData ? (
+                            <Placeholder
+                              className="justify-end py-2"
+                              color={Placeholder.color.INDIGO}
+                              width={Placeholder.width.THIRD}
+                            />
                           ) : null}
                         </div>
                       </div>
                     </div>
-                  ) : null}
-                  {loadingStackerData || loadingVaultData ? (
-                    <div className="px-4 py-5 sm:p-6">
-                      <div className="flex justify-between flex-1">
-                        <Placeholder
-                          className="py-2"
-                          color={Placeholder.color.GRAY}
-                          width={Placeholder.width.HALF}
-                        />
-                        <Placeholder
-                          className="justify-end py-2"
-                          color={Placeholder.color.INDIGO}
-                          width={Placeholder.width.THIRD}
-                        />
-                      </div>
-                      <div className="flex justify-between flex-1 mt-4">
-                        <Placeholder
-                          className="py-2"
-                          color={Placeholder.color.GRAY}
-                          width={Placeholder.width.HALF}
-                        />
-                        <Placeholder
-                          className="justify-end py-2"
-                          color={Placeholder.color.INDIGO}
-                          width={Placeholder.width.THIRD}
-                        />
-                      </div>
-                    </div>
-                  ) : canStackCollateral ? (
-                    <div className="px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600 sm:p-6">
-                      <dl>
-                        <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                          <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
-                            {unlockBurnHeight == 0 ? (
-                              <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
-                                Will be stacked
-                              </p>
+
+                    <div className="mt-6">
+                      <div>
+                        {/* TODO: make component out of this */}
+                        {debtClass(collateralType?.liquidationRatio, debtRatio) == 'text-green-400' ? (
+                          <Alert type={Alert.type.SUCCESS} title="Low liquidation risk">
+                            {loadingVaultData ? (
+                              <div className="flex flex-col flex-1">
+                                <Placeholder
+                                  className="py-2"
+                                  color={Placeholder.color.GRAY}
+                                  width={Placeholder.width.FULL}
+                                />
+                                <Placeholder
+                                  className="py-2"
+                                  color={Placeholder.color.GRAY}
+                                  width={Placeholder.width.FULL}
+                                />
+                              </div>
                             ) : (
-                              <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
-                                Currently stacking
+                              <p>
+                                Good job! Your vault looks quite healthy. Your liquidation price ({vault?.collateralToken} below <span className="font-semibold">${liquidationPrice()}</span>) is still very far but keep in mind that you can pay back the outstanding debt or deposit extra collateral at any time anyway.
                               </p>
                             )}
-                          </dt>
-                          <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
+                          </Alert>
+                        ) : debtClass(collateralType?.liquidationRatio, debtRatio) == 'text-orange-400' ? (
+                          <Alert type={Alert.type.WARNING} title="Medium liquidation risk">
+                            {loadingVaultData ? (
+                              <div className="flex flex-col flex-1">
+                                <Placeholder
+                                  className="py-2"
+                                  color={Placeholder.color.GRAY}
+                                  width={Placeholder.width.FULL}
+                                />
+                                <Placeholder
+                                  className="py-2"
+                                  color={Placeholder.color.GRAY}
+                                  width={Placeholder.width.FULL}
+                                />
+                              </div>
+                            ) : (
+                              <p>
+                                Be careful. You will be liquidated if the {vault?.collateralToken} price drops
+                                below{' '}
+                                <span className="font-semibold">
+                                  ${liquidationPrice()} USD
+                                </span>
+                                . Pay back the outstanding debt or deposit extra collateral to keep
+                                your vault healthy.
+                              </p>
+                            )}
+                          </Alert>
+                        ) : (
+                          <Alert type={Alert.type.ERROR} title="High liquidation risk">
+                            {loadingVaultData ? (
+                              <div className="flex flex-col flex-1">
+                                <Placeholder
+                                  className="py-2"
+                                  color={Placeholder.color.GRAY}
+                                  width={Placeholder.width.FULL}
+                                />
+                                <Placeholder
+                                  className="py-2"
+                                  color={Placeholder.color.GRAY}
+                                  width={Placeholder.width.FULL}
+                                />
+                              </div>
+                            ) : (
+                              <p>
+                                You are very close to being liquidated. If the {vault?.collateralToken} price drops
+                                below{' '}
+                                <span className="font-semibold">
+                                  ${liquidationPrice()} USD
+                                </span>
+                                . Pay back the outstanding debt or deposit extra collateral to keep
+                                your vault healthy.
+                              </p>
+                            )}
+                          </Alert>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-12">
+          <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <h3 className="text-lg font-bold leading-6 text-gray-900 font-headings dark:text-zinc-50">
+                  Stacking
+                </h3>
+
+                {canStackCollateral && !loadingVaultData ? (
+                  enabledStacking ? (
+                    <span className="ml-3 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-green-100 text-green-800">
+                      <CheckCircleIcon className="flex-shrink-0 w-5 h-5 mr-2" />
+                      Enabled
+                    </span>
+                  ) : (
+                    <span className="ml-3 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-red-100 text-red-800">
+                      <XCircleIcon className="flex-shrink-0 w-5 h-5 mr-2" />
+                      Disabled
+                    </span>
+                  )
+                ) : null}
+              </div>
+
+              {canStackCollateral ? (
+                <div className="flex items-start justify-between">
+                  <div>
+                    {canStackCollateral &&
+                    isVaultOwner &&
+                    vault?.stackedTokens > 0 &&
+                    !vault?.revokedStacking &&
+                    !startedStacking &&
+                    !loadingVaultData ? (
+                      // cycle not started, offer to opt-out
+                      <button
+                        type="button"
+                        className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        onClick={() => callToggleStacking()}
+                      >
+                        Unstack
+                      </button>
+                    ) : canStackCollateral &&
+                      isVaultOwner &&
+                      vault?.stackedTokens > 0 &&
+                      vault?.revokedStacking &&
+                      !loadingVaultData ? (
+                      // user has unstacked collateral, offer to stack again
+                        <button
+                          type="button"
+                          className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          onClick={() => callToggleStacking()}
+                        >
+                          Restack
+                        </button>
+                    ) : canStackCollateral && vault?.stackedTokens == 0 && isVaultOwner && !loadingVaultData ? (
+                      // user is not stacking
+                        <button
+                          type="button"
+                          className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          onClick={() => stackCollateral()}
+                        >
+                          Stack
+                        </button>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          </header>
+
+          <div className="mt-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <section>
+                <div className="relative">
+                  <div
+                    className="absolute w-full h-full dark:opacity-30"
+                    style={{ backgroundImage: 'url(/assets/stacks-pattern.png)', backgroundSize: '20%' }}
+                  />
+                  <a
+                    className="absolute top-0 right-0 z-10 mt-2 mr-2 bg-indigo-600 rounded-full"
+                    href="https://stacking.club/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <svg
+                      className="w-8 h-8"
+                      viewBox="0 0 120 120"
+                      aria-hidden="true"
+                    >
+                      <circle cx="60" cy="60" r="60" fill="#5546FF"/>
+                      <path d="M86.0779 92L72.4991 71.4267H91.9992V63.6647H28V71.4357H47.4937L33.9214 92H44.0471L59.9997 67.8295L75.9522 92H86.0779ZM91.9993 56.1313V48.2912H72.8952L86.2874 28H76.1618L59.9995 52.4877L43.8375 28H33.7119L47.1212 48.3094H28V56.1313H91.9993Z" fill="white"/>
+                    </svg>
+
+                  </a>
+
+                  <dl className="relative grid grid-cols-1 overflow-hidden bg-indigo-100 bg-opacity-50 border border-indigo-200 divide-y divide-indigo-200 rounded-lg shadow-sm dark:bg-zinc-700 dark:bg-opacity-95 dark:border-zinc-600 dark:divide-zinc-600">
+                    <div className="px-4 py-3">
+                      <dt className="text-xs font-semibold text-indigo-600 uppercase dark:text-indigo-100">
+                        Stacking Cycle #
+                      </dt>
+                      <dd className="flex items-baseline justify-between mt-1 md:block">
+                        <div className="flex items-baseline justify-between flex-1 text-lg font-semibold text-indigo-800 dark:text-indigo-200">
+                          {state.cycleNumber}
+                        </div>
+                      </dd>
+                    </div>
+                    <div className="px-4 py-3">
+                      <dt className="text-xs font-semibold text-indigo-600 uppercase dark:text-indigo-100">
+                        Days in cycle
+                      </dt>
+                      <dd className="flex items-baseline justify-between mt-1 md:block">
+                        <div className="flex items-baseline justify-between flex-1 text-lg font-semibold text-indigo-800 dark:text-indigo-200">
+                          <span>
+                            {state.daysPassed} <span className="text-xs opacity-80">(since Feb 18 2022)</span>
+                          </span>
+                          <a
+                            className="hover:underline"
+                            href="https://mempool.space/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <span className="text-xs">~#724000</span>
+                          </a>
+                        </div>
+                      </dd>
+                    </div>
+                    <div className="px-4 py-3">
+                      <dt className="text-xs font-semibold text-indigo-600 uppercase dark:text-indigo-100">
+                        Days left
+                      </dt>
+                      <dd className="flex items-baseline justify-between mt-1 md:block">
+                        <div className="flex items-baseline justify-between flex-1 text-lg font-semibold text-indigo-800 dark:text-indigo-200">
+                          <span>
+                            {state.daysLeft} <span className="text-xs opacity-80">(ends on {state.endDate})</span>
+                          </span>
+                          <a
+                            className="hover:underline"
+                            href="https://mempool.space/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <span className="text-xs">~#724000</span>
+                          </a>
+                        </div>
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+                <div className="mt-3">
+                  <dl className="relative border divide-y rounded-lg shadow-sm bg-zinc-200/30 border-zinc-300">
+                    <div className="px-4 py-3">
+                      <dt className="text-xs font-semibold uppercase text-zinc-500">
+                        Bitcoin block height
+                      </dt>
+                      <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
+                        <div className="justify-between font-semibold text-zinc-600">
+                          <a
+                            className="hover:underline"
+                            href="https://mempool.space/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            #723900
+                          </a>
+                        </div>
+                      </dd>
+                    </div>
+                    <a
+                      className="absolute top-0 right-0 z-10 mt-2 mr-2 rounded-full"
+                      href="https://mempool.space/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <svg
+                        className="w-8 h-8 filter grayscale"
+                        viewBox="0 0 120 120"
+                        aria-hidden="true"
+                      >
+                        <path fill="#F7931A" d="M118.2 74.52a59.98 59.98 0 0 1-72.72 43.68 59.98 59.98 0 1 1 72.72-43.68Z"/>
+                        <path fill="#fff" d="M86.46 51.45c1.2-7.98-4.89-12.27-13.2-15.14l2.7-10.81-6.59-1.64-2.63 10.53c-1.73-.43-3.5-.84-5.27-1.24l2.64-10.6-6.58-1.64-2.69 10.8-13.28-3.28-1.75 7.03s4.88 1.12 4.78 1.19c2.67.67 3.15 2.43 3.07 3.83L40.27 70.1c-.33.8-1.15 2.02-3.02 1.56.07.1-4.78-1.2-4.78-1.2L29.2 78l13.26 3.35-2.73 10.94 6.58 1.64 2.7-10.82c1.8.49 3.54.94 5.25 1.36l-2.7 10.77 6.59 1.64 2.73-10.92C72.1 88.1 80.55 87.24 84.1 77.1c2.86-8.17-.14-12.89-6.05-15.96 4.3-1 7.54-3.83 8.4-9.67h.01Zm-15.05 21.1c-2.04 8.17-15.8 3.75-20.26 2.64l3.61-14.49c4.46 1.11 18.77 3.32 16.65 11.85Zm2.04-21.21C71.6 58.78 60.14 55 56.42 54.07l3.27-13.15c3.72.93 15.7 2.66 13.76 10.42"/>
+                      </svg>
+                    </a>
+                  </dl>
+                </div>
+              </section>
+              <div className="sm:col-span-2">
+                <div className="bg-white rounded-md shadow dark:bg-zinc-900">
+                  <div className="px-4 py-5 sm:p-6">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="text-sm font-normal leading-6 text-gray-500 dark:text-zinc-400">
+                          Total Locked
+                        </p>
+                        <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
+                          {collateralLocked()}{' '}
+                          <span className="text-sm font-normal">
+                            {vault?.collateralToken.toUpperCase()}
+                          </span>
+                        </p>
+                      </div>
+                      <div className="flex items-center">
+                        {isVaultOwner &&
+                        canUnlockCollateral &&
+                        vault?.stackedTokens > 0 &&
+                        !loadingVaultData ? (
+                          <button
+                          type="button"
+                          className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          onClick={() => unlockCollateral()}
+                          >
+
+                            <LockOpenIcon
+                              className="-ml-0.5 mr-2 h-4 w-4"
+                              aria-hidden="true"
+                            />
+                            Unlock
+                          </button>
+                        ) : null}
+
+                        {isVaultOwner && !loadingVaultData ? (
+                          <button
+                            type="button"
+                            className="inline-flex items-center px-3 py-2 ml-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            onClick={() => setShowDepositModal(true)}
+                          >
+                            Deposit
+                          </button>
+                        ) : null}
+                      </div>
+                    </div>
+
+                    <div className="relative">
+                      <div className="flex w-full h-10 mt-6 mb-12 overflow-hidden rounded-md bg-zinc-100">
+                        <div className="flex items-center font-semibold justify-center text-xs text-center w-[20%] bg-indigo-300 text-indigo-900 hover:cursor-help">
+                          <Tooltip
+                            label={`End of next PoX cycle`}
+                          >
+                            Preparation
+                          </Tooltip>
+                        </div>
+                        <div className="flex items-center font-semibold justify-center text-xs text-center w-[60%]">
+                          <div className="flex items-center justify-center w-1/3 h-full text-xs font-semibold text-white bg-indigo-600/70">Cycle 1 (#27)</div>
+                          <div className="flex items-center justify-center w-1/3 h-full text-xs font-semibold text-white bg-indigo-600/80">Cycle 2 (#28)</div>
+                          <div className="flex items-center justify-center w-1/3 h-full text-xs font-semibold text-white bg-indigo-600/90">Cycle 3 (#29)</div>
+                        </div>
+                        <div className="flex text-white items-center font-semibold justify-center text-xs text-center w-[20%] bg-indigo-800 hover:cursor-help">
+                          <Tooltip
+                            label={`2-week period`}
+                          >
+                            Cooldown
+                          </Tooltip>
+                        </div>
+                      </div>
+
+                      <div className="absolute flex flex-col items-start justify-start cursor-help -left-1 top-11">
+                        <div className="flex items-center mt-1">
+                          <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 18h-6a3 3 0 0 1 -3 -3v-10l-4 4m8 0l-4 -4"></path>
+                          </svg>
+                          <div className="text-xs font-semibold">Start</div>
+                        </div>
+                        <a href="https://mempool.space/" target="_blank" rel="noopener noreferrer" className="hover:underline text-xs mt-0.5 ml-1">#722650</a>
+                      </div>
+
+                      <div className="absolute flex flex-col items-start justify-start cursor-help -right-1 top-11">
+                        <div className="flex items-center mt-1">
+                          <svg className="order-1 w-4 h-4 mr-1 -scale-x-100" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 18h-6a3 3 0 0 1 -3 -3v-10l-4 4m8 0l-4 -4"></path>
+                          </svg>
+                          <div className="text-xs font-semibold">Finish</div>
+                        </div>
+                        <a href="https://mempool.space/" target="_blank" rel="noopener noreferrer" className="hover:underline text-xs mt-0.5 mr-1">#722650</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-900 dark:divide-zinc-600 sm:rounded-md sm:overflow-hidden">
+                  <div className="px-4 py-5 sm:p-6">
+                    {loadingStackerData || loadingVaultData ? (
+                      <>
+                        <div className="flex justify-between flex-1 mt-3">
+                          <Placeholder
+                            color={Placeholder.color.GRAY}
+                            width={Placeholder.width.FULL}
+                          />
+                          <Placeholder
+                            className="justify-end"
+                            color={Placeholder.color.INDIGO}
+                            width={Placeholder.width.THIRD}
+                          />
+                        </div>
+                        <div className="flex justify-between flex-1 mt-4">
+                          <Placeholder
+                            color={Placeholder.color.GRAY}
+                            width={Placeholder.width.FULL}
+                          />
+                          <Placeholder
+                            className="justify-end"
+                            color={Placeholder.color.INDIGO}
+                            width={Placeholder.width.THIRD}
+                          />
+                        </div>
+                      </>
+                    ) : canStackCollateral ? (
+                      <div>
+                        <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
+                          <div className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                            {unlockBurnHeight == 0 ? (
+                              <>
+                                <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
+                                  Available for stacking
+                                </p>
+                                <Tooltip
+                                  shouldWrapChildren={true}
+                                  label={`...`}
+                                >
+                                  <InformationCircleIcon
+                                    className="block w-5 h-5 ml-2 text-gray-400"
+                                    aria-hidden="true"
+                                  />
+                                </Tooltip>
+                              </>
+                            ) : (
+                              <>
+                                <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
+                                  Currently stacking
+                                </p>
+                                <Tooltip
+                                  shouldWrapChildren={true}
+                                  label={`...`}
+                                >
+                                  <InformationCircleIcon
+                                    className="block w-5 h-5 ml-2 text-gray-400"
+                                    aria-hidden="true"
+                                  />
+                                </Tooltip>
+                              </>
+                            )}
+                          </div>
+                          <div className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                             <p className="text-lg font-semibold leading-none">
                               {enabledStacking ? (
                                 <span>{microToReadable(vault?.collateral)}{' '}</span>
@@ -692,87 +1222,65 @@ export const ManageVault = ({ match }) => {
                                 {vault?.collateralToken.toUpperCase()}
                               </span>
                             </p>
-                          </dd>
+                          </div>
                         </div>
-                        <div className="mt-4 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                          {enabledStacking && stackingEndDate != '' ? (
-                            <>
-                              <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
-                                <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
-                                  End of stacking
-                                </p>
-                                <Tooltip
-                                  shouldWrapChildren={true}
-                                  label={`The yield on your vault is given when stacking ends. If you opt-out of stacking, you can withdraw your funds when stacking ends.`}
-                                >
-                                  <InformationCircleIcon
-                                    className="block w-5 h-5 ml-2 text-gray-400"
-                                    aria-hidden="true"
-                                  />
-                                </Tooltip>
-                              </dt>
-                              <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
-                                <p className="text-lg font-semibold leading-none">
-                                  {stackingEndDate}
-                                </p>
-                              </dd>
-                            </>
-                          ) : unlockBurnHeight == 0 ? (
-                            <>
-                              <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
-                                <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
-                                  Stacking starts in
-                                </p>
-                              </dt>
-                              <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
-                                <p className="text-lg font-semibold leading-none">
-                                  {state.daysLeft} days
-                                </p>
-                              </dd>
-                            </>
-                          ) : null}
-                        </div>
-                      </dl>
-                    </div>
-                  ) : null}
 
-                  {canStackCollateral ? (
-                    <div className="px-4 py-5 sm:p-6">
-                      <div className="flex items-center justify-between">
-                        <h4 className="text-xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
-                          Yield
-                        </h4>
-
-                        {poxYield != 0 ? (
-                          <div>
-                            <button
-                              type="button"
-                              className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => claimYield()}
-                            >
-                              Add as collateral
-                            </button>
-                            {false ? (
-                              <button
-                                type="button"
-                                className="inline-flex items-center px-3 py-2 ml-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                onClick={() => claimYieldPayDebt()}
+                        {enabledStacking && stackingEndDate != '' ? (
+                          <div className="mt-3 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
+                            <div className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                              <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
+                                End of stacking
+                              </p>
+                              <Tooltip
+                                shouldWrapChildren={true}
+                                label={`The yield on your vault is given when stacking ends. If you opt-out of stacking, you can withdraw your funds when stacking ends.`}
                               >
-                                Pay back debt
-                              </button>
-                            ) : null}
+                                <InformationCircleIcon
+                                  className="block w-5 h-5 ml-2 text-gray-400"
+                                  aria-hidden="true"
+                                />
+                              </Tooltip>
+                            </div>
+                            <div className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
+                              <p className="text-lg font-semibold leading-none">
+                                {stackingEndDate}
+                              </p>
+                            </div>
+                          </div>
+                        ) : unlockBurnHeight == 0 ? (
+                          <div className="mt-3 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
+                            <div className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                              <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
+                                Stacking starts in
+                              </p>
+                            </div>
+                            <div className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
+                              <p className="text-lg font-semibold leading-none">
+                                {state.daysLeft} days
+                              </p>
+                            </div>
                           </div>
                         ) : null}
                       </div>
+                    ) : null}
 
-                      <dl className="mt-4">
-                        <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                          <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
-                            <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
-                              Available yield
+                    {canStackCollateral ? (
+                      <>
+                        <div className="flex items-center justify-between mt-4">
+                          <div>
+                            <p className="flex items-center text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
+                              Rewards
+                              <Tooltip
+                                className="ml-2"
+                                shouldWrapChildren={true}
+                                label={`...`}
+                              >
+                                <InformationCircleIcon
+                                  className="block w-5 h-5 ml-2 text-gray-400"
+                                  aria-hidden="true"
+                                />
+                              </Tooltip>
                             </p>
-                          </dt>
-                          <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                             {loadingPoxYieldData ? (
                               <Placeholder
                                 className="justify-end py-2"
@@ -780,27 +1288,72 @@ export const ManageVault = ({ match }) => {
                                 width={Placeholder.width.THIRD}
                               />
                             ) : (
-                              <p className="text-lg font-semibold leading-none">
+                              <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
                                 {poxYield}{' '}
                                 <span className="text-sm font-normal">
                                   {vault?.collateralToken.toUpperCase()}
                                 </span>
                               </p>
                             )}
-                          </dd>
+                          </div>
+                          {poxYield != 0 ? (
+                            <div>
+                              <button
+                                type="button"
+                                className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                onClick={() => claimYield()}
+                              >
+                                Add as collateral
+                              </button>
+                              {false ? (
+                                <button
+                                  type="button"
+                                  className="inline-flex items-center px-3 py-2 ml-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  onClick={() => claimYieldPayDebt()}
+                                >
+                                  Pay back debt
+                                </button>
+                              ) : null}
+                            </div>
+                          ) : null}
                         </div>
-                      </dl>
-                    </div>
-                  ) : null}
+                      </>
+                    ) : null}
 
-                  <div className="px-4 py-5 sm:p-6">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
-                        Withdrawal
-                      </h4>
+                    <div className="flex items-center justify-between mt-4">
+                      <div>
+                        <p className="flex items-center text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
+                          Withdrawal
+                          <Tooltip
+                            className="ml-2"
+                            shouldWrapChildren={true}
+                            label={`...`}
+                          >
+                            <InformationCircleIcon
+                              className="block w-5 h-5 ml-2 text-gray-400"
+                              aria-hidden="true"
+                            />
+                          </Tooltip>
+                        </p>
+                        {loadingVaultData ? (
+                          <Placeholder
+                            className="justify-end py-2"
+                            color={Placeholder.color.INDIGO}
+                            width={Placeholder.width.THIRD}
+                          />
+                        ) : (
+                          <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
+                            {maximumCollateralToWithdraw}{' '}
+                            <span className="text-sm font-normal">
+                              {vault?.collateralToken.toUpperCase()}
+                            </span>
+                          </p>
+                        )}
+                      </div>
                       {isVaultOwner &&
                       canWithdrawCollateral &&
                       !loadingVaultData &&
+                      maximumCollateralToWithdraw > 0 &&
                       totalDebt > 0 ? (
                         <button
                           type="button"
@@ -810,48 +1363,10 @@ export const ManageVault = ({ match }) => {
                           Withdraw
                         </button>
                       ) : null}
-                      {isVaultOwner &&
-                      canUnlockCollateral &&
-                      vault?.stackedTokens > 0 &&
-                      !loadingVaultData ? (
-                        <button
-                          type="button"
-                          className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                          onClick={() => unlockCollateral()}
-                        >
-                          Unlock Collateral
-                        </button>
-                      ) : null}
                     </div>
 
-                    <dl className="mt-4">
-                      <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                        <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
-                          <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
-                            Able to withdraw
-                          </p>
-                        </dt>
-                        <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
-                          {loadingVaultData ? (
-                            <Placeholder
-                              className="justify-end py-2"
-                              color={Placeholder.color.INDIGO}
-                              width={Placeholder.width.THIRD}
-                            />
-                          ) : (
-                            <p className="text-lg font-semibold leading-none">
-                              {maximumCollateralToWithdraw}{' '}
-                              <span className="text-sm font-normal">
-                                {vault?.collateralToken.toUpperCase()}
-                              </span>
-                            </p>
-                          )}
-                        </dd>
-                      </div>
-                    </dl>
-
                     {loadingVaultData ? (
-                      <div className="mt-4">
+                      <div className="mt-6">
                         <Alert>
                           <Placeholder
                             className="py-2"
@@ -869,8 +1384,8 @@ export const ManageVault = ({ match }) => {
                       isVaultOwner &&
                       vault?.stackedTokens > 0 &&
                       !vault?.revokedStacking ? (
-                      // user has indicated they want to stack their STX tokens
-                      <div className="mt-4">
+                      // user has indicated they want to stack their tokens
+                      <div className="mt-6">
                         <Alert>
                           {startedStacking ? (
                             <p>
@@ -905,271 +1420,6 @@ export const ManageVault = ({ match }) => {
                         </Alert>
                       </div>
                     ) : null}
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-900 dark:divide-zinc-600 sm:rounded-md sm:overflow-hidden">
-                  <div className="px-4 py-5 sm:p-6">
-                    <h3 className="text-2xl font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
-                      Mint
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-zinc-400">
-                      Manage your loan. Get extra USDA. Pay it back.
-                    </p>
-                  </div>
-                  <div className="relative px-4 py-5 space-y-6 bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600 sm:p-6">
-                    <div>
-                      <div className="flex items-start justify-between">
-                        <div>
-                          {loadingVaultData ? (
-                            <Placeholder
-                              className="py-2"
-                              color={Placeholder.color.INDIGO}
-                              width={Placeholder.width.THIRD}
-                            />
-                          ) : (
-                            <p className="text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
-                              {availableCoinsToMint(
-                                price,
-                                collateralLocked(),
-                                outstandingDebt(),
-                                collateralType?.collateralToDebtRatio
-                              ).toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 6,
-                              })}{' '}
-                              <span className="text-sm font-normal">USDA</span>
-                            </p>
-                          )}
-                          <p className="flex items-center text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
-                            Available to mint
-                            <Tooltip
-                              className="ml-2"
-                              shouldWrapChildren={true}
-                              label={`When the price of ${vault?.collateralToken.toUpperCase()} increases compared to when you created a vault, your collateral is bigger in dollar value so you can mint more.`}
-                            >
-                              <InformationCircleIcon
-                                className="block w-5 h-5 ml-2 text-gray-400"
-                                aria-hidden="true"
-                              />
-                            </Tooltip>
-                          </p>
-                        </div>
-                        {isVaultOwner &&
-                        !loadingVaultData &&
-                        Number(
-                          availableCoinsToMint(
-                            price,
-                            collateralLocked(),
-                            outstandingDebt(),
-                            collateralType?.collateralToDebtRatio
-                          )
-                        ) > 0 ? (
-                          <button
-                            type="button"
-                            className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            onClick={() => setShowMintModal(true)}
-                          >
-                            Mint
-                          </button>
-                        ) : null}
-                      </div>
-
-                      <div className="mt-4">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            {loadingFeesData || loadingVaultData ? (
-                              <Placeholder
-                                className="py-2"
-                                color={Placeholder.color.INDIGO}
-                                width={Placeholder.width.THIRD}
-                              />
-                            ) : (
-                              <p className="text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
-                                {totalDebt.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                                })}{' '}
-                                <span className="text-sm font-normal">USDA</span>
-                              </p>
-                            )}
-                            <p className="flex items-center text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
-                              Outstanding USDA debt
-                              <Tooltip
-                                className="ml-2"
-                                shouldWrapChildren={true}
-                                label={`Includes a ${
-                                  collateralType?.stabilityFeeApy / 100
-                                }% yearly stability fee.`}
-                              >
-                                <InformationCircleIcon
-                                  className="block w-5 h-5 ml-2 text-gray-400"
-                                  aria-hidden="true"
-                                />
-                              </Tooltip>
-                            </p>
-                          </div>
-                          {!loadingStackerData && isVaultOwner && canWithdrawCollateral && Number(vault?.stackedTokens) === 0 && Number(totalDebt) <= 0.6 ? (
-                            <button
-                              type="button"
-                              className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => setShowCloseModal(true)}
-                            >
-                              Withdraw Collateral & Close Vault
-                            </button>
-                          ) : !loadingStackerData && isVaultOwner ? (
-                            <button
-                              type="button"
-                              className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              onClick={() => setShowBurnModal(true)}
-                            >
-                              Pay back
-                            </button>
-                          ) : loadingStackerData ? (
-                            <Placeholder
-                              className="justify-end py-2"
-                              color={Placeholder.color.INDIGO}
-                              width={Placeholder.width.THIRD}
-                            />
-                          ) : null}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="pt-6">
-                      <dl>
-                        <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                          <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
-                            <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
-                              Collateral to Debt ratio
-                            </p>
-                            <Tooltip
-                              shouldWrapChildren={true}
-                              label={`The amount of collateral you deposit in a vault versus the stablecoin debt you are minting against it`}
-                            >
-                              <InformationCircleIcon
-                                className="block w-5 h-5 ml-2 text-gray-400"
-                                aria-hidden="true"
-                              />
-                            </Tooltip>
-                          </dt>
-                          <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
-                            {loadingVaultData ? (
-                              <Placeholder
-                                className="justify-end py-2"
-                                color={Placeholder.color.INDIGO}
-                                width={Placeholder.width.THIRD}
-                              />
-                            ) : (
-                              <p
-                                className={`text-lg font-semibold leading-none ${debtClass(
-                                  collateralType?.liquidationRatio,
-                                  debtRatio
-                                )}`}
-                              >
-                                {debtRatio}
-                                <span className="text-sm font-normal">%</span>
-                              </p>
-                            )}
-                          </dd>
-                        </div>
-
-                        <div className="mt-4 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                          <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
-                            <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
-                              Minimum Ratio (before liquidation)
-                            </p>
-                            <Tooltip
-                              shouldWrapChildren={true}
-                              label={`The collateral-to-debt ratio when your vault gets liquidated`}
-                            >
-                              <InformationCircleIcon
-                                className="block w-5 h-5 ml-2 text-gray-400"
-                                aria-hidden="true"
-                              />
-                            </Tooltip>
-                          </dt>
-                          <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
-                            {loadingVaultData ? (
-                              <Placeholder
-                                className="justify-end py-2"
-                                color={Placeholder.color.INDIGO}
-                                width={Placeholder.width.THIRD}
-                              />
-                            ) : (
-                              <p className="text-lg font-semibold leading-none">
-                                {collateralType?.liquidationRatio}
-                                <span className="text-sm font-normal">%</span>
-                              </p>
-                            )}
-                          </dd>
-                        </div>
-
-                        <div className="mt-4 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                          <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
-                            <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
-                              Liquidation penalty
-                            </p>
-                            <Tooltip
-                              shouldWrapChildren={true}
-                              label={`The penalty you pay when your vault gets liquidated`}
-                            >
-                              <InformationCircleIcon
-                                className="block w-5 h-5 ml-2 text-gray-400"
-                                aria-hidden="true"
-                              />
-                            </Tooltip>
-                          </dt>
-                          <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
-                            {loadingVaultData ? (
-                              <Placeholder
-                                className="justify-end py-2"
-                                color={Placeholder.color.INDIGO}
-                                width={Placeholder.width.THIRD}
-                              />
-                            ) : (
-                              <p className="text-lg font-semibold leading-none">
-                                {collateralType?.liquidationPenalty}
-                                <span className="text-sm font-normal">%</span>
-                              </p>
-                            )}
-                          </dd>
-                        </div>
-                      </dl>
-
-                      <div className="mt-4">
-                        <Alert>
-                          {loadingVaultData ? (
-                            <div className="flex flex-col flex-1">
-                              <Placeholder
-                                className="py-2"
-                                color={Placeholder.color.INDIGO}
-                                width={Placeholder.width.FULL}
-                              />
-                              <Placeholder
-                                className="py-2"
-                                color={Placeholder.color.INDIGO}
-                                width={Placeholder.width.FULL}
-                              />
-                            </div>
-                          ) : (
-                            <p>
-                              The current {vault?.collateralToken} price is{' '}
-                              <span className="font-semibold text-blue-900">
-                                ${price / 1000000} USD
-                              </span>
-                              . You will be liquidated if the {vault?.collateralToken} price drops
-                              below{' '}
-                              <span className="font-semibold text-blue-900">
-                                ${liquidationPrice()} USD
-                              </span>
-                              . Pay back the outstanding debt or deposit extra collateral to keep
-                              your vault healthy.
-                            </p>
-                          )}
-                        </Alert>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
