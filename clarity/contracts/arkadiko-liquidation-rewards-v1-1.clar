@@ -1,7 +1,8 @@
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 
 ;; Errors
-(define-constant ERR-NOT-AUTHORIZED (err u30401))
+(define-constant ERR-NOT-AUTHORIZED u30401)
+(define-constant ERR-WRONG-TOKEN u30402)
 
 ;; Constants
 
@@ -55,6 +56,8 @@
   (let (
     (reward-id (var-get total-reward-ids))
   )
+    ;; TODO
+    ;; (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "auction-engine"))) (err ERR-NOT-AUTHORIZED))
 
     ;; Transfer rewards to contract
     (try! (contract-call? token transfer total-amount tx-sender (as-contract tx-sender) none))
@@ -96,13 +99,12 @@
   (let (
     (user tx-sender)
     (reward-amount (unwrap-panic (get-rewards-of user reward-id)))
+    (reward-info (get-reward-data reward-id))
   )
-
-    ;; TODO: check token parameter
+    (asserts! (is-eq (contract-of token) (get token reward-info)) (err ERR-WRONG-TOKEN))
 
     (if (is-eq reward-amount u0)
       (ok u0)
-
       (begin 
         (try! (as-contract (contract-call? token transfer reward-amount (as-contract tx-sender) user none)))
 

@@ -1,8 +1,6 @@
 
 ;; Errors
-(define-constant ERR-NOT-AUTHORIZED (err u30401))
-
-;; Constants
+(define-constant ERR-NOT-AUTHORIZED u32401)
 
 ;; Variables
 (define-data-var fragments-per-token uint u1000000000000)
@@ -130,6 +128,9 @@
     (new-usda-balance (- usda-balance amount))
     (new-fragments-per-token (/ (var-get total-fragments) new-usda-balance))
   )
+    ;; TODO
+    ;; (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "auction-engine"))) (err ERR-NOT-AUTHORIZED))
+
     ;; Transfer token
     (try! (as-contract (contract-call? .usda-token transfer amount (as-contract tx-sender) sender none)))
 

@@ -1,7 +1,6 @@
 ;; @contract Auction Engine - Sells off vault collateral to raise USDA
 ;; @version 1
 
-;; (impl-trait .arkadiko-auction-engine-trait-v3.auction-engine-trait)
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait vault-manager-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
@@ -10,23 +9,14 @@
 (use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
 
 ;; constants
-(define-constant blocks-per-day u144)
-(define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u213)
-(define-constant ERR-CANNOT-WITHDRAW u21)
-(define-constant ERR-ALREADY-REDEEMED u22)
-(define-constant ERR-WITHDRAWAL-AMOUNT-EXCEEDED u23)
-(define-constant ERR-AUCTION-NOT-ALLOWED u24)
-(define-constant ERR-AUCTION-NOT-CLOSED u25)
-(define-constant ERR-TOKEN-TYPE-MISMATCH u26)
-(define-constant ERR-NO-COMMITMENT u27)
-(define-constant ERR-NOT-AUTHORIZED u2403)
-(define-constant ERR-NO-LIQUIDATION-REQUIRED u52)
+(define-constant ERR-NOT-AUTHORIZED u31401)
+(define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u31002)
+(define-constant ERR-AUCTION-NOT-ALLOWED u31003)
+(define-constant ERR-NO-LIQUIDATION-REQUIRED u31004)
 
 ;; variables
 (define-data-var auction-engine-shutdown-activated bool false)
-(define-data-var total-commitments uint u0) ;; total micro-amount of USDA committed to the auction engine
 (define-data-var last-auction-id uint u0)
-(define-data-var last-liquidation uint u0) ;; block height when last liquidation happened
 
 (define-map auctions
   { id: uint }
@@ -109,7 +99,7 @@
     (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
-    ;; TODO: check reserve
+    ;; TODO: check reserve ?
 
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-AUCTION-NOT-ALLOWED))
 
@@ -168,7 +158,7 @@
     (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
-    ;; TODO: check reserve
+    ;; TODO: check reserve?
 
     (if (is-eq usda-to-use u0)
       true
