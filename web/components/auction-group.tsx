@@ -124,25 +124,24 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeig
           collateral.
         </p>
 
-        {/* TODO: replace this input with InputAmount component (+ clickMax function) */}
-        <div className="relative mt-4 rounded-md shadow-sm">
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            $
-          </div>
-          <input
-            type="text"
-            name="stx"
-            id="stxAmount"
-            value={bidAmount}
-            onChange={onInputChange}
-            className="block w-full pr-12 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 pl-7 sm:text-sm"
-            placeholder="0.00"
-            aria-describedby="stx-currency"
-          />
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <span className="text-gray-500 sm:text-sm" id="stx-currency">
-              USDA
-            </span>
+        <div className="mt-6">
+          {/* TODO: replace this input with InputAmount component (+ clickMax function) */}
+          <div className="inline-flex items-center w-full min-w-0 mt-2 mb-2 border border-gray-300 rounded-md focus-within:ring-indigo-500 focus-within:border-indigo-500 dark:bg-zinc-700 dark:border-zinc-500">
+            <input
+              type="text"
+              name="usda"
+              id="usdaAmount"
+              value={bidAmount}
+              onChange={onInputChange}
+              className="flex-1 min-w-0 px-3 mr-2 border-0 rounded-md sm:text-sm focus:outline-none focus:ring-0 dark:bg-zinc-700 dark:text-zinc-200"
+              placeholder="0.00"
+              aria-describedby="usda-currency"
+            />
+            <div className="ml-auto mr-2 text-sm shrink-0">
+              <div className="flex items-center min-w-0">
+                <span className="text-gray-400 dark:text-zinc-300 sm:text-sm">USDA</span>
+              </div>
+            </div>
           </div>
         </div>
       </Modal>
