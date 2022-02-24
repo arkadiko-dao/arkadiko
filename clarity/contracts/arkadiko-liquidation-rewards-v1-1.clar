@@ -84,7 +84,7 @@
     (total-amount (get total-amount reward-info))
 
     (user-shares (unwrap-panic (contract-call? .arkadiko-liquidation-pool-v1-1 get-shares-at user share-block)))
-    (total-rewards (/ (* user-shares total-amount) u10000000000))
+    (total-rewards (/ (* user-shares total-amount) u10000000))
 
     (claimed (get claimed-amount (get-reward-claimed reward-id user)))
   )

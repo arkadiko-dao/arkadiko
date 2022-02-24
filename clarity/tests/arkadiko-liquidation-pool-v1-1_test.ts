@@ -201,33 +201,33 @@ Clarinet.test({
 
     // Shares at 1
     call = await liquidationPool.getSharesAt(deployer.address, 1);
-    call.result.expectOk().expectUint(1 * 10000000000);
+    call.result.expectOk().expectUint(1 * 10000000);
     call = await liquidationPool.getSharesAt(wallet_1.address, 1);
     call.result.expectOk().expectUint(0);
 
     // Shares at 2
     call = await liquidationPool.getSharesAt(deployer.address, 2);
-    call.result.expectOk().expectUint(0.90 * 10000000000);
+    call.result.expectOk().expectUint(0.90 * 10000000);
     call = await liquidationPool.getSharesAt(wallet_1.address, 2);
-    call.result.expectOk().expectUint(0.10 * 10000000000);
+    call.result.expectOk().expectUint(0.10 * 10000000);
 
     // Shares at 3
     call = await liquidationPool.getSharesAt(deployer.address, 3);
-    call.result.expectOk().expectUint(0.90 * 10000000000);
+    call.result.expectOk().expectUint(0.90 * 10000000);
     call = await liquidationPool.getSharesAt(wallet_1.address, 3);
-    call.result.expectOk().expectUint(0.10 * 10000000000);
+    call.result.expectOk().expectUint(0.10 * 10000000);
 
     // Shares at 4
     call = await liquidationPool.getSharesAt(deployer.address, 4);
-    call.result.expectOk().expectUint(0.45 * 10000000000);
+    call.result.expectOk().expectUint(0.45 * 10000000);
     call = await liquidationPool.getSharesAt(wallet_1.address, 4);
-    call.result.expectOk().expectUint(0.55 * 10000000000);
+    call.result.expectOk().expectUint(0.55 * 10000000);
 
     // Shares at 5
     call = await liquidationPool.getSharesAt(deployer.address, 5);
     call.result.expectOk().expectUint(0);
     call = await liquidationPool.getSharesAt(wallet_1.address, 5);
-    call.result.expectOk().expectUint(1 * 10000000000);
+    call.result.expectOk().expectUint(1 * 10000000);
 
     // Shares at 6
     call = await liquidationPool.getSharesAt(deployer.address, 6);

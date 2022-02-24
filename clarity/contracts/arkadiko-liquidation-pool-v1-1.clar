@@ -64,7 +64,7 @@
   )
     (if (is-eq fragments-total u0)
       (ok u0)
-      (ok (/ (* user-fragments u10000000000) fragments-total))
+      (ok (/ (* user-fragments u10000000) fragments-total))
     )
   )
 )

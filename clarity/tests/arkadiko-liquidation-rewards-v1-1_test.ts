@@ -57,9 +57,9 @@ Clarinet.test({
     // Rewards 1
     // TODO - Rounding errors
     call = await liquidationRewards.getRewardsOf(deployer.address, 1);
-    call.result.expectOk().expectUintWithDecimals(99.999999);
+    call.result.expectOk().expectUintWithDecimals(99.999990);
     call = await liquidationRewards.getRewardsOf(wallet_1.address, 1);
-    call.result.expectOk().expectUintWithDecimals(199.999999);
+    call.result.expectOk().expectUintWithDecimals(199.999980);
 
     // Claim reward
     result = liquidationRewards.claimRewards(deployer, 0, "arkadiko-token");
@@ -71,7 +71,7 @@ Clarinet.test({
 
     // Claim reward
     result = liquidationRewards.claimRewards(deployer, 1, "arkadiko-token");
-    result.expectOk().expectUintWithDecimals(99.999999);
+    result.expectOk().expectUintWithDecimals(99.999990);
 
     // No rewards left
     call = await liquidationRewards.getRewardsOf(deployer.address, 1);
@@ -79,7 +79,7 @@ Clarinet.test({
 
     // Claim reward
     result = liquidationRewards.claimRewards(wallet_1, 1, "arkadiko-token");
-    result.expectOk().expectUintWithDecimals(199.999999);
+    result.expectOk().expectUintWithDecimals(199.999980);
 
     // No rewards left
     call = await liquidationRewards.getRewardsOf(wallet_1.address, 1);

@@ -564,3 +564,66 @@ class VaultRewards {
 
 }
 export { VaultRewards };
+
+
+// ---------------------------------------------------------
+// Vault auction
+// ---------------------------------------------------------
+
+class VaultAuctionV4 {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  getAuctionById(auctionId: number) {
+    return this.chain.callReadOnlyFn(
+      "arkadiko-auction-engine-v4-1",
+      "get-auction-by-id",
+      [types.uint(auctionId)],
+      this.deployer.address,
+    );
+  }
+
+  getAuctionOpen(auctionId: number) {
+    return this.chain.callReadOnlyFn(
+      "arkadiko-auction-engine-v4-1",
+      "get-auction-open",
+      [types.uint(auctionId)],
+      this.deployer.address,
+    );
+  }
+
+  startAuction(user: Account, vaultId: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-auction-engine-v4-1", "start-auction", [
+        types.uint(vaultId),
+        types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1')),
+        types.principal(Utils.qualifiedName('xstx-token')),
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+      ], user.address),
+    ]);
+    return block.receipts[0].result;
+  }
+
+  burnUsda(user: Account, auctionId: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-auction-engine-v4-1", "burn-usda", [
+        types.uint(auctionId),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
+        types.principal(Utils.qualifiedName('xstx-token')),
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+      ], user.address),
+    ]);
+    return block.receipts[0].result;
+  }
+
+}
+export { VaultAuctionV4 };

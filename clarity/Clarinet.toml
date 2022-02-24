@@ -323,6 +323,11 @@ path = "contracts/arkadiko-liquidation-pool-v1-1.clar"
 depends_on = ["sip-010-trait-ft-standard"]
 path = "contracts/arkadiko-liquidation-rewards-v1-1.clar"
 
+[contracts.arkadiko-auction-engine-v4-1]
+depends_on = ["sip-010-trait-ft-standard", "arkadiko-liquidation-pool-v1-1", "arkadiko-liquidation-rewards-v1-1"]
+path = "contracts/arkadiko-auction-engine-v4-1.clar"
+
+
 
 # Tokensoft xBTC
 [contracts.restricted-token-trait]
