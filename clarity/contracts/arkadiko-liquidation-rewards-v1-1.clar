@@ -56,9 +56,6 @@
   (let (
     (reward-id (var-get total-reward-ids))
   )
-    ;; TODO
-    ;; (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "auction-engine"))) (err ERR-NOT-AUTHORIZED))
-
     ;; Transfer rewards to contract
     (try! (contract-call? token transfer total-amount tx-sender (as-contract tx-sender) none))
 

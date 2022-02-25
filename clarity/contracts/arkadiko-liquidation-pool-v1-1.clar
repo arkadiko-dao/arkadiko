@@ -128,8 +128,7 @@
     (new-usda-balance (- usda-balance amount))
     (new-fragments-per-token (/ (var-get total-fragments) new-usda-balance))
   )
-    ;; TODO
-    ;; (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "auction-engine"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "auction-engine"))) (err ERR-NOT-AUTHORIZED))
 
     ;; Transfer token
     (try! (as-contract (contract-call? .usda-token transfer amount (as-contract tx-sender) sender none)))
