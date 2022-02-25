@@ -168,6 +168,7 @@
 
         ;; Burn USDA, get collateral token
         (try! (contract-call? .arkadiko-dao burn-token .usda-token usda-to-use (as-contract tx-sender)))
+        ;; TODO: token string parameter
         (try! (contract-call? vault-manager redeem-auction-collateral ft "xSTX" reserve collateral-sold tx-sender)) 
 
         ;; Deposit collateral token
@@ -199,6 +200,10 @@
   (let (
     (auction (get-auction-by-id auction-id))
   )
+    (asserts! (not (shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
+    (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
+
     (if (get-auction-open auction-id)
       (ok false)
       (begin
