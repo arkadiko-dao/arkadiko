@@ -260,6 +260,7 @@ class LiquidationRewards {
     return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-1", "get-rewards-of", [
       types.principal(user),
       types.uint(rewardId),
+      types.principal(Utils.qualifiedName('arkadiko-liquidation-pool-v1-1')),
     ], this.deployer.address);
   }
 
@@ -286,6 +287,7 @@ class LiquidationRewards {
       Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "claim-rewards-of", [
         types.uint(rewardId),
         types.principal(Utils.qualifiedName(token)),
+        types.principal(Utils.qualifiedName('arkadiko-liquidation-pool-v1-1')),
       ], user.address)
     ]);
     return block.receipts[0].result;
@@ -317,6 +319,7 @@ class LiquidationRewardsDiko {
   addRewards() {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-liquidation-rewards-diko-v1-1", "add-rewards", [
+        types.principal(Utils.qualifiedName('arkadiko-liquidation-rewards-v1-1')),
       ], this.deployer.address)
     ]);
     return block.receipts[0].result;

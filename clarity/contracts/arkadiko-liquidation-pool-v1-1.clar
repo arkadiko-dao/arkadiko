@@ -1,3 +1,4 @@
+(impl-trait .arkadiko-liquidation-pool-trait-v1.liquidation-pool-trait)
 
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED u32401)

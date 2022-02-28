@@ -1,3 +1,4 @@
+(use-trait liquidation-rewards-trait .arkadiko-liquidation-rewards-trait-v1.liquidation-rewards-trait)
 
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED u34401)
@@ -33,16 +34,17 @@
 )
 
 ;; @desc add DIKO rewards to liquidation-rewards
-(define-public (add-rewards)
+(define-public (add-rewards (liquidation-rewards <liquidation-rewards-trait>))
   (let (
     (rewards-to-add (get-rewards-to-add))
     (start-block (- (var-get end-epoch-block) blocks-per-epoch))
   )
+    (asserts! (is-eq (contract-of liquidation-rewards) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "liquidation-rewards"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (>= block-height (var-get end-epoch-block)) (err ERR-EPOCH-NOT-ENDED))
 
     ;; Get DIKO token, add as rewards for epoch
     (try! (contract-call? .arkadiko-dao mint-token .arkadiko-token rewards-to-add (as-contract tx-sender)))
-    (try! (contract-call? .arkadiko-liquidation-rewards-v1-1 add-reward start-block .arkadiko-token rewards-to-add))
+    (try! (contract-call? liquidation-rewards add-reward start-block .arkadiko-token rewards-to-add))
 
     (var-set end-epoch-block (+ (var-get end-epoch-block) blocks-per-epoch))
 

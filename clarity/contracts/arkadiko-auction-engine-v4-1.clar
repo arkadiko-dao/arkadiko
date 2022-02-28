@@ -7,6 +7,8 @@
 (use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
 (use-trait auction-engine-trait .arkadiko-auction-engine-trait-v2.auction-engine-trait)
 (use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
+(use-trait liquidation-pool-trait .arkadiko-liquidation-pool-trait-v1.liquidation-pool-trait)
+(use-trait liquidation-rewards-trait .arkadiko-liquidation-rewards-trait-v1.liquidation-rewards-trait)
 
 ;; constants
 (define-constant ERR-NOT-AUTHORIZED u31401)
@@ -92,6 +94,8 @@
 ;; @param oracle; oracle
 ;; @param ft; collateral token if not STX vault
 ;; @param reserve; reserve to get collateral tokens from
+;; @param liquidation-pool; pool to get USDA from
+;; @param liquidation-rewards; contract to deposit rewards
 (define-public (start-auction
   (vault-id uint)
   (vault-manager <vault-manager-trait>)
@@ -99,6 +103,8 @@
   (oracle <oracle-trait>)
   (ft <ft-trait>)
   (reserve <vault-trait>)
+  (liquidation-pool <liquidation-pool-trait>)
+  (liquidation-rewards <liquidation-rewards-trait>)
 )
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
@@ -137,7 +143,7 @@
       (map-set auctions { id: auction-id } auction)
 
       ;; Try to burn
-      (try! (burn-usda auction-id oracle coll-type vault-manager ft reserve))
+      (try! (burn-usda auction-id oracle coll-type vault-manager ft reserve liquidation-pool liquidation-rewards))
 
       (print { type: "auction", action: "created", data: auction })
       (ok true)
@@ -152,6 +158,8 @@
 ;; @param vault-manager; vault manager
 ;; @param ft; collateral token if not STX vault
 ;; @param reserve; reserve to get collateral tokens from
+;; @param liquidation-pool; pool to get USDA from
+;; @param liquidation-rewards; contract to deposit rewards
 (define-public (burn-usda
   (auction-id uint)
   (oracle <oracle-trait>)
@@ -159,6 +167,8 @@
   (vault-manager <vault-manager-trait>)
   (ft <ft-trait>)
   (reserve <vault-trait>)
+  (liquidation-pool <liquidation-pool-trait>)
+  (liquidation-rewards <liquidation-rewards-trait>)
 )
   (let (
     (auction (get-auction-by-id auction-id))
@@ -174,20 +184,23 @@
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "sip10-reserve"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of liquidation-pool) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "liquidation-pool"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of liquidation-rewards) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "liquidation-rewards"))) (err ERR-NOT-AUTHORIZED))
+
     (asserts! (or (is-eq (contract-of ft) token-address) (is-eq "xSTX" token-string)) (err ERR-TOKEN-TYPE-MISMATCH))
 
     (if (is-eq usda-to-use u0)
       true
       (begin
         ;; Get USDA from fund
-        (try! (as-contract (contract-call? .arkadiko-liquidation-pool-v1-1 withdraw usda-to-use)))
+        (try! (as-contract (contract-call? liquidation-pool withdraw usda-to-use)))
 
         ;; Burn USDA, get collateral token
         (try! (contract-call? .arkadiko-dao burn-token .usda-token usda-to-use (as-contract tx-sender)))
         (try! (contract-call? vault-manager redeem-auction-collateral ft token-string reserve collateral-sold tx-sender)) 
 
         ;; Deposit collateral token
-        (try! (contract-call? .arkadiko-liquidation-rewards-v1-1 add-reward block-height ft collateral-sold))
+        (try! (contract-call? liquidation-rewards add-reward block-height ft collateral-sold))
 
         ;; Update auction
         (map-set auctions { id: auction-id } (merge auction {

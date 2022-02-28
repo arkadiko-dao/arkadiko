@@ -606,6 +606,8 @@ class VaultAuctionV4 {
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1')),
         types.principal(Utils.qualifiedName(token)),
         types.principal(Utils.qualifiedName(reserve)),
+        types.principal(Utils.qualifiedName('arkadiko-liquidation-pool-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-liquidation-rewards-v1-1')),
       ], user.address),
     ]);
     return block.receipts[0].result;
@@ -620,6 +622,8 @@ class VaultAuctionV4 {
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
         types.principal(Utils.qualifiedName(token)),
         types.principal(Utils.qualifiedName(reserve)),
+        types.principal(Utils.qualifiedName('arkadiko-liquidation-pool-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-liquidation-rewards-v1-1')),
       ], user.address),
     ]);
     return block.receipts[0].result;

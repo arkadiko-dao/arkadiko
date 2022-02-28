@@ -315,12 +315,21 @@ path = "contracts/arkadiko-ui-stake-v1-3.clar"
 depends_on = ["arkadiko-freddie-v1-1", "arkadiko-stacker-v1-1", "arkadiko-stacker-2-v1-1", "arkadiko-stacker-3-v1-1", "arkadiko-stacker-4-v1-1"]
 path = "contracts/arkadiko-pox-unstack-unlock-v1-1.clar"
 
-[contracts.arkadiko-liquidation-pool-v1-1]
+
+[contracts.arkadiko-liquidation-rewards-trait-v1]
 depends_on = []
+path = "contracts/arkadiko-liquidation-rewards-trait-v1.clar"
+
+[contracts.arkadiko-liquidation-pool-trait-v1]
+depends_on = []
+path = "contracts/arkadiko-liquidation-pool-trait-v1.clar"
+
+[contracts.arkadiko-liquidation-pool-v1-1]
+depends_on = ["arkadiko-liquidation-pool-trait-v1"]
 path = "contracts/arkadiko-liquidation-pool-v1-1.clar"
 
 [contracts.arkadiko-liquidation-rewards-v1-1]
-depends_on = ["sip-010-trait-ft-standard"]
+depends_on = ["sip-010-trait-ft-standard", "arkadiko-liquidation-rewards-trait-v1"]
 path = "contracts/arkadiko-liquidation-rewards-v1-1.clar"
 
 [contracts.arkadiko-auction-engine-v4-1]
