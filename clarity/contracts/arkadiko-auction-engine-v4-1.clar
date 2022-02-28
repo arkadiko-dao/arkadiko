@@ -173,7 +173,7 @@
   (let (
     (auction (get-auction-by-id auction-id))
     (debt-left (- (get debt-to-raise auction) (get total-debt-burned auction)))
-    (usda-to-use (withdrawable-usda debt-left))
+    (usda-to-use (withdrawable-usda debt-left liquidation-pool))
     (collateral-sold (unwrap-panic (get-collateral-amount oracle auction-id usda-to-use)))
 
     (token-string (if (is-eq (get collateral-token auction) "STX") "xSTX" (get collateral-token auction)))
@@ -277,9 +277,9 @@
   )
 )
 
-(define-private (withdrawable-usda (needed-usda uint))
+(define-private (withdrawable-usda (needed-usda uint) (liquidation-pool <liquidation-pool-trait>))
   (let (
-    (max-usda (contract-call? .arkadiko-liquidation-pool-v1-1 max-withdrawable-usda))
+    (max-usda (unwrap-panic (contract-call? liquidation-pool max-withdrawable-usda)))
   )
     (if (> needed-usda max-usda)
       max-usda

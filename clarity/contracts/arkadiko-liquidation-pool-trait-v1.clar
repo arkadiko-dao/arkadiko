@@ -3,6 +3,8 @@
 (define-trait liquidation-pool-trait
   (
     (get-shares-at (principal uint) (response uint uint))
+
+    (max-withdrawable-usda () (response uint uint))
     (withdraw (uint) (response uint uint))
   )
 )

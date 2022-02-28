@@ -61,7 +61,7 @@ Clarinet.test({ name: "auction engine: liquidate STX vault, 1 wallet",
 
     // Can use 9k of 10k in pool
     call = await liquidationPool.maxWithdrawableUsda();
-    call.result.expectUintWithDecimals(9000);
+    call.result.expectOk().expectUintWithDecimals(9000);
 
     // Start auction
     result = vaultAuction.startAuction(deployer, 1);

@@ -146,8 +146,8 @@
     (usda-to-keep u1000000000) ;; always keep 1k USDA
   )
     (if (<= usda-balance usda-to-keep)
-      u0
-      (- usda-balance usda-to-keep)
+      (ok u0)
+      (ok (- usda-balance usda-to-keep))
     )
   )
 )
@@ -163,7 +163,7 @@
     (new-fragments-per-token (/ (var-get total-fragments) new-usda-balance))
   )
     (asserts! (is-eq tx-sender (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "auction-engine"))) (err ERR-NOT-AUTHORIZED))
-    (asserts! (<= amount (max-withdrawable-usda)) (err ERR-WITHDRAWAL-AMOUNT-EXCEEDED))
+    (asserts! (<= amount (unwrap-panic (max-withdrawable-usda))) (err ERR-WITHDRAWAL-AMOUNT-EXCEEDED))
 
     ;; Transfer token
     (try! (as-contract (contract-call? .usda-token transfer amount (as-contract tx-sender) sender none)))
