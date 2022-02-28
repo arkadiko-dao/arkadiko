@@ -34,6 +34,8 @@
   }
 )
 
+;; @desc get data for given reward
+;; @param reward-id; the reward
 (define-read-only (get-reward-data (reward-id uint))
   (default-to
     { share-block: u0, token: .usda-token, total-amount: u0 }
@@ -41,6 +43,9 @@
   )
 )
 
+;; @desc get amount a user has already claimed for given reward
+;; @param reward-id; the reward
+;; @param user; the user who claimed
 (define-read-only (get-reward-claimed (reward-id uint) (user principal))
   (default-to
     { claimed-amount: u0 }
@@ -52,6 +57,10 @@
 ;; Add rewards
 ;; ---------------------------------------------------------
 
+;; @desc add rewards to the contract
+;; @param share-block; block on which user shares in USDA pool are checked
+;; @param token; the reward token
+;; @param total-amount; amount of rewards
 (define-public (add-reward (share-block uint) (token <ft-trait>) (total-amount uint))
   (let (
     (reward-id (var-get total-reward-ids))
@@ -77,6 +86,9 @@
 ;; Get rewards
 ;; ---------------------------------------------------------
 
+;; @desc get amount of rewards for user
+;; @param user; user to get rewards for
+;; @param reward-id; the rewards
 (define-public (get-rewards-of (user principal) (reward-id uint))
   (let (
     (reward-info (get-reward-data reward-id))
@@ -92,6 +104,9 @@
   )
 )
 
+;; @desc claim rewards for user
+;; @param reward-id; the rewards
+;; @param token; the reward token
 (define-public (claim-rewards-of (reward-id uint) (token <ft-trait>))
   (let (
     (user tx-sender)

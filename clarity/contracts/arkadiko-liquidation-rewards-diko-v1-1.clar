@@ -17,12 +17,25 @@
 ;; Add rewards
 ;; ---------------------------------------------------------
 
-(define-public (add-rewards)
+;; @desc Amount of rewards that can be added
+(define-read-only (get-rewards-to-add)
   (let (
     (total-block-rewards (contract-call? .arkadiko-diko-guardian-v1-1 get-staking-rewards-per-block))
 
     ;; 10% of staking rewards
     (rewards-to-add (/ (* total-block-rewards blocks-per-epoch) u100000))
+  )
+    (if (< block-height (var-get end-epoch-block))
+      u0
+      rewards-to-add
+    )
+  )
+)
+
+;; @desc add DIKO rewards to liquidation-rewards
+(define-public (add-rewards)
+  (let (
+    (rewards-to-add (get-rewards-to-add))
     (start-block (- (var-get end-epoch-block) blocks-per-epoch))
   )
     (asserts! (>= block-height (var-get end-epoch-block)) (err ERR-EPOCH-NOT-ENDED))

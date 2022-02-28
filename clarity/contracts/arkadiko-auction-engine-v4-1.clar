@@ -77,6 +77,7 @@
   )
 )
 
+;; @desc check if shutdown activated
 (define-read-only (shutdown-activated)
   (or
     (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated))
@@ -84,7 +85,13 @@
   )
 )
 
-
+;; @desc mark vault as liquidated and start auction
+;; @param vault-id; the vault to liquidate
+;; @param vault-manager; vault manager
+;; @param coll-type; collateral types
+;; @param oracle; oracle
+;; @param ft; collateral token if not STX vault
+;; @param reserve; reserve to get collateral tokens from
 (define-public (start-auction
   (vault-id uint)
   (vault-manager <vault-manager-trait>)
@@ -138,6 +145,13 @@
   )
 )
 
+;; @desc burn USDA for vault and get part of collateral
+;; @param auction-id; the auction
+;; @param oracle; oracle
+;; @param coll-type; collateral types
+;; @param vault-manager; vault manager
+;; @param ft; collateral token if not STX vault
+;; @param reserve; reserve to get collateral tokens from
 (define-public (burn-usda
   (auction-id uint)
   (oracle <oracle-trait>)
@@ -193,6 +207,10 @@
   )
 )
 
+;; @desc finalize liquidation so rest of collateral becomes available to vault owner
+;; @param auction-id; the auction
+;; @param vault-manager; vault manager
+;; @param coll-type; collateral types
 (define-public (finalize-liquidation
   (auction-id uint)
   (vault-manager <vault-manager-trait>)

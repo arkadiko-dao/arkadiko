@@ -32,14 +32,18 @@
 ;; Getters
 ;; ---------------------------------------------------------
 
+;; @desc get current total fragments
 (define-read-only (get-total-fragments)
   (ok (var-get total-fragments))
 )
 
+;; @desc get current fragments per token
 (define-read-only (get-fragments-per-token)
   (ok (var-get fragments-per-token))
 )
 
+;; @desc get tokens of given staker
+;; @param staker; the staker to get tokens of
 (define-read-only (get-tokens-of (staker principal))
   (let (
     (per-token (var-get fragments-per-token))
@@ -55,6 +59,9 @@
   )
 )
 
+;; @desc get share % of user at given block
+;; @param user; the user to get share of
+;; @param block; block on which shares are calculated
 (define-read-only (get-shares-at (user principal) (block uint))
   (let (
     (block-hash (unwrap-panic (get-block-info? id-header-hash block)))
@@ -73,6 +80,8 @@
 ;; Stake / unstake
 ;; ---------------------------------------------------------
 
+;; @desc stake USDA in pool
+;; @param amount; amount to stake
 (define-public (stake (amount uint))
   (let (
     (staker tx-sender)
@@ -95,6 +104,8 @@
   )
 )
 
+;; @desc unstake USDA from pool
+;; @param amount; amount to unstake
 (define-public (unstake (amount uint))
   (let (
     (staker tx-sender)
@@ -127,9 +138,10 @@
 ;; Withdraw
 ;; ---------------------------------------------------------
 
+;; @desc max amount of USDA that can be withdrawn for liquidations
 (define-read-only (max-withdrawable-usda)
   (let (
-    (usda-balance (unwrap-panic (contract-call? .usda-token get-balance .arkadiko-liquidation-pool-v1-1)))
+    (usda-balance (unwrap-panic (contract-call? .usda-token get-balance (as-contract tx-sender))))
     (usda-to-keep u1000000000) ;; always keep 1k USDA
   )
     (if (<= usda-balance usda-to-keep)
@@ -139,6 +151,8 @@
   )
 )
 
+;; @desc withdraw USDA for liquidations (only for auction-engine)
+;; @param amount; amount to withdraw
 (define-public (withdraw (amount uint))
   (let (
     (sender tx-sender)
