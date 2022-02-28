@@ -1,5 +1,5 @@
 class PoxCalculator
-  def self.calculate_yields(names: ['stacker'], file: 'vaults-pox-25.json', ustx_stacked: 11_552_001_078_680, ustx_yield: 45_433_519_500)
+  def self.calculate_yields(names: ['stacker'], file: 'vaults-pox-26.json', ustx_stacked: 1_807_039_448_224, ustx_yield: 8_044_455_200)
     file = File.open("files/#{file}")
     data = JSON.load(file)
     vaults = {}
@@ -23,7 +23,7 @@ class PoxCalculator
     vaults
   end
 
-  def self.build_clarity_list_tuples(names:, file:)
+  def self.build_clarity_list_tuples(names:, file: 'vaults-pox-26.json')
     vaults = calculate_yields(names: names, file: file)
     vaults.each do |vault_id, value|
       puts "tx.tupleCV({ 'to': tx.uintCV(#{vault_id}), 'ustx': tx.uintCV(#{value[:yield]}) }),"
