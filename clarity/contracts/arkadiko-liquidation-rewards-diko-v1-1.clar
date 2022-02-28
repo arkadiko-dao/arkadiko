@@ -44,7 +44,7 @@
 
     ;; Get DIKO token, add as rewards for epoch
     (try! (as-contract (contract-call? .arkadiko-dao mint-token .arkadiko-token rewards-to-add (as-contract tx-sender))))
-    (try! (as-contract (contract-call? liquidation-rewards add-reward start-block .arkadiko-token rewards-to-add)))
+    (try! (as-contract (contract-call? liquidation-rewards add-reward start-block false .arkadiko-token rewards-to-add)))
 
     (var-set end-epoch-block (+ (var-get end-epoch-block) blocks-per-epoch))
 

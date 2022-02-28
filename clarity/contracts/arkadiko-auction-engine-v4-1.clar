@@ -1,5 +1,5 @@
 ;; @contract Auction Engine - Sells off vault collateral to raise USDA
-;; @version 1
+;; @version 4.1
 
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
@@ -107,12 +107,27 @@
 )
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
+    (token-string (get collateral-token vault))
+    (coll-token-address (unwrap-panic (contract-call? coll-type get-token-address (get collateral-type vault))))
   )
     (asserts! (not (shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "sip10-reserve"))) (err ERR-NOT-AUTHORIZED))
+    (asserts!
+      (or
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "sip10-reserve")))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
+    (asserts! 
+      (or
+        (and (is-eq token-string "STX") (is-eq (contract-of ft) .xstx-token))
+        (and (not (is-eq token-string "STX")) (is-eq (contract-of ft) coll-token-address))
+      ) 
+      (err ERR-TOKEN-TYPE-MISMATCH)
+    )
     (asserts! (is-eq (get is-liquidated vault) false) (err ERR-AUCTION-NOT-ALLOWED))
 
     (let (
@@ -121,16 +136,18 @@
       (liquidation-ratio (unwrap-panic (contract-call? coll-type get-liquidation-ratio collateral-type)))
       (amounts (unwrap-panic (as-contract (contract-call? vault-manager liquidate vault-id coll-type))))
 
+      (updated-vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
+
       (auction-id (+ (var-get last-auction-id) u1))
       (auction {
         id: auction-id,
         auction-type: "collateral",
         vault-id: vault-id,
         collateral-amount: (get ustx-amount amounts),
-        collateral-token: (get collateral-token vault),
-        collateral-address: (unwrap-panic (contract-call? coll-type get-token-address (get collateral-type vault))),
+        collateral-token: (get collateral-token updated-vault),
+        collateral-address: (contract-of ft),
         debt-to-raise: (get vault-debt amounts),
-        discount: (unwrap-panic (contract-call? coll-type get-liquidation-penalty (get collateral-type vault))),
+        discount: (unwrap-panic (contract-call? coll-type get-liquidation-penalty (get collateral-type updated-vault))),
         total-debt-burned: u0,
         total-collateral-sold: u0,
         ended-at: u0,
@@ -175,18 +192,30 @@
     (usda-to-use (withdrawable-usda debt-left liquidation-pool))
     (collateral-sold (unwrap-panic (get-collateral-amount oracle auction-id usda-to-use)))
 
-    (token-string (if (is-eq (get collateral-token auction) "STX") "xSTX" (get collateral-token auction)))
     (token-address (get collateral-address auction))
+    (token-string (get collateral-token auction))
+    (token-is-stx (is-eq token-string "STX"))
   )
     (asserts! (not (shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "sip10-reserve"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of liquidation-pool) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "liquidation-pool"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of liquidation-rewards) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "liquidation-rewards"))) (err ERR-NOT-AUTHORIZED))
-
-    (asserts! (or (is-eq (contract-of ft) token-address) (is-eq "xSTX" token-string)) (err ERR-TOKEN-TYPE-MISMATCH))
+    (asserts!
+      (or
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
+        (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "sip10-reserve")))
+      )
+      (err ERR-NOT-AUTHORIZED)
+    )
+    (asserts! 
+      (or
+        (and token-is-stx (is-eq (contract-of ft) .xstx-token))
+        (and (not token-is-stx) (is-eq (contract-of ft) token-address))
+      ) 
+      (err ERR-TOKEN-TYPE-MISMATCH)
+    )
 
     (if (is-eq usda-to-use u0)
       true
@@ -195,11 +224,11 @@
         (try! (as-contract (contract-call? liquidation-pool withdraw usda-to-use)))
 
         ;; Burn USDA, get collateral token
-        (try! (contract-call? .arkadiko-dao burn-token .usda-token usda-to-use (as-contract tx-sender)))
-        (try! (contract-call? vault-manager redeem-auction-collateral ft token-string reserve collateral-sold tx-sender)) 
+        (try! (as-contract (contract-call? .arkadiko-dao burn-token .usda-token usda-to-use (as-contract tx-sender))))
+        (try! (as-contract (contract-call? vault-manager redeem-auction-collateral ft token-string reserve collateral-sold (as-contract tx-sender)))) 
 
         ;; Deposit collateral token
-        (try! (contract-call? liquidation-rewards add-reward block-height ft collateral-sold))
+        (try! (as-contract (contract-call? liquidation-rewards add-reward block-height token-is-stx ft collateral-sold)))
 
         ;; Update auction
         (map-set auctions { id: auction-id } (merge auction {
@@ -238,13 +267,13 @@
     (if (get-auction-open auction-id)
       (ok false)
       (begin
-        (try! (contract-call?
+        (try! (as-contract (contract-call?
           vault-manager
           finalize-liquidation
           (get vault-id auction)
           (- (get collateral-amount auction) (get total-collateral-sold auction))
           coll-type
-        ))
+        )))
         (map-set auctions { id: auction-id } (merge auction { ended-at: block-height }))
       
         (print { type: "auction", action: "finalize-liquidation", data: auction })

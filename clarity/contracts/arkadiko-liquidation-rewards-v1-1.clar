@@ -21,6 +21,7 @@
   } 
   {
     share-block: uint, ;; block on which USDA shares are calculated
+    token-is-stx: bool,
     token: principal,
     total-amount: uint
   }
@@ -44,7 +45,7 @@
 ;; @param reward-id; the reward
 (define-read-only (get-reward-data (reward-id uint))
   (default-to
-    { share-block: u0, token: .usda-token, total-amount: u0 }
+    { share-block: u0, token-is-stx: false, token: .usda-token, total-amount: u0 }
     (map-get? reward-data { reward-id : reward-id  })
   )
 )
@@ -67,16 +68,20 @@
 ;; @param share-block; block on which user shares in USDA pool are checked
 ;; @param token; the reward token
 ;; @param total-amount; amount of rewards
-(define-public (add-reward (share-block uint) (token <ft-trait>) (total-amount uint))
+(define-public (add-reward (share-block uint) (token-is-stx bool) (token <ft-trait>) (total-amount uint))
   (let (
     (reward-id (var-get total-reward-ids))
   )
     ;; Transfer rewards to contract
-    (try! (contract-call? token transfer total-amount tx-sender (as-contract tx-sender) none))
+    (if token-is-stx
+      (try! (stx-transfer? total-amount tx-sender (as-contract tx-sender)))
+      (try! (contract-call? token transfer total-amount tx-sender (as-contract tx-sender) none))
+    )
 
     ;; Add reward to map
     (map-set reward-data  { reward-id: reward-id } { 
       share-block: share-block,
+      token-is-stx: token-is-stx,
       token: (contract-of token),
       total-amount: total-amount
     })
@@ -126,7 +131,10 @@
     (if (is-eq reward-amount u0)
       (ok u0)
       (begin 
-        (try! (as-contract (contract-call? token transfer reward-amount (as-contract tx-sender) user none)))
+        (if (get token-is-stx reward-info)
+          (try! (as-contract (stx-transfer? reward-amount (as-contract tx-sender) user)))
+          (try! (as-contract (contract-call? token transfer reward-amount (as-contract tx-sender) user none)))
+        )
 
         (map-set reward-claimed  { reward-id: reward-id, user: user } { claimed-amount: reward-amount })
 
