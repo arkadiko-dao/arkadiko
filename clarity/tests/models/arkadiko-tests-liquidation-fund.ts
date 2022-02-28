@@ -281,3 +281,34 @@ class LiquidationRewards {
 
 }
 export { LiquidationRewards };
+
+
+// ---------------------------------------------------------
+// Liquidation rewards Diko
+// ---------------------------------------------------------
+
+class LiquidationRewardsDiko {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  getEndEpochBlock(rewardId: number) {
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-diko-v1-1", "get-end-epoch-block", [
+      types.uint(rewardId),
+    ], this.deployer.address);
+  }
+
+  addRewards() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-rewards-diko-v1-1", "add-rewards", [
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+}
+export { LiquidationRewardsDiko };

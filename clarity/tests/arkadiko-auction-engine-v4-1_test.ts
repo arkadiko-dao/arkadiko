@@ -10,7 +10,7 @@ import {
   OracleManager,
   UsdaToken,
   XstxManager,
-  DikoToken
+  XbtcToken
 } from './models/arkadiko-tests-tokens.ts';
 
 import { 
@@ -26,7 +26,7 @@ import {
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
-Clarinet.test({ name: "auction engine: liquidate vault",
+Clarinet.test({ name: "auction engine: liquidate STX vault, 1 wallet",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -83,13 +83,15 @@ Clarinet.test({ name: "auction engine: liquidate vault",
     call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-liquidation-pool-v1-1'));
     call.result.expectOk().expectUintWithDecimals(9000);
 
+    // xSTX
     call = await xstxManager.balanceOf(wallet_1.address);
     call.result.expectOk().expectUint(0);
 
-
+    // xSTX rewards contract
     call = await xstxManager.balanceOf(Utils.qualifiedName('arkadiko-liquidation-rewards-v1-1'));
     call.result.expectOk().expectUintWithDecimals(1111.111111);
 
+    // Rewards
     call = await liquidationRewards.getRewardsOf(wallet_1.address, 0);
     call.result.expectOk().expectUintWithDecimals(1111.111111);
 
@@ -123,14 +125,78 @@ Clarinet.test({ name: "auction engine: liquidate vault",
   }
 });
 
-Clarinet.test({ name: "auction engine: liquidate vault without enough USDA to liquidate",
+Clarinet.test({ name: "auction engine: liquidate STX vault, multiple wallets",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
 
     let oracleManager = new OracleManager(chain, deployer);
     let usdaToken = new UsdaToken(chain, deployer);
     let xstxManager = new XstxManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let liquidationPool = new LiquidationPool(chain, deployer);
+    let liquidationRewards = new LiquidationRewards(chain, deployer);
+
+    // Initialize price of STX to $2 in the oracle
+    let result = oracleManager.updatePrice("STX", 3);
+    result = oracleManager.updatePrice("xSTX", 3);
+
+    // Create vault - 1500 STX, 1000 USDA
+    result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    // Upate price to $1.0
+    result = oracleManager.updatePrice("STX", 1);
+    result = oracleManager.updatePrice("xSTX", 1);
+
+    // Deposit USDA
+    result = liquidationPool.stake(wallet_1, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+    result = liquidationPool.stake(wallet_2, 2000);
+    result.expectOk().expectUintWithDecimals(2000);
+    result = liquidationPool.stake(deployer, 5000);
+    result.expectOk().expectUintWithDecimals(5000);
+
+    // USDA in pool
+    let call:any = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-liquidation-pool-v1-1'));
+    call.result.expectOk().expectUintWithDecimals(8000);
+
+    // Start auction
+    result = vaultAuction.startAuction(deployer, 1);
+    result.expectOk().expectBool(true);
+
+    // Auction closed
+    call = await vaultAuction.getAuctionOpen(1);
+    call.result.expectBool(false);
+
+    // USDA in pool
+    call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-liquidation-pool-v1-1'));
+    call.result.expectOk().expectUintWithDecimals(7000);
+
+    // xSTX rewards contract
+    call = await xstxManager.balanceOf(Utils.qualifiedName('arkadiko-liquidation-rewards-v1-1'));
+    call.result.expectOk().expectUintWithDecimals(1111.111111);
+
+    // Rewards
+    call = await liquidationRewards.getRewardsOf(wallet_1.address, 0);
+    call.result.expectOk().expectUintWithDecimals(138.888888);
+    call = await liquidationRewards.getRewardsOf(wallet_2.address, 0);
+    call.result.expectOk().expectUintWithDecimals(277.777777);
+    call = await liquidationRewards.getRewardsOf(deployer.address, 0);
+    call.result.expectOk().expectUintWithDecimals(694.444444);
+  }
+});
+
+Clarinet.test({ name: "auction engine: liquidate STX vault without enough USDA to liquidate",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let usdaToken = new UsdaToken(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
     let vaultAuction = new VaultAuctionV4(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
@@ -176,7 +242,7 @@ Clarinet.test({ name: "auction engine: liquidate vault without enough USDA to li
     call.result.expectBool(true);
 
     // Deposit 800 USDA
-    result = liquidationPool.stake(wallet_1, 300);
+    result = liquidationPool.stake(wallet_2, 300);
     result.expectOk().expectUintWithDecimals(300);
 
     result = vaultAuction.burnUsda(deployer, 1);
@@ -186,21 +252,97 @@ Clarinet.test({ name: "auction engine: liquidate vault without enough USDA to li
     call = await vaultAuction.getAuctionOpen(1);
     call.result.expectBool(false);
     
+    // Liquidation rewards
     call = await liquidationRewards.getRewardsOf(wallet_1.address, 0);
     call.result.expectOk().expectUintWithDecimals(888.888887);
-
 
     // Reward data
     call = await liquidationRewards.getRewardData(1);
     call.result.expectTuple()["share-block"].expectUint(10);
     call.result.expectTuple()["total-amount"].expectUintWithDecimals(222.222223);
 
-    call = await liquidationRewards.getRewardsOf(wallet_1.address, 1);
-    call.result.expectOk().expectUintWithDecimals(222.222223);
+    call = await liquidationRewards.getRewardsOf(wallet_2.address, 1);
+    call.result.expectOk().expectUintWithDecimals(222.222200);
 
     // Claim reward
-    result = liquidationRewards.claimRewards(wallet_1, 1, "xstx-token");
-    result.expectOk().expectUintWithDecimals(222.222223);
+    result = liquidationRewards.claimRewards(wallet_2, 1, "xstx-token");
+    result.expectOk().expectUintWithDecimals(222.222200);
+
+  }
+});
+
+Clarinet.test({ name: "auction engine: liquidate xBTC vault, multiple wallets",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let usdaToken = new UsdaToken(chain, deployer);
+    let xstxManager = new XstxManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let liquidationPool = new LiquidationPool(chain, deployer);
+    let liquidationRewards = new LiquidationRewards(chain, deployer);
+    let xbtcToken = new XbtcToken(chain, deployer);
+
+    // Initialize price of xBTC
+    let result = oracleManager.updatePrice("xBTC", 40000);
+
+    // Create vault
+    result = vaultManager.createVault(deployer, "XBTC-A", 0.1, 1500, false, false, "arkadiko-sip10-reserve-v1-1", "tokensoft-token");
+    result.expectOk().expectUintWithDecimals(1500);
+
+    // Upate price
+    result = oracleManager.updatePrice("xBTC", 20000);
+
+    // Deposit USDA
+    result = liquidationPool.stake(wallet_1, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+    result = liquidationPool.stake(wallet_2, 2000);
+    result.expectOk().expectUintWithDecimals(2000);
+    result = liquidationPool.stake(deployer, 5000);
+    result.expectOk().expectUintWithDecimals(5000);
+
+    // USDA in pool
+    let call:any = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-liquidation-pool-v1-1'));
+    call.result.expectOk().expectUintWithDecimals(8000);
+
+    // Start auction
+    result = vaultAuction.startAuction(deployer, 1, "tokensoft-token", "arkadiko-sip10-reserve-v1-1");
+    result.expectOk().expectBool(true);
+
+    // Auction closed
+    call = await vaultAuction.getAuctionOpen(1);
+    call.result.expectBool(false);
+
+    // USDA in pool
+    call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-liquidation-pool-v1-1'));
+    call.result.expectOk().expectUintWithDecimals(6500);
+
+    // xBTC rewards contract
+    call = await xbtcToken.balanceOf(Utils.qualifiedName('arkadiko-liquidation-rewards-v1-1'));
+    call.result.expectOk().expectUintWithDecimals(0.083333);
+
+    // Rewards
+    call = await liquidationRewards.getRewardsOf(wallet_1.address, 0);
+    call.result.expectOk().expectUintWithDecimals(0.010416);
+    call = await liquidationRewards.getRewardsOf(wallet_2.address, 0);
+    call.result.expectOk().expectUintWithDecimals(0.020833);
+    call = await liquidationRewards.getRewardsOf(deployer.address, 0);
+    call.result.expectOk().expectUintWithDecimals(0.052083);
+
+    // Vault owner balance
+    call = await xbtcToken.balanceOf(deployer.address);
+    call.result.expectOk().expectUintWithDecimals(9999.9);
+
+    // Withdraw leftover collateral
+    result = vaultManager.withdrawLeftoverCollateral(deployer, "tokensoft-token");
+    result.expectOk().expectBool(true);
+
+    // Vault owner balance
+    call = await xbtcToken.balanceOf(deployer.address);
+    call.result.expectOk().expectUintWithDecimals(9999.916667);
 
   }
 });

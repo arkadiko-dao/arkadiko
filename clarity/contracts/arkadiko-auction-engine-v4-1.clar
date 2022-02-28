@@ -13,6 +13,7 @@
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u31002)
 (define-constant ERR-AUCTION-NOT-ALLOWED u31003)
 (define-constant ERR-NO-LIQUIDATION-REQUIRED u31004)
+(define-constant ERR-TOKEN-TYPE-MISMATCH u31005)
 
 ;; variables
 (define-data-var auction-engine-shutdown-activated bool false)
@@ -152,12 +153,15 @@
     (usda-to-use (withdrawable-usda debt-left))
     (collateral-sold (unwrap-panic (get-collateral-amount oracle auction-id usda-to-use)))
 
-    (token-string (get collateral-token auction))
+    (token-string (if (is-eq (get collateral-token auction) "STX") "xSTX" (get collateral-token auction)))
+    (token-address (get collateral-address auction))
   )
     (asserts! (not (shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
+    
+    (asserts! (or (is-eq (contract-of ft) token-address) (is-eq "xSTX" token-string)) (err ERR-TOKEN-TYPE-MISMATCH))
     ;; TODO: check reserve?
 
     (if (is-eq usda-to-use u0)
@@ -168,8 +172,7 @@
 
         ;; Burn USDA, get collateral token
         (try! (contract-call? .arkadiko-dao burn-token .usda-token usda-to-use (as-contract tx-sender)))
-        ;; TODO: token string parameter
-        (try! (contract-call? vault-manager redeem-auction-collateral ft "xSTX" reserve collateral-sold tx-sender)) 
+        (try! (contract-call? vault-manager redeem-auction-collateral ft token-string reserve collateral-sold tx-sender)) 
 
         ;; Deposit collateral token
         (try! (contract-call? .arkadiko-liquidation-rewards-v1-1 add-reward block-height ft collateral-sold))
