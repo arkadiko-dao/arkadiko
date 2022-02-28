@@ -62,9 +62,17 @@ Clarinet.test({
     call = await liquidationRewards.getRewardsOf(wallet_1.address, 1);
     call.result.expectOk().expectUintWithDecimals(199.999980);
 
+    // No rewards claimed yet
+    call = await liquidationRewards.getRewardsClaimed(deployer.address, 0);
+    call.result.expectTuple()['claimed-amount'].expectUintWithDecimals(0);
+
     // Claim reward
     result = liquidationRewards.claimRewards(deployer, 0, "arkadiko-token");
     result.expectOk().expectUintWithDecimals(100);
+
+    // Rewards claimed
+    call = await liquidationRewards.getRewardsClaimed(deployer.address, 0);
+    call.result.expectTuple()['claimed-amount'].expectUintWithDecimals(100);
 
     // No rewards left
     call = await liquidationRewards.getRewardsOf(deployer.address, 0);
@@ -93,7 +101,6 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(0);
   }
 });
-
 
 Clarinet.test({
   name: "liquidation-rewards: add diko staking rewards",
@@ -160,5 +167,26 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(0);
     call = await liquidationRewards.getRewardsOf(deployer.address, 1);
     call.result.expectOk().expectUintWithDecimals(0);
+  }
+});
+
+
+Clarinet.test({
+  name: "liquidation-rewards: try to claim rewards with wrong token",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let usdaToken = new UsdaToken(chain, deployer);
+    let liquidationPool = new LiquidationPool(chain, deployer);
+    let liquidationRewards = new LiquidationRewards(chain, deployer);
+
+    // Add rewards
+    let result = liquidationRewards.addReward(1, "arkadiko-token", 100);
+    result.expectOk().expectBool(true);
+
+    // Claim reward fails
+    result = liquidationRewards.claimRewards(deployer, 0, "tokensoft-token");
+    result.expectErr().expectUint(30402);
   }
 });

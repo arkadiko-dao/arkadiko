@@ -183,7 +183,6 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
 
-    let usdaToken = new UsdaToken(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
@@ -265,3 +264,43 @@ Clarinet.test({
   }
 });
 
+Clarinet.test({
+  name: "liquidation-pool: try to unstake more than staked",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let liquidationPool = new LiquidationPool(chain, deployer);
+ 
+    // Stake
+    let result = liquidationPool.stake(deployer, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Stake
+    result = liquidationPool.stake(wallet_1, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    // Unstake fails
+    result = liquidationPool.unstake(deployer, 11000);
+    result.expectErr().expectUint(32002);
+  }
+});
+
+
+Clarinet.test({
+  name: "liquidation-pool: try to withdraw as user",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let liquidationPool = new LiquidationPool(chain, deployer);
+ 
+    // Stake
+    let result = liquidationPool.stake(deployer, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Withdraw fails
+    result = liquidationPool.withdraw(wallet_1, 1000);
+    result.expectErr().expectUint(32401);
+  }
+});

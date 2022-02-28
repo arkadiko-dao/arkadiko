@@ -257,6 +257,13 @@ class LiquidationRewards {
       types.uint(rewardId),
     ], this.deployer.address);
   }
+
+  getRewardsClaimed(user: string, rewardId: number) {
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-1", "get-reward-claimed", [
+      types.uint(rewardId),
+      types.principal(user),
+    ], this.deployer.address);
+  }
   
   addReward(shareBlock: number, token: string, totalAmount: number) {
     let block = this.chain.mineBlock([

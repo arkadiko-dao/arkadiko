@@ -1,6 +1,7 @@
 
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED u32401)
+(define-constant ERR-WITHDRAWAL-AMOUNT-EXCEEDED u32002)
 
 ;; Variables
 (define-data-var fragments-per-token uint u1000000000000)
@@ -99,19 +100,24 @@
 
     (user-fragments (get fragments (get-staker-fragments staker)))
     (remove-user-fragments (* amount (var-get fragments-per-token)))
-    (new-user-fragments (- user-fragments remove-user-fragments))
-    (new-total-fragments (- (var-get total-fragments) remove-user-fragments))
   )
-    ;; Transfer USDA
-    (try! (as-contract (contract-call? .usda-token transfer amount (as-contract tx-sender) staker none)))
+    (asserts! (>= user-fragments remove-user-fragments) (err ERR-WITHDRAWAL-AMOUNT-EXCEEDED))
 
-    ;; Update user tokens
-    (map-set staker-fragments  { staker: staker } { fragments: new-user-fragments })
+    (let (
+      (new-user-fragments (- user-fragments remove-user-fragments))
+      (new-total-fragments (- (var-get total-fragments) remove-user-fragments))
+    )
+      ;; Transfer USDA
+      (try! (as-contract (contract-call? .usda-token transfer amount (as-contract tx-sender) staker none)))
 
-    ;; Update total fragments
-    (var-set total-fragments new-total-fragments)
+      ;; Update user tokens
+      (map-set staker-fragments  { staker: staker } { fragments: new-user-fragments })
 
-    (ok amount)
+      ;; Update total fragments
+      (var-set total-fragments new-total-fragments)
+
+      (ok amount)
+    )
   )
 )
 

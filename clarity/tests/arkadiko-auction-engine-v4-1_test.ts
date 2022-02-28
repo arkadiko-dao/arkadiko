@@ -343,6 +343,5 @@ Clarinet.test({ name: "auction engine: liquidate xBTC vault, multiple wallets",
     // Vault owner balance
     call = await xbtcToken.balanceOf(deployer.address);
     call.result.expectOk().expectUintWithDecimals(9999.916667);
-
   }
 });
