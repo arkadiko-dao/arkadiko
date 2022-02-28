@@ -315,6 +315,9 @@ path = "contracts/arkadiko-ui-stake-v1-3.clar"
 depends_on = ["arkadiko-freddie-v1-1", "arkadiko-stacker-v1-1", "arkadiko-stacker-2-v1-1", "arkadiko-stacker-3-v1-1", "arkadiko-stacker-4-v1-1"]
 path = "contracts/arkadiko-pox-unstack-unlock-v1-1.clar"
 
+[contracts.arkadiko-xstx-migrate]
+depends_on = []
+path = "contracts/arkadiko-xstx-migrate.clar"
 
 [contracts.arkadiko-liquidation-rewards-trait-v1]
 depends_on = []

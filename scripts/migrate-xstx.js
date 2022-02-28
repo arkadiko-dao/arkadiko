@@ -8,15 +8,9 @@ const network = utils.resolveNetwork();
 async function burn() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-governance-v3-1",
-    functionName: "add-contract-address",
-    functionArgs: [
-      tx.stringAsciiCV("migrate-xstx"),
-      tx.standardPrincipalCV('SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR'),
-      tx.contractPrincipalCV('SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR', 'arkadiko-xstx-migrate'),
-      tx.trueCV(),
-      tx.trueCV()
-    ],
+    contractName: "arkadiko-xstx-migrate",
+    functionName: "migrate-xstx",
+    functionArgs: [],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network
