@@ -36,6 +36,10 @@
   }
 )
 
+(define-read-only (get-total-reward-ids)
+  (var-get total-reward-ids)
+)
+
 ;; @desc get data for given reward
 ;; @param reward-id; the reward
 (define-read-only (get-reward-data (reward-id uint))
