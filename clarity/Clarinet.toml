@@ -295,9 +295,9 @@ path = "contracts/arkadiko-diko-init.clar"
 depends_on = ["arkadiko-vault-data-v1-1", "arkadiko-swap-v2-1", "arkadiko-stacker-v1-1", "arkadiko-stacker-2-v1-1", "arkadiko-stacker-3-v1-1", "arkadiko-stacker-4-v1-1"]
 path = "contracts/arkadiko-claim-yield-v2-1.clar"
 
-[contracts.query-swap]
+[contracts.arkadiko-multi-hop-swap-v1-1]
 depends_on = ["arkadiko-swap-v2-1"]
-path = "contracts/recovery/query-swap.clar"
+path = "contracts/arkadiko-multi-hop-swap-v1-1.clar"
 
 [contracts.sip-010-trait-ft-standard]
 depends_on = []
