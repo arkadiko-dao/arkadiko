@@ -248,14 +248,11 @@
 
 (define-private (withdrawable-usda (needed-usda uint))
   (let (
-    (usda-balance (unwrap-panic (contract-call? .usda-token get-balance .arkadiko-liquidation-pool-v1-1)))
+    (max-usda (contract-call? .arkadiko-liquidation-pool-v1-1 max-withdrawable-usda))
   )
-    (if (is-eq usda-balance u0)
-      u0
-      (if (> usda-balance needed-usda)
-        needed-usda
-        (- usda-balance u1)
-      )
+    (if (> needed-usda max-usda)
+      max-usda
+      needed-usda
     )
   )
 )

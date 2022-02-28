@@ -201,6 +201,11 @@ class LiquidationPool {
     ], this.deployer.address);
   }
 
+  maxWithdrawableUsda() {
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-pool-v1-1", "max-withdrawable-usda", [
+    ], this.deployer.address);
+  }
+
   stake(user: Account, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-liquidation-pool-v1-1", "stake", [

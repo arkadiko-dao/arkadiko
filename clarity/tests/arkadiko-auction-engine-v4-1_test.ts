@@ -59,6 +59,10 @@ Clarinet.test({ name: "auction engine: liquidate STX vault, 1 wallet",
     let call:any = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-liquidation-pool-v1-1'));
     call.result.expectOk().expectUintWithDecimals(10000);
 
+    // Can use 9k of 10k in pool
+    call = await liquidationPool.maxWithdrawableUsda();
+    call.result.expectUintWithDecimals(9000);
+
     // Start auction
     result = vaultAuction.startAuction(deployer, 1);
     result.expectOk().expectBool(true);
@@ -230,12 +234,20 @@ Clarinet.test({ name: "auction engine: liquidate STX vault without enough USDA t
     call = await vaultAuction.getAuctionOpen(1);
     call.result.expectBool(true);
 
+    // Deposit 1000 USDA
+    result = liquidationPool.stake(wallet_1, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    // Nothing burned as we always keep 1k USDA in pool
+    result = vaultAuction.burnUsda(deployer, 1);
+    result.expectOk().expectUintWithDecimals(0);
+
     // Deposit 800 USDA
     result = liquidationPool.stake(wallet_1, 800);
     result.expectOk().expectUintWithDecimals(800);
 
     result = vaultAuction.burnUsda(deployer, 1);
-    result.expectOk().expectUintWithDecimals(799.999999);
+    result.expectOk().expectUintWithDecimals(800);
 
     // Auction is open
     call = await vaultAuction.getAuctionOpen(1);
@@ -246,7 +258,7 @@ Clarinet.test({ name: "auction engine: liquidate STX vault without enough USDA t
     result.expectOk().expectUintWithDecimals(300);
 
     result = vaultAuction.burnUsda(deployer, 1);
-    result.expectOk().expectUintWithDecimals(200.000001);
+    result.expectOk().expectUintWithDecimals(200);
 
     // Auction is open
     call = await vaultAuction.getAuctionOpen(1);
@@ -254,19 +266,21 @@ Clarinet.test({ name: "auction engine: liquidate STX vault without enough USDA t
     
     // Liquidation rewards
     call = await liquidationRewards.getRewardsOf(wallet_1.address, 0);
-    call.result.expectOk().expectUintWithDecimals(888.888887);
+    call.result.expectOk().expectUintWithDecimals(888.888888);
 
     // Reward data
     call = await liquidationRewards.getRewardData(1);
-    call.result.expectTuple()["share-block"].expectUint(10);
-    call.result.expectTuple()["total-amount"].expectUintWithDecimals(222.222223);
+    call.result.expectTuple()["share-block"].expectUint(12);
+    call.result.expectTuple()["total-amount"].expectUintWithDecimals(222.222222);
 
+    call = await liquidationRewards.getRewardsOf(wallet_1.address, 1);
+    call.result.expectOk().expectUintWithDecimals(170.940155);
     call = await liquidationRewards.getRewardsOf(wallet_2.address, 1);
-    call.result.expectOk().expectUintWithDecimals(222.222200);
+    call.result.expectOk().expectUintWithDecimals(51.282044);
 
     // Claim reward
     result = liquidationRewards.claimRewards(wallet_2, 1, "xstx-token");
-    result.expectOk().expectUintWithDecimals(222.222200);
+    result.expectOk().expectUintWithDecimals(51.282044);
 
   }
 });

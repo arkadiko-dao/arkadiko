@@ -1,7 +1,8 @@
 
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED u32401)
-(define-constant ERR-WITHDRAWAL-AMOUNT-EXCEEDED u32002)
+(define-constant ERR-UNSTAKE-AMOUNT-EXCEEDED u32002)
+(define-constant ERR-WITHDRAWAL-AMOUNT-EXCEEDED u32003)
 
 ;; Variables
 (define-data-var fragments-per-token uint u1000000000000)
@@ -101,7 +102,7 @@
     (user-fragments (get fragments (get-staker-fragments staker)))
     (remove-user-fragments (* amount (var-get fragments-per-token)))
   )
-    (asserts! (>= user-fragments remove-user-fragments) (err ERR-WITHDRAWAL-AMOUNT-EXCEEDED))
+    (asserts! (>= user-fragments remove-user-fragments) (err ERR-UNSTAKE-AMOUNT-EXCEEDED))
 
     (let (
       (new-user-fragments (- user-fragments remove-user-fragments))
@@ -126,6 +127,18 @@
 ;; Withdraw
 ;; ---------------------------------------------------------
 
+(define-read-only (max-withdrawable-usda)
+  (let (
+    (usda-balance (unwrap-panic (contract-call? .usda-token get-balance .arkadiko-liquidation-pool-v1-1)))
+    (usda-to-keep u1000000000) ;; always keep 1k USDA
+  )
+    (if (<= usda-balance usda-to-keep)
+      u0
+      (- usda-balance usda-to-keep)
+    )
+  )
+)
+
 (define-public (withdraw (amount uint))
   (let (
     (sender tx-sender)
@@ -135,6 +148,7 @@
     (new-fragments-per-token (/ (var-get total-fragments) new-usda-balance))
   )
     (asserts! (is-eq tx-sender (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "auction-engine"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (<= amount (max-withdrawable-usda)) (err ERR-WITHDRAWAL-AMOUNT-EXCEEDED))
 
     ;; Transfer token
     (try! (as-contract (contract-call? .usda-token transfer amount (as-contract tx-sender) sender none)))
