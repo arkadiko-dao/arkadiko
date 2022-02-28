@@ -20,6 +20,7 @@ import { getRPCClient } from '@common/utils';
 import { CashIcon } from '@heroicons/react/outline';
 import { EmptyState } from './ui/empty-state';
 import { Placeholder } from "./ui/placeholder";
+import { LiquidationRewardProps, LiquidationReward } from './liquidations-reward';
 
 export const Liquidations: React.FC = () => {
   const { doContractCall } = useConnect();
@@ -28,6 +29,7 @@ export const Liquidations: React.FC = () => {
 
   const [state, setState] = useContext(AppContext);
   const [isLoading, setIsLoading] = useState(true);
+  const [rewardData, setRewardData] = useState([]);
   const [stakeAmount, setStakeAmount] = useState(0);
   const [unstakeAmount, setUnstakeAmount] = useState(0);
   const [userPooled, setUserPooled] = useState(0);
@@ -125,6 +127,12 @@ export const Liquidations: React.FC = () => {
 
   useEffect(() => {
 
+    async function asyncForEach(array, callback) {
+      for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array);
+      }
+    }
+
     const getTotalPooled = async () => {
       const call = await callReadOnlyFunction({
         contractAddress,
@@ -188,6 +196,66 @@ export const Liquidations: React.FC = () => {
       return result;
     };
 
+    const getRewardsData = async () => {
+
+      const call = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-liquidation-rewards-v1-1',
+        functionName: 'get-total-reward-ids',
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const maxRewardId = cvToJSON(call).value;
+
+      console.log("maxRewardId: ", maxRewardId);
+
+      var rewardIds = [];
+      for (let rewardId = 0; rewardId < parseInt(maxRewardId); rewardId++) {
+        rewardIds.push(rewardId);
+      }
+
+      const rewardsData: LiquidationRewardProps[] = [];
+      await asyncForEach(rewardIds, async (rewardId: number) => {
+
+        const callUserPending = await callReadOnlyFunction({
+          contractAddress,
+          contractName: 'arkadiko-liquidation-rewards-v1-1',
+          functionName: 'get-rewards-of',
+          functionArgs: [
+            standardPrincipalCV(stxAddress || ''),
+            uintCV(rewardId),
+            contractPrincipalCV(contractAddress, 'arkadiko-liquidation-pool-v1-1'),
+          ],
+          senderAddress: stxAddress || '',
+          network: network,
+        });
+        const resultUserPending = cvToJSON(callUserPending).value.value;
+
+        if (resultUserPending > 0) {
+          const call = await callReadOnlyFunction({
+            contractAddress,
+            contractName: 'arkadiko-liquidation-rewards-v1-1',
+            functionName: 'get-reward-data',
+            functionArgs: [
+              uintCV(rewardId)
+            ],
+            senderAddress: stxAddress || '',
+            network: network,
+          });
+          const json = cvToJSON(call);
+          const data = json.value;
+          rewardsData.push({
+            rewardId: rewardId,
+            token: data['token'].value,
+            claimable: resultUserPending,
+          });
+        }
+      });
+
+      return rewardsData;
+    };
+
     const fetchInfo = async () => {
       // Fetch info
       const [
@@ -195,14 +263,26 @@ export const Liquidations: React.FC = () => {
         userPooled,
         dikoEpochEnd,
         dikoEpochRewardsToAdd,
-        currentBlockHeight
+        currentBlockHeight,
+        rewards
       ] = await Promise.all([
         getTotalPooled(),
         getUserPooled(),
         getDikoEpochEnd(),
         getDikoEpochRewardsToAdd(),
         getCurrentBlockHeight(),
+        getRewardsData()
       ]);
+
+      const rewardItems = rewards.map((reward: object) => (
+        <LiquidationReward
+          key={reward.rewardId}
+          rewardId={reward.rewardId}
+          token={reward.token}
+          claimable={reward.claimable}
+        />
+      ));
+      setRewardData(rewardItems);
 
       setTotalPooled(totalPooled);
       setUserPooled(userPooled);
@@ -219,7 +299,6 @@ export const Liquidations: React.FC = () => {
 
 
     fetchInfo();
-
   }, []);
 
   return (
@@ -244,13 +323,31 @@ export const Liquidations: React.FC = () => {
                     <Placeholder className="py-2" width={Placeholder.width.FULL} />
                     <Placeholder className="py-2" width={Placeholder.width.FULL} />
                   </>
+                ) : rewardData.length == 0 ? (
+                  <EmptyState
+                    Icon={CashIcon}
+                    title="You have no rewards to claim."
+                    description="DIKO and liquidation rewards will appear here."
+                  />
                 ) : (
                   <>
-                    <EmptyState
-                      Icon={CashIcon}
-                      title="You have no rewards to claim."
-                      description="DIKO and liquidation rewards will appear here."
-                    />
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
+                      <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
+                        <tr>
+                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400">
+                            Reward ID
+                          </th>
+                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400">
+                            Token
+                          </th>
+                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400">
+                            Amount
+                          </th>
+                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"></th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600">{rewardData}</tbody>
+                    </table>
                   </>
                 )}
               </div>
