@@ -27,7 +27,45 @@ const xbtcTokenAddress = 'tokensoft-token';
 const dikoUsdaPoolAddress = 'arkadiko-swap-token-diko-usda';
 const wstxUsdaPoolAddress = 'arkadiko-swap-token-wstx-usda';
 const wstxXbtcPoolAddress = 'arkadiko-swap-token-wstx-xbtc';
+const xbtcUsdaPoolAddress = 'arkadiko-swap-token-xbtc-usda';
 const wstxTokenAddress = 'wrapped-stx-token';
+
+Clarinet.test({
+  name: "swap: swap STX/xBTC token using multi-hop",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let swap = new Swap(chain, deployer);
+
+    // Create pair STX-USDA and xBTC-USDA
+    let result:any = swap.createPair(deployer, "wrapped-stx-token", usdaTokenAddress, "arkadiko-swap-token-wstx-usda", "wSTX-USDA", 100, 100);
+    result.expectOk().expectBool(true);
+    result = swap.createPair(deployer, xbtcTokenAddress, usdaTokenAddress, xbtcUsdaPoolAddress, "xBTC-USDA", 0.040894, 100, 8, 6);
+    result.expectOk().expectBool(true);
+
+    // Swap
+    result = swap.swapXForY(deployer, wstxTokenAddress, xbtcTokenAddress, 10, 0, 6, 8);
+    result.expectOk().expectList()[0].expectUintWithDecimals(10);
+    // K = 852 * 0.040894 = 34.841688
+    // y = K / 862 = 0.0404195916473
+    // So user would get: 0.040894 - 0.0404195916473 = 0.0004744083527
+    // Minus 0.3% fees
+    result.expectOk().expectList()[1].expectUint(47300);
+
+    // Swap back
+    result = swap.swapYForX(deployer, wstxTokenAddress, xbtcTokenAddress, 0.00047, 0, 6, 8);
+    // K = Total Balance X * Total Balance Y
+    // Total Balance Y = 0.040891
+    // K = 862 * (0.040894 - 0.000473)
+    // K = 34.842902
+
+    // X = Total Balance X - K / (Total Balance Y)
+    // X = 862 - (34.842902 / 0.040891)
+    // X = 9.90780367318
+    // Without 0.03% fees: 9.87...
+    result.expectOk().expectList()[0].expectUint(9878420); 
+    result.expectOk().expectList()[1].expectUint(47000);
+  },
+});
 
 Clarinet.test({
   name: "swap: create STX/xBTC pair, add and remove liquidity",

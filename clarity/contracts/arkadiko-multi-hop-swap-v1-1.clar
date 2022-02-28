@@ -14,12 +14,16 @@
   (token-z-trait <ft-trait>)
   (dx uint)
   (min-dz uint)
-  (inverse bool)
+  (inverse-first bool)
+  (inverse-second bool)
 )
   (let (
-    (swapped-amounts (unwrap-panic (contract-call? .arkadiko-swap-v2-1 swap-x-for-y token-x-trait token-y-trait dx u0)))
+    (swapped-amounts (if inverse-first
+      (unwrap-panic (contract-call? .arkadiko-swap-v2-1 swap-x-for-y token-x-trait token-y-trait dx u0))
+      (unwrap-panic (contract-call? .arkadiko-swap-v2-1 swap-y-for-x token-x-trait token-y-trait dx u0))
+    ))
     (y-amount (unwrap-panic (element-at swapped-amounts u1)))
-    (swapped-amounts-2 (if inverse
+    (swapped-amounts-2 (if inverse-second
       (unwrap-panic (contract-call? .arkadiko-swap-v2-1 swap-y-for-x token-y-trait token-z-trait dx min-dz))
       (unwrap-panic (contract-call? .arkadiko-swap-v2-1 swap-x-for-y token-y-trait token-z-trait dx min-dz))
     ))
