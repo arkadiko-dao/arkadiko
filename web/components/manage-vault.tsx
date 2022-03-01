@@ -658,7 +658,7 @@ export const ManageVault = ({ match }) => {
                   <div className="p-3 mt-auto rounded-md bg-gray-50">
                     <p className="text-xs font-semibold leading-none text-gray-400 uppercase">Current {vault?.collateralToken} price</p>
                     <p className="mt-1 text-sm font-semibold text-gray-900">
-                      ${price / 1000000}
+                      ${price / decimals}
                     </p>
                   </div>
                 </div>
