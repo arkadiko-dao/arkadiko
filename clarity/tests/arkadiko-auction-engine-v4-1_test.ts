@@ -19,6 +19,10 @@ import {
 } from './models/arkadiko-tests-vaults.ts';
 
 import { 
+  Swap,
+} from './models/arkadiko-tests-swap.ts';
+
+import { 
   LiquidationPool,
   LiquidationRewards
 } from './models/arkadiko-tests-liquidation-fund.ts';
@@ -38,9 +42,14 @@ Clarinet.test({ name: "auction engine: liquidate stacking STX vault without enou
     let vaultAuction = new VaultAuctionV4(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
     let liquidationRewards = new LiquidationRewards(chain, deployer);
+    let swap = new Swap(chain, deployer);
+
+    // Create pair
+    let result = swap.createPair(deployer, "arkadiko-token", "usda-token", "arkadiko-swap-token-diko-usda", "DIKO-USDA", 10000, 20000, 6, 6);
+    result.expectOk().expectBool(true);
 
     // Initialize price of STX to $2 in the oracle
-    let result = oracleManager.updatePrice("STX", 3);
+    result = oracleManager.updatePrice("STX", 3);
     result = oracleManager.updatePrice("xSTX", 3);
 
     // Create vault - 1500 STX, 1000 USDA
@@ -63,14 +72,14 @@ Clarinet.test({ name: "auction engine: liquidate stacking STX vault without enou
     let auction:any = await vaultAuction.getAuctionById(1);
     auction.result.expectTuple()['collateral-amount'].expectUintWithDecimals(1500);
     auction.result.expectTuple()['debt-to-raise'].expectUintWithDecimals(1000);
-    auction.result.expectTuple()['total-debt-burned'].expectUintWithDecimals(675);
+    auction.result.expectTuple()['total-debt-burned'].expectUintWithDecimals(1000);
     auction.result.expectTuple()['total-collateral-sold'].expectUintWithDecimals(1500);
 
-    // Auction not closed yet
+    // Auction closed
     let call = await vaultAuction.getAuctionOpen(1);
-    call.result.expectBool(true);
+    call.result.expectBool(false);
 
-    
+
   }
 });
 

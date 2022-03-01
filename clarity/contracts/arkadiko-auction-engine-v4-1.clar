@@ -86,6 +86,11 @@
   )
 )
 
+
+;; ---------------------------------------------------------
+;; Core
+;; ---------------------------------------------------------
+
 ;; @desc mark vault as liquidated and start auction
 ;; @param vault-id; the vault to liquidate
 ;; @param vault-manager; vault manager
@@ -265,26 +270,81 @@
     (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
 
-    (if (get-auction-open auction-id)
-      (ok false)
-      (begin
-        (try! (as-contract (contract-call?
-          vault-manager
-          finalize-liquidation
-          (get vault-id auction)
-          (- (get collateral-amount auction) (get total-collateral-sold auction))
-          coll-type
-        )))
-        (map-set auctions { id: auction-id } (merge auction { ended-at: block-height }))
-      
-        (print { type: "auction", action: "finalize-liquidation", data: auction })
-        (ok true)
+    ;; Sell off DIKO if needed
+    (try! (sell-diko auction-id))
+
+    ;; Do not continue if auction still open
+    (asserts! (not (get-auction-open auction-id)) (ok false))
+
+    ;; Finalize liquidation
+    (try! (as-contract (contract-call?
+      vault-manager
+      finalize-liquidation
+      (get vault-id auction)
+      (- (get collateral-amount auction) (get total-collateral-sold auction))
+      coll-type
+    )))
+    (map-set auctions { id: auction-id } (merge (get-auction-by-id auction-id) { ended-at: block-height }))
+  
+    (print { type: "auction", action: "finalize-liquidation", data: auction })
+    (ok true)
+  )
+)
+
+;; ---------------------------------------------------------
+;; Helpers
+;; ---------------------------------------------------------
+
+;; If all collateral sold but still debt to raise,
+;; DIKO is minted and swapped to USDA to pay off debt
+(define-private (sell-diko (auction-id uint))
+  (let (
+    (auction (get-auction-by-id auction-id))
+    (all-collateral-sold (is-eq (get collateral-amount auction) (get total-collateral-sold auction)))
+    (debt-left (- (get debt-to-raise auction) (get total-debt-burned auction)))
+  )
+    ;; Stop if not all collateral sold, no debt to raise or auction not open
+    (asserts! all-collateral-sold (ok u0))
+    (asserts! (> debt-left u0) (ok u0))
+    (asserts! (get-auction-open auction-id) (ok u0))
+    
+    (let (
+      (pair-details (unwrap-panic (unwrap-panic (contract-call? .arkadiko-swap-v2-1 get-pair-details .arkadiko-token .usda-token))))
+      (diko-price (/ (* (get balance-x pair-details) u1100000) (get balance-y pair-details))) ;; 10% extra 
+      (diko-to-mint (/ (* debt-left diko-price) u1000000))
+    )
+      ;; Mint DIKO
+      (try! (as-contract (contract-call? .arkadiko-dao mint-token .arkadiko-token diko-to-mint (as-contract tx-sender))))
+
+      ;; Swap DIKO to USDA
+      (try! (as-contract (contract-call? .arkadiko-swap-v2-1 swap-x-for-y .arkadiko-token .usda-token diko-to-mint u0)))
+
+      ;; Burn USDA
+      (try! (as-contract (contract-call? .arkadiko-dao burn-token .usda-token debt-left (as-contract tx-sender))))
+
+      ;; Swap leftover USDA to DIKO
+      (let ((leftover-usda (unwrap-panic (contract-call? .usda-token get-balance (as-contract tx-sender)))))
+        (try! (as-contract (contract-call? .arkadiko-swap-v2-1 swap-y-for-x .arkadiko-token .usda-token leftover-usda u0)))
       )
+
+      ;; Burn leftover DIKO
+      (let ((leftover-diko (unwrap-panic (contract-call? .arkadiko-token get-balance (as-contract tx-sender)))))
+        (try! (as-contract (contract-call? .arkadiko-dao burn-token .arkadiko-token leftover-diko (as-contract tx-sender))))
+      )
+
+      ;; Update auction
+      (map-set auctions { id: auction-id } (merge auction {
+        total-debt-burned: (+ (get total-debt-burned auction) debt-left)
+      }))
+
+      (print { type: "auction", action: "sell-diko", data: diko-to-mint })
+      (ok diko-to-mint)
     )
   )
 )
 
-;; @desc calculate the amount of USDA to burn
+
+;; @desc calculate the amount of USDA to burn 
 ;; @param auction-id; the ID of the auction for which the collateral amount should be calculated
 ;; @param oracle; the oracle implementation that provides the on-chain price
 ;; @param liquidation-pool; the pool that holds USDA to use in liquidations
@@ -300,9 +360,8 @@
     (collateral-price (unwrap-panic (get-collateral-discounted-price oracle auction-id)))
 
     (usda-for-collateral (/ (* collateral-left collateral-price) u1000000))
-    (usda-withdrawable (withdrawable-usda debt-left liquidation-pool))
+    (usda-withdrawable (unwrap-panic (contract-call? liquidation-pool max-withdrawable-usda)))
     (usda-to-use (min-of (min-of debt-left usda-for-collateral) usda-withdrawable))
-
     (collateral-to-sell (/ (* usda-to-use u1000000) collateral-price))
   )
     (ok { usda-to-use: usda-to-use, collateral-to-sell: collateral-to-sell })
@@ -326,17 +385,6 @@
   )
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
     (ok (/ (* discounted-price u1000000) decimals))
-  )
-)
-
-(define-private (withdrawable-usda (needed-usda uint) (liquidation-pool <liquidation-pool-trait>))
-  (let (
-    (max-usda (unwrap-panic (contract-call? liquidation-pool max-withdrawable-usda)))
-  )
-    (if (> needed-usda max-usda)
-      max-usda
-      needed-usda
-    )
   )
 )
 

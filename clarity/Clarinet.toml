@@ -336,7 +336,7 @@ depends_on = ["sip-010-trait-ft-standard", "arkadiko-liquidation-rewards-trait-v
 path = "contracts/arkadiko-liquidation-rewards-v1-1.clar"
 
 [contracts.arkadiko-auction-engine-v4-1]
-depends_on = ["sip-010-trait-ft-standard", "arkadiko-liquidation-pool-trait-v1", "arkadiko-liquidation-rewards-trait-v1"]
+depends_on = ["sip-010-trait-ft-standard", "arkadiko-liquidation-pool-trait-v1", "arkadiko-liquidation-rewards-trait-v1", "arkadiko-swap-v2-1"]
 path = "contracts/arkadiko-auction-engine-v4-1.clar"
 
 [contracts.arkadiko-liquidation-rewards-diko-v1-1]
