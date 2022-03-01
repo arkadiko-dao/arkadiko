@@ -3,7 +3,9 @@
 
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 
-(define-constant ERR-TOO-MUCH-SLIPPAGE u71)
+(define-constant ERR-TOO-MUCH-SLIPPAGE u7771)
+(define-constant ERR-SWAP-ONE-FAILED u7772)
+(define-constant ERR-SWAP-TWO-FAILED u7773)
 
 ;; Swap X for Z with token Y in between
 ;; For instance, I want to swap STX to xBTC but there is no STX/xBTC pair
@@ -19,17 +21,17 @@
 )
   (let (
     (swapped-amounts (if inverse-first
-      (unwrap-panic (contract-call? .arkadiko-swap-v2-1 swap-x-for-y token-x-trait token-y-trait dx u0))
-      (unwrap-panic (contract-call? .arkadiko-swap-v2-1 swap-y-for-x token-x-trait token-y-trait dx u0))
+      (unwrap! (contract-call? .arkadiko-swap-v2-1 swap-y-for-x token-x-trait token-y-trait dx u0) (err ERR-SWAP-ONE-FAILED))
+      (unwrap! (contract-call? .arkadiko-swap-v2-1 swap-x-for-y token-x-trait token-y-trait dx u0) (err ERR-SWAP-ONE-FAILED))
     ))
     (y-amount (unwrap-panic (element-at swapped-amounts u1)))
     (swapped-amounts-2 (if inverse-second
-      (unwrap-panic (contract-call? .arkadiko-swap-v2-1 swap-y-for-x token-y-trait token-z-trait dx min-dz))
-      (unwrap-panic (contract-call? .arkadiko-swap-v2-1 swap-x-for-y token-y-trait token-z-trait dx min-dz))
+      (unwrap! (contract-call? .arkadiko-swap-v2-1 swap-y-for-x token-z-trait token-y-trait y-amount min-dz) (err ERR-SWAP-TWO-FAILED))
+      (unwrap! (contract-call? .arkadiko-swap-v2-1 swap-x-for-y token-y-trait token-z-trait y-amount min-dz) (err ERR-SWAP-TWO-FAILED))
     ))
     (z-amount (unwrap-panic (element-at swapped-amounts-2 u1)))
   )
     (asserts! (< min-dz z-amount) (err ERR-TOO-MUCH-SLIPPAGE))
-    (ok true)
+    (ok swapped-amounts-2)
   )
 )
