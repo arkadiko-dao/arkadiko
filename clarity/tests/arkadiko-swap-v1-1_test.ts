@@ -41,7 +41,7 @@ Clarinet.test({
     let multiHopSwap = new MultiHopSwap(chain, deployer);
 
     // Create pair STX-USDA and xBTC-USDA
-    let result:any = swap.createPair(deployer, "wrapped-stx-token", usdaTokenAddress, "arkadiko-swap-token-wstx-usda", "wSTX-USDA", 1000, 1000);
+    let result:any = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, "arkadiko-swap-token-wstx-usda", "wSTX-USDA", 1000, 1000);
     result.expectOk().expectBool(true);
     result = swap.createPair(deployer, xbtcTokenAddress, usdaTokenAddress, xbtcUsdaPoolAddress, "xBTC-USDA", 0.40894, 1000, 8, 6);
     result.expectOk().expectBool(true);
@@ -59,7 +59,7 @@ Clarinet.test({
     // Swap
     result = multiHopSwap.swapXForZ(wallet_1, wstxTokenAddress, usdaTokenAddress, xbtcTokenAddress, 10, 0, false, true, 6, 8);
     result.expectOk().expectList()[0].expectUint(398554); // 0.00398554 btc
-    result.expectOk().expectList()[1].expectUint(9871580); // 9.8 USDA
+    result.expectOk().expectList()[1].expectUint(9871580); // 9.871 USDA
 
     call = await chain.callReadOnlyFn("usda-token", "get-balance", [
       types.principal(wallet_1.address),
@@ -71,9 +71,9 @@ Clarinet.test({
     call.result.expectOk().expectUint(398554); // 0.00398554 xBTC after swap
 
     // Swap back
-    // result = swap.swapYForX(deployer, wstxTokenAddress, xbtcTokenAddress, 0.00047, 0, 6, 8);
-    // result.expectOk().expectList()[0].expectUint(9878420);
-    // result.expectOk().expectList()[1].expectUint(47000);
+    result = multiHopSwap.swapXForZ(deployer, xbtcTokenAddress, usdaTokenAddress, wstxTokenAddress, 0.00398, 0, false, true, 8, 6);
+    result.expectOk().expectList()[0].expectUint(9868790); // 9.868 STX
+    result.expectOk().expectList()[1].expectUint(9799487); // 9.799 USDA
   },
 });
 
