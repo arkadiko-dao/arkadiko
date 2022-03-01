@@ -185,6 +185,8 @@ export const tokenTraits: TokenTraits = {
 export const resolveReserveName = (collateralToken: string) => {
   if (collateralToken.toLowerCase().startsWith('stx')) {
     return 'arkadiko-stx-reserve-v1-1';
+  } else if (collateralToken.toLowerCase().startsWith('xstx')) {
+    return 'arkadiko-sip10-reserve-v2-1';
   } else {
     return 'arkadiko-sip10-reserve-v2-1'; // we have only two reserves: 1 for STX and 1 for all other SIP10 FTs
   }
@@ -192,7 +194,7 @@ export const resolveReserveName = (collateralToken: string) => {
 
 export const contractsMap = {
   'vault-manager': 'arkadiko-freddie-v1-1',
-  'auction-engine': 'arkadiko-auction-engine-v2-1',
+  'auction-engine': 'arkadiko-auction-engine-v3-1',
   oracle: 'arkadiko-oracle-v1-1',
   governance: 'arkadiko-governance-v2-1',
 };

@@ -55,6 +55,7 @@ export const VaultCloseModal: React.FC<Props> = ({
       ],
       onFinish: data => {
         console.log('finished closing vault!', data, data.txId);
+        setShowCloseModal(false);
         setState(prevState => ({
           ...prevState,
           currentTxId: data.txId,

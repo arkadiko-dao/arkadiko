@@ -12,7 +12,7 @@ async function initiateStacking() {
     functionName: "set-tokens-to-stack",
     functionArgs: [
       tx.stringAsciiCV('stacker'),
-      tx.uintCV(400000000000)
+      tx.uintCV(6200000000000)
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
