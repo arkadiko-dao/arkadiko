@@ -35,6 +35,8 @@ Clarinet.test({
   name: "swap: swap STX/xBTC token using multi-hop",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
     let swap = new Swap(chain, deployer);
     let multiHopSwap = new MultiHopSwap(chain, deployer);
 
@@ -44,10 +46,29 @@ Clarinet.test({
     result = swap.createPair(deployer, xbtcTokenAddress, usdaTokenAddress, xbtcUsdaPoolAddress, "xBTC-USDA", 0.40894, 1000, 8, 6);
     result.expectOk().expectBool(true);
 
+    // Check balances of wallet 1
+    let call = await chain.callReadOnlyFn("usda-token", "get-balance", [
+      types.principal(wallet_1.address),
+    ], wallet_1.address);
+    call.result.expectOk().expectUint(1000000000000); // 1M USDA
+    call = await chain.callReadOnlyFn("tokensoft-token", "get-balance", [
+      types.principal(wallet_1.address),
+    ], wallet_1.address);
+    call.result.expectOk().expectUint(0); // 0 xBTC
+
     // Swap
-    result = multiHopSwap.swapXForZ(deployer, wstxTokenAddress, usdaTokenAddress, xbtcTokenAddress, 10, 0, false, true, 6, 8);
+    result = multiHopSwap.swapXForZ(wallet_1, wstxTokenAddress, usdaTokenAddress, xbtcTokenAddress, 10, 0, false, true, 6, 8);
     result.expectOk().expectList()[0].expectUint(398554); // 0.00398554 btc
     result.expectOk().expectList()[1].expectUint(9871580); // 9.8 USDA
+
+    call = await chain.callReadOnlyFn("usda-token", "get-balance", [
+      types.principal(wallet_1.address),
+    ], wallet_1.address);
+    call.result.expectOk().expectUint(1000000000000); // still 1M USDA after swap
+    call = await chain.callReadOnlyFn("tokensoft-token", "get-balance", [
+      types.principal(wallet_1.address),
+    ], wallet_1.address);
+    call.result.expectOk().expectUint(398554); // 0.00398554 xBTC after swap
 
     // Swap back
     // result = swap.swapYForX(deployer, wstxTokenAddress, xbtcTokenAddress, 0.00047, 0, 6, 8);
