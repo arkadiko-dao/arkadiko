@@ -189,8 +189,9 @@
   (let (
     (auction (get-auction-by-id auction-id))
     (debt-left (- (get debt-to-raise auction) (get total-debt-burned auction)))
-    (usda-to-use (withdrawable-usda debt-left liquidation-pool))
-    (collateral-sold (unwrap-panic (get-collateral-amount oracle auction-id usda-to-use)))
+    (burn-amounts (unwrap-panic (burn-usda-amount auction-id oracle liquidation-pool)))
+    (usda-to-use (get usda-to-use burn-amounts))
+    (collateral-sold (get collateral-to-sell burn-amounts))
 
     (token-address (get collateral-address auction))
     (token-string (get collateral-token auction))
@@ -283,12 +284,35 @@
   )
 )
 
-;; @desc calculates the collateral amount to sell
-;; e.g. if we need to cover 10 USDA debt, and we have 20 STX at $1/STX,
-;; we only need to auction off 10 STX excluding an additional discount
+;; @desc calculate the amount of USDA to burn
+;; @param auction-id; the ID of the auction for which the collateral amount should be calculated
+;; @param oracle; the oracle implementation that provides the on-chain price
+;; @param liquidation-pool; the pool that holds USDA to use in liquidations
+(define-public (burn-usda-amount
+  (auction-id uint)
+  (oracle <oracle-trait>)
+  (liquidation-pool <liquidation-pool-trait>)
+)
+  (let (
+    (auction (get-auction-by-id auction-id))
+    (debt-left (- (get debt-to-raise auction) (get total-debt-burned auction)))
+    (collateral-left (- (get collateral-amount auction) (get total-collateral-sold auction)))
+    (collateral-price (unwrap-panic (get-collateral-discounted-price oracle auction-id)))
+
+    (usda-for-collateral (/ (* collateral-left collateral-price) u1000000))
+    (usda-withdrawable (withdrawable-usda debt-left liquidation-pool))
+    (usda-to-use (min-of (min-of debt-left usda-for-collateral) usda-withdrawable))
+
+    (collateral-to-sell (/ (* usda-to-use u1000000) collateral-price))
+  )
+    (ok { usda-to-use: usda-to-use, collateral-to-sell: collateral-to-sell })
+  )
+)
+
+;; @desc calculate the collateral price taking into account the liquidation discount
 ;; @param oracle; the oracle implementation that provides the on-chain price
 ;; @param auction-id; the ID of the auction for which the collateral amount should be calculated
-(define-public (get-collateral-amount (oracle <oracle-trait>) (auction-id uint) (debt uint))
+(define-public (get-collateral-discounted-price (oracle <oracle-trait>) (auction-id uint))
   (let (
     (auction (get-auction-by-id auction-id))
     (collateral-price (unwrap-panic (contract-call? oracle fetch-price (get collateral-token auction))))
@@ -301,7 +325,7 @@
     (discounted-price (- price (/ (* price discount) (/ decimals u100))))
   )
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
-    (ok (/ (* debt decimals) discounted-price))
+    (ok (/ (* discounted-price u1000000) decimals))
   )
 )
 
