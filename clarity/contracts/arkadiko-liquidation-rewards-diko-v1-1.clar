@@ -8,6 +8,7 @@
 (define-constant blocks-per-epoch u2016) ;; 2 weeks
 
 ;; Variables
+;; TODO - SET FOR MAINNET
 (define-data-var end-epoch-block uint (+ block-height blocks-per-epoch))
 
 (define-read-only (get-end-epoch-block)

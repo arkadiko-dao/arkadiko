@@ -128,7 +128,7 @@
       ) 
       (err ERR-TOKEN-TYPE-MISMATCH)
     )
-    (asserts! (is-eq (get is-liquidated vault) false) (err ERR-AUCTION-NOT-ALLOWED))
+    (asserts! (not (get is-liquidated vault)) (err ERR-AUCTION-NOT-ALLOWED))
 
     (let (
       (collateral-type (unwrap-panic (contract-call? vault-manager get-collateral-type-for-vault vault-id)))
@@ -241,7 +241,7 @@
     )
 
     ;; Try to finalize
-    (unwrap-panic (finalize-liquidation auction-id vault-manager coll-type))
+    (try! (finalize-liquidation auction-id vault-manager coll-type))
 
     (print { type: "auction", action: "burn-usda", data: auction })
     (ok usda-to-use)
