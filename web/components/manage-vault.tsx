@@ -655,8 +655,8 @@ export const ManageVault = ({ match }) => {
                     </div>
                   </dl>
 
-                  <div className="p-3 mt-auto rounded-md bg-gray-50">
-                    <p className="text-xs font-semibold leading-none text-gray-400 uppercase">Current {vault?.collateralToken} price</p>
+                  <div className="p-3 mt-auto rounded-md bg-gray-50 dark:bg-gray-200">
+                    <p className="text-xs font-semibold leading-none text-gray-400 dark:text-gray-500 uppercase">Current {vault?.collateralToken} price</p>
                     <p className="mt-1 text-sm font-semibold text-gray-900">
                       ${price / decimals}
                     </p>
@@ -1020,13 +1020,13 @@ export const ManageVault = ({ match }) => {
                   </dl>
                 </div>
                 <div className="mt-3">
-                  <dl className="relative border divide-y rounded-lg shadow-sm bg-zinc-200/30 border-zinc-300">
+                  <dl className="relative border divide-y rounded-lg shadow-sm bg-zinc-200/30 border-gray-300 dark:bg-gray-500 dark:border-gray-700">
                     <div className="px-4 py-3">
-                      <dt className="text-xs font-semibold uppercase text-zinc-500">
+                      <dt className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-300">
                         Current Bitcoin block height
                       </dt>
                       <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
-                        <div className="justify-between font-semibold text-zinc-600">
+                        <div className="justify-between font-semibold text-gray-600 dark:text-gray-50">
                           <a
                             className="hover:underline"
                             href="https://mempool.space/"
@@ -1126,23 +1126,23 @@ export const ManageVault = ({ match }) => {
                       </div>
 
                       <div className="absolute flex flex-col items-start justify-start cursor-help -left-1 top-11">
-                        <div className="flex items-center mt-1">
+                        <div className="flex items-center mt-1 dark:text-gray-300">
                           <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M18 18h-6a3 3 0 0 1 -3 -3v-10l-4 4m8 0l-4 -4"></path>
                           </svg>
                           <div className="text-xs font-semibold">Start</div>
                         </div>
-                        <a href="https://mempool.space/" target="_blank" rel="noopener noreferrer" className="hover:underline text-xs mt-0.5 ml-1">#722650</a>
+                        <a href="https://mempool.space/" target="_blank" rel="noopener noreferrer" className="hover:underline text-xs mt-0.5 ml-1 dark:text-gray-200">#722650</a>
                       </div>
 
                       <div className="absolute flex flex-col items-start justify-start cursor-help -right-1 top-11">
-                        <div className="flex items-center mt-1">
+                        <div className="flex items-center mt-1 dark:text-gray-300">
                           <svg className="order-1 w-4 h-4 mr-1 -scale-x-100" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M18 18h-6a3 3 0 0 1 -3 -3v-10l-4 4m8 0l-4 -4"></path>
                           </svg>
                           <div className="text-xs font-semibold">Finish</div>
                         </div>
-                        <a href="https://mempool.space/" target="_blank" rel="noopener noreferrer" className="hover:underline text-xs mt-0.5 mr-1">#722650</a>
+                        <a href="https://mempool.space/" target="_blank" rel="noopener noreferrer" className="hover:underline text-xs mt-0.5 mr-1 dark:text-gray-200">#722650</a>
                       </div>
                     </div>
                   </div>
@@ -1226,7 +1226,7 @@ export const ManageVault = ({ match }) => {
                         </div>
 
                         {enabledStacking && stackingEndDate != '' ? (
-                          <div className="mt-3 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
+                          <div className="mt-4 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
                             <div className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
                               <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                                 End of stacking
@@ -1248,7 +1248,7 @@ export const ManageVault = ({ match }) => {
                             </div>
                           </div>
                         ) : unlockBurnHeight == 0 ? (
-                          <div className="mt-3 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
+                          <div className="mt-4 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
                             <div className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
                               <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                                 Stacking starts in
