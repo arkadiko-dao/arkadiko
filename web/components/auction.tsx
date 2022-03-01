@@ -136,14 +136,14 @@ export const Auction: React.FC<AuctionProps> = ({
           <button
             type="button"
             onClick={() => setBidParams()}
-            className="mr-2 px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             Bid
           </button>
         </span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <RouterLink className="font-medium text-gray-900 dark:text-zinc-100" to={`/vaults/${vaultId}`}>View vault</RouterLink>
+        <RouterLink className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700" to={`/vaults/${vaultId}`}>View vault</RouterLink>
       </td>
     </tr>
   );
