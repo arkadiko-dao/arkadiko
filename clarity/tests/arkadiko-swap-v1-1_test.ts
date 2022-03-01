@@ -74,6 +74,10 @@ Clarinet.test({
     result = multiHopSwap.swapXForZ(deployer, xbtcTokenAddress, usdaTokenAddress, wstxTokenAddress, 0.00398, 0, false, true, 8, 6);
     result.expectOk().expectList()[0].expectUint(9868790); // 9.868 STX
     result.expectOk().expectList()[1].expectUint(9799487); // 9.799 USDA
+
+    // Too high slippage
+    result = multiHopSwap.swapXForZ(wallet_1, wstxTokenAddress, usdaTokenAddress, xbtcTokenAddress, 10, 0.004, false, true, 6, 8);
+    result.expectErr().expectUint(7772);
   },
 });
 

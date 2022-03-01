@@ -3,9 +3,8 @@
 
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 
-(define-constant ERR-TOO-MUCH-SLIPPAGE u7771)
-(define-constant ERR-SWAP-ONE-FAILED u7772)
-(define-constant ERR-SWAP-TWO-FAILED u7773)
+(define-constant ERR-SWAP-ONE-FAILED u7771)
+(define-constant ERR-SWAP-TWO-FAILED u7772)
 
 ;; Swap X for Z with token Y in between
 ;; For instance, I want to swap STX to xBTC but there is no STX/xBTC pair
@@ -37,7 +36,6 @@
       (unwrap-panic (element-at swapped-amounts-2 u1))
     ))
   )
-    (asserts! (< min-dz z-amount) (err ERR-TOO-MUCH-SLIPPAGE))
     (ok swapped-amounts-2)
   )
 )
