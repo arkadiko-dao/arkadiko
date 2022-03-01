@@ -166,6 +166,8 @@ export const App: React.FC = () => {
               endDate: endDate,
               daysPassed: daysPassed,
               daysLeft: daysLeft,
+              cycleStartHeight: response['cycleStartHeight'],
+              cycleEndHeight: response['cycleEndHeight']
             }));
           });
       });

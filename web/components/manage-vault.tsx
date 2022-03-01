@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Tooltip } from '@blockstack/ui';
-import { InformationCircleIcon, LockOpenIcon, ArrowSmDownIcon, ShieldCheckIcon, ExclamationIcon, ShieldExclamationIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/solid';
+import { InformationCircleIcon, LockOpenIcon, ShieldCheckIcon, ExclamationIcon, ShieldExclamationIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/solid';
 import { Container } from './home';
 import { VaultDepositModal } from '@components/vault-deposit-modal';
 import { VaultWithdrawModal } from '@components/vault-withdraw-modal';
@@ -43,6 +43,7 @@ export const ManageVault = ({ match }) => {
   const [showBurnModal, setShowBurnModal] = useState(false);
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [auctionEnded, setAuctionEnded] = useState(false);
+
   const [maximumCollateralToWithdraw, setMaximumCollateralToWithdraw] = useState(0);
   const [reserveName, setReserveName] = useState('');
   const [vault, setVault] = useState<VaultProps>();
@@ -61,6 +62,9 @@ export const ManageVault = ({ match }) => {
   const [decimals, setDecimals] = useState(1000000);
   const [stackingEndDate, setStackingEndDate] = useState('');
   const [poxYield, setPoxYield] = useState(0);
+  const [stacksTipHeight, setStacksTipHeight] = useState(0);
+  const [burnBlockHeight, setBurnBlockHeight] = useState(0);
+
   const [loadingVaultData, setLoadingVaultData] = useState(true);
   const [loadingFeesData, setLoadingFeesData] = useState(true);
   const [loadingStackerData, setLoadingStackerData] = useState(true);
@@ -150,6 +154,14 @@ export const ManageVault = ({ match }) => {
   }, [collateralType?.collateralToDebtRatio, price]);
 
   useEffect(() => {
+    const fetchStackingInfo = async () => {
+      const client = getRPCClient();
+      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
+      const data = await response.json();
+      setStacksTipHeight(data['stacks_tip_height']);
+      setBurnBlockHeight(data['burn_block_height']);
+    };
+
     const fetchFees = async () => {
       const feeCall = await callReadOnlyFunction({
         contractAddress,
@@ -272,6 +284,7 @@ export const ManageVault = ({ match }) => {
       if (vault['collateralType'].toLowerCase().includes('stx')) {
         setCanStackCollateral(true);
         fetchYield();
+        fetchStackingInfo();
       }
       setDecimals(vault['collateralType'].toLowerCase().includes('stx') ? 1000000 : 100000000);
       fetchFees();
@@ -984,7 +997,7 @@ export const ManageVault = ({ match }) => {
                       <dd className="flex items-baseline justify-between mt-1 md:block">
                         <div className="flex items-baseline justify-between flex-1 text-lg font-semibold text-indigo-800 dark:text-indigo-200">
                           <span>
-                            {state.daysPassed} <span className="text-xs opacity-80">(since Feb 18 2022)</span>
+                            {state.daysPassed} <span className="text-xs opacity-80">(since {state.startDate})</span>
                           </span>
                           <a
                             className="hover:underline"
@@ -992,7 +1005,7 @@ export const ManageVault = ({ match }) => {
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            <span className="text-xs">~#724000</span>
+                            <span className="text-xs">~#{state.cycleStartHeight}</span>
                           </a>
                         </div>
                       </dd>
@@ -1012,7 +1025,7 @@ export const ManageVault = ({ match }) => {
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            <span className="text-xs">~#724000</span>
+                            <span className="text-xs">~#{state.cycleEndHeight}</span>
                           </a>
                         </div>
                       </dd>
@@ -1033,7 +1046,7 @@ export const ManageVault = ({ match }) => {
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            #723900
+                            #{burnBlockHeight}
                           </a>
                         </div>
                       </dd>
