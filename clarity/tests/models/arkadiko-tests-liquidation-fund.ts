@@ -275,6 +275,7 @@ class LiquidationRewards {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "add-reward", [
         types.uint(shareBlock),
+        types.bool(false),
         types.principal(Utils.qualifiedName(token)),
         types.uint(totalAmount * 1000000)
       ], this.deployer.address)
@@ -310,9 +311,13 @@ class LiquidationRewardsDiko {
     this.deployer = deployer;
   }
 
-  getEndEpochBlock(rewardId: number) {
+  getEndEpochBlock() {
     return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-diko-v1-1", "get-end-epoch-block", [
-      types.uint(rewardId),
+    ], this.deployer.address);
+  }
+
+  getEpochInfo() {
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-diko-v1-1", "get-epoch-info", [
     ], this.deployer.address);
   }
 
@@ -320,6 +325,16 @@ class LiquidationRewardsDiko {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-liquidation-rewards-diko-v1-1", "add-rewards", [
         types.principal(Utils.qualifiedName('arkadiko-liquidation-rewards-v1-1')),
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  updateEpoch(rate: number, length: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-rewards-diko-v1-1", "update-epoch-data", [
+        types.uint(rate * 1000000),
+        types.uint(length),
       ], this.deployer.address)
     ]);
     return block.receipts[0].result;

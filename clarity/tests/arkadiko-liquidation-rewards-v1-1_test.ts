@@ -170,6 +170,67 @@ Clarinet.test({
   }
 });
 
+Clarinet.test({
+  name: "liquidation-rewards: update epoch info",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let usdaToken = new UsdaToken(chain, deployer);
+    let liquidationPool = new LiquidationPool(chain, deployer);
+    let liquidationRewards = new LiquidationRewards(chain, deployer);
+    let liquidationRewardsDiko = new LiquidationRewardsDiko(chain, deployer);
+
+    // Stake
+    let result = liquidationPool.stake(deployer, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Reward data
+    let call:any = await liquidationRewardsDiko.getEpochInfo();
+    call.result.expectOk().expectTuple()["blocks"].expectUint(2016);
+    call.result.expectOk().expectTuple()["rate"].expectUintWithDecimals(0.1);
+    call.result.expectOk().expectTuple()["end-block"].expectUint(2016);
+
+    // Update epoch
+    result = liquidationRewardsDiko.updateEpoch(0.2, 100);
+    result.expectOk().expectBool(true);
+
+    // Reward data
+    call = await liquidationRewardsDiko.getEpochInfo();
+    call.result.expectOk().expectTuple()["blocks"].expectUint(100);
+    call.result.expectOk().expectTuple()["rate"].expectUintWithDecimals(0.2);
+    call.result.expectOk().expectTuple()["end-block"].expectUint(100);
+
+    // Advance to next epoch
+    chain.mineEmptyBlock(100);
+
+    // Add rewards - epoch ended
+    result = liquidationRewardsDiko.addRewards();
+    result.expectOk().expectUintWithDecimals(0.313199);
+
+    // No rewards yet as nothing staked when epoch started
+    call = await liquidationRewards.getRewardsOf(deployer.address, 0);
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    // Advance to next epoch
+    chain.mineEmptyBlock(100);
+
+    // Add rewards - epoch ended
+    result = liquidationRewardsDiko.addRewards();
+    result.expectOk().expectUintWithDecimals(0.313199);
+
+    // Rewards 1
+    call = await liquidationRewards.getRewardsOf(deployer.address, 1);
+    call.result.expectOk().expectUintWithDecimals(0.313199);
+
+    // Reward data
+    call = await liquidationRewardsDiko.getEpochInfo();
+    call.result.expectOk().expectTuple()["blocks"].expectUint(100);
+    call.result.expectOk().expectTuple()["rate"].expectUintWithDecimals(0.2);
+    call.result.expectOk().expectTuple()["end-block"].expectUint(300);
+
+  }
+});
 
 Clarinet.test({
   name: "liquidation-rewards: try to claim rewards with wrong token",

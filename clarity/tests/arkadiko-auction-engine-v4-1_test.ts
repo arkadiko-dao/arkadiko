@@ -36,12 +36,9 @@ Clarinet.test({ name: "auction engine: liquidate stacking STX vault without enou
     let wallet_1 = accounts.get("wallet_1")!;
 
     let oracleManager = new OracleManager(chain, deployer);
-    let usdaToken = new UsdaToken(chain, deployer);
-    let xstxManager = new XstxManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
     let vaultAuction = new VaultAuctionV4(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
-    let liquidationRewards = new LiquidationRewards(chain, deployer);
     let swap = new Swap(chain, deployer);
 
     // Create pair
@@ -78,7 +75,6 @@ Clarinet.test({ name: "auction engine: liquidate stacking STX vault without enou
     // Auction closed
     let call = await vaultAuction.getAuctionOpen(1);
     call.result.expectBool(false);
-
 
   }
 });
