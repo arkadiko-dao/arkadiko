@@ -37,7 +37,7 @@ export const PoxTimeline = ({ unlockBurnHeight, currentBurnHeight, isLoading }) 
                 Cycle 1 (#{firstCycle})
 
                 {currentIndex === 0 ? (
-                  <div className="absolute flex flex-col items-start justify-start transform -translate-x-1/2 cursor-help whitespace-nowrap left-1/2 -top-11">
+                  <div className="absolute flex flex-col items-start justify-start transform -translate-x-1/2 cursor-help whitespace-nowrap left-3/4 -top-11">
                     <div className="flex items-center order-1 mt-1 text-gray-600 dark:text-gray-300">
                       <svg className="w-4 h-4 mr-1 rotate-180 -scale-x-100" viewBox="0 0 24 24" strokeWidth="3" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M18 18h-6a3 3 0 0 1 -3 -3v-10l-4 4m8 0l-4 -4"></path>
@@ -52,7 +52,7 @@ export const PoxTimeline = ({ unlockBurnHeight, currentBurnHeight, isLoading }) 
                 Cycle 2 (#{firstCycle + 1})
 
                 {currentIndex === 1 ? (
-                  <div className="absolute flex flex-col items-start justify-start transform -translate-x-1/2 cursor-help whitespace-nowrap left-1/2 -top-11">
+                  <div className="absolute flex flex-col items-start justify-start transform -translate-x-1/2 cursor-help whitespace-nowrap left-3/4 -top-11">
                     <div className="flex items-center order-1 mt-1 text-gray-600 dark:text-gray-300">
                       <svg className="w-4 h-4 mr-1 rotate-180 -scale-x-100" viewBox="0 0 24 24" strokeWidth="3" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M18 18h-6a3 3 0 0 1 -3 -3v-10l-4 4m8 0l-4 -4"></path>
@@ -67,7 +67,7 @@ export const PoxTimeline = ({ unlockBurnHeight, currentBurnHeight, isLoading }) 
                 Cycle 3 (#{firstCycle + 2})
 
                 {currentIndex === 2 ? (
-                  <div className="absolute flex flex-col items-start justify-start transform -translate-x-1/2 cursor-help whitespace-nowrap left-1/2 -top-11">
+                  <div className="absolute flex flex-col items-start justify-start transform -translate-x-1/2 cursor-help whitespace-nowrap left-3/4 -top-11">
                     <div className="flex items-center order-1 mt-1 text-gray-600 dark:text-gray-300">
                       <svg className="w-4 h-4 mr-1 rotate-180 -scale-x-100" viewBox="0 0 24 24" strokeWidth="3" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M18 18h-6a3 3 0 0 1 -3 -3v-10l-4 4m8 0l-4 -4"></path>
@@ -91,7 +91,7 @@ export const PoxTimeline = ({ unlockBurnHeight, currentBurnHeight, isLoading }) 
             </div>
             <div className="flex text-white items-center font-semibold justify-center text-xs text-center w-[25%] bg-indigo-800 hover:cursor-help rounded-r-md">
               {currentIndex === 3 ? (
-                <div className="relative flex flex-col items-start justify-start transform -translate-x-1/2 cursor-help whitespace-nowrap left-1/2 -top-11">
+                <div className="relative flex flex-col items-start justify-start transform -translate-x-1/2 cursor-help whitespace-nowrap left-3/4 -top-11">
                   <div className="flex items-center order-1 mt-1 text-gray-600 dark:text-gray-300">
                     <svg className="w-4 h-4 mr-1 rotate-180 -scale-x-100" viewBox="0 0 24 24" strokeWidth="3" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M18 18h-6a3 3 0 0 1 -3 -3v-10l-4 4m8 0l-4 -4"></path>
