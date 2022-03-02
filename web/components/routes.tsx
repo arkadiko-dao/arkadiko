@@ -43,14 +43,12 @@ export function Routes() {
       <Route exact path="/swap/remove/:currencyIdA/:currencyIdB" component={RemoveSwapLiquidity} />
       <Route exact path="/pool" component={Pool} />
 
-      <Route exact path="/auctions" component={Auctions} />
+      <Route exact path="/auctions" component={Liquidations} />
       <Route exact path="/governance" component={Governance} />
       <Route exact path="/stake" component={Stake} />
       <Route exact path="/vaults/new" component={NewVault} />
       <Route path="/vaults/:id" component={ManageVault} />
       <Route path="/governance/:id" component={ViewProposal} />
-
-      <Route exact path="/liquidations" component={Liquidations} />
 
       <Redirect to="/" />
     </Switch>
