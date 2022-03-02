@@ -1068,7 +1068,6 @@ export const ManageVault = ({ match }) => {
                           className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                           onClick={() => unlockCollateral()}
                           >
-
                             <LockOpenIcon
                               className="-ml-0.5 mr-2 h-4 w-4"
                               aria-hidden="true"
@@ -1276,7 +1275,7 @@ export const ManageVault = ({ match }) => {
                           <Tooltip
                             className="ml-2"
                             shouldWrapChildren={true}
-                            label={`The amount of collateral you are able to withdraw while keeping a healthy collateralisation level`}
+                            label={`The amount of collateral you are able to withdraw while keeping a healthy collateralization level`}
                           >
                             <InformationCircleIcon
                               className="block w-5 h-5 ml-2 text-gray-400"
