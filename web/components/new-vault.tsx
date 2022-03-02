@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Container } from './home';
 import { CreateVaultStepOne } from './create-vault-step-one';
+import { CreateVaultStepTwo } from './create-vault-step-two';
 import { CreateVaultConfirm } from './create-vault-confirm';
 import { CreateVaultTransact } from './create-vault-transact';
 
@@ -24,12 +25,14 @@ export const NewVault = () => {
       <Helmet>
         <title>Create vault</title>
       </Helmet>
-    
+
       <Container>
         <main className="py-12">
           {step === 0 ? (
             <CreateVaultStepOne setStep={setStep} setCoinAmounts={setCoinAmounts} />
-          ) : step === 1 ? (
+            ) : step === 1 ? (
+              <CreateVaultStepTwo setStep={setStep} setCoinAmounts={setCoinAmounts} />
+            ) : step === 2 ? (
             <CreateVaultConfirm
               setStep={setStep}
               coinAmounts={coinAmounts}
