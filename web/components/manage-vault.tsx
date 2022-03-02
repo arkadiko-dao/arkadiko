@@ -63,7 +63,6 @@ export const ManageVault = ({ match }) => {
   const [decimals, setDecimals] = useState(1000000);
   const [stackingEndDate, setStackingEndDate] = useState('');
   const [poxYield, setPoxYield] = useState(0);
-  const [stacksTipHeight, setStacksTipHeight] = useState(0);
   const [burnBlockHeight, setBurnBlockHeight] = useState(0);
 
   const [loadingVaultData, setLoadingVaultData] = useState(true);
@@ -159,7 +158,6 @@ export const ManageVault = ({ match }) => {
       const client = getRPCClient();
       const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
       const data = await response.json();
-      setStacksTipHeight(data['stacks_tip_height']);
       setBurnBlockHeight(data['burn_block_height']);
     };
 
@@ -1091,7 +1089,10 @@ export const ManageVault = ({ match }) => {
                       </div>
                     </div>
 
-                    <PoxTimeline unlockBurnHeight={unlockBurnHeight} currentBurnHeight={burnBlockHeight} />
+                    <PoxTimeline
+                      unlockBurnHeight={unlockBurnHeight}
+                      currentBurnHeight={burnBlockHeight}
+                    />
                   </div>
                 </div>
 
