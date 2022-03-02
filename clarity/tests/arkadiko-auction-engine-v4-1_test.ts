@@ -29,7 +29,6 @@ import {
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
-
 Clarinet.test({ name: "auction engine: liquidate stacking STX vault without enough collateral to cover debt",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -75,7 +74,6 @@ Clarinet.test({ name: "auction engine: liquidate stacking STX vault without enou
     // Auction closed
     let call = await vaultAuction.getAuctionOpen(1);
     call.result.expectBool(false);
-
   }
 });
 
@@ -493,5 +491,53 @@ Clarinet.test({ name: "auction engine: liquidate xBTC vault, multiple wallets",
     // Vault owner balance
     call = await xbtcToken.balanceOf(deployer.address);
     call.result.expectOk().expectUintWithDecimals(9999.916667);
+  }
+});
+
+
+Clarinet.test({ name: "auction engine: toggle shutdown",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let usdaToken = new UsdaToken(chain, deployer);
+    let xstxManager = new XstxManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let liquidationPool = new LiquidationPool(chain, deployer);
+    let liquidationRewards = new LiquidationRewards(chain, deployer);
+
+    // Initialize price of STX to $2 in the oracle
+    let result = oracleManager.updatePrice("STX", 3);
+    result = oracleManager.updatePrice("xSTX", 3);
+
+    // Create vault - 1500 STX, 1000 USDA
+    result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    // Upate price to $1.0
+    result = oracleManager.updatePrice("STX", 1);
+    result = oracleManager.updatePrice("xSTX", 1);
+
+    // Deposit 10K USDA
+    result = liquidationPool.stake(wallet_1, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Toggle shutdown
+    result = vaultAuction.toggleEmergencyShutdown();
+    result.expectOk().expectBool(true);
+
+    // Start auction
+    result = vaultAuction.startAuction(deployer, 1);
+    result.expectErr().expectUint(31002);
+
+    // Toggle shutdown
+    result = vaultAuction.toggleEmergencyShutdown();
+    result.expectOk().expectBool(true);
+
+    // Start auction
+    result = vaultAuction.startAuction(deployer, 1);
+    result.expectOk().expectBool(true);
   }
 });

@@ -629,5 +629,13 @@ class VaultAuctionV4 {
     return block.receipts[0].result;
   }
 
+  toggleEmergencyShutdown() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-auction-engine-v4-1", "toggle-auction-engine-shutdown", [
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
 }
 export { VaultAuctionV4 };

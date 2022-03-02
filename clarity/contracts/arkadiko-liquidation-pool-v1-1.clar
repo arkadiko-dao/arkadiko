@@ -4,10 +4,12 @@
 (define-constant ERR-NOT-AUTHORIZED u32401)
 (define-constant ERR-UNSTAKE-AMOUNT-EXCEEDED u32002)
 (define-constant ERR-WITHDRAWAL-AMOUNT-EXCEEDED u32003)
+(define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u32004)
 
 ;; Variables
 (define-data-var fragments-per-token uint u1000000000000)
 (define-data-var total-fragments uint u0)
+(define-data-var shutdown-activated bool false)
 
 ;; ---------------------------------------------------------
 ;; Maps
@@ -28,6 +30,23 @@
     (map-get? staker-fragments { staker: staker })
   )
 )
+
+(define-read-only (get-shutdown-activated)
+  (or
+    (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated))
+    (var-get shutdown-activated)
+  )
+)
+
+;; @desc toggles the killswitch
+(define-public (toggle-shutdown)
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set shutdown-activated (not (var-get shutdown-activated))))
+  )
+)
+
 
 ;; ---------------------------------------------------------
 ;; Getters
@@ -92,6 +111,8 @@
     (new-user-fragments (+ user-fragments add-user-fragments))
     (new-total-fragments (+ (var-get total-fragments) add-user-fragments))
   )
+    (asserts! (not (get-shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
+
     ;; Transfer USDA
     (try! (contract-call? .usda-token transfer amount staker (as-contract tx-sender) none))
 
@@ -114,6 +135,7 @@
     (user-fragments (get fragments (get-staker-fragments staker)))
     (remove-user-fragments (* amount (var-get fragments-per-token)))
   )
+    (asserts! (not (get-shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (>= user-fragments remove-user-fragments) (err ERR-UNSTAKE-AMOUNT-EXCEEDED))
 
     (let (

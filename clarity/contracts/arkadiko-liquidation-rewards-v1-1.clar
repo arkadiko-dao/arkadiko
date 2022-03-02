@@ -4,12 +4,12 @@
 
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED u30401)
-(define-constant ERR-WRONG-TOKEN u30402)
-
-;; Constants
+(define-constant ERR-WRONG-TOKEN u30002)
+(define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u30003)
 
 ;; Variables
 (define-data-var total-reward-ids uint u0)
+(define-data-var shutdown-activated bool false)
 
 ;; ---------------------------------------------------------
 ;; Maps
@@ -60,6 +60,22 @@
   )
 )
 
+(define-read-only (get-shutdown-activated)
+  (or
+    (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated))
+    (var-get shutdown-activated)
+  )
+)
+
+;; @desc toggles the killswitch
+(define-public (toggle-shutdown)
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set shutdown-activated (not (var-get shutdown-activated))))
+  )
+)
+
 ;; ---------------------------------------------------------
 ;; Add rewards
 ;; ---------------------------------------------------------
@@ -72,6 +88,8 @@
   (let (
     (reward-id (var-get total-reward-ids))
   )
+    (asserts! (not (get-shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
+
     ;; Transfer rewards to contract
     (if token-is-stx
       (try! (stx-transfer? total-amount tx-sender (as-contract tx-sender)))
@@ -126,6 +144,7 @@
     (reward-amount (unwrap-panic (get-rewards-of user reward-id liquidation-pool)))
     (reward-info (get-reward-data reward-id))
   )
+    (asserts! (not (get-shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq (contract-of token) (get token reward-info)) (err ERR-WRONG-TOKEN))
 
     (if (is-eq reward-amount u0)

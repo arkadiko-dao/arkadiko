@@ -85,7 +85,6 @@ Clarinet.test({
   }
 });
 
-
 Clarinet.test({
   name: "liquidation-pool: withdraw",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -175,7 +174,6 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(1000);
   }
 });
-
 
 Clarinet.test({
   name: "liquidation-pool: shares at block",
@@ -286,7 +284,6 @@ Clarinet.test({
   }
 });
 
-
 Clarinet.test({
   name: "liquidation-pool: try to withdraw as user",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -302,5 +299,39 @@ Clarinet.test({
     // Withdraw fails
     result = liquidationPool.withdraw(wallet_1, 1000);
     result.expectErr().expectUint(32401);
+  }
+});
+
+Clarinet.test({
+  name: "liquidation-pool: emergency shutdown",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let liquidationPool = new LiquidationPool(chain, deployer);
+ 
+    // Stake
+    let result = liquidationPool.stake(deployer, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Emergency shutdown activated
+    result = liquidationPool.toggleEmergencyShutdown();
+    result.expectOk().expectBool(true);
+
+    // Stake fails
+    result = liquidationPool.stake(wallet_1, 1000);
+    result.expectErr().expectUint(32004);
+
+    // Unstake fails
+    result = liquidationPool.unstake(deployer, 2000);
+    result.expectErr().expectUint(32004);
+
+    // Emergency shutdown deactivated
+    result = liquidationPool.toggleEmergencyShutdown();
+    result.expectOk().expectBool(true);
+
+    // Unstake
+    result = liquidationPool.unstake(deployer, 2000);
+    result.expectOk().expectUintWithDecimals(2000);
   }
 });

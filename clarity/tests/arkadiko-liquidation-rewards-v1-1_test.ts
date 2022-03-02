@@ -12,10 +12,6 @@ import {
   LiquidationRewardsDiko
 } from './models/arkadiko-tests-liquidation-fund.ts';
 
-import { 
-  UsdaToken
-} from './models/arkadiko-tests-tokens.ts';
-
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 Clarinet.test({
@@ -24,7 +20,6 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
 
-    let usdaToken = new UsdaToken(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
     let liquidationRewards = new LiquidationRewards(chain, deployer);
 
@@ -108,7 +103,6 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
 
-    let usdaToken = new UsdaToken(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
     let liquidationRewards = new LiquidationRewards(chain, deployer);
     let liquidationRewardsDiko = new LiquidationRewardsDiko(chain, deployer);
@@ -174,9 +168,7 @@ Clarinet.test({
   name: "liquidation-rewards: update epoch info",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
 
-    let usdaToken = new UsdaToken(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
     let liquidationRewards = new LiquidationRewards(chain, deployer);
     let liquidationRewardsDiko = new LiquidationRewardsDiko(chain, deployer);
@@ -236,10 +228,7 @@ Clarinet.test({
   name: "liquidation-rewards: try to claim rewards with wrong token",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
-
-    let usdaToken = new UsdaToken(chain, deployer);
-    let liquidationPool = new LiquidationPool(chain, deployer);
+ 
     let liquidationRewards = new LiquidationRewards(chain, deployer);
 
     // Add rewards
@@ -248,6 +237,98 @@ Clarinet.test({
 
     // Claim reward fails
     result = liquidationRewards.claimRewards(deployer, 0, "tokensoft-token");
-    result.expectErr().expectUint(30402);
+    result.expectErr().expectUint(30002);
+  }
+});
+
+Clarinet.test({
+  name: "liquidation-rewards: emergency shutdown",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let liquidationPool = new LiquidationPool(chain, deployer);
+    let liquidationRewards = new LiquidationRewards(chain, deployer);
+
+    // Stake
+    let result = liquidationPool.stake(deployer, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Add rewards
+    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
+    result.expectOk().expectBool(true);
+
+    // Add rewards
+    result = liquidationRewards.addReward(2, "arkadiko-token", 300);
+    result.expectOk().expectBool(true);
+
+    // Rewards 0
+    let call:any = await liquidationRewards.getRewardsOf(deployer.address, 0);
+    call.result.expectOk().expectUintWithDecimals(100);
+
+    // Toggle shutdown
+    result = liquidationRewards.toggleEmergencyShutdown();
+    result.expectOk().expectBool(true);
+
+    // Add rewards fails
+    result = liquidationRewards.addReward(2, "arkadiko-token", 300);
+    result.expectErr().expectUint(30003);
+
+    // Claim reward fails
+    result = liquidationRewards.claimRewards(deployer, 0, "arkadiko-token");
+    result.expectErr().expectUint(30003);
+
+    // Toggle shutdown
+    result = liquidationRewards.toggleEmergencyShutdown();
+    result.expectOk().expectBool(true);
+
+    // Add rewards
+    result = liquidationRewards.addReward(2, "arkadiko-token", 300);
+    result.expectOk().expectBool(true);
+
+    // Claim reward
+    result = liquidationRewards.claimRewards(deployer, 0, "arkadiko-token");
+    call.result.expectOk().expectUintWithDecimals(100);
+  }
+});
+
+
+Clarinet.test({
+  name: "liquidation-rewards: shutdown diko rewards",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let liquidationPool = new LiquidationPool(chain, deployer);
+    let liquidationRewards = new LiquidationRewards(chain, deployer);
+    let liquidationRewardsDiko = new LiquidationRewardsDiko(chain, deployer);
+
+    // Stake
+    let result = liquidationPool.stake(deployer, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Advance to next epoch
+    chain.mineEmptyBlock(2020);
+
+    // Toggle shutdown
+    result = liquidationRewardsDiko.toggleEmergencyShutdown();
+    result.expectOk().expectBool(true);
+
+    // Add rewards
+    result = liquidationRewardsDiko.addRewards();
+    result.expectErr().expectUint(34003);
+
+    // Toggle shutdown
+    result = liquidationRewardsDiko.toggleEmergencyShutdown();
+    result.expectOk().expectBool(true);
+
+    // Add rewards
+    result = liquidationRewardsDiko.addRewards();
+    result.expectOk().expectUintWithDecimals(12.385355);
+
+    // Reward data
+    let call:any = await liquidationRewards.getRewardData(0);
+    call.result.expectTuple()["share-block"].expectUint(0);
+    call.result.expectTuple()["total-amount"].expectUintWithDecimals(12.385355);
   }
 });

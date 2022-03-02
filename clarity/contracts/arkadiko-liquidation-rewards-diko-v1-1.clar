@@ -3,12 +3,14 @@
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED u34401)
 (define-constant ERR-EPOCH-NOT-ENDED u34002)
+(define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u34003)
 
 ;; Variables
 ;; TODO - SET FOR MAINNET
 (define-data-var end-epoch-block uint (+ block-height u2016)) ;; 2 weeks after deploy
 (define-data-var epoch-rate uint u100000) ;; 10%
 (define-data-var blocks-per-epoch uint u2016) ;; 2 weeks
+(define-data-var shutdown-activated bool false)
 
 (define-read-only (get-end-epoch-block)
   (ok (var-get end-epoch-block))
@@ -28,6 +30,22 @@
     rate: (var-get epoch-rate),
     end-block: (var-get end-epoch-block)
   })
+)
+
+(define-read-only (get-shutdown-activated)
+  (or
+    (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated))
+    (var-get shutdown-activated)
+  )
+)
+
+;; @desc toggles the killswitch
+(define-public (toggle-shutdown)
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set shutdown-activated (not (var-get shutdown-activated))))
+  )
 )
 
 ;; ---------------------------------------------------------
@@ -54,6 +72,7 @@
     (rewards-to-add (get-rewards-to-add))
     (start-block (- (var-get end-epoch-block) (var-get blocks-per-epoch)))
   )
+    (asserts! (not (get-shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq (contract-of liquidation-rewards) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "liquidation-rewards"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (>= block-height (var-get end-epoch-block)) (err ERR-EPOCH-NOT-ENDED))
 

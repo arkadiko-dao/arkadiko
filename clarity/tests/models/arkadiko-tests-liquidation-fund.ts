@@ -233,6 +233,13 @@ class LiquidationPool {
     return block.receipts[0].result;
   }
 
+  toggleEmergencyShutdown() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-pool-v1-1", "toggle-shutdown", [
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
 }
 export { LiquidationPool };
 
@@ -294,6 +301,13 @@ class LiquidationRewards {
     return block.receipts[0].result;
   }
 
+  toggleEmergencyShutdown() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "toggle-shutdown", [
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
 }
 export { LiquidationRewards };
 
@@ -335,6 +349,14 @@ class LiquidationRewardsDiko {
       Tx.contractCall("arkadiko-liquidation-rewards-diko-v1-1", "update-epoch-data", [
         types.uint(rate * 1000000),
         types.uint(length),
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  toggleEmergencyShutdown() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-rewards-diko-v1-1", "toggle-shutdown", [
       ], this.deployer.address)
     ]);
     return block.receipts[0].result;
