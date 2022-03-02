@@ -285,12 +285,12 @@ export const ManageVault = ({ match }) => {
       if (vault['collateralType'].toLowerCase().includes('stx')) {
         setCanStackCollateral(true);
         fetchYield();
-        fetchStackingInfo();
       }
       setDecimals(vault['collateralType'].toLowerCase().includes('stx') ? 1000000 : 100000000);
       fetchFees();
       fetchStackerHeight();
       fetchCollateralToDebtRatio();
+      fetchStackingInfo();
     }
   }, [vault]);
 
@@ -1091,7 +1091,7 @@ export const ManageVault = ({ match }) => {
                       </div>
                     </div>
 
-                    <PoxTimeline />
+                    <PoxTimeline unlockBurnHeight={unlockBurnHeight} currentBurnHeight={burnBlockHeight} />
                   </div>
                 </div>
 

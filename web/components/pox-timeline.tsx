@@ -1,9 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { AppContext } from '@common/context';
 import { Tooltip } from '@blockstack/ui';
 
-export const PoxTimeline = () => {
+export const PoxTimeline = ({ unlockBurnHeight, currentBurnHeight }) => {
   const [state, _] = useContext(AppContext);
+  const startBurnHeight = unlockBurnHeight - 3 * 2100;
 
   return (
     <div className="relative">
@@ -30,7 +31,7 @@ export const PoxTimeline = () => {
                 </svg>
                 <div className="text-xs font-semibold">We are here</div>
               </div>
-              <a href={`https://mempool.space/`} target="_blank" rel="noopener noreferrer" className="font-normal hover:underline text-xs mt-0.5 ml-1 text-gray-500 dark:text-gray-200">#0000000</a>
+              <a href={`https://mempool.space/`} target="_blank" rel="noopener noreferrer" className="font-normal hover:underline text-xs mt-0.5 ml-1 text-gray-500 dark:text-gray-200">#{currentBurnHeight}</a>
             </div>
 
             <div className="absolute flex flex-col items-start justify-start cursor-help -right-2 top-11">
@@ -40,7 +41,7 @@ export const PoxTimeline = () => {
                 </svg>
                 <div className="text-xs font-semibold">Finish</div>
               </div>
-              <a href="https://mempool.space/" target="_blank" rel="noopener noreferrer" className="font-normal hover:underline text-xs mt-0.5 mr-1 text-gray-500 dark:text-gray-200">#{state.cycleEndHeight}</a>
+              <a href="https://mempool.space/" target="_blank" rel="noopener noreferrer" className="font-normal hover:underline text-xs mt-0.5 mr-1 text-gray-500 dark:text-gray-200">#{unlockBurnHeight}</a>
             </div>
           </div>
         </div>
@@ -60,7 +61,7 @@ export const PoxTimeline = () => {
           </svg>
           <div className="text-xs font-semibold">Start</div>
         </div>
-        <a href={`https://mempool.space/block/${state.cycleStartHeight}`} target="_blank" rel="noopener noreferrer" className="hover:underline text-xs mt-0.5 ml-1 text-gray-500 dark:text-gray-200">#{state.cycleStartHeight}</a>
+        <a href={`https://mempool.space/block/${state.cycleStartHeight}`} target="_blank" rel="noopener noreferrer" className="hover:underline text-xs mt-0.5 ml-1 text-gray-500 dark:text-gray-200">#{startBurnHeight}</a>
       </div>
     </div>
   )
