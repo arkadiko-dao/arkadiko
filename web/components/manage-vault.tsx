@@ -1092,6 +1092,7 @@ export const ManageVault = ({ match }) => {
                     <PoxTimeline
                       unlockBurnHeight={unlockBurnHeight}
                       currentBurnHeight={burnBlockHeight}
+                      isLoading={loadingStackerData}
                     />
                   </div>
                 </div>
