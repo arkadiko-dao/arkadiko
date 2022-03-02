@@ -138,6 +138,7 @@
 ;; @desc claim rewards for user
 ;; @param reward-id; the rewards
 ;; @param token; the reward token
+;; @param liquidation-pool; the pool on which shares are based
 (define-public (claim-rewards-of (reward-id uint) (token <ft-trait>) (liquidation-pool <liquidation-pool-trait>))
   (let (
     (user tx-sender)
@@ -163,4 +164,23 @@
   )
 )
 
-
+;; @desc claim multiple rewards at once
+;; @param reward-ids; the rewards to claim
+;; @param token; the reward token
+;; @param liquidation-pool; the pool on which shares are based
+(define-public (claim-many-rewards-of (reward-ids (list 5 uint)) (token <ft-trait>) (liquidation-pool <liquidation-pool-trait>))
+  (let (
+    (id-0 (element-at reward-ids u0))
+    (id-1 (element-at reward-ids u1))
+    (id-2 (element-at reward-ids u2))
+    (id-3 (element-at reward-ids u3))
+    (id-4 (element-at reward-ids u4))
+  )
+    (if (is-none id-0) u0 (try! (claim-rewards-of (unwrap-panic id-0) token liquidation-pool)))
+    (if (is-none id-1) u0 (try! (claim-rewards-of (unwrap-panic id-1) token liquidation-pool)))
+    (if (is-none id-2) u0 (try! (claim-rewards-of (unwrap-panic id-2) token liquidation-pool)))
+    (if (is-none id-3) u0 (try! (claim-rewards-of (unwrap-panic id-3) token liquidation-pool)))
+    (if (is-none id-4) u0 (try! (claim-rewards-of (unwrap-panic id-4) token liquidation-pool)))
+    (ok true)
+  )
+)

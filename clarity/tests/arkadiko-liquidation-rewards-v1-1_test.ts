@@ -97,6 +97,63 @@ Clarinet.test({
   }
 });
 
+
+Clarinet.test({
+  name: "liquidation-rewards: add rewards and claim at once",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let liquidationPool = new LiquidationPool(chain, deployer);
+    let liquidationRewards = new LiquidationRewards(chain, deployer);
+
+    // Stake
+    let result = liquidationPool.stake(deployer, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Add rewards
+    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
+    result.expectOk().expectBool(true);
+    result = liquidationRewards.addReward(2, "arkadiko-token", 200);
+    result.expectOk().expectBool(true);
+    result = liquidationRewards.addReward(3, "arkadiko-token", 300);
+    result.expectOk().expectBool(true);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 400);
+    result.expectOk().expectBool(true);
+    result = liquidationRewards.addReward(5, "arkadiko-token", 500);
+    result.expectOk().expectBool(true);
+
+    // Pending rewards
+    let call = await liquidationRewards.getRewardsOf(deployer.address, 0);
+    call.result.expectOk().expectUintWithDecimals(100);
+    call = await liquidationRewards.getRewardsOf(deployer.address, 1);
+    call.result.expectOk().expectUintWithDecimals(200);
+    call = await liquidationRewards.getRewardsOf(deployer.address, 2);
+    call.result.expectOk().expectUintWithDecimals(300);
+    call = await liquidationRewards.getRewardsOf(deployer.address, 3);
+    call.result.expectOk().expectUintWithDecimals(400);
+    call = await liquidationRewards.getRewardsOf(deployer.address, 4);
+    call.result.expectOk().expectUintWithDecimals(500);
+
+    // Claim 0 and 2 at once
+    let rewardIds = [types.uint(0), types.uint(2), types.uint(4)];
+    result = liquidationRewards.claimManyRewards(rewardIds, "arkadiko-token");
+    result.expectOk().expectBool(true);
+
+    // Pending rewards
+    call = await liquidationRewards.getRewardsOf(deployer.address, 0);
+    call.result.expectOk().expectUintWithDecimals(0);
+    call = await liquidationRewards.getRewardsOf(deployer.address, 1);
+    call.result.expectOk().expectUintWithDecimals(200);
+    call = await liquidationRewards.getRewardsOf(deployer.address, 2);
+    call.result.expectOk().expectUintWithDecimals(0);
+    call = await liquidationRewards.getRewardsOf(deployer.address, 3);
+    call.result.expectOk().expectUintWithDecimals(400);
+    call = await liquidationRewards.getRewardsOf(deployer.address, 4);
+    call.result.expectOk().expectUintWithDecimals(0);
+  }
+});
+
 Clarinet.test({
   name: "liquidation-rewards: add diko staking rewards",
   async fn(chain: Chain, accounts: Map<string, Account>) {
