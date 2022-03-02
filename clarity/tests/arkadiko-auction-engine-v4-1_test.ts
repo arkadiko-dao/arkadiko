@@ -501,12 +501,9 @@ Clarinet.test({ name: "auction engine: toggle shutdown",
     let wallet_1 = accounts.get("wallet_1")!;
 
     let oracleManager = new OracleManager(chain, deployer);
-    let usdaToken = new UsdaToken(chain, deployer);
-    let xstxManager = new XstxManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
     let vaultAuction = new VaultAuctionV4(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
-    let liquidationRewards = new LiquidationRewards(chain, deployer);
 
     // Initialize price of STX to $2 in the oracle
     let result = oracleManager.updatePrice("STX", 3);
