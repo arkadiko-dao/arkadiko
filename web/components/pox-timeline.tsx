@@ -85,7 +85,7 @@ export const PoxTimeline = ({ unlockBurnHeight, currentBurnHeight, isLoading }) 
                 />
               </div>
             </div>
-            <div className="flex text-white items-center font-semibold justify-center text-xs text-center w-[25%] bg-indigo-800 hover:cursor-help rounded-r-md">
+            <div className="relative flex text-white items-center font-semibold justify-center text-xs text-center w-[25%] bg-indigo-800 hover:cursor-help rounded-r-md">
               {currentIndex === 3 ? (
                 <PoxTimelineIndicator
                   position="transform -translate-x-1/2 left-3/4 -top-11"
