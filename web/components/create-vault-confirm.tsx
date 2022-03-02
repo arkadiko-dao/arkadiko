@@ -13,7 +13,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
 
   const endDate = Date.parse(state.endDate);
   const msInWeek = 7 * 24 * 60 * 60 * 1000;
-  const availableTokensDate = endDate + 8 * msInWeek; // 6-week stacking + 2-week cooldown = 8 weeks
+  const availableTokensDate = endDate + 6 * msInWeek; // 6-week stacking
   const tokensAvailability = new Date(availableTokensDate)
     .toDateString()
     .split(' ')
