@@ -18,7 +18,7 @@ export function PoxTimelineIndicator({ position = '-left-1 top-11', reversed, ar
         </svg>
         <div className="text-xs font-semibold">{label}</div>
       </div>
-      <a href={link} target="_blank" rel="noopener noreferrer" className="hover:underline text-xs mt-0.5 ml-1 text-gray-500 dark:text-gray-200">#{block}</a>
+      <a href={link} target="_blank" rel="noopener noreferrer" className="font-normal hover:underline text-xs mt-0.5 ml-1 text-gray-500 dark:text-gray-200">#{block}</a>
     </div>
   )
 };

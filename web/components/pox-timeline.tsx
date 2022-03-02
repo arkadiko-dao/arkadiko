@@ -20,15 +20,13 @@ export const PoxTimeline = ({ unlockBurnHeight, currentBurnHeight, isLoading }) 
   return (
     <>
       {isLoading ? (
-        <div className="p-4 border-l-4 border-gray-400 rounded-tr-md rounded-br-md bg-gray-50 dark:bg-gray-200">
-          <div className="flex">
-            <div className="w-5 h-5 bg-gray-300 rounded-full shrink-0" />
-            <div className="flex-1 ml-3">
-              <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.HALF} />
-              <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.THIRD} />
-              <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.FULL} />
-            </div>
+        <div className="flex w-full h-10 my-12 rounded-md bg-zinc-100 animate-pulse">
+          <div className="flex items-center w-[75%]">
+            <div className="w-1/3 h-full bg-gray-400/70 rounded-l-md" />
+            <div className="w-1/3 h-full bg-gray-400/80" />
+            <div className="w-1/3 h-full bg-gray-400/90" />
           </div>
+          <div className="w-[25%] bg-gray-400 rounded-r-md" />
         </div>
       ) : (
         <div className="relative">
