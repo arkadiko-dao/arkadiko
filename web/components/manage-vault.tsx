@@ -1150,7 +1150,7 @@ export const ManageVault = ({ match }) => {
                                 </p>
                                 <Tooltip
                                   shouldWrapChildren={true}
-                                  label={`...`}
+                                  label={`The amount of STX that is currently stacking or will be stacking after your cooldown cycle`}
                                 >
                                   <InformationCircleIcon
                                     className="block w-5 h-5 ml-2 text-gray-400"
@@ -1222,7 +1222,7 @@ export const ManageVault = ({ match }) => {
                               <Tooltip
                                 className="ml-2"
                                 shouldWrapChildren={true}
-                                label={`...`}
+                                label={`The amount of yield that your vault has earned so far`}
                               >
                                 <InformationCircleIcon
                                   className="block w-5 h-5 ml-2 text-gray-400"
@@ -1276,7 +1276,7 @@ export const ManageVault = ({ match }) => {
                           <Tooltip
                             className="ml-2"
                             shouldWrapChildren={true}
-                            label={`...`}
+                            label={`The amount of collateral you are able to withdraw while keeping a healthy collateralisation level`}
                           >
                             <InformationCircleIcon
                               className="block w-5 h-5 ml-2 text-gray-400"
