@@ -191,6 +191,8 @@ export const App: React.FC = () => {
         }
       };
       void getData();
+    } else {
+      fetchStackingCycle();
     }
   }, []);
 

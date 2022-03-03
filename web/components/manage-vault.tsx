@@ -77,7 +77,7 @@ export const ManageVault = ({ match }) => {
         contractName: 'arkadiko-freddie-v1-1',
         functionName: 'get-vault-by-id',
         functionArgs: [uintCV(match.params.id)],
-        senderAddress: senderAddress || '',
+        senderAddress: senderAddress || contractAddress,
         network: network,
       });
 
@@ -111,7 +111,7 @@ export const ManageVault = ({ match }) => {
           contractName: 'arkadiko-collateral-types-v1-1',
           functionName: 'get-collateral-type-by-name',
           functionArgs: [stringAsciiCV(data['collateral-type'].value)],
-          senderAddress: senderAddress || '',
+          senderAddress: senderAddress || contractAddress,
           network: network,
         });
 
@@ -207,7 +207,7 @@ export const ManageVault = ({ match }) => {
             contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v1-1'),
             falseCV(),
           ],
-          senderAddress: senderAddress || '',
+          senderAddress: senderAddress || contractAddress,
           network: network,
         });
         const json = cvToJSON(collToDebt);
