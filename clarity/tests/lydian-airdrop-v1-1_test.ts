@@ -102,6 +102,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   chain.mineEmptyBlock(20);
 
+  // Get diko info
   call = await chain.callReadOnlyFn("lydian-airdrop-v1-1", "get-diko-for-user", [
     types.principal(wallet_1.address),
     types.uint(20)
@@ -118,5 +119,14 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // 30k dko in pool, got 10%
   call.result.expectOk().expectTuple()['wstxdiko'].expectUintWithDecimals(2999.999999); 
+
+  // Total diko for user
+  call = await chain.callReadOnlyFn("lydian-airdrop-v1-1", "get-total-diko-for-user", [
+    types.principal(wallet_1.address),
+    types.uint(20)
+  ], deployer.address);
+
+  // 100k diko in wallet
+  call.result.expectOk().expectUintWithDecimals(154999.999998); 
 }
 });

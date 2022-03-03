@@ -1,4 +1,76 @@
 
+;; ---------------------------------------------------------
+;; Maps
+;; ---------------------------------------------------------
+
+(define-map claimed
+  { user: principal }
+  {
+    amount: uint
+  }
+)
+
+(define-read-only (get-claimed (user principal))
+  (default-to
+    {
+      amount: u0
+    }
+    (map-get? claimed { user: user })
+  )
+)
+
+
+;; ---------------------------------------------------------
+;; Claim LDN
+;; ---------------------------------------------------------
+
+(define-read-only (ldn-for-user (user principal) (block uint))
+  (let (
+    (block-hash (unwrap-panic (get-block-info? id-header-hash block)))
+    (diko-supply (unwrap-panic (at-block block-hash (contract-call? .arkadiko-token get-total-supply))))
+    (user-diko (unwrap-panic (get-total-diko-for-user user block)))
+
+    ;; TODO
+    (ldn-to-distribute u2000000000)
+
+    (diko-percentage (/ (* user-diko u1000000000000) diko-supply))
+    (ldn-user (/ (* diko-percentage ldn-to-distribute) u1000000000000))
+  )
+    (ok ldn-user)
+  )
+)
+
+(define-public (claim)
+  (let (
+    (sender tx-sender)
+    (ldn-for-user (unwrap-panic (ldn-for-user tx-sender u47500)))
+    (claimed-amount (get amount (get-claimed sender)))
+    (left-to-claim (- ldn-for-user claimed-amount))
+  )
+    (if (is-eq left-to-claim u0)
+      (ok false)
+
+      ;; TODO 
+      (as-contract (contract-call? .arkadiko-token transfer left-to-claim (as-contract tx-sender) sender none))
+    )
+  )
+)
+
+
+;; ---------------------------------------------------------
+;; DIKO for user
+;; ---------------------------------------------------------
+
+(define-read-only (get-total-diko-for-user (user principal) (block uint))
+  (let (
+    (wallet-diko (unwrap-panic (get-diko-wallet-for-user user block)))
+    (stdiko-diko (unwrap-panic (get-stdiko-wallet-for-user user block)))
+    (lp1-diko (unwrap-panic (get-diko-usda-for-user user block)))
+    (lp2-diko (unwrap-panic (get-wstx-diko-for-user user block)))
+  )
+    (ok (+ wallet-diko stdiko-diko lp1-diko lp2-diko))
+  )
+)
 
 (define-read-only (get-diko-for-user (user principal) (block uint))
   (let (
