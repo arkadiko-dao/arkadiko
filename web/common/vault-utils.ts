@@ -3,9 +3,11 @@ export const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 export const getLiquidationPrice = (
   liquidationRatio: number,
   coinsMinted: number,
-  stxCollateral: number
+  stxCollateral: number,
+  collateralToken: string
 ) => {
-  return ((liquidationRatio * coinsMinted) / (stxCollateral * 100)).toFixed(4);
+  const denominator = collateralToken.toLocaleLowerCase().includes('xbtc') ? 1 : 100;
+  return ((liquidationRatio * coinsMinted) / (stxCollateral * denominator)).toFixed(4);
 };
 
 export const getCollateralToDebtRatio = (

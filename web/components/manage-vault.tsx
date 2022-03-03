@@ -304,7 +304,8 @@ export const ManageVault = ({ match }) => {
       return getLiquidationPrice(
         collateralType?.liquidationRatio,
         vault['debt'],
-        vault['collateral']
+        vault['collateral'],
+        vault['collateralToken']
       );
     }
 
