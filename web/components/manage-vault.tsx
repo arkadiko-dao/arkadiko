@@ -1340,7 +1340,11 @@ export const ManageVault = ({ match }) => {
                       // user has indicated they want to stack their tokens
                       <div className="mt-6">
                         <Alert>
-                          {startedStacking ? (
+                          {startedStacking && burnBlockHeight > unlockBurnHeight ? (
+                            <p>
+                              You can stop stacking and withdraw your collateral by unlocking your vault with the above Unlock button.
+                            </p>
+                          ) : startedStacking ? (
                             <p>
                               You cannot withdraw your collateral since it is stacked until Bitcoin
                               block {unlockBurnHeight}. We are currently at Bitcoin block {burnBlockHeight}.
