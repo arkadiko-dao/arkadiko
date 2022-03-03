@@ -1272,7 +1272,7 @@ export const ManageVault = ({ match }) => {
                       </>
                     ) : null}
 
-                    <div className="flex items-center justify-between mt-4">
+                    <div className={canStackCollateral ? `flex items-center justify-between mt-4` : `flex items-center justify-between`}>
                       <div>
                         <p className="flex items-center text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                           Withdrawal
