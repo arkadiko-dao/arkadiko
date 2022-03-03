@@ -864,7 +864,7 @@ export const ManageVault = ({ match }) => {
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <h3 className="text-lg font-bold leading-6 text-gray-900 font-headings dark:text-zinc-50">
-                  Stacking
+                  {canStackCollateral ? `Stacking` : `Manage`}
                 </h3>
 
                 {canStackCollateral && !loadingVaultData ? (
@@ -931,82 +931,84 @@ export const ManageVault = ({ match }) => {
           <div className="mt-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <section>
-                <div className="relative">
-                  <div
-                    className="absolute w-full h-full dark:opacity-30"
-                    style={{ backgroundImage: 'url(/assets/stacks-pattern.png)', backgroundSize: '20%' }}
-                  />
-                  <a
-                    className="absolute top-0 right-0 z-10 mt-2 mr-2 bg-indigo-600 rounded-full"
-                    href="https://stacking.club/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <svg
-                      className="w-8 h-8"
-                      viewBox="0 0 120 120"
-                      aria-hidden="true"
+                {canStackCollateral ? (
+                  <div className="relative">
+                    <div
+                      className="absolute w-full h-full dark:opacity-30"
+                      style={{ backgroundImage: 'url(/assets/stacks-pattern.png)', backgroundSize: '20%' }}
+                    />
+                    <a
+                      className="absolute top-0 right-0 z-10 mt-2 mr-2 bg-indigo-600 rounded-full"
+                      href="https://stacking.club/"
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
-                      <circle cx="60" cy="60" r="60" fill="#5546FF"/>
-                      <path d="M86.0779 92L72.4991 71.4267H91.9992V63.6647H28V71.4357H47.4937L33.9214 92H44.0471L59.9997 67.8295L75.9522 92H86.0779ZM91.9993 56.1313V48.2912H72.8952L86.2874 28H76.1618L59.9995 52.4877L43.8375 28H33.7119L47.1212 48.3094H28V56.1313H91.9993Z" fill="white"/>
-                    </svg>
+                      <svg
+                        className="w-8 h-8"
+                        viewBox="0 0 120 120"
+                        aria-hidden="true"
+                      >
+                        <circle cx="60" cy="60" r="60" fill="#5546FF"/>
+                        <path d="M86.0779 92L72.4991 71.4267H91.9992V63.6647H28V71.4357H47.4937L33.9214 92H44.0471L59.9997 67.8295L75.9522 92H86.0779ZM91.9993 56.1313V48.2912H72.8952L86.2874 28H76.1618L59.9995 52.4877L43.8375 28H33.7119L47.1212 48.3094H28V56.1313H91.9993Z" fill="white"/>
+                      </svg>
 
-                  </a>
+                    </a>
 
-                  <dl className="relative grid grid-cols-1 overflow-hidden bg-indigo-100 bg-opacity-50 border border-indigo-200 divide-y divide-indigo-200 rounded-lg shadow-sm dark:bg-zinc-700 dark:bg-opacity-95 dark:border-zinc-600 dark:divide-zinc-600">
-                    <div className="px-4 py-3">
-                      <dt className="text-xs font-semibold text-indigo-600 uppercase dark:text-indigo-100">
-                        Stacking Cycle #
-                      </dt>
-                      <dd className="flex items-baseline justify-between mt-1 md:block">
-                        <div className="flex items-baseline justify-between flex-1 text-lg font-semibold text-indigo-800 dark:text-indigo-200">
-                          {state.cycleNumber}
-                        </div>
-                      </dd>
-                    </div>
-                    <div className="px-4 py-3">
-                      <dt className="text-xs font-semibold text-indigo-600 uppercase dark:text-indigo-100">
-                        Days in cycle
-                      </dt>
-                      <dd className="flex items-baseline justify-between mt-1 md:block">
-                        <div className="flex items-baseline justify-between flex-1 text-lg font-semibold text-indigo-800 dark:text-indigo-200">
-                          <span>
-                            {state.daysPassed} <span className="text-xs opacity-80">(since {state.startDate})</span>
-                          </span>
-                          <a
-                            className="hover:underline"
-                            href={`https://mempool.space/block/${state.cycleStartHeight}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <span className="text-xs">~#{state.cycleStartHeight}</span>
-                          </a>
-                        </div>
-                      </dd>
-                    </div>
-                    <div className="px-4 py-3">
-                      <dt className="text-xs font-semibold text-indigo-600 uppercase dark:text-indigo-100">
-                        Days left
-                      </dt>
-                      <dd className="flex items-baseline justify-between mt-1 md:block">
-                        <div className="flex items-baseline justify-between flex-1 text-lg font-semibold text-indigo-800 dark:text-indigo-200">
-                          <span>
-                            {state.daysLeft} <span className="text-xs opacity-80">(ends on {state.endDate})</span>
-                          </span>
-                          <a
-                            className="hover:underline"
-                            href="https://mempool.space/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <span className="text-xs">~#{state.cycleEndHeight}</span>
-                          </a>
-                        </div>
-                      </dd>
-                    </div>
-                  </dl>
-                </div>
-                <div className="mt-3">
+                    <dl className="relative grid grid-cols-1 overflow-hidden bg-indigo-100 bg-opacity-50 border border-indigo-200 divide-y divide-indigo-200 rounded-lg shadow-sm dark:bg-zinc-700 dark:bg-opacity-95 dark:border-zinc-600 dark:divide-zinc-600">
+                      <div className="px-4 py-3">
+                        <dt className="text-xs font-semibold text-indigo-600 uppercase dark:text-indigo-100">
+                          Stacking Cycle #
+                        </dt>
+                        <dd className="flex items-baseline justify-between mt-1 md:block">
+                          <div className="flex items-baseline justify-between flex-1 text-lg font-semibold text-indigo-800 dark:text-indigo-200">
+                            {state.cycleNumber}
+                          </div>
+                        </dd>
+                      </div>
+                      <div className="px-4 py-3">
+                        <dt className="text-xs font-semibold text-indigo-600 uppercase dark:text-indigo-100">
+                          Days in cycle
+                        </dt>
+                        <dd className="flex items-baseline justify-between mt-1 md:block">
+                          <div className="flex items-baseline justify-between flex-1 text-lg font-semibold text-indigo-800 dark:text-indigo-200">
+                            <span>
+                              {state.daysPassed} <span className="text-xs opacity-80">(since {state.startDate})</span>
+                            </span>
+                            <a
+                              className="hover:underline"
+                              href={`https://mempool.space/block/${state.cycleStartHeight}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <span className="text-xs">~#{state.cycleStartHeight}</span>
+                            </a>
+                          </div>
+                        </dd>
+                      </div>
+                      <div className="px-4 py-3">
+                        <dt className="text-xs font-semibold text-indigo-600 uppercase dark:text-indigo-100">
+                          Days left
+                        </dt>
+                        <dd className="flex items-baseline justify-between mt-1 md:block">
+                          <div className="flex items-baseline justify-between flex-1 text-lg font-semibold text-indigo-800 dark:text-indigo-200">
+                            <span>
+                              {state.daysLeft} <span className="text-xs opacity-80">(ends on {state.endDate})</span>
+                            </span>
+                            <a
+                              className="hover:underline"
+                              href="https://mempool.space/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <span className="text-xs">~#{state.cycleEndHeight}</span>
+                            </a>
+                          </div>
+                        </dd>
+                      </div>
+                    </dl>
+                  </div>
+                ) : null}
+                <div className={canStackCollateral ? `mt-3` : ``}>
                   <dl className="relative border border-gray-300 divide-y rounded-lg shadow-sm bg-zinc-200/30 dark:bg-gray-500 dark:border-gray-700">
                     <div className="px-4 py-3">
                       <dt className="text-xs font-semibold text-gray-500 uppercase dark:text-gray-300">
