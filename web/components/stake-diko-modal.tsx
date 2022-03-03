@@ -102,9 +102,11 @@ export const StakeDikoModal: React.FC<Props> = ({ showStakeModal, setShowStakeMo
       initialFocus={inputRef}
     >
       {errors.length > 0 ? (
-        <Alert type={Alert.type.ERROR}>
-          <p>{errors[0]}</p>
-        </Alert>
+        <div className="mb-4">
+          <Alert type={Alert.type.ERROR}>
+            <p>{errors[0]}</p>
+          </Alert>
+        </div>
       ) : null}
 
       <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">

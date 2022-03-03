@@ -280,7 +280,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
               </dl>
             </div>
 
-            <div className="mt-4">
+            <div className="my-4">
               <Alert>
                 <p>
                   In order to remove liquidity and make the LP tokens available again, keep in mind

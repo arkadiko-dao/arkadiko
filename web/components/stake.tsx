@@ -896,13 +896,15 @@ export const Stake = () => {
         <Container>
           <main className="relative flex-1 py-12">
             {hasUnstakedTokens ? (
-              <Alert title="Unstaked LP tokens">
-                <p>👀 We noticed that your wallet contains LP Tokens that are not staked yet.</p>
-                <p className="mt-1">
-                  If you want to stake them, pick the appropriate token in the table below, hit the
-                  Actions dropdown button and choose Stake LP to initiate staking.
-                </p>
-              </Alert>
+              <div className="mb-4">
+                <Alert title="Unstaked LP tokens">
+                  <p>👀 We noticed that your wallet contains LP Tokens that are not staked yet.</p>
+                  <p className="mt-1">
+                    If you want to stake them, pick the appropriate token in the table below, hit the
+                    Actions dropdown button and choose Stake LP to initiate staking.
+                  </p>
+                </Alert>
+              </div>
             ) : null}
             <section>
               <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
