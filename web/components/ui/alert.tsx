@@ -59,7 +59,8 @@ export function Alert({ children, type = AlertType.INFO, title }: Props) {
 
   return (
     <div
-      className={classNames('p-4 mb-6 border-l-4 rounded-tr-md rounded-br-md', alert.wrapperClass)}
+      className={classNames('p-4 border-l-4 rounded-tr-md rounded-br-md', alert.wrapperClass)}
+      role="alert"
     >
       <div className="flex">
         <div className="shrink-0">{alert.icon}</div>

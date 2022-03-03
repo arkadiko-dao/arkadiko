@@ -187,7 +187,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
 
                 {tokenName.includes('STX') ? (
                   <div className="pt-4">
-                    <div className="mt-2">
+                    <div className="mt-2 mb-4">
                       <Alert type={Alert.type.WARNING} title="Important note">
                         <p className="">
                           Choosing to stack your STX means that they will be locked and become

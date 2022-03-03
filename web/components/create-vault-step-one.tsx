@@ -180,11 +180,13 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep, setCoinAmoun
         <div className="mt-4 shadow sm:rounded-md sm:overflow-hidden">
           <div className="px-4 py-5 space-y-6 bg-white dark:bg-zinc-900 sm:p-6">
             {errors.length > 0 ? (
-              <Alert type={Alert.type.ERROR}>
-                {errors.map(txt => (
-                  <p key={txt}>{txt}</p>
-                ))}
-              </Alert>
+              <div className="mb-4">
+                <Alert type={Alert.type.ERROR}>
+                  {errors.map(txt => (
+                    <p key={txt}>{txt}</p>
+                  ))}
+                </Alert>
+              </div>
             ) : null}
             <form className="space-y-8 divide-y divide-gray-200 dark:divide-zinc-600">
               <div className="space-y-8 divide-y divide-gray-200 dark:divide-zinc-600">
