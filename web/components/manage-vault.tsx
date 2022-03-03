@@ -1088,11 +1088,13 @@ export const ManageVault = ({ match }) => {
                       </div>
                     </div>
 
-                    <PoxTimeline
-                      unlockBurnHeight={unlockBurnHeight}
-                      currentBurnHeight={burnBlockHeight}
-                      isLoading={loadingStackerData}
-                    />
+                    {canStackCollateral ? (
+                      <PoxTimeline
+                        unlockBurnHeight={unlockBurnHeight}
+                        currentBurnHeight={burnBlockHeight}
+                        isLoading={loadingStackerData}
+                      />
+                    ) : null}
                   </div>
                 </div>
 
