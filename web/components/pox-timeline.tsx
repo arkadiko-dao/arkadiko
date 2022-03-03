@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
 import { AppContext } from '@common/context';
 import { Tooltip } from '@blockstack/ui';
-import { Placeholder } from './ui/placeholder';
 import { PoxTimelineIndicator } from './pox-timeline-indicator';
 
 export const PoxTimeline = ({ unlockBurnHeight, currentBurnHeight, isLoading }) => {
   const [state, _] = useContext(AppContext);
 
-  const startBurnHeight = unlockBurnHeight - 3 * 2100;
+  let startBurnHeight = unlockBurnHeight - 3 * 2100;
+  let endBurnHeight = unlockBurnHeight;
   let currentIndex = 3; // cooldown
   if (unlockBurnHeight > currentBurnHeight) {
     currentIndex = Math.floor(((unlockBurnHeight - currentBurnHeight) / 2100) - 2);
@@ -15,6 +15,10 @@ export const PoxTimeline = ({ unlockBurnHeight, currentBurnHeight, isLoading }) 
   let firstCycle = state.cycleNumber + 1;
   if (currentIndex !== 3) {
     firstCycle = (startBurnHeight - 100) === state.cycleStartHeight ? state.cycleNumber : state.cycleNumber + currentIndex;
+  } else {
+    // we are in a cooldown, adjust the block heights
+    startBurnHeight = state.cycleEndHeight;
+    endBurnHeight = startBurnHeight + 3 * 2100;
   }
 
   return (
@@ -79,7 +83,7 @@ export const PoxTimeline = ({ unlockBurnHeight, currentBurnHeight, isLoading }) 
                   arrow="order-1 w-4 h-4 mr-1 -scale-x-100"
                   label="Finish"
                   link={`https://mempool.space/`}
-                  block={unlockBurnHeight}
+                  block={endBurnHeight}
                 />
               </div>
             </div>
