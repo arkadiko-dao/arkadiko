@@ -3,7 +3,7 @@ import { CheckIcon } from '@heroicons/react/solid';
 import { classNames } from '@common/class-names';
 import { NavLink as RouterLink } from 'react-router-dom';
 
-export const NewVaultWizardNav = props => {
+export const NewVaultWizardNav = ({ currentSection, setStep }) => {
   const vaultCreationSections = [
     {
       id: '01',
@@ -29,7 +29,6 @@ export const NewVaultWizardNav = props => {
   ];
 
   vaultCreationSections.forEach((section, index) => {
-    const currentSection = props.currentSection;
     if (index < currentSection) {
       section.status = 'complete';
     } else if (index === currentSection) {
@@ -56,7 +55,7 @@ export const NewVaultWizardNav = props => {
                 )}
               >
                 {section.status === 'complete' ? (
-                  <RouterLink to={section.href} className="group">
+                  <button onClick={() => { setStep(sectionIdx) }} className="group">
                     <span
                       className="absolute top-0 left-0 w-1 h-full bg-transparent group-hover:bg-gray-200 lg:w-full lg:h-1 lg:bottom-0 lg:top-auto"
                       aria-hidden="true"
@@ -79,7 +78,7 @@ export const NewVaultWizardNav = props => {
                         </span>
                       </span>
                     </span>
-                  </RouterLink>
+                  </button>
                 ) : section.status === 'current' ? (
                   <RouterLink to={section.href} aria-current="step">
                     <span

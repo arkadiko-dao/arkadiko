@@ -33,22 +33,9 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
     }));
   };
 
-  const toggleAutoPayoff = () => {
-    const newState = !coinAmounts['auto-payoff'];
-    let stackPox = coinAmounts['stack-pox'];
-    if (newState) {
-      stackPox = true;
-    }
-    setCoinAmounts(prevState => ({
-      ...prevState,
-      'stack-pox': stackPox,
-      'auto-payoff': newState,
-    }));
-  };
-
   return (
     <>
-      <NewVaultWizardNav currentSection={currentSection} />
+      <NewVaultWizardNav currentSection={currentSection} setStep={setStep} />
 
       <section className="mt-8">
         <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">

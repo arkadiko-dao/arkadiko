@@ -27,7 +27,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep }) => {
 
   return (
     <>
-      <NewVaultWizardNav currentSection={currentSection} />
+      <NewVaultWizardNav currentSection={currentSection} setStep={setStep} />
 
       <section className="mt-8">
         <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">

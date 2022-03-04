@@ -148,7 +148,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   useEffect(() => {
     if (collateralAmount && coinAmount) {
       setLiquidationPrice(
-        getLiquidationPrice(liquidationRatio, parseFloat(coinAmount), parseFloat(collateralAmount))
+        getLiquidationPrice(liquidationRatio, parseFloat(coinAmount), parseFloat(collateralAmount), tokenName)
       );
       setCollateralToDebt(
         getCollateralToDebtRatio(price * 100, parseFloat(coinAmount), parseFloat(collateralAmount))
@@ -166,7 +166,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
 
   return (
     <>
-      <NewVaultWizardNav currentSection={currentSection} />
+      <NewVaultWizardNav currentSection={currentSection} setStep={setStep} />
 
       <section className="mt-8">
         <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
