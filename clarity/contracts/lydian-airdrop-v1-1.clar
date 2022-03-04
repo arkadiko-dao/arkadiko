@@ -1,4 +1,5 @@
 
+
 ;; ---------------------------------------------------------
 ;; Maps
 ;; ---------------------------------------------------------
@@ -30,9 +31,7 @@
     (diko-supply (unwrap-panic (at-block block-hash (contract-call? .arkadiko-token get-total-supply))))
     (user-diko (unwrap-panic (get-total-diko-for-user user block)))
 
-    ;; TODO
-    (ldn-to-distribute u2000000000)
-
+    (ldn-to-distribute u1538461538)
     (diko-percentage (/ (* user-diko u1000000000000) diko-supply))
     (ldn-user (/ (* diko-percentage ldn-to-distribute) u1000000000000))
   )
@@ -43,15 +42,20 @@
 (define-public (claim)
   (let (
     (sender tx-sender)
-    (ldn-for-user (unwrap-panic (ldn-for-user tx-sender u47500)))
+    (ldn-user (unwrap-panic (ldn-for-user sender u47500)))
     (claimed-amount (get amount (get-claimed sender)))
-    (left-to-claim (- ldn-for-user claimed-amount))
+    (left-to-claim (- ldn-user claimed-amount))
   )
     (if (is-eq left-to-claim u0)
       (ok false)
 
-      ;; TODO 
-      (as-contract (contract-call? .arkadiko-token transfer left-to-claim (as-contract tx-sender) sender none))
+      (begin
+        ;; Update claimed map
+        (map-set claimed { user: sender } { amount: (+ claimed-amount left-to-claim) })
+
+        ;; TODO - SET MAINNET ADDRESS FOR LYDIAN TOKEN
+        (as-contract (contract-call? .lydian-token transfer left-to-claim (as-contract tx-sender) sender none))
+      )
     )
   )
 )
@@ -92,7 +96,6 @@
   (let (
     (block-hash (unwrap-panic (get-block-info? id-header-hash block)))
 
-    ;; DIKO in wallet
     (diko-wallet (unwrap-panic (at-block block-hash (contract-call? .arkadiko-token get-balance user))))
   )
     (ok diko-wallet)
