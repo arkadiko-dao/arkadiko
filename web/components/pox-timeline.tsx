@@ -108,7 +108,7 @@ export const PoxTimeline = ({ unlockBurnHeight, currentBurnHeight, isLoading }) 
 
           <PoxTimelineIndicator
             label="Start"
-            link={`https://mempool.space/block/${state.cycleStartHeight}`}
+            link={`https://mempool.space/block/${startBurnHeight}`}
             block={startBurnHeight}
           />
         </div>
