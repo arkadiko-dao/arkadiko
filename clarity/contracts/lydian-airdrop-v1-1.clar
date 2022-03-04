@@ -1,4 +1,38 @@
+(define-constant ERR-NOT-AUTHORIZED u444001)
+(define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u444002)
 
+;; ---------------------------------------------------------
+;; Emergency
+;; ---------------------------------------------------------
+
+(define-data-var shutdown-activated bool false)
+
+(define-public (toggle-shutdown)
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set shutdown-activated (not (var-get shutdown-activated))))
+  )
+)
+
+(define-read-only (get-shutdown-activated)
+  (or
+    (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated))
+    (var-get shutdown-activated)
+  )
+)
+
+(define-public (emergency-withdraw-tokens)
+  (let (
+    (guardian tx-sender)
+    (contract-balance (unwrap-panic (contract-call? .lydian-token get-balance (as-contract tx-sender))))
+  )
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
+
+    ;; TODO - SET MAINNET ADDRESS FOR LYDIAN TOKEN
+    (as-contract (contract-call? .lydian-token transfer contract-balance (as-contract tx-sender) guardian none))
+  )
+)
 
 ;; ---------------------------------------------------------
 ;; Maps
@@ -46,6 +80,8 @@
     (claimed-amount (get amount (get-claimed sender)))
     (left-to-claim (- ldn-user claimed-amount))
   )
+    (asserts! (not (get-shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
+
     (if (is-eq left-to-claim u0)
       (ok false)
 
