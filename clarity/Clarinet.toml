@@ -212,7 +212,7 @@ depends_on = ["arkadiko-stake-pool-trait-v1", "arkadiko-stake-pool-diko-trait-v1
 path = "contracts/arkadiko-stake-pool-diko-v1-2.clar"
 
 [contracts.arkadiko-stake-pool-diko-slash-v1-1]
-depends_on = ["arkadiko-stake-pool-diko-v1-1"]
+depends_on = ["arkadiko-stake-pool-diko-v1-2"]
 path = "contracts/arkadiko-stake-pool-diko-slash-v1-1.clar"
 
 [contracts.arkadiko-stake-pool-diko-usda-v1-1]

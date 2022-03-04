@@ -112,7 +112,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   call.result.expectOk().expectTuple()['diko'].expectUintWithDecimals(100000); 
 
   // 50k diko staked
-  call.result.expectOk().expectTuple()['stdiko'].expectUintWithDecimals(50000); 
+  call.result.expectOk().expectTuple()['stdiko'].expectUintWithDecimals(50313.199530); 
 
   // 20k diko in pool, got 10%
   call.result.expectOk().expectTuple()['dikousda'].expectUintWithDecimals(1999.999999); 
@@ -127,6 +127,6 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   ], deployer.address);
 
   // 100k diko in wallet
-  call.result.expectOk().expectUintWithDecimals(154999.999998); 
+  call.result.expectOk().expectUintWithDecimals(155313.199528); 
 }
 });
