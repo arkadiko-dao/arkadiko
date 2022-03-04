@@ -522,47 +522,49 @@ export const ManageVault = ({ match }) => {
                 )}
               </h2>
 
-              {loadingVaultData ? (
-                <Placeholder className="justify-end py-2" color={Placeholder.color.GRAY} width={Placeholder.width.THIRD} />
-              ) : (
-                <>
-                  {/* TODO: Make component out of this */}
-                  {debtClass(collateralType?.liquidationRatio, debtRatio) == 'text-green-500' ? (
-                    <span className="overflow-hidden group inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-green-100 text-green-800 h-6">
-                      <ShieldCheckIcon className="flex-shrink-0 w-5 h-5 mr-2" />
-                      Healthy
-                      <span className="flex items-center flex-shrink-0 invisible w-0 h-0 group-hover:w-full group-hover:visible group-hover:h-6">
-                        <svg className="w-1.5 h-1.5 mx-1 flex-shrink-0" fill="currentColor" viewBox="0 0 8 8">
-                          <circle cx={4} cy={4} r={3} />
-                        </svg>
-                        <span className="flex-shrink-0">Low liquidation risk</span>
+              {debtRatio > 0 ? (
+                loadingVaultData ? (
+                  <Placeholder className="justify-end py-2" color={Placeholder.color.GRAY} width={Placeholder.width.THIRD} />
+                ) : (
+                  <>
+                    {/* TODO: Make component out of this */}
+                    {debtClass(collateralType?.liquidationRatio, debtRatio) == 'text-green-500' ? (
+                      <span className="overflow-hidden group inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-green-100 text-green-800 h-6">
+                        <ShieldCheckIcon className="flex-shrink-0 w-5 h-5 mr-2" />
+                        Healthy
+                        <span className="flex items-center flex-shrink-0 invisible w-0 h-0 group-hover:w-full group-hover:visible group-hover:h-6">
+                          <svg className="w-1.5 h-1.5 mx-1 flex-shrink-0" fill="currentColor" viewBox="0 0 8 8">
+                            <circle cx={4} cy={4} r={3} />
+                          </svg>
+                          <span className="flex-shrink-0">Low liquidation risk</span>
+                        </span>
                       </span>
-                    </span>
-                  ) : debtClass(collateralType?.liquidationRatio, debtRatio) == 'text-orange-400' ? (
-                    <span className="overflow-hidden group inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800 h-6">
-                      <ExclamationIcon className="flex-shrink-0 w-5 h-5 mr-2" />
-                      Warning
-                      <span className="flex items-center flex-shrink-0 invisible w-0 h-0 group-hover:w-full group-hover:visible group-hover:h-6">
-                        <svg className="w-1.5 h-1.5 mx-1 flex-shrink-0" fill="currentColor" viewBox="0 0 8 8">
-                          <circle cx={4} cy={4} r={3} />
-                        </svg>
-                        <span className="flex-shrink-0">Medium liquidation risk</span>
+                    ) : debtClass(collateralType?.liquidationRatio, debtRatio) == 'text-orange-500' ? (
+                      <span className="overflow-hidden group inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800 h-6">
+                        <ExclamationIcon className="flex-shrink-0 w-5 h-5 mr-2" />
+                        Warning
+                        <span className="flex items-center flex-shrink-0 invisible w-0 h-0 group-hover:w-full group-hover:visible group-hover:h-6">
+                          <svg className="w-1.5 h-1.5 mx-1 flex-shrink-0" fill="currentColor" viewBox="0 0 8 8">
+                            <circle cx={4} cy={4} r={3} />
+                          </svg>
+                          <span className="flex-shrink-0">Medium liquidation risk</span>
+                        </span>
                       </span>
-                    </span>
-                  ) : (
-                    <span className="overflow-hidden group inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-red-100 text-red-800 h-6">
-                      <ShieldExclamationIcon className="flex-shrink-0 w-5 h-5 mr-2" />
-                      Danger
-                      <span className="flex items-center flex-shrink-0 invisible w-0 h-0 group-hover:w-full group-hover:visible group-hover:h-6">
-                        <svg className="w-1.5 h-1.5 mx-1 flex-shrink-0" fill="currentColor" viewBox="0 0 8 8">
-                          <circle cx={4} cy={4} r={3} />
-                        </svg>
-                        <span className="flex-shrink-0">High liquidation risk</span>
+                    ) : (
+                      <span className="overflow-hidden group inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-red-100 text-red-800 h-6">
+                        <ShieldExclamationIcon className="flex-shrink-0 w-5 h-5 mr-2" />
+                        Danger
+                        <span className="flex items-center flex-shrink-0 invisible w-0 h-0 group-hover:w-full group-hover:visible group-hover:h-6">
+                          <svg className="w-1.5 h-1.5 mx-1 flex-shrink-0" fill="currentColor" viewBox="0 0 8 8">
+                            <circle cx={4} cy={4} r={3} />
+                          </svg>
+                          <span className="flex-shrink-0">High liquidation risk</span>
+                        </span>
                       </span>
-                    </span>
-                  )}
-                </>
-              )}
+                    )}
+                  </>
+                )
+              ) : null}
             </div>
           </header>
 
@@ -802,57 +804,59 @@ export const ManageVault = ({ match }) => {
                       </div>
                     </div>
 
-                    <div className="mt-6">
-                      <div>
-                        {loadingVaultData ? (
-                          <div className="p-4 border-l-4 border-gray-400 rounded-tr-md rounded-br-md bg-gray-50 dark:bg-gray-200">
-                            <div className="flex">
-                              <div className="w-5 h-5 bg-gray-300 rounded-full shrink-0" />
-                              <div className="flex-1 ml-3">
-                                <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.HALF} />
-                                <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.THIRD} />
-                                <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.FULL} />
+                    {debtRatio > 0 ? (
+                      <div className="mt-6">
+                        <div>
+                          {loadingVaultData ? (
+                            <div className="p-4 border-l-4 border-gray-400 rounded-tr-md rounded-br-md bg-gray-50 dark:bg-gray-200">
+                              <div className="flex">
+                                <div className="w-5 h-5 bg-gray-300 rounded-full shrink-0" />
+                                <div className="flex-1 ml-3">
+                                  <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.HALF} />
+                                  <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.THIRD} />
+                                  <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.FULL} />
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ) : (
-                          <>
-                            {/* TODO: make component out of this */}
-                            {debtClass(collateralType?.liquidationRatio, debtRatio) == 'text-green-500' ? (
-                              <Alert type={Alert.type.SUCCESS} title="Low liquidation risk">
-                                <p>
-                                  Good job! Your vault looks quite healthy. Your liquidation price ({vault?.collateralToken} below <span className="font-semibold">${liquidationPrice()}</span>) is still very far but keep in mind that you can pay back the outstanding debt or deposit extra collateral at any time anyway.
-                                </p>
-                              </Alert>
-                            ) : debtClass(collateralType?.liquidationRatio, debtRatio) == 'text-orange-400' ? (
-                              <Alert type={Alert.type.WARNING} title="Medium liquidation risk">
-                                <p>
-                                  Be careful. You will be liquidated if the {vault?.collateralToken} price drops
-                                  below{' '}
-                                  <span className="font-semibold">
-                                    ${liquidationPrice()} USD
-                                  </span>
-                                  . Pay back the outstanding debt or deposit extra collateral to keep
-                                  your vault healthy.
-                                </p>
-                              </Alert>
-                            ) : (
-                              <Alert type={Alert.type.ERROR} title="High liquidation risk">
-                                <p>
-                                  You are very close to being liquidated. If the {vault?.collateralToken} price drops
-                                  below{' '}
-                                  <span className="font-semibold">
-                                    ${liquidationPrice()} USD
-                                  </span>
-                                  . Pay back the outstanding debt or deposit extra collateral to keep
-                                  your vault healthy.
-                                </p>
-                              </Alert>
-                            )}
-                          </>
-                        )}
+                          ) : (
+                            <>
+                              {/* TODO: make component out of this */}
+                              {debtClass(collateralType?.liquidationRatio, debtRatio) == 'text-green-500' ? (
+                                <Alert type={Alert.type.SUCCESS} title="Low liquidation risk">
+                                  <p>
+                                    Good job! Your vault looks quite healthy. Your liquidation price ({vault?.collateralToken} below <span className="font-semibold">${liquidationPrice()}</span>) is still very far but keep in mind that you can pay back the outstanding debt or deposit extra collateral at any time anyway.
+                                  </p>
+                                </Alert>
+                              ) : debtClass(collateralType?.liquidationRatio, debtRatio) == 'text-orange-500' ? (
+                                <Alert type={Alert.type.WARNING} title="Medium liquidation risk">
+                                  <p>
+                                    Be careful. You will be liquidated if the {vault?.collateralToken} price drops
+                                    below{' '}
+                                    <span className="font-semibold">
+                                      ${liquidationPrice()} USD
+                                    </span>
+                                    . Pay back the outstanding debt or deposit extra collateral to keep
+                                    your vault healthy.
+                                  </p>
+                                </Alert>
+                              ) : (
+                                <Alert type={Alert.type.ERROR} title="High liquidation risk">
+                                  <p>
+                                    You are very close to being liquidated. If the {vault?.collateralToken} price drops
+                                    below{' '}
+                                    <span className="font-semibold">
+                                      ${liquidationPrice()} USD
+                                    </span>
+                                    . Pay back the outstanding debt or deposit extra collateral to keep
+                                    your vault healthy.
+                                  </p>
+                                </Alert>
+                              )}
+                            </>
+                          )}
+                        </div>
                       </div>
-                    </div>
+                    ) : null}
                   </div>
                 </div>
               </div>
