@@ -10,11 +10,11 @@ export const PoxTimeline = ({ unlockBurnHeight, currentBurnHeight, isLoading }) 
   let endBurnHeight = unlockBurnHeight;
   let currentIndex = 3; // cooldown
   if (unlockBurnHeight > currentBurnHeight) {
-    currentIndex = Math.floor(((unlockBurnHeight - currentBurnHeight) / 2100) - 2);
+    currentIndex = 2 - Math.floor(((unlockBurnHeight - currentBurnHeight) / 2100));
   }
   let firstCycle = state.cycleNumber + 1;
   if (currentIndex !== 3) {
-    firstCycle = (startBurnHeight - 100) === state.cycleStartHeight ? state.cycleNumber : state.cycleNumber + currentIndex;
+    firstCycle = (startBurnHeight - 100) === state.cycleStartHeight ? state.cycleNumber : state.cycleNumber - currentIndex;
   } else {
     // we are in a cooldown, adjust the block heights
     startBurnHeight = state.cycleEndHeight;
@@ -108,7 +108,7 @@ export const PoxTimeline = ({ unlockBurnHeight, currentBurnHeight, isLoading }) 
 
           <PoxTimelineIndicator
             label="Start"
-            link={`https://mempool.space/block/${state.cycleStartHeight}`}
+            link={`https://mempool.space/block/${startBurnHeight}`}
             block={startBurnHeight}
           />
         </div>
