@@ -144,8 +144,8 @@ export const Prices = () => {
       </header>
 
       <div className="min-w-full mt-4 overflow-hidden overflow-x-auto align-middle border border-gray-200 rounded-lg dark:border-zinc-600 lg:hidden">
-        <div className="bg-white dark:bg-zinc-900">
-          <div className="mx-auto bg-white dark:bg-zinc-900 sm:py-6 max-w-7xl">
+        <div className="bg-white dark:bg-zinc-800">
+          <div className="mx-auto bg-white dark:bg-zinc-800 sm:py-6 max-w-7xl">
             <div className="max-w-2xl mx-auto space-y-2 divide-y divide-gray-200 dark:divide-zinc-600">
               {assets.map(asset => (
                 <section className="pt-4" key={asset.token}>
@@ -228,7 +228,7 @@ export const Prices = () => {
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
             <div className="overflow-hidden border border-gray-200 rounded-lg dark:border-zinc-700">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
-                <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
+                <thead className="bg-gray-50 dark:bg-zinc-800 dark:bg-opacity-80">
                   <tr>
                     <th
                       scope="col"
@@ -250,9 +250,9 @@ export const Prices = () => {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600">
+                <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-800 dark:divide-zinc-600">
                   {assets.map(asset => (
-                    <tr key={asset.token} className="bg-white dark:bg-zinc-900">
+                    <tr key={asset.token} className="bg-white dark:bg-zinc-800">
                       <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="w-10 h-10 shrink-0">

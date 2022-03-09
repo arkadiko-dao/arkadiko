@@ -4,7 +4,7 @@ import { TrendingUpIcon } from '@heroicons/react/outline';
 export const Footer = () => {
   return (
     <footer>
-      <div className="px-6 py-4 mx-auto bg-gray-100 lg:px-8 dark:bg-zinc-800">
+      <div className="px-6 py-4 mx-auto bg-gray-100 lg:px-8 dark:bg-zinc-900">
         <div className="md:flex md:items-center md:justify-between">
           <a href="https://info.arkadiko.finance/" target="_blank" rel="noopener noreferrer" className="relative flex items-center group">
             <TrendingUpIcon
