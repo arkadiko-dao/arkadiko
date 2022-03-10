@@ -7,9 +7,9 @@
 
 ;; Variables
 ;; TODO - SET FOR MAINNET
-(define-data-var end-epoch-block uint (+ block-height u2016)) ;; 2 weeks after deploy
+(define-data-var end-epoch-block uint (+ block-height u720)) ;; 5 days after deploy
 (define-data-var epoch-rate uint u100000) ;; 10%
-(define-data-var blocks-per-epoch uint u2016) ;; 2 weeks
+(define-data-var blocks-per-epoch uint u720) ;; 5 days
 (define-data-var shutdown-activated bool false)
 
 (define-read-only (get-end-epoch-block)
