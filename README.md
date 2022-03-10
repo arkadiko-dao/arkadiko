@@ -57,6 +57,7 @@ Some of the smart contracts (such as PoX and fungible token trait) are mocked co
 
 All errors thrown by the smart contracts are unsigned integers. The format used is the following <SMART_CONTRACT_PREFIX><ERROR_CODE>, where the smart contract prefix is denoted as follows:
 
+```
 1 - arkadiko-token
 2 - auction-engine
 3 - dao
@@ -76,3 +77,4 @@ All errors thrown by the smart contracts are unsigned integers. The format used 
 19 - stacker
 20 - swap
 21 - swap-token-diko-usda
+```
