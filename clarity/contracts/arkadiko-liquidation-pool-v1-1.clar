@@ -5,11 +5,13 @@
 (define-constant ERR-UNSTAKE-AMOUNT-EXCEEDED u32002)
 (define-constant ERR-WITHDRAWAL-AMOUNT-EXCEEDED u32003)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u32004)
+(define-constant ERR-STAKE-NOT-UNLOCKED u32005)
 
 ;; Variables
 (define-data-var fragments-per-token uint u1000000000000)
 (define-data-var total-fragments uint u0)
 (define-data-var shutdown-activated bool false)
+(define-data-var lockup-blocks uint u4320)
 
 ;; ---------------------------------------------------------
 ;; Maps
@@ -28,6 +30,22 @@
   (default-to
     { fragments: u0 }
     (map-get? staker-fragments { staker: staker })
+  )
+)
+
+(define-map staker-lockup 
+  { 
+    staker: principal,
+  } 
+  {
+    start-block: uint
+  }
+)
+
+(define-read-only (get-staker-lockup (staker principal))
+  (default-to
+    { start-block: u0 }
+    (map-get? staker-lockup { staker: staker })
   )
 )
 
@@ -119,6 +137,9 @@
     ;; Update user tokens
     (map-set staker-fragments  { staker: staker } { fragments: new-user-fragments })
 
+    ;; Update lockup
+    (map-set staker-lockup  { staker: staker } { start-block: block-height })
+
     ;; Update total fragments
     (var-set total-fragments new-total-fragments)
 
@@ -132,11 +153,13 @@
   (let (
     (staker tx-sender)
 
+    (stake-start-block (get start-block (get-staker-lockup staker)))
     (user-fragments (get fragments (get-staker-fragments staker)))
     (remove-user-fragments (* amount (var-get fragments-per-token)))
   )
     (asserts! (not (get-shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (>= user-fragments remove-user-fragments) (err ERR-UNSTAKE-AMOUNT-EXCEEDED))
+    (asserts! (>= block-height (+ stake-start-block (var-get lockup-blocks))) (err ERR-STAKE-NOT-UNLOCKED))
 
     (let (
       (new-user-fragments (- user-fragments remove-user-fragments))
@@ -194,5 +217,19 @@
     (var-set fragments-per-token new-fragments-per-token)
 
     (ok amount)
+  )
+)
+
+;; ---------------------------------------------------------
+;; Update
+;; ---------------------------------------------------------
+
+(define-public (update-lockup (blocks uint))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (var-set lockup-blocks blocks)
+    
+    (ok true)
   )
 )

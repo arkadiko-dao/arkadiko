@@ -18,7 +18,7 @@ import {
 import { 
   VaultManager,
   VaultAuctionV4 
-} from './models/arkadiko-tests-vaults.ts';
+} from './models/arkadiko-tests-vaults.ts'; VaultAuctionV4;
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
@@ -52,6 +52,9 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(10000);
     call = await liquidationPool.getTokensOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(1000);
+
+    // Advance
+    chain.mineEmptyBlock(4320);
 
     // Unstake
     result = liquidationPool.unstake(deployer, 2000);
@@ -147,6 +150,9 @@ Clarinet.test({
     call = await liquidationPool.getTokensOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(2000);
 
+    // Advance
+    chain.mineEmptyBlock(4320);
+
     // Unstake
     result = liquidationPool.unstake(deployer, 5000);
     result.expectOk().expectUintWithDecimals(5000);
@@ -209,6 +215,9 @@ Clarinet.test({
     // Stake
     result = liquidationPool.stake(wallet_1, 5000);
     result.expectOk().expectUintWithDecimals(5000);
+
+    // Advance
+    chain.mineEmptyBlock(4320);
     
     // Unstake
     result = liquidationPool.unstake(deployer, 4500);
@@ -248,16 +257,16 @@ Clarinet.test({
     call = await liquidationPool.getSharesAt(wallet_1.address, 9);
     call.result.expectOk().expectUint(0.55 * 10000000);
 
-    // Shares at block 10
-    call = await liquidationPool.getSharesAt(deployer.address, 10);
+    // Shares at block 4330
+    call = await liquidationPool.getSharesAt(deployer.address, 4330);
     call.result.expectOk().expectUint(0);
-    call = await liquidationPool.getSharesAt(wallet_1.address, 10);
+    call = await liquidationPool.getSharesAt(wallet_1.address, 4330);
     call.result.expectOk().expectUint(1 * 10000000);
 
-    // Shares at block 11
-    call = await liquidationPool.getSharesAt(deployer.address, 11);
+    // Shares at block 4331
+    call = await liquidationPool.getSharesAt(deployer.address, 4331);
     call.result.expectOk().expectUint(0);
-    call = await liquidationPool.getSharesAt(wallet_1.address, 11);
+    call = await liquidationPool.getSharesAt(wallet_1.address, 4331);
     call.result.expectOk().expectUint(0);
   }
 });
@@ -330,8 +339,42 @@ Clarinet.test({
     result = liquidationPool.toggleEmergencyShutdown();
     result.expectOk().expectBool(true);
 
+    // Advance
+    chain.mineEmptyBlock(4320);
+
     // Unstake
     result = liquidationPool.unstake(deployer, 2000);
     result.expectOk().expectUintWithDecimals(2000);
+  }
+});
+
+Clarinet.test({
+  name: "liquidation-pool: can not unstake if lockup not ended",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let liquidationPool = new LiquidationPool(chain, deployer);
+ 
+    // Stake
+    let result = liquidationPool.stake(deployer, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Unstake fails
+    result = liquidationPool.unstake(deployer, 10000);
+    result.expectErr().expectUint(32005);
+
+    // Advance
+    chain.mineEmptyBlock(4316);
+
+    // Unstake fails
+    result = liquidationPool.unstake(deployer, 10000);
+    result.expectErr().expectUint(32005);
+
+    // Advance
+    chain.mineEmptyBlock(1);
+
+    // Unstake
+    result = liquidationPool.unstake(deployer, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
   }
 });
