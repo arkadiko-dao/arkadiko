@@ -29,51 +29,6 @@ const wstxTokenAddress = 'wrapped-stx-token'
 const dikoUsdaPoolAddress = 'arkadiko-swap-token-diko-usda'
 const wstxDikoPoolAddress = 'arkadiko-swap-token-wstx-diko'
 
-
-Clarinet.test({
-  name: "lydian-airdrop: LDN for DIKO in wallet",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
-  
-    let swap = new Swap(chain, deployer);
-    let stakeRegistry = new StakeRegistry(chain, deployer);
-
-    // Create swap pairs
-    let result = swap.createPair(deployer, dikoTokenAddress, usdaTokenAddress, dikoUsdaPoolAddress, "DIKO-USDA", 20000, 10000);
-    result.expectOk().expectBool(true);
-    result = swap.createPair(deployer, wstxTokenAddress, dikoTokenAddress, wstxDikoPoolAddress, "wSTX-DIKO", 60000, 30000);
-    result.expectOk().expectBool(true);
-  
-    // Stake
-    result = stakeRegistry.stake(deployer, 'arkadiko-stake-pool-diko-v1-2', 'arkadiko-token', 50000);
-    result.expectOk().expectUintWithDecimals(50000);
-
-    // Advance
-    chain.mineEmptyBlock(20);
-
-    // Total DIKO supply
-    let call = await chain.callReadOnlyFn("arkadiko-token", "get-total-supply", [], deployer.address);
-    call.result.expectOk().expectUintWithDecimals(53190187.919718); 
-
-    // Total DIKO for wallet_1
-    call = await chain.callReadOnlyFn("arkadiko-token", "get-balance", [
-      types.principal(wallet_1.address),
-    ], deployer.address);
-    call.result.expectOk().expectUintWithDecimals(150000); 
-
-    // Total to distribute: 500 LDN
-    // 150000 / (53190187.919718 - 50000 - 50000) = 0.00282538084
-    // 0.00282538084 * 500 = 1.411361)
-    call = await chain.callReadOnlyFn("lydian-airdrop-v1-1", "get-ldn-for-diko-in-wallet", [
-      types.principal(wallet_1.address),
-      types.uint(20)
-    ], deployer.address);
-    call.result.expectOk().expectUintWithDecimals(1.411361); 
-    
-  }
-});
-
 Clarinet.test({
   name: "lydian-airdrop: LDN for stDIKO pool",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -267,32 +222,6 @@ Clarinet.test({
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
-
-    // LDN for wallet
-    call = await chain.callReadOnlyFn("lydian-airdrop-v1-1", "get-ldn-for-diko-in-wallet", [
-      types.principal(wallet_1.address),
-      types.uint(20)
-    ], deployer.address);
-    call.result.expectOk().expectUintWithDecimals(0.940901); 
-
-    // Claim
-    block = chain.mineBlock([
-      Tx.contractCall("lydian-airdrop-v1-1", "claim-ldn-for-diko-in-wallet", [], wallet_1.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
-
-    // Claim again
-    block = chain.mineBlock([
-      Tx.contractCall("lydian-airdrop-v1-1", "claim-ldn-for-diko-in-wallet", [], wallet_1.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(false);
-
-    // User received LDN
-    call = await chain.callReadOnlyFn("lydian-token", "get-balance", [
-      types.principal(wallet_1.address),
-    ], deployer.address);
-    call.result.expectOk().expectUintWithDecimals(0.940901); 
-
     // LDN for stDIKO pool
     call = await chain.callReadOnlyFn("lydian-airdrop-v1-1", "get-ldn-for-stdiko-pool", [
       types.principal(wallet_1.address),
@@ -316,7 +245,7 @@ Clarinet.test({
     call = await chain.callReadOnlyFn("lydian-token", "get-balance", [
       types.principal(wallet_1.address),
     ], deployer.address);
-    call.result.expectOk().expectUintWithDecimals(0.940901 + 298.504195); 
+    call.result.expectOk().expectUintWithDecimals(298.504195); 
 
     // LDN for DIKO/USDA
     call = await chain.callReadOnlyFn("lydian-airdrop-v1-1", "get-ldn-for-diko-usda-pool", [
@@ -341,7 +270,7 @@ Clarinet.test({
     call = await chain.callReadOnlyFn("lydian-token", "get-balance", [
       types.principal(wallet_1.address),
     ], deployer.address);
-    call.result.expectOk().expectUintWithDecimals(0.940901 + 298.504195 + 69.999999); 
+    call.result.expectOk().expectUintWithDecimals(298.504195 + 69.999999); 
 
     // LDN for wSTX/DIKO
     call = await chain.callReadOnlyFn("lydian-airdrop-v1-1", "get-ldn-for-wstx-diko-pool", [
@@ -366,7 +295,7 @@ Clarinet.test({
     call = await chain.callReadOnlyFn("lydian-token", "get-balance", [
       types.principal(wallet_1.address),
     ], deployer.address);
-    call.result.expectOk().expectUintWithDecimals(0.940901 + 298.504195 + 69.999999 + 79.999999); 
+    call.result.expectOk().expectUintWithDecimals(298.504195 + 69.999999 + 79.999999); 
 
   }
 });
@@ -389,6 +318,8 @@ Clarinet.test({
     // Stake
     result = stakeRegistry.stake(deployer, 'arkadiko-stake-pool-diko-v1-2', 'arkadiko-token', 50000);
     result.expectOk().expectUintWithDecimals(50000);
+    result = stakeRegistry.stake(wallet_1, 'arkadiko-stake-pool-diko-v1-2', 'arkadiko-token', 50000);
+    result.expectOk().expectUintWithDecimals(49750.699246);
 
     // Add LDN to contract
     let block = chain.mineBlock([
@@ -404,12 +335,12 @@ Clarinet.test({
     // Advance to block 47500
     chain.mineEmptyBlock(47500);
   
-    // LDN for DIKO in wallet
-    let call = await chain.callReadOnlyFn("lydian-airdrop-v1-1", "get-ldn-for-diko-in-wallet", [
+    // LDN for DIKO in pool
+    let call = await chain.callReadOnlyFn("lydian-airdrop-v1-1", "get-ldn-for-stdiko-pool", [
       types.principal(wallet_1.address),
       types.uint(47500)
     ], deployer.address);
-    call.result.expectOk().expectUintWithDecimals(1.411361); 
+    call.result.expectOk().expectUintWithDecimals(299.250228); 
 
     // Shutdown
     block = chain.mineBlock([
@@ -419,7 +350,7 @@ Clarinet.test({
 
     // Claim fails
     block = chain.mineBlock([
-      Tx.contractCall("lydian-airdrop-v1-1", "claim-ldn-for-diko-in-wallet", [], wallet_1.address)
+      Tx.contractCall("lydian-airdrop-v1-1", "claim-ldn-for-stdiko-pool", [], wallet_1.address)
     ]);
     block.receipts[0].result.expectErr().expectUint(444002);
 

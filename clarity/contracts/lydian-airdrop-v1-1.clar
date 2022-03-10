@@ -2,7 +2,6 @@
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u444002)
 
 ;; TODO - SET FOR MAINNET
-(define-constant ldn-for-wallet u500000000)
 (define-constant ldn-for-stdiko u600000000)
 (define-constant ldn-for-diko-usda u700000000)
 (define-constant ldn-for-wstx-diko u800000000)
@@ -47,7 +46,6 @@
 (define-map claimed
   { user: principal }
   {
-    amount-wallet: uint,
     amount-stdiko: uint,
     amount-wstx-diko: uint,
     amount-diko-usda: uint,
@@ -57,61 +55,11 @@
 (define-read-only (get-claimed (user principal))
   (default-to
     {
-      amount-wallet: u0,
       amount-stdiko: u0,
       amount-wstx-diko: u0,
       amount-diko-usda: u0,
     }
     (map-get? claimed { user: user })
-  )
-)
-
-;; ---------------------------------------------------------
-;; DIKO wallet
-;; ---------------------------------------------------------
-
-(define-public (claim-ldn-for-diko-in-wallet)
-  (let (
-    (sender tx-sender)
-    (ldn-user (unwrap-panic (get-ldn-for-diko-in-wallet sender u47500)))
-    (claimed-map (get-claimed sender))
-    (claimed-amount (get amount-wallet claimed-map))
-    (left-to-claim (- ldn-user claimed-amount))
-  )
-    (asserts! (not (get-shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
-
-    (if (is-eq left-to-claim u0)
-      (ok false)
-
-      (begin
-        ;; Update claimed map
-        (map-set claimed { user: sender } (merge claimed-map { amount-wallet: (+ claimed-amount left-to-claim) }))
-
-        ;; TODO - SET MAINNET ADDRESS FOR LYDIAN TOKEN
-        (as-contract (contract-call? .lydian-token transfer left-to-claim (as-contract tx-sender) sender none))
-      )
-    )
-  )
-)
-
-(define-read-only (get-ldn-for-diko-in-wallet (user principal) (block uint))
-  (let (
-    (block-hash (unwrap-panic (get-block-info? id-header-hash block)))
-
-    ;; DIKO in wallets
-    (diko-supply (unwrap-panic (at-block block-hash (contract-call? .arkadiko-token get-total-supply))))
-    (diko-swap-v2 (unwrap-panic (at-block block-hash (contract-call? .arkadiko-token get-balance .arkadiko-swap-v2-1))))
-    (diko-stake-v2 (unwrap-panic (at-block block-hash (contract-call? .arkadiko-token get-balance .arkadiko-stake-pool-diko-v2-1))))
-    (diko-wallets (- diko-supply (+ diko-swap-v2 diko-stake-v2)))
-
-    ;; DIKO in user wallet
-    (diko-user (unwrap-panic (at-block block-hash (contract-call? .arkadiko-token get-balance user))))
-
-    ;; Percentage
-    (percentage (/ (* diko-user u1000000000000) diko-wallets))
-    (ldn-to-receive (/ (* percentage ldn-for-wallet) u1000000000000))
-  )
-    (ok ldn-to-receive)
   )
 )
 
