@@ -24,7 +24,6 @@ export const LydianAirdrop = () => {
   const [claimAmount1, setClaimAmount1] = useState(0);
   const [claimAmount2, setClaimAmount2] = useState(0);
   const [claimAmount3, setClaimAmount3] = useState(0);
-  const [claimAmount4, setClaimAmount4] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -42,22 +41,6 @@ export const LydianAirdrop = () => {
       });
       const result = cvToJSON(call).value;
       return result;
-    };
-
-    const fetchLdnForWallet = async () => {
-      const call = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'lydian-airdrop-v1-1',
-        functionName: 'get-ldn-for-diko-in-wallet',
-        functionArgs: [
-          standardPrincipalCV(stxAddress || ''),
-          uintCV(47500),
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const result = cvToJSON(call).value.value;
-      return parseInt(result);
     };
 
     const fetchLdnForStdiko = async () => {
@@ -111,13 +94,11 @@ export const LydianAirdrop = () => {
     const fetchInfo = async () => {
       // Fetch all info
       const [
-        // ldnForWallet,
         // ldnForStdiko,
         // ldnForDikoUsda,
         // ldnForWstxDiko,
         claimed
       ] = await Promise.all([
-        // fetchLdnForWallet(),
         // fetchLdnForStdiko(),
         // fetchLdnForDikoUsda(),
         // fetchLdnForWstxDiko(),
@@ -125,20 +106,17 @@ export const LydianAirdrop = () => {
       ]);
 
       // TODO: REMOVE FOR MAINNET
-      const ldnForWallet = 3120000;
       const ldnForStdiko = 4230000;
       const ldnForDikoUsda = 0;
       const ldnForWstxDiko = 32000;
 
-      const claimed1 = claimed['amount-wallet'].value;
-      const claimed2 = claimed['amount-stdiko'].value;
-      const claimed3 = claimed['amount-diko-usda'].value;
-      const claimed4 = claimed['amount-wstx-diko'].value;
+      const claimed1 = claimed['amount-stdiko'].value;
+      const claimed2 = claimed['amount-diko-usda'].value;
+      const claimed3 = claimed['amount-wstx-diko'].value;
 
-      setClaimAmount1(ldnForWallet - claimed1);
-      setClaimAmount2(ldnForStdiko - claimed2);
-      setClaimAmount3(ldnForDikoUsda - claimed3);
-      setClaimAmount4(ldnForWstxDiko - claimed4);
+      setClaimAmount1(ldnForStdiko - claimed1);
+      setClaimAmount2(ldnForDikoUsda - claimed2);
+      setClaimAmount3(ldnForWstxDiko - claimed3);
 
       setIsLoading(false);
     };
@@ -147,27 +125,6 @@ export const LydianAirdrop = () => {
   }, []);
 
   const claim1 = async () => {
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'lydian-airdrop-v1-1',
-      functionName: 'claim-ldn-for-diko-in-wallet',
-      functionArgs: [
-      ],
-      postConditionMode: 0x01,
-      onFinish: data => {
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-      },
-      anchorMode: AnchorMode.Any,
-    });
-  };
-
-  const claim2 = async () => {
     await doContractCall({
       network,
       contractAddress,
@@ -188,7 +145,7 @@ export const LydianAirdrop = () => {
     });
   };
 
-  const claim3 = async () => {
+  const claim2 = async () => {
     await doContractCall({
       network,
       contractAddress,
@@ -209,7 +166,7 @@ export const LydianAirdrop = () => {
     });
   };
 
-  const claim4 = async () => {
+  const claim3 = async () => {
     await doContractCall({
       network,
       contractAddress,
@@ -258,7 +215,7 @@ export const LydianAirdrop = () => {
                     <a href="https://twitter.com/Lydian_DAO">- Twitter</a>
 
                     <h2 className="text-xl font-headings mt-4">
-                      DIKO/USDA pool
+                      stDIKO pool
                     </h2>
                     <p className="text-gray-800">
                       {isLoading ? (
@@ -286,7 +243,7 @@ export const LydianAirdrop = () => {
                     </p>
 
                     <h2 className="text-xl font-headings mt-4">
-                      wSTX/DIKO pool
+                      DIKO/USDA pool
                     </h2>
                     <p className="text-gray-800">
                       {isLoading ? (
@@ -314,7 +271,7 @@ export const LydianAirdrop = () => {
                     </p>
 
                     <h2 className="text-xl font-headings mt-4">
-                      stDIKO
+                      wSTX/DIKO
                     </h2>
                     <p className="text-gray-800">
                       {isLoading ? (
@@ -333,34 +290,6 @@ export const LydianAirdrop = () => {
                             type="button"
                             disabled={claimAmount3 === 0}
                             onClick={() => claim3()}
-                            className="inline-flex items-center justify-center w-full px-4 py-3 mt-4 text-xl font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm cursor-pointer hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-300 disabled:hover:bg-indigo-300 disabled:pointer-events-none"
-                          >
-                            Claim
-                          </button>
-                        </span>
-                      )}
-                    </p>
-
-                    <h2 className="text-xl font-headings mt-4">
-                      DIKO
-                    </h2>
-                    <p className="text-gray-800">
-                      {isLoading ? (
-                        <>
-                          <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                          <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                        </>
-                      ) : (
-                        <span>
-                          Claimable: {' '}
-                          {microToReadable(claimAmount4).toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 6,
-                          })} LDN
-                          <button
-                            type="button"
-                            disabled={claimAmount4 === 0}
-                            onClick={() => claim4()}
                             className="inline-flex items-center justify-center w-full px-4 py-3 mt-4 text-xl font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm cursor-pointer hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-300 disabled:hover:bg-indigo-300 disabled:pointer-events-none"
                           >
                             Claim
