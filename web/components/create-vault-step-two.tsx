@@ -269,66 +269,6 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                             />
                           </div>
                         </div>
-
-                        {tokenKey === 'stx' ? (
-                          <div>
-                            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
-                              Do you want to stack your STX?
-                            </h3>
-                            <p className="mt-2 text-sm">
-                              Stacking your collateral will allow you to earn rewards.
-                            </p>
-
-                            <div className="mt-4">
-                              <label className="flex items-center space-x-3">
-                                <input
-                                  type="checkbox"
-                                  className="w-5 h-5 border border-gray-300 rounded-md appearance-none form-tick checked:bg-indigo-600 checked:border-transparent focus:outline-none"
-                                  checked={coinAmount['stack-pox']}
-                                  onChange={() => togglePox()}
-                                />
-                                <span className="text-gray-900 dark:text-zinc-100">
-                                  I want to stack my STX tokens to earn yield
-                                </span>
-                              </label>
-
-                              {coinAmount['stack-pox'] ? (
-                                <div className="mt-4">
-                                  <Alert type={Alert.type.WARNING} title="Important note">
-                                    <p>
-                                      Choosing to stack your STX means that they will be <span className="font-semibold">locked and become
-                                      illiquid immediately</span>.
-                                    </p>
-                                    <p className="mt-1">
-                                      They will be available again on:{' '}
-                                      <span className="font-semibold">{tokensAvailability}</span> (End of the{' '}
-                                      <a
-                                        href="https://stacking.club/cycles/next"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="font-medium text-yellow-700 underline hover:text-yellow-600"
-                                      >
-                                        next PoX cycle
-                                      </a>
-                                      : {state.endDate} + 6-week stacking phase + 2-week cooldown period).
-                                    </p>
-
-                                    <p className="mt-1">
-                                      <a
-                                        href="https://stacking.club/learn"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="font-medium text-yellow-700 underline hover:text-yellow-600"
-                                      >
-                                        Learn more about the PoX cycle.
-                                      </a>
-                                    </p>
-                                  </Alert>
-                                </div>
-                              ) : null}
-                            </div>
-                          </div>
-                        ) : null}
                       </div>
                     )}
                     <div className="sm:col-start-6 sm:col-span-5">
