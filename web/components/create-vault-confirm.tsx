@@ -1,17 +1,19 @@
 import React, { useContext } from 'react';
 import { AppContext } from '@common/context';
-import { QuestionMarkCircleIcon, ExternalLinkIcon } from '@heroicons/react/solid';
+import { QuestionMarkCircleIcon, ExternalLinkIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/solid';
 import { useLocation } from 'react-router-dom';
 import { Alert } from './ui/alert';
+import { NewVaultWizardNav } from './new-vault-wizard-nav';
 
 export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => {
   const [state] = useContext(AppContext);
   const search = useLocation().search;
   const tokenName = new URLSearchParams(search).get('token') || 'STX';
+  const currentSection = 2;
 
   const endDate = Date.parse(state.endDate);
   const msInWeek = 7 * 24 * 60 * 60 * 1000;
-  const availableTokensDate = endDate + 8 * msInWeek; // 6-week stacking + 2-week cooldown = 8 weeks
+  const availableTokensDate = endDate + 6 * msInWeek; // 6-week stacking
   const tokensAvailability = new Date(availableTokensDate)
     .toDateString()
     .split(' ')
@@ -31,22 +33,11 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
     }));
   };
 
-  const toggleAutoPayoff = () => {
-    const newState = !coinAmounts['auto-payoff'];
-    let stackPox = coinAmounts['stack-pox'];
-    if (newState) {
-      stackPox = true;
-    }
-    setCoinAmounts(prevState => ({
-      ...prevState,
-      'stack-pox': stackPox,
-      'auto-payoff': newState,
-    }));
-  };
-
   return (
     <>
-      <section>
+      <NewVaultWizardNav currentSection={currentSection} setStep={setStep} />
+
+      <section className="mt-8">
         <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
           <div>
             <h2 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">
@@ -76,9 +67,82 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
 
         <div className="max-w-4xl mx-auto mt-4 shadow sm:rounded-md sm:overflow-hidden">
           <div className="px-4 py-5 space-y-6 bg-white dark:bg-zinc-900 sm:p-6">
+            {tokenName.includes('STX') ? (
+              <div>
+                <div className="flex items-center">
+                  <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
+                    Stacking
+                  </h3>
+
+                  {coinAmounts['stack-pox'] ? (
+                    <span className="ml-3 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-green-100 text-green-800">
+                      <CheckCircleIcon className="flex-shrink-0 w-5 h-5 mr-2" />
+                      Enabled
+                    </span>
+                  ) : (
+                    <span className="ml-3 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-red-100 text-red-800">
+                      <XCircleIcon className="flex-shrink-0 w-5 h-5 mr-2" />
+                      Disabled
+                    </span>
+                  )}
+                </div>
+
+                <label className="flex items-center mt-6 space-x-3">
+                  <input
+                    type="checkbox"
+                    className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-indigo-600 checked:border-transparent focus:outline-none"
+                    checked={coinAmounts['stack-pox']}
+                    onChange={() => togglePox()}
+                  />
+                  <span className="text-gray-900 dark:text-zinc-100">
+                    I want to stack my STX tokens to earn yield
+                  </span>
+                </label>
+
+                {coinAmounts['stack-pox'] ? (
+                  <div className="mt-4">
+                    <Alert type={Alert.type.WARNING} title="Important note">
+                      <p>
+                        Choosing to stack your STX means that they will be <span className="font-semibold">locked and become
+                        illiquid immediately</span>.
+                      </p>
+                      <p className="mt-1">
+                        They will be available again on:{' '}
+                        <span className="font-semibold">{tokensAvailability}</span> (End of the{' '}
+                        <a
+                          href="https://stacking.club/cycles/next"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-medium text-yellow-700 underline hover:text-yellow-600"
+                        >
+                          next PoX cycle
+                        </a>
+                        : {state.endDate} + 6-week stacking phase + 2-week cooldown period).
+                      </p>
+
+                      <p className="mt-1">
+                        <a
+                          href="https://stacking.club/learn"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-medium text-yellow-700 underline hover:text-yellow-600"
+                        >
+                          Learn more about the PoX cycle.
+                        </a>
+                      </p>
+                    </Alert>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="max-w-4xl mx-auto mt-4 shadow sm:rounded-md sm:overflow-hidden">
+          <div className="px-4 py-5 space-y-6 bg-white dark:bg-zinc-900 sm:p-6">
             <div className="space-y-8 divide-y divide-gray-200 dark:divide-zinc-600">
               <div className="space-y-4 divide-y divide-gray-100 dark:divide-gray-800">
-                <div className="pt-4 sm:flex sm:justify-between sm:items-baseline">
+                <div className="sm:flex sm:justify-between sm:items-baseline">
                   <div>
                     <h3 className="mb-2 text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
                       Depositing
@@ -184,59 +248,13 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                     {coinAmounts['stability-fee-apy'] / 100}%
                   </p>
                 </div>
-
-                {tokenName.includes('STX') ? (
-                  <div className="pt-4">
-                    <div className="mt-2 mb-4">
-                      <Alert type={Alert.type.WARNING} title="Important note">
-                        <p className="">
-                          Choosing to stack your STX means that they will be locked and become
-                          illiquid immediately. They will be available again on:{' '}
-                          <span className="font-semibold">{tokensAvailability}</span> (End of the{' '}
-                          <a
-                            href="https://stacking.club/cycles/next"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-medium text-yellow-700 underline hover:text-yellow-600"
-                          >
-                            next PoX cycle
-                          </a>
-                          : {state.endDate} + 6-week stacking phase + 2-week cooldown period).
-                        </p>
-
-                        <p className="mt-1">
-                          <a
-                            href="https://stacking.club/learn"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-medium text-yellow-700 underline hover:text-yellow-600"
-                          >
-                            Learn more about the PoX cycle.
-                          </a>
-                        </p>
-                      </Alert>
-                    </div>
-
-                    <label className="flex items-center space-x-3">
-                      <input
-                        type="checkbox"
-                        className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-indigo-600 checked:border-transparent focus:outline-none"
-                        checked={coinAmounts['stack-pox']}
-                        onChange={() => togglePox()}
-                      />
-                      <span className="text-gray-900 dark:text-zinc-100">
-                        I want my STX tokens stacked to earn yield
-                      </span>
-                    </label>
-                  </div>
-                ) : null}
               </div>
 
               <div className="pt-5">
                 <div className="flex justify-end">
                   <button
                     type="button"
-                    onClick={() => setStep(0)}
+                    onClick={() => setStep(1)}
                     className="inline-flex justify-center px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   >
                     Back
@@ -244,7 +262,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
 
                   <button
                     type="button"
-                    onClick={() => setStep(2)}
+                    onClick={() => setStep(3)}
                     className="inline-flex justify-center px-4 py-2 ml-3 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   >
                     Open Vault
