@@ -570,7 +570,7 @@ export const ManageVault = ({ match }) => {
 
           <div className="mt-4" id="liquidation-status-alert">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <div className="flex flex-col bg-white divide-y divide-gray-200 rounded-md shadow dark:bg-zinc-900 dark:divide-zinc-600">
+              <div className="flex flex-col bg-white divide-y divide-gray-200 rounded-md shadow dark:bg-zinc-800 dark:divide-zinc-600">
                 <div className="px-4 py-3">
                   <h3 className="text-base font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">Vault details</h3>
                 </div>
@@ -684,7 +684,7 @@ export const ManageVault = ({ match }) => {
                 </div>
               </div>
               <div className="sm:col-span-2">
-                <div className="bg-white rounded-md shadow dark:bg-zinc-900">
+                <div className="bg-white rounded-md shadow dark:bg-zinc-800">
                   <div className="flex flex-col px-4 py-5 sm:p-6">
                     <div>
                       <div className="flex items-start justify-between">
@@ -1051,7 +1051,7 @@ export const ManageVault = ({ match }) => {
                 </div>
               </section>
               <div className="sm:col-span-2">
-                <div className="bg-white rounded-md shadow dark:bg-zinc-900">
+                <div className="bg-white rounded-md shadow dark:bg-zinc-800">
                   <div className="px-4 py-5 sm:p-6">
                     <div className="flex items-start justify-between">
                       <div>
@@ -1105,7 +1105,7 @@ export const ManageVault = ({ match }) => {
                   </div>
                 </div>
 
-                <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-900 dark:divide-zinc-600 sm:rounded-md sm:overflow-hidden">
+                <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-800 dark:divide-zinc-600 sm:rounded-md sm:overflow-hidden">
                   <div className="px-4 py-5 sm:p-6">
                     {loadingStackerData || loadingVaultData ? (
                       <>

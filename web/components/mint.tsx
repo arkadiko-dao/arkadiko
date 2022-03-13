@@ -192,7 +192,7 @@ export const Mint = () => {
           ) : loadingVaults === true ? (
             <div className="min-w-full mt-4 overflow-hidden overflow-x-auto align-middle rounded-lg sm:shadow">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
-                <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
+                <thead className="bg-gray-50 dark:bg-zinc-800 dark:bg-opacity-80">
                   <tr>
                     <th
                       scope="col"
@@ -203,12 +203,12 @@ export const Mint = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="bg-white dark:bg-zinc-900">
+                  <tr className="bg-white dark:bg-zinc-800">
                     <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
                       <Placeholder />
                     </td>
                   </tr>
-                  <tr className="bg-white dark:bg-zinc-900">
+                  <tr className="bg-white dark:bg-zinc-800">
                     <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
                       <Placeholder />
                     </td>

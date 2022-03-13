@@ -28,8 +28,8 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types, setStep }
 
   return (
     <div className="min-w-full overflow-hidden overflow-x-auto align-middle border border-gray-200 rounded-lg dark:border-zinc-600">
-      <div className="bg-white dark:bg-zinc-900">
-        <div className="py-12 mx-auto bg-white dark:bg-zinc-900 sm:py-6 max-w-7xl">
+      <div className="bg-white dark:bg-zinc-800">
+        <div className="py-12 mx-auto bg-white dark:bg-zinc-800 sm:py-6 max-w-7xl">
           {/* xs to lg */}
           <div className="max-w-2xl mx-auto space-y-16 lg:hidden">
             {collateralItems.map((collateral, collateralIdx) => (

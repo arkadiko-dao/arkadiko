@@ -197,7 +197,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
         </header>
 
         <div className="mt-4 shadow sm:rounded-md sm:overflow-hidden">
-          <div className="px-4 py-5 space-y-6 bg-white dark:bg-zinc-900 sm:p-6">
+          <div className="px-4 py-5 space-y-6 bg-white dark:bg-zinc-800 sm:p-6">
             {errors.length > 0 ? (
               <Alert type={Alert.type.ERROR}>
                 {errors.map(txt => (

@@ -142,7 +142,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
               leaveTo="translate-x-full"
             >
               <div className="w-screen max-w-md">
-                <div className="flex flex-col h-full overflow-y-scroll bg-white shadow-xl dark:bg-zinc-900">
+                <div className="flex flex-col h-full overflow-y-scroll bg-white shadow-xl dark:bg-zinc-800">
                   <div className="px-4 py-6 bg-indigo-700 sm:px-6">
                     <div className="flex items-start justify-between">
                       <Dialog.Title className="text-lg text-white font-headings">
@@ -168,7 +168,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                   <div className="relative px-4 my-6 sm:px-6">
                     <div className="relative w-72">
                       <Listbox value={selectedNetworkKey} onChange={setSelectedNetworkKey}>
-                        <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-300 rounded-md shadow-sm cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-zinc-800 dark:border-zinc-800">
+                        <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-300 rounded-md shadow-sm cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-zinc-900 dark:border-zinc-800">
                           <span className="block truncate dark:text-zinc-50">
                             {selectedNetwork?.name}
                           </span>
@@ -182,7 +182,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                           leaveFrom="opacity-100"
                           leaveTo="opacity-0"
                         >
-                          <Listbox.Options className="absolute right-0 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg dark:text-zinc-50 dark:bg-zinc-800 max-h-56 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                          <Listbox.Options className="absolute right-0 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg dark:text-zinc-50 dark:bg-zinc-900 max-h-56 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                             {networks.map(network => (
                               <Listbox.Option
                                 key={network.key}
