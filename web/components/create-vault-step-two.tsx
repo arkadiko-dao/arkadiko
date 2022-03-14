@@ -147,8 +147,9 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
 
   useEffect(() => {
     if (collateralAmount && coinAmount) {
+      const amount = tokenName.toLocaleLowerCase().includes('xbtc') ? collateralAmount * 100 : collateralAmount;
       setLiquidationPrice(
-        getLiquidationPrice(liquidationRatio, parseFloat(coinAmount), parseFloat(collateralAmount), tokenName)
+        getLiquidationPrice(liquidationRatio, parseFloat(coinAmount), parseFloat(amount), tokenName)
       );
       setCollateralToDebt(
         getCollateralToDebtRatio(price * 100, parseFloat(coinAmount), parseFloat(collateralAmount))
