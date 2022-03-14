@@ -21,11 +21,12 @@ interface VaultProps {
 
 export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmounts }) => {
   const [state, _] = useContext(AppContext);
+  const [tokenKey, setTokenKey] = useState('');
+  const [decimals, setDecimals] = useState(1000000);
+
   const search = useLocation().search;
-  const tokenType = new URLSearchParams(search).get('type') || 'STX-A';
-  const tokenName = new URLSearchParams(search).get('token') || 'STX';
-  const tokenKey = tokenName.toLowerCase() as UserBalanceKeys;
-  const decimals = tokenKey === 'stx' ? 1000000 : 100000000;
+  const tokenType = new URLSearchParams(search).get('type');
+  const tokenName = new URLSearchParams(search).get('token');
   const currentSection = 1;
 
   const continueVault = () => {
@@ -65,13 +66,21 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
 
   useEffect(() => {
     const fetchPrice = async () => {
+      if (!tokenName) {
+        return;
+      }
+
       const price = await getPrice(tokenName);
       setPrice(price / 1000000);
       setIsLoading(false);
     };
 
-    fetchPrice();
-  }, []);
+    if (tokenName) {
+      fetchPrice();
+      setTokenKey(tokenName.toLowerCase() as UserBalanceKeys);
+      setDecimals(tokenKey === 'stx' ? 1000000 : 100000000);
+    }
+  }, [tokenName]);
 
   const setCollateralValues = (value: string) => {
     setCollateralAmount(value);
@@ -158,7 +167,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   }, [price, collateralAmount, coinAmount]);
 
   useEffect(() => {
-    if (state.collateralTypes[tokenType.toUpperCase()]) {
+    if (tokenType && state.collateralTypes[tokenType.toUpperCase()]) {
       setStabilityFeeApy(state.collateralTypes[tokenType.toUpperCase()].stabilityFeeApy);
       setLiquidationPenalty(state.collateralTypes[tokenType.toUpperCase()].liquidationPenalty);
       setLiquidationRatio(state.collateralTypes[tokenType.toUpperCase()].liquidationRatio);
