@@ -72,13 +72,14 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
 
       const price = await getPrice(tokenName);
       setPrice(price / 1000000);
-      setIsLoading(false);
     };
 
     if (tokenName) {
       fetchPrice();
-      setTokenKey(tokenName.toLowerCase() as UserBalanceKeys);
+      const tokenKey = tokenName.toLowerCase() as UserBalanceKeys;
+      setTokenKey(tokenKey);
       setDecimals(tokenKey === 'stx' ? 1000000 : 100000000);
+      setIsLoading(false);
     }
   }, [tokenName]);
 
@@ -140,20 +141,6 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
     setCoinAmount((maximumToMint / 1000000).toString());
   }, [state, maximumToMint]);
 
-  const togglePox = () => {
-    const newState = !coinAmount['stack-pox'];
-    let autoPayoff = coinAmount['auto-payoff'];
-    if (!newState) {
-      autoPayoff = false;
-    }
-    setCoinAmounts(prevState => ({
-      ...prevState,
-      'stack-pox': newState,
-      'auto-payoff': autoPayoff,
-    }));
-  };
-
-
   useEffect(() => {
     if (collateralAmount && coinAmount) {
       const amount = tokenName.toLocaleLowerCase().includes('xbtc') ? collateralAmount * 100 : collateralAmount;
@@ -164,7 +151,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
         getCollateralToDebtRatio(price * 100, parseFloat(coinAmount), parseFloat(collateralAmount))
       );
     }
-  }, [price, collateralAmount, coinAmount]);
+  }, [price, tokenName, collateralAmount, coinAmount]);
 
   useEffect(() => {
     if (tokenType && state.collateralTypes[tokenType.toUpperCase()]) {

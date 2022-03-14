@@ -3,6 +3,7 @@ import { AppContext } from '@common/context';
 import { CollateralType } from '@components/collateral-type';
 import { NewVaultWizardNav } from './new-vault-wizard-nav';
 import { tokenList } from '@components/token-swap-list';
+import { useHistory, useLocation } from 'react-router-dom';
 
 interface VaultProps {
   setStep: (arg: number) => void;
@@ -12,9 +13,11 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep }) => {
   const [{collateralTypes}, _x] = useContext(AppContext);
   const [collateralTypeChoice, setCollateralTypeChoice] = useState('');
   const currentSection = 0;
+  const history = useHistory();
 
   useEffect(() => {
     setStep(0);
+    history.replace({ type: null, token: null });
   }, []);
 
   const stxCollateralTypes = Object.fromEntries(
