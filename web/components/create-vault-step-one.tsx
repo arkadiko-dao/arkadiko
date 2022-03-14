@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { CollateralType } from '@components/collateral-type';
 import { NewVaultWizardNav } from './new-vault-wizard-nav';
@@ -12,7 +12,10 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep }) => {
   const [{collateralTypes}, _x] = useContext(AppContext);
   const [collateralTypeChoice, setCollateralTypeChoice] = useState('');
   const currentSection = 0;
-  setStep(0);
+
+  useEffect(() => {
+    setStep(0);
+  }, []);
 
   const stxCollateralTypes = Object.fromEntries(
     Object.entries(collateralTypes).filter(

@@ -22,6 +22,7 @@ export const getPriceInfo = async (symbol: string) => {
 
 export const getPrice = async (symbol: string) => {
   const priceInfo = await getPriceInfo(symbol)
+  console.log(symbol, priceInfo);
   return priceInfo['last-price'].value;
 }
 
