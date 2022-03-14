@@ -77,6 +77,11 @@ export const tokenTraits: TokenTraits = {
     name: 'Wrapped-Bitcoin',
     swap: 'Wrapped-Bitcoin',
   },
+  wldn: {
+    address: 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5',
+    name: 'wrapped-lydian-token',
+    swap: 'wrapped-lydian-token',
+  },
   welsh: {
     address: 'SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G',
     name: 'welshcorgicoin-token',
@@ -161,6 +166,16 @@ export const tokenTraits: TokenTraits = {
     address: contractAddress,
     name: 'arkadiko-swap-token-xbtc-usda',
     swap: 'xbtc-usda',
+  },
+  wldnusda: {
+    address: contractAddress,
+    name: 'arkadiko-swap-token-wldn-usda',
+    swap: 'wldn-usda',
+  },
+  usdawldn: {
+    address: contractAddress,
+    name: 'arkadiko-swap-token-wldn-usda',
+    swap: 'wldn-usda',
   },
   wstxwelsh: {
     address: contractAddress,

@@ -93,12 +93,14 @@ export const Swap: React.FC = () => {
           stx: account.stx.toString(),
           xstx: account.xstx.toString(),
           stdiko: account.stdiko.toString(),
+          wldn: account.wldn.toString(),
           welsh: account.welsh.toString(),
           dikousda: account.dikousda.toString(),
           wstxusda: account.wstxusda.toString(),
           wstxdiko: account.wstxdiko.toString(),
           wstxxbtc: account.wstxxbtc.toString(),
           xbtcusda: account.xbtcusda.toString(),
+          wldnusda: account.wldnusda.toString(),
           wstxwelsh: account.wstxwelsh.toString()
         },
       }));

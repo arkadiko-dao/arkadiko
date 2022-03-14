@@ -43,6 +43,15 @@ export const tokenList = [
   },
   {
     id: 5,
+    name: 'wLDN',
+    nameInPair: 'Wrapped Lydian',
+    logo: '/assets/tokens/lydian.png',
+    listed: true,
+    address: 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5',
+    decimals: 6
+  },
+  {
+    id: 6,
     name: 'WELSH',
     nameInPair: 'welsh',
     logo: '/assets/tokens/welsh.png',

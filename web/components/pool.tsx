@@ -86,7 +86,11 @@ export const Pool: React.FC = () => {
               </dl>
 
               <dl className="mt-6 space-y-6">
-                <PoolPosition key="token6" indexTokenX={2} indexTokenY={4} />
+                <PoolPosition key="token6" indexTokenX={4} indexTokenY={0} />
+              </dl>
+
+              <dl className="mt-6 space-y-6">
+                <PoolPosition key="token7" indexTokenX={2} indexTokenY={5} />
               </dl>
             </div>
 
