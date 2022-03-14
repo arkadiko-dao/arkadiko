@@ -203,7 +203,9 @@ export const Governance = () => {
                 <>
                   <ProposalGroup proposals={proposals} />
 
-                  <h4 className="mt-8 text-base leading-6 text-gray-900 font-headings dark:text-zinc-50">Governance V1</h4>
+                  <h4 className="mt-8 text-base leading-6 text-gray-900 font-headings dark:text-zinc-50">
+                    Governance V1
+                  </h4>
                   <ProposalGroup proposals={proposalsV1} />
                 </>
               ) : (

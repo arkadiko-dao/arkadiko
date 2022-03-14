@@ -58,7 +58,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
     ];
 
     let postConditions: any[] = [];
-    let postConditionMode = 0x02;
+    const postConditionMode = 0x02;
     if (coinAmounts['token-name'].toLowerCase() === 'stx') {
       postConditions = [
         makeStandardSTXPostCondition(address || '', FungibleConditionCode.Equal, amount.value),
@@ -69,7 +69,11 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
           address || '',
           FungibleConditionCode.LessEqual,
           amount.value,
-          createAssetInfo('SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR', 'Wrapped-Bitcoin', 'wrapped-bitcoin')
+          createAssetInfo(
+            'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR',
+            'Wrapped-Bitcoin',
+            'wrapped-bitcoin'
+          )
         ),
       ];
     }

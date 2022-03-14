@@ -25,7 +25,7 @@ export const NewVaultWizardNav = ({ currentSection, setStep }) => {
       description: 'Ready to open your vault?',
       href: '#',
       status: 'upcoming',
-    }
+    },
   ];
 
   vaultCreationSections.forEach((section, index) => {
@@ -55,7 +55,12 @@ export const NewVaultWizardNav = ({ currentSection, setStep }) => {
                 )}
               >
                 {section.status === 'complete' ? (
-                  <button onClick={() => { setStep(sectionIdx) }} className="group">
+                  <button
+                    onClick={() => {
+                      setStep(sectionIdx);
+                    }}
+                    className="group"
+                  >
                     <span
                       className="absolute top-0 left-0 w-1 h-full bg-transparent group-hover:bg-gray-200 lg:w-full lg:h-1 lg:bottom-0 lg:top-auto"
                       aria-hidden="true"
@@ -68,7 +73,10 @@ export const NewVaultWizardNav = ({ currentSection, setStep }) => {
                     >
                       <span className="shrink-0">
                         <span className="flex items-center justify-center w-10 h-10 bg-indigo-600 rounded-full dark:bg-indigo-400">
-                          <CheckIcon className="w-6 h-6 text-white dark:text-zinc-700" aria-hidden="true" />
+                          <CheckIcon
+                            className="w-6 h-6 text-white dark:text-zinc-700"
+                            aria-hidden="true"
+                          />
                         </span>
                       </span>
                       <span className="mt-0.5 ml-4 min-w-0 flex flex-col">
@@ -93,7 +101,9 @@ export const NewVaultWizardNav = ({ currentSection, setStep }) => {
                     >
                       <span className="shrink-0">
                         <span className="flex items-center justify-center w-10 h-10 border-2 border-indigo-600 rounded-full dark:border-indigo-400">
-                          <span className="font-semibold text-indigo-600 dark:text-indigo-400">{section.id}</span>
+                          <span className="font-semibold text-indigo-600 dark:text-indigo-400">
+                            {section.id}
+                          </span>
                         </span>
                       </span>
                       <span className="mt-0.5 ml-4 min-w-0 flex flex-col">

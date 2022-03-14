@@ -149,7 +149,12 @@ export const Auction: React.FC<AuctionProps> = ({
         </span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <RouterLink className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700" to={`/vaults/${vaultId}`}>View vault</RouterLink>
+        <RouterLink
+          className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
+          to={`/vaults/${vaultId}`}
+        >
+          View vault
+        </RouterLink>
       </td>
     </tr>
   );

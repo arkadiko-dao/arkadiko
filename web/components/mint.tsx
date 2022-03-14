@@ -2,12 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
-import {
-  callReadOnlyFunction,
-  cvToJSON,
-  standardPrincipalCV,
-  uintCV,
-} from '@stacks/transactions';
+import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, uintCV } from '@stacks/transactions';
 import { VaultGroup } from './vault-group';
 import { AppContext } from '@common/context';
 import { useEffect } from 'react';
@@ -17,7 +12,6 @@ import { ArchiveIcon } from '@heroicons/react/outline';
 import { Placeholder } from './ui/placeholder';
 import { Prices } from './prices';
 import { NavLink as RouterLink } from 'react-router-dom';
-
 
 export const Mint = () => {
   const address = useSTXAddress();
@@ -88,7 +82,6 @@ export const Mint = () => {
 
     fetchVaults();
   }, []);
-
 
   return (
     <div>

@@ -892,8 +892,8 @@ export const Stake = () => {
                 <Alert title="Unstaked LP tokens">
                   <p>👀 We noticed that your wallet contains LP Tokens that are not staked yet.</p>
                   <p className="mt-1">
-                    If you want to stake them, pick the appropriate token in the table below, hit the
-                    Actions dropdown button and choose Stake LP to initiate staking.
+                    If you want to stake them, pick the appropriate token in the table below, hit
+                    the Actions dropdown button and choose Stake LP to initiate staking.
                   </p>
                 </Alert>
               </div>
@@ -1203,7 +1203,8 @@ export const Stake = () => {
                   Liquidity Provider Tokens
                 </h3>
                 <p className="max-w-3xl mt-2 text-sm text-gray-500 dark:text-zinc-400 dark:text-zinc-300">
-                  Over time, DIKO rewards will accumulate which you can claim to your wallet or stake in the Security Module. Happy farming!
+                  Over time, DIKO rewards will accumulate which you can claim to your wallet or
+                  stake in the Security Module. Happy farming!
                 </p>
               </header>
 

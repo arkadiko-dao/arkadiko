@@ -77,7 +77,9 @@ export const VaultGroup: React.FC<VaultGroupProps> = ({ vaults }) => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-800 dark:divide-zinc-600">{vaultItems}</tbody>
+                  <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-800 dark:divide-zinc-600">
+                    {vaultItems}
+                  </tbody>
                 </table>
               </div>
             </div>

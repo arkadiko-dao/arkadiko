@@ -103,8 +103,11 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                   <div className="mt-4">
                     <Alert type={Alert.type.WARNING} title="Important note">
                       <p>
-                        Choosing to stack your STX means that they will be <span className="font-semibold">locked and become
-                        illiquid immediately</span>.
+                        Choosing to stack your STX means that they will be{' '}
+                        <span className="font-semibold">
+                          locked and become illiquid immediately
+                        </span>
+                        .
                       </p>
                       <p className="mt-1">
                         They will be available again on:{' '}

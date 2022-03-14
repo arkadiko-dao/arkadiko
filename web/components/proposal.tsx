@@ -56,7 +56,8 @@ export const Proposal: React.FC<ProposalProps> = ({
                 className="mr-2 text-gray-400 dark:text-gray-300"
               />
               <p>
-              {isOpen ? (`Closing`) : (`Closed`)} on block height {endBlockHeight}</p>
+                {isOpen ? `Closing` : `Closed`} on block height {endBlockHeight}
+              </p>
             </div>
           </div>
         </div>

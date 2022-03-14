@@ -176,7 +176,7 @@ export const App: React.FC = () => {
               daysPassed: daysPassed,
               daysLeft: daysLeft,
               cycleStartHeight: response['cycleStartHeight'],
-              cycleEndHeight: response['cycleEndHeight']
+              cycleEndHeight: response['cycleEndHeight'],
             }));
           });
       });
@@ -246,10 +246,7 @@ export const App: React.FC = () => {
     <Connect authOptions={authOptions}>
       <ThemeProvider theme={theme}>
         <AppContext.Provider value={[state, setState]}>
-          <Helmet
-            titleTemplate="Arkadiko Finance App - %s"
-            defaultTitle="Arkadiko Finance App"
-          />
+          <Helmet titleTemplate="Arkadiko Finance App - %s" defaultTitle="Arkadiko Finance App" />
           <div className="flex flex-col font-sans bg-white dark:bg-zinc-900 min-height-screen">
             {location.pathname.indexOf('/onboarding') != 0 ? (
               <Header signOut={signOut} setShowSidebar={setShowSidebar} />

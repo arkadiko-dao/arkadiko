@@ -511,10 +511,7 @@ export const ManageVault = ({ match }) => {
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold leading-6 text-gray-900 font-headings dark:text-zinc-50">
                 {loadingVaultData ? (
-                  <Placeholder
-                    className="py-2 w-[150px]"
-                    color={Placeholder.color.GRAY}
-                  />
+                  <Placeholder className="py-2 w-[150px]" color={Placeholder.color.GRAY} />
                 ) : (
                   <>
                     {vault?.collateralToken.toUpperCase()}/USDA — Vault #{match.params.id}
@@ -524,35 +521,40 @@ export const ManageVault = ({ match }) => {
 
               {debtRatio > 0 ? (
                 loadingVaultData ? (
-                  <Placeholder className="justify-end py-2" color={Placeholder.color.GRAY} width={Placeholder.width.THIRD} />
+                  <Placeholder
+                    className="justify-end py-2"
+                    color={Placeholder.color.GRAY}
+                    width={Placeholder.width.THIRD}
+                  />
                 ) : (
                   <>
                     {/* TODO: Make component out of this */}
                     {debtClass(collateralType?.liquidationRatio, debtRatio) == 'text-green-500' ? (
                       <span className="overflow-hidden group inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-green-100 text-green-800 h-6">
-                        <StyledIcon
-                          as="ShieldCheckIcon"
-                          size={5}
-                          className="mr-2"
-                        />
+                        <StyledIcon as="ShieldCheckIcon" size={5} className="mr-2" />
                         Healthy
                         <span className="flex items-center flex-shrink-0 invisible w-0 h-0 group-hover:w-full group-hover:visible group-hover:h-6">
-                          <svg className="w-1.5 h-1.5 mx-1 flex-shrink-0" fill="currentColor" viewBox="0 0 8 8">
+                          <svg
+                            className="w-1.5 h-1.5 mx-1 flex-shrink-0"
+                            fill="currentColor"
+                            viewBox="0 0 8 8"
+                          >
                             <circle cx={4} cy={4} r={3} />
                           </svg>
                           <span className="flex-shrink-0">Low liquidation risk</span>
                         </span>
                       </span>
-                    ) : debtClass(collateralType?.liquidationRatio, debtRatio) == 'text-orange-500' ? (
+                    ) : debtClass(collateralType?.liquidationRatio, debtRatio) ==
+                      'text-orange-500' ? (
                       <span className="overflow-hidden group inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800 h-6">
-                        <StyledIcon
-                          as="ExclamationIcon"
-                          size={5}
-                          className="mr-2"
-                        />
+                        <StyledIcon as="ExclamationIcon" size={5} className="mr-2" />
                         Warning
                         <span className="flex items-center flex-shrink-0 invisible w-0 h-0 group-hover:w-full group-hover:visible group-hover:h-6">
-                          <svg className="w-1.5 h-1.5 mx-1 flex-shrink-0" fill="currentColor" viewBox="0 0 8 8">
+                          <svg
+                            className="w-1.5 h-1.5 mx-1 flex-shrink-0"
+                            fill="currentColor"
+                            viewBox="0 0 8 8"
+                          >
                             <circle cx={4} cy={4} r={3} />
                           </svg>
                           <span className="flex-shrink-0">Medium liquidation risk</span>
@@ -560,14 +562,14 @@ export const ManageVault = ({ match }) => {
                       </span>
                     ) : (
                       <span className="overflow-hidden group inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-red-100 text-red-800 h-6">
-                        <StyledIcon
-                          as="ShieldExclamationIcon"
-                          size={5}
-                          className="mr-2"
-                        />
+                        <StyledIcon as="ShieldExclamationIcon" size={5} className="mr-2" />
                         Danger
                         <span className="flex items-center flex-shrink-0 invisible w-0 h-0 group-hover:w-full group-hover:visible group-hover:h-6">
-                          <svg className="w-1.5 h-1.5 mx-1 flex-shrink-0" fill="currentColor" viewBox="0 0 8 8">
+                          <svg
+                            className="w-1.5 h-1.5 mx-1 flex-shrink-0"
+                            fill="currentColor"
+                            viewBox="0 0 8 8"
+                          >
                             <circle cx={4} cy={4} r={3} />
                           </svg>
                           <span className="flex-shrink-0">High liquidation risk</span>
@@ -584,7 +586,9 @@ export const ManageVault = ({ match }) => {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div className="flex flex-col bg-white divide-y divide-gray-200 rounded-md shadow dark:bg-zinc-800 dark:divide-zinc-600">
                 <div className="px-4 py-3">
-                  <h3 className="text-base font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">Vault details</h3>
+                  <h3 className="text-base font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
+                    Vault details
+                  </h3>
                 </div>
                 <div className="flex flex-col h-full px-4 py-3">
                   <dl>
@@ -691,10 +695,10 @@ export const ManageVault = ({ match }) => {
                   </dl>
 
                   <div className="p-3 mt-auto rounded-md bg-gray-50 dark:bg-gray-200">
-                    <p className="text-xs font-semibold leading-none text-gray-400 uppercase dark:text-gray-500">Current {vault?.collateralToken} price</p>
-                    <p className="mt-1 text-sm font-semibold text-gray-900">
-                      ${price / 1000000}
+                    <p className="text-xs font-semibold leading-none text-gray-400 uppercase dark:text-gray-500">
+                      Current {vault?.collateralToken} price
                     </p>
+                    <p className="mt-1 text-sm font-semibold text-gray-900">${price / 1000000}</p>
                   </div>
                 </div>
               </div>
@@ -833,43 +837,57 @@ export const ManageVault = ({ match }) => {
                               <div className="flex">
                                 <div className="w-5 h-5 bg-gray-300 rounded-full shrink-0" />
                                 <div className="flex-1 ml-3">
-                                  <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.HALF} />
-                                  <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.THIRD} />
-                                  <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.FULL} />
+                                  <Placeholder
+                                    className="py-2"
+                                    color={Placeholder.color.GRAY}
+                                    width={Placeholder.width.HALF}
+                                  />
+                                  <Placeholder
+                                    className="py-2"
+                                    color={Placeholder.color.GRAY}
+                                    width={Placeholder.width.THIRD}
+                                  />
+                                  <Placeholder
+                                    className="py-2"
+                                    color={Placeholder.color.GRAY}
+                                    width={Placeholder.width.FULL}
+                                  />
                                 </div>
                               </div>
                             </div>
                           ) : (
                             <>
                               {/* TODO: make component out of this */}
-                              {debtClass(collateralType?.liquidationRatio, debtRatio) == 'text-green-500' ? (
+                              {debtClass(collateralType?.liquidationRatio, debtRatio) ==
+                              'text-green-500' ? (
                                 <Alert type={Alert.type.SUCCESS} title="Low liquidation risk">
                                   <p>
-                                    Good job! Your vault looks quite healthy. Your liquidation price ({vault?.collateralToken} below <span className="font-semibold">${liquidationPrice()}</span>) is still very far but keep in mind that you can pay back the outstanding debt or deposit extra collateral at any time anyway.
+                                    Good job! Your vault looks quite healthy. Your liquidation price
+                                    ({vault?.collateralToken} below{' '}
+                                    <span className="font-semibold">${liquidationPrice()}</span>) is
+                                    still very far but keep in mind that you can pay back the
+                                    outstanding debt or deposit extra collateral at any time anyway.
                                   </p>
                                 </Alert>
-                              ) : debtClass(collateralType?.liquidationRatio, debtRatio) == 'text-orange-500' ? (
+                              ) : debtClass(collateralType?.liquidationRatio, debtRatio) ==
+                                'text-orange-500' ? (
                                 <Alert type={Alert.type.WARNING} title="Medium liquidation risk">
                                   <p>
-                                    Be careful. You will be liquidated if the {vault?.collateralToken} price drops
-                                    below{' '}
-                                    <span className="font-semibold">
-                                      ${liquidationPrice()} USD
-                                    </span>
-                                    . Pay back the outstanding debt or deposit extra collateral to keep
-                                    your vault healthy.
+                                    Be careful. You will be liquidated if the{' '}
+                                    {vault?.collateralToken} price drops below{' '}
+                                    <span className="font-semibold">${liquidationPrice()} USD</span>
+                                    . Pay back the outstanding debt or deposit extra collateral to
+                                    keep your vault healthy.
                                   </p>
                                 </Alert>
                               ) : (
                                 <Alert type={Alert.type.ERROR} title="High liquidation risk">
                                   <p>
-                                    You are very close to being liquidated. If the {vault?.collateralToken} price drops
-                                    below{' '}
-                                    <span className="font-semibold">
-                                      ${liquidationPrice()} USD
-                                    </span>
-                                    . Pay back the outstanding debt or deposit extra collateral to keep
-                                    your vault healthy.
+                                    You are very close to being liquidated. If the{' '}
+                                    {vault?.collateralToken} price drops below{' '}
+                                    <span className="font-semibold">${liquidationPrice()} USD</span>
+                                    . Pay back the outstanding debt or deposit extra collateral to
+                                    keep your vault healthy.
                                   </p>
                                 </Alert>
                               )}
@@ -896,20 +914,12 @@ export const ManageVault = ({ match }) => {
                 {canStackCollateral && !loadingVaultData ? (
                   enabledStacking ? (
                     <span className="ml-3 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-green-100 text-green-800">
-                      <StyledIcon
-                        as="CheckCircleIcon"
-                        size={5}
-                        className="mr-2"
-                      />
+                      <StyledIcon as="CheckCircleIcon" size={5} className="mr-2" />
                       Enabled
                     </span>
                   ) : (
                     <span className="ml-3 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-red-100 text-red-800">
-                      <StyledIcon
-                        as="XCircleIcon"
-                        size={5}
-                        className="mr-2"
-                      />
+                      <StyledIcon as="XCircleIcon" size={5} className="mr-2" />
                       Disabled
                     </span>
                   )
@@ -939,22 +949,25 @@ export const ManageVault = ({ match }) => {
                       vault?.revokedStacking &&
                       !loadingVaultData ? (
                       // user has unstacked collateral, offer to stack again
-                        <button
-                          type="button"
-                          className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                          onClick={() => callToggleStacking()}
-                        >
-                          Restack
-                        </button>
-                    ) : canStackCollateral && vault?.stackedTokens == 0 && isVaultOwner && !loadingVaultData ? (
+                      <button
+                        type="button"
+                        className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        onClick={() => callToggleStacking()}
+                      >
+                        Restack
+                      </button>
+                    ) : canStackCollateral &&
+                      vault?.stackedTokens == 0 &&
+                      isVaultOwner &&
+                      !loadingVaultData ? (
                       // user is not stacking
-                        <button
-                          type="button"
-                          className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                          onClick={() => stackCollateral()}
-                        >
-                          Stack
-                        </button>
+                      <button
+                        type="button"
+                        className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        onClick={() => stackCollateral()}
+                      >
+                        Stack
+                      </button>
                     ) : null}
                   </div>
                 </div>
@@ -969,7 +982,10 @@ export const ManageVault = ({ match }) => {
                   <div className="relative">
                     <div
                       className="absolute w-full h-full dark:opacity-30"
-                      style={{ backgroundImage: 'url(/assets/stacks-pattern.png)', backgroundSize: '20%' }}
+                      style={{
+                        backgroundImage: 'url(/assets/stacks-pattern.png)',
+                        backgroundSize: '20%',
+                      }}
                     />
                     <a
                       className="absolute top-0 right-0 z-10 mt-2 mr-2 bg-indigo-600 rounded-full"
@@ -977,15 +993,13 @@ export const ManageVault = ({ match }) => {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <svg
-                        className="w-8 h-8"
-                        viewBox="0 0 120 120"
-                        aria-hidden="true"
-                      >
-                        <circle cx="60" cy="60" r="60" fill="#5546FF"/>
-                        <path d="M86.0779 92L72.4991 71.4267H91.9992V63.6647H28V71.4357H47.4937L33.9214 92H44.0471L59.9997 67.8295L75.9522 92H86.0779ZM91.9993 56.1313V48.2912H72.8952L86.2874 28H76.1618L59.9995 52.4877L43.8375 28H33.7119L47.1212 48.3094H28V56.1313H91.9993Z" fill="white"/>
+                      <svg className="w-8 h-8" viewBox="0 0 120 120" aria-hidden="true">
+                        <circle cx="60" cy="60" r="60" fill="#5546FF" />
+                        <path
+                          d="M86.0779 92L72.4991 71.4267H91.9992V63.6647H28V71.4357H47.4937L33.9214 92H44.0471L59.9997 67.8295L75.9522 92H86.0779ZM91.9993 56.1313V48.2912H72.8952L86.2874 28H76.1618L59.9995 52.4877L43.8375 28H33.7119L47.1212 48.3094H28V56.1313H91.9993Z"
+                          fill="white"
+                        />
                       </svg>
-
                     </a>
 
                     <dl className="relative grid grid-cols-1 overflow-hidden bg-indigo-100 bg-opacity-50 border border-indigo-200 divide-y divide-indigo-200 rounded-lg shadow-sm dark:bg-zinc-700 dark:bg-opacity-95 dark:border-zinc-600 dark:divide-zinc-600">
@@ -1006,7 +1020,8 @@ export const ManageVault = ({ match }) => {
                         <dd className="flex items-baseline justify-between mt-1 md:block">
                           <div className="flex items-baseline justify-between flex-1 text-lg font-semibold text-indigo-800 dark:text-indigo-200">
                             <span>
-                              {state.daysPassed} <span className="text-xs opacity-80">(since {state.startDate})</span>
+                              {state.daysPassed}{' '}
+                              <span className="text-xs opacity-80">(since {state.startDate})</span>
                             </span>
                             <a
                               className="hover:underline"
@@ -1026,7 +1041,8 @@ export const ManageVault = ({ match }) => {
                         <dd className="flex items-baseline justify-between mt-1 md:block">
                           <div className="flex items-baseline justify-between flex-1 text-lg font-semibold text-indigo-800 dark:text-indigo-200">
                             <span>
-                              {state.daysLeft} <span className="text-xs opacity-80">(ends on {state.endDate})</span>
+                              {state.daysLeft}{' '}
+                              <span className="text-xs opacity-80">(ends on {state.endDate})</span>
                             </span>
                             <a
                               className="hover:underline"
@@ -1072,8 +1088,14 @@ export const ManageVault = ({ match }) => {
                         viewBox="0 0 120 120"
                         aria-hidden="true"
                       >
-                        <path fill="#F7931A" d="M118.2 74.52a59.98 59.98 0 0 1-72.72 43.68 59.98 59.98 0 1 1 72.72-43.68Z"/>
-                        <path fill="#fff" d="M86.46 51.45c1.2-7.98-4.89-12.27-13.2-15.14l2.7-10.81-6.59-1.64-2.63 10.53c-1.73-.43-3.5-.84-5.27-1.24l2.64-10.6-6.58-1.64-2.69 10.8-13.28-3.28-1.75 7.03s4.88 1.12 4.78 1.19c2.67.67 3.15 2.43 3.07 3.83L40.27 70.1c-.33.8-1.15 2.02-3.02 1.56.07.1-4.78-1.2-4.78-1.2L29.2 78l13.26 3.35-2.73 10.94 6.58 1.64 2.7-10.82c1.8.49 3.54.94 5.25 1.36l-2.7 10.77 6.59 1.64 2.73-10.92C72.1 88.1 80.55 87.24 84.1 77.1c2.86-8.17-.14-12.89-6.05-15.96 4.3-1 7.54-3.83 8.4-9.67h.01Zm-15.05 21.1c-2.04 8.17-15.8 3.75-20.26 2.64l3.61-14.49c4.46 1.11 18.77 3.32 16.65 11.85Zm2.04-21.21C71.6 58.78 60.14 55 56.42 54.07l3.27-13.15c3.72.93 15.7 2.66 13.76 10.42"/>
+                        <path
+                          fill="#F7931A"
+                          d="M118.2 74.52a59.98 59.98 0 0 1-72.72 43.68 59.98 59.98 0 1 1 72.72-43.68Z"
+                        />
+                        <path
+                          fill="#fff"
+                          d="M86.46 51.45c1.2-7.98-4.89-12.27-13.2-15.14l2.7-10.81-6.59-1.64-2.63 10.53c-1.73-.43-3.5-.84-5.27-1.24l2.64-10.6-6.58-1.64-2.69 10.8-13.28-3.28-1.75 7.03s4.88 1.12 4.78 1.19c2.67.67 3.15 2.43 3.07 3.83L40.27 70.1c-.33.8-1.15 2.02-3.02 1.56.07.1-4.78-1.2-4.78-1.2L29.2 78l13.26 3.35-2.73 10.94 6.58 1.64 2.7-10.82c1.8.49 3.54.94 5.25 1.36l-2.7 10.77 6.59 1.64 2.73-10.92C72.1 88.1 80.55 87.24 84.1 77.1c2.86-8.17-.14-12.89-6.05-15.96 4.3-1 7.54-3.83 8.4-9.67h.01Zm-15.05 21.1c-2.04 8.17-15.8 3.75-20.26 2.64l3.61-14.49c4.46 1.11 18.77 3.32 16.65 11.85Zm2.04-21.21C71.6 58.78 60.14 55 56.42 54.07l3.27-13.15c3.72.93 15.7 2.66 13.76 10.42"
+                        />
                       </svg>
                     </a>
                   </dl>
@@ -1100,15 +1122,11 @@ export const ManageVault = ({ match }) => {
                         vault?.stackedTokens > 0 &&
                         !loadingVaultData ? (
                           <button
-                          type="button"
-                          className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                          onClick={() => unlockCollateral()}
+                            type="button"
+                            className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            onClick={() => unlockCollateral()}
                           >
-                            <StyledIcon
-                              as="LockOpenIcon"
-                              size={4}
-                              className="-ml-0.5 mr-2"
-                            />
+                            <StyledIcon as="LockOpenIcon" size={4} className="-ml-0.5 mr-2" />
                             Unlock
                           </button>
                         ) : null}
@@ -1171,10 +1189,7 @@ export const ManageVault = ({ match }) => {
                                 <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                                   Available for stacking
                                 </p>
-                                <Tooltip
-                                  shouldWrapChildren={true}
-                                  label={`...`}
-                                >
+                                <Tooltip shouldWrapChildren={true} label={`...`}>
                                   <StyledIcon
                                     as="InformationCircleIcon"
                                     size={5}
@@ -1203,9 +1218,9 @@ export const ManageVault = ({ match }) => {
                           <div className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
                             <p className="text-lg font-semibold leading-none">
                               {enabledStacking ? (
-                                <span>{microToReadable(vault?.collateral)}{' '}</span>
+                                <span>{microToReadable(vault?.collateral)} </span>
                               ) : (
-                                <span>0{' '}</span>
+                                <span>0 </span>
                               )}
                               <span className="text-sm font-normal">
                                 {vault?.collateralToken.toUpperCase()}
@@ -1311,7 +1326,13 @@ export const ManageVault = ({ match }) => {
                       </>
                     ) : null}
 
-                    <div className={canStackCollateral ? `flex items-center justify-between mt-4` : `flex items-center justify-between`}>
+                    <div
+                      className={
+                        canStackCollateral
+                          ? `flex items-center justify-between mt-4`
+                          : `flex items-center justify-between`
+                      }
+                    >
                       <div>
                         <p className="flex items-center text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
                           Withdrawal
@@ -1381,13 +1402,15 @@ export const ManageVault = ({ match }) => {
                         <Alert>
                           {startedStacking && burnBlockHeight > unlockBurnHeight ? (
                             <p>
-                              You can stop stacking and withdraw your collateral by unlocking your vault with the above Unlock button.
+                              You can stop stacking and withdraw your collateral by unlocking your
+                              vault with the above Unlock button.
                             </p>
                           ) : startedStacking ? (
                             <p>
                               You cannot withdraw your collateral since it is stacked until Bitcoin
-                              block {unlockBurnHeight}. We are currently at Bitcoin block {burnBlockHeight}.
-                              After block {unlockBurnHeight} gets mined, you will need to manually unlock your vault to get access to your collateral.
+                              block {unlockBurnHeight}. We are currently at Bitcoin block{' '}
+                              {burnBlockHeight}. After block {unlockBurnHeight} gets mined, you will
+                              need to manually unlock your vault to get access to your collateral.
                             </p>
                           ) : (
                             <p>
@@ -1405,7 +1428,9 @@ export const ManageVault = ({ match }) => {
                       <div className="mt-4">
                         <Alert>
                           <p>
-                            You have unstacked your collateral. It is still stacking in PoX until Bitcoin block {unlockBurnHeight}. Once your cooldown cycle hits, you can unlock the collateral.
+                            You have unstacked your collateral. It is still stacking in PoX until
+                            Bitcoin block {unlockBurnHeight}. Once your cooldown cycle hits, you can
+                            unlock the collateral.
                           </p>
                         </Alert>
                       </div>
