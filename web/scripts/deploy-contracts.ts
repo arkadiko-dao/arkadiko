@@ -19,7 +19,7 @@ interface Contract {
 }
 
 const contracts: Contract[] = [
-  { name: 'arkadiko-xstx-migrate' }
+  { name: 'arkadiko-update-collateral-types' }
 ];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');

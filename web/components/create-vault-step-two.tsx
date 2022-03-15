@@ -69,6 +69,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
       if (!tokenName) {
         return;
       }
+      console.log(state.collateralTypes);
 
       const price = await getPrice(tokenName);
       setPrice(price / 1000000);
