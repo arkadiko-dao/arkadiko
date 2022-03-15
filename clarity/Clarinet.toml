@@ -319,10 +319,6 @@ path = "contracts/arkadiko-pox-unstack-unlock-v1-1.clar"
 depends_on = []
 path = "contracts/arkadiko-xstx-migrate.clar"
 
-[contracts.arkadiko-update-collateral-types]
-depends_on = []
-path = "contracts/arkadiko-update-collateral-types.clar"
-
 # Tokensoft xBTC
 [contracts.restricted-token-trait]
 path = "contracts/xbtc/restricted-token-trait.clar"
