@@ -8,7 +8,7 @@ export const SwapLoadingPlaceholder: React.FC = ({ tokenX, tokenY }) => {
   return (
     <>
       <div>
-        <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 h-[104px] dark:border-zinc-800 dark:bg-zinc-800 dark:border-zinc-900">
+        <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 h-[104px] dark:border-zinc-800 dark:bg-zinc-900 dark:border-zinc-900">
           <div className="flex items-center p-4 pb-2">
             <TokenSwapList selected={tokenX} setSelected={() => {}} disabled={true} />
           </div>
@@ -18,11 +18,11 @@ export const SwapLoadingPlaceholder: React.FC = ({ tokenX, tokenY }) => {
           </div>
         </div>
 
-        <div className="relative z-10 flex items-center justify-center w-8 h-8 -mt-4 -mb-4 -ml-4 text-gray-400 transform bg-white border border-gray-300 rounded-md dark:bg-zinc-900 left-1/2 focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-800">
+        <div className="relative z-10 flex items-center justify-center w-8 h-8 -mt-4 -mb-4 -ml-4 text-gray-400 transform bg-white border border-gray-300 rounded-md dark:bg-zinc-800 left-1/2 focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-800">
           <SwitchVerticalIcon className="w-5 h-5" aria-hidden="true" />
         </div>
 
-        <div className="mt-1 border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 h-[104px] dark:border-zinc-800 dark:bg-zinc-800 dark:border-zinc-900">
+        <div className="mt-1 border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 h-[104px] dark:border-zinc-800 dark:bg-zinc-900 dark:border-zinc-900">
           <div className="flex items-center p-4 pb-2">
             <TokenSwapList selected={tokenY} setSelected={() => {}} disabled={true} />
           </div>

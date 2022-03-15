@@ -35,7 +35,7 @@ export const VaultGroup: React.FC<VaultGroupProps> = ({ vaults }) => {
             <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
               <div className="overflow-hidden border border-gray-200 rounded-lg dark:border-zinc-700">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
-                  <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
+                  <thead className="bg-gray-50 dark:bg-zinc-800 dark:bg-opacity-80">
                     <tr>
                       <th
                         scope="col"
@@ -81,7 +81,7 @@ export const VaultGroup: React.FC<VaultGroupProps> = ({ vaults }) => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600">{vaultItems}</tbody>
+                  <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-800 dark:divide-zinc-600">{vaultItems}</tbody>
                 </table>
               </div>
             </div>

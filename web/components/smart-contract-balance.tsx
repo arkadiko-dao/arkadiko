@@ -94,7 +94,7 @@ export const SmartContractBalance = ({ address, description, name }) => {
   }, []);
 
   return (
-    <tr className="bg-white dark:bg-zinc-900">
+    <tr className="bg-white dark:bg-zinc-800">
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         <div className="flex items-center">
           {name}

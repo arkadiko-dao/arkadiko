@@ -356,7 +356,7 @@ export const ViewProposal = ({ match }) => {
       <Modal isOpen={showVoteDikoModal}>
         <div className="flex px-4 pt-4 pb-20 text-center sm:block sm:p-0">
           <div
-            className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg dark:bg-zinc-900 sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6"
+            className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg dark:bg-zinc-800 sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6"
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-headline"
@@ -563,7 +563,7 @@ export const ViewProposal = ({ match }) => {
 
           <div className="mt-4">
             <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-x-4 lg:space-y-0">
-              <div className="overflow-hidden bg-white rounded-lg shadow dark:bg-zinc-900">
+              <div className="overflow-hidden bg-white rounded-lg shadow dark:bg-zinc-800">
                 <div className="px-4 py-5 sm:px-6">
                   <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
                     Details
@@ -665,7 +665,7 @@ export const ViewProposal = ({ match }) => {
                 </div>
               </div>
 
-              <div className="flex flex-col overflow-hidden bg-white rounded-lg shadow dark:bg-zinc-900">
+              <div className="flex flex-col overflow-hidden bg-white rounded-lg shadow dark:bg-zinc-800">
                 <dl className="flex-1 sm:grid sm:grid-cols-2">
                   <div className="flex flex-col justify-center p-6 text-center border-b border-gray-200 dark:border-zinc-600 sm:border-0 sm:border-r">
                     <dt className="inline-flex items-center order-2 mx-auto mt-2 text-lg font-medium leading-6">
@@ -750,7 +750,7 @@ export const ViewProposal = ({ match }) => {
                     </dd>
                   </div>
                 </dl>
-                <div className="p-5 bg-white border-t border-gray-200 dark:bg-zinc-900 dark:border-zinc-600">
+                <div className="p-5 bg-white border-t border-gray-200 dark:bg-zinc-800 dark:border-zinc-600">
                   {isLoading ? (
                     <Placeholder
                       className="justify-center py-2"
