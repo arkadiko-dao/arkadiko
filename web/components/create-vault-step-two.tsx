@@ -58,10 +58,12 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   const [isLoading, setIsLoading] = useState(true);
 
   const maximumCoinsToMint = (value: string) => {
-    const minColl = tokenType == 'STX-A' ? 400 : 310;
-    const maxRatio = Math.max(minColl, parseInt(liquidationRatio, 10) + 30);
-    const uCollateralAmount = parseInt(value * 1000000, 10);
-    setMaximumToMint(Math.floor((uCollateralAmount * price * 100) / maxRatio));
+    if (state.collateralTypes[tokenType]) {
+      const minColl = state.collateralTypes[tokenType]['collateralToDebtRatio'];
+      const maxRatio = Math.max(minColl, parseInt(liquidationRatio, 10) + 30);
+      const uCollateralAmount = parseInt(value * 1000000, 10);
+      setMaximumToMint(Math.floor((uCollateralAmount * price * 100) / maxRatio));
+    }
   };
 
   useEffect(() => {
