@@ -29,10 +29,10 @@
 (define-public (emergency-withdraw-tokens)
   (let (
     (guardian tx-sender)
-    (contract-balance (unwrap-panic (contract-call? 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5.wrapped-lydian-token get-balance (as-contract tx-sender))))
+    (contract-balance (unwrap-panic (contract-call? .wrapped-lydian-token get-balance (as-contract tx-sender))))
   )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
-    (as-contract (contract-call? 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5.wrapped-lydian-token transfer contract-balance (as-contract tx-sender) guardian none))
+    (as-contract (contract-call? .wrapped-lydian-token transfer contract-balance (as-contract tx-sender) guardian none))
   )
 )
 
@@ -80,7 +80,7 @@
       (begin
         ;; Update claimed map
         (map-set claimed { user: sender } (merge claimed-map { amount-stdiko: (+ claimed-amount left-to-claim) }))
-        (as-contract (contract-call? 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5.wrapped-lydian-token transfer left-to-claim (as-contract tx-sender) sender none))
+        (as-contract (contract-call? .wrapped-lydian-token transfer left-to-claim (as-contract tx-sender) sender none))
       )
     )
   )
@@ -121,7 +121,7 @@
       (begin
         ;; Update claimed map
         (map-set claimed { user: sender } (merge claimed-map { amount-diko-usda: (+ claimed-amount left-to-claim) }))
-        (as-contract (contract-call? 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5.wrapped-lydian-token transfer left-to-claim (as-contract tx-sender) sender none))
+        (as-contract (contract-call? .wrapped-lydian-token transfer left-to-claim (as-contract tx-sender) sender none))
       )
     )
   )
@@ -168,7 +168,7 @@
       (begin
         ;; Update claimed map
         (map-set claimed { user: sender } (merge claimed-map { amount-wstx-diko: (+ claimed-amount left-to-claim) }))
-        (as-contract (contract-call? 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5.wrapped-lydian-token transfer left-to-claim (as-contract tx-sender) sender none))
+        (as-contract (contract-call? .wrapped-lydian-token transfer left-to-claim (as-contract tx-sender) sender none))
       )
     )
   )
