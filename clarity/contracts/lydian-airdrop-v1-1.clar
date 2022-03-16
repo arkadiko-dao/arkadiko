@@ -1,10 +1,9 @@
 (define-constant ERR-NOT-AUTHORIZED u444001)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u444002)
 
-;; TODO - SET FOR MAINNET
-(define-constant ldn-for-stdiko u600000000)
-(define-constant ldn-for-diko-usda u700000000)
-(define-constant ldn-for-wstx-diko u800000000)
+(define-constant ldn-for-stdiko u591010441)
+(define-constant ldn-for-diko-usda u520508667)
+(define-constant ldn-for-wstx-diko u426980892)
 
 ;; ---------------------------------------------------------
 ;; Emergency
@@ -30,12 +29,10 @@
 (define-public (emergency-withdraw-tokens)
   (let (
     (guardian tx-sender)
-    (contract-balance (unwrap-panic (contract-call? .lydian-token get-balance (as-contract tx-sender))))
+    (contract-balance (unwrap-panic (contract-call? 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5.wrapped-lydian-token get-balance (as-contract tx-sender))))
   )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
-
-    ;; TODO - SET MAINNET ADDRESS FOR LYDIAN TOKEN
-    (as-contract (contract-call? .lydian-token transfer contract-balance (as-contract tx-sender) guardian none))
+    (as-contract (contract-call? 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5.wrapped-lydian-token transfer contract-balance (as-contract tx-sender) guardian none))
   )
 )
 
@@ -83,9 +80,7 @@
       (begin
         ;; Update claimed map
         (map-set claimed { user: sender } (merge claimed-map { amount-stdiko: (+ claimed-amount left-to-claim) }))
-
-        ;; TODO - SET MAINNET ADDRESS FOR LYDIAN TOKEN
-        (as-contract (contract-call? .lydian-token transfer left-to-claim (as-contract tx-sender) sender none))
+        (as-contract (contract-call? 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5.wrapped-lydian-token transfer left-to-claim (as-contract tx-sender) sender none))
       )
     )
   )
@@ -126,9 +121,7 @@
       (begin
         ;; Update claimed map
         (map-set claimed { user: sender } (merge claimed-map { amount-diko-usda: (+ claimed-amount left-to-claim) }))
-
-        ;; TODO - SET MAINNET ADDRESS FOR LYDIAN TOKEN
-        (as-contract (contract-call? .lydian-token transfer left-to-claim (as-contract tx-sender) sender none))
+        (as-contract (contract-call? 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5.wrapped-lydian-token transfer left-to-claim (as-contract tx-sender) sender none))
       )
     )
   )
@@ -175,9 +168,7 @@
       (begin
         ;; Update claimed map
         (map-set claimed { user: sender } (merge claimed-map { amount-wstx-diko: (+ claimed-amount left-to-claim) }))
-
-        ;; TODO - SET MAINNET ADDRESS FOR LYDIAN TOKEN
-        (as-contract (contract-call? .lydian-token transfer left-to-claim (as-contract tx-sender) sender none))
+        (as-contract (contract-call? 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5.wrapped-lydian-token transfer left-to-claim (as-contract tx-sender) sender none))
       )
     )
   )
