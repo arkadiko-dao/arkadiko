@@ -21,7 +21,7 @@ export const Pool: React.FC = () => {
   return (
     <Container>
       <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
-        <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow dark:bg-zinc-900">
+        <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow dark:bg-zinc-800">
           <div className="flex flex-col p-4">
             <div className="mb-4">
               <div>

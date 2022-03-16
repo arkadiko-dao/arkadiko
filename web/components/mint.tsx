@@ -10,13 +10,13 @@ import {
 } from '@stacks/transactions';
 import { VaultGroup } from './vault-group';
 import { AppContext } from '@common/context';
-import { CollateralType } from '@components/collateral-type';
 import { useEffect } from 'react';
 import { VaultProps } from './vault';
 import { EmptyState } from './ui/empty-state';
 import { ArchiveIcon } from '@heroicons/react/outline';
 import { Placeholder } from './ui/placeholder';
 import { Prices } from './prices';
+import { NavLink as RouterLink } from 'react-router-dom';
 
 export const Mint = () => {
   const address = useSTXAddress();
@@ -167,10 +167,23 @@ export const Mint = () => {
         </section>
 
         <section className="mt-12">
-          <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:items-center sm:justify-between">
+          <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:items-end sm:justify-between">
             <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
               Your vaults
             </h3>
+
+            {vaults.length &&
+            Object.keys(collateralTypes).length === state.definedCollateralTypes.length ? (
+              <div>
+                <RouterLink
+                  to={`/vaults/new`}
+                  exact
+                  className="inline-flex px-4 py-2 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Create Vault
+                </RouterLink>
+              </div>
+            ) : null}
           </header>
 
           {vaults.length &&
@@ -179,7 +192,7 @@ export const Mint = () => {
           ) : loadingVaults === true ? (
             <div className="min-w-full mt-4 overflow-hidden overflow-x-auto align-middle rounded-lg sm:shadow">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
-                <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
+                <thead className="bg-gray-50 dark:bg-zinc-800 dark:bg-opacity-80">
                   <tr>
                     <th
                       scope="col"
@@ -190,12 +203,12 @@ export const Mint = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="bg-white dark:bg-zinc-900">
+                  <tr className="bg-white dark:bg-zinc-800">
                     <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
                       <Placeholder />
                     </td>
                   </tr>
-                  <tr className="bg-white dark:bg-zinc-900">
+                  <tr className="bg-white dark:bg-zinc-800">
                     <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
                       <Placeholder />
                     </td>
@@ -204,53 +217,24 @@ export const Mint = () => {
               </table>
             </div>
           ) : (
-            <EmptyState
-              Icon={ArchiveIcon}
-              title="You currently have no open vaults."
-              description="Start creating a new vault by choosing the appropriate collateral type below."
-            />
-          )}
-        </section>
+            <>
+              <EmptyState
+                Icon={ArchiveIcon}
+                title="You currently have no open vaults."
+                description="Start creating a new vault and unleash the power of self repaying-loans!"
+              />
 
-        <section className="mt-8">
-          <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
-            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
-              Create vault
-            </h3>
-          </header>
-
-          <div className="flex flex-col mt-4">
-            {Object.keys(collateralTypes).length > 0 ? (
-              <CollateralType types={collateralTypes} />
-            ) : (
-              <div className="min-w-full mt-4 overflow-hidden overflow-x-auto align-middle rounded-lg sm:shadow">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
-                  <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
-                    <tr>
-                      <th
-                        scope="col"
-                        className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
-                      >
-                        <Placeholder color={Placeholder.color.GRAY} />
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="bg-white dark:bg-zinc-900">
-                      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-                        <Placeholder />
-                      </td>
-                    </tr>
-                    <tr className="bg-white dark:bg-zinc-900">
-                      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-                        <Placeholder />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div className="flex justify-center my-4">
+                <RouterLink
+                  to={`/vaults/new`}
+                  exact
+                  className="inline-flex px-6 py-3 text-base font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Create Vault
+                </RouterLink>
               </div>
-            )}
-          </div>
+            </>
+          )}
         </section>
 
         <Prices />

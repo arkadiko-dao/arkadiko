@@ -104,7 +104,7 @@ export const Auction: React.FC<AuctionProps> = ({
   };
 
   return (
-    <tr className="bg-white dark:bg-zinc-900">
+    <tr className="bg-white dark:bg-zinc-800">
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         <span className="font-medium text-gray-900 dark:text-zinc-100">
           {id}.{lotId + 1}

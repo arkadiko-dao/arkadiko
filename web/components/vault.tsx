@@ -93,7 +93,7 @@ export const Vault: React.FC<VaultProps> = ({
       return 'bg-red-300/50';
     }
 
-    return 'bg-white dark:bg-zinc-900';
+    return 'bg-white dark:bg-zinc-800';
   };
 
   let debtRatio = 0;
@@ -206,7 +206,7 @@ export const Vault: React.FC<VaultProps> = ({
           </td>
         </tr>
       ) : (
-        <div role="listitem" className="bg-white dark:bg-zinc-900">
+        <div role="listitem" className="bg-white dark:bg-zinc-800">
           <table className="w-full">
             <thead>
               <tr>
