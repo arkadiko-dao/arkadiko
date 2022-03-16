@@ -278,11 +278,11 @@ class LiquidationRewards {
     ], this.deployer.address);
   }
   
-  addReward(shareBlock: number, token: string, totalAmount: number) {
+  addReward(shareBlock: number, token: string, totalAmount: number, isStx: boolean = false) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "add-reward", [
         types.uint(shareBlock),
-        types.bool(false),
+        types.bool(isStx),
         types.principal(Utils.qualifiedName(token)),
         types.uint(totalAmount * 1000000)
       ], this.deployer.address)
@@ -315,6 +315,16 @@ class LiquidationRewards {
   toggleEmergencyShutdown() {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "toggle-shutdown", [
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  updateRewardToken(token: string, whitelisted: boolean) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "update-reward-tokens", [
+        types.principal(Utils.qualifiedName(token)),
+        types.bool(whitelisted)
       ], this.deployer.address)
     ]);
     return block.receipts[0].result;

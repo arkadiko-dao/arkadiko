@@ -6,6 +6,7 @@
 (define-constant ERR-NOT-AUTHORIZED u30401)
 (define-constant ERR-WRONG-TOKEN u30002)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u30003)
+(define-constant ERR-TOKEN-NOT-WHITELISTED u30004)
 
 ;; Variables
 (define-data-var total-reward-ids uint u0)
@@ -37,6 +38,15 @@
   }
 )
 
+(define-map reward-tokens
+  { 
+    token: principal,
+  } 
+  {
+    whitelisted: bool
+  }
+)
+
 (define-read-only (get-total-reward-ids)
   (var-get total-reward-ids)
 )
@@ -58,6 +68,13 @@
     { claimed-amount: u0 }
     (map-get? reward-claimed { reward-id : reward-id, user: user })
   )
+)
+
+(define-read-only (token-whitelisted (token principal))
+  (get whitelisted (default-to
+    { whitelisted: false }
+    (map-get? reward-tokens { token: token  })
+  ))
 )
 
 (define-read-only (get-shutdown-activated)
@@ -89,6 +106,7 @@
     (reward-id (var-get total-reward-ids))
   )
     (asserts! (not (get-shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
+    (asserts! (or token-is-stx (token-whitelisted (contract-of token))) (err ERR-TOKEN-NOT-WHITELISTED))
 
     ;; Transfer rewards to contract
     (if token-is-stx
@@ -183,4 +201,30 @@
     (if (is-none id-4) u0 (try! (claim-rewards-of (unwrap-panic id-4) token liquidation-pool)))
     (ok true)
   )
+)
+
+;; ---------------------------------------------------------
+;; Admin
+;; ---------------------------------------------------------
+
+(define-public (update-reward-tokens (token principal) (whitelisted bool))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (map-set reward-tokens  { token: token } { whitelisted: whitelisted })
+    
+    (ok true)
+  )
+)
+
+;; ---------------------------------------------------------
+;; Init
+;; ---------------------------------------------------------
+
+(begin
+  (map-set reward-tokens  { token: .arkadiko-token } { whitelisted: true })
+  (map-set reward-tokens  { token: .xstx-token } { whitelisted: true })
+
+  ;; TODO - UPDATE ADDRESS FOR MAINNET
+  (map-set reward-tokens  { token: .tokensoft-token } { whitelisted: true })
 )

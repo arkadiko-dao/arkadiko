@@ -349,7 +349,6 @@ Clarinet.test({
   }
 });
 
-
 Clarinet.test({
   name: "liquidation-rewards: shutdown diko rewards",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -387,5 +386,38 @@ Clarinet.test({
     let call:any = await liquidationRewards.getRewardData(0);
     call.result.expectTuple()["share-block"].expectUint(0);
     call.result.expectTuple()["total-amount"].expectUintWithDecimals(4.423341);
+  }
+});
+
+Clarinet.test({
+  name: "liquidation-rewards: whitelist tokens",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let liquidationRewards = new LiquidationRewards(chain, deployer);
+
+    // Can add DIKO rrewards
+    let result = liquidationRewards.addReward(1, "arkadiko-token", 100);
+    result.expectOk().expectBool(true);
+
+    // Disable DIKO
+    result = liquidationRewards.updateRewardToken("arkadiko-token", false)
+    result.expectOk().expectBool(true);
+
+    // Can not add DIKO rewards
+    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
+    result.expectErr().expectUint(30004);
+
+    // Can still add STX rewards
+    result = liquidationRewards.addReward(1, "arkadiko-token", 100, true);
+    result.expectOk().expectBool(true);
+
+    // Enable DIKO again
+    result = liquidationRewards.updateRewardToken("arkadiko-token", true)
+    result.expectOk().expectBool(true);
+
+    // Can add DIKO rewards again
+    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
+    result.expectOk().expectBool(true);
   }
 });
