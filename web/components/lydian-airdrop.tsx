@@ -315,7 +315,7 @@ export const LydianAirdrop = () => {
                       </div>
                       <div className="px-6 py-5">
                         <h2 className="text-xl font-headings">
-                          wSTX/DIKO
+                          STX/DIKO
                         </h2>
                         <p>
                           {isLoading ? (
