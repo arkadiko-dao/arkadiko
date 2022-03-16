@@ -95,21 +95,16 @@ export const LydianAirdrop = () => {
     const fetchInfo = async () => {
       // Fetch all info
       const [
-        // ldnForStdiko,
-        // ldnForDikoUsda,
-        // ldnForWstxDiko,
+        ldnForStdiko,
+        ldnForDikoUsda,
+        ldnForWstxDiko,
         claimed
       ] = await Promise.all([
-        // fetchLdnForStdiko(),
-        // fetchLdnForDikoUsda(),
-        // fetchLdnForWstxDiko(),
+        fetchLdnForStdiko(),
+        fetchLdnForDikoUsda(),
+        fetchLdnForWstxDiko(),
         fetchClaimed()
       ]);
-
-      // TODO: REMOVE FOR MAINNET
-      const ldnForStdiko = 4230000;
-      const ldnForDikoUsda = 0;
-      const ldnForWstxDiko = 32000;
 
       const claimed1 = claimed['amount-stdiko'].value;
       const claimed2 = claimed['amount-diko-usda'].value;
