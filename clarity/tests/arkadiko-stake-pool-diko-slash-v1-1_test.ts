@@ -34,7 +34,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Add funds to DIKO pool first (100 DIKO)
   let result = stakeRegistry.stake(
     wallet_1, 
-    'arkadiko-stake-pool-diko-v1-1',
+    'arkadiko-stake-pool-diko-v1-2',
     'arkadiko-token',
     100
   );
@@ -70,7 +70,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   call.result.expectTuple()["is-open"].expectBool(false);
 
   // Check total DIKO pool balance (as rewards have auto compounded)
-  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
+  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
   call.result.expectOk().expectUintWithDecimals(162.639906);
 
   // Now that the contract is active in the DAO, we can execute it
@@ -86,7 +86,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Check total DIKO pool balance
   // 70% of 162 DIKO = ~113
-  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1'));
+  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
   call.result.expectOk().expectUintWithDecimals(113.847935);
 
   // Can not execute slash again
