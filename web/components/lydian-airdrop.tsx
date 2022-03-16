@@ -266,14 +266,16 @@ export const LydianAirdrop = () => {
                                   maximumFractionDigits: 6,
                                 })} LDN
                               </p>
-                              <button
-                                type="button"
-                                disabled={claimAmount1 === 0}
-                                onClick={() => claim1()}
-                                className="inline-flex px-4 py-2 mt-4 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-300 disabled:hover:bg-indigo-300 disabled:pointer-events-none"
-                              >
-                                Claim
-                              </button>
+                              {false ? (
+                                <button
+                                  type="button"
+                                  disabled={claimAmount1 === 0}
+                                  onClick={() => claim1()}
+                                  className="inline-flex px-4 py-2 mt-4 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-300 disabled:hover:bg-indigo-300 disabled:pointer-events-none"
+                                >
+                                  Claim
+                                </button>
+                              ) : null}
                             </>
                           )}
                         </p>
@@ -297,14 +299,16 @@ export const LydianAirdrop = () => {
                                   maximumFractionDigits: 6,
                                 })} LDN
                               </p>
-                              <button
-                                type="button"
-                                disabled={claimAmount2 === 0}
-                                onClick={() => claim2()}
-                                className="inline-flex px-4 py-2 mt-4 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-300 disabled:hover:bg-indigo-300 disabled:pointer-events-none"
-                              >
-                                Claim
-                              </button>
+                              {false ? (
+                                <button
+                                  type="button"
+                                  disabled={claimAmount2 === 0}
+                                  onClick={() => claim2()}
+                                  className="inline-flex px-4 py-2 mt-4 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-300 disabled:hover:bg-indigo-300 disabled:pointer-events-none"
+                                >
+                                  Claim
+                                </button>
+                              ) : null}
                             </>
                           )}
                         </p>
@@ -328,16 +332,26 @@ export const LydianAirdrop = () => {
                                   maximumFractionDigits: 6,
                                 })} LDN
                               </p>
-                              <button
-                                type="button"
-                                disabled={claimAmount3 === 0}
-                                onClick={() => claim3()}
-                                className="inline-flex px-4 py-2 mt-4 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-300 disabled:hover:bg-indigo-300 disabled:pointer-events-none"
-                              >
-                                Claim
-                              </button>
+                              {false ? (
+                                <button
+                                  type="button"
+                                  disabled={claimAmount3 === 0}
+                                  onClick={() => claim3()}
+                                  className="inline-flex px-4 py-2 mt-4 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-300 disabled:hover:bg-indigo-300 disabled:pointer-events-none"
+                                >
+                                  Claim
+                                </button>
+                              ) : null}
                             </>
                           )}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="p-4 px-4 py-5 sm:p-6">
+                      <div className="flex items-center">
+                        <p>
+                          <strong>ATTENTION</strong>: LDN tokens will be claimable if the Arkadiko governance vote succeeds.
                         </p>
                       </div>
                     </div>
