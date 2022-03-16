@@ -15,6 +15,7 @@ import {
   cvToJSON
 } from '@stacks/transactions';
 import { GiftIcon, LinkIcon } from '@heroicons/react/solid';
+import { Alert } from './ui/alert';
 
 export const LydianAirdrop = () => {
   const stxAddress = useSTXAddress();
@@ -246,7 +247,7 @@ export const LydianAirdrop = () => {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 border-t border-b border-gray-200 divide-y divide-gray-200 dark:border-zinc-600 dark:divide-zinc-600 bg-gray-50 dark:bg-zinc-700 sm:grid-cols-3 sm:divide-y-0 sm:divide-x rounded-bl-md rounded-br-md">
+                    <div className="grid grid-cols-1 border-t border-b border-gray-200 divide-y divide-gray-200 dark:border-zinc-600 dark:divide-zinc-600 bg-gray-50 dark:bg-zinc-700 sm:grid-cols-3 sm:divide-y-0 sm:divide-x">
                       <div className="px-6 py-5">
                         <h2 className="text-xl font-headings">
                           stDIKO pool
@@ -349,11 +350,11 @@ export const LydianAirdrop = () => {
                     </div>
 
                     <div className="p-4 px-4 py-5 sm:p-6">
-                      <div className="flex items-center">
+                      <Alert type={Alert.type.WARNING} title="Important">
                         <p>
-                          <strong>ATTENTION</strong>: LDN tokens will be claimable if the Arkadiko governance vote succeeds.
+                          LDN tokens will be claimable only if the Arkadiko <a href="/governance/9" className="font-semibold underline">governance vote #9</a> succeeds.
                         </p>
-                      </div>
+                      </Alert>
                     </div>
                   </div>
                 </div>
