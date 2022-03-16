@@ -229,7 +229,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                 </span>
               </RouterLink>
             </p>
-            <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow dark:bg-zinc-900">
+            <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow dark:bg-zinc-800">
               <div className="flex flex-col p-4">
                 <div className="flex justify-between mb-4">
                   <div>
@@ -332,7 +332,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                 </div>
 
                 <form className="mt-4">
-                  <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-800 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200">
+                  <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-900 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200">
                     <div className="flex items-center p-4">
                       <div className="lg:flex lg:items-start lg:flex-1 lg:justify-between">
                         <label
@@ -355,7 +355,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                               placeholder="0.0"
                               value={percentageToRemove}
                               onChange={onInputChange}
-                              className="block p-0 pr-4 m-0 text-3xl font-semibold text-right text-gray-700 truncate border-0 focus:outline-none focus:ring-0 bg-gray-50 dark:bg-zinc-800 dark:text-zinc-200 w-52"
+                              className="block p-0 pr-4 m-0 text-3xl font-semibold text-right text-gray-700 truncate border-0 focus:outline-none focus:ring-0 bg-gray-50 dark:bg-zinc-900 dark:text-zinc-200 w-52"
                               style={{ appearance: 'textfield' }}
                             />
                             <div className="absolute inset-y-0 right-0 flex items-end pb-1 pointer-events-none">
@@ -410,7 +410,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                     <ArrowDownIcon className="w-6 h-6 text-gray-500" aria-hidden="true" />
                   </div>
 
-                  <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-800 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200">
+                  <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-900 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200">
                     <div className="p-4">
                       <p className="text-base text-gray-700 dark:text-zinc-200">You will receive</p>
 

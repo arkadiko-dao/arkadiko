@@ -99,11 +99,13 @@ export const UnstakeDikoModal = ({
       initialFocus={inputRef}
     >
       {errors.length > 0 ? (
-        <Alert type={Alert.type.ERROR}>
-          {errors.map(txt => (
-            <p key={txt}>{txt}</p>
-          ))}
-        </Alert>
+        <div className="mb-4">
+          <Alert type={Alert.type.ERROR}>
+            {errors.map(txt => (
+              <p key={txt}>{txt}</p>
+            ))}
+          </Alert>
+        </div>
       ) : null}
 
       <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">

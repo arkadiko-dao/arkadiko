@@ -166,6 +166,8 @@ export const App: React.FC = () => {
               endDate: endDate,
               daysPassed: daysPassed,
               daysLeft: daysLeft,
+              cycleStartHeight: response['cycleStartHeight'],
+              cycleEndHeight: response['cycleEndHeight']
             }));
           });
       });
@@ -189,6 +191,8 @@ export const App: React.FC = () => {
         }
       };
       void getData();
+    } else {
+      fetchStackingCycle();
     }
   }, []);
 
@@ -237,7 +241,7 @@ export const App: React.FC = () => {
             titleTemplate="Arkadiko Finance App - %s"
             defaultTitle="Arkadiko Finance App"
           />
-          <div className="flex flex-col font-sans bg-white dark:bg-zinc-800 min-height-screen">
+          <div className="flex flex-col font-sans bg-white dark:bg-zinc-900 min-height-screen">
             {location.pathname.indexOf('/onboarding') != 0 ? (
               <Header signOut={signOut} setShowSidebar={setShowSidebar} />
             ) : null}

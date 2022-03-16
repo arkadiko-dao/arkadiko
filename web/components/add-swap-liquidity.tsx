@@ -363,7 +363,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                 </span>
               </RouterLink>
             </p>
-            <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow dark:bg-zinc-900">
+            <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow dark:bg-zinc-800">
               <div className="flex flex-col p-4">
                 <div className="flex justify-between mb-4">
                   <div>
@@ -410,7 +410,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                 <form className="mt-4">
                   {isLoading ? (
                     <>
-                      <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-800 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200 h-[104px]">
+                      <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-900 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200 h-[104px]">
                         <div className="flex items-center p-4 pb-2">
                           <TokenSwapList selected={tokenX} disabled={true} />
                         </div>
@@ -427,7 +427,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                         <PlusIcon className="w-6 h-6 text-gray-500" aria-hidden="true" />
                       </div>
 
-                      <div className="mt-1 border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-800 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200 h-[104px]">
+                      <div className="mt-1 border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-900 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200 h-[104px]">
                         <div className="flex items-center p-4 pb-2">
                           <TokenSwapList selected={tokenY} disabled={true} />
                         </div>
@@ -442,7 +442,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                     </>
                   ) : (
                     <>
-                      <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-800 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200">
+                      <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-900 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200">
                         <div className="flex items-center p-4 pb-2">
                           <TokenSwapList
                             selected={tokenX}
@@ -466,7 +466,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                             value={tokenXAmount || ''}
                             onChange={onInputXChange}
                             min={0}
-                            className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50 dark:bg-zinc-800 dark:text-zinc-50"
+                            className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50 dark:bg-zinc-900 dark:text-zinc-50"
                             style={{ appearance: 'textfield' }}
                           />
                         </div>
@@ -502,7 +502,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                         <PlusIcon className="w-6 h-6 text-gray-500" aria-hidden="true" />
                       </div>
 
-                      <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-800 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200">
+                      <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-900 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200">
                         <div className="flex items-center p-4 pb-2">
                           <TokenSwapList
                             selected={tokenY}
@@ -526,7 +526,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                             value={tokenYAmount || ''}
                             onChange={onInputYChange}
                             min={0}
-                            className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50 dark:bg-zinc-800 dark:text-zinc-50"
+                            className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50 dark:bg-zinc-900 dark:text-zinc-50"
                             style={{ appearance: 'textfield' }}
                           />
                         </div>

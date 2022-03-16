@@ -72,8 +72,8 @@ export const MarketCap: React.FC = ({ lastDikoPrice, lastUsdaPrice }) => {
       </header>
 
       <div className="min-w-full mt-4 overflow-hidden overflow-x-auto align-middle border border-gray-200 rounded-lg dark:border-zinc-600 lg:hidden">
-        <div className="bg-white dark:bg-zinc-900">
-          <div className="mx-auto bg-white dark:bg-zinc-900 sm:py-6 max-w-7xl">
+        <div className="bg-white dark:bg-zinc-800">
+          <div className="mx-auto bg-white dark:bg-zinc-800 sm:py-6 max-w-7xl">
             <div className="max-w-2xl mx-auto space-y-2 divide-y divide-gray-200 dark:divide-zinc-600">
               {tokens.map(token => (
                 <section className="pt-6" key={token.name}>

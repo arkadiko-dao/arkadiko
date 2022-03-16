@@ -44,16 +44,21 @@ async function getYieldClaim(index) {
   return tx.cvToJSON(vaultTx).value;
 }
 
+async function timeout(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function iterateAndCheck() {
   const lastId = await getLastVaultId();
   console.log('Last Vault ID is', lastId, ', iterating vaults');
   const vaultIds = Array.from(Array(lastId).keys());
-  for (let index = 43; index <= lastId; index++) {
+  for (let index = 230; index <= lastId; index++) {
     const vault = await getVaultById(index);
     const collateral = vault['collateral']['value'];
     if (collateral === 0) {
       const claim = await getYieldClaim(index);
       console.log(index + ': ' + claim['ustx']['value']);
+      await timeout(1000);
     }
   }
 }

@@ -896,13 +896,15 @@ export const Stake = () => {
         <Container>
           <main className="relative flex-1 py-12">
             {hasUnstakedTokens ? (
-              <Alert title="Unstaked LP tokens">
-                <p>👀 We noticed that your wallet contains LP Tokens that are not staked yet.</p>
-                <p className="mt-1">
-                  If you want to stake them, pick the appropriate token in the table below, hit the
-                  Actions dropdown button and choose Stake LP to initiate staking.
-                </p>
-              </Alert>
+              <div className="mb-4">
+                <Alert title="Unstaked LP tokens">
+                  <p>👀 We noticed that your wallet contains LP Tokens that are not staked yet.</p>
+                  <p className="mt-1">
+                    If you want to stake them, pick the appropriate token in the table below, hit the
+                    Actions dropdown button and choose Stake LP to initiate staking.
+                  </p>
+                </Alert>
+              </div>
             ) : null}
             <section>
               <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
@@ -939,7 +941,7 @@ export const Stake = () => {
                 </div>
               </header>
 
-              <div className="mt-4 bg-white divide-y divide-gray-200 rounded-md shadow dark:divide-gray-600 dark:bg-zinc-900">
+              <div className="mt-4 bg-white divide-y divide-gray-200 rounded-md shadow dark:divide-gray-600 dark:bg-zinc-800">
                 <div className="px-4 py-5 space-y-6 divide-y divide-gray-200 dark:divide-zinc-600 sm:p-6">
                   <div className="md:grid md:grid-flow-col gap-4 sm:grid-cols-[min-content,auto]">
                     <div className="self-center w-14">
@@ -1031,7 +1033,7 @@ export const Stake = () => {
                       <Menu as="div" className="relative flex items-center justify-end">
                         {({ open }) => (
                           <>
-                            <Menu.Button className="inline-flex items-center justify-center px-2 py-1 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-900 dark:text-indigo-400">
+                            <Menu.Button className="inline-flex items-center justify-center px-2 py-1 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-800 dark:text-indigo-400">
                               <span>Actions</span>
                               <ChevronUpIcon
                                 className={`${
@@ -1210,7 +1212,7 @@ export const Stake = () => {
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                     <div className="overflow-hidden border border-gray-200 rounded-lg dark:border-zinc-700">
                       <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
-                        <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
+                        <thead className="bg-gray-50 dark:bg-zinc-800 dark:bg-opacity-80">
                           <tr>
                             <th
                               scope="col"

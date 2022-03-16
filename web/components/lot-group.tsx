@@ -25,7 +25,7 @@ export const LotGroup: React.FC<LotProps[]> = ({ lots }) => {
     <div className="flex flex-col mt-4">
       <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
-          <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
+          <thead className="bg-gray-50 dark:bg-zinc-800 dark:bg-opacity-80">
             <tr>
               <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400">
                 Auction ID
@@ -39,7 +39,7 @@ export const LotGroup: React.FC<LotProps[]> = ({ lots }) => {
               <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"></th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600">{lotItems}</tbody>
+          <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-800 dark:divide-zinc-600">{lotItems}</tbody>
         </table>
       </div>
     </div>

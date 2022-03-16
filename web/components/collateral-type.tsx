@@ -5,7 +5,7 @@ import { InformationCircleIcon } from '@heroicons/react/solid';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { classNames } from '@common/class-names';
 
-export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
+export const CollateralType: React.FC<CollateralTypeProps> = ({ types, setStep }) => {
   const collateralItems: CollateralTypeProps[] = [];
   ['STX-A', 'STX-B', 'XBTC-A'].forEach((tokenString: string) => {
     const coll = types?.[tokenString];
@@ -28,8 +28,8 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
 
   return (
     <div className="min-w-full overflow-hidden overflow-x-auto align-middle border border-gray-200 rounded-lg dark:border-zinc-600">
-      <div className="bg-white dark:bg-zinc-900">
-        <div className="py-12 mx-auto bg-white dark:bg-zinc-900 sm:py-6 max-w-7xl">
+      <div className="bg-white dark:bg-zinc-800">
+        <div className="py-12 mx-auto bg-white dark:bg-zinc-800 sm:py-6 max-w-7xl">
           {/* xs to lg */}
           <div className="max-w-2xl mx-auto space-y-16 lg:hidden">
             {collateralItems.map((collateral, collateralIdx) => (
@@ -165,10 +165,11 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
                 >
                   <RouterLink
                     to={`/vaults/new?type=${collateral.tokenType}&token=${collateral.token}`}
+                    onClick={() => setStep(1)}
                     exact
                     className="block w-full px-4 py-2 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   >
-                    Create Vault
+                    Choose
                   </RouterLink>
                 </div>
               </section>
@@ -321,10 +322,11 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types }) => {
                     <td key={collateral.tokenType} className="px-6 pt-5">
                       <RouterLink
                         to={`/vaults/new?type=${collateral.tokenType}&token=${collateral.token}`}
+                        onClick={() => setStep(1)}
                         exact
                         className="px-4 py-2 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                       >
-                        Create Vault
+                        Choose
                       </RouterLink>
                     </td>
                   ))}
