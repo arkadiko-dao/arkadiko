@@ -319,16 +319,16 @@ path = "contracts/arkadiko-pox-unstack-unlock-v1-1.clar"
 depends_on = []
 path = "contracts/arkadiko-xstx-migrate.clar"
 
-[contracts.lydian-token]
+[contracts.wrapped-lydian-token]
 depends_on = []
-path = "contracts/lydian-token.clar"
+path = "contracts/wrapped-lydian-token.clar"
 
 [contracts.lydian-airdrop-v1-1]
-depends_on = ["lydian-token"]
+depends_on = ["wrapped-lydian-token"]
 path = "contracts/lydian-airdrop-v1-1.clar"
 
 [contracts.lydian-airdrop-snapshot-v1-1]
-depends_on = ["lydian-token"]
+depends_on = ["wrapped-lydian-token"]
 path = "contracts/lydian-airdrop-snapshot-v1-1.clar"
 
 # Tokensoft xBTC

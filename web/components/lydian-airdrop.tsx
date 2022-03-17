@@ -33,7 +33,7 @@ export const LydianAirdrop = () => {
     const fetchClaimed = async () => {
       const call = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'lydian-airdrop-v1-1',
+        contractName: 'lydian-airdrop-v1-2',
         functionName: 'get-claimed',
         functionArgs: [
           standardPrincipalCV(stxAddress || ''),
@@ -48,7 +48,7 @@ export const LydianAirdrop = () => {
     const fetchLdnForStdiko = async () => {
       const call = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'lydian-airdrop-v1-1',
+        contractName: 'lydian-airdrop-v1-2',
         functionName: 'get-ldn-for-stdiko-pool',
         functionArgs: [
           standardPrincipalCV(stxAddress || ''),
@@ -64,7 +64,7 @@ export const LydianAirdrop = () => {
     const fetchLdnForDikoUsda = async () => {
       const call = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'lydian-airdrop-v1-1',
+        contractName: 'lydian-airdrop-v1-2',
         functionName: 'get-ldn-for-diko-usda-pool',
         functionArgs: [
           standardPrincipalCV(stxAddress || ''),
@@ -80,7 +80,7 @@ export const LydianAirdrop = () => {
     const fetchLdnForWstxDiko = async () => {
       const call = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'lydian-airdrop-v1-1',
+        contractName: 'lydian-airdrop-v1-2',
         functionName: 'get-ldn-for-wstx-diko-pool',
         functionArgs: [
           standardPrincipalCV(stxAddress || ''),
@@ -126,7 +126,7 @@ export const LydianAirdrop = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'lydian-airdrop-v1-1',
+      contractName: 'lydian-airdrop-v1-2',
       functionName: 'claim-ldn-for-stdiko-pool',
       functionArgs: [
       ],
@@ -147,7 +147,7 @@ export const LydianAirdrop = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'lydian-airdrop-v1-1',
+      contractName: 'lydian-airdrop-v1-2',
       functionName: 'claim-ldn-for-diko-usda-pool',
       functionArgs: [
       ],
@@ -168,7 +168,7 @@ export const LydianAirdrop = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'lydian-airdrop-v1-1',
+      contractName: 'lydian-airdrop-v1-2',
       functionName: 'claim-ldn-for-wstx-diko-pool',
       functionArgs: [
       ],
