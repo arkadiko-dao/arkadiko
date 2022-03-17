@@ -352,7 +352,7 @@ export const LydianAirdrop = () => {
                     <div className="p-4 px-4 py-5 sm:p-6">
                       <Alert type={Alert.type.WARNING} title="Important">
                         <p>
-                          LDN tokens will be claimable only if the Arkadiko <a href="/governance/9" className="font-semibold underline">governance vote #9</a> succeeds.
+                          LDN tokens will be claimable only if the upcoming Arkadiko governance vote succeeds.
                         </p>
                       </Alert>
                     </div>
