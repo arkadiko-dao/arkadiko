@@ -18,7 +18,7 @@ import { useLocation } from 'react-router-dom';
 import { initiateConnection } from '@common/websocket-tx-updater';
 import ScrollToTop from '@components/scroll-to-top';
 import { Redirect } from 'react-router-dom';
-import { Helmet } from "react-helmet";
+import { Helmet } from 'react-helmet';
 
 export const getBalance = async (address: string) => {
   const client = getRPCClient();
@@ -42,8 +42,14 @@ export const getBalance = async (address: string) => {
     data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-xbtc-usda::xbtc-usda`];
   const lpStxWelshBalance =
     data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-welsh::wstx-welsh`];
-  const xbtcBalance = data.fungible_tokens[`SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin::wrapped-bitcoin`];
-  const welshBalance = data.fungible_tokens[`SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G.welshcorgicoin-token::welshcorgicoin`];
+  const xbtcBalance =
+    data.fungible_tokens[
+      `SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin::wrapped-bitcoin`
+    ];
+  const welshBalance =
+    data.fungible_tokens[
+      `SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G.welshcorgicoin-token::welshcorgicoin`
+    ];
 
   return {
     stx: Number(data.stx.balance) - Number(data.stx.locked),
@@ -58,7 +64,7 @@ export const getBalance = async (address: string) => {
     wstxdiko: lpStxDikoBalance ? lpStxDikoBalance.balance : 0,
     wstxxbtc: lpStxXbtcBalance ? lpStxXbtcBalance.balance : 0,
     xbtcusda: lpXbtcUsdaBalance ? lpXbtcUsdaBalance.balance : 0,
-    wstxwelsh: lpStxWelshBalance ? lpStxWelshBalance.balance : 0
+    wstxwelsh: lpStxWelshBalance ? lpStxWelshBalance.balance : 0,
   };
 };
 
@@ -99,7 +105,7 @@ export const App: React.FC = () => {
         wstxdiko: account.wstxdiko.toString(),
         wstxxbtc: account.wstxxbtc.toString(),
         xbtcusda: account.xbtcusda.toString(),
-        wstxwelsh: account.wstxwelsh.toString()
+        wstxwelsh: account.wstxwelsh.toString(),
       },
     }));
   };
@@ -154,7 +160,10 @@ export const App: React.FC = () => {
             const daysPassed = Math.round(
               (currentTimestamp - startTimestamp) / (1000 * 60 * 60 * 24)
             );
-            const daysLeft = Math.max(0, Math.round((endTimestamp - currentTimestamp) / (1000 * 60 * 60 * 24)));
+            const daysLeft = Math.max(
+              0,
+              Math.round((endTimestamp - currentTimestamp) / (1000 * 60 * 60 * 24))
+            );
 
             const startDate = new Date(startTimestamp).toDateString();
             const endDate = new Date(endTimestamp).toDateString().split(' ').slice(1).join(' ');
@@ -167,7 +176,7 @@ export const App: React.FC = () => {
               daysPassed: daysPassed,
               daysLeft: daysLeft,
               cycleStartHeight: response['cycleStartHeight'],
-              cycleEndHeight: response['cycleEndHeight']
+              cycleEndHeight: response['cycleEndHeight'],
             }));
           });
       });
@@ -237,10 +246,7 @@ export const App: React.FC = () => {
     <Connect authOptions={authOptions}>
       <ThemeProvider theme={theme}>
         <AppContext.Provider value={[state, setState]}>
-          <Helmet
-            titleTemplate="Arkadiko Finance App - %s"
-            defaultTitle="Arkadiko Finance App"
-          />
+          <Helmet titleTemplate="Arkadiko Finance App - %s" defaultTitle="Arkadiko Finance App" />
           <div className="flex flex-col font-sans bg-white dark:bg-zinc-900 min-height-screen">
             {location.pathname.indexOf('/onboarding') != 0 ? (
               <Header signOut={signOut} setShowSidebar={setShowSidebar} />

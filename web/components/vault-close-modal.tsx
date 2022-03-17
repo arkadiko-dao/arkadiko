@@ -2,11 +2,7 @@ import React, { useContext, useState, useRef } from 'react';
 import { Modal } from '@components/ui/modal';
 import { tokenList } from '@components/token-swap-list';
 import { AppContext } from '@common/context';
-import {
-  AnchorMode,
-  contractPrincipalCV,
-  uintCV
-} from '@stacks/transactions';
+import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
@@ -25,7 +21,7 @@ export const VaultCloseModal: React.FC<Props> = ({
   showCloseModal,
   setShowCloseModal,
   vault,
-  reserveName
+  reserveName,
 }) => {
   const [_, setState] = useContext(AppContext);
 
@@ -77,8 +73,8 @@ export const VaultCloseModal: React.FC<Props> = ({
       initialFocus={inputRef}
     >
       <p className="text-sm text-center text-gray-500">
-        Are you sure you want to close your vault?
-        This change is irreversible and any yield you are waiting for won't be received.
+        Are you sure you want to close your vault? This change is irreversible and any yield you are
+        waiting for won't be received.
       </p>
     </Modal>
   );

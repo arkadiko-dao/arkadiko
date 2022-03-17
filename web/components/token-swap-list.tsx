@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
-import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
 import { classNames } from '@common/class-names';
+import { StyledIcon } from './ui/styled-icon';
 
 export const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 export const tokenList = [
@@ -12,7 +12,7 @@ export const tokenList = [
     logo: '/assets/tokens/usda.svg',
     listed: true,
     address: contractAddress,
-    decimals: 6
+    decimals: 6,
   },
   {
     id: 2,
@@ -21,7 +21,7 @@ export const tokenList = [
     logo: '/assets/tokens/diko.svg',
     listed: true,
     address: contractAddress,
-    decimals: 6
+    decimals: 6,
   },
   {
     id: 3,
@@ -30,7 +30,7 @@ export const tokenList = [
     logo: '/assets/tokens/stx.svg',
     listed: true,
     address: contractAddress,
-    decimals: 6
+    decimals: 6,
   },
   {
     id: 4,
@@ -39,7 +39,7 @@ export const tokenList = [
     logo: '/assets/tokens/xbtc.svg',
     listed: true,
     address: 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR',
-    decimals: 8
+    decimals: 8,
   },
   {
     id: 5,
@@ -48,7 +48,7 @@ export const tokenList = [
     logo: '/assets/tokens/welsh.png',
     listed: true,
     address: 'SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G',
-    decimals: 6
+    decimals: 6,
   },
 ];
 
@@ -82,7 +82,7 @@ export const TokenSwapList: React.FC<Props> = ({ selected, setSelected, disabled
               </span>
               {!disabled ? (
                 <span className="absolute inset-y-0 right-0 flex items-center pr-2 ml-3 pointer-events-none">
-                  <SelectorIcon className="w-5 h-5 text-gray-400" aria-hidden="true" />
+                  <StyledIcon as="SelectorIcon" size={5} className="text-gray-400" />
                 </span>
               ) : null}
             </Listbox.Button>
@@ -136,7 +136,7 @@ export const TokenSwapList: React.FC<Props> = ({ selected, setSelected, disabled
                                 'absolute inset-y-0 right-0 flex items-center pr-4'
                               )}
                             >
-                              <CheckIcon className="w-5 h-5" aria-hidden="true" />
+                              <StyledIcon as="CheckIcon" size={5} />
                             </span>
                           ) : null}
                         </>

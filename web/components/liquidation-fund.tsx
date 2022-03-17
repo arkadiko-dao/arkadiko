@@ -10,7 +10,7 @@ import {
   AnchorMode,
   makeStandardSTXPostCondition,
   FungibleConditionCode,
-  uintCV
+  uintCV,
 } from '@stacks/transactions';
 
 export const LiquidationFund = () => {
@@ -21,13 +21,12 @@ export const LiquidationFund = () => {
   const [depositAmount, setDepositAmount] = useState(0);
   const [insufficientFunds, setInsufficientFunds] = useState(false);
 
-  useEffect(() => {
-  }, []);
+  useEffect(() => {}, []);
 
   const onInputChange = (event: any) => {
     const value = event.target.value;
-    console.log("Value changed: ", value);
-    setDepositAmount(value)
+    console.log('Value changed: ', value);
+    setDepositAmount(value);
 
     setInsufficientFunds(false);
     if (value > state.balance['stx'] / 1000000) {
@@ -37,13 +36,17 @@ export const LiquidationFund = () => {
 
   const onMaxPressed = (event: any) => {
     const value = event.target.value;
-    console.log("Value changed: ", value);
-    setDepositAmount(state.balance['stx'] / 1000000 - 1)
+    console.log('Value changed: ', value);
+    setDepositAmount(state.balance['stx'] / 1000000 - 1);
   };
 
   const deposit = async () => {
     const postConditions = [
-      makeStandardSTXPostCondition(stxAddress || '', FungibleConditionCode.Equal, Number(depositAmount) * 1000000),
+      makeStandardSTXPostCondition(
+        stxAddress || '',
+        FungibleConditionCode.Equal,
+        Number(depositAmount) * 1000000
+      ),
     ];
     await doContractCall({
       network,
@@ -51,9 +54,7 @@ export const LiquidationFund = () => {
       stxAddress,
       contractName: 'arkadiko-liquidation-fund-v1-1',
       functionName: 'deposit-stx',
-      functionArgs: [
-        uintCV(Number(depositAmount) * 1000000)
-      ],
+      functionArgs: [uintCV(Number(depositAmount) * 1000000)],
       postConditions,
       onFinish: data => {
         setState(prevState => ({
@@ -78,13 +79,13 @@ export const LiquidationFund = () => {
                   <div className="absolute bg-indigo-200 rounded-full -bottom-16 opacity-70 -right-16 w-80 h-80 mix-blend-multiply filter blur-xl"></div>
 
                   <div className="relative p-4 bg-white rounded-lg">
-                    <h2 className="text-2xl font-headings">
-                      Liquidation Fund
-                    </h2>
+                    <h2 className="text-2xl font-headings">Liquidation Fund</h2>
                     <p className="mt-4 text-gray-800">
-                      Deposited STX will be used to provide STX/USDA liquidity and stake the LP tokens. Funds can be used by the controller to perform liquidations and participate in auctions.
+                      Deposited STX will be used to provide STX/USDA liquidity and stake the LP
+                      tokens. Funds can be used by the controller to perform liquidations and
+                      participate in auctions.
                     </p>
-                    
+
                     <div className="mt-6">
                       <InputAmount
                         balance={state.balance['stx'] / 1000000}

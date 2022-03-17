@@ -2,10 +2,10 @@ import React from 'react';
 import { microToReadable } from '@common/vault-utils';
 import { tokenList } from '@components/token-swap-list';
 import { Disclosure } from '@headlessui/react';
-import { InformationCircleIcon, ChevronUpIcon } from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
 import { Placeholder } from './ui/placeholder';
 import { NavLink as RouterLink } from 'react-router-dom';
+import { StyledIcon } from './ui/styled-icon';
 
 interface StakeLpRowProps {}
 
@@ -93,9 +93,10 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                         })}{' '}
                         <span className="text-sm font-normal">LP</span>
                       </p>
-                      <InformationCircleIcon
-                        className="inline w-5 h-5 ml-2 text-gray-400"
-                        aria-hidden="true"
+                      <StyledIcon
+                        as="InformationCircleIcon"
+                        size={5}
+                        className="inline ml-2 text-gray-400"
                       />
                     </div>
                   </Tooltip>
@@ -137,9 +138,10 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                         })}{' '}
                         <span className="text-sm font-normal">LP</span>
                       </p>
-                      <InformationCircleIcon
-                        className="inline w-5 h-5 ml-2 text-gray-400"
-                        aria-hidden="true"
+                      <StyledIcon
+                        as="InformationCircleIcon"
+                        size={5}
+                        className="inline ml-2 text-gray-400"
                       />
                     </div>
                   </Tooltip>
@@ -169,10 +171,12 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
             <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
               <Disclosure.Button className="inline-flex items-center justify-center px-2 py-1 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-800 dark:text-indigo-400">
                 <span>Actions</span>
-                <ChevronUpIcon
+                <StyledIcon
+                  as="ChevronUpIcon"
+                  size={5}
                   className={`${
                     open ? '' : 'transform rotate-180 transition ease-in-out duration-300'
-                  } ml-2 w-5 h-5`}
+                  } ml-2`}
                 />
               </Disclosure.Button>
             </td>

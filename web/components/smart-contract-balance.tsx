@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getRPCClient } from '@common/utils';
 import { Tooltip } from '@blockstack/ui';
-import { InformationCircleIcon } from '@heroicons/react/solid';
+import { StyledIcon } from './ui/styled-icon';
 
 export const SmartContractBalance = ({ address, description, name }) => {
   const [stxBalance, setStxBalance] = useState(0.0);
@@ -62,27 +62,29 @@ export const SmartContractBalance = ({ address, description, name }) => {
         setStDikoBalance(0.0);
       }
 
-      const wstxDikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-diko::wstx-diko`];
+      const wstxDikoBalance =
+        data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-diko::wstx-diko`];
       if (wstxDikoBalance) {
         setWstxDikoBalance(wstxDikoBalance.balance / 1000000);
       } else {
         setWstxDikoBalance(0.0);
       }
 
-      const wstxUsdaBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-usda::wstx-usda`];
+      const wstxUsdaBalance =
+        data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-usda::wstx-usda`];
       if (wstxUsdaBalance) {
         setWstxUsdaBalance(wstxUsdaBalance.balance / 1000000);
       } else {
         setWstxUsdaBalance(0.0);
       }
 
-      const dikoUsdaBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-diko-usda::diko-usda`];
+      const dikoUsdaBalance =
+        data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-diko-usda::diko-usda`];
       if (dikoUsdaBalance) {
         setDikoUsdaBalance(dikoUsdaBalance.balance / 1000000);
       } else {
         setDikoUsdaBalance(0.0);
       }
-
     };
     if (mounted) {
       void getData();
@@ -99,7 +101,7 @@ export const SmartContractBalance = ({ address, description, name }) => {
         <div className="flex items-center">
           {name}
           <Tooltip shouldWrapChildren={true} label={`${description}`}>
-            <InformationCircleIcon className="w-5 h-5 ml-2 text-gray-400" aria-hidden="true" />
+            <StyledIcon as="InformationCircleIcon" size={5} className="ml-2 text-gray-400" />
           </Tooltip>
         </div>
       </td>

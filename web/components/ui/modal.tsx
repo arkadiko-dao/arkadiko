@@ -1,6 +1,6 @@
 import React, { ReactNode, Fragment, useRef } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { XIcon } from '@heroicons/react/outline';
+import { StyledIcon } from './styled-icon';
 
 type Props = {
   open: boolean;
@@ -69,7 +69,7 @@ export function Modal({
                   onClick={closeModal}
                 >
                   <span className="sr-only">Close</span>
-                  <XIcon className="w-6 h-6" aria-hidden="true" />
+                  <StyledIcon as="XIcon" solid={false} size={6} />
                 </button>
               </div>
               <div>

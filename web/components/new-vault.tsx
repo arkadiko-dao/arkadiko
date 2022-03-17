@@ -38,9 +38,9 @@ export const NewVault = () => {
         <main className="py-12">
           {step === 0 ? (
             <CreateVaultStepOne setStep={setStep} setCoinAmounts={setCoinAmounts} />
-            ) : step === 1 ? (
-              <CreateVaultStepTwo setStep={setStep} setCoinAmounts={setCoinAmounts} />
-            ) : step === 2 ? (
+          ) : step === 1 ? (
+            <CreateVaultStepTwo setStep={setStep} setCoinAmounts={setCoinAmounts} />
+          ) : step === 2 ? (
             <CreateVaultConfirm
               setStep={setStep}
               coinAmounts={coinAmounts}
