@@ -97,26 +97,6 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                       Governance
                     </RouterLink>
 
-                    <a
-                      className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
-                      href="https://docs.arkadiko.finance/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Docs
-                      <StyledIcon as="ExternalLinkIcon" size={3} className="block ml-2" />
-                    </a>
-
-                    <a
-                      className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
-                      href="https://github.com/arkadiko-dao/arkadiko/blob/master/SECURITY.md"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Security
-                      <StyledIcon as="ExternalLinkIcon" size={3} className="block ml-2" />
-                    </a>
-
                     <button
                       type="button"
                       className="block px-1 text-sm font-medium text-gray-500 dark:text-white hover:text-gray-700 "
@@ -142,26 +122,6 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   </div>
                 ) : (
                   <div className="hidden lg:ml-6 lg:flex lg:space-x-6 lg:items-center">
-                    <div className="sm:flex sm:space-x-8 sm:h-full">
-                      <a
-                        className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
-                        href="https://docs.arkadiko.finance/"
-                        target="_blank"
-                      >
-                        Docs
-                        <StyledIcon as="ExternalLinkIcon" size={3} className="block ml-2" />
-                      </a>
-
-                      <a
-                        className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
-                        href="https://github.com/arkadiko-dao/arkadiko/blob/master/SECURITY.md"
-                        target="_blank"
-                      >
-                        Security
-                        <StyledIcon as="ExternalLinkIcon" size={3} className="block ml-2" />
-                      </a>
-                    </div>
-
                     {showWallet ? (
                       <div>
                         <button
@@ -239,24 +199,6 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   >
                     Governance
                   </Disclosure.Button>
-
-                  <a
-                    className="flex items-center py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
-                    href="https://docs.arkadiko.finance/"
-                    target="_blank"
-                  >
-                    Docs
-                    <StyledIcon as="ExternalLinkIcon" size={3} className="block ml-2" />
-                  </a>
-
-                  <a
-                    className="flex items-center py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
-                    href="https://github.com/arkadiko-dao/arkadiko/blob/master/SECURITY.md"
-                    target="_blank"
-                  >
-                    Security
-                    <StyledIcon as="ExternalLinkIcon" size={3} className="block ml-2" />
-                  </a>
                 </div>
                 <div className="pt-4 pb-3 border-t border-gray-300 dark:border-zinc-600">
                   <div className="space-y-1">
@@ -287,23 +229,6 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
               </div>
             ) : (
               <div>
-                <div className="pt-2 pb-3 space-y-1">
-                  <a
-                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
-                    href="https://docs.arkadiko.finance/"
-                    target="_blank"
-                  >
-                    Docs
-                  </a>
-
-                  <a
-                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
-                    href="https://github.com/arkadiko-dao/arkadiko/blob/master/SECURITY.md"
-                    target="_blank"
-                  >
-                    Security
-                  </a>
-                </div>
                 <div className="p-3 border-t border-gray-200">
                   {showWallet ? (
                     <button
