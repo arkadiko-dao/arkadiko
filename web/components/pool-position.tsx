@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { AppContext } from '@common/context';
 import { classNames } from '@common/class-names';
-import { InformationCircleIcon, ChevronDownIcon } from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
 import { Disclosure } from '@headlessui/react';
 import { tokenList } from '@components/token-swap-list';
@@ -17,6 +16,7 @@ import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { Alert } from './ui/alert';
 import { Placeholder } from './ui/placeholder';
+import { StyledIcon } from './ui/styled-icon';
 
 export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
   const tokenX = tokenList[indexTokenX];
@@ -37,7 +37,12 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
 
-  const fetchPair = async (tokenXAddress: string, tokenXContract: string, tokenYAddress: string, tokenYContract: string) => {
+  const fetchPair = async (
+    tokenXAddress: string,
+    tokenXContract: string,
+    tokenYAddress: string,
+    tokenYContract: string
+  ) => {
     const details = await callReadOnlyFunction({
       contractAddress,
       contractName: 'arkadiko-swap-v2-1',
@@ -84,9 +89,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
     const json3 = await fetchPair(tokenXAddress, tokenXTrait, tokenYAddress, tokenYTrait);
     if (json3['success']) {
       const pairDetails = json3['value']['value']['value'];
-      const stakedTokens = await fetchStakedTokens(
-        pairDetails['name'].value
-      );
+      const stakedTokens = await fetchStakedTokens(pairDetails['name'].value);
       setStakedLpTokens(stakedTokens);
 
       const balanceX = pairDetails['balance-x'].value;
@@ -151,9 +154,10 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                 </p>
               </div>
               <span className="flex items-center ml-6 h-7">
-                <ChevronDownIcon
-                  className={classNames(open ? '-rotate-180' : 'rotate-0', 'h-6 w-6 transform')}
-                  aria-hidden="true"
+                <StyledIcon
+                  as="ChevronDownIcon"
+                  size={6}
+                  className={classNames(open ? '-rotate-180' : 'rotate-0', 'transform')}
                 />
               </span>
             </Disclosure.Button>
@@ -172,9 +176,10 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                         shouldWrapChildren={true}
                         label={`Indicates the total amount of LP tokens you have in your wallet`}
                       >
-                        <InformationCircleIcon
-                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
-                          aria-hidden="true"
+                        <StyledIcon
+                          as="InformationCircleIcon"
+                          size={4}
+                          className="block text-indigo-400 dark:text-indigo-500"
                         />
                       </Tooltip>
                     </div>
@@ -199,9 +204,10 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                         shouldWrapChildren={true}
                         label={`Indicates the total amount of LP tokens you have staked`}
                       >
-                        <InformationCircleIcon
-                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
-                          aria-hidden="true"
+                        <StyledIcon
+                          as="InformationCircleIcon"
+                          size={4}
+                          className="block text-indigo-400 dark:text-indigo-500"
                         />
                       </Tooltip>
                     </div>
@@ -226,9 +232,10 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY }) => {
                         shouldWrapChildren={true}
                         label={`The percentual share of LP tokens you own against the whole pool supply`}
                       >
-                        <InformationCircleIcon
-                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
-                          aria-hidden="true"
+                        <StyledIcon
+                          as="InformationCircleIcon"
+                          size={4}
+                          className="block text-indigo-400 dark:text-indigo-500"
                         />
                       </Tooltip>
                     </div>

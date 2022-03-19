@@ -445,8 +445,8 @@ Clarinet.test({
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-v1-1", "stake-pending-rewards", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2')),
         types.principal(Utils.qualifiedName('arkadiko-token')),
       ], deployer.address)
     ]);

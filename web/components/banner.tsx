@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExclamationIcon } from '@heroicons/react/outline';
+import { StyledIcon } from './ui/styled-icon';
 
 export const Banner = () => {
   return (
@@ -8,7 +8,7 @@ export const Banner = () => {
         <div className="flex flex-wrap items-center justify-between">
           <div className="flex items-center flex-1">
             <span className="flex p-2 bg-yellow-100 rounded-lg">
-              <ExclamationIcon className="w-6 h-6 text-yellow-700" aria-hidden="true" />
+              <StyledIcon as="ExclamationIcon" size={6} className="text-yellow-700" />
             </span>
             <p className="ml-3 text-yellow-700 truncate">
               <span className="md:hidden">Announcement</span>
@@ -17,7 +17,7 @@ export const Banner = () => {
               </span>
             </p>
           </div>
-          <div className="shrink-0 w-full mt-2 sm:mt-0 sm:w-auto">
+          <div className="w-full mt-2 shrink-0 sm:mt-0 sm:w-auto">
             <a
               href="https://arkadikofinance.medium.com/arkadiko-swap-post-mortem-f38cef95ff28"
               className="flex items-center justify-center bg-yellow-100 px-2 py-1.5 rounded-md text-sm font-medium text-yellow-800 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yellow-50 focus:ring-yellow-600"

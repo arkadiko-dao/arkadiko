@@ -3,11 +3,7 @@ import { Modal } from '@components/ui/modal';
 import { tokenList } from '@components/token-swap-list';
 import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
-import {
-  AnchorMode,
-  contractPrincipalCV,
-  uintCV
-} from '@stacks/transactions';
+import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
@@ -30,7 +26,7 @@ export const VaultMintModal: React.FC<Props> = ({
   vault,
   reserveName,
   price,
-  collateralType
+  collateralType,
 }) => {
   const [_, setState] = useContext(AppContext);
   const [usdToMint, setUsdToMint] = useState('');

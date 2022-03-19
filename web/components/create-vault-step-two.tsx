@@ -21,11 +21,12 @@ interface VaultProps {
 
 export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmounts }) => {
   const [state, _] = useContext(AppContext);
+  const [tokenKey, setTokenKey] = useState('');
+  const [decimals, setDecimals] = useState(1000000);
+
   const search = useLocation().search;
-  const tokenType = new URLSearchParams(search).get('type') || 'STX-A';
-  const tokenName = new URLSearchParams(search).get('token') || 'STX';
-  const tokenKey = tokenName.toLowerCase() as UserBalanceKeys;
-  const decimals = tokenKey === 'stx' ? 1000000 : 100000000;
+  const tokenType = new URLSearchParams(search).get('type');
+  const tokenName = new URLSearchParams(search).get('token');
   const currentSection = 1;
 
   const continueVault = () => {
@@ -57,21 +58,33 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   const [isLoading, setIsLoading] = useState(true);
 
   const maximumCoinsToMint = (value: string) => {
-    const minColl = tokenType == 'STX-A' ? 400 : 310;
-    const maxRatio = Math.max(minColl, parseInt(liquidationRatio, 10) + 30);
-    const uCollateralAmount = parseInt(value * 1000000, 10);
-    setMaximumToMint(Math.floor((uCollateralAmount * price * 100) / maxRatio));
+    const collateralType = state.collateralTypes[tokenType?.toLocaleUpperCase()];
+    if (collateralType) {
+      const minColl = collateralType['collateralToDebtRatio'];
+      const maxRatio = Math.max(minColl, parseInt(liquidationRatio, 10) + 30);
+      const uCollateralAmount = parseInt(value * 1000000, 10);
+      setMaximumToMint(Math.floor((uCollateralAmount * price * 100) / maxRatio));
+    }
   };
 
   useEffect(() => {
     const fetchPrice = async () => {
+      if (!tokenName) {
+        return;
+      }
+
       const price = await getPrice(tokenName);
       setPrice(price / 1000000);
-      setIsLoading(false);
     };
 
-    fetchPrice();
-  }, []);
+    if (tokenName) {
+      fetchPrice();
+      const tokenKey = tokenName.toLowerCase() as UserBalanceKeys;
+      setTokenKey(tokenKey);
+      setDecimals(tokenKey === 'stx' ? 1000000 : 100000000);
+      setIsLoading(false);
+    }
+  }, [tokenName]);
 
   const setCollateralValues = (value: string) => {
     setCollateralAmount(value);
@@ -131,33 +144,22 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
     setCoinAmount((maximumToMint / 1000000).toString());
   }, [state, maximumToMint]);
 
-  const togglePox = () => {
-    const newState = !coinAmount['stack-pox'];
-    let autoPayoff = coinAmount['auto-payoff'];
-    if (!newState) {
-      autoPayoff = false;
-    }
-    setCoinAmounts(prevState => ({
-      ...prevState,
-      'stack-pox': newState,
-      'auto-payoff': autoPayoff,
-    }));
-  };
-
-
   useEffect(() => {
     if (collateralAmount && coinAmount) {
+      const amount = tokenName.toLocaleLowerCase().includes('xbtc')
+        ? collateralAmount * 100
+        : collateralAmount;
       setLiquidationPrice(
-        getLiquidationPrice(liquidationRatio, parseFloat(coinAmount), parseFloat(collateralAmount), tokenName)
+        getLiquidationPrice(liquidationRatio, parseFloat(coinAmount), parseFloat(amount), tokenName)
       );
       setCollateralToDebt(
         getCollateralToDebtRatio(price * 100, parseFloat(coinAmount), parseFloat(collateralAmount))
       );
     }
-  }, [price, collateralAmount, coinAmount]);
+  }, [price, tokenName, collateralAmount, coinAmount]);
 
   useEffect(() => {
-    if (state.collateralTypes[tokenType.toUpperCase()]) {
+    if (tokenType && state.collateralTypes[tokenType.toUpperCase()]) {
       setStabilityFeeApy(state.collateralTypes[tokenType.toUpperCase()].stabilityFeeApy);
       setLiquidationPenalty(state.collateralTypes[tokenType.toUpperCase()].liquidationPenalty);
       setLiquidationRatio(state.collateralTypes[tokenType.toUpperCase()].liquidationRatio);
@@ -212,15 +214,27 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                     {isLoading ? (
                       <div className="space-y-16 sm:col-span-3">
                         <div>
-                          <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.FULL} />
+                          <Placeholder
+                            className="py-2"
+                            color={Placeholder.color.GRAY}
+                            width={Placeholder.width.FULL}
+                          />
                           <Placeholder className="py-2" width={Placeholder.width.THIRD} />
                         </div>
                         <div>
-                          <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.FULL} />
+                          <Placeholder
+                            className="py-2"
+                            color={Placeholder.color.GRAY}
+                            width={Placeholder.width.FULL}
+                          />
                           <Placeholder className="py-2" width={Placeholder.width.THIRD} />
                         </div>
                         <div>
-                          <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.FULL} />
+                          <Placeholder
+                            className="py-2"
+                            color={Placeholder.color.GRAY}
+                            width={Placeholder.width.FULL}
+                          />
                           <Placeholder className="py-2" width={Placeholder.width.THIRD} />
                         </div>
                       </div>

@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react';
 import { Popover, Transition } from '@headlessui/react';
-import { CogIcon, InformationCircleIcon } from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
 import { classNames } from '@common/class-names';
+import { StyledIcon } from './ui/styled-icon';
 
 interface Props {
   slippageTolerance: number;
@@ -29,9 +29,10 @@ export const SwapSettings: React.FC<Props> = ({
             id="open-transaction-settings"
           >
             <span className="sr-only">Swap transation settings</span>
-            <CogIcon
-              className="w-6 h-6 text-gray-400 transition duration-150 ease-in-out hover:text-indigo-700 dark:hover:text-indigo-400"
-              aria-hidden="true"
+            <StyledIcon
+              as="CogIcon"
+              size={6}
+              className="text-gray-400 transition duration-150 ease-in-out hover:text-indigo-700 dark:hover:text-indigo-400"
             />
           </Popover.Button>
           <Transition
@@ -56,9 +57,10 @@ export const SwapSettings: React.FC<Props> = ({
                         shouldWrapChildren={true}
                         label={`Your transaction will revert if the price changes unfavorably by more of this percentage`}
                       >
-                        <InformationCircleIcon
-                          className="block w-5 h-5 text-gray-400"
-                          aria-hidden="true"
+                        <StyledIcon
+                          as="InformationCircleIcon"
+                          size={5}
+                          className="block text-gray-400"
                         />
                       </Tooltip>
                     </div>

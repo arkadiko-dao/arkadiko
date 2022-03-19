@@ -23,7 +23,7 @@
 (define-constant POOL-TOKEN .arkadiko-token)
 
 ;; Variables
-(define-data-var last-reward-add-block uint u999999999)
+(define-data-var last-reward-add-block uint u0)
 
 ;; ---------------------------------------------------------
 ;; Migration

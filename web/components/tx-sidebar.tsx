@@ -1,6 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { Disclosure, Dialog, Transition, Listbox } from '@headlessui/react';
-import { XIcon } from '@heroicons/react/outline';
 import { getAccountTransactions, getPendingTransactions } from '@common/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import {
@@ -9,7 +8,7 @@ import {
 } from '@blockstack/stacks-blockchain-api-types';
 import { ContractTransaction } from '@components/contract-transaction';
 import { Placeholder } from './ui/placeholder';
-import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
+import { StyledIcon } from './ui/styled-icon';
 
 const DEFAULT_NETWORKS = [
   { name: 'Stacks', key: 'stacks', url: 'https://stacks-node-api.mainnet.stacks.co' },
@@ -26,7 +25,8 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
 
   const [networks, setNetworks] = useState([]);
   const [selectedNetworkKey, setSelectedNetworkKey] = useState(
-    JSON.parse(localStorage.getItem('arkadiko-stacks-node') || JSON.stringify(DEFAULT_NETWORKS[0])).key
+    JSON.parse(localStorage.getItem('arkadiko-stacks-node') || JSON.stringify(DEFAULT_NETWORKS[0]))
+      .key
   );
   const selectedNetwork = networks.find(network => network.key === selectedNetworkKey);
 
@@ -46,7 +46,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
   };
 
   const addNewNetwork = () => {
-    let networks = JSON.parse(localStorage.getItem('arkadiko-stacks-nodes') || '[]');
+    const networks = JSON.parse(localStorage.getItem('arkadiko-stacks-nodes') || '[]');
     const network = {
       name: networkName,
       url: networkAddress,
@@ -96,7 +96,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
     };
 
     const setAllNetworks = () => {
-      let addedNetworks = JSON.parse(localStorage.getItem('arkadiko-stacks-nodes') || '[]');
+      const addedNetworks = JSON.parse(localStorage.getItem('arkadiko-stacks-nodes') || '[]');
       setNetworks(DEFAULT_NETWORKS.concat(addedNetworks));
     };
 
@@ -157,7 +157,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                           }}
                         >
                           <span className="sr-only">Close panel</span>
-                          <XIcon className="w-6 h-6" aria-hidden="true" />
+                          <StyledIcon as="XIcon" size={6} solid={false} />
                         </button>
                       </div>
                     </div>
@@ -173,7 +173,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                             {selectedNetwork?.name}
                           </span>
                           <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                            <SelectorIcon className="w-5 h-5 text-gray-400" aria-hidden="true" />
+                            <StyledIcon as="SelectorIcon" size={5} className="text-gray-400" />
                           </span>
                         </Listbox.Button>
                         <Transition
@@ -189,7 +189,7 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                                 value={network.key}
                                 className={({ active }) =>
                                   `${active ? 'text-white bg-indigo-600' : 'text-gray-900'}
-                                  cursor-default select-none relative py-2 pl-10 pr-4`
+                              cursor-default select-none relative py-2 pl-10 pr-4`
                                 }
                               >
                                 {({ selected, active }) => (
@@ -204,9 +204,9 @@ export const TxSidebar = ({ showSidebar, setShowSidebar }) => {
                                     {selected ? (
                                       <span
                                         className={`${active ? 'text-white' : 'text-indigo-600'}
-                                        absolute inset-y-0 left-0 flex items-center pl-3`}
+                                      absolute inset-y-0 left-0 flex items-center pl-3`}
                                       >
-                                        <CheckIcon className="w-5 h-5" aria-hidden="true" />
+                                        <StyledIcon as="CheckIcon" size={5} />
                                       </span>
                                     ) : null}
                                   </div>

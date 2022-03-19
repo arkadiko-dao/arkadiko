@@ -1,28 +1,30 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { CollateralType } from '@components/collateral-type';
 import { NewVaultWizardNav } from './new-vault-wizard-nav';
 import { tokenList } from '@components/token-swap-list';
+import { useHistory, useLocation } from 'react-router-dom';
 
 interface VaultProps {
   setStep: (arg: number) => void;
 }
 
 export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep }) => {
-  const [{collateralTypes}, _x] = useContext(AppContext);
+  const [{ collateralTypes }, _x] = useContext(AppContext);
   const [collateralTypeChoice, setCollateralTypeChoice] = useState('');
   const currentSection = 0;
-  setStep(0);
+  const history = useHistory();
+
+  useEffect(() => {
+    setStep(0);
+    history.replace({ type: null, token: null });
+  }, []);
 
   const stxCollateralTypes = Object.fromEntries(
-    Object.entries(collateralTypes).filter(
-      ([key]) => key.includes('STX')
-    )
+    Object.entries(collateralTypes).filter(([key]) => key.includes('STX'))
   );
   const xBtcCollateralTypes = Object.fromEntries(
-    Object.entries(collateralTypes).filter(
-      ([key]) => key.includes('XBTC')
-    )
+    Object.entries(collateralTypes).filter(([key]) => key.includes('XBTC'))
   );
 
   return (
@@ -37,11 +39,14 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep }) => {
         </header>
 
         <div className="flex flex-col mt-4">
-
           <div className="flex items-center justify-center mb-6">
             <button
               type="button"
-              className={`w-1/2 p-6 text-lg font-semibold text-center text-gray-500 dark:text-zinc-300 bg-white dark:bg-zinc-700 rounded-md shadow md:w-1/6 hover:bg-white/80 ${collateralTypeChoice === 'stx' ? 'border border-indigo-500/60' : 'border border-transparent'}`}
+              className={`w-1/2 p-6 text-lg font-semibold text-center text-gray-500 dark:text-zinc-300 bg-white dark:bg-zinc-700 rounded-md shadow md:w-1/6 hover:bg-white/80 ${
+                collateralTypeChoice === 'stx'
+                  ? 'border border-indigo-500/60'
+                  : 'border border-transparent'
+              }`}
               onClick={() => setCollateralTypeChoice('stx')}
             >
               <img className="w-10 h-10 mx-auto mb-3 rounded-full" src={tokenList[2].logo} alt="" />
@@ -50,7 +55,11 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep }) => {
 
             <button
               type="button"
-              className={`w-1/2 p-6 ml-6 text-lg font-semibold text-center text-gray-500 dark:text-zinc-300 bg-white dark:bg-zinc-700 rounded-md shadow md:w-1/6 hover:bg-white/80 ${collateralTypeChoice === 'xbtc' ? 'border border-indigo-500/60' : 'border border-transparent'}`}
+              className={`w-1/2 p-6 ml-6 text-lg font-semibold text-center text-gray-500 dark:text-zinc-300 bg-white dark:bg-zinc-700 rounded-md shadow md:w-1/6 hover:bg-white/80 ${
+                collateralTypeChoice === 'xbtc'
+                  ? 'border border-indigo-500/60'
+                  : 'border border-transparent'
+              }`}
               onClick={() => setCollateralTypeChoice('xbtc')}
             >
               <img className="w-10 h-10 mx-auto mb-3 rounded-full" src={tokenList[3].logo} alt="" />

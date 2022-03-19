@@ -196,7 +196,7 @@ export const tokenTraits: TokenTraits = {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-welsh',
     swap: 'wstx-welsh',
-  }
+  },
 };
 
 export const resolveReserveName = (collateralToken: string) => {
@@ -216,6 +216,6 @@ export const contractsMap = {
   governance: 'arkadiko-governance-v2-1',
 };
 
-export const microToReadable = (amount: number | string, decimals: number = 6) => {
+export const microToReadable = (amount: number | string, decimals = 6) => {
   return parseFloat(`${amount}`) / Math.pow(10, decimals);
 };

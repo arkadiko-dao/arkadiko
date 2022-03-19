@@ -37,7 +37,7 @@ export const ProposalGroup: React.FC<ProposalProps[]> = ({ proposals }) => {
     />
   ));
 
-  proposalItems.sort((a, b) => (a.endBlockHeight > b.endBlockHeight) ? 1 : -1);
+  proposalItems.sort((a, b) => (a.endBlockHeight > b.endBlockHeight ? 1 : -1));
 
   return (
     <div className="mt-5 overflow-hidden bg-white rounded-md shadow dark:bg-zinc-800">

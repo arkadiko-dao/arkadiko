@@ -220,16 +220,24 @@ export const Vault: React.FC<VaultProps> = ({
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-zinc-600">
               <tr>
-                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400" scope="row">
+                <th
+                  className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                  scope="row"
+                >
                   <div className="flex items-center">Vault ID</div>
                 </th>
                 <td className="py-5 pr-4">
-                  <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">{id}</span>
+                  <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
+                    {id}
+                  </span>
                 </td>
               </tr>
 
               <tr className="border-t border-gray-200 dark:border-zinc-600">
-                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400" scope="row">
+                <th
+                  className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                  scope="row"
+                >
                   <div className="flex items-center">Collateral Type</div>
                 </th>
                 <td className="py-5 pr-4">
@@ -240,7 +248,10 @@ export const Vault: React.FC<VaultProps> = ({
               </tr>
 
               <tr className="border-t border-gray-200 dark:border-zinc-600">
-                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400" scope="row">
+                <th
+                  className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                  scope="row"
+                >
                   Current Collateralization
                 </th>
                 <td className="py-5 pr-4">
@@ -253,7 +264,10 @@ export const Vault: React.FC<VaultProps> = ({
               </tr>
 
               <tr className="border-t border-gray-200 dark:border-zinc-600">
-                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400" scope="row">
+                <th
+                  className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                  scope="row"
+                >
                   Stability Fee Owed
                 </th>
                 <td className="py-5 pr-4">
@@ -264,7 +278,10 @@ export const Vault: React.FC<VaultProps> = ({
               </tr>
 
               <tr className="border-t border-gray-200 dark:border-zinc-600">
-                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400" scope="row">
+                <th
+                  className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                  scope="row"
+                >
                   USDA amount
                 </th>
                 <td className="py-5 pr-4">
@@ -280,7 +297,10 @@ export const Vault: React.FC<VaultProps> = ({
               </tr>
 
               <tr className="border-t border-gray-200 dark:border-zinc-600">
-                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400" scope="row">
+                <th
+                  className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                  scope="row"
+                >
                   Collateral amount
                 </th>
                 <td className="py-5 pr-4">
@@ -303,8 +323,8 @@ export const Vault: React.FC<VaultProps> = ({
                     type="button"
                     className="block w-full px-4 py-2 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     onClick={() => callWithdrawLeftoverCollateral()}
-                    >
-                      Withdraw Leftover Collateral
+                  >
+                    Withdraw Leftover Collateral
                   </button>
                 ) : (
                   <span>Vault liquidated</span>

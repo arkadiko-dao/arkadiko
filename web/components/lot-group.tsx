@@ -39,7 +39,9 @@ export const LotGroup: React.FC<LotProps[]> = ({ lots }) => {
               <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"></th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-800 dark:divide-zinc-600">{lotItems}</tbody>
+          <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-800 dark:divide-zinc-600">
+            {lotItems}
+          </tbody>
         </table>
       </div>
     </div>

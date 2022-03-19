@@ -118,13 +118,19 @@ export const Auction: React.FC<AuctionProps> = ({
         </span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900 dark:text-zinc-100">${(discountedPrice / 100).toFixed(2)}</span>
+        <span className="font-medium text-gray-900 dark:text-zinc-100">
+          ${(discountedPrice / 100).toFixed(2)}
+        </span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900 dark:text-zinc-100">${(debtToRaise / 1000000).toFixed(4)}</span>
+        <span className="font-medium text-gray-900 dark:text-zinc-100">
+          ${(debtToRaise / 1000000).toFixed(4)}
+        </span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900 dark:text-zinc-100">${currentBid / 1000000}</span>
+        <span className="font-medium text-gray-900 dark:text-zinc-100">
+          ${currentBid / 1000000}
+        </span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         <span className="font-medium text-gray-900 dark:text-zinc-100">
@@ -143,7 +149,12 @@ export const Auction: React.FC<AuctionProps> = ({
         </span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <RouterLink className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700" to={`/vaults/${vaultId}`}>View vault</RouterLink>
+        <RouterLink
+          className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
+          to={`/vaults/${vaultId}`}
+        >
+          View vault
+        </RouterLink>
       </td>
     </tr>
   );
