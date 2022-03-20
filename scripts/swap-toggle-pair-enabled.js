@@ -10,8 +10,8 @@ const txOptions = {
   contractName: 'arkadiko-swap-v2-1',
   functionName: 'toggle-pair-enabled',
   functionArgs: [
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wrapped-stx-token'),
-    tx.contractPrincipalCV('SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G', 'welshcorgicoin-token')
+    tx.contractPrincipalCV('SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5', 'wrapped-lydian-token'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'usda-token'),
   ],
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,

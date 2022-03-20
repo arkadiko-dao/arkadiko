@@ -42,6 +42,9 @@ export const getBalance = async (address: string) => {
     data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-xbtc-usda::xbtc-usda`];
   const lpStxWelshBalance =
     data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-welsh::wstx-welsh`];
+    const lpWldnUsdaBalance =
+    data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wldn-usda::wldn-usda`];
+  const wldnBalance = data.fungible_tokens[`SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5.wrapped-lydian-token::wrapped-lydian`];
   const xbtcBalance =
     data.fungible_tokens[
       `SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin::wrapped-bitcoin`
@@ -58,12 +61,14 @@ export const getBalance = async (address: string) => {
     diko: dikoBalance ? dikoBalance.balance : 0,
     xstx: xStxBalance ? xStxBalance.balance : 0,
     stdiko: stDikoBalance ? stDikoBalance.balance : 0,
+    wldn: wldnBalance ? wldnBalance.balance : 0,
     welsh: welshBalance ? welshBalance.balance : 0,
     dikousda: lpDikoUsdaBalance ? lpDikoUsdaBalance.balance : 0,
     wstxusda: lpStxUsdaBalance ? lpStxUsdaBalance.balance : 0,
     wstxdiko: lpStxDikoBalance ? lpStxDikoBalance.balance : 0,
     wstxxbtc: lpStxXbtcBalance ? lpStxXbtcBalance.balance : 0,
     xbtcusda: lpXbtcUsdaBalance ? lpXbtcUsdaBalance.balance : 0,
+    wldnusda: lpWldnUsdaBalance ? lpWldnUsdaBalance.balance : 0,
     wstxwelsh: lpStxWelshBalance ? lpStxWelshBalance.balance : 0,
   };
 };
@@ -99,12 +104,14 @@ export const App: React.FC = () => {
         stx: account.stx.toString(),
         xstx: account.xstx.toString(),
         stdiko: account.stdiko.toString(),
+        wldn: account.wldn.toString(),
         welsh: account.welsh.toString(),
         dikousda: account.dikousda.toString(),
         wstxusda: account.wstxusda.toString(),
         wstxdiko: account.wstxdiko.toString(),
         wstxxbtc: account.wstxxbtc.toString(),
         xbtcusda: account.xbtcusda.toString(),
+        wldnusda: account.wldnusda.toString(),
         wstxwelsh: account.wstxwelsh.toString(),
       },
     }));

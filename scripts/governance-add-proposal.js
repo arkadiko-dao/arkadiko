@@ -15,23 +15,16 @@ async function transact() {
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
       tx.uintCV(48225),
       tx.uintCV(720),
-      tx.stringUtf8CV('Upgrade SIP10 Reserve'),
+      tx.stringUtf8CV('Add wLDN/USDA Pair'),
       tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/420'),
       tx.listCV([
         tx.tupleCV({
-          'name': tx.stringAsciiCV("sip10-reserve"),
+          'name': tx.stringAsciiCV("add-wldn"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-sip10-reserve-v2-1"),
-          'can-mint': tx.trueCV(),
-          'can-burn': tx.trueCV()
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-add-wldn"),
+          'can-mint': tx.falseCV(),
+          'can-burn': tx.falseCV()
         }),
-        tx.tupleCV({
-          'name': tx.stringAsciiCV("auction-engine"),
-          'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-auction-engine-v3-1"),
-          'can-mint': tx.trueCV(),
-          'can-burn': tx.trueCV()
-        })
       ])
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
