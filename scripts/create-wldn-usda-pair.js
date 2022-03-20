@@ -21,7 +21,7 @@ const createPair = async () => {
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-swap-token-wldn-usda'),
       tx.stringAsciiCV('wLDN-USDA'),
       tx.uintCV(new BN(385000000)), // 385 wLDN
-      tx.uintCV(new BN(32062800000)) // 385 * 83.28 USDA = 32062.8 USDA
+      tx.uintCV(new BN(32062883425)) // 385 * 83.28 USDA = 32062.8 USDA
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     nonce: new BN(nonce),

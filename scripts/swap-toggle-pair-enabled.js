@@ -13,6 +13,8 @@ const txOptions = {
     tx.contractPrincipalCV('SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5', 'wrapped-lydian-token'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'usda-token'),
   ],
+  nonce: new BN(677, 10),
+  fee: new BN(10000, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network
