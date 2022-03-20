@@ -44,7 +44,7 @@ export const tokenList = [
   {
     id: 5,
     name: 'wLDN',
-    nameInPair: 'Wrapped Lydian',
+    nameInPair: 'wldn',
     logo: '/assets/tokens/lydian.png',
     listed: true,
     address: 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5',
