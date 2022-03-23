@@ -50,6 +50,7 @@ export const VaultDepositModal: React.FC<Props> = ({
     }
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
     const decimals = token === 'Wrapped-Bitcoin' ? 100000000 : 1000000;
+    const tokenAddress = tokenTraits[vault['collateralToken'].toLowerCase()]['address'];
 
     let postConditions: any[] = [];
     if (vault['collateralToken'].toLowerCase() === 'stx') {
@@ -85,7 +86,7 @@ export const VaultDepositModal: React.FC<Props> = ({
         uintCV(match.params.id),
         uintCV(parseFloat(extraCollateralDeposit) * decimals),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
+        contractPrincipalCV(tokenAddress, token),
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
           'arkadiko-collateral-types-v1-1'
