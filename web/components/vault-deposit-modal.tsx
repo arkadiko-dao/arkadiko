@@ -10,6 +10,8 @@ import {
   uintCV,
   FungibleConditionCode,
   makeStandardSTXPostCondition,
+  makeStandardFungiblePostCondition,
+  createAssetInfo
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
@@ -47,6 +49,7 @@ export const VaultDepositModal: React.FC<Props> = ({
       return;
     }
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
+    const decimals = token === 'Wrapped-Bitcoin' ? 100000000 : 1000000;
 
     let postConditions: any[] = [];
     if (vault['collateralToken'].toLowerCase() === 'stx') {
@@ -54,22 +57,22 @@ export const VaultDepositModal: React.FC<Props> = ({
         makeStandardSTXPostCondition(
           senderAddress || '',
           FungibleConditionCode.Equal,
-          new BN(parseFloat(extraCollateralDeposit) * 1000000)
+          new BN(parseFloat(extraCollateralDeposit) * decimals)
         ),
       ];
     } else {
-      // postConditions = [
-      //   makeStandardFungiblePostCondition(
-      //     senderAddress || '',
-      //     FungibleConditionCode.Equal,
-      //     new BN(parseFloat(extraCollateralDeposit) * 1000000),
-      //     createAssetInfo(
-      //       "CONTRACT_ADDRESS",
-      //       token,
-      //       vault['collateralToken'].toUpperCase()
-      //     )
-      //   )
-      // ];
+      postConditions = [
+        makeStandardFungiblePostCondition(
+          senderAddress || '',
+          FungibleConditionCode.LessEqual,
+          new BN(parseFloat(extraCollateralDeposit) * decimals),
+          createAssetInfo(
+            'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR',
+            'Wrapped-Bitcoin',
+            'wrapped-bitcoin'
+          )
+        ),
+      ];
     }
 
     await doContractCall({
@@ -80,7 +83,7 @@ export const VaultDepositModal: React.FC<Props> = ({
       functionName: 'deposit',
       functionArgs: [
         uintCV(match.params.id),
-        uintCV(parseFloat(extraCollateralDeposit) * 1000000),
+        uintCV(parseFloat(extraCollateralDeposit) * decimals),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
         contractPrincipalCV(
@@ -103,7 +106,13 @@ export const VaultDepositModal: React.FC<Props> = ({
   };
 
   const depositMaxAmount = () => {
-    setExtraCollateralDeposit((state.balance['stx'] / 1000000 - 1).toString());
+    const token = vault['collateralToken'].toLowerCase();
+    const decimals = token === 'xbtc' ? 100000000 : 1000000;
+    if (token === 'stx') {
+      setExtraCollateralDeposit((state.balance['stx'] / decimals - 1).toString());
+    } else {
+      setExtraCollateralDeposit((state.balance[token] / decimals).toString());
+    }
   };
 
   const onInputChange = (event: { target: { value: any; name: any } }) => {
