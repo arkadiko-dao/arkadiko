@@ -134,13 +134,13 @@ export const tokenTraits: TokenTraits = {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
-    multihop: ['wstxusda', 'usdadiko'],
+    multihop: ['stx', 'usda', 'diko'],
   },
   dikowstx: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
-    multihop: ['dikousda', 'usdawstx']
+    multihop: ['diko', 'usda', 'wstx']
   },
   dikostx: {
     address: contractAddress,
