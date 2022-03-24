@@ -233,7 +233,7 @@ export const Swap: React.FC = () => {
     let tokenYAmount = 0;
     let priceImpact = 0;
     if (isMultiHop) {
-      tokenYAmount = tokenXAmount * currentPrice;
+      tokenYAmount = tokenXAmount / currentPrice;
       priceImpact = 5;
     } else {
       if (inverseDirection) {
