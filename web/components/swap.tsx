@@ -559,36 +559,43 @@ export const Swap: React.FC = () => {
                     {loadingData ? (
                       <Placeholder className="justify-end pt-3" width={Placeholder.width.THIRD} />
                     ) : foundPair ? (
-                      <div className="flex items-center justify-end mt-2">
-                        <p className="text-sm font-semibold text-right text-gray-400 dark:text-zinc-200">
-                          {exchangeRateSwitched ? (
-                            <>
-                              1 {tokenX.name} ≈{' '}
-                              {(1 / currentPrice).toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 6,
-                              })}{' '}
-                              {tokenY.name}
-                            </>
-                          ) : (
-                            <>
-                              1 {tokenY.name} ≈{' '}
-                              {currentPrice.toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 6,
-                              })}{' '}
-                              {tokenX.name}
-                            </>
-                          )}
-                        </p>
-                        <button
-                          type="button"
-                          onClick={switchExchangeRate}
-                          className="ml-2 text-gray-400 hover:text-indigo-700 dark:hover:text-indigo-400"
-                        >
-                          <StyledIcon as="SwitchHorizontalIcon" size={5} />
-                        </button>
-                      </div>
+                      <>
+                        <div className="flex items-center justify-end mt-2">
+                          <p className="text-sm font-semibold text-right text-gray-400 dark:text-zinc-200">
+                            {exchangeRateSwitched ? (
+                              <>
+                                1 {tokenX.name} ≈{' '}
+                                {(1 / currentPrice).toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 6,
+                                })}{' '}
+                                {tokenY.name}
+                              </>
+                            ) : (
+                              <>
+                                1 {tokenY.name} ≈{' '}
+                                {currentPrice.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 6,
+                                })}{' '}
+                                {tokenX.name}
+                              </>
+                            )}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={switchExchangeRate}
+                            className="ml-2 text-gray-400 hover:text-indigo-700 dark:hover:text-indigo-400"
+                          >
+                            <StyledIcon as="SwitchHorizontalIcon" size={5} />
+                          </button>
+                        </div>
+                        {isMultiHop ? (
+                          <div className="flex items-center justify-end mt-2">
+                            {pairX['token_x_name']} -> {pairX['token_y_name']} -> {pairY['token_x_name']}
+                          </div>
+                        ) : null}
+                      </>
                     ) : null}
 
                     {state.userData ? (
