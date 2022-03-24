@@ -224,25 +224,33 @@ export const Swap: React.FC = () => {
     if (!currentPair || tokenXAmount === 0 || tokenXAmount === undefined) {
       return;
     }
+    if (isMultiHop && (!pairX || !pairY)) {
+      return;
+    }
 
+    const slippage = (100 - slippageTolerance) / 100;
     const inputWithoutFees = Number(tokenXAmount) * 0.997;
     let tokenYAmount = 0;
     let priceImpact = 0;
-    const slippage = (100 - slippageTolerance) / 100;
-    if (inverseDirection) {
-      const balanceX = currentPair['balance_x'] / Math.pow(10, tokenY['decimals']);
-      const balanceY = currentPair['balance_y'] / Math.pow(10, tokenX['decimals']);
-      const newBalanceY = balanceY + inputWithoutFees;
-      const newBalanceX = (balanceY * balanceX) / newBalanceY;
-      tokenYAmount = balanceX - newBalanceX;
-      priceImpact = newBalanceY / newBalanceX / (balanceY / balanceX) - 1.0;
+    if (isMultiHop) {
+      tokenYAmount = tokenXAmount * currentPrice;
+      priceImpact = 5;
     } else {
-      const balanceX = currentPair['balance_x'] / Math.pow(10, tokenX['decimals']);
-      const balanceY = currentPair['balance_y'] / Math.pow(10, tokenY['decimals']);
-      const newBalanceX = balanceX + inputWithoutFees;
-      const newBalanceY = (balanceX * balanceY) / newBalanceX;
-      tokenYAmount = balanceY - newBalanceY;
-      priceImpact = newBalanceX / newBalanceY / (balanceX / balanceY) - 1.0;
+      if (inverseDirection) {
+        const balanceX = currentPair['balance_x'] / Math.pow(10, tokenY['decimals']);
+        const balanceY = currentPair['balance_y'] / Math.pow(10, tokenX['decimals']);
+        const newBalanceY = balanceY + inputWithoutFees;
+        const newBalanceX = (balanceY * balanceX) / newBalanceY;
+        tokenYAmount = balanceX - newBalanceX;
+        priceImpact = newBalanceY / newBalanceX / (balanceY / balanceX) - 1.0;
+      } else {
+        const balanceX = currentPair['balance_x'] / Math.pow(10, tokenX['decimals']);
+        const balanceY = currentPair['balance_y'] / Math.pow(10, tokenY['decimals']);
+        const newBalanceX = balanceX + inputWithoutFees;
+        const newBalanceY = (balanceX * balanceY) / newBalanceX;
+        tokenYAmount = balanceY - newBalanceY;
+        priceImpact = newBalanceX / newBalanceY / (balanceX / balanceY) - 1.0;
+      }
     }
 
     setMinimumReceived(tokenYAmount * slippage);
