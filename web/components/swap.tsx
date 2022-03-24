@@ -163,10 +163,11 @@ export const Swap: React.FC = () => {
           const balanceOneY = json3['balance_y'];
           const balanceTwoX = json4['balance_x'];
           const balanceTwoY = json4['balance_y'];
-          const ratioOne = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']);
-          const ratioTwo = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']);
+          const ratioOne = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']); // TODO
+          const ratioTwo = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']); // TODO
           const basePrice = Number((ratioOne * balanceOneX) / balanceOneY);
-          setCurrentPrice(basePrice);
+          const secondPrice = Number((ratioTwo * balanceTwoX) / balanceTwoY);
+          setCurrentPrice(basePrice / secondPrice);
           setFoundPair(true);
           setLoadingData(false);
         }
