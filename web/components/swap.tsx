@@ -5,7 +5,7 @@ import { Container } from './home';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { microToReadable } from '@common/vault-utils';
-import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
+import { AnchorMode, contractPrincipalCV, uintCV, trueCV, falseCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
@@ -337,7 +337,51 @@ export const Swap: React.FC = () => {
     setTokenY(newTokenY);
   };
 
+  const swapTokensMultihop = async () => {
+    const tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
+    const tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
+    let principalX = contractPrincipalCV(tokenX['address'], tokenXTrait);
+    let principalY = contractPrincipalCV(tokenY['address'], tokenYTrait);
+    let principalZ = contractPrincipalCV(tokenY['address'], tokenYTrait);
+    const amount = uintCV(tokenXAmount * Math.pow(10, tokenX['decimals']));
+    const postConditionMode = 0x01;
+
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-multi-hop-swap-v1-1',
+      functionName: 'swap-x-for-z',
+      functionArgs: [
+        principalX,
+        principalY,
+        principalZ,
+        amount,
+        uintCV((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
+        inverseDirectionX ? trueCV() : falseCV(),
+        inverseDirectionY ? trueCV() : falseCV()
+      ],
+      postConditionMode,
+      onFinish: data => {
+        console.log('finished multihop swap!', data);
+        setState(prevState => ({
+          ...prevState,
+          showTxModal: true,
+          currentTxMessage: '',
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
   const swapTokens = async () => {
+    if (isMultiHop) {
+      swapTokensMultihop();
+      return;
+    }
+
     let contractName = 'swap-x-for-y';
     let tokenNameX = tokenX['name'];
     let tokenNameY = tokenY['name'];
