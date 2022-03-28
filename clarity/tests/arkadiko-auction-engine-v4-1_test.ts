@@ -72,8 +72,12 @@ Clarinet.test({ name: "auction engine: liquidate stacking STX vault without enou
     auction.result.expectTuple()['total-collateral-sold'].expectUintWithDecimals(1500);
 
     // Auction closed
-    let call = await vaultAuction.getAuctionOpen(1);
+    let call:any = await vaultAuction.getAuctionOpen(1);
     call.result.expectBool(false);
+
+    // Auction closed
+    call = await vaultManager.getVaultById(1, deployer);
+    call.result.expectTuple()['auction-ended'].expectBool(true);
   }
 });
 
