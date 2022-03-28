@@ -3,9 +3,9 @@
 
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED u32401)
+(define-constant ERR-NOT-ACTIVATED u320001)
 
-;; Basic emission percentage (5.5%)
-(define-data-var rewards-percentage uint u55000)
+(define-data-var rewards-per-cycle uint u12500000000) ;; 12.5K DIKO
 (define-data-var shutdown-activated bool false)
 
 (define-read-only (is-activated)
@@ -15,28 +15,12 @@
   )
 )
 
-(define-read-only (get-rewards-per-block-for-alex)
-  (let (
-    (total-staking-rewards (contract-call? .arkadiko-diko-guardian-v1-1 get-staking-rewards-per-block))
-    (pool-percentage (var-get rewards-percentage))
-  )
-    (if (is-activated)
-      (/ (* total-staking-rewards pool-percentage) u1000000)
-      u0
-    )
-  )
-)
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; public methods (callable by ALEX contract or Arkadiko DAO) ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-public (mint (amount-of-blocks uint))
-  (let (
-    (pending-rewards (* amount-of-blocks (get-rewards-per-block-for-alex)))
-  )
+(define-public (mint (amount uint) (recipient principal))
+  (begin
     (asserts!
       (or
         (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address))
@@ -44,9 +28,10 @@
       )
       (err ERR-NOT-AUTHORIZED)
     )
-    (try! (contract-call? .arkadiko-dao mint-token .arkadiko-token pending-rewards tx-sender)) ;; TODO - add contract to DAO and update other emissions
+    (asserts! (is-activated) (err ERR-NOT-ACTIVATED))
 
-    (ok pending-rewards)
+    (try! (as-contract (contract-call? .arkadiko-token transfer amount tx-sender recipient none))) ;; TODO - add contract to DAO and update other emissions
+    (ok amount)
   )
 )
 
@@ -56,11 +41,21 @@
 ;; public admin methods       ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-public (update-rewards-percentage (percentage uint))
+(define-public (mint-diko)
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-activated) (err ERR-NOT-ACTIVATED))
+
+    (try! (contract-call? .arkadiko-dao mint-token .arkadiko-token (* u10 (var-get rewards-per-cycle)) (as-contract tx-sender)))
+    (ok true)
+  )
+)
+
+(define-public (update-rewards-per-cycle (rewards uint))
   (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
 
-    (var-set rewards-percentage percentage)
+    (var-set rewards-per-cycle rewards)
     (ok true)
   )
 )
