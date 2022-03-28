@@ -45,6 +45,7 @@ export const Liquidations: React.FC = () => {
   const [buttonUnstakeDisabled, setButtonUnstakeDisabled] = useState(true);
   const [buttonStakeDisabled, setButtonStakeDisabled] = useState(true);
   const [buttonAddDikoRewardsDisabled, setButtonAddDikoRewardsDisabled] = useState(true);
+  const [redeemableStx, setRedeemableStx] = useState(0);
 
   const onInputStakeChange = (event: any) => {
     const value = event.target.value;
@@ -62,6 +63,26 @@ export const Liquidations: React.FC = () => {
 
   const unstakeMaxAmount = () => {
     setUnstakeAmount((userPooled / 1000000).toString());
+  };
+
+  const redeemStx = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-freddie-v1-1',
+      functionName: 'redeem-stx',
+      functionArgs: [uintCV(state.balance['xstx'])],
+      postConditionMode: 0x01,
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
   };
 
   const stake = async () => {
@@ -201,6 +222,19 @@ export const Liquidations: React.FC = () => {
       return result;
     };
 
+    const getStxRedeemable = async () => {
+      const stxRedeemable = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-freddie-v1-1',
+        functionName: 'get-stx-redeemable',
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const result = cvToJSON(stxRedeemable).value.value;
+      return result;
+    };
+
     const getRewardsData = async () => {
 
       const call = await callReadOnlyFunction({
@@ -250,10 +284,13 @@ export const Liquidations: React.FC = () => {
           });
           const json = cvToJSON(call);
           const data = json.value;
+
+          console.log("IS STX:", data['token-is-stx'].value);
           rewardsData.push({
             rewardId: rewardId,
             token: data['token'].value,
             claimable: resultUserPending,
+            tokenIsStx: data['token-is-stx'].value,
           });
         }
       });
@@ -269,14 +306,16 @@ export const Liquidations: React.FC = () => {
         dikoEpochEnd,
         dikoEpochRewardsToAdd,
         currentBlockHeight,
-        rewards
+        rewards,
+        stxRedeemable
       ] = await Promise.all([
         getTotalPooled(),
         getUserPooled(),
         getDikoEpochEnd(),
         getDikoEpochRewardsToAdd(),
         getCurrentBlockHeight(),
-        getRewardsData()
+        getRewardsData(),
+        getStxRedeemable()
       ]);
 
       const rewardItems = rewards.map((reward: object) => (
@@ -299,6 +338,8 @@ export const Liquidations: React.FC = () => {
       setButtonUnstakeDisabled(userPooled == 0)
       setButtonAddDikoRewardsDisabled(dikoEpochRewardsToAdd == 0);
 
+      setRedeemableStx(stxRedeemable);
+
       setIsLoading(false);
     };
 
@@ -320,6 +361,37 @@ export const Liquidations: React.FC = () => {
       {state.userData ? (
         <Container>
           <main className="relative flex-1 py-12">
+
+            {state.balance['xstx'] > 0 ? (
+              <section>
+                <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
+                  <div>
+                    <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">Trade xSTX for STX</h3>
+                  </div>
+                </header>
+                <div className="mt-4">
+                  {isLoading ? (
+                    <>
+                      <Placeholder className="py-2" width={Placeholder.width.FULL} />
+                      <Placeholder className="py-2" width={Placeholder.width.FULL} />
+                    </>
+                  ) : (
+                    <p className="mt-2 mb-7">
+                      There are {redeemableStx / 1000000} STX redeemable in the Arkadiko pool. <br />
+                      You have {state.balance['xstx'] / 1000000} xSTX. <br />
+                      <button
+                        type="button"
+                        onClick={() => redeemStx()}
+                        className="mt-2 px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                      >
+                        Redeem
+                      </button>
+                    </p>
+                  )}
+                </div>
+              </section>
+            ): null}
+
             <section>
               <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
                 <div>

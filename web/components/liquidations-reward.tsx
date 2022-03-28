@@ -14,12 +14,14 @@ export interface LiquidationRewardProps {
   rewardId: number;
   token: string;
   claimable: number;
+  tokenIsStx: boolean;
 }
 
 export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
   rewardId,
   token,
   claimable,
+  tokenIsStx
 }) => {
   const { doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
@@ -60,7 +62,11 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
         <span className="font-medium text-gray-900 dark:text-zinc-100">{rewardId}</span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900 dark:text-zinc-100">{token.split('.')[1]}</span>
+        {tokenIsStx ? ( 
+          <span className="font-medium text-gray-900 dark:text-zinc-100">STX</span>
+        ) : (
+          <span className="font-medium text-gray-900 dark:text-zinc-100">{token.split('.')[1]}</span>
+        )}
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         <span className="font-medium text-gray-900 dark:text-zinc-100">
