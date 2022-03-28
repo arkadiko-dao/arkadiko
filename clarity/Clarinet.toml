@@ -212,7 +212,7 @@ depends_on = ["arkadiko-stake-pool-trait-v1", "arkadiko-stake-pool-diko-trait-v1
 path = "contracts/arkadiko-stake-pool-diko-v1-2.clar"
 
 [contracts.arkadiko-stake-pool-diko-slash-v1-1]
-depends_on = ["arkadiko-stake-pool-diko-v1-1"]
+depends_on = ["arkadiko-stake-pool-diko-v1-2"]
 path = "contracts/arkadiko-stake-pool-diko-slash-v1-1.clar"
 
 [contracts.arkadiko-stake-pool-diko-usda-v1-1]
@@ -343,6 +343,17 @@ path = "contracts/arkadiko-auction-engine-v4-1.clar"
 depends_on = ["sip-010-trait-ft-standard", "arkadiko-token"]
 path = "contracts/arkadiko-liquidation-rewards-diko-v1-1.clar"
 
+[contracts.wrapped-lydian-token]
+depends_on = []
+path = "contracts/wrapped-lydian-token.clar"
+
+[contracts.lydian-airdrop-v1-1]
+depends_on = ["wrapped-lydian-token"]
+path = "contracts/lydian-airdrop-v1-1.clar"
+
+[contracts.lydian-airdrop-snapshot-v1-1]
+depends_on = ["wrapped-lydian-token"]
+path = "contracts/lydian-airdrop-snapshot-v1-1.clar"
 
 # Tokensoft xBTC
 [contracts.restricted-token-trait]

@@ -1,20 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Helmet } from "react-helmet";
+import { Helmet } from 'react-helmet';
 import { AppContext } from '@common/context';
 import { Container } from './home';
-import {
-  SwitchVerticalIcon,
-  InformationCircleIcon,
-  SwitchHorizontalIcon,
-} from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { microToReadable } from '@common/vault-utils';
-import {
-  AnchorMode,
-  contractPrincipalCV,
-  uintCV,
-} from '@stacks/transactions';
+import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
@@ -26,6 +17,7 @@ import { classNames } from '@common/class-names';
 import { Placeholder } from './ui/placeholder';
 import { SwapLoadingPlaceholder } from './swap-loading-placeholder';
 import axios from 'axios';
+import { StyledIcon } from './ui/styled-icon';
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
@@ -60,7 +52,7 @@ export const Swap: React.FC = () => {
       let response = await axios.get(`${apiUrl}/api/v1/pages/swap`);
       response = response['data'];
       setPairs(response);
-    }
+    };
 
     fetchPairs();
   }, []);
@@ -93,13 +85,15 @@ export const Swap: React.FC = () => {
           stx: account.stx.toString(),
           xstx: account.xstx.toString(),
           stdiko: account.stdiko.toString(),
+          wldn: account.wldn.toString(),
           welsh: account.welsh.toString(),
           dikousda: account.dikousda.toString(),
           wstxusda: account.wstxusda.toString(),
           wstxdiko: account.wstxdiko.toString(),
           wstxxbtc: account.wstxxbtc.toString(),
           xbtcusda: account.xbtcusda.toString(),
-          wstxwelsh: account.wstxwelsh.toString()
+          wldnusda: account.wldnusda.toString(),
+          wstxwelsh: account.wstxwelsh.toString(),
         },
       }));
     };
@@ -129,7 +123,7 @@ export const Swap: React.FC = () => {
         const balanceX = json3['balance_x'];
         const balanceY = json3['balance_y'];
         const ratio = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']);
-        const basePrice = Number((ratio * balanceX / balanceY));
+        const basePrice = Number((ratio * balanceX) / balanceY);
         setCurrentPrice(basePrice);
         setSwapLink(`swap/add/${tokenX.name}/${tokenY.name}`);
         setInverseDirection(false);
@@ -144,7 +138,7 @@ export const Swap: React.FC = () => {
         const balanceX = json4['balance_x'];
         const balanceY = json4['balance_y'];
         const ratio = Math.pow(10, tokenX['decimals']) / Math.pow(10, tokenY['decimals']);
-        const basePrice = Number((balanceY / (ratio * balanceX)));
+        const basePrice = Number(balanceY / (ratio * balanceX));
         setCurrentPrice(basePrice);
         setFoundPair(true);
         setLoadingData(false);
@@ -204,7 +198,10 @@ export const Swap: React.FC = () => {
       })
     );
 
-    if (Number(tokenXAmount) * Math.pow(10, tokenX['decimals']) > state.balance[tokenX['name'].toLowerCase()]) {
+    if (
+      Number(tokenXAmount) * Math.pow(10, tokenX['decimals']) >
+      state.balance[tokenX['name'].toLowerCase()]
+    ) {
       setInsufficientBalance(true);
     }
   };
@@ -445,7 +442,7 @@ export const Swap: React.FC = () => {
                       onClick={switchTokens}
                       className="relative z-10 flex items-center justify-center w-8 h-8 -mt-4 -mb-4 -ml-4 text-gray-400 transform bg-white border border-gray-300 rounded-md dark:bg-zinc-800 left-1/2 hover:text-indigo-700 focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-800 dark:hover:text-indigo-400"
                     >
-                      <SwitchVerticalIcon className="w-5 h-5" aria-hidden="true" />
+                      <StyledIcon as="SwitchVerticalIcon" size={5} />
                     </button>
 
                     <div className="mt-1 border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-900 dark:hover:border-zinc-900">
@@ -506,10 +503,12 @@ export const Swap: React.FC = () => {
                             </>
                           ) : (
                             <>
-                              1 {tokenY.name} ≈ {currentPrice.toLocaleString(undefined, {
+                              1 {tokenY.name} ≈{' '}
+                              {currentPrice.toLocaleString(undefined, {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 6,
-                              })} {tokenX.name}
+                              })}{' '}
+                              {tokenX.name}
                             </>
                           )}
                         </p>
@@ -518,7 +517,7 @@ export const Swap: React.FC = () => {
                           onClick={switchExchangeRate}
                           className="ml-2 text-gray-400 hover:text-indigo-700 dark:hover:text-indigo-400"
                         >
-                          <SwitchHorizontalIcon className="w-5 h-5" aria-hidden="true" />
+                          <StyledIcon as="SwitchHorizontalIcon" size={5} />
                         </button>
                       </div>
                     ) : null}
@@ -527,7 +526,11 @@ export const Swap: React.FC = () => {
                       <button
                         type="button"
                         disabled={
-                          loadingData || insufficientBalance || tokenYAmount === 0 || !foundPair || !pairEnabled
+                          loadingData ||
+                          insufficientBalance ||
+                          tokenYAmount === 0 ||
+                          !foundPair ||
+                          !pairEnabled
                         }
                         onClick={() => swapTokens()}
                         className={classNames(
@@ -585,9 +588,10 @@ export const Swap: React.FC = () => {
                         shouldWrapChildren={true}
                         label={`Your transaction will revert if there is a large, unfavorable price movement before it is confirmed`}
                       >
-                        <InformationCircleIcon
-                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
-                          aria-hidden="true"
+                        <StyledIcon
+                          as="InformationCircleIcon"
+                          size={4}
+                          className="block text-indigo-400 dark:text-indigo-500"
                         />
                       </Tooltip>
                     </div>
@@ -617,9 +621,10 @@ export const Swap: React.FC = () => {
                         shouldWrapChildren={true}
                         label={`The difference between the market price and estimated price due to trade size`}
                       >
-                        <InformationCircleIcon
-                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
-                          aria-hidden="true"
+                        <StyledIcon
+                          as="InformationCircleIcon"
+                          size={4}
+                          className="block text-indigo-400 dark:text-indigo-500"
                         />
                       </Tooltip>
                     </div>
@@ -643,9 +648,10 @@ export const Swap: React.FC = () => {
                         shouldWrapChildren={true}
                         label={`A portion of each trade goes to liquidity providers as a protocol incentive`}
                       >
-                        <InformationCircleIcon
-                          className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
-                          aria-hidden="true"
+                        <StyledIcon
+                          as="InformationCircleIcon"
+                          size={4}
+                          className="block text-indigo-400 dark:text-indigo-500"
                         />
                       </Tooltip>
                     </div>

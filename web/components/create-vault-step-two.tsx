@@ -58,8 +58,9 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   const [isLoading, setIsLoading] = useState(true);
 
   const maximumCoinsToMint = (value: string) => {
-    if (state.collateralTypes[tokenType]) {
-      const minColl = state.collateralTypes[tokenType]['collateralToDebtRatio'];
+    const collateralType = state.collateralTypes[tokenType?.toLocaleUpperCase()];
+    if (collateralType) {
+      const minColl = collateralType['collateralToDebtRatio'];
       const maxRatio = Math.max(minColl, parseInt(liquidationRatio, 10) + 30);
       const uCollateralAmount = parseInt(value * 1000000, 10);
       setMaximumToMint(Math.floor((uCollateralAmount * price * 100) / maxRatio));
@@ -145,7 +146,9 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
 
   useEffect(() => {
     if (collateralAmount && coinAmount) {
-      const amount = tokenName.toLocaleLowerCase().includes('xbtc') ? collateralAmount * 100 : collateralAmount;
+      const amount = tokenName.toLocaleLowerCase().includes('xbtc')
+        ? collateralAmount * 100
+        : collateralAmount;
       setLiquidationPrice(
         getLiquidationPrice(liquidationRatio, parseFloat(coinAmount), parseFloat(amount), tokenName)
       );
@@ -211,15 +214,27 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                     {isLoading ? (
                       <div className="space-y-16 sm:col-span-3">
                         <div>
-                          <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.FULL} />
+                          <Placeholder
+                            className="py-2"
+                            color={Placeholder.color.GRAY}
+                            width={Placeholder.width.FULL}
+                          />
                           <Placeholder className="py-2" width={Placeholder.width.THIRD} />
                         </div>
                         <div>
-                          <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.FULL} />
+                          <Placeholder
+                            className="py-2"
+                            color={Placeholder.color.GRAY}
+                            width={Placeholder.width.FULL}
+                          />
                           <Placeholder className="py-2" width={Placeholder.width.THIRD} />
                         </div>
                         <div>
-                          <Placeholder className="py-2" color={Placeholder.color.GRAY} width={Placeholder.width.FULL} />
+                          <Placeholder
+                            className="py-2"
+                            color={Placeholder.color.GRAY}
+                            width={Placeholder.width.FULL}
+                          />
                           <Placeholder className="py-2" width={Placeholder.width.THIRD} />
                         </div>
                       </div>

@@ -1,9 +1,9 @@
 import React from 'react';
 import { CollateralTypeProps } from '@common/context';
 import { Tooltip } from '@blockstack/ui';
-import { InformationCircleIcon } from '@heroicons/react/solid';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { classNames } from '@common/class-names';
+import { StyledIcon } from './ui/styled-icon';
 
 export const CollateralType: React.FC<CollateralTypeProps> = ({ types, setStep }) => {
   const collateralItems: CollateralTypeProps[] = [];
@@ -51,9 +51,10 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types, setStep }
                       shouldWrapChildren={true}
                       label={`The collateral-to-debt ratio when your vault gets liquidated`}
                     >
-                      <InformationCircleIcon
-                        className="block w-5 h-5 ml-2 text-gray-400"
-                        aria-hidden="true"
+                      <StyledIcon
+                        as="InformationCircleIcon"
+                        size={5}
+                        className="block ml-2 text-gray-400"
                       />
                     </Tooltip>
                   </div>
@@ -83,9 +84,10 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types, setStep }
                             shouldWrapChildren={true}
                             label={`The interest in percentage to borrow USDA`}
                           >
-                            <InformationCircleIcon
-                              className="block w-5 h-5 ml-2 text-gray-400"
-                              aria-hidden="true"
+                            <StyledIcon
+                              as="InformationCircleIcon"
+                              size={5}
+                              className="block ml-2 text-gray-400"
                             />
                           </Tooltip>
                         </div>
@@ -109,9 +111,10 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types, setStep }
                             shouldWrapChildren={true}
                             label={`The penalty you pay when your vault gets liquidated`}
                           >
-                            <InformationCircleIcon
-                              className="block w-5 h-5 ml-2 text-gray-400"
-                              aria-hidden="true"
+                            <StyledIcon
+                              as="InformationCircleIcon"
+                              size={5}
+                              className="block ml-2 text-gray-400"
                             />
                           </Tooltip>
                         </div>
@@ -212,9 +215,10 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types, setStep }
                         shouldWrapChildren={true}
                         label={`The collateral-to-debt ratio when your vault gets liquidated`}
                       >
-                        <InformationCircleIcon
-                          className="block w-5 h-5 ml-2 text-gray-400"
-                          aria-hidden="true"
+                        <StyledIcon
+                          as="InformationCircleIcon"
+                          size={5}
+                          className="block ml-2 text-gray-400"
                         />
                       </Tooltip>
                     </div>
@@ -242,9 +246,10 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types, setStep }
                         shouldWrapChildren={true}
                         label={`The interest in percentage to borrow USDA`}
                       >
-                        <InformationCircleIcon
-                          className="block w-5 h-5 ml-2 text-gray-400"
-                          aria-hidden="true"
+                        <StyledIcon
+                          as="InformationCircleIcon"
+                          size={5}
+                          className="block ml-2 text-gray-400"
                         />
                       </Tooltip>
                     </div>
@@ -267,9 +272,10 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types, setStep }
                         shouldWrapChildren={true}
                         label={`The penalty you pay when your vault gets liquidated`}
                       >
-                        <InformationCircleIcon
-                          className="block w-5 h-5 ml-2 text-gray-400"
-                          aria-hidden="true"
+                        <StyledIcon
+                          as="InformationCircleIcon"
+                          size={5}
+                          className="block ml-2 text-gray-400"
                         />
                       </Tooltip>
                     </div>

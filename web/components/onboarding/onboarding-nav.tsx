@@ -1,7 +1,7 @@
 import React from 'react';
-import { CheckIcon, ArrowNarrowRightIcon, ExclamationIcon } from '@heroicons/react/solid';
 import { classNames } from '@common/class-names';
 import { NavLink as RouterLink } from 'react-router-dom';
+import { StyledIcon } from '@components/ui/styled-icon';
 
 export const OnboardingNav = props => {
   const onboardingSections = [
@@ -77,7 +77,7 @@ export const OnboardingNav = props => {
                       >
                         <span className="shrink-0">
                           <span className="flex items-center justify-center w-10 h-10 bg-indigo-600 rounded-full">
-                            <CheckIcon className="w-6 h-6 text-white" aria-hidden="true" />
+                            <StyledIcon as="CheckIcon" size={6} className="text-white" />
                           </span>
                         </span>
                         <span className="mt-0.5 ml-4 min-w-0 flex flex-col">
@@ -176,7 +176,7 @@ export const OnboardingNav = props => {
         <div className="px-3 py-3 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <div className="flex items-center justify-center">
             <div className="shrink-0">
-              <ExclamationIcon className="w-5 h-5 text-yellow-400" aria-hidden="true" />
+              <StyledIcon as="ExclamationIcon" size={5} className="text-yellow-400" />
             </div>
             <div className="ml-3">
               <p className="text-yellow-700">
@@ -196,7 +196,7 @@ export const OnboardingNav = props => {
           className="flex items-center justify-end p-4 text-base font-medium text-gray-700 sm:text-xs hover:text-gray-800 hover:underline"
         >
           Skip the onboarding
-          <ArrowNarrowRightIcon className="w-4 h-4 ml-2 text-gray-800" aria-hidden="true" />
+          <StyledIcon as="ArrowNarrowRightIcon" size={4} className="ml-2 text-gray-800" />
         </RouterLink>
       </p>
     </>

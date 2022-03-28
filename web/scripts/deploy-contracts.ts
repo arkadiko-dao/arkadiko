@@ -76,6 +76,9 @@ const contracts: Contract[] = [
   { name: 'arkadiko-liquidation-rewards-diko-v1-1' },
   { name: 'arkadiko-auction-engine-v4-1' },
 
+  { name: 'lydian-token' },
+  { name: 'lydian-airdrop-v1-1' },
+
 ];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');

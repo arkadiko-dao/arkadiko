@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 import { AppContext } from '@common/context';
-import { QuestionMarkCircleIcon, ExternalLinkIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/solid';
 import { useLocation } from 'react-router-dom';
 import { Alert } from './ui/alert';
 import { NewVaultWizardNav } from './new-vault-wizard-nav';
+import { StyledIcon } from './ui/styled-icon';
 
 export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => {
   const [state] = useContext(AppContext);
@@ -50,7 +50,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
           <div>
             <div className="flex items-center">
               <div className="w-5.5 h-5.5 rounded-full bg-indigo-200 flex items-center justify-center">
-                <QuestionMarkCircleIcon className="w-5 h-5 text-indigo-600" aria-hidden="true" />
+                <StyledIcon as="QuestionMarkCircleIcon" size={5} className="text-indigo-600" />
               </div>
               <a
                 className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
@@ -59,7 +59,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                 rel="noopener noreferrer"
               >
                 More on vaults parameters
-                <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
+                <StyledIcon as="ExternalLinkIcon" size={3} className="block ml-2" />
               </a>
             </div>
           </div>
@@ -76,12 +76,12 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
 
                   {coinAmounts['stack-pox'] ? (
                     <span className="ml-3 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-green-100 text-green-800">
-                      <CheckCircleIcon className="flex-shrink-0 w-5 h-5 mr-2" />
+                      <StyledIcon as="CheckCircleIcon" size={5} className="mr-2" />
                       Enabled
                     </span>
                   ) : (
                     <span className="ml-3 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-red-100 text-red-800">
-                      <XCircleIcon className="flex-shrink-0 w-5 h-5 mr-2" />
+                      <StyledIcon as="XCircleIcon" size={5} className="mr-2" />
                       Disabled
                     </span>
                   )}
@@ -103,8 +103,11 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                   <div className="mt-4">
                     <Alert type={Alert.type.WARNING} title="Important note">
                       <p>
-                        Choosing to stack your STX means that they will be <span className="font-semibold">locked and become
-                        illiquid immediately</span>.
+                        Choosing to stack your STX means that they will be{' '}
+                        <span className="font-semibold">
+                          locked and become illiquid immediately
+                        </span>
+                        .
                       </p>
                       <p className="mt-1">
                         They will be available again on:{' '}
