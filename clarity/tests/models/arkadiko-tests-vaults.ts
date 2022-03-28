@@ -646,5 +646,23 @@ class VaultAuctionV4 {
     return block.receipts[0].result;
   }
 
+  updateFee(fee: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-auction-engine-v4-1", "update-fee", [
+        types.uint(fee),
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  withdrawFees(token: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-auction-engine-v4-1", "withdraw-fees", [
+        types.principal(Utils.qualifiedName(token)),
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
 }
 export { VaultAuctionV4 };

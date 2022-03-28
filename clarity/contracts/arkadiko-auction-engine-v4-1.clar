@@ -19,6 +19,7 @@
 ;; variables
 (define-data-var auction-engine-shutdown-activated bool false)
 (define-data-var last-auction-id uint u0)
+(define-data-var auction-fee uint u0)
 
 (define-map auctions
   { id: uint }
@@ -202,6 +203,8 @@
     (burn-amounts (unwrap-panic (burn-usda-amount auction-id oracle liquidation-pool)))
     (usda-to-use (get usda-to-use burn-amounts))
     (collateral-sold (get collateral-to-sell burn-amounts))
+    (collateral-fee (/ (* collateral-sold (var-get auction-fee)) u10000))
+    (collateral-without-fee (- collateral-sold collateral-fee))
 
     (token-address (get collateral-address auction))
     (token-string (get collateral-token auction))
@@ -239,7 +242,7 @@
         (try! (as-contract (contract-call? vault-manager redeem-auction-collateral ft token-string reserve collateral-sold (as-contract tx-sender)))) 
 
         ;; Deposit collateral token
-        (try! (as-contract (contract-call? liquidation-rewards add-reward block-height token-is-stx ft collateral-sold)))
+        (try! (as-contract (contract-call? liquidation-rewards add-reward block-height token-is-stx ft collateral-without-fee)))
 
         ;; Update auction
         (map-set auctions { id: auction-id } (merge auction {
@@ -400,5 +403,28 @@
   (if (< x y)
     x
     y
+  )
+)
+
+;; ---------------------------------------------------------
+;; Admin
+;; ---------------------------------------------------------
+
+
+(define-public (withdraw-fees (ft <ft-trait>))
+  (let (
+    (sender tx-sender)
+    (contract-balance (unwrap-panic (contract-call? ft get-balance (as-contract tx-sender))))
+  )
+    (asserts! (is-eq sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
+    (as-contract (contract-call? ft transfer contract-balance (as-contract tx-sender) sender none))
+  )
+)
+
+(define-public (update-fee (new-fee uint))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
+    (var-set auction-fee new-fee)
+    (ok new-fee)
   )
 )
