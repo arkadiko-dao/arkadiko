@@ -538,3 +538,56 @@ Clarinet.test({ name: "auction engine: toggle shutdown",
     result.expectOk().expectBool(true);
   }
 });
+
+
+Clarinet.test({ name: "auction engine: can not burn-usda on auction which has ended",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let liquidationPool = new LiquidationPool(chain, deployer);
+    let swap = new Swap(chain, deployer);
+
+    // Create pair
+    let result = swap.createPair(deployer, "arkadiko-token", "usda-token", "arkadiko-swap-token-diko-usda", "DIKO-USDA", 10000, 20000, 6, 6);
+    result.expectOk().expectBool(true);
+
+    // Initialize price of STX to $2 in the oracle
+    result = oracleManager.updatePrice("STX", 3);
+    result = oracleManager.updatePrice("xSTX", 3);
+
+    // Create vault - 1500 STX, 1000 USDA
+    result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    // Upate price to $1.0
+    result = oracleManager.updatePrice("STX", 0.5);
+    result = oracleManager.updatePrice("xSTX", 0.5);
+
+    // Deposit 10K USDA
+    result = liquidationPool.stake(wallet_1, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Start auction
+    result = vaultAuction.startAuction(deployer, 1);
+    result.expectOk().expectBool(true);
+
+    // Check auction parameters
+    let auction:any = await vaultAuction.getAuctionById(1);
+    auction.result.expectTuple()['collateral-amount'].expectUintWithDecimals(1500);
+    auction.result.expectTuple()['debt-to-raise'].expectUintWithDecimals(1000);
+    auction.result.expectTuple()['total-debt-burned'].expectUintWithDecimals(1000);
+    auction.result.expectTuple()['total-collateral-sold'].expectUintWithDecimals(1500);
+
+    // Auction closed
+    let call = await vaultAuction.getAuctionOpen(1);
+    call.result.expectBool(false);
+
+    // No USDA used
+    result = vaultAuction.burnUsda(deployer, 1);
+    result.expectOk().expectUintWithDecimals(0);
+  }
+});
