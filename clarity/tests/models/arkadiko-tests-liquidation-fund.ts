@@ -365,11 +365,12 @@ class LiquidationRewardsDiko {
     return block.receipts[0].result;
   }
 
-  updateEpoch(rate: number, length: number) {
+  updateEpoch(rate: number, length: number, endBlock: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-liquidation-rewards-diko-v1-1", "update-epoch-data", [
         types.uint(rate * 1000000),
         types.uint(length),
+        types.uint(endBlock),
       ], this.deployer.address)
     ]);
     return block.receipts[0].result;

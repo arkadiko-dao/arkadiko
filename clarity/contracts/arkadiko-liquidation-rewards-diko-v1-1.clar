@@ -7,6 +7,7 @@
 
 ;; Variables
 ;; TODO - SET FOR MAINNET
+;; TODO - UPDATE REWARDS FOR STAKING POOLS
 (define-data-var end-epoch-block uint (+ block-height u720)) ;; 5 days after deploy
 (define-data-var epoch-rate uint u100000) ;; 10%
 (define-data-var blocks-per-epoch uint u720) ;; 5 days
@@ -56,7 +57,6 @@
 (define-read-only (get-rewards-to-add)
   (let (
     (total-block-rewards (contract-call? .arkadiko-diko-guardian-v1-1 get-staking-rewards-per-block))
-
     (rewards-to-add (/ (* total-block-rewards (var-get blocks-per-epoch)) (var-get epoch-rate)))
   )
     (if (< block-height (var-get end-epoch-block))
@@ -90,15 +90,13 @@
 ;; Update
 ;; ---------------------------------------------------------
 
-(define-public (update-epoch-data (rate uint) (epoch-length uint))
-  (let (
-    (new-end-block (+ (- (var-get end-epoch-block) (var-get blocks-per-epoch)) epoch-length))
-  )
+(define-public (update-epoch-data (rate uint) (length uint) (end-block uint))
+  (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
     (var-set epoch-rate rate)
-    (var-set blocks-per-epoch epoch-length)
-    (var-set end-epoch-block new-end-block)
+    (var-set blocks-per-epoch length)
+    (var-set end-epoch-block end-block)
     
     (ok true)
   )

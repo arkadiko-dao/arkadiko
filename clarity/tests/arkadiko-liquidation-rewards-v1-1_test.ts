@@ -241,7 +241,7 @@ Clarinet.test({
     call.result.expectOk().expectTuple()["end-block"].expectUint(720);
 
     // Update epoch
-    result = liquidationRewardsDiko.updateEpoch(0.2, 100);
+    result = liquidationRewardsDiko.updateEpoch(0.2, 100, 100);
     result.expectOk().expectBool(true);
 
     // Reward data
