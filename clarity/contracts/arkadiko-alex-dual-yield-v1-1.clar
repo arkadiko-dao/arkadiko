@@ -32,6 +32,7 @@
       (err ERR-NOT-AUTHORIZED)
     )
     (asserts! (is-activated) (err ERR-NOT-ACTIVATED))
+    (asserts! (<= amount (var-get rewards-per-cycle)) (err ERR-TOO-MUCH-DIKO))
 
     (try! (as-contract (contract-call? .arkadiko-token transfer amount tx-sender recipient none))) ;; TODO - add contract to DAO and update other emissions
     (ok amount)
