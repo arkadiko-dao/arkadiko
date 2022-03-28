@@ -135,6 +135,10 @@ Clarinet.test({
     call = await liquidationRewards.getRewardsOf(deployer.address, 4);
     call.result.expectOk().expectUintWithDecimals(500);
 
+    // 5 rewards
+    call = await liquidationRewards.getTotalRewardIds();
+    call.result.expectUint(5);
+
     // Claim 0 and 2 at once
     let rewardIds = [types.uint(0), types.uint(2), types.uint(4)];
     result = liquidationRewards.claimManyRewards(rewardIds, "arkadiko-token");
@@ -239,6 +243,15 @@ Clarinet.test({
     call.result.expectOk().expectTuple()["blocks"].expectUint(720);
     call.result.expectOk().expectTuple()["rate"].expectUintWithDecimals(0.1);
     call.result.expectOk().expectTuple()["end-block"].expectUint(720);
+
+    // Epoch info
+    call = await liquidationRewardsDiko.getBlocksPerEpoch();
+    call.result.expectOk().expectUint(720);
+    call = await liquidationRewardsDiko.getEpochRate();
+    call.result.expectOk().expectUintWithDecimals(0.1);
+    call = await liquidationRewardsDiko.getEndEpochBlock();
+    call.result.expectOk().expectUint(720);
+
 
     // Update epoch
     result = liquidationRewardsDiko.updateEpoch(0.2, 100, 100);

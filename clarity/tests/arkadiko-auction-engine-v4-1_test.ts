@@ -494,7 +494,6 @@ Clarinet.test({ name: "auction engine: liquidate xBTC vault, multiple wallets",
   }
 });
 
-
 Clarinet.test({ name: "auction engine: toggle shutdown",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -538,7 +537,6 @@ Clarinet.test({ name: "auction engine: toggle shutdown",
     result.expectOk().expectBool(true);
   }
 });
-
 
 Clarinet.test({ name: "auction engine: can not burn-usda on auction which has ended",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -589,5 +587,116 @@ Clarinet.test({ name: "auction engine: can not burn-usda on auction which has en
     // No USDA used
     result = vaultAuction.burnUsda(deployer, 1);
     result.expectOk().expectUintWithDecimals(0);
+  }
+});
+
+Clarinet.test({ name: "auction engine: can not start auction with wrong token or reserve",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let liquidationPool = new LiquidationPool(chain, deployer);
+    let swap = new Swap(chain, deployer);
+
+    // Create pair
+    let result = swap.createPair(deployer, "arkadiko-token", "usda-token", "arkadiko-swap-token-diko-usda", "DIKO-USDA", 10000, 20000, 6, 6);
+    result.expectOk().expectBool(true);
+
+    // Initialize price of STX to $2 in the oracle
+    result = oracleManager.updatePrice("STX", 3);
+    result = oracleManager.updatePrice("xSTX", 3);
+
+    // Create vault - 1500 STX, 1000 USDA
+    result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+    // Create vault - not stacking
+    result = vaultManager.createVault(deployer, "STX-A", 1500, 1000, false, false);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    // Upate price to $1.0
+    result = oracleManager.updatePrice("STX", 0.5);
+    result = oracleManager.updatePrice("xSTX", 0.5);
+
+    // Deposit 10K USDA
+    result = liquidationPool.stake(wallet_1, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Wrong token
+    result = vaultAuction.startAuction(deployer, 1, "arkadiko-token", "arkadiko-sip10-reserve-v1-1");
+    result.expectErr().expectUint(31005);
+
+    // Wrong reserve (vault is stacking so should be sip10-reserve)
+    result = vaultAuction.startAuction(deployer, 1, "xstx-token", "arkadiko-stx-reserve-v1-1");
+    result.expectErr().expectUint(118);
+
+    // Wrong reserve (vault not stacking so should be stx-reserve)
+    result = vaultAuction.startAuction(deployer, 2, "xstx-token", "arkadiko-sip10-reserve-v1-1");
+    result.expectErr().expectUint(98);
+  }
+});
+
+
+Clarinet.test({ name: "auction engine: can not burn USDA with wrong token or reserve",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let liquidationPool = new LiquidationPool(chain, deployer);
+    let swap = new Swap(chain, deployer);
+
+    // Create pair
+    let result = swap.createPair(deployer, "arkadiko-token", "usda-token", "arkadiko-swap-token-diko-usda", "DIKO-USDA", 10000, 20000, 6, 6);
+    result.expectOk().expectBool(true);
+
+    // Initialize price of STX to $2 in the oracle
+    result = oracleManager.updatePrice("STX", 3);
+    result = oracleManager.updatePrice("xSTX", 3);
+
+    // Create vault - 1500 STX, 1000 USDA
+    result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+    // Create vault - not stacking
+    result = vaultManager.createVault(deployer, "STX-A", 1500, 1000, false, false);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    // Upate price to $1.0
+    result = oracleManager.updatePrice("STX", 0.5);
+    result = oracleManager.updatePrice("xSTX", 0.5);
+
+    // Deposit 1K USDA
+    result = liquidationPool.stake(wallet_1, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    // Start auctions
+    result = vaultAuction.startAuction(deployer, 1, "xstx-token", "arkadiko-sip10-reserve-v1-1");
+    result.expectOk().expectBool(true);
+    result = vaultAuction.startAuction(deployer, 2, "xstx-token", "arkadiko-stx-reserve-v1-1");
+    result.expectOk().expectBool(true);
+
+    // Get number of auctions
+    let call = await vaultAuction.getLastAuctionId();
+    call.result.expectOk().expectUint(2);
+
+    // Deposit 10K USDA
+    result = liquidationPool.stake(wallet_1, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Wrong token
+    result = vaultAuction.burnUsda(deployer, 1, "arkadiko-token", "arkadiko-sip10-reserve-v1-1");
+    result.expectErr().expectUint(31005);
+
+    // Wrong reserve (vault is stacking so should be sip10-reserve)
+    result = vaultAuction.burnUsda(deployer, 1, "xstx-token", "arkadiko-stx-reserve-v1-1");
+    result.expectErr().expectUint(118);
+
+    // Wrong reserve (vault not stacking so should be stx-reserve)
+    result = vaultAuction.burnUsda(deployer, 2, "xstx-token", "arkadiko-sip10-reserve-v1-1");
+    result.expectErr().expectUint(98);
   }
 });

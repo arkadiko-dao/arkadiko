@@ -257,6 +257,11 @@ class LiquidationRewards {
     this.deployer = deployer;
   }
 
+  getTotalRewardIds() {
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-1", "get-total-reward-ids", [
+    ], this.deployer.address);
+  }
+
   getRewardData(rewardId: number) {
     return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-1", "get-reward-data", [
       types.uint(rewardId),
@@ -348,6 +353,16 @@ class LiquidationRewardsDiko {
 
   getEndEpochBlock() {
     return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-diko-v1-1", "get-end-epoch-block", [
+    ], this.deployer.address);
+  }
+
+  getEpochRate() {
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-diko-v1-1", "get-epoch-rate", [
+    ], this.deployer.address);
+  }
+
+  getBlocksPerEpoch() {
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-diko-v1-1", "get-blocks-per-epoch", [
     ], this.deployer.address);
   }
 

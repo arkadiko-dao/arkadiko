@@ -579,6 +579,15 @@ class VaultAuctionV4 {
     this.deployer = deployer;
   }
 
+  getLastAuctionId() {
+    return this.chain.callReadOnlyFn(
+      "arkadiko-auction-engine-v4-1",
+      "get-last-auction-id",
+      [],
+      this.deployer.address,
+    );
+  }
+
   getAuctionById(auctionId: number) {
     return this.chain.callReadOnlyFn(
       "arkadiko-auction-engine-v4-1",
