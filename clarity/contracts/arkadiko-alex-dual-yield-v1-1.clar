@@ -45,14 +45,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define-public (mint-diko (number-of-cycles uint))
-  (begin
+  (let (
+    (diko-to-mint (* number-of-cycles (var-get rewards-per-cycle)))
+  )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-activated) (err ERR-NOT-ACTIVATED))
-    (asserts! (<= number-of-cycles u10) (err ERR-TOO-MUCH-DIKO))
-    (asserts! (< (var-get diko-minted) MAX-TO-MINT) (err ERR-TOO-MUCH-DIKO))
+    (asserts! (<= (+ (var-get diko-minted) diko-to-mint) MAX-TO-MINT) (err ERR-TOO-MUCH-DIKO))
 
-    (try! (contract-call? .arkadiko-dao mint-token .arkadiko-token (* number-of-cycles (var-get rewards-per-cycle)) (as-contract tx-sender)))
-    (var-set diko-minted (+ (var-get diko-minted) (* number-of-cycles (var-get rewards-per-cycle))))
+    (try! (contract-call? .arkadiko-dao mint-token .arkadiko-token diko-to-mint (as-contract tx-sender)))
+    (var-set diko-minted (+ (var-get diko-minted) diko-to-mint))
     (ok true)
   )
 )
