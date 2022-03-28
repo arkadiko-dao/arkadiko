@@ -301,7 +301,10 @@
   (let (
     (auction (get-auction-by-id auction-id))
     (all-collateral-sold (is-eq (get collateral-amount auction) (get total-collateral-sold auction)))
-    (debt-left (- (get debt-to-raise auction) (get total-debt-burned auction)))
+    (debt-left (if (>= (get total-debt-burned auction) (get debt-to-raise auction))
+      u0
+      (- (get debt-to-raise auction) (get total-debt-burned auction))
+    ))
   )
     ;; Stop if not all collateral sold, no debt to raise or auction not open
     (asserts! all-collateral-sold (ok u0))
