@@ -27,7 +27,7 @@
     (asserts!
       (or
         (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address))
-        (is-eq tx-sender tx-sender) ;; TODO - allow ALEX contract to call this
+        (is-eq contract-caller 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.dual-farm-diko-helper)
       )
       (err ERR-NOT-AUTHORIZED)
     )
