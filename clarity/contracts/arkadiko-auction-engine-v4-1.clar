@@ -56,6 +56,10 @@
   )
 )
 
+(define-read-only (get-last-auction-id)
+  (ok (var-get last-auction-id))
+)
+
 ;; @desc check if auction open (not enough debt raised + end block height not reached)
 ;; @param auction-id; ID of the auction to be checked
 (define-read-only (get-auction-open (auction-id uint))
@@ -162,6 +166,7 @@
 
       ;; Add auction
       (map-set auctions { id: auction-id } auction)
+      (var-set last-auction-id auction-id)
 
       ;; Try to burn
       (try! (burn-usda auction-id oracle coll-type vault-manager ft reserve liquidation-pool liquidation-rewards))
