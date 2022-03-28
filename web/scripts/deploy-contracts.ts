@@ -43,7 +43,8 @@ const contracts: Contract[] = [
   { name: 'arkadiko-diko-init' },
   { name: 'stdiko-token' },
   { name: 'arkadiko-stake-pool-diko-trait-v1' },
-  { name: 'arkadiko-governance-v1-1' },
+  { name: 'arkadiko-governance-v2-1' },
+  { name: 'arkadiko-governance-v3-1' },
   { name: 'arkadiko-liquidator-v1-1' },
   { name: 'arkadiko-swap-trait-v1' },
   { name: 'wrapped-stx-token' },
@@ -57,6 +58,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-stake-pool-trait-v1' },
   { name: 'arkadiko-stake-registry-v1-1' },
   { name: 'arkadiko-stake-pool-diko-v1-1' },
+  { name: 'arkadiko-stake-pool-diko-v1-2' },
   { name: 'arkadiko-swap-token-diko-usda' },
   { name: 'arkadiko-stake-pool-diko-usda-v1-1' },
   { name: 'arkadiko-swap-token-wstx-usda' },
@@ -76,7 +78,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-liquidation-rewards-diko-v1-1' },
   { name: 'arkadiko-auction-engine-v4-1' },
 
-  { name: 'lydian-token' },
+  { name: 'wrapped-lydian-token' },
   { name: 'lydian-airdrop-v1-1' },
 
 ];
