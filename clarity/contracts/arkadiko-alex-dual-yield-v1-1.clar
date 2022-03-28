@@ -41,12 +41,12 @@
 ;; public admin methods       ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-public (mint-diko)
+(define-public (mint-diko (number-of-cycles uint))
   (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-activated) (err ERR-NOT-ACTIVATED))
 
-    (try! (contract-call? .arkadiko-dao mint-token .arkadiko-token (* u10 (var-get rewards-per-cycle)) (as-contract tx-sender)))
+    (try! (contract-call? .arkadiko-dao mint-token .arkadiko-token (* number-of-cycles (var-get rewards-per-cycle)) (as-contract tx-sender)))
     (ok true)
   )
 )
