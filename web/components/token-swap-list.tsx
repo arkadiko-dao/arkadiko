@@ -46,7 +46,7 @@ export const tokenList = [
     name: 'wLDN',
     nameInPair: 'wldn',
     logo: '/assets/tokens/lydian.svg',
-    listed: true,
+    listed: false,
     address: 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5',
     decimals: 6
   },
