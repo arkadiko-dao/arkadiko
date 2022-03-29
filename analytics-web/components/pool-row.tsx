@@ -19,6 +19,8 @@ const tokenToName = (token: string) => {
     return 'WELSH';
   } else if (token === 'wrapped-lydian-token') {
     return 'wLDN';
+  } else if (token === 'lydian-token') {
+    return 'LDN';
   } else {
     return '';
   }
@@ -41,8 +43,8 @@ const decimals = (token: string) => {
 const getPrice = async (symbol: string) => {
   if (symbol === 'USDA') {
     return 1000000;
-  } else if (symbol === 'wLDN') {
-    return 83280202;
+  } else if (symbol === 'wLDN' || symbol === 'LDN') {
+    return 62280202;
   }
 
   const contractAddress = 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR';
