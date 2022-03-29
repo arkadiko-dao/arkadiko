@@ -59,10 +59,7 @@
     (total-block-rewards (contract-call? .arkadiko-diko-guardian-v1-1 get-staking-rewards-per-block))
     (rewards-to-add (/ (* total-block-rewards (var-get blocks-per-epoch)) (var-get epoch-rate)))
   )
-    (if (< block-height (var-get end-epoch-block))
-      u0
-      rewards-to-add
-    )
+    rewards-to-add
   )
 )
 
