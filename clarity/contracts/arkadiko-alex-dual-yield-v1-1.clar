@@ -22,6 +22,9 @@
   (var-get rewards-per-cycle)
 )
 
+(define-read-only (get-diko-minted)
+  (var-get diko-minted)
+)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
