@@ -62,9 +62,7 @@ async function getLiquidationRatio(collateralType) {
   return tx.cvToJSON(vaultTx).value.value;
 }
 
-async function liquidateVault(vaultId, tokenName, stacking) {
-  let nonce = await utils.getNonce(CONTRACT_ADDRESS);
-
+async function liquidateVault(vaultId, tokenName, stacking, nonce) {
   let reserve = 'arkadiko-sip10-reserve-v1-1';
   if (tokenName == 'STX' && !stacking) {
     reserve = 'arkadiko-stx-reserve-v1-1';
@@ -91,16 +89,17 @@ async function liquidateVault(vaultId, tokenName, stacking) {
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
+    nonce: nonce,
     network
   };
 
   const transaction = await tx.makeContractCall(txOptions);
-  console.log('Nonce =', nonce);
   const result = tx.broadcastTransaction(transaction, network);
   return await utils.processing(result, transaction.txid(), 0);
 }
 
 async function iterateAndCheck() {
+  let nonce = await utils.getNonce(CONTRACT_ADDRESS);
   const lastId = await getLastVaultId();
   console.log('Last Vault ID is', lastId, ', iterating vaults');
 
@@ -114,7 +113,8 @@ async function iterateAndCheck() {
       const liqRatio = await getLiquidationRatio(vault['collateral-type']['value']);
       if (collRatio < liqRatio) {
         console.log('Vault', index, 'needs to be liquidated - collateralization ratio:', collRatio, ', liquidation ratio:', liqRatio);
-        await liquidateVault(index, vault['collateral-token'].value, !vault['revoked-stacking'].value);
+        await liquidateVault(index, vault['collateral-token'].value, !vault['revoked-stacking'].value, nonce);
+        nonce = nonce + 1;
       }
     }
     await new Promise(r => setTimeout(r, 2000));
