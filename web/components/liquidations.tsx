@@ -315,7 +315,6 @@ export const Liquidations: React.FC = () => {
           const json = cvToJSON(call);
           const data = json.value;
 
-          console.log("IS STX:", data['token-is-stx'].value);
           rewardsData.push({
             rewardId: rewardId,
             token: data['token'].value,
@@ -358,6 +357,7 @@ export const Liquidations: React.FC = () => {
           rewardId={reward.rewardId}
           token={reward.token}
           claimable={reward.claimable}
+          tokenIsStx={reward.tokenIsStx}
         />
       ));
       setRewardData(rewardItems);

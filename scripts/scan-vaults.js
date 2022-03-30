@@ -39,7 +39,8 @@ async function getCollateralizationRatio(vaultId) {
     functionArgs: [
       tx.uintCV(vaultId),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v1-1'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v1-1')
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v1-1'),
+      tx.falseCV()
     ],
     senderAddress: CONTRACT_ADDRESS,
     network
@@ -61,20 +62,35 @@ async function getLiquidationRatio(collateralType) {
   return tx.cvToJSON(vaultTx).value.value;
 }
 
-async function liquidateVault(vaultId, nonce) {
+async function liquidateVault(vaultId, tokenName, stacking) {
+  let nonce = await utils.getNonce(CONTRACT_ADDRESS);
+
+  let reserve = 'arkadiko-sip10-reserve-v1-1';
+  if (tokenName == 'STX' && !stacking) {
+    reserve = 'arkadiko-stx-reserve-v1-1';
+  }
+
+  let token = 'xstx-token';
+  if (tokenName == 'xBTC') {
+    token = 'tokensoft-token';
+  }
+
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-liquidator-v2-1",
-    functionName: "notify-risky-vault",
+    contractName: 'arkadiko-auction-engine-v4-1',
+    functionName: 'start-auction',
     functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-freddie-v1-1'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-auction-engine-v2-1'),
       tx.uintCV(vaultId),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-freddie-v1-1'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v1-1'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v1-1'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, token),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, reserve),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-pool-v1-1'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-rewards-v1-1'),
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
-    nonce: new BN(nonce),
     network
   };
 
@@ -85,22 +101,20 @@ async function liquidateVault(vaultId, nonce) {
 }
 
 async function iterateAndCheck() {
-  let nonce = await utils.getNonce(CONTRACT_ADDRESS);
   const lastId = await getLastVaultId();
   console.log('Last Vault ID is', lastId, ', iterating vaults');
-  let vault;
+
   const vaultIds = Array.from(Array(lastId).keys());
-  for (let index = 85; index <= lastId; index++) {
-    vault = await getVaultById(index);
+  for (let index = lastId; index > 0; index--) {
+    let vault = await getVaultById(index);
     if (!vault['is-liquidated']['value']) {
       // console.log(vault);
       console.log('Querying vault', index);
       const collRatio = await getCollateralizationRatio(index);
       const liqRatio = await getLiquidationRatio(vault['collateral-type']['value']);
       if (collRatio < liqRatio) {
-        console.log('Vault', index, 'is in danger... need to liquidate - collateralization ratio:', collRatio, ', liquidation ratio:', liqRatio);
-        await liquidateVault(index, nonce);
-        nonce += 1;
+        console.log('Vault', index, 'needs to be liquidated - collateralization ratio:', collRatio, ', liquidation ratio:', liqRatio);
+        await liquidateVault(index, vault['collateral-token'].value, !vault['revoked-stacking'].value);
       }
     }
     await new Promise(r => setTimeout(r, 2000));

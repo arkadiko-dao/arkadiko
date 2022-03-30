@@ -64,6 +64,8 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         {tokenIsStx ? ( 
           <span className="font-medium text-gray-900 dark:text-zinc-100">STX</span>
+        ) : token.split('.')[1] == "xstx-token" ? (
+          <span className="font-medium text-gray-900 dark:text-zinc-100">xSTX</span>
         ) : (
           <span className="font-medium text-gray-900 dark:text-zinc-100">{token.split('.')[1]}</span>
         )}
