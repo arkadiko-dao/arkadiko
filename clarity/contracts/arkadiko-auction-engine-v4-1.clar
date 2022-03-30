@@ -165,6 +165,16 @@
     )
       (asserts! (>= liquidation-ratio collateral-to-debt-ratio) (err ERR-NO-LIQUIDATION-REQUIRED))
 
+      ;; When freddie liquidates, xSTX tokens are minted in arkadiko-sip10-reserve-v1-1
+      ;; So we need to transfer tokens to the new reserve
+      (if (and (is-eq "STX" (get collateral-token vault)) (> (get stacked-tokens vault) u0))
+        (begin
+          (try! (contract-call? .arkadiko-dao burn-token .xstx-token (get ustx-amount amounts) .arkadiko-sip10-reserve-v1-1))
+          (try! (contract-call? .arkadiko-dao mint-token .xstx-token (get ustx-amount amounts) (contract-of reserve)))
+        )
+        true
+      )
+
       ;; Add auction
       (map-set auctions { id: auction-id } auction)
       (var-set last-auction-id auction-id)
