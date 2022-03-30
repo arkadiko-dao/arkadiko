@@ -516,7 +516,7 @@ Clarinet.test({ name: "auction engine: liquidate xBTC vault, multiple wallets",
     let result = oracleManager.updatePrice("xBTC", 40000);
 
     // Create vault
-    result = vaultManager.createVault(deployer, "XBTC-A", 0.1, 1500, false, false, "arkadiko-sip10-reserve-v1-1", "tokensoft-token");
+    result = vaultManager.createVault(deployer, "XBTC-A", 0.1, 1500, false, false, "arkadiko-sip10-reserve-v2-1", "tokensoft-token");
     result.expectOk().expectUintWithDecimals(1500);
 
     // Upate price
@@ -535,7 +535,7 @@ Clarinet.test({ name: "auction engine: liquidate xBTC vault, multiple wallets",
     call.result.expectOk().expectUintWithDecimals(8000);
 
     // Start auction
-    result = vaultAuction.startAuction(deployer, 1, "tokensoft-token", "arkadiko-sip10-reserve-v1-1");
+    result = vaultAuction.startAuction(deployer, 1, "tokensoft-token", "arkadiko-sip10-reserve-v2-1");
     result.expectOk().expectBool(true);
 
     // Auction closed
@@ -703,7 +703,7 @@ Clarinet.test({ name: "auction engine: can not start auction with wrong token or
     result.expectOk().expectUintWithDecimals(10000);
 
     // Wrong token
-    result = vaultAuction.startAuction(deployer, 1, "arkadiko-token", "arkadiko-sip10-reserve-v1-1");
+    result = vaultAuction.startAuction(deployer, 1, "arkadiko-token", "arkadiko-sip10-reserve-v2-1");
     result.expectErr().expectUint(31005);
 
     // Wrong reserve (vault is stacking so should be sip10-reserve)
@@ -711,7 +711,7 @@ Clarinet.test({ name: "auction engine: can not start auction with wrong token or
     result.expectErr().expectUint(118);
 
     // Wrong reserve (vault not stacking so should be stx-reserve)
-    result = vaultAuction.startAuction(deployer, 2, "xstx-token", "arkadiko-sip10-reserve-v1-1");
+    result = vaultAuction.startAuction(deployer, 2, "xstx-token", "arkadiko-sip10-reserve-v2-1");
     result.expectErr().expectUint(98);
   }
 });
@@ -752,7 +752,7 @@ Clarinet.test({ name: "auction engine: can not burn USDA with wrong token or res
     result.expectOk().expectUintWithDecimals(1000);
 
     // Start auctions
-    result = vaultAuction.startAuction(deployer, 1, "xstx-token", "arkadiko-sip10-reserve-v1-1");
+    result = vaultAuction.startAuction(deployer, 1, "xstx-token", "arkadiko-sip10-reserve-v2-1");
     result.expectOk().expectBool(true);
     result = vaultAuction.startAuction(deployer, 2, "xstx-token", "arkadiko-stx-reserve-v1-1");
     result.expectOk().expectBool(true);
@@ -766,7 +766,7 @@ Clarinet.test({ name: "auction engine: can not burn USDA with wrong token or res
     result.expectOk().expectUintWithDecimals(10000);
 
     // Wrong token
-    result = vaultAuction.burnUsda(deployer, 1, "arkadiko-token", "arkadiko-sip10-reserve-v1-1");
+    result = vaultAuction.burnUsda(deployer, 1, "arkadiko-token", "arkadiko-sip10-reserve-v2-1");
     result.expectErr().expectUint(31005);
 
     // Wrong reserve (vault is stacking so should be sip10-reserve)
@@ -774,7 +774,7 @@ Clarinet.test({ name: "auction engine: can not burn USDA with wrong token or res
     result.expectErr().expectUint(118);
 
     // Wrong reserve (vault not stacking so should be stx-reserve)
-    result = vaultAuction.burnUsda(deployer, 2, "xstx-token", "arkadiko-sip10-reserve-v1-1");
+    result = vaultAuction.burnUsda(deployer, 2, "xstx-token", "arkadiko-sip10-reserve-v2-1");
     result.expectErr().expectUint(98);
   }
 });

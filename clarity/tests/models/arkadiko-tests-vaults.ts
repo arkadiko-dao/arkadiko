@@ -230,7 +230,7 @@ class VaultManager {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "withdraw-leftover-collateral", [
         types.uint(1),
-        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v2-1')),
         types.principal(Utils.qualifiedName(token)),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1'))
       ], user.address)
@@ -606,7 +606,7 @@ class VaultAuctionV4 {
     );
   }
 
-  startAuction(user: Account, vaultId: number, token: string = 'xstx-token', reserve: string = 'arkadiko-sip10-reserve-v1-1') {
+  startAuction(user: Account, vaultId: number, token: string = 'xstx-token', reserve: string = 'arkadiko-sip10-reserve-v2-1') {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v4-1", "start-auction", [
         types.uint(vaultId),
@@ -622,7 +622,7 @@ class VaultAuctionV4 {
     return block.receipts[0].result;
   }
 
-  burnUsda(user: Account, auctionId: number, token: string = 'xstx-token', reserve: string = 'arkadiko-sip10-reserve-v1-1') {
+  burnUsda(user: Account, auctionId: number, token: string = 'xstx-token', reserve: string = 'arkadiko-sip10-reserve-v2-1') {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v4-1", "burn-usda", [
         types.uint(auctionId),

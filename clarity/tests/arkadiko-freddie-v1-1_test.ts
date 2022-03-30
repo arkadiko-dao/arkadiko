@@ -77,7 +77,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(50000);
 
     // 1 xBTC, 10K USDA
-    result = vaultManager.createVault(deployer, "XBTC-A", 100, 10000, false, false, 'arkadiko-sip10-reserve-v1-1', 'tokensoft-token');
+    result = vaultManager.createVault(deployer, "XBTC-A", 100, 10000, false, false, 'arkadiko-sip10-reserve-v2-1', 'tokensoft-token');
     result.expectOk().expectUintWithDecimals(10000);
 
     let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
@@ -86,11 +86,11 @@ Clarinet.test({
     // 1 xBTC, 20K USDA
     // collateral-to-debt-ratio = 250
     // 50.000 / 2.5 = 20.000
-    result = vaultManager.createVault(deployer, "XBTC-A", 100, 20000, false, false, 'arkadiko-sip10-reserve-v1-1', 'tokensoft-token'); 
+    result = vaultManager.createVault(deployer, "XBTC-A", 100, 20000, false, false, 'arkadiko-sip10-reserve-v2-1', 'tokensoft-token'); 
     result.expectOk().expectUintWithDecimals(20000);
 
     // Can not mint 20.001 USDA
-    result = vaultManager.createVault(deployer, "XBTC-A", 100, 20001, false, false, 'arkadiko-sip10-reserve-v1-1', 'tokensoft-token'); 
+    result = vaultManager.createVault(deployer, "XBTC-A", 100, 20001, false, false, 'arkadiko-sip10-reserve-v2-1', 'tokensoft-token'); 
     result.expectErr().expectUint(49);
   }
 });
@@ -254,10 +254,10 @@ Clarinet.test({
     result = oracleManager.updatePrice("DIKO", 2);
     result.expectOk().expectUintWithDecimals(2);
 
-    result = vaultManager.createVault(deployer, 'STX-A', 5, 1, true, true, 'arkadiko-sip10-reserve-v1-1', 'arkadiko-token')
+    result = vaultManager.createVault(deployer, 'STX-A', 5, 1, true, true, 'arkadiko-sip10-reserve-v2-1', 'arkadiko-token')
     result.expectErr().expectUint(98); // wrong token error
 
-    result = vaultManager.createVault(deployer, 'WRONG-A', 5, 1, true, true, 'arkadiko-sip10-reserve-v1-1', 'arkadiko-token')
+    result = vaultManager.createVault(deployer, 'WRONG-A', 5, 1, true, true, 'arkadiko-sip10-reserve-v2-1', 'arkadiko-token')
     result.expectErr().expectUint(417); // wrong token error
 
     result = vaultManager.createVault(deployer, 'WRONG-A', 5, 1, true, true, 'arkadiko-stx-reserve-v1-1', 'arkadiko-token')
@@ -282,7 +282,7 @@ Clarinet.test({
     result.expectOk().expectUint(1);
 
     // Should not be able to deposit in STX reserve
-    result = vaultManager.deposit(deployer, 1, 10, 'arkadiko-sip10-reserve-v1-1', 'arkadiko-token');
+    result = vaultManager.deposit(deployer, 1, 10, 'arkadiko-sip10-reserve-v2-1', 'arkadiko-token');
     result.expectErr().expectUint(45);
 
   },
