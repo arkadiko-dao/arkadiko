@@ -18,6 +18,12 @@
   )
 )
 
+(define-read-only (get-rewards-per-cycle)
+  (var-get rewards-per-cycle)
+)
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; public methods (callable by ALEX contract or Arkadiko DAO) ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -38,7 +44,6 @@
     (ok amount)
   )
 )
-
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
