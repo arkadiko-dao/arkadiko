@@ -127,6 +127,7 @@ const run = async () => {
       codeBody: source.toString('utf8'),
       senderKey: privateKey,
       nonce: new BN(account.nonce + index, 10),
+      fee: new BN(100000, 10),
       network,
     });
 
