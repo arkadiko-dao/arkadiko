@@ -332,7 +332,7 @@ depends_on = ["wrapped-lydian-token"]
 path = "contracts/lydian-airdrop-snapshot-v1-1.clar"
 
 [contracts.arkadiko-alex-dual-yield-v1-1]
-depends_on = ["arkadiko-dao", "arkadiko-diko-guardian-v1-1"]
+depends_on = ["arkadiko-dao"]
 path = "contracts/arkadiko-alex-dual-yield-v1-1.clar"
 
 # Tokensoft xBTC
