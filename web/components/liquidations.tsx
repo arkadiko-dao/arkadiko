@@ -582,7 +582,7 @@ export const Liquidations: React.FC = () => {
                             <Tooltip
                               className="z-10"
                               shouldWrapChildren={true}
-                              label={`...`}
+                              label={`Deposited USDA will be locked.`}
                             >
                               <InformationCircleIcon
                                 className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
@@ -634,12 +634,12 @@ export const Liquidations: React.FC = () => {
                       
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                         <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
-                          Your tokens locked
+                          Your tokens ulocked
                           <div className="ml-2">
                             <Tooltip
                               className="z-10"
                               shouldWrapChildren={true}
-                              label={`...`}
+                              label={`Your deposited USDA will unlock at this block.`}
                             >
                               <InformationCircleIcon
                                 className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
