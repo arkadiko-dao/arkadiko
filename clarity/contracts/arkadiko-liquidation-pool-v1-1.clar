@@ -70,6 +70,11 @@
 ;; Getters
 ;; ---------------------------------------------------------
 
+;; @desc get current lockup time
+(define-read-only (get-lockup-blocks)
+  (ok (var-get lockup-blocks))
+)
+
 ;; @desc get current total fragments
 (define-read-only (get-total-fragments)
   (ok (var-get total-fragments))

@@ -25,7 +25,7 @@ import { Tooltip } from '@blockstack/ui';
 import { Tab } from '@headlessui/react';
 import { InformationCircleIcon, MinusCircleIcon, PlusCircleIcon } from '@heroicons/react/solid';
 import { classNames } from '@common/class-names';
-
+import { Alert } from './ui/alert';
 
 export const Liquidations: React.FC = () => {
   const { doContractCall } = useConnect();
@@ -46,6 +46,8 @@ export const Liquidations: React.FC = () => {
   const [buttonStakeDisabled, setButtonStakeDisabled] = useState(true);
   const [buttonAddDikoRewardsDisabled, setButtonAddDikoRewardsDisabled] = useState(true);
   const [redeemableStx, setRedeemableStx] = useState(0);
+  const [lockupBlocks, setLockupBlocks] = useState(0);
+  const [stakerLockupBlocks, setStakerLockupBlocks] = useState(0);
 
   const onInputStakeChange = (event: any) => {
     const value = event.target.value;
@@ -235,6 +237,34 @@ export const Liquidations: React.FC = () => {
       return result;
     };
 
+    const getLockup = async () => {
+      const stxRedeemable = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-liquidation-pool-v1-1',
+        functionName: 'get-lockup-blocks',
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const result = cvToJSON(stxRedeemable).value.value;
+      return result;
+    };
+
+    const getStakerLockup = async () => {
+      const call = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-liquidation-pool-v1-1',
+        functionName: 'get-staker-lockup',
+        functionArgs: [
+          standardPrincipalCV(stxAddress || ''),
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const result = cvToJSON(call).value;
+      return result["start-block"].value;
+    };
+
     const getRewardsData = async () => {
 
       const call = await callReadOnlyFunction({
@@ -307,7 +337,9 @@ export const Liquidations: React.FC = () => {
         dikoEpochRewardsToAdd,
         currentBlockHeight,
         rewards,
-        stxRedeemable
+        stxRedeemable,
+        stakerLockup,
+        lockupBlocks
       ] = await Promise.all([
         getTotalPooled(),
         getUserPooled(),
@@ -315,7 +347,9 @@ export const Liquidations: React.FC = () => {
         getDikoEpochRewardsToAdd(),
         getCurrentBlockHeight(),
         getRewardsData(),
-        getStxRedeemable()
+        getStxRedeemable(),
+        getStakerLockup(),
+        getLockup()
       ]);
 
       const rewardItems = rewards.map((reward: object) => (
@@ -334,9 +368,16 @@ export const Liquidations: React.FC = () => {
       setDikoRewardsToAdd(dikoEpochRewardsToAdd);
       setCurrentBlockHeight(currentBlockHeight);
 
+      setButtonAddDikoRewardsDisabled(currentBlockHeight < dikoEpochEnd)
       setButtonStakeDisabled(false);
       setButtonUnstakeDisabled(userPooled == 0)
-      setButtonAddDikoRewardsDisabled(dikoEpochRewardsToAdd == 0);
+
+      if (userPooled == 0) {
+        setStakerLockupBlocks(0);
+      } else {
+        setStakerLockupBlocks(parseInt(stakerLockup) + parseInt(lockupBlocks));
+      }
+      setLockupBlocks(lockupBlocks);
 
       setRedeemableStx(stxRedeemable);
 
@@ -511,7 +552,7 @@ export const Liquidations: React.FC = () => {
                             <Tooltip
                               className="z-10"
                               shouldWrapChildren={true}
-                              label={`...`}
+                              label={`Amount of USDA that is currently in the pool, ready to be used for liquidations.`}
                             >
                               <InformationCircleIcon
                                 className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
@@ -533,9 +574,10 @@ export const Liquidations: React.FC = () => {
                           )}
                         </dt>
                       </div>
+
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                         <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
-                          Your tokens in pool
+                          Token lockup
                           <div className="ml-2">
                             <Tooltip
                               className="z-10"
@@ -554,10 +596,64 @@ export const Liquidations: React.FC = () => {
                             <Placeholder className="py-2" width={Placeholder.width.FULL} />
                           ) : (
                             <>
+                              {lockupBlocks} blocks
+                            </>
+                          )}
+                        </dt>
+                      </div>
+
+                      <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
+                          Your tokens in pool
+                          <div className="ml-2">
+                            <Tooltip
+                              className="z-10"
+                              shouldWrapChildren={true}
+                              label={`The amount of USDA you still have in the pool. Will decrease if USDA is used in liquidations`}
+                            >
+                              <InformationCircleIcon
+                                className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
+                                aria-hidden="true"
+                              />
+                            </Tooltip>
+                          </div>
+                        </dt>
+                        <dt className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
+                          {isLoading ? (
+                            <Placeholder className="py-2" width={Placeholder.width.FULL} />
+                          ) : (
+                            <>
                               {microToReadable(userPooled).toLocaleString(undefined, {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 6,
                               })} USDA
+                            </>
+                          )}
+                        </dt>
+                      </div>
+                      
+                      <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
+                          Your tokens locked
+                          <div className="ml-2">
+                            <Tooltip
+                              className="z-10"
+                              shouldWrapChildren={true}
+                              label={`...`}
+                            >
+                              <InformationCircleIcon
+                                className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
+                                aria-hidden="true"
+                              />
+                            </Tooltip>
+                          </div>
+                        </dt>
+                        <dt className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
+                          {isLoading ? (
+                            <Placeholder className="py-2" width={Placeholder.width.FULL} />
+                          ) : (
+                            <>
+                              block {stakerLockupBlocks}
                             </>
                           )}
                         </dt>
@@ -628,6 +724,14 @@ export const Liquidations: React.FC = () => {
                             <Tab.Panel>
                               {isLoading ? (
                                 <Placeholder className="py-2" width={Placeholder.width.FULL} />
+                              ) : currentBlockHeight < stakerLockupBlocks ? (
+                                <div className="">
+                                  <Alert type={Alert.type.WARNING} title="Locked">
+                                    <p>
+                                      Your USDA is locked until block #{stakerLockupBlocks}
+                                    </p>
+                                  </Alert>
+                                </div>
                               ) : (
                                 <>
                                   <InputAmount
@@ -648,6 +752,8 @@ export const Liquidations: React.FC = () => {
                                   >
                                     Remove USDA from pool
                                   </button>
+
+
                                 </>
                               )}
                             </Tab.Panel>
