@@ -183,14 +183,19 @@ Clarinet.test({
     // Advance to next epoch
     chain.mineEmptyBlock(720);
 
-    // Add rewards - epoch ended
-    result = liquidationRewardsDiko.addRewards();
-    result.expectOk().expectUintWithDecimals(4.510073);
+    // Total 626 DIKO per block
+    let call:any = chain.callReadOnlyFn("arkadiko-diko-guardian-v1-1", "get-staking-rewards-per-block", [], wallet_1.address);
+    call.result.expectUintWithDecimals(626.399062)
 
+    // Add rewards - epoch ended
+    // 626.399 DIKO * 720 blocks * 10% = 45.100
+    // 626399062 * 720 * 1000000 / 100000
+    result = liquidationRewardsDiko.addRewards();
+    result.expectOk().expectUintWithDecimals(45100.732464);
     // Reward data
-    let call:any = await liquidationRewards.getRewardData(0);
+    call = await liquidationRewards.getRewardData(0);
     call.result.expectTuple()["share-block"].expectUint(0);
-    call.result.expectTuple()["total-amount"].expectUintWithDecimals(4.510073);
+    call.result.expectTuple()["total-amount"].expectUintWithDecimals(45100.732464);
 
     // No rewards yet as nothing staked when epoch started
     call = await liquidationRewards.getRewardsOf(deployer.address, 0);
@@ -203,19 +208,19 @@ Clarinet.test({
 
     // Add rewards - epoch ended
     result = liquidationRewardsDiko.addRewards();
-    result.expectOk().expectUintWithDecimals(4.510073);
+    result.expectOk().expectUintWithDecimals(45100.732464);
 
     // Rewards 1
     call = await liquidationRewards.getRewardsOf(deployer.address, 1);
-    call.result.expectOk().expectUintWithDecimals(1.503357);
+    call.result.expectOk().expectUintWithDecimals(15033.575984);
     call = await liquidationRewards.getRewardsOf(wallet_1.address, 1);
-    call.result.expectOk().expectUintWithDecimals(3.006715);
+    call.result.expectOk().expectUintWithDecimals(30067.151969);
 
     // Claim reward
     result = liquidationRewards.claimRewards(deployer, 1, "arkadiko-token");
-    result.expectOk().expectUintWithDecimals(1.503357);
+    result.expectOk().expectUintWithDecimals(15033.575984);
     result = liquidationRewards.claimRewards(wallet_1, 1, "arkadiko-token");
-    result.expectOk().expectUintWithDecimals(3.006715);
+    result.expectOk().expectUintWithDecimals(30067.151969);
 
     // No rewards left
     call = await liquidationRewards.getRewardsOf(deployer.address, 1);
@@ -267,8 +272,9 @@ Clarinet.test({
     chain.mineEmptyBlock(100);
 
     // Add rewards - epoch ended
+    // 626399062 DIKO * 100 blocks * 200000 / 1000000
     result = liquidationRewardsDiko.addRewards();
-    result.expectOk().expectUintWithDecimals(0.313199);
+    result.expectOk().expectUintWithDecimals(12527.981240);
 
     // No rewards yet as nothing staked when epoch started
     call = await liquidationRewards.getRewardsOf(deployer.address, 0);
@@ -279,11 +285,11 @@ Clarinet.test({
 
     // Add rewards - epoch ended
     result = liquidationRewardsDiko.addRewards();
-    result.expectOk().expectUintWithDecimals(0.313199);
+    result.expectOk().expectUintWithDecimals(12527.981240);
 
     // Rewards 1
     call = await liquidationRewards.getRewardsOf(deployer.address, 1);
-    call.result.expectOk().expectUintWithDecimals(0.313199);
+    call.result.expectOk().expectUintWithDecimals(12527.981240);
 
     // Reward data
     call = await liquidationRewardsDiko.getEpochInfo();
@@ -393,12 +399,12 @@ Clarinet.test({
 
     // Add rewards
     result = liquidationRewardsDiko.addRewards();
-    result.expectOk().expectUintWithDecimals(4.423341);
+    result.expectOk().expectUintWithDecimals(44233.410744);
 
     // Reward data
     let call:any = await liquidationRewards.getRewardData(0);
     call.result.expectTuple()["share-block"].expectUint(0);
-    call.result.expectTuple()["total-amount"].expectUintWithDecimals(4.423341);
+    call.result.expectTuple()["total-amount"].expectUintWithDecimals(44233.410744);
   }
 });
 

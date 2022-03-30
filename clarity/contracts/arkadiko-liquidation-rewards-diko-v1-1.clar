@@ -57,7 +57,7 @@
 (define-read-only (get-rewards-to-add)
   (let (
     (total-block-rewards (contract-call? .arkadiko-diko-guardian-v1-1 get-staking-rewards-per-block))
-    (rewards-to-add (/ (* total-block-rewards (var-get blocks-per-epoch)) (var-get epoch-rate)))
+    (rewards-to-add (/ (* total-block-rewards (var-get blocks-per-epoch) (var-get epoch-rate)) u1000000))
   )
     rewards-to-add
   )
