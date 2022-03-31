@@ -13,15 +13,15 @@ async function transact() {
     functionName: 'propose',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
-      tx.uintCV(48225),
+      tx.uintCV(54390),
       tx.uintCV(720),
-      tx.stringUtf8CV('Add wLDN/USDA Pair'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/420'),
+      tx.stringUtf8CV('AIP6 Emissions Changes'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/473'),
       tx.listCV([
         tx.tupleCV({
-          'name': tx.stringAsciiCV("add-wldn"),
+          'name': tx.stringAsciiCV("arkadiko-governance-new-yields"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-add-wldn"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-governance-new-yields"),
           'can-mint': tx.falseCV(),
           'can-burn': tx.falseCV()
         }),
