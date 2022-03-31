@@ -69,8 +69,10 @@ async function liquidateVault(vaultId, tokenName, stacking, nonce) {
   }
 
   let token = 'xstx-token';
+  let tokenAddress = CONTRACT_ADDRESS; 
   if (tokenName == 'xBTC') {
-    token = 'tokensoft-token';
+    token = 'Wrapped-Bitcoin';
+    tokenAddress = 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR';
   }
 
   const txOptions = {
@@ -82,7 +84,7 @@ async function liquidateVault(vaultId, tokenName, stacking, nonce) {
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-freddie-v1-1'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v1-1'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v1-1'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, token),
+      tx.contractPrincipalCV(tokenAddress, token),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, reserve),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-pool-v1-1'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-rewards-v1-1'),
