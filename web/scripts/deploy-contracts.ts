@@ -35,6 +35,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-stx-reserve-v1-1' },
   { name: 'xstx-token' },
   { name: 'arkadiko-sip10-reserve-v1-1' },
+  { name: 'arkadiko-sip10-reserve-v2-1' },
   { name: 'arkadiko-diko-guardian-v1-1' },
   { name: 'arkadiko-vault-data-v1-1' },
   { name: 'arkadiko-vault-rewards-v1-1' },

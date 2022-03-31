@@ -63,7 +63,7 @@ async function getLiquidationRatio(collateralType) {
 }
 
 async function liquidateVault(vaultId, tokenName, stacking, nonce) {
-  let reserve = 'arkadiko-sip10-reserve-v1-1';
+  let reserve = 'arkadiko-sip10-reserve-v2-1';
   if (tokenName == 'STX' && !stacking) {
     reserve = 'arkadiko-stx-reserve-v1-1';
   }
@@ -89,7 +89,7 @@ async function liquidateVault(vaultId, tokenName, stacking, nonce) {
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
-    nonce: nonce,
+    nonce: new BN(nonce),
     network
   };
 
