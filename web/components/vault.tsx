@@ -81,11 +81,7 @@ export const Vault: React.FC<VaultProps> = ({
       setStabilityFee(fee.value.value);
     };
 
-    if (auctionEnded) {
-      setStabilityFee(0);
-    } else {
-      fetchFees();
-    }
+    fetchFees();
   }, []);
 
   const debtBackgroundClass = (ratio: number) => {
