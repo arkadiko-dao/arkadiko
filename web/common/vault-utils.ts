@@ -59,7 +59,7 @@ export const tokenTraits: TokenTraits = {
   },
   stx: {
     address: contractAddress,
-    name: 'arkadiko-token',
+    name: 'xstx-token',
     swap: 'wrapped-stx-token',
   },
   xstx: {
