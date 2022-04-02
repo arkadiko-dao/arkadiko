@@ -227,6 +227,20 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(0);
     call = await liquidationRewards.getRewardsOf(deployer.address, 1);
     call.result.expectOk().expectUintWithDecimals(0);
+
+    // Advance to next epoch
+    chain.mineEmptyBlock(720);
+
+    // Add rewards - epoch ended
+    result = liquidationRewardsDiko.addRewards();
+    result.expectOk().expectUintWithDecimals(44233.410744);
+
+    // Rewards 1
+    call = await liquidationRewards.getRewardsOf(deployer.address, 2);
+    call.result.expectOk().expectUintWithDecimals(14744.468773);
+    call = await liquidationRewards.getRewardsOf(wallet_1.address, 2);
+    call.result.expectOk().expectUintWithDecimals(29488.937547);
+    
   }
 });
 
