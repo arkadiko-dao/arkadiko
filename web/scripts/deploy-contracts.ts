@@ -69,7 +69,6 @@ const contracts: Contract[] = [
   { name: 'arkadiko-claim-yield-v1-1' },
   { name: 'arkadiko-claim-yield-v2-1' },
   { name: 'arkadiko-stake-lp-rewards' },
-  { name: 'arkadiko-liquidation-fund-v1-1' },
 
   { name: 'arkadiko-liquidation-pool-trait-v1' },
   { name: 'arkadiko-liquidation-rewards-trait-v1' },

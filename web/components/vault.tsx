@@ -81,11 +81,7 @@ export const Vault: React.FC<VaultProps> = ({
       setStabilityFee(fee.value.value);
     };
 
-    if (auctionEnded) {
-      setStabilityFee(0);
-    } else {
-      fetchFees();
-    }
+    fetchFees();
   }, []);
 
   const debtBackgroundClass = (ratio: number) => {
@@ -179,7 +175,7 @@ export const Vault: React.FC<VaultProps> = ({
             <span className="text-gray-900 dark:text-zinc-100">
               {isLiquidated ? (
                 auctionEnded ? (
-                  leftoverCollateral > 0 && stackedTokens === 0 ? (
+                  Number(leftoverCollateral) > 0 && Number(stackedTokens) === 0 ? (
                     <button
                       type="button"
                       className="text-indigo-600 hover:text-indigo-900"
