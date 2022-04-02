@@ -44,7 +44,6 @@ export const Liquidations: React.FC = () => {
   const [dikoRewardsToAdd, setDikoRewardsToAdd] = useState(0);
   const [buttonUnstakeDisabled, setButtonUnstakeDisabled] = useState(true);
   const [buttonStakeDisabled, setButtonStakeDisabled] = useState(true);
-  const [buttonAddDikoRewardsDisabled, setButtonAddDikoRewardsDisabled] = useState(true);
   const [redeemableStx, setRedeemableStx] = useState(0);
   const [lockupBlocks, setLockupBlocks] = useState(0);
   const [stakerLockupBlocks, setStakerLockupBlocks] = useState(0);
@@ -118,28 +117,6 @@ export const Liquidations: React.FC = () => {
       functionName: 'unstake',
       functionArgs: [
         uintCV(Number((parseFloat(unstakeAmount) * 1000000).toFixed(0)))
-      ],
-      postConditionMode: 0x01,
-      onFinish: data => {
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-      },
-      anchorMode: AnchorMode.Any,
-    });
-  };
-
-  const addDikoRewards = async () => {
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-liquidation-rewards-diko-v1-1',
-      functionName: 'add-rewards',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-liquidation-rewards-v1-1'),
       ],
       postConditionMode: 0x01,
       onFinish: data => {
@@ -368,7 +345,6 @@ export const Liquidations: React.FC = () => {
       setDikoRewardsToAdd(dikoEpochRewardsToAdd);
       setCurrentBlockHeight(currentBlockHeight);
 
-      setButtonAddDikoRewardsDisabled(currentBlockHeight < dikoEpochEnd)
       setButtonStakeDisabled(false);
       setButtonUnstakeDisabled(userPooled == 0)
 
@@ -505,7 +481,7 @@ export const Liquidations: React.FC = () => {
                   </div>
 
                   <div className="p-4 overflow-hidden border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
-                    <p className="text-xs font-semibold text-indigo-600 uppercase">Rewards to add</p>
+                    <p className="text-xs font-semibold text-indigo-600 uppercase">Rewards to distribute</p>
                     {isLoading ? (
                       <>
                         <Placeholder className="py-2" width={Placeholder.width.THIRD} />
@@ -519,14 +495,6 @@ export const Liquidations: React.FC = () => {
                             maximumFractionDigits: 6,
                           })} DIKO
                         </p>
-                        <button
-                          type="button"
-                          className="inline-flex justify-center px-4 py-2 mt-4 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
-                          disabled={buttonAddDikoRewardsDisabled}
-                          onClick={addDikoRewards}
-                        >
-                          Add DIKO rewards to pool
-                        </button>
                       </>
                     )}
                   </div>
