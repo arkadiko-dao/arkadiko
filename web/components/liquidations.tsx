@@ -42,6 +42,7 @@ export const Liquidations: React.FC = () => {
   const [currentBlockHeight, setCurrentBlockHeight] = useState(0);
   const [dikoEndBlock, setDikoEndBlock] = useState(0);
   const [dikoRewardsToAdd, setDikoRewardsToAdd] = useState(0);
+  const [dikoApr, setDikoApr] = useState(0);
   const [buttonUnstakeDisabled, setButtonUnstakeDisabled] = useState(true);
   const [buttonStakeDisabled, setButtonStakeDisabled] = useState(true);
   const [redeemableStx, setRedeemableStx] = useState(0);
@@ -138,6 +139,25 @@ export const Liquidations: React.FC = () => {
       }
     }
 
+    // TODO: Replace by API price
+    const getDikoPrice = async () => {
+      const call = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-swap-v2-1',
+        functionName: 'get-pair-details',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-token'),
+          contractPrincipalCV(contractAddress, 'usda-token'),
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const resultPairDetails = cvToJSON(call).value.value.value;
+      const balanceX = resultPairDetails["balance-x"].value;
+      const balanceY = resultPairDetails["balance-y"].value;
+      return balanceY / balanceX;
+    };
+
     const getTotalPooled = async () => {
       const call = await callReadOnlyFunction({
         contractAddress,
@@ -175,11 +195,11 @@ export const Liquidations: React.FC = () => {
       return data['stacks_tip_height'];
     };
 
-    const getDikoEpochEnd = async () => {
+    const getEpochInfo = async () => {
       const call = await callReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-liquidation-rewards-diko-v1-1',
-        functionName: 'get-end-epoch-block',
+        functionName: 'get-epoch-info',
         functionArgs: [],
         senderAddress: stxAddress || '',
         network: network,
@@ -309,23 +329,25 @@ export const Liquidations: React.FC = () => {
       const [
         totalPooled,
         userPooled,
-        dikoEpochEnd,
+        epochInfo,
         dikoEpochRewardsToAdd,
         currentBlockHeight,
         rewards,
         stxRedeemable,
         stakerLockup,
-        lockupBlocks
+        lockupBlocks,
+        dikoPrice
       ] = await Promise.all([
         getTotalPooled(),
         getUserPooled(),
-        getDikoEpochEnd(),
+        getEpochInfo(),
         getDikoEpochRewardsToAdd(),
         getCurrentBlockHeight(),
         getRewardsData(),
         getStxRedeemable(),
         getStakerLockup(),
-        getLockup()
+        getLockup(),
+        getDikoPrice()
       ]);
 
       const rewardItems = rewards.map((reward: object) => (
@@ -341,7 +363,7 @@ export const Liquidations: React.FC = () => {
 
       setTotalPooled(totalPooled);
       setUserPooled(userPooled);
-      setDikoEndBlock(dikoEpochEnd);
+      setDikoEndBlock(epochInfo["end-block"].value);
       setDikoRewardsToAdd(dikoEpochRewardsToAdd);
       setCurrentBlockHeight(currentBlockHeight);
 
@@ -354,9 +376,16 @@ export const Liquidations: React.FC = () => {
         setStakerLockupBlocks(parseInt(stakerLockup) + parseInt(lockupBlocks));
       }
       setLockupBlocks(lockupBlocks);
-
       setRedeemableStx(stxRedeemable);
 
+      console.log("epochInfo: ", epochInfo);
+      console.log('diko price:', dikoPrice);
+
+      console.log('dikoEpochRewardsToAdd:', dikoEpochRewardsToAdd);
+      console.log('totalPooled:', totalPooled);
+
+      const dikoPerYear = (52560 / epochInfo["blocks"].value) * dikoEpochRewardsToAdd;
+      setDikoApr((dikoPerYear * dikoPrice) / totalPooled * 100.0);
       setIsLoading(false);
     };
 
@@ -459,7 +488,7 @@ export const Liquidations: React.FC = () => {
                 </div>
               </header>
               <div className="mt-4">
-                <div className="grid grid-cols-1 gap-5 mt-4 sm:grid-cols-3">
+                <div className="grid grid-cols-1 gap-5 mt-4 sm:grid-cols-4">
                   <div className="p-4 overflow-hidden border border-gray-300 rounded-lg shadow-sm bg-zinc-200/30 dark:bg-gray-500 dark:border-gray-700">
                     <p className="text-xs font-semibold text-gray-500 uppercase dark:text-gray-300">Current Block Height</p>
                     {isLoading ? (
@@ -494,6 +523,25 @@ export const Liquidations: React.FC = () => {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 6,
                           })} DIKO
+                        </p>
+                      </>
+                    )}
+                  </div>
+                  
+                  <div className="p-4 overflow-hidden border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
+                    <p className="text-xs font-semibold text-indigo-600 uppercase">APR</p>
+                    {isLoading ? (
+                      <>
+                        <Placeholder className="py-2" width={Placeholder.width.THIRD} />
+                        <Placeholder className="py-2" width={Placeholder.width.FULL} />
+                      </>
+                    ) : (
+                      <>
+                        <p className="mt-1 text-xl font-semibold text-indigo-800">
+                          {dikoApr.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}%
                         </p>
                       </>
                     )}
