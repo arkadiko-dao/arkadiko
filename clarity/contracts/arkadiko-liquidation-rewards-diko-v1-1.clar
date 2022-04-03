@@ -8,7 +8,7 @@
 ;; Variables
 ;; TODO - SET FOR MAINNET
 ;; TODO - UPDATE REWARDS FOR STAKING POOLS
-(define-data-var end-epoch-block uint (+ block-height u720)) ;; 5 days after deploy
+(define-data-var end-epoch-block uint (+ block-height u1440)) ;; 10 days after deploy
 (define-data-var epoch-rate uint u100000) ;; 10%
 (define-data-var blocks-per-epoch uint u720) ;; 5 days
 (define-data-var shutdown-activated bool false)
