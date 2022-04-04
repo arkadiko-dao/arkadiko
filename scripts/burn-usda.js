@@ -10,8 +10,8 @@ async function transact() {
     contractAddress: CONTRACT_ADDRESS,
     contractName: 'arkadiko-usda-burner',
     functionName: 'burn-usda',
-    functionArgs: [tx.uintCV(150000000000)],
-    fee: new BN(10000, 10),
+    functionArgs: [tx.uintCV(10000000000)],
+    nonce: new BN(725, 10),
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network
