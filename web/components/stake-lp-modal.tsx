@@ -18,7 +18,6 @@ import { useConnect } from '@stacks/connect-react';
 import { Alert } from './ui/alert';
 
 export const StakeLpModal = ({
-  canStake,
   showStakeModal,
   setShowStakeModal,
   apy,
