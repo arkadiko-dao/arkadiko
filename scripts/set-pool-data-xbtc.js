@@ -12,7 +12,7 @@ const txOptions = {
   functionArgs: [
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-wstx-xbtc-v1-1'),
     tx.stringAsciiCV('wSTX-xBTC LP'),
-    tx.uintCV(0),
+    tx.uintCV(55200), // completely disable
     tx.uintCV(0),
     tx.uintCV(0)
   ],
