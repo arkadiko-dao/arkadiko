@@ -14,10 +14,8 @@ const txOptions = {
     tx.stringAsciiCV('wSTX-xBTC LP'),
     tx.uintCV(0),
     tx.uintCV(0),
-    tx.uintCV(50000)
+    tx.uintCV(0)
   ],
-  nonce: new BN(437, 10),
-  fee: new BN(500000, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network

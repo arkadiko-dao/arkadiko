@@ -12,6 +12,7 @@ interface StakeLpRowProps {}
 export const StakeLpRow: React.FC<StakeLpRowProps> = ({
   loadingApy,
   loadingData,
+  canStake,
   tokenListItemX,
   tokenListItemY,
   balance,
@@ -202,7 +203,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                 <button
                   type="button"
                   className="inline-flex items-center px-4 py-2 text-sm leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
-                  disabled={balance == 0}
+                  disabled={!canStake || balance == 0}
                   onClick={() => setShowStakeLpModal(true)}
                 >
                   Stake LP

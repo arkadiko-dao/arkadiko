@@ -135,8 +135,7 @@ export const Stake = () => {
       if (
         state.balance['dikousda'] > 0 ||
         state.balance['wstxusda'] > 0 ||
-        state.balance['wstxdiko'] > 0 ||
-        state.balance['wstxxbtc'] > 0
+        state.balance['wstxdiko'] > 0
       ) {
         setHasUnstakedTokens(true);
       }
@@ -383,7 +382,7 @@ export const Stake = () => {
         0,
         totalStxDikoStaked
       );
-      const stxDikoPoolRewards = totalStakingRewardsYear1 * 0.15;
+      const stxDikoPoolRewards = totalStakingRewardsYear1 * 0.082;
       const stxDikoApr =
         stxDikoPoolRewards / (dikoStxDiko['walletValue'] / Number(dikoPrice / 1000000));
       setStxDikoLpApy(Number((100 * stxDikoApr).toFixed(2)));
@@ -393,9 +392,8 @@ export const Stake = () => {
         0,
         totalStxXbtcStaked
       );
-      const stxXbtcPoolRewards = totalStakingRewardsYear1 * 0.05;
-      const stxXbtcApr =
-        stxXbtcPoolRewards / (dikoStxXbtc['walletValue'] / Number(dikoPrice / 1000000));
+      const stxXbtcPoolRewards = 0;
+      const stxXbtcApr = stxXbtcPoolRewards / (dikoStxXbtc['walletValue'] / Number(dikoPrice / 1000000));
       setStxXbtcLpApy(Number((100 * stxXbtcApr).toFixed(2)));
 
       const dikoXbtcUsda = await lpTokenValue(
@@ -1258,6 +1256,7 @@ export const Stake = () => {
                         <StakeLpRow
                           loadingApy={loadingApy}
                           loadingData={loadingData}
+                          canStake={true}
                           tokenListItemX={1}
                           tokenListItemY={0}
                           balance={state.balance['dikousda']}
@@ -1276,6 +1275,7 @@ export const Stake = () => {
                         <StakeLpRow
                           loadingApy={loadingApy}
                           loadingData={loadingData}
+                          canStake={true}
                           tokenListItemX={2}
                           tokenListItemY={0}
                           balance={state.balance['wstxusda']}
@@ -1294,6 +1294,7 @@ export const Stake = () => {
                         <StakeLpRow
                           loadingApy={loadingApy}
                           loadingData={loadingData}
+                          canStake={false}
                           tokenListItemX={2}
                           tokenListItemY={1}
                           balance={state.balance['wstxdiko']}
@@ -1312,6 +1313,7 @@ export const Stake = () => {
                         <StakeLpRow
                           loadingApy={loadingApy}
                           loadingData={loadingData}
+                          canStake={false}
                           tokenListItemX={2}
                           tokenListItemY={3}
                           balance={state.balance['wstxxbtc']}
@@ -1330,6 +1332,7 @@ export const Stake = () => {
                         <StakeLpRow
                           loadingApy={loadingApy}
                           loadingData={loadingData}
+                          canStake={true}
                           tokenListItemX={3}
                           tokenListItemY={0}
                           balance={state.balance['xbtcusda']}
