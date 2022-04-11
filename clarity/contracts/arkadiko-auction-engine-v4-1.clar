@@ -15,6 +15,7 @@
 (define-constant ERR-AUCTION-NOT-ALLOWED u31003)
 (define-constant ERR-NO-LIQUIDATION-REQUIRED u31004)
 (define-constant ERR-TOKEN-TYPE-MISMATCH u31005)
+(define-constant ERR-DISCOUNTED-PRICE u31006)
 
 ;; variables
 (define-data-var auction-engine-shutdown-activated bool false)
@@ -378,7 +379,7 @@
     (auction (get-auction-by-id auction-id))
     (debt-left (- (get debt-to-raise auction) (get total-debt-burned auction)))
     (collateral-left (- (get collateral-amount auction) (get total-collateral-sold auction)))
-    (collateral-price (unwrap! (get-collateral-discounted-price oracle auction-id)))
+    (collateral-price (unwrap! (get-collateral-discounted-price oracle auction-id) (err ERR-DISCOUNTED-PRICE)))
 
     (usda-for-collateral (/ (* collateral-left collateral-price) u1000000))
     (usda-withdrawable (unwrap-panic (contract-call? liquidation-pool max-withdrawable-usda)))
