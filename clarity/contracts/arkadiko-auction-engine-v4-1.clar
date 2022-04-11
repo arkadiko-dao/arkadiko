@@ -318,7 +318,7 @@
 (define-private (sell-diko (auction-id uint))
   (let (
     (auction (get-auction-by-id auction-id))
-    (all-collateral-sold (is-eq (get collateral-amount auction) (get total-collateral-sold auction)))
+    (all-collateral-sold (<= (get collateral-amount auction) (get total-collateral-sold auction)))
     (debt-left (if (>= (get total-debt-burned auction) (get debt-to-raise auction))
       u0
       (- (get debt-to-raise auction) (get total-debt-burned auction))
