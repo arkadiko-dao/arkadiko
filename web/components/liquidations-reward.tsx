@@ -14,7 +14,6 @@ import {
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { tokenTraits } from '@common/vault-utils';
-import { TokenSwapList, tokenList } from '@components/token-swap-list';
 
 export interface LiquidationRewardProps {
   rewardId: number;
