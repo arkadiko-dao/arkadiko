@@ -49,168 +49,200 @@ export const availableCoinsToMint = (
   return 0;
 };
 
-type TokenTraits = Record<string, { address: string; name: string; swap: string }>;
+type TokenTraits = Record<string, { address: string; name: string; swap: string; ft: string }>;
 
 export const tokenTraits: TokenTraits = {
   diko: {
     address: contractAddress,
     name: 'arkadiko-token',
     swap: 'arkadiko-token',
+    ft: 'diko',
   },
   stx: {
     address: contractAddress,
     name: 'xstx-token',
     swap: 'wrapped-stx-token',
+    ft: 'stx',
   },
   xstx: {
     address: contractAddress,
     name: 'xstx-token',
     swap: 'xstx-token',
+    ft: 'xstx',
   },
   usda: {
     address: contractAddress,
     name: 'usda-token',
     swap: 'usda-token',
+    ft: 'usda',
   },
   xbtc: {
     address: 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR',
     name: 'Wrapped-Bitcoin',
     swap: 'Wrapped-Bitcoin',
+    ft: 'wrapped-bitcoin',
   },
   wldn: {
     address: 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5',
     name: 'wrapped-lydian-token',
     swap: 'wrapped-lydian-token',
+    ft: 'wrapped-lydian',
   },
   ldn: {
     address: 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5',
     name: 'lydian-token',
     swap: 'lydian-token',
+    ft: 'lydian',
   },
   welsh: {
     address: 'SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G',
     name: 'welshcorgicoin-token',
     swap: 'welshcorgicoin-token',
+    ft: 'welshcorgicoin',
   },
   dikousda: {
     address: contractAddress,
     name: 'arkadiko-swap-token-diko-usda',
     swap: 'diko-usda',
+    ft: 'diko-usda',
   },
   usdadiko: {
     address: contractAddress,
     name: 'arkadiko-swap-token-diko-usda',
     swap: 'diko-usda',
+    ft: 'diko-usda',
   },
   wstxusda: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-usda',
     swap: 'wstx-usda',
+    ft: 'wstx-usda',
   },
   usdawstx: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-usda',
     swap: 'wstx-usda',
+    ft: 'wstx-usda',
   },
   usdastx: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-usda',
     swap: 'wstx-usda',
+    ft: 'wstx-usda',
   },
   stxusda: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-usda',
     swap: 'wstx-usda',
+    ft: 'wstx-usda',
   },
   wstxdiko: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
+    ft: 'wstx-diko',
   },
   dikowstx: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
+    ft: 'wstx-diko',
   },
   dikostx: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
+    ft: 'wstx-diko',
   },
   wstxxbtc: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-xbtc',
     swap: 'wstx-xbtc',
+    ft: 'wstx-xbtc',
   },
   stxxbtc: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-xbtc',
     swap: 'wstx-xbtc',
+    ft: 'wstx-xbtc',
   },
   xbtcstx: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-xbtc',
     swap: 'wstx-xbtc',
+    ft: 'wstx-xbtc',
   },
   xbtcwstx: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-xbtc',
     swap: 'wstx-xbtc',
+    ft: 'wstx-xbtc',
   },
   stxdiko: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
+    ft: 'wstx-diko',
   },
   xbtcusda: {
     address: contractAddress,
     name: 'arkadiko-swap-token-xbtc-usda',
     swap: 'xbtc-usda',
+    ft: 'xbtc-usda',
   },
   usdaxbtc: {
     address: contractAddress,
     name: 'arkadiko-swap-token-xbtc-usda',
     swap: 'xbtc-usda',
+    ft: 'xbtc-usda',
   },
   wldnusda: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wldn-usda',
     swap: 'wldn-usda',
+    ft: 'wldn-usda'
   },
   usdawldn: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wldn-usda',
     swap: 'wldn-usda',
+    ft: 'wldn-usda'
   },
   ldnusda: {
     address: contractAddress,
     name: 'arkadiko-swap-token-ldn-usda',
     swap: 'ldn-usda',
+    ft: 'ldn-usda'
   },
   usdaldn: {
     address: contractAddress,
     name: 'arkadiko-swap-token-ldn-usda',
     swap: 'ldn-usda',
+    ft: 'ldn-usda'
   },
   wstxwelsh: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-welsh',
     swap: 'wstx-welsh',
+    ft: 'wstx-welsh'
   },
   stxwelsh: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-welsh',
     swap: 'wstx-welsh',
+    ft: 'wstx-welsh'
   },
   welshwstx: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-welsh',
     swap: 'wstx-welsh',
+    ft: 'wstx-welsh'
   },
   welshstx: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-welsh',
     swap: 'wstx-welsh',
+    ft: 'wstx-welsh'
   },
 };
 
