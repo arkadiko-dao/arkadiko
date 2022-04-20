@@ -1,21 +1,19 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const tx = require('@stacks/transactions');
-const BN = require('bn.js');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
 
-async function burn() {
+async function transfer() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-governance-v3-1",
-    functionName: "add-contract-address",
+    contractName: "usda-token",
+    functionName: "transfer",
     functionArgs: [
-      tx.stringAsciiCV("arkadiko-alex-dual-yield-v1-1"),
-      tx.standardPrincipalCV('SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR'),
-      tx.contractPrincipalCV('SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR', 'arkadiko-alex-dual-yield-v1-1'),
-      tx.trueCV(),
-      tx.falseCV()
+      tx.uintCV(100000000000),
+      tx.standardPrincipalCV(CONTRACT_ADDRESS),
+      tx.contractPrincipalCV('SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9', 'executor-dao'),
+      tx.noneCV()
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
@@ -27,4 +25,4 @@ async function burn() {
   await utils.processing(result, transaction.txid(), 0);
 }
 
-burn();
+transfer();
