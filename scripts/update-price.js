@@ -91,24 +91,24 @@ const setPrice = async (stxPrice, btcPrice) => {
   }
 };
 
-const requestOptions = {
-  method: 'GET',
-  uri: 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest',
-  qs: {
-    'id': '4847,1',
-    'convert': 'USD'
-  },
-  headers: {
-    'X-CMC_PRO_API_KEY': process.env.CMC_API_KEY
-  },
-  json: true,
-  gzip: true
-};
+// const requestOptions = {
+//   method: 'GET',
+//   uri: 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest',
+//   qs: {
+//     'id': '4847,1',
+//     'convert': 'USD'
+//   },
+//   headers: {
+//     'X-CMC_PRO_API_KEY': process.env.CMC_API_KEY
+//   },
+//   json: true,
+//   gzip: true
+// };
 
-rp(requestOptions).then(async (response) => {
-  let stxPrice = response['data']['4847']['quote']['USD']['price'];
-  let btcPrice = response['data']['1']['quote']['USD']['price'];
-  await setPrice(stxPrice, btcPrice);
-});
+// rp(requestOptions).then(async (response) => {
+//   let stxPrice = response['data']['4847']['quote']['USD']['price'];
+//   let btcPrice = response['data']['1']['quote']['USD']['price'];
+//   await setPrice(stxPrice, btcPrice);
+// });
 
-// setPrice(1.05, 50000); // 0.5 USD
+setPrice(1.05, 50000); // 0.5 USD

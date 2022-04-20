@@ -516,7 +516,7 @@ Clarinet.test({ name: "auction engine: liquidate xBTC vault, multiple wallets",
     let result = oracleManager.updatePrice("xBTC", 40000);
 
     // Create vault
-    result = vaultManager.createVault(deployer, "XBTC-A", 0.1, 1500, false, false, "arkadiko-sip10-reserve-v2-1", "tokensoft-token");
+    result = vaultManager.createVault(deployer, "XBTC-A", 0.1, 1500, false, false, "arkadiko-sip10-reserve-v2-1", "Wrapped-Bitcoin");
     result.expectOk().expectUintWithDecimals(1500);
 
     // Upate price
@@ -535,7 +535,7 @@ Clarinet.test({ name: "auction engine: liquidate xBTC vault, multiple wallets",
     call.result.expectOk().expectUintWithDecimals(8000);
 
     // Start auction
-    result = vaultAuction.startAuction(deployer, 1, "tokensoft-token", "arkadiko-sip10-reserve-v2-1");
+    result = vaultAuction.startAuction(deployer, 1, "Wrapped-Bitcoin", "arkadiko-sip10-reserve-v2-1");
     result.expectOk().expectBool(true);
 
     // Auction closed
@@ -563,7 +563,7 @@ Clarinet.test({ name: "auction engine: liquidate xBTC vault, multiple wallets",
     call.result.expectOk().expectUintWithDecimals(9999.9);
 
     // Withdraw leftover collateral
-    result = vaultManager.withdrawLeftoverCollateral(deployer, "tokensoft-token");
+    result = vaultManager.withdrawLeftoverCollateral(deployer, "Wrapped-Bitcoin");
     result.expectOk().expectBool(true);
 
     // Vault owner balance
