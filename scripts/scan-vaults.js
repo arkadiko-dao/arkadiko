@@ -1,5 +1,6 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
+const XBTC_CONTRACT_ADDRESS = process.env.XBTC_CONTRACT_ADDRESS;
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
@@ -72,7 +73,7 @@ async function liquidateVault(vaultId, tokenName, stacking, nonce) {
   let tokenAddress = CONTRACT_ADDRESS; 
   if (tokenName == 'xBTC') {
     token = 'Wrapped-Bitcoin';
-    tokenAddress = 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR';
+    tokenAddress = XBTC_CONTRACT_ADDRESS;
   }
 
   const txOptions = {
