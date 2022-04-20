@@ -22,12 +22,12 @@
 
 ;; Defines built in support functions for tokens used in this contract
 ;; A second optional parameter can be added here to set an upper limit on max total-supply
-(define-fungible-token Wrapped-Bitcoin)
+(define-fungible-token wrapped-bitcoin)
 
 
 ;; Get the token balance of the specified owner in base units
 (define-read-only (get-balance (owner principal))
-  (ok (ft-get-balance Wrapped-Bitcoin owner)))
+  (ok (ft-get-balance wrapped-bitcoin owner)))
 
 ;; Returns the token name
 (define-read-only (get-name)
@@ -43,7 +43,7 @@
 
 ;; Returns the total number of tokens that currently exist
 (define-read-only (get-total-supply)
-  (ok (ft-get-supply Wrapped-Bitcoin)))
+  (ok (ft-get-supply wrapped-bitcoin)))
 
 
 ;; Write function to transfer tokens between accounts - conforms to SIP 10
@@ -57,7 +57,7 @@
   (begin
     (try! (detect-transfer-restriction amount sender recipient)) ;; Ensure there is no restriction
     (asserts! (is-eq tx-sender sender) (err u4)) ;; Ensure the originator is the sender principal
-    (ft-transfer? Wrapped-Bitcoin amount sender recipient) ) ) ;; Transfer
+    (ft-transfer? wrapped-bitcoin amount sender recipient) ) ) ;; Transfer
 
 
 ;; Role Based Access Control
@@ -130,7 +130,7 @@
     (asserts! (has-role MINTER_ROLE contract-caller) (err PERMISSION_DENIED_ERROR))
     ;; Print the action for any off chain watchers
     (print { action: "mint-tokens", mint-amount: mint-amount, mint-to: mint-to  })
-    (ft-mint? Wrapped-Bitcoin mint-amount mint-to)))
+    (ft-mint? wrapped-bitcoin mint-amount mint-to)))
 
 ;; Burn tokens from the target address
 ;; Only existing principals with the BURNER_ROLE can mint tokens
@@ -139,7 +139,7 @@
     (asserts! (has-role BURNER_ROLE contract-caller) (err PERMISSION_DENIED_ERROR))
     ;; Print the action for any off chain watchers
     (print { action: "burn-tokens", burn-amount: burn-amount, burn-from : burn-from  })
-    (ft-burn? Wrapped-Bitcoin burn-amount burn-from)))
+    (ft-burn? wrapped-bitcoin burn-amount burn-from)))
 
 
 ;; Revoking Tokens
@@ -152,7 +152,7 @@
     (asserts! (has-role REVOKER_ROLE contract-caller) (err PERMISSION_DENIED_ERROR))
     ;; Print the action for any off chain watchers
     (print { action: "revoke-tokens", revoke-amount: revoke-amount, revoke-from: revoke-from, revoke-to: revoke-to })
-    (ft-transfer? Wrapped-Bitcoin revoke-amount revoke-from revoke-to)))
+    (ft-transfer? wrapped-bitcoin revoke-amount revoke-from revoke-to)))
 
 ;; Blacklisting Principals
 ;; --------------------------------------------------------------------------
@@ -176,7 +176,7 @@
 ;; Transfer Restrictions
 ;; --------------------------------------------------------------------------
 (define-constant RESTRICTION_NONE u0) ;; No restriction detected
-(define-constant RESTRICTION_BLACKLIST u1) ;; Sender or receiver is on the blacklist
+(define-constant RESTRICTION_BLACKLIST u5) ;; Sender or receiver is on the blacklist
 
 ;; Checks to see if a transfer should be restricted.  If so returns an error code that specifies restriction type.
 (define-read-only (detect-transfer-restriction (amount uint) (sender principal) (recipient principal))
@@ -211,5 +211,5 @@
 
 (try! (initialize "Wrapped Bitcoin" "xBTC" u8 tx-sender))
 
-(try! (ft-mint? Wrapped-Bitcoin u10000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
-(try! (ft-mint? Wrapped-Bitcoin u10000000000 'ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF)) ;; 100 xBTC (100 with 8 decimals)
+(try! (ft-mint? wrapped-bitcoin u10000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
+(try! (ft-mint? wrapped-bitcoin u10000000000 'ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF)) ;; 100 xBTC (100 with 8 decimals)
