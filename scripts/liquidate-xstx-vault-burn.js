@@ -4,18 +4,18 @@ const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
 
-const vaultId = process.argv.slice(2)[0];
-console.log('Trying to liquidate vault with ID', vaultId);
+const auctionId = process.argv.slice(2)[0];
+console.log('Trying to burn USDA for auction', auctionId);
 
 const txOptions = {
   contractAddress: CONTRACT_ADDRESS,
   contractName: 'arkadiko-auction-engine-v4-1',
-  functionName: 'start-auction',
+  functionName: 'burn-usda',
   functionArgs: [
-    tx.uintCV(vaultId),
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-freddie-v1-1'),
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v1-1'),
+    tx.uintCV(auctionId),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v1-1'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v1-1'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-freddie-v1-1'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'xstx-token'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-sip10-reserve-v2-1'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-pool-v1-1'),
