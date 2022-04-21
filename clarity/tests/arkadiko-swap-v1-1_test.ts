@@ -51,7 +51,7 @@ Clarinet.test({
       types.principal(wallet_1.address),
     ], wallet_1.address);
     call.result.expectOk().expectUint(1000000000000); // 1M USDA
-    call = await chain.callReadOnlyFn("tokensoft-token", "get-balance", [
+    call = await chain.callReadOnlyFn("Wrapped-Bitcoin", "get-balance", [
       types.principal(wallet_1.address),
     ], wallet_1.address);
     call.result.expectOk().expectUint(0); // 0 xBTC
@@ -65,7 +65,7 @@ Clarinet.test({
       types.principal(wallet_1.address),
     ], wallet_1.address);
     call.result.expectOk().expectUint(1000000000000); // still 1M USDA after swap
-    call = await chain.callReadOnlyFn("tokensoft-token", "get-balance", [
+    call = await chain.callReadOnlyFn("Wrapped-Bitcoin", "get-balance", [
       types.principal(wallet_1.address),
     ], wallet_1.address);
     call.result.expectOk().expectUint(398554); // 0.00398554 xBTC after swap
