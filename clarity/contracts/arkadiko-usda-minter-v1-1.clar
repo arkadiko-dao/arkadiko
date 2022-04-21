@@ -3,7 +3,9 @@
 
 (define-constant ERR-NOT-AUTHORIZED u40401)
 (define-constant ERR-INSUFFICIENT-CAPITAL u40001)
-(define-data-var supply-ceiling uint u1000000) ;; 1M USDA
+(define-constant ERR-CEILING-REACHED u40002)
+
+(define-data-var supply-ceiling uint u3000000000000) ;; 3M USDA
 (define-data-var current-supply uint u0)
 
 (define-public (mint-usda (oracle <oracle-trait>) (amount uint))
@@ -14,6 +16,7 @@
     (amount-to-burn (* amount amount-to-burn-per-usda))
   )
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (<= (+ (var-get current-supply) amount) (var-get supply-ceiling)) (err ERR-CEILING-REACHED))
 
     (try! (contract-call? .arkadiko-dao burn-token .arkadiko-token amount-to-burn tx-sender))
     (try! (contract-call? .arkadiko-dao mint-token .usda-token amount tx-sender))
