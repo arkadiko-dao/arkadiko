@@ -42,7 +42,7 @@ Clarinet.test({
 
     // create a vault with 0.1 xbtc and 1000 USDA debt
     // 0.1 xbtc = $4K. $1K debt/$4K collateral = 25% LTV (~400 collateralization ratio)
-    result = vaultManager.createVault(deployer, "XBTC-A", 10, 1000, false, false, 'arkadiko-sip10-reserve-v2-1', 'tokensoft-token');
+    result = vaultManager.createVault(deployer, "XBTC-A", 10, 1000, false, false, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin');
     result.expectOk().expectUintWithDecimals(1000);
 
     let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
@@ -76,7 +76,7 @@ Clarinet.test({
     result.expectOk().expectUint(40000000000);
 
     // Create vault
-    result = vaultManager.createVault(deployer, "XBTC-A", 1000, 500, false, false, 'arkadiko-sip10-reserve-v2-1', 'tokensoft-token');
+    result = vaultManager.createVault(deployer, "XBTC-A", 1000, 500, false, false, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin');
     result.expectOk().expectUintWithDecimals(500);
 
     // New USDA balance
@@ -104,17 +104,17 @@ Clarinet.test({
     // Parameter 1000 = 1000 * 1000000 = 1,000,000,000 -> 10 xBTC
     // 10 xBTC = 400,000 USDA
     // 500 USDA minted
-    result = vaultManager.createVault(deployer, "XBTC-A", 1000, 500, true, true, 'arkadiko-sip10-reserve-v2-1', 'tokensoft-token');
+    result = vaultManager.createVault(deployer, "XBTC-A", 1000, 500, true, true, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin');
     result.expectOk().expectUintWithDecimals(500);
 
     // Deposit extra
     // Deposit 0.1 btc extra, total 10.1 xBTC
-    result = vaultManager.deposit(deployer, 1, 10, 'arkadiko-sip10-reserve-v2-1', 'tokensoft-token');
+    result = vaultManager.deposit(deployer, 1, 10, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin');
     result.expectOk().expectBool(true);
 
     // withdraw part
     // Withdraw 0.02 xBTC, total 10.08 xBTC
-    result = vaultManager.withdraw(deployer, 1, 2, 'arkadiko-sip10-reserve-v2-1', 'tokensoft-token');
+    result = vaultManager.withdraw(deployer, 1, 2, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin');
     result.expectOk().expectBool(true);
 
     // mint
@@ -123,7 +123,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // burn
-    result = vaultManager.burn(deployer, 1, 2, 'arkadiko-sip10-reserve-v2-1', 'tokensoft-token');
+    result = vaultManager.burn(deployer, 1, 2, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin');
     result.expectOk().expectBool(true);
   },
 });
@@ -143,11 +143,11 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(40000);
 
     // Create vault
-    result = vaultManager.createVault(deployer, "XBTC-A", 1000, 500, false, false, 'arkadiko-sip10-reserve-v2-1', 'tokensoft-token');
+    result = vaultManager.createVault(deployer, "XBTC-A", 1000, 500, false, false, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin');
     result.expectOk().expectUintWithDecimals(500);
 
     // Close vault
-    result = vaultManager.closeVault(deployer, 1, 'arkadiko-sip10-reserve-v2-1', 'tokensoft-token');
+    result = vaultManager.closeVault(deployer, 1, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin');
     result.expectOk().expectBool(true);
 
   },
@@ -171,24 +171,24 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(40000);
 
     // Create vault
-    result = vaultManager.createVault(deployer, "XBTC-A", 1000, 500, false, false, 'arkadiko-stx-reserve-v1-1', 'tokensoft-token');
+    result = vaultManager.createVault(deployer, "XBTC-A", 1000, 500, false, false, 'arkadiko-stx-reserve-v1-1', 'Wrapped-Bitcoin');
     result.expectErr().expectUint(118);
     
     result = vaultManager.createVault(deployer, "XBTC-A", 1000, 500, false, false, 'arkadiko-sip10-reserve-v2-1', 'arkadiko-token');
     result.expectErr().expectUint(415);
 
-    result = vaultManager.createVault(deployer, "XBTC-A", 1000, 500, false, false, 'arkadiko-sip10-reserve-v2-1', 'tokensoft-token');
+    result = vaultManager.createVault(deployer, "XBTC-A", 1000, 500, false, false, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin');
     result.expectOk().expectUintWithDecimals(500);
 
     // Deposit extra
-    result = vaultManager.deposit(deployer, 1, 10, 'arkadiko-stx-reserve-v1-1', 'tokensoft-token');
+    result = vaultManager.deposit(deployer, 1, 10, 'arkadiko-stx-reserve-v1-1', 'Wrapped-Bitcoin');
     result.expectErr().expectUint(45);
 
     result = vaultManager.deposit(deployer, 1, 10, 'arkadiko-sip10-reserve-v2-1', 'arkadiko-token');
     result.expectErr().expectUint(415);
 
     // withdraw part
-    result = vaultManager.withdraw(deployer, 1, 2, 'arkadiko-stx-reserve-v1-1', 'tokensoft-token');
+    result = vaultManager.withdraw(deployer, 1, 2, 'arkadiko-stx-reserve-v1-1', 'Wrapped-Bitcoin');
     result.expectErr().expectUint(46);
 
     result = vaultManager.withdraw(deployer, 1, 2, 'arkadiko-sip10-reserve-v2-1', 'arkadiko-token');
@@ -199,14 +199,14 @@ Clarinet.test({
     result.expectErr().expectUint(118);
     
     // burn
-    result = vaultManager.burn(deployer, 1, 2, 'arkadiko-stx-reserve-v1-1', 'tokensoft-token');
+    result = vaultManager.burn(deployer, 1, 2, 'arkadiko-stx-reserve-v1-1', 'Wrapped-Bitcoin');
     result.expectOk().expectBool(true); // reserve parameter is not used
 
     result = vaultManager.burn(deployer, 1, 2, 'arkadiko-sip10-reserve-v2-1', 'arkadiko-token');
     result.expectErr().expectUint(415);
 
     // close vault
-    result = vaultManager.closeVault(deployer, 1, 'arkadiko-stx-reserve-v1-1', 'tokensoft-token');
+    result = vaultManager.closeVault(deployer, 1, 'arkadiko-stx-reserve-v1-1', 'Wrapped-Bitcoin');
     result.expectErr().expectUint(112);
 
     result = vaultManager.closeVault(deployer, 1, 'arkadiko-sip10-reserve-v2-1', 'arkadiko-token');
@@ -267,7 +267,7 @@ Clarinet.test({
         }),
         types.ascii("XBTC-A"),
         types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v2-1')),
-        types.principal(Utils.qualifiedName('tokensoft-token')),
+        types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], deployer.address)
@@ -343,7 +343,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-freddie-v1-1", "close-vault", [
         types.uint(1),
         types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v2-1')),
-        types.principal(Utils.qualifiedName('tokensoft-token')),
+        types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1'))
       ], deployer.address),
     ]);

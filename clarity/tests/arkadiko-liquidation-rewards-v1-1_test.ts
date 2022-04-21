@@ -329,7 +329,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Claim reward fails
-    result = liquidationRewards.claimRewards(deployer, 0, "tokensoft-token");
+    result = liquidationRewards.claimRewards(deployer, 0, "Wrapped-Bitcoin");
     result.expectErr().expectUint(30002);
   }
 });

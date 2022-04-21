@@ -8,6 +8,7 @@ import {
 
 import { 
   Swap,
+  MultiHopSwap
 } from './models/arkadiko-tests-swap.ts';
 
 import { 
@@ -23,11 +24,62 @@ import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 const dikoTokenAddress = 'arkadiko-token';
 const usdaTokenAddress = 'usda-token';
-const xbtcTokenAddress = 'tokensoft-token';
+const xbtcTokenAddress = 'Wrapped-Bitcoin';
 const dikoUsdaPoolAddress = 'arkadiko-swap-token-diko-usda';
 const wstxUsdaPoolAddress = 'arkadiko-swap-token-wstx-usda';
 const wstxXbtcPoolAddress = 'arkadiko-swap-token-wstx-xbtc';
+const xbtcUsdaPoolAddress = 'arkadiko-swap-token-xbtc-usda';
 const wstxTokenAddress = 'wrapped-stx-token';
+
+Clarinet.test({
+  name: "swap: swap STX/xBTC token using multi-hop",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let swap = new Swap(chain, deployer);
+    let multiHopSwap = new MultiHopSwap(chain, deployer);
+
+    // Create pair STX-USDA and xBTC-USDA
+    let result:any = swap.createPair(deployer, wstxTokenAddress, usdaTokenAddress, "arkadiko-swap-token-wstx-usda", "wSTX-USDA", 1000, 1000);
+    result.expectOk().expectBool(true);
+    result = swap.createPair(deployer, xbtcTokenAddress, usdaTokenAddress, xbtcUsdaPoolAddress, "xBTC-USDA", 0.40894, 1000, 8, 6);
+    result.expectOk().expectBool(true);
+
+    // Check balances of wallet 1
+    let call = await chain.callReadOnlyFn("usda-token", "get-balance", [
+      types.principal(wallet_1.address),
+    ], wallet_1.address);
+    call.result.expectOk().expectUint(1000000000000); // 1M USDA
+    call = await chain.callReadOnlyFn("Wrapped-Bitcoin", "get-balance", [
+      types.principal(wallet_1.address),
+    ], wallet_1.address);
+    call.result.expectOk().expectUint(0); // 0 xBTC
+
+    // Swap
+    result = multiHopSwap.swapXForZ(wallet_1, wstxTokenAddress, usdaTokenAddress, xbtcTokenAddress, 10, 0, false, true, 6, 8);
+    result.expectOk().expectList()[0].expectUint(398554); // 0.00398554 btc
+    result.expectOk().expectList()[1].expectUint(9871580); // 9.871 USDA
+
+    call = await chain.callReadOnlyFn("usda-token", "get-balance", [
+      types.principal(wallet_1.address),
+    ], wallet_1.address);
+    call.result.expectOk().expectUint(1000000000000); // still 1M USDA after swap
+    call = await chain.callReadOnlyFn("Wrapped-Bitcoin", "get-balance", [
+      types.principal(wallet_1.address),
+    ], wallet_1.address);
+    call.result.expectOk().expectUint(398554); // 0.00398554 xBTC after swap
+
+    // Swap back
+    result = multiHopSwap.swapXForZ(deployer, xbtcTokenAddress, usdaTokenAddress, wstxTokenAddress, 0.00398, 0, false, true, 8, 6);
+    result.expectOk().expectList()[0].expectUint(9868790); // 9.868 STX
+    result.expectOk().expectList()[1].expectUint(9799487); // 9.799 USDA
+
+    // Too high slippage
+    result = multiHopSwap.swapXForZ(wallet_1, wstxTokenAddress, usdaTokenAddress, xbtcTokenAddress, 10, 0.004, false, true, 6, 8);
+    result.expectErr().expectUint(7772);
+  },
+});
 
 Clarinet.test({
   name: "swap: create STX/xBTC pair, add and remove liquidity",
@@ -59,7 +111,7 @@ Clarinet.test({
     call.result.expectOk().expectList()[1].expectUint(8178800);
 
     // Check if tracked balances is the same as tokens owned by contract
-    call = chain.callReadOnlyFn("tokensoft-token", "get-balance", [types.principal(Utils.qualifiedName('arkadiko-swap-v2-1'))], deployer.address);
+    call = chain.callReadOnlyFn("Wrapped-Bitcoin", "get-balance", [types.principal(Utils.qualifiedName('arkadiko-swap-v2-1'))], deployer.address);
     call.result.expectOk().expectUint(8178800);
     call = chain.callReadOnlyFn("wrapped-stx-token", "get-balance", [types.principal(Utils.qualifiedName('arkadiko-swap-v2-1'))], deployer.address);
     call.result.expectOk().expectUint(1704000000);

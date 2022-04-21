@@ -1,5 +1,6 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
+const LDN_CONTRACT_ADDRESS = process.env.LDN_CONTRACT_ADDRESS;
 const CONTRACT_NAME = 'arkadiko-swap-v2-1';
 const FUNCTION_NAME = 'create-pair';
 const rp = require('request-promise');
@@ -16,7 +17,7 @@ const createPair = async () => {
     contractName: CONTRACT_NAME,
     functionName: FUNCTION_NAME,
     functionArgs: [
-      tx.contractPrincipalCV('SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5', 'wrapped-lydian-token'),
+      tx.contractPrincipalCV(LDN_CONTRACT_ADDRESS, 'wrapped-lydian-token'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'usda-token'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-swap-token-wldn-usda'),
       tx.stringAsciiCV('wLDN-USDA'),

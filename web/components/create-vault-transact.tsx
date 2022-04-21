@@ -25,6 +25,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
   const { doContractCall } = useConnect();
   const address = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
 
   const callCollateralizeAndMint = async () => {
     const decimals = coinAmounts['token-type'].toLowerCase().includes('stx') ? 1000000 : 100000000;
@@ -70,7 +71,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
           FungibleConditionCode.LessEqual,
           amount.value,
           createAssetInfo(
-            'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR',
+            xbtcContractAddress,
             'Wrapped-Bitcoin',
             'wrapped-bitcoin'
           )

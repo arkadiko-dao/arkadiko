@@ -77,7 +77,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(50000);
 
     // 1 xBTC, 10K USDA
-    result = vaultManager.createVault(deployer, "XBTC-A", 100, 10000, false, false, 'arkadiko-sip10-reserve-v2-1', 'tokensoft-token');
+    result = vaultManager.createVault(deployer, "XBTC-A", 100, 10000, false, false, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin');
     result.expectOk().expectUintWithDecimals(10000);
 
     let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
@@ -86,11 +86,11 @@ Clarinet.test({
     // 1 xBTC, 20K USDA
     // collateral-to-debt-ratio = 250
     // 50.000 / 2.5 = 20.000
-    result = vaultManager.createVault(deployer, "XBTC-A", 100, 20000, false, false, 'arkadiko-sip10-reserve-v2-1', 'tokensoft-token'); 
+    result = vaultManager.createVault(deployer, "XBTC-A", 100, 20000, false, false, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin'); 
     result.expectOk().expectUintWithDecimals(20000);
 
     // Can not mint 20.001 USDA
-    result = vaultManager.createVault(deployer, "XBTC-A", 100, 20001, false, false, 'arkadiko-sip10-reserve-v2-1', 'tokensoft-token'); 
+    result = vaultManager.createVault(deployer, "XBTC-A", 100, 20001, false, false, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin'); 
     result.expectErr().expectUint(49);
   }
 });
