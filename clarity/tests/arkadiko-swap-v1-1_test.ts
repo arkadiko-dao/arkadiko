@@ -23,7 +23,7 @@ import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 const dikoTokenAddress = 'arkadiko-token';
 const usdaTokenAddress = 'usda-token';
-const xbtcTokenAddress = 'tokensoft-token';
+const xbtcTokenAddress = 'Wrapped-Bitcoin';
 const dikoUsdaPoolAddress = 'arkadiko-swap-token-diko-usda';
 const wstxUsdaPoolAddress = 'arkadiko-swap-token-wstx-usda';
 const wstxXbtcPoolAddress = 'arkadiko-swap-token-wstx-xbtc';
@@ -59,7 +59,7 @@ Clarinet.test({
     call.result.expectOk().expectList()[1].expectUint(8178800);
 
     // Check if tracked balances is the same as tokens owned by contract
-    call = chain.callReadOnlyFn("tokensoft-token", "get-balance", [types.principal(Utils.qualifiedName('arkadiko-swap-v2-1'))], deployer.address);
+    call = chain.callReadOnlyFn("Wrapped-Bitcoin", "get-balance", [types.principal(Utils.qualifiedName('arkadiko-swap-v2-1'))], deployer.address);
     call.result.expectOk().expectUint(8178800);
     call = chain.callReadOnlyFn("wrapped-stx-token", "get-balance", [types.principal(Utils.qualifiedName('arkadiko-swap-v2-1'))], deployer.address);
     call.result.expectOk().expectUint(1704000000);

@@ -1,5 +1,6 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
+const WELSH_CONTRACT_ADDRESS = process.env.WELSH_CONTRACT_ADDRESS;
 const CONTRACT_NAME = 'arkadiko-swap-v2-1';
 const FUNCTION_NAME = 'create-pair';
 const rp = require('request-promise');
@@ -17,7 +18,7 @@ const createPair = async () => {
     functionName: FUNCTION_NAME,
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wrapped-stx-token'),
-      tx.contractPrincipalCV('SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G', 'welshcorgicoin-token'),
+      tx.contractPrincipalCV(WELSH_CONTRACT_ADDRESS, 'welshcorgicoin-token'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-swap-token-wstx-welsh'),
       tx.stringAsciiCV('wSTX-WELSH'),
       tx.uintCV(new BN(180000)), // 0.18 STX

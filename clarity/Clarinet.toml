@@ -373,8 +373,8 @@ path = "contracts/arkadiko-alex-dual-yield-v1-1.clar"
 path = "contracts/xbtc/restricted-token-trait.clar"
 depends_on = []
 
-[contracts.tokensoft-token]
-path = "contracts/xbtc/tokensoft-token.clar"
+[contracts.Wrapped-Bitcoin]
+path = "contracts/xbtc/Wrapped-Bitcoin.clar"
 depends_on = ["sip-010-trait-ft-standard", "restricted-token-trait"]
 
 # Tests

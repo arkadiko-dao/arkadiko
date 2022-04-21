@@ -226,5 +226,5 @@
   (map-set reward-tokens  { token: .xstx-token } { whitelisted: true })
 
   ;; TODO - UPDATE ADDRESS FOR MAINNET
-  (map-set reward-tokens  { token: .tokensoft-token } { whitelisted: true })
+  (map-set reward-tokens  { token: .Wrapped-Bitcoin } { whitelisted: true })
 )

@@ -488,7 +488,7 @@ class VaultAuction {
       Tx.contractCall("arkadiko-auction-engine-v2-1", "redeem-lot-collateral", [
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
         types.principal(
-          Utils.qualifiedName('tokensoft-token'),
+          Utils.qualifiedName('Wrapped-Bitcoin'),
         ),
         types.principal(
           Utils.qualifiedName('arkadiko-sip10-reserve-v1-1'),

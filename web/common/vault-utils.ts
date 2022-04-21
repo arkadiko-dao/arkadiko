@@ -1,4 +1,7 @@
 export const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+export const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
+export const welshContractAddress = process.env.WELSH_CONTRACT_ADDRESS || '';
+export const ldnContractAddress = process.env.LDN_CONTRACT_ADDRESS || '';
 
 export const getLiquidationPrice = (
   liquidationRatio: number,
@@ -73,22 +76,22 @@ export const tokenTraits: TokenTraits = {
     swap: 'usda-token',
   },
   xbtc: {
-    address: 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR',
+    address: xbtcContractAddress,
     name: 'Wrapped-Bitcoin',
     swap: 'Wrapped-Bitcoin',
   },
   wldn: {
-    address: 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5',
+    address: ldnContractAddress,
     name: 'wrapped-lydian-token',
     swap: 'wrapped-lydian-token',
   },
   ldn: {
-    address: 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5',
+    address: ldnContractAddress,
     name: 'lydian-token',
     swap: 'lydian-token',
   },
   welsh: {
-    address: 'SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G',
+    address: welshContractAddress,
     name: 'welshcorgicoin-token',
     swap: 'welshcorgicoin-token',
   },
