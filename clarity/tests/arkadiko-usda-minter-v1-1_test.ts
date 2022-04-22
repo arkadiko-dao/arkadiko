@@ -54,3 +54,36 @@ Clarinet.test({name: "USDA minter: mint and burn USDA",
     block.receipts[0].result.expectOk().expectUint(666666); // 0.1 USDA burned, minted 0.666666 DIKO
   }
 });
+
+Clarinet.test({name: "USDA minter: diko per dollar",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
+        types.ascii("DIKO"),
+        types.uint(150000),
+        types.uint(1000000)
+      ], deployer.address),
+    ]);
+
+    let call = chain.callReadOnlyFn("arkadiko-usda-minter-v1-1", "diko-per-dollar", [
+      types.principal(Utils.qualifiedName("arkadiko-oracle-v1-1"))
+    ], deployer.address);
+    call.result.expectOk().expectUint(6666666);
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
+        types.ascii("DIKO"),
+        types.uint(15000000), // 1 DIKO = 15 USD
+        types.uint(1000000)
+      ], deployer.address),
+    ]);
+
+    call = chain.callReadOnlyFn("arkadiko-usda-minter-v1-1", "diko-per-dollar", [
+      types.principal(Utils.qualifiedName("arkadiko-oracle-v1-1"))
+    ], deployer.address);
+    call.result.expectOk().expectUint(66666); // 0.066666 DIKO
+  }
+});
