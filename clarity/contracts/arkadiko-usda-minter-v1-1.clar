@@ -5,15 +5,32 @@
 (define-constant ERR-INSUFFICIENT-CAPITAL u40001)
 (define-constant ERR-CEILING-REACHED u40002)
 
+(define-constant ONE-DOLLAR u1000000)
 (define-data-var supply-ceiling uint u3000000000000) ;; 3M USDA
 (define-data-var current-supply uint u0)
 
+;; Read-only
+(define-read-only (get-supply-ceiling)
+  (var-get supply-ceiling)
+)
+
+(define-read-only (get-current-supply)
+  (var-get current-supply)
+)
+
+(define-public (diko-per-dollar (oracle <oracle-trait>))
+  (let (
+    (diko-price (unwrap-panic (contract-call? oracle fetch-price "DIKO")))
+    (amount-per-dollar (/ (* u1000000 ONE-DOLLAR) (get last-price diko-price))) ;; TODO: fix when DIKO price is > $1
+  )
+    (ok amount-per-dollar)
+  )
+)
+
+;; Public functions
 (define-public (mint-usda (oracle <oracle-trait>) (amount uint))
   (let (
-    (diko-price (unwrap-panic (contract-call? oracle fetch-price "diko")))
-    (one-dollar u1000000)
-    (amount-to-burn-per-usda (/ (/ (* u100 one-dollar) (get last-price diko-price)) u100)) ;; TODO: fix when DIKO price is > $1
-    (amount-to-burn (* amount amount-to-burn-per-usda))
+    (amount-to-burn (/ (* amount (unwrap-panic (diko-per-dollar oracle))) u1000000))
   )
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (<= (+ (var-get current-supply) amount) (var-get supply-ceiling)) (err ERR-CEILING-REACHED))
@@ -28,10 +45,7 @@
 
 (define-public (burn-usda (oracle <oracle-trait>) (amount uint))
   (let (
-    (diko-price (unwrap-panic (contract-call? oracle fetch-price "diko")))
-    (one-dollar u1000000)
-    (amount-to-mint-per-usda (/ (/ (* u100 one-dollar) (get last-price diko-price)) u100)) ;; TODO: fix when DIKO price is > $1
-    (amount-to-mint (* amount amount-to-mint-per-usda))
+    (amount-to-mint (/ (* amount (unwrap-panic (diko-per-dollar oracle))) u1000000))
   )
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (>= (var-get current-supply) amount) (err ERR-INSUFFICIENT-CAPITAL))
