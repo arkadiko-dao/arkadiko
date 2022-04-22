@@ -23,7 +23,7 @@
 (define-public (diko-per-dollar (oracle <oracle-trait>))
   (let (
     (diko-price (unwrap-panic (contract-call? oracle fetch-price "DIKO")))
-    (amount-per-dollar (/ (* u1000000 ONE-DOLLAR) (get last-price diko-price))) ;; TODO: fix when DIKO price is > $1
+    (amount-per-dollar (/ (* u1000000 ONE-DOLLAR) (get last-price diko-price)))
   )
     (ok amount-per-dollar)
   )
