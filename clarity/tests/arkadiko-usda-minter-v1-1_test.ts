@@ -85,5 +85,18 @@ Clarinet.test({name: "USDA minter: diko per dollar",
       types.principal(Utils.qualifiedName("arkadiko-oracle-v1-1"))
     ], deployer.address);
     call.result.expectOk().expectUint(66666); // 0.066666 DIKO
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
+        types.ascii("DIKO"),
+        types.uint(66324000), // 1 DIKO = 66.324 USD
+        types.uint(1000000)
+      ], deployer.address),
+    ]);
+
+    call = chain.callReadOnlyFn("arkadiko-usda-minter-v1-1", "diko-per-dollar", [
+      types.principal(Utils.qualifiedName("arkadiko-oracle-v1-1"))
+    ], deployer.address);
+    call.result.expectOk().expectUint(15077); // 0.015077 DIKO
   }
 });
