@@ -37,7 +37,6 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
 
     const postConditions = [];
     if (tokenIsStx) {
-
       // PC
       postConditions.push(
         makeContractSTXPostCondition(
@@ -48,14 +47,11 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
         )
       )
     } else {
-
       // FT name
-      var tokenName = "diko";
-      Object.keys(tokenTraits).forEach((key, index) => {
-        if (tokenTraits[key].address == token.split('.')[0] && tokenTraits[key].swap == token.split('.')[1]) {
-          tokenName = tokenTraits[key].ft;
-        }
-      });
+      const tokenTraitsKey = Object.keys(tokenTraits).filter((key) => 
+        (tokenTraits[key].address == token.split('.')[0] && tokenTraits[key].swap == token.split('.')[1])
+      );
+      const tokenName = tokenTraits[tokenTraitsKey].ft;
 
       // PC
       postConditions.push(
