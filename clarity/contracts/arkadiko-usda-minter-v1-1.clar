@@ -9,7 +9,9 @@
 (define-data-var supply-ceiling uint u3000000000000) ;; 3M USDA
 (define-data-var current-supply uint u0)
 
-;; Read-only
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Read-only functions  ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define-read-only (get-supply-ceiling)
   (var-get supply-ceiling)
 )
@@ -27,7 +29,9 @@
   )
 )
 
-;; Public functions
+;;;;;;;;;;;;;;;;;;;;;;
+;; Public functions ;;
+;;;;;;;;;;;;;;;;;;;;;;
 (define-public (mint-usda (oracle <oracle-trait>) (amount uint))
   (let (
     (amount-to-burn (/ (* amount (unwrap-panic (diko-per-dollar oracle))) u1000000))
@@ -39,7 +43,7 @@
     (try! (contract-call? .arkadiko-dao mint-token .usda-token amount tx-sender))
 
     (var-set current-supply (+ (var-get current-supply) amount))
-    (ok true)
+    (ok amount-to-burn)
   )
 )
 
@@ -54,10 +58,14 @@
     (try! (contract-call? .arkadiko-dao burn-token .usda-token amount tx-sender))
 
     (var-set current-supply (- (var-get current-supply) amount))
-    (ok true)
+    (ok amount-to-mint)
   )
 )
 
+
+;;;;;;;;;;;;;;;;;;;;;;
+;; Admin functions  ;;
+;;;;;;;;;;;;;;;;;;;;;;
 (define-public (update-supply-ceiling (ceiling uint))
   (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))

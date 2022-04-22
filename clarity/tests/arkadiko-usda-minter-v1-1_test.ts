@@ -43,7 +43,7 @@ Clarinet.test({name: "USDA minter: mint and burn USDA",
         types.uint(1000000)
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectBool(true);
+    block.receipts[0].result.expectOk().expectUint(6666666);
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-usda-minter-v1-1", "burn-usda", [
@@ -51,6 +51,6 @@ Clarinet.test({name: "USDA minter: mint and burn USDA",
         types.uint(100000)
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectBool(true);
+    block.receipts[0].result.expectOk().expectUint(666666); // 0.1 USDA burned, minted 0.666666 DIKO
   }
 });
