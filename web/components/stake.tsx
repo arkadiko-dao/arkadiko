@@ -382,9 +382,8 @@ export const Stake = () => {
         0,
         totalStxDikoStaked
       );
-      const stxDikoPoolRewards = totalStakingRewardsYear1 * 0.082;
-      const stxDikoApr =
-        stxDikoPoolRewards / (dikoStxDiko['walletValue'] / Number(dikoPrice / 1000000));
+      const stxDikoPoolRewards = 0;
+      const stxDikoApr = stxDikoPoolRewards / (dikoStxDiko['walletValue'] / Number(dikoPrice / 1000000));
       setStxDikoLpApy(Number((100 * stxDikoApr).toFixed(2)));
 
       const dikoStxXbtc = await lpTokenValue(
