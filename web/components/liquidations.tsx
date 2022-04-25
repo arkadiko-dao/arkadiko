@@ -12,6 +12,10 @@ import {
   uintCV,
   contractPrincipalCV,
   standardPrincipalCV,
+  makeStandardFungiblePostCondition,
+  makeContractFungiblePostCondition,
+  FungibleConditionCode,
+  createAssetInfo
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { microToReadable } from '@common/vault-utils';
@@ -88,6 +92,16 @@ export const Liquidations: React.FC = () => {
   };
 
   const stake = async () => {
+
+    const postConditions = [
+      makeStandardFungiblePostCondition(
+        stxAddress || '',
+        FungibleConditionCode.Equal,
+        uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0))).value,
+        createAssetInfo(contractAddress, 'usda-token', 'usda')
+      ),
+    ];
+
     await doContractCall({
       network,
       contractAddress,
@@ -97,7 +111,7 @@ export const Liquidations: React.FC = () => {
       functionArgs: [
         uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0)))
       ],
-      postConditionMode: 0x01,
+      postConditions,
       onFinish: data => {
         setState(prevState => ({
           ...prevState,
@@ -110,6 +124,17 @@ export const Liquidations: React.FC = () => {
   };
 
   const unstake = async () => {
+
+    const postConditions = [
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-liquidation-pool-v1-1',
+        FungibleConditionCode.Equal,
+        uintCV(Number((parseFloat(unstakeAmount) * 1000000).toFixed(0))).value,
+        createAssetInfo(contractAddress, 'usda-token', 'usda')
+      ),
+    ];
+
     await doContractCall({
       network,
       contractAddress,
@@ -119,7 +144,7 @@ export const Liquidations: React.FC = () => {
       functionArgs: [
         uintCV(Number((parseFloat(unstakeAmount) * 1000000).toFixed(0)))
       ],
-      postConditionMode: 0x01,
+      postConditions,
       onFinish: data => {
         setState(prevState => ({
           ...prevState,

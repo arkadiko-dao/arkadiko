@@ -7,8 +7,13 @@ import {
   AnchorMode,
   uintCV,
   contractPrincipalCV,
+  makeContractFungiblePostCondition,
+  makeContractSTXPostCondition,
+  FungibleConditionCode,
+  createAssetInfo
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
+import { tokenTraits } from '@common/vault-utils';
 
 export interface LiquidationRewardProps {
   rewardId: number;
@@ -29,6 +34,38 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
   const [state, setState] = useContext(AppContext);
 
   const claim = async () => {
+
+    const postConditions = [];
+    if (tokenIsStx) {
+      // PC
+      postConditions.push(
+        makeContractSTXPostCondition(
+          contractAddress,
+          'arkadiko-liquidation-rewards-v1-1',
+          FungibleConditionCode.Equal,
+          uintCV(claimable).value,
+        )
+      )
+    } else {
+      // FT name
+      const tokenTraitsKey = Object.keys(tokenTraits).filter((key) => 
+        (tokenTraits[key].address == token.split('.')[0] && tokenTraits[key].swap == token.split('.')[1])
+      );
+      const tokenName = tokenTraits[tokenTraitsKey].ft;
+
+      // PC
+      postConditions.push(
+        makeContractFungiblePostCondition(
+          contractAddress,
+          'arkadiko-liquidation-rewards-v1-1',
+          FungibleConditionCode.Equal,
+          uintCV(claimable).value,
+          createAssetInfo(token.split('.')[0], token.split('.')[1], tokenName)
+        )
+      )
+    }
+
+    // Call
     await doContractCall({
       network,
       contractAddress,
@@ -40,7 +77,7 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
         contractPrincipalCV(token.split('.')[0], token.split('.')[1]),
         contractPrincipalCV(contractAddress, 'arkadiko-liquidation-pool-v1-1'),
       ],
-      postConditionMode: 0x01,
+      postConditions,
       onFinish: data => {
         setState(prevState => ({
           ...prevState,
