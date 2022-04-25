@@ -40,6 +40,8 @@ export const VaultDepositModal: React.FC<Props> = ({
   const [extraCollateralDeposit, setExtraCollateralDeposit] = useState('');
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
+
   const senderAddress = useSTXAddress();
   const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -68,7 +70,7 @@ export const VaultDepositModal: React.FC<Props> = ({
           FungibleConditionCode.LessEqual,
           new BN(parseFloat(extraCollateralDeposit) * decimals),
           createAssetInfo(
-            'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR',
+            xbtcContractAddress,
             'Wrapped-Bitcoin',
             'wrapped-bitcoin'
           )

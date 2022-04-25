@@ -1,5 +1,6 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
+const XBTC_CONTRACT_ADDRESS = process.env.XBTC_CONTRACT_ADDRESS;
 const CONTRACT_NAME = 'arkadiko-swap-v2-1';
 const FUNCTION_NAME = 'create-pair';
 const rp = require('request-promise');
@@ -17,14 +18,14 @@ const createPair = async () => {
     functionName: FUNCTION_NAME,
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wrapped-stx-token'),
-      tx.contractPrincipalCV('SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR', 'Wrapped-Bitcoin'),
+      tx.contractPrincipalCV(XBTC_CONTRACT_ADDRESS, 'Wrapped-Bitcoin'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-swap-token-wstx-xbtc'),
       tx.stringAsciiCV('wSTX-xBTC'),
-      tx.uintCV(new BN(852000000)), // 852 STX at 4800 sats/STX
-      tx.uintCV(new BN(4089440)) // 4M sats 
+      tx.uintCV(new BN(1000000000000)), // 1M STX
+      tx.uintCV(new BN(2666666666)) // 26 xBTC
     ],
-    nonce: new BN(408, 10),
-    fee: new BN(500000, 10),
+    nonce: new BN(nonce, 10),
+    fee: new BN(100000, 10),
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network

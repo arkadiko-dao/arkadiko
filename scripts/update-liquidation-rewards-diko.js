@@ -8,20 +8,17 @@ const utils = require('./utils');
 const network = utils.resolveNetwork();
 
 const updateRewards = async () => {
-  let nonce = await utils.getNonce(CONTRACT_ADDRESS);
-
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
     contractName: CONTRACT_NAME,
     functionName: FUNCTION_NAME,
     functionArgs: [
-      tx.uintCV(100000),
-      tx.uintCV(30), 
-      tx.uintCV(190)
+      tx.uintCV(82000),
+      tx.uintCV(720),
+      tx.uintCV(58243)
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
-    nonce: new BN(nonce),
     network
   };
 

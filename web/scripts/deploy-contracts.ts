@@ -19,6 +19,8 @@ interface Contract {
 }
 
 const contracts: Contract[] = [
+
+  // Traits
   { name: 'sip-010-trait-ft-standard' },
 
   { name: 'arkadiko-oracle-trait-v1' },
@@ -26,8 +28,18 @@ const contracts: Contract[] = [
   { name: 'arkadiko-collateral-types-trait-v1' },
   { name: 'arkadiko-vault-manager-trait-v1' },
   { name: 'arkadiko-auction-engine-trait-v1' },
-  { name: 'arkadiko-oracle-v1-1' },
   { name: 'arkadiko-dao-token-trait-v1' },
+  { name: 'arkadiko-stake-pool-diko-trait-v1' },
+  { name: 'arkadiko-swap-trait-v1' },
+  { name: 'arkadiko-stake-registry-trait-v1' },
+  { name: 'arkadiko-stake-pool-trait-v1' },
+  { name: 'arkadiko-liquidation-pool-trait-v1' },
+  { name: 'arkadiko-liquidation-rewards-trait-v1' },
+
+  { name: 'restricted-token-trait', file: 'xbtc/restricted-token-trait' },
+
+  // Contracts
+  { name: 'arkadiko-oracle-v1-1' },
   { name: 'arkadiko-token' },
   { name: 'arkadiko-collateral-types-v1-1' },
   { name: 'arkadiko-dao' },
@@ -43,11 +55,9 @@ const contracts: Contract[] = [
   { name: 'arkadiko-auction-engine-v1-1' },
   { name: 'arkadiko-diko-init' },
   { name: 'stdiko-token' },
-  { name: 'arkadiko-stake-pool-diko-trait-v1' },
   { name: 'arkadiko-governance-v2-1' },
   { name: 'arkadiko-governance-v3-1' },
   { name: 'arkadiko-liquidator-v1-1' },
-  { name: 'arkadiko-swap-trait-v1' },
   { name: 'wrapped-stx-token' },
   { name: 'arkadiko-swap-v2-1' },
   { name: 'arkadiko-stacker-payer-v1-1' },
@@ -55,8 +65,6 @@ const contracts: Contract[] = [
   { name: 'arkadiko-stacker-3-v1-1' },
   { name: 'arkadiko-stacker-4-v1-1' },
   { name: 'arkadiko-stacker-v1-1' },
-  { name: 'arkadiko-stake-registry-trait-v1' },
-  { name: 'arkadiko-stake-pool-trait-v1' },
   { name: 'arkadiko-stake-registry-v1-1' },
   { name: 'arkadiko-stake-pool-diko-v1-1' },
   { name: 'arkadiko-stake-pool-diko-v1-2' },
@@ -65,14 +73,11 @@ const contracts: Contract[] = [
   { name: 'arkadiko-swap-token-wstx-usda' },
   { name: 'arkadiko-stake-pool-wstx-usda-v1-1' },
   { name: 'arkadiko-swap-token-wstx-diko' },
+  { name: 'arkadiko-swap-token-wstx-xbtc' },
   { name: 'arkadiko-stake-pool-wstx-diko-v1-1' },
   { name: 'arkadiko-claim-yield-v1-1' },
   { name: 'arkadiko-claim-yield-v2-1' },
   { name: 'arkadiko-stake-lp-rewards' },
-
-  { name: 'arkadiko-liquidation-pool-trait-v1' },
-  { name: 'arkadiko-liquidation-rewards-trait-v1' },
-
   { name: 'arkadiko-liquidation-pool-v1-1' },
   { name: 'arkadiko-liquidation-rewards-v1-1' },
   { name: 'arkadiko-liquidation-rewards-diko-v1-1' },
@@ -80,7 +85,9 @@ const contracts: Contract[] = [
 
   { name: 'wrapped-lydian-token' },
   { name: 'lydian-airdrop-v1-1' },
+  { name: 'arkadiko-swap-token-ldn-usda' },
 
+  { name: 'Wrapped-Bitcoin', file: 'xbtc/Wrapped-Bitcoin' },
 ];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');
