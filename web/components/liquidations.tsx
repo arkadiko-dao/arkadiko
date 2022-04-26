@@ -309,19 +309,24 @@ export const Liquidations: React.FC = () => {
       const rewardsData: LiquidationRewardProps[] = [];
       await asyncForEach(rewardIds, async (rewardId: number) => {
 
-        const callUserPending = await callReadOnlyFunction({
-          contractAddress,
-          contractName: 'arkadiko-liquidation-rewards-v1-1',
-          functionName: 'get-rewards-of',
-          functionArgs: [
-            standardPrincipalCV(stxAddress || ''),
-            uintCV(rewardId),
-            contractPrincipalCV(contractAddress, 'arkadiko-liquidation-pool-v1-1'),
-          ],
-          senderAddress: stxAddress || '',
-          network: network,
-        });
-        const resultUserPending = cvToJSON(callUserPending).value.value;
+        let resultUserPending = 0;
+        try {
+          const callUserPending = await callReadOnlyFunction({
+            contractAddress,
+            contractName: 'arkadiko-liquidation-rewards-v1-1',
+            functionName: 'get-rewards-of',
+            functionArgs: [
+              standardPrincipalCV(stxAddress || ''),
+              uintCV(rewardId),
+              contractPrincipalCV(contractAddress, 'arkadiko-liquidation-pool-v1-1'),
+            ],
+            senderAddress: stxAddress || '',
+            network: network,
+          });
+          resultUserPending = cvToJSON(callUserPending).value.value;
+        } catch (e) {
+          console.error(e);
+        }
 
         if (resultUserPending > 0) {
           const call = await callReadOnlyFunction({
