@@ -6,6 +6,7 @@ import { microToReadable } from '@common/vault-utils';
 import {
   AnchorMode,
   uintCV,
+  listCV,
   contractPrincipalCV,
   makeContractFungiblePostCondition,
   makeContractSTXPostCondition,
@@ -16,14 +17,14 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { tokenTraits } from '@common/vault-utils';
 
 export interface LiquidationRewardProps {
-  rewardId: number;
+  rewardIds: number[];
   token: string;
   claimable: number;
   tokenIsStx: boolean;
 }
 
 export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
-  rewardId,
+  rewardIds,
   token,
   claimable,
   tokenIsStx
@@ -71,9 +72,9 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
       contractAddress,
       stxAddress,
       contractName: 'arkadiko-liquidation-rewards-v1-1',
-      functionName: 'claim-rewards-of',
+      functionName: 'claim-many-rewards-of',
       functionArgs: [
-        uintCV(rewardId),
+        listCV(rewardIds.map((id) =>  uintCV(id))),
         contractPrincipalCV(token.split('.')[0], token.split('.')[1]),
         contractPrincipalCV(contractAddress, 'arkadiko-liquidation-pool-v1-1'),
       ],
@@ -96,7 +97,7 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
   return (
     <tr className="bg-white dark:bg-zinc-900">
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900 dark:text-zinc-100">{rewardId}</span>
+        <span className="font-medium text-gray-900 dark:text-zinc-100">{rewardIds.join(", ")}</span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         {tokenIsStx ? ( 
