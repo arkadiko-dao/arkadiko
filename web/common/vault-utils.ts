@@ -171,7 +171,7 @@ export const tokenTraits: TokenTraits = {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
-    multihop: [],
+    multihop: ['diko', 'usda', 'wstx'],
     ft: 'wstx-diko',
   },
   wstxxbtc: {
@@ -206,7 +206,7 @@ export const tokenTraits: TokenTraits = {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
-    multihop: [],
+    multihop: ['diko', 'usda', 'wstx'],
     ft: 'wstx-diko',
   },
   xbtcusda: {
@@ -241,12 +241,14 @@ export const tokenTraits: TokenTraits = {
     address: contractAddress,
     name: 'arkadiko-swap-token-ldn-usda',
     swap: 'ldn-usda',
+    multihop: [],
     ft: 'ldn-usda'
   },
   usdaldn: {
     address: contractAddress,
     name: 'arkadiko-swap-token-ldn-usda',
     swap: 'ldn-usda',
+    multihop: [],
     ft: 'ldn-usda'
   },
   wstxwelsh: {
