@@ -119,6 +119,7 @@ export const Swap: React.FC = () => {
       setTokenXAmount(0.0);
       setTokenYAmount(0.0);
       setLoadingData(true);
+      setIsMultiHop(false);
       setExchangeRateSwitched(false);
 
       const swapPair = `${tokenX['nameInPair']}${tokenY['nameInPair']}`;
