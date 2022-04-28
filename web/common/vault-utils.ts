@@ -163,7 +163,7 @@ export const tokenTraits: TokenTraits = {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
-    multihop: ['diko', 'usda', 'wstx']
+    multihop: ['diko', 'usda', 'wstx'],
     ft: 'wstx-diko',
   },
   dikostx: {
