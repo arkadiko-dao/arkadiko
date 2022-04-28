@@ -22,7 +22,7 @@ import { StyledIcon } from './ui/styled-icon';
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
   const [tokenX, setTokenX] = useState(tokenList[2]);
-  const [tokenY, setTokenY] = useState(tokenList[1]);
+  const [tokenY, setTokenY] = useState(tokenList[0]);
   const [tokenXAmount, setTokenXAmount] = useState<number>();
   const [tokenYAmount, setTokenYAmount] = useState(0.0);
   const [balanceSelectedTokenX, setBalanceSelectedTokenX] = useState(0.0);

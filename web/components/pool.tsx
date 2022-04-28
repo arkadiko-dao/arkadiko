@@ -68,31 +68,35 @@ export const Pool: React.FC = () => {
                 Your liquidity positions
               </h3>
               <dl className="mt-6 space-y-6">
-                <PoolPosition key="token1" indexTokenX={2} indexTokenY={0} />
+                <PoolPosition key="token1" indexTokenX={2} indexTokenY={0} canAdd={true} />
               </dl>
 
               <dl className="mt-6 space-y-6">
-                <PoolPosition key="token2" indexTokenX={2} indexTokenY={1} />
+                <PoolPosition key="token2" indexTokenX={2} indexTokenY={1} canAdd={false} />
               </dl>
 
               <dl className="mt-6 space-y-6">
-                <PoolPosition key="token3" indexTokenX={1} indexTokenY={0} />
+                <PoolPosition key="token3" indexTokenX={1} indexTokenY={0} canAdd={true} />
               </dl>
 
               <dl className="mt-6 space-y-6">
-                <PoolPosition key="token4" indexTokenX={2} indexTokenY={3} />
+                <PoolPosition key="token4" indexTokenX={2} indexTokenY={3} canAdd={false} />
               </dl>
 
               <dl className="mt-6 space-y-6">
-                <PoolPosition key="token5" indexTokenX={3} indexTokenY={0} />
+                <PoolPosition key="token5" indexTokenX={3} indexTokenY={0} canAdd={true} />
               </dl>
 
               <dl className="mt-6 space-y-6">
-                <PoolPosition key="token6" indexTokenX={4} indexTokenY={0} />
+                <PoolPosition key="token6" indexTokenX={4} indexTokenY={0} canAdd={true} />
               </dl>
 
               <dl className="mt-6 space-y-6">
-                <PoolPosition key="token7" indexTokenX={2} indexTokenY={5} />
+                <PoolPosition key="token7" indexTokenX={2} indexTokenY={6} canAdd={true} />
+              </dl>
+
+              <dl className="mt-6 space-y-6">
+                <PoolPosition key="token8" indexTokenX={5} indexTokenY={0} canAdd={true} />
               </dl>
             </div>
 

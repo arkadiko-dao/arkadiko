@@ -26,6 +26,10 @@ export const getBalance = async (address: string) => {
   const response = await fetch(url, { credentials: 'omit' });
   const data = await response.json();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
+  const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
+  const welshContractAddress = process.env.WELSH_CONTRACT_ADDRESS || '';
+  const ldnContractAddress = process.env.LDN_CONTRACT_ADDRESS || '';
+
   const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
   const usdaBalance = data.fungible_tokens[`${contractAddress}.usda-token::usda`];
   const xStxBalance = data.fungible_tokens[`${contractAddress}.xstx-token::xstx`];
@@ -42,16 +46,19 @@ export const getBalance = async (address: string) => {
     data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-xbtc-usda::xbtc-usda`];
   const lpStxWelshBalance =
     data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-welsh::wstx-welsh`];
-    const lpWldnUsdaBalance =
+  const lpWldnUsdaBalance =
     data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wldn-usda::wldn-usda`];
-  const wldnBalance = data.fungible_tokens[`SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5.wrapped-lydian-token::wrapped-lydian`];
+  const lpLdnUsdaBalance =
+    data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-ldn-usda::ldn-usda`];
+  const wldnBalance = data.fungible_tokens[`${ldnContractAddress}.wrapped-lydian-token::wrapped-lydian`];
+  const ldnBalance = data.fungible_tokens[`${ldnContractAddress}.lydian-token::lydian`];
   const xbtcBalance =
     data.fungible_tokens[
-      `SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin::wrapped-bitcoin`
+      `${xbtcContractAddress}.Wrapped-Bitcoin::wrapped-bitcoin`
     ];
   const welshBalance =
     data.fungible_tokens[
-      `SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G.welshcorgicoin-token::welshcorgicoin`
+      `${welshContractAddress}.welshcorgicoin-token::welshcorgicoin`
     ];
 
   return {
@@ -62,6 +69,7 @@ export const getBalance = async (address: string) => {
     xstx: xStxBalance ? xStxBalance.balance : 0,
     stdiko: stDikoBalance ? stDikoBalance.balance : 0,
     wldn: wldnBalance ? wldnBalance.balance : 0,
+    ldn: ldnBalance ? ldnBalance.balance : 0,
     welsh: welshBalance ? welshBalance.balance : 0,
     dikousda: lpDikoUsdaBalance ? lpDikoUsdaBalance.balance : 0,
     wstxusda: lpStxUsdaBalance ? lpStxUsdaBalance.balance : 0,
@@ -69,6 +77,7 @@ export const getBalance = async (address: string) => {
     wstxxbtc: lpStxXbtcBalance ? lpStxXbtcBalance.balance : 0,
     xbtcusda: lpXbtcUsdaBalance ? lpXbtcUsdaBalance.balance : 0,
     wldnusda: lpWldnUsdaBalance ? lpWldnUsdaBalance.balance : 0,
+    ldnusda: lpLdnUsdaBalance ? lpLdnUsdaBalance.balance : 0,
     wstxwelsh: lpStxWelshBalance ? lpStxWelshBalance.balance : 0,
   };
 };
@@ -105,6 +114,7 @@ export const App: React.FC = () => {
         xstx: account.xstx.toString(),
         stdiko: account.stdiko.toString(),
         wldn: account.wldn.toString(),
+        ldn: account.ldn.toString(),
         welsh: account.welsh.toString(),
         dikousda: account.dikousda.toString(),
         wstxusda: account.wstxusda.toString(),
@@ -112,6 +122,7 @@ export const App: React.FC = () => {
         wstxxbtc: account.wstxxbtc.toString(),
         xbtcusda: account.xbtcusda.toString(),
         wldnusda: account.wldnusda.toString(),
+        ldnusda: account.ldnusda.toString(),
         wstxwelsh: account.wstxwelsh.toString(),
       },
     }));

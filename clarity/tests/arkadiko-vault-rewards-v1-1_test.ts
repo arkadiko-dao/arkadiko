@@ -223,61 +223,6 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "vault-rewards: user loses rewards when vault gets liquidated",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-
-    let oracleManager = new OracleManager(chain, deployer);
-    let vaultManager = new VaultManager(chain, deployer);
-    let vaultRewards = new VaultRewards(chain, deployer);
-    let vaultLiquidator = new VaultLiquidator(chain, deployer);
-    let stacker = new Stacker(chain, deployer);
-
-    // Set price, create vault
-    oracleManager.updatePrice("STX", 2);
-    vaultManager.createVault(deployer, "STX-A", 5, 1);
-
-    // Collateral in vault rewards contract
-    let call:any = vaultRewards.getCollateralOf(deployer);
-    call.result.expectTuple()["collateral"].expectUintWithDecimals(5);
-    call.result.expectTuple()["cumm-reward-per-collateral"].expectUint(0);
-
-    // Deposit extra
-    let result = vaultManager.deposit(deployer, 1, 2);
-    result.expectOk().expectBool(true);
-
-    // Collateral in vault rewards contract
-    call = vaultRewards.getCollateralOf(deployer);
-    call.result.expectTuple()["collateral"].expectUintWithDecimals(7);
-    call.result.expectTuple()["cumm-reward-per-collateral"].expectUintWithDecimals(64);
-
-    // Toggle stacking
-    result = vaultManager.toggleStacking(deployer, 1);
-    result.expectOk().expectBool(true);
-    stacker.enableVaultWithdrawals(1);
-
-    // Withdraw
-    result = vaultManager.withdraw(deployer, 1, 1);
-    result.expectOk().expectBool(true);
-
-    // Collateral in vault rewards contract
-    call = vaultRewards.getCollateralOf(deployer);
-    call.result.expectTuple()["collateral"].expectUintWithDecimals(6);
-    call.result.expectTuple()["cumm-reward-per-collateral"].expectUintWithDecimals(201.142857);
-
-    // Liquidate
-    result = oracleManager.updatePrice("STX", 0.2);
-    result.expectOk().expectUintWithDecimals(0.2);
-    result = vaultLiquidator.notifyRiskyVault(deployer, 1);
-    result.expectOk().expectUint(5200);
-
-    // No collateral left
-    call = vaultRewards.getCollateralOf(deployer);
-    call.result.expectTuple()["collateral"].expectUint(0);
-  },
-});
-
-Clarinet.test({
   name: "vault-rewards: vault DIKO rewards over time",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;

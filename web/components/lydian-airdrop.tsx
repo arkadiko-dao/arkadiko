@@ -267,7 +267,7 @@ export const LydianAirdrop = () => {
                                   maximumFractionDigits: 6,
                                 })} LDN
                               </p>
-                              {false ? (
+                              {true ? (
                                 <button
                                   type="button"
                                   disabled={claimAmount1 === 0}
@@ -300,7 +300,7 @@ export const LydianAirdrop = () => {
                                   maximumFractionDigits: 6,
                                 })} LDN
                               </p>
-                              {false ? (
+                              {true ? (
                                 <button
                                   type="button"
                                   disabled={claimAmount2 === 0}
@@ -333,7 +333,7 @@ export const LydianAirdrop = () => {
                                   maximumFractionDigits: 6,
                                 })} LDN
                               </p>
-                              {false ? (
+                              {true ? (
                                 <button
                                   type="button"
                                   disabled={claimAmount3 === 0}

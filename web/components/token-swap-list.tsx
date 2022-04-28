@@ -4,6 +4,10 @@ import { classNames } from '@common/class-names';
 import { StyledIcon } from './ui/styled-icon';
 
 export const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+export const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
+export const welshContractAddress = process.env.WELSH_CONTRACT_ADDRESS || '';
+export const ldnContractAddress = process.env.LDN_CONTRACT_ADDRESS || '';
+
 export const tokenList = [
   {
     id: 1,
@@ -38,7 +42,7 @@ export const tokenList = [
     nameInPair: 'xbtc',
     logo: '/assets/tokens/xbtc.svg',
     listed: true,
-    address: 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR',
+    address: xbtcContractAddress,
     decimals: 8,
   },
   {
@@ -46,17 +50,26 @@ export const tokenList = [
     name: 'wLDN',
     nameInPair: 'wldn',
     logo: '/assets/tokens/lydian.svg',
-    listed: true,
-    address: 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5',
+    listed: false,
+    address: ldnContractAddress,
     decimals: 6
   },
   {
     id: 6,
+    name: 'LDN',
+    nameInPair: 'ldn',
+    logo: '/assets/tokens/lydian.svg',
+    listed: true,
+    address: ldnContractAddress,
+    decimals: 6
+  },
+  {
+    id: 7,
     name: 'WELSH',
     nameInPair: 'welsh',
     logo: '/assets/tokens/welsh.png',
     listed: true,
-    address: 'SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G',
+    address: welshContractAddress,
     decimals: 6,
   },
 ];

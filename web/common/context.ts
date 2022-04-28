@@ -10,6 +10,7 @@ interface UserBalance {
   diko: number;
   stdiko: number;
   wldn: number;
+  ldn: number;
   welsh: number;
   dikousda: number;
   wstxusda: number;
@@ -17,6 +18,7 @@ interface UserBalance {
   wstxxbtc: number;
   xbtcusda: number;
   wldnusda: number;
+  ldnusda: number;
   wstxwelsh: number;
 }
 
@@ -57,6 +59,7 @@ export const defaultBalance = () => {
     xstx: 0,
     stdiko: 0,
     wldn: 0,
+    ldn: 0,
     welsh: 0,
     dikousda: undefined,
     stxusda: undefined,
@@ -65,6 +68,7 @@ export const defaultBalance = () => {
     wstxxbtc: undefined,
     xbtcusda: undefined,
     wldnusda: undefined,
+    ldnusda: undefined,
     wstxwelsh: undefined,
   };
 };

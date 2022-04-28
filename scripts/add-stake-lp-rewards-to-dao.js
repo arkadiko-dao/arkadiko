@@ -11,11 +11,11 @@ async function burn() {
     contractName: "arkadiko-governance-v3-1",
     functionName: "add-contract-address",
     functionArgs: [
-      tx.stringAsciiCV("migrate-xstx"),
+      tx.stringAsciiCV("arkadiko-alex-dual-yield-v1-1"),
       tx.standardPrincipalCV('SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR'),
-      tx.contractPrincipalCV('SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR', 'arkadiko-xstx-migrate'),
+      tx.contractPrincipalCV('SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR', 'arkadiko-alex-dual-yield-v1-1'),
       tx.trueCV(),
-      tx.trueCV()
+      tx.falseCV()
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
