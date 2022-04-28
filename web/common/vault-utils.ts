@@ -101,6 +101,7 @@ export const tokenTraits: TokenTraits = {
     address: ldnContractAddress,
     name: 'lydian-token',
     swap: 'lydian-token',
+    multihop: [],
     ft: 'lydian',
   },
   welsh: {

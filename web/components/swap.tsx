@@ -338,11 +338,19 @@ export const Swap: React.FC = () => {
   };
 
   const swapTokensMultihop = async () => {
-    const tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
-    const tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
+    const swapPair = `${tokenX['nameInPair']}${tokenY['nameInPair']}`;
+    const pair = tokenTraits[swapPair];
+    const tokenXTrait = tokenTraits[pair['multihop'][0]]['swap'];
+    const tokenYTrait = tokenTraits[pair['multihop'][1]]['swap'];
+    const tokenZTrait = tokenTraits[pair['multihop'][2]]['swap'];
+
+    if (!pair || pair['multihop'].length === 0) {
+      return;
+    }
+
     let principalX = contractPrincipalCV(tokenX['address'], tokenXTrait);
     let principalY = contractPrincipalCV(tokenY['address'], tokenYTrait);
-    let principalZ = contractPrincipalCV(tokenY['address'], tokenYTrait);
+    let principalZ = contractPrincipalCV(tokenY['address'], tokenZTrait); // TODO: token Z address
     const amount = uintCV(tokenXAmount * Math.pow(10, tokenX['decimals']));
     const postConditionMode = 0x01;
 
