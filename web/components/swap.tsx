@@ -130,8 +130,6 @@ export const Swap: React.FC = () => {
         const tokenXContract = tokenTraits[pair['multihop'][0]]['swap'];
         const tokenYContract = tokenTraits[pair['multihop'][1]]['swap'];
         const tokenZContract = tokenTraits[pair['multihop'][2]]['swap'];
-        console.log(tokenXContract, tokenYContract, tokenZContract);
-        console.log(pairs);
         let json3 = pairs[`${tokenXContract}/${tokenYContract}`];
         if (!json3) {
           json3 = pairs[`${tokenYContract}/${tokenXContract}`];
@@ -153,8 +151,6 @@ export const Swap: React.FC = () => {
           setInverseDirectionY(true);
         }
 
-        console.log(json3, json4);
-        console.log('found multihop pair!');
         if (json3 && json4) {
           setCurrentPair(json3);
           setPairEnabled(json3['enabled'] && json4['enabled']);
