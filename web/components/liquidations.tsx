@@ -569,7 +569,7 @@ export const Liquidations: React.FC = () => {
                       </>
                     )}
                   </div>
-                  
+
                   <div className="p-4 overflow-hidden border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
                     <p className="text-xs font-semibold text-indigo-600 uppercase">APR</p>
                     {isLoading ? (
@@ -635,7 +635,7 @@ export const Liquidations: React.FC = () => {
 
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                         <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
-                          Token lockup
+                          Lockup duration
                           <div className="ml-2">
                             <Tooltip
                               className="z-10"
@@ -689,10 +689,10 @@ export const Liquidations: React.FC = () => {
                           )}
                         </dt>
                       </div>
-                      
+
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                         <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
-                          Your tokens ulocked
+                          Unlocking at
                           <div className="ml-2">
                             <Tooltip
                               className="z-10"
@@ -711,7 +711,7 @@ export const Liquidations: React.FC = () => {
                             <Placeholder className="py-2" width={Placeholder.width.FULL} />
                           ) : (
                             <>
-                              block {stakerLockupBlocks}
+                              Block {stakerLockupBlocks}
                             </>
                           )}
                         </dt>
