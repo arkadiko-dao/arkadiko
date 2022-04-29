@@ -647,14 +647,14 @@ export const Swap: React.FC = () => {
                                 src={tokenList[2].logo}
                                 alt=""
                               />
-                              <span className="ml-1.5 mr-1 text-sm">{tokenList[0].name}</span>
+                              <span className="ml-1.5 mr-1 text-sm">{tokenList[2].name}</span>
                               <StyledIcon as="ChevronRightIcon" size={5} />
                               <img
                                 className="inline-block w-6 h-6 rounded-full shrink-0 ring-2 ring-white dark:ring-zinc-800"
                                 src={tokenList[0].logo}
                                 alt=""
                               />
-                              <span className="ml-1.5 mr-1 text-sm">{tokenList[3].name}</span>
+                              <span className="ml-1.5 mr-1 text-sm">{tokenList[0].name}</span>
                               <StyledIcon as="ChevronRightIcon" size={5} />
                               <img
                                 className="inline-block w-6 h-6 rounded-full shrink-0 ring-2 ring-white dark:ring-zinc-800"
