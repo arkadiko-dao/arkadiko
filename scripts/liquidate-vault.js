@@ -3,6 +3,7 @@ const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
+const BN = require('bn.js');
 
 const vaultId = process.argv.slice(2)[0];
 console.log('Trying to liquidate vault with ID', vaultId);
@@ -21,6 +22,7 @@ const txOptions = {
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-pool-v1-1'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-rewards-v1-1'),
   ],
+  nonce: new BN(851, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network
