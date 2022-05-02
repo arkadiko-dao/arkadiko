@@ -298,7 +298,6 @@ export const Liquidations: React.FC = () => {
         network: network,
       });
       const maxRewardId = cvToJSON(call).value;
-
       console.log("maxRewardId: ", maxRewardId);
 
       var rewardIds = [];
@@ -308,7 +307,6 @@ export const Liquidations: React.FC = () => {
 
       const rewardsData: LiquidationRewardProps[] = [];
       await asyncForEach(rewardIds, async (rewardId: number) => {
-
         let resultUserPending = 0;
         try {
           const callUserPending = await callReadOnlyFunction({
@@ -343,15 +341,29 @@ export const Liquidations: React.FC = () => {
           const data = json.value;
 
           rewardsData.push({
-            rewardId: rewardId,
+            rewardIds: [rewardId],
             token: data['token'].value,
-            claimable: resultUserPending,
+            claimable: parseInt(resultUserPending),
             tokenIsStx: data['token-is-stx'].value,
           });
         }
       });
 
-      return rewardsData;
+      // Merge in groups to bulk claim
+      const rewardsDataMerged: LiquidationRewardProps[] = [];
+      for (const rewardData of rewardsData) {
+        const result = rewardsDataMerged.filter(data => {
+          return data.rewardIds.length < 5 && data.token == rewardData.token && data.tokenIsStx == rewardData.tokenIsStx;
+        });
+        if (result.length == 0) {
+          rewardsDataMerged.push(rewardData);
+        } else {
+          let existingData = result[0];
+          existingData.rewardIds.push(rewardData.rewardIds[0]);
+          existingData.claimable = parseInt(existingData.claimable) + parseInt(rewardData.claimable);
+        }
+      }
+      return rewardsDataMerged;
     };
 
     const fetchInfo = async () => {
@@ -382,8 +394,8 @@ export const Liquidations: React.FC = () => {
 
       const rewardItems = rewards.map((reward: object) => (
         <LiquidationReward
-          key={reward.rewardId}
-          rewardId={reward.rewardId}
+          key={reward.rewardIds}
+          rewardIds={reward.rewardIds}
           token={reward.token}
           claimable={reward.claimable}
           tokenIsStx={reward.tokenIsStx}
@@ -492,16 +504,16 @@ export const Liquidations: React.FC = () => {
                     <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
                       <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
                         <tr>
-                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400">
-                            Reward ID
+                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-zinc-400">
+                            Reward IDs
                           </th>
-                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400">
+                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-zinc-400">
                             Token
                           </th>
-                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400">
+                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-zinc-400">
                             Amount
                           </th>
-                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"></th>
+                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-zinc-400"></th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600">{rewardData}</tbody>
@@ -557,7 +569,7 @@ export const Liquidations: React.FC = () => {
                       </>
                     )}
                   </div>
-                  
+
                   <div className="p-4 overflow-hidden border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
                     <p className="text-xs font-semibold text-indigo-600 uppercase">APR</p>
                     {isLoading ? (
@@ -623,7 +635,7 @@ export const Liquidations: React.FC = () => {
 
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                         <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
-                          Token lockup
+                          Lockup duration
                           <div className="ml-2">
                             <Tooltip
                               className="z-10"
@@ -677,10 +689,10 @@ export const Liquidations: React.FC = () => {
                           )}
                         </dt>
                       </div>
-                      
+
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                         <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
-                          Your tokens ulocked
+                          Unlocking at
                           <div className="ml-2">
                             <Tooltip
                               className="z-10"
@@ -699,7 +711,7 @@ export const Liquidations: React.FC = () => {
                             <Placeholder className="py-2" width={Placeholder.width.FULL} />
                           ) : (
                             <>
-                              block {stakerLockupBlocks}
+                              Block {stakerLockupBlocks}
                             </>
                           )}
                         </dt>
