@@ -404,8 +404,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v1-1", "stake-pending-rewards", [
       types.principal(Utils.qualifiedName('arkadiko-stake-registry-v1-1')),
-      types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
-      types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-1')),
+      types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2')),
+      types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2')),
       types.principal(Utils.qualifiedName('arkadiko-token')),
     ], deployer.address)
   ]);
@@ -717,7 +717,7 @@ Clarinet.test({
     );
     result.expectOk().expectBool(true);
 
-    let call:any = governance.getProposalByID(1);
+    let call:any = governance.getProposalByID(7);
     call.result.expectTuple()["is-open"].expectBool(true);
     call.result.expectTuple()["start-block-height"].expectUint(10);
     
@@ -725,14 +725,17 @@ Clarinet.test({
     chain.mineEmptyBlock(10);
 
     // Vote for wallet_1
-    result = governance.voteForProposal(deployer, 1, 10);
+    result = governance.voteForProposal(deployer, 7, 10000);
+    result.expectOk().expectUint(3200);
+
+    result = governance.voteForProposal(deployer, 7, 150000, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
     // Advance
     chain.mineEmptyBlock(1500);
 
     // End proposal
-    result = governance.endProposal(1);
+    result = governance.endProposal(7);
     result.expectOk().expectUint(3200);
 
     // Check if DAO updated

@@ -34,9 +34,9 @@ export interface VaultProps {
 
 export const debtClass = (liquidationRatio: number, ratio: number) => {
   if (Number(ratio) >= Number(liquidationRatio) + 50) {
-    return 'text-green-400';
+    return 'text-green-500';
   } else if (Number(ratio) >= Number(liquidationRatio) + 30) {
-    return 'text-orange-400';
+    return 'text-orange-500';
   } else if (Number(ratio) > Number(liquidationRatio) + 10) {
     return 'text-red-600';
   }
@@ -81,19 +81,15 @@ export const Vault: React.FC<VaultProps> = ({
       setStabilityFee(fee.value.value);
     };
 
-    if (auctionEnded) {
-      setStabilityFee(0);
-    } else {
-      fetchFees();
-    }
+    fetchFees();
   }, []);
 
   const debtBackgroundClass = (ratio: number) => {
     if (ratio && ratio < Number(collateralData?.liquidationRatio)) {
-      return 'bg-red-300';
+      return 'bg-red-300/50';
     }
 
-    return 'bg-white dark:bg-zinc-900';
+    return 'bg-white dark:bg-zinc-800';
   };
 
   let debtRatio = 0;
@@ -150,7 +146,7 @@ export const Vault: React.FC<VaultProps> = ({
           </td>
           <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-zinc-400 whitespace-nowrap">
             <span className={`${debtClass(collateralData?.liquidationRatio, debtRatio)}`}>
-              {debtRatio}% (&gt; {collateralData['liquidationRatio']}%)
+              {debtRatio}% (&gt; {collateralData?.liquidationRatio}%)
             </span>
           </td>
           <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-zinc-400 whitespace-nowrap">
@@ -179,7 +175,7 @@ export const Vault: React.FC<VaultProps> = ({
             <span className="text-gray-900 dark:text-zinc-100">
               {isLiquidated ? (
                 auctionEnded ? (
-                  leftoverCollateral > 0 && stackedTokens === 0 ? (
+                  Number(leftoverCollateral) > 0 && Number(stackedTokens) === 0 ? (
                     <button
                       type="button"
                       className="text-indigo-600 hover:text-indigo-900"
@@ -206,7 +202,7 @@ export const Vault: React.FC<VaultProps> = ({
           </td>
         </tr>
       ) : (
-        <div role="listitem" className="bg-white dark:bg-zinc-900">
+        <div role="listitem" className="bg-white dark:bg-zinc-800">
           <table className="w-full">
             <thead>
               <tr>
@@ -220,16 +216,24 @@ export const Vault: React.FC<VaultProps> = ({
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-zinc-600">
               <tr>
-                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400" scope="row">
+                <th
+                  className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                  scope="row"
+                >
                   <div className="flex items-center">Vault ID</div>
                 </th>
                 <td className="py-5 pr-4">
-                  <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">{id}</span>
+                  <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
+                    {id}
+                  </span>
                 </td>
               </tr>
 
               <tr className="border-t border-gray-200 dark:border-zinc-600">
-                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400" scope="row">
+                <th
+                  className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                  scope="row"
+                >
                   <div className="flex items-center">Collateral Type</div>
                 </th>
                 <td className="py-5 pr-4">
@@ -240,20 +244,26 @@ export const Vault: React.FC<VaultProps> = ({
               </tr>
 
               <tr className="border-t border-gray-200 dark:border-zinc-600">
-                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400" scope="row">
+                <th
+                  className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                  scope="row"
+                >
                   Current Collateralization
                 </th>
                 <td className="py-5 pr-4">
                   <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
                     <span className={`${debtClass(collateralData?.liquidationRatio, debtRatio)}`}>
-                      {debtRatio}% (&gt; {collateralData['liquidationRatio']}%)
+                      {debtRatio}% (&gt; {collateralData?.liquidationRatio}%)
                     </span>
                   </span>
                 </td>
               </tr>
 
               <tr className="border-t border-gray-200 dark:border-zinc-600">
-                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400" scope="row">
+                <th
+                  className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                  scope="row"
+                >
                   Stability Fee Owed
                 </th>
                 <td className="py-5 pr-4">
@@ -264,7 +274,10 @@ export const Vault: React.FC<VaultProps> = ({
               </tr>
 
               <tr className="border-t border-gray-200 dark:border-zinc-600">
-                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400" scope="row">
+                <th
+                  className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                  scope="row"
+                >
                   USDA amount
                 </th>
                 <td className="py-5 pr-4">
@@ -280,7 +293,10 @@ export const Vault: React.FC<VaultProps> = ({
               </tr>
 
               <tr className="border-t border-gray-200 dark:border-zinc-600">
-                <th className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400" scope="row">
+                <th
+                  className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                  scope="row"
+                >
                   Collateral amount
                 </th>
                 <td className="py-5 pr-4">
@@ -303,8 +319,8 @@ export const Vault: React.FC<VaultProps> = ({
                     type="button"
                     className="block w-full px-4 py-2 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     onClick={() => callWithdrawLeftoverCollateral()}
-                    >
-                      Withdraw Leftover Collateral
+                  >
+                    Withdraw Leftover Collateral
                   </button>
                 ) : (
                   <span>Vault liquidated</span>

@@ -18,7 +18,7 @@ import { useLocation } from 'react-router-dom';
 import { initiateConnection } from '@common/websocket-tx-updater';
 import ScrollToTop from '@components/scroll-to-top';
 import { Redirect } from 'react-router-dom';
-import { Helmet } from "react-helmet";
+import { Helmet } from 'react-helmet';
 
 export const getBalance = async (address: string) => {
   const client = getRPCClient();
@@ -26,6 +26,10 @@ export const getBalance = async (address: string) => {
   const response = await fetch(url, { credentials: 'omit' });
   const data = await response.json();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
+  const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
+  const welshContractAddress = process.env.WELSH_CONTRACT_ADDRESS || '';
+  const ldnContractAddress = process.env.LDN_CONTRACT_ADDRESS || '';
+
   const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
   const usdaBalance = data.fungible_tokens[`${contractAddress}.usda-token::usda`];
   const xStxBalance = data.fungible_tokens[`${contractAddress}.xstx-token::xstx`];
@@ -42,8 +46,20 @@ export const getBalance = async (address: string) => {
     data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-xbtc-usda::xbtc-usda`];
   const lpStxWelshBalance =
     data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-welsh::wstx-welsh`];
-  const xbtcBalance = data.fungible_tokens[`SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin::wrapped-bitcoin`];
-  const welshBalance = data.fungible_tokens[`SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G.welshcorgicoin-token::welshcorgicoin`];
+  const lpWldnUsdaBalance =
+    data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wldn-usda::wldn-usda`];
+  const lpLdnUsdaBalance =
+    data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-ldn-usda::ldn-usda`];
+  const wldnBalance = data.fungible_tokens[`${ldnContractAddress}.wrapped-lydian-token::wrapped-lydian`];
+  const ldnBalance = data.fungible_tokens[`${ldnContractAddress}.lydian-token::lydian`];
+  const xbtcBalance =
+    data.fungible_tokens[
+      `${xbtcContractAddress}.Wrapped-Bitcoin::wrapped-bitcoin`
+    ];
+  const welshBalance =
+    data.fungible_tokens[
+      `${welshContractAddress}.welshcorgicoin-token::welshcorgicoin`
+    ];
 
   return {
     stx: Number(data.stx.balance) - Number(data.stx.locked),
@@ -52,13 +68,17 @@ export const getBalance = async (address: string) => {
     diko: dikoBalance ? dikoBalance.balance : 0,
     xstx: xStxBalance ? xStxBalance.balance : 0,
     stdiko: stDikoBalance ? stDikoBalance.balance : 0,
+    wldn: wldnBalance ? wldnBalance.balance : 0,
+    ldn: ldnBalance ? ldnBalance.balance : 0,
     welsh: welshBalance ? welshBalance.balance : 0,
     dikousda: lpDikoUsdaBalance ? lpDikoUsdaBalance.balance : 0,
     wstxusda: lpStxUsdaBalance ? lpStxUsdaBalance.balance : 0,
     wstxdiko: lpStxDikoBalance ? lpStxDikoBalance.balance : 0,
     wstxxbtc: lpStxXbtcBalance ? lpStxXbtcBalance.balance : 0,
     xbtcusda: lpXbtcUsdaBalance ? lpXbtcUsdaBalance.balance : 0,
-    wstxwelsh: lpStxWelshBalance ? lpStxWelshBalance.balance : 0
+    wldnusda: lpWldnUsdaBalance ? lpWldnUsdaBalance.balance : 0,
+    ldnusda: lpLdnUsdaBalance ? lpLdnUsdaBalance.balance : 0,
+    wstxwelsh: lpStxWelshBalance ? lpStxWelshBalance.balance : 0,
   };
 };
 
@@ -93,20 +113,24 @@ export const App: React.FC = () => {
         stx: account.stx.toString(),
         xstx: account.xstx.toString(),
         stdiko: account.stdiko.toString(),
+        wldn: account.wldn.toString(),
+        ldn: account.ldn.toString(),
         welsh: account.welsh.toString(),
         dikousda: account.dikousda.toString(),
         wstxusda: account.wstxusda.toString(),
         wstxdiko: account.wstxdiko.toString(),
         wstxxbtc: account.wstxxbtc.toString(),
         xbtcusda: account.xbtcusda.toString(),
-        wstxwelsh: account.wstxwelsh.toString()
+        wldnusda: account.wldnusda.toString(),
+        ldnusda: account.ldnusda.toString(),
+        wstxwelsh: account.wstxwelsh.toString(),
       },
     }));
   };
 
   const fetchCollateralTypes = async (address: string) => {
     const collTypes = {};
-    ['STX-A', 'STX-B'].forEach(async token => {
+    ['STX-A', 'STX-B', 'XBTC-A'].forEach(async token => {
       const types = await callReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-collateral-types-v1-1',
@@ -154,7 +178,10 @@ export const App: React.FC = () => {
             const daysPassed = Math.round(
               (currentTimestamp - startTimestamp) / (1000 * 60 * 60 * 24)
             );
-            const daysLeft = Math.max(0, Math.round((endTimestamp - currentTimestamp) / (1000 * 60 * 60 * 24)));
+            const daysLeft = Math.max(
+              0,
+              Math.round((endTimestamp - currentTimestamp) / (1000 * 60 * 60 * 24))
+            );
 
             const startDate = new Date(startTimestamp).toDateString();
             const endDate = new Date(endTimestamp).toDateString().split(' ').slice(1).join(' ');
@@ -166,6 +193,8 @@ export const App: React.FC = () => {
               endDate: endDate,
               daysPassed: daysPassed,
               daysLeft: daysLeft,
+              cycleStartHeight: response['cycleStartHeight'],
+              cycleEndHeight: response['cycleEndHeight'],
             }));
           });
       });
@@ -189,6 +218,8 @@ export const App: React.FC = () => {
         }
       };
       void getData();
+    } else {
+      fetchStackingCycle();
     }
   }, []);
 
@@ -233,11 +264,8 @@ export const App: React.FC = () => {
     <Connect authOptions={authOptions}>
       <ThemeProvider theme={theme}>
         <AppContext.Provider value={[state, setState]}>
-          <Helmet
-            titleTemplate="Arkadiko Finance App - %s"
-            defaultTitle="Arkadiko Finance App"
-          />
-          <div className="flex flex-col font-sans bg-white dark:bg-zinc-800 min-height-screen">
+          <Helmet titleTemplate="Arkadiko Finance App - %s" defaultTitle="Arkadiko Finance App" />
+          <div className="flex flex-col font-sans bg-white dark:bg-zinc-900 min-height-screen">
             {location.pathname.indexOf('/onboarding') != 0 ? (
               <Header signOut={signOut} setShowSidebar={setShowSidebar} />
             ) : null}

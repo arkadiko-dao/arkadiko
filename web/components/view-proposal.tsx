@@ -16,13 +16,12 @@ import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
 import { AppContext } from '@common/context';
-import { ThumbUpIcon, ThumbDownIcon } from '@heroicons/react/outline';
-import { ExternalLinkIcon } from '@heroicons/react/solid';
 import { getRPCClient } from '@common/utils';
 import { ProposalProps } from './proposal-group';
 import BN from 'bn.js';
 import { Placeholder } from './ui/placeholder';
 import { classNames } from '@common/class-names';
+import { StyledIcon } from './ui/styled-icon';
 
 export const ViewProposal = ({ match }) => {
   const [state, setState] = useContext(AppContext);
@@ -40,7 +39,11 @@ export const ViewProposal = ({ match }) => {
   const [stdikoVoted, setStdikoVoted] = useState('');
 
   const CONTRACT_NAME =
-    match.params.id <= 2 ? 'arkadiko-governance-v1-1' : 'arkadiko-governance-v2-1';
+    match.params.id <= 2
+      ? 'arkadiko-governance-v1-1'
+      : match.params.id <= 6
+      ? 'arkadiko-governance-v2-1'
+      : 'arkadiko-governance-v3-1';
 
   useEffect(() => {
     if (state.currentTxStatus === 'success') {
@@ -356,7 +359,7 @@ export const ViewProposal = ({ match }) => {
       <Modal isOpen={showVoteDikoModal}>
         <div className="flex px-4 pt-4 pb-20 text-center sm:block sm:p-0">
           <div
-            className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg dark:bg-zinc-900 sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6"
+            className="inline-block px-2 pt-5 pb-4 overflow-hidden text-left align-bottom bg-white rounded-lg dark:bg-zinc-800 sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6"
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-headline"
@@ -563,7 +566,7 @@ export const ViewProposal = ({ match }) => {
 
           <div className="mt-4">
             <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-x-4 lg:space-y-0">
-              <div className="overflow-hidden bg-white rounded-lg shadow dark:bg-zinc-900">
+              <div className="overflow-hidden bg-white rounded-lg shadow dark:bg-zinc-800">
                 <div className="px-4 py-5 sm:px-6">
                   <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
                     Details
@@ -574,7 +577,7 @@ export const ViewProposal = ({ match }) => {
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                       <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
                         Link
-                        <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
+                        <StyledIcon as="ExternalLinkIcon" size={4} className="block ml-2" />
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 dark:text-zinc-100 sm:mt-0 sm:col-span-2">
                         {isLoading ? (
@@ -599,7 +602,7 @@ export const ViewProposal = ({ match }) => {
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                       <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
                         Proposer
-                        <ExternalLinkIcon className="block w-3 h-3 ml-2" aria-hidden="true" />
+                        <StyledIcon as="ExternalLinkIcon" size={4} className="block ml-2" />
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 dark:text-zinc-100 sm:mt-0 sm:col-span-2">
                         {isLoading ? (
@@ -665,7 +668,7 @@ export const ViewProposal = ({ match }) => {
                 </div>
               </div>
 
-              <div className="flex flex-col overflow-hidden bg-white rounded-lg shadow dark:bg-zinc-900">
+              <div className="flex flex-col overflow-hidden bg-white rounded-lg shadow dark:bg-zinc-800">
                 <dl className="flex-1 sm:grid sm:grid-cols-2">
                   <div className="flex flex-col justify-center p-6 text-center border-b border-gray-200 dark:border-zinc-600 sm:border-0 sm:border-r">
                     <dt className="inline-flex items-center order-2 mx-auto mt-2 text-lg font-medium leading-6">
@@ -677,14 +680,16 @@ export const ViewProposal = ({ match }) => {
                           'inline-flex items-center px-3 mt-3 py-1.5 rounded-full'
                         )}
                       >
-                        <ThumbUpIcon
+                        <StyledIcon
+                          as="ThumbUpIcon"
+                          solid={false}
+                          size={6}
                           className={classNames(
                             Number(proposal.forVotes) > Number(proposal.against) && !proposal.isOpen
                               ? 'text-green-800'
                               : 'text-gray-400',
-                            'block w-6 h-6 mr-2'
+                            'block mr-2'
                           )}
-                          aria-hidden="true"
                         />
                         Vote For
                       </span>
@@ -718,14 +723,16 @@ export const ViewProposal = ({ match }) => {
                           'inline-flex items-center px-3 mt-3 py-1.5 rounded-full'
                         )}
                       >
-                        <ThumbDownIcon
+                        <StyledIcon
+                          as="ThumbDownIcon"
+                          solid={false}
+                          size={6}
                           className={classNames(
                             Number(proposal.against) > Number(proposal.forVotes) && !proposal.isOpen
                               ? 'text-red-800'
                               : 'text-gray-400',
-                            'block w-6 h-6 mr-2'
+                            'block mr-2'
                           )}
-                          aria-hidden="true"
                         />
                         Vote Against
                       </span>
@@ -750,7 +757,7 @@ export const ViewProposal = ({ match }) => {
                     </dd>
                   </div>
                 </dl>
-                <div className="p-5 bg-white border-t border-gray-200 dark:bg-zinc-900 dark:border-zinc-600">
+                <div className="p-5 bg-white border-t border-gray-200 dark:bg-zinc-800 dark:border-zinc-600">
                   {isLoading ? (
                     <Placeholder
                       className="justify-center py-2"

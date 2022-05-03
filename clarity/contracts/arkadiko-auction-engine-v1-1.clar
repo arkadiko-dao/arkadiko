@@ -258,12 +258,16 @@
 ;; @desc calculate the discounted auction price on the (dollarcent) price of the collateral
 ;; @param price; the current on-chain price
 ;; @param auction-id; the ID of the auction in which the collateral will be sold
-(define-read-only (discounted-auction-price (price uint) (auction-id uint))
+(define-read-only (discounted-auction-price (price uint) (decimals uint) (auction-id uint))
   (let (
     (auction (get-auction-by-id auction-id))
     (discount (* price (get discount auction)))
+    (total-decimals (if (> decimals u0)
+      decimals
+      u1000000
+    ))
   )
-    (ok (/ (- (* u100 price) discount) u1000000))
+    (ok (/ (- (* u100 price) discount) total-decimals))
   )
 )
 
@@ -292,7 +296,7 @@
       )
     )
     (collateral-price (unwrap-panic (contract-call? oracle fetch-price (collateral-token (get collateral-token auction)))))
-    (discounted-price (unwrap-panic (discounted-auction-price (get last-price collateral-price) auction-id)))
+    (discounted-price (unwrap-panic (discounted-auction-price (get last-price collateral-price) (get decimals collateral-price) auction-id)))
   )
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
     (asserts!

@@ -31,8 +31,10 @@ export const ContractTransaction: React.FC<ComponentProps> = ({ transaction, sta
             )}
           />
           <div className="flex-1 space-y-1">
-            <h3 className="font-headings">{transaction.contract_call.function_name}</h3>
-            <p className="text-sm text-gray-500">{contract_id}</p>
+            <h3 className="font-headings dark:text-zinc-50">
+              {transaction.contract_call.function_name}
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-zinc-200">{contract_id}</p>
           </div>
         </div>
       </a>

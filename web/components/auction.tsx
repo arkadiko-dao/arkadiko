@@ -4,12 +4,14 @@ import { callReadOnlyFunction, contractPrincipalCV, cvToJSON, uintCV } from '@st
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { getPrice } from '@common/get-price';
+import { NavLink as RouterLink } from 'react-router-dom';
 
 export const Auction: React.FC<AuctionProps> = ({
   id,
   lotId,
   collateralToken,
   endsAt,
+  vaultId,
   stacksTipHeight,
   setShowBidModal,
   setBidAuctionId,
@@ -29,11 +31,12 @@ export const Auction: React.FC<AuctionProps> = ({
       const price = await getPrice(collateralToken);
       setPrice(price);
 
+      const decimals = collateralToken.toLowerCase().includes('xbtc') ? 100000000 : 1000000;
       const discountedPriceCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-auction-engine-v2-1',
+        contractName: 'arkadiko-auction-engine-v3-1',
         functionName: 'discounted-auction-price',
-        functionArgs: [uintCV(price), uintCV(id)],
+        functionArgs: [uintCV(price), uintCV(decimals), uintCV(id)],
         senderAddress: stxAddress || '',
         network: network,
       });
@@ -50,7 +53,7 @@ export const Auction: React.FC<AuctionProps> = ({
     const getData = async () => {
       const minimumCollateralAmount = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-auction-engine-v2-1',
+        contractName: 'arkadiko-auction-engine-v3-1',
         functionName: 'get-minimum-collateral-amount',
         functionArgs: [
           contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v1-1'),
@@ -67,7 +70,7 @@ export const Auction: React.FC<AuctionProps> = ({
 
       const currentBid = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-auction-engine-v2-1',
+        contractName: 'arkadiko-auction-engine-v3-1',
         functionName: 'get-last-bid',
         functionArgs: [uintCV(id), uintCV(lotId)],
         senderAddress: stxAddress || '',
@@ -101,7 +104,7 @@ export const Auction: React.FC<AuctionProps> = ({
   };
 
   return (
-    <tr className="bg-white dark:bg-zinc-900">
+    <tr className="bg-white dark:bg-zinc-800">
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         <span className="font-medium text-gray-900 dark:text-zinc-100">
           {id}.{lotId + 1}
@@ -115,13 +118,19 @@ export const Auction: React.FC<AuctionProps> = ({
         </span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900 dark:text-zinc-100">${(discountedPrice / 100).toFixed(2)}</span>
+        <span className="font-medium text-gray-900 dark:text-zinc-100">
+          ${(discountedPrice / 100).toFixed(2)}
+        </span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900 dark:text-zinc-100">${(debtToRaise / 1000000).toFixed(4)}</span>
+        <span className="font-medium text-gray-900 dark:text-zinc-100">
+          ${(debtToRaise / 1000000).toFixed(4)}
+        </span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900 dark:text-zinc-100">${currentBid / 1000000}</span>
+        <span className="font-medium text-gray-900 dark:text-zinc-100">
+          ${currentBid / 1000000}
+        </span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         <span className="font-medium text-gray-900 dark:text-zinc-100">
@@ -133,11 +142,19 @@ export const Auction: React.FC<AuctionProps> = ({
           <button
             type="button"
             onClick={() => setBidParams()}
-            className="mr-2 px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             Bid
           </button>
         </span>
+      </td>
+      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+        <RouterLink
+          className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
+          to={`/vaults/${vaultId}`}
+        >
+          View vault
+        </RouterLink>
       </td>
     </tr>
   );

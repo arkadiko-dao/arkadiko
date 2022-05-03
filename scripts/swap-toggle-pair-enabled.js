@@ -1,5 +1,6 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
+const LDN_CONTRACT_ADDRESS = process.env.LDN_CONTRACT_ADDRESS;
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
@@ -10,9 +11,11 @@ const txOptions = {
   contractName: 'arkadiko-swap-v2-1',
   functionName: 'toggle-pair-enabled',
   functionArgs: [
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wrapped-stx-token'),
-    tx.contractPrincipalCV('SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G', 'welshcorgicoin-token')
+    tx.contractPrincipalCV(LDN_CONTRACT_ADDRESS, 'wrapped-lydian-token'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'usda-token'),
   ],
+  nonce: new BN(677, 10),
+  fee: new BN(10000, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network

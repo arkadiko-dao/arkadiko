@@ -17,11 +17,7 @@ import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { Alert } from './ui/alert';
 
-export const UnstakeDikoModal = ({
-  showUnstakeModal,
-  setShowUnstakeModal,
-  stakedAmount,
-}) => {
+export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmount }) => {
   const [state, setState] = useContext(AppContext);
   const [errors, setErrors] = useState<string[]>([]);
   const [stakeAmount, setStakeAmount] = useState('');
@@ -99,11 +95,13 @@ export const UnstakeDikoModal = ({
       initialFocus={inputRef}
     >
       {errors.length > 0 ? (
-        <Alert type={Alert.type.ERROR}>
-          {errors.map(txt => (
-            <p key={txt}>{txt}</p>
-          ))}
-        </Alert>
+        <div className="mb-4">
+          <Alert type={Alert.type.ERROR}>
+            {errors.map(txt => (
+              <p key={txt}>{txt}</p>
+            ))}
+          </Alert>
+        </div>
       ) : null}
 
       <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">

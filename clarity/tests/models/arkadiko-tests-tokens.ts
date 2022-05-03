@@ -226,13 +226,13 @@ class XbtcToken {
   }
 
   balanceOf(wallet: string) {
-    return this.chain.callReadOnlyFn("tokensoft-token", "get-balance", [
+    return this.chain.callReadOnlyFn("Wrapped-Bitcoin", "get-balance", [
       types.principal(wallet),
     ], this.deployer.address);
   }
   
   totalSupply() {
-    return this.chain.callReadOnlyFn("tokensoft-token", "get-total-supply", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("Wrapped-Bitcoin", "get-total-supply", [], this.deployer.address);
   }
 }
 export { XbtcToken };

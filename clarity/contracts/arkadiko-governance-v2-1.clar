@@ -13,6 +13,9 @@
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u34)
 (define-constant ERR-BLOCK-HEIGHT-NOT-REACHED u35)
 (define-constant ERR-BLOCK-HEIGHT-PASSED u36)
+(define-constant ERR-NOT-ENOUGH-PARTICIPATION u37)
+(define-constant ERR-WRONG-POOL u38)
+(define-constant ERR-VOTING-CLOSED u39)
 (define-constant ERR-NOT-AUTHORIZED u3401)
 (define-constant STATUS-OK u3200)
 
@@ -37,7 +40,7 @@
 )
 
 (define-data-var governance-shutdown-activated bool false)
-(define-data-var proposal-count uint u0)
+(define-data-var proposal-count uint u6)
 (define-data-var proposal-ids (list 100 uint) (list u0))
 (define-map votes-by-member { proposal-id: uint, member: principal } { vote-count: uint })
 (define-map tokens-by-member { proposal-id: uint, member: principal, token: principal } { amount: uint })
@@ -151,7 +154,7 @@
     (end-block-height
       (if (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner))
         (+ start-block-height (max-of u250 vote-length))
-        (+ start-block-height u1440)
+        (+ start-block-height u720)
       )
     )
 
@@ -183,12 +186,12 @@
         (contract-of stake-pool-diko)
         (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-pool-diko"))
       )
-      (err ERR-NOT-AUTHORIZED)
+      (err ERR-WRONG-POOL)
     )
     (asserts! (>= start-block-height block-height) (err ERR-BLOCK-HEIGHT-PASSED))
 
-    ;; Requires 1% of the supply 
-    (asserts! (>= (* proposer-total-balance u100) supply) (err ERR-NOT-ENOUGH-BALANCE))
+    ;; Requires 0.25% of the supply 
+    (asserts! (>= (* proposer-total-balance u25) supply) (err ERR-NOT-ENOUGH-BALANCE))
     ;; Mutate
     (map-set proposals
       { id: proposal-id }
@@ -245,14 +248,14 @@
         (contract-of stake-pool-diko)
         (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-pool-diko"))
       )
-      (err ERR-NOT-AUTHORIZED)
+      (err ERR-WRONG-POOL)
     )
 
     ;; Can vote with DIKO and stDIKO
-    (asserts! (is-eq (is-token-accepted token) true) (err ERR-WRONG-TOKEN))
+    (asserts! (is-token-accepted token) (err ERR-WRONG-TOKEN))
     ;; Proposal should be open for voting
-    (asserts! (is-eq (get is-open proposal) true) (err ERR-NOT-AUTHORIZED))
-    ;; Vote should be casted after the start-block-height
+    (asserts! (get is-open proposal) (err ERR-VOTING-CLOSED))
+    ;; Vote should be cast after the start-block-height
     (asserts! (>= block-height (get start-block-height proposal)) (err ERR-NOT-AUTHORIZED))
     ;; Voter should be able to stake
     (try! (contract-call? token transfer amount tx-sender (as-contract tx-sender) none))
@@ -297,7 +300,7 @@
         (contract-of stake-pool-diko)
         (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-pool-diko"))
       )
-      (err ERR-NOT-AUTHORIZED)
+      (err ERR-WRONG-POOL)
     )
 
     ;; Can vote with DIKO and stDIKO
@@ -327,7 +330,13 @@
 ;; @param proposal-id; proposal to execute
 ;; @post uint; returns 3200 when executed
 (define-public (end-proposal (proposal-id uint))
-  (let ((proposal (get-proposal-by-id proposal-id)))
+  (let (
+    (proposal (get-proposal-by-id proposal-id))
+    (diko-init-balance (unwrap-panic (contract-call? .arkadiko-token get-balance .arkadiko-diko-init)))
+    (supply (- (unwrap-panic (contract-call? .arkadiko-token get-total-supply)) diko-init-balance))
+    (sum-of-votes (+ (get no-votes proposal) (get yes-votes proposal)))
+    (participation-threshold (/ (* u5 supply) u100))
+  )
     (asserts!
       (and
         (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
@@ -342,7 +351,7 @@
     (map-set proposals
       { id: proposal-id }
       (merge proposal { is-open: false }))
-    (if (> (get yes-votes proposal) (get no-votes proposal))
+    (if (and (>= sum-of-votes participation-threshold) (> (get yes-votes proposal) (get no-votes proposal)))
       (try! (execute-proposal proposal-id))
       false
     )

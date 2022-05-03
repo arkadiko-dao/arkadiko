@@ -3,11 +3,7 @@ import { Modal } from '@components/ui/modal';
 import { tokenList } from '@components/token-swap-list';
 import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
-import {
-  AnchorMode,
-  contractPrincipalCV,
-  uintCV
-} from '@stacks/transactions';
+import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
@@ -28,7 +24,7 @@ export const VaultWithdrawModal: React.FC<Props> = ({
   setShowWithdrawModal,
   maximumCollateralToWithdraw,
   vault,
-  reserveName
+  reserveName,
 }) => {
   const [_, setState] = useContext(AppContext);
   const [collateralToWithdraw, setCollateralToWithdraw] = useState('');
@@ -44,6 +40,9 @@ export const VaultWithdrawModal: React.FC<Props> = ({
     }
 
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
+    const decimals = token === 'Wrapped-Bitcoin' ? 100000000 : 1000000;
+    const amount = uintCV(Number((parseFloat(collateralToWithdraw) * decimals).toFixed(0)));
+    const tokenAddress = tokenTraits[vault['collateralToken'].toLowerCase()]['address'];
     await doContractCall({
       network,
       contractAddress,
@@ -52,9 +51,9 @@ export const VaultWithdrawModal: React.FC<Props> = ({
       functionName: 'withdraw',
       functionArgs: [
         uintCV(match.params.id),
-        uintCV(parseFloat(collateralToWithdraw) * 1000000),
+        amount,
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
+        contractPrincipalCV(tokenAddress, token),
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
           'arkadiko-collateral-types-v1-1'

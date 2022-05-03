@@ -14,6 +14,6 @@
     (var-set is-executed true)
 
     ;; Execute slash for 30%
-    (contract-call? .arkadiko-stake-pool-diko-v1-1 execute-slash u30)
+    (contract-call? .arkadiko-stake-pool-diko-v1-2 execute-slash u30)
   )
 )

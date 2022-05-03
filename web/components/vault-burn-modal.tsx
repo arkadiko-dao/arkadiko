@@ -33,7 +33,7 @@ export const VaultBurnModal: React.FC<Props> = ({
   outstandingDebt,
   stabilityFee,
   vault,
-  reserveName
+  reserveName,
 }) => {
   const [state, setState] = useContext(AppContext);
   const [usdToBurn, setUsdToBurn] = useState('');
@@ -45,6 +45,7 @@ export const VaultBurnModal: React.FC<Props> = ({
 
   const callBurn = async () => {
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
+    const tokenAddress = tokenTraits[vault['collateralToken'].toLowerCase()]['address'];
     let totalToBurn = Number(usdToBurn) + stabilityFee / 1000000;
     if (Number(totalToBurn) >= Number(state.balance['usda'] / 1000000)) {
       totalToBurn = Number(state.balance['usda'] / 1000000);
@@ -66,9 +67,9 @@ export const VaultBurnModal: React.FC<Props> = ({
       functionName: 'burn',
       functionArgs: [
         uintCV(match.params.id),
-        uintCV(parseInt((parseFloat(usdToBurn) * 1000000) - (1.5 * stabilityFee), 10)),
+        uintCV(parseInt(parseFloat(usdToBurn) * 1000000 - 1.5 * stabilityFee, 10)),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
+        contractPrincipalCV(tokenAddress, token),
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
           'arkadiko-collateral-types-v1-1'
@@ -91,10 +92,10 @@ export const VaultBurnModal: React.FC<Props> = ({
   const burnMaxAmount = () => {
     let debtToPay = Number(outstandingDebt()) * 1000000 + Number(stabilityFee);
     if (debtToPay > state.balance['usda']) {
-      const balance = Number(state.balance['usda']) / 1000000;
+      const balance = Number(state.balance['usda']);
       debtToPay = balance.toFixed(6);
     }
-    setUsdToBurn(debtToPay);
+    setUsdToBurn((debtToPay / 1000000).toFixed(6));
   };
 
   const onInputChange = (event: { target: { value: any; name: any } }) => {

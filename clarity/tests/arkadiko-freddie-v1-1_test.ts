@@ -42,21 +42,6 @@ Clarinet.test({
     // Let's say STX price crash to 35 cents
     result = oracleManager.updatePrice("STX", 0.35);
     result.expectOk().expectUintWithDecimals(0.35);
-
-    // Notify liquidator
-    result = vaultLiquidator.notifyRiskyVault(deployer, 1);
-    result.expectOk().expectUint(5200);
-
-    let call = await vaultAuction.getAuctions();
-    let auctions:any = call.result.expectOk().expectList().map((e: String) => e.expectTuple());
-    auctions[0]["vault-id"].expectUint(0);
-    auctions[1]["vault-id"].expectUint(1);
-
-    call = await vaultAuction.getAuctionOpen(0, wallet_1);
-    call.result.expectOk().expectBool(false);
-
-    call = await vaultAuction.getAuctionOpen(1, wallet_1);
-    call.result.expectOk().expectBool(true);
   },
 });
 
@@ -87,14 +72,26 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
+    // 1 xBTC = $50k
     let result = oracleManager.updatePrice("xBTC", 50000, 100000000);
     result.expectOk().expectUintWithDecimals(50000);
 
-    result = vaultManager.createVault(deployer, "XBTC-A", 100, 10000, false, false, 'arkadiko-sip10-reserve-v1-1', 'tokensoft-token'); // 1 xBTC, 10K USDA
+    // 1 xBTC, 10K USDA
+    result = vaultManager.createVault(deployer, "XBTC-A", 100, 10000, false, false, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin');
     result.expectOk().expectUintWithDecimals(10000);
 
     let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
     call.result.expectOk().expectUint(499);
+
+    // 1 xBTC, 20K USDA
+    // collateral-to-debt-ratio = 250
+    // 50.000 / 2.5 = 20.000
+    result = vaultManager.createVault(deployer, "XBTC-A", 100, 20000, false, false, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin'); 
+    result.expectOk().expectUintWithDecimals(20000);
+
+    // Can not mint 20.001 USDA
+    result = vaultManager.createVault(deployer, "XBTC-A", 100, 20001, false, false, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin'); 
+    result.expectErr().expectUint(49);
   }
 });
 
@@ -257,11 +254,11 @@ Clarinet.test({
     result = oracleManager.updatePrice("DIKO", 2);
     result.expectOk().expectUintWithDecimals(2);
 
-    result = vaultManager.createVault(deployer, 'STX-A', 5, 1, true, true, 'arkadiko-sip10-reserve-v1-1', 'arkadiko-token')
+    result = vaultManager.createVault(deployer, 'STX-A', 5, 1, true, true, 'arkadiko-sip10-reserve-v2-1', 'arkadiko-token')
     result.expectErr().expectUint(98); // wrong token error
 
-    result = vaultManager.createVault(deployer, 'WRONG-A', 5, 1, true, true, 'arkadiko-sip10-reserve-v1-1', 'arkadiko-token')
-    result.expectErr().expectUint(410); // wrong token error
+    result = vaultManager.createVault(deployer, 'WRONG-A', 5, 1, true, true, 'arkadiko-sip10-reserve-v2-1', 'arkadiko-token')
+    result.expectErr().expectUint(417); // wrong token error
 
     result = vaultManager.createVault(deployer, 'WRONG-A', 5, 1, true, true, 'arkadiko-stx-reserve-v1-1', 'arkadiko-token')
     result.expectErr().expectUint(410); // wrong token error
@@ -285,12 +282,11 @@ Clarinet.test({
     result.expectOk().expectUint(1);
 
     // Should not be able to deposit in STX reserve
-    result = vaultManager.deposit(deployer, 1, 10, 'arkadiko-sip10-reserve-v1-1', 'arkadiko-token');
+    result = vaultManager.deposit(deployer, 1, 10, 'arkadiko-sip10-reserve-v2-1', 'arkadiko-token');
     result.expectErr().expectUint(45);
 
   },
 });
-
 
 Clarinet.test({
   name: "freddie: mint and burn",
@@ -486,67 +482,6 @@ Clarinet.test({
     result = vaultManager.createVault(deployer, "STX-A", 1000, 30);
     result.expectErr().expectUint(411);
   }
-});
-
-Clarinet.test({
-  name: "freddie: get pending DIKO rewards for liquidated vault",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
-
-    let oracleManager = new OracleManager(chain, deployer);
-    let dikoToken = new DikoToken(chain, deployer);
-    let vaultManager = new VaultManager(chain, deployer);
-    let vaultLiquidator = new VaultLiquidator(chain, deployer);
-
-    let result = oracleManager.updatePrice("STX", 1);
-    result.expectOk().expectUintWithDecimals(1);
-
-    result = vaultManager.createVault(deployer, "STX-A", 5, 1);
-    result.expectOk().expectUintWithDecimals(1);
-
-    // Advance 30 blocks
-    chain.mineEmptyBlock(144*30);
-
-    // Get pending rewards for user
-    let call = await chain.callReadOnlyFn(
-      "arkadiko-vault-rewards-v1-1",
-      "get-pending-rewards",
-      [types.principal(deployer.address)],
-      wallet_1.address,
-    );
-    call.result.expectOk().expectUintWithDecimals(947068.138);
-
-    // Freddie should not have DIKO yet
-    call = await dikoToken.balanceOf(Utils.qualifiedName('arkadiko-freddie-v1-1'));
-    call.result.expectOk().expectUint(0);
-
-    result = oracleManager.updatePrice("STX", 0.35);
-    result.expectOk().expectUintWithDecimals(0.35);
-
-    result = vaultLiquidator.notifyRiskyVault(deployer, 1);
-    result.expectOk().expectUint(5200);
-
-    // Freddie should have received pending DIKO rewards
-    call = await dikoToken.balanceOf(Utils.qualifiedName('arkadiko-freddie-v1-1'));
-    call.result.expectOk().expectUintWithDecimals(947287.316);
-
-    // Payout address balance
-    call = await dikoToken.balanceOf(deployer.address)
-    call.result.expectOk().expectUintWithDecimals(890000);
-
-    // Advance 30 blocks
-    chain.mineEmptyBlock(144*30);
-
-    // Redeem DIKO
-    result = vaultManager.redeemTokens(0, 947068138000);
-    result.expectOk().expectBool(true);
-
-    // Payout address balance
-    call = await dikoToken.balanceOf(deployer.address)
-    call.result.expectOk().expectUintWithDecimals(890000 + 947068.138);
-
-  },
 });
 
 Clarinet.test({

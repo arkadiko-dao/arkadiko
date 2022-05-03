@@ -1,12 +1,12 @@
 ;; @contract Auction Engine - Sells off vault collateral to raise USDA
 ;; @version 1
 
-(impl-trait .arkadiko-auction-engine-trait-v2.auction-engine-trait)
+(impl-trait .arkadiko-auction-engine-trait-v1.auction-engine-trait)
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait vault-manager-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
 (use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
-(use-trait auction-engine-trait .arkadiko-auction-engine-trait-v2.auction-engine-trait)
+(use-trait auction-engine-trait .arkadiko-auction-engine-trait-v1.auction-engine-trait)
 (use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
 
 ;; errors
@@ -258,12 +258,16 @@
 ;; @desc calculate the discounted auction price on the (dollarcent) price of the collateral
 ;; @param price; the current on-chain price
 ;; @param auction-id; the ID of the auction in which the collateral will be sold
-(define-read-only (discounted-auction-price (price uint) (auction-id uint))
+(define-read-only (discounted-auction-price (price uint) (decimals uint) (auction-id uint))
   (let (
     (auction (get-auction-by-id auction-id))
     (discount (* price (get discount auction)))
+    (total-decimals (if (> decimals u0)
+      decimals
+      u1000000
+    ))
   )
-    (ok (/ (- (* u100 price) discount) u1000000))
+    (ok (/ (- (* u100 price) discount) total-decimals))
   )
 )
 
@@ -292,7 +296,7 @@
       )
     )
     (collateral-price (unwrap-panic (contract-call? oracle fetch-price (collateral-token (get collateral-token auction)))))
-    (discounted-price (unwrap-panic (discounted-auction-price (get last-price collateral-price) auction-id)))
+    (discounted-price (unwrap-panic (discounted-auction-price (get last-price collateral-price) (get decimals collateral-price) auction-id)))
   )
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
     (asserts!

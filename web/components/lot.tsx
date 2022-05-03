@@ -20,7 +20,7 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collatera
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-auction-engine-v2-1',
+      contractName: 'arkadiko-auction-engine-v3-1',
       functionName: 'redeem-lot-collateral',
       functionArgs: [
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-freddie-v1-1'),
@@ -56,7 +56,7 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collatera
   }, [state.currentTxStatus]);
 
   return (
-    <tr className="bg-white dark:bg-zinc-900">
+    <tr className="bg-white dark:bg-zinc-800">
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         <span className="font-medium text-gray-900 dark:text-zinc-100">
           {id}.{lotId + 1}
@@ -71,13 +71,17 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collatera
         <span className="font-medium text-gray-900 dark:text-zinc-100">{usda / 1000000} USDA</span>
       </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <button
-          type="button"
-          onClick={() => redeemLot()}
-          className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Redeem
-        </button>
+        {false ? (
+          <span>Redeem available after auction (within 1 day)</span>
+        ) : (
+          <button
+            type="button"
+            onClick={() => redeemLot()}
+            className="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Redeem
+          </button>
+        )}
       </td>
     </tr>
   );

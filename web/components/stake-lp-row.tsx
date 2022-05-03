@@ -2,16 +2,17 @@ import React from 'react';
 import { microToReadable } from '@common/vault-utils';
 import { tokenList } from '@components/token-swap-list';
 import { Disclosure } from '@headlessui/react';
-import { InformationCircleIcon, ChevronUpIcon } from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
 import { Placeholder } from './ui/placeholder';
 import { NavLink as RouterLink } from 'react-router-dom';
+import { StyledIcon } from './ui/styled-icon';
 
 interface StakeLpRowProps {}
 
 export const StakeLpRow: React.FC<StakeLpRowProps> = ({
   loadingApy,
   loadingData,
+  canStake,
   tokenListItemX,
   tokenListItemY,
   balance,
@@ -26,10 +27,10 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
   getLpRoute,
 }) => {
   return (
-    <Disclosure as="tbody" className="bg-white dark:bg-zinc-900">
+    <Disclosure as="tbody" className="bg-white dark:bg-zinc-800">
       {({ open }) => (
         <>
-          <tr className="bg-white dark:bg-zinc-900">
+          <tr className="bg-white dark:bg-zinc-800">
             <td className="px-6 py-4 text-sm whitespace-nowrap">
               <div className="flex flex-wrap items-center flex-1 sm:flex-nowrap">
                 <div className="flex -space-x-2 shrink-0">
@@ -93,9 +94,10 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                         })}{' '}
                         <span className="text-sm font-normal">LP</span>
                       </p>
-                      <InformationCircleIcon
-                        className="inline w-5 h-5 ml-2 text-gray-400"
-                        aria-hidden="true"
+                      <StyledIcon
+                        as="InformationCircleIcon"
+                        size={5}
+                        className="inline ml-2 text-gray-400"
                       />
                     </div>
                   </Tooltip>
@@ -137,9 +139,10 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                         })}{' '}
                         <span className="text-sm font-normal">LP</span>
                       </p>
-                      <InformationCircleIcon
-                        className="inline w-5 h-5 ml-2 text-gray-400"
-                        aria-hidden="true"
+                      <StyledIcon
+                        as="InformationCircleIcon"
+                        size={5}
+                        className="inline ml-2 text-gray-400"
                       />
                     </div>
                   </Tooltip>
@@ -167,12 +170,14 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
               )}
             </td>
             <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
-              <Disclosure.Button className="inline-flex items-center justify-center px-2 py-1 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-900 dark:text-indigo-400">
+              <Disclosure.Button className="inline-flex items-center justify-center px-2 py-1 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-800 dark:text-indigo-400">
                 <span>Actions</span>
-                <ChevronUpIcon
+                <StyledIcon
+                  as="ChevronUpIcon"
+                  size={5}
                   className={`${
                     open ? '' : 'transform rotate-180 transition ease-in-out duration-300'
-                  } ml-2 w-5 h-5`}
+                  } ml-2`}
                 />
               </Disclosure.Button>
             </td>
@@ -198,7 +203,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                 <button
                   type="button"
                   className="inline-flex items-center px-4 py-2 text-sm leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
-                  disabled={balance == 0}
+                  disabled={!canStake || balance == 0}
                   onClick={() => setShowStakeLpModal(true)}
                 >
                   Stake LP

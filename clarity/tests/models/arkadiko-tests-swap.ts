@@ -200,3 +200,30 @@ class Swap {
 }
 
 export { Swap };
+
+class MultiHopSwap {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  swapXForZ(user: Account, tokenX: string, tokenY: string, tokenZ: string, dx: number, dzMin: number, inverseFirst: boolean = false, inverseSecond: boolean = true, decimalsX: number = 6, decimalsZ: number = 6) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-multi-hop-swap-v1-1", "swap-x-for-z", [
+        types.principal(Utils.qualifiedName(tokenX)),
+        types.principal(Utils.qualifiedName(tokenY)),
+        types.principal(Utils.qualifiedName(tokenZ)),
+        types.uint(dx * Math.pow(10, decimalsX)),
+        types.uint(dzMin * Math.pow(10, decimalsZ)),
+        types.bool(inverseFirst),
+        types.bool(inverseSecond)
+      ], user.address),
+    ]);
+    return block.receipts[0].result;
+  }
+}
+
+export { MultiHopSwap };

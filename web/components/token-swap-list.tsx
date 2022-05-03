@@ -1,9 +1,13 @@
 import React, { Fragment } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
-import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
 import { classNames } from '@common/class-names';
+import { StyledIcon } from './ui/styled-icon';
 
 export const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+export const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
+export const welshContractAddress = process.env.WELSH_CONTRACT_ADDRESS || '';
+export const ldnContractAddress = process.env.LDN_CONTRACT_ADDRESS || '';
+
 export const tokenList = [
   {
     id: 1,
@@ -41,17 +45,35 @@ export const tokenList = [
     nameInPair: 'xbtc',
     logo: '/assets/tokens/xbtc.svg',
     listed: true,
-    address: 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR',
+    address: xbtcContractAddress,
     fullName: 'Wrapped-Bitcoin',
-    decimals: 8
+    decimals: 8,
   },
   {
     id: 5,
+    name: 'wLDN',
+    nameInPair: 'wldn',
+    logo: '/assets/tokens/lydian.svg',
+    listed: false,
+    address: ldnContractAddress,
+    decimals: 6
+  },
+  {
+    id: 6,
+    name: 'LDN',
+    nameInPair: 'ldn',
+    logo: '/assets/tokens/lydian.svg',
+    listed: true,
+    address: ldnContractAddress,
+    decimals: 6
+  },
+  {
+    id: 7,
     name: 'WELSH',
     nameInPair: 'welsh',
     logo: '/assets/tokens/welsh.png',
     listed: true,
-    address: 'SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G',
+    address: welshContractAddress,
     fullName: 'welshcorgicoin-token',
     decimals: 6
   },
@@ -79,7 +101,7 @@ export const TokenSwapList: React.FC<Props> = ({ selected, setSelected, disabled
             <Listbox.Button
               className={`relative w-full py-2 pl-3 ${
                 disabled ? 'pr-3' : 'pr-10'
-              } text-left bg-white border border-gray-300 rounded-md shadow-sm cursor-default md:w-36 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-zinc-900 dark:border-zinc-900`}
+              } text-left bg-white border border-gray-300 rounded-md shadow-sm cursor-default md:w-36 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-zinc-800 dark:border-zinc-900`}
             >
               <span className="flex items-center">
                 <img src={selected.logo} alt="" className="w-6 h-6 rounded-full shrink-0" />
@@ -87,7 +109,7 @@ export const TokenSwapList: React.FC<Props> = ({ selected, setSelected, disabled
               </span>
               {!disabled ? (
                 <span className="absolute inset-y-0 right-0 flex items-center pr-2 ml-3 pointer-events-none">
-                  <SelectorIcon className="w-5 h-5 text-gray-400" aria-hidden="true" />
+                  <StyledIcon as="SelectorIcon" size={5} className="text-gray-400" />
                 </span>
               ) : null}
             </Listbox.Button>
@@ -101,7 +123,7 @@ export const TokenSwapList: React.FC<Props> = ({ selected, setSelected, disabled
             >
               <Listbox.Options
                 static
-                className="absolute z-20 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg dark:text-zinc-50 dark:bg-zinc-900 max-h-56 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+                className="absolute z-20 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg dark:text-zinc-50 dark:bg-zinc-800 max-h-56 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
               >
                 {tokenList
                   .filter(token => token.listed)
@@ -141,7 +163,7 @@ export const TokenSwapList: React.FC<Props> = ({ selected, setSelected, disabled
                                 'absolute inset-y-0 right-0 flex items-center pr-4'
                               )}
                             >
-                              <CheckIcon className="w-5 h-5" aria-hidden="true" />
+                              <StyledIcon as="CheckIcon" size={5} />
                             </span>
                           ) : null}
                         </>

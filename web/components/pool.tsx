@@ -1,8 +1,8 @@
 import React from 'react';
 import { Container } from './home';
 import { classNames } from '@common/class-names';
-import { CashIcon } from '@heroicons/react/outline';
 import { PoolPosition } from '@components/pool-position';
+import { StyledIcon } from './ui/styled-icon';
 
 export const Pool: React.FC = () => {
   const tabs = [
@@ -21,7 +21,7 @@ export const Pool: React.FC = () => {
   return (
     <Container>
       <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
-        <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow dark:bg-zinc-900">
+        <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow dark:bg-zinc-800">
           <div className="flex flex-col p-4">
             <div className="mb-4">
               <div>
@@ -64,35 +64,45 @@ export const Pool: React.FC = () => {
             </div>
 
             <div className="p-3">
-              <h3 className="text-xl leading-6 font-headings dark:text-zinc-50">Your liquidity positions</h3>
+              <h3 className="text-xl leading-6 font-headings dark:text-zinc-50">
+                Your liquidity positions
+              </h3>
               <dl className="mt-6 space-y-6">
-                <PoolPosition key="token1" indexTokenX={2} indexTokenY={0} />
+                <PoolPosition key="token1" indexTokenX={2} indexTokenY={0} canAdd={true} />
               </dl>
 
               <dl className="mt-6 space-y-6">
-                <PoolPosition key="token2" indexTokenX={2} indexTokenY={1} />
+                <PoolPosition key="token2" indexTokenX={2} indexTokenY={1} canAdd={false} />
               </dl>
 
               <dl className="mt-6 space-y-6">
-                <PoolPosition key="token3" indexTokenX={1} indexTokenY={0} />
+                <PoolPosition key="token3" indexTokenX={1} indexTokenY={0} canAdd={true} />
               </dl>
 
               <dl className="mt-6 space-y-6">
-                <PoolPosition key="token4" indexTokenX={2} indexTokenY={3} />
+                <PoolPosition key="token4" indexTokenX={2} indexTokenY={3} canAdd={false} />
               </dl>
 
               <dl className="mt-6 space-y-6">
-                <PoolPosition key="token5" indexTokenX={3} indexTokenY={0} />
+                <PoolPosition key="token5" indexTokenX={3} indexTokenY={0} canAdd={true} />
               </dl>
 
               <dl className="mt-6 space-y-6">
-                <PoolPosition key="token6" indexTokenX={2} indexTokenY={4} />
+                <PoolPosition key="token6" indexTokenX={4} indexTokenY={0} canAdd={true} />
+              </dl>
+
+              <dl className="mt-6 space-y-6">
+                <PoolPosition key="token7" indexTokenX={2} indexTokenY={6} canAdd={true} />
+              </dl>
+
+              <dl className="mt-6 space-y-6">
+                <PoolPosition key="token8" indexTokenX={5} indexTokenY={0} canAdd={true} />
               </dl>
             </div>
 
             <div className="flex items-start flex-1 mt-8">
               <span className="flex p-2 bg-gray-100 rounded-lg">
-                <CashIcon className="w-6 h-6 text-indigo-500" aria-hidden="true" />
+                <StyledIcon as="CashIcon" size={6} className="text-indigo-500" />
               </span>
               <p className="ml-4 text-sm text-gray-500 dark:text-zinc-400">
                 By adding liquidity, you will earn 0.25% on trades for this pool, proportional to

@@ -20,7 +20,8 @@ import {
   VaultManager,
   VaultLiquidator,
   VaultAuction,
-  VaultRewards
+  VaultRewards,
+  VaultAuctionV4
 } from './models/arkadiko-tests-vaults.ts';
 
 import { 
@@ -28,6 +29,10 @@ import {
   StackerPayer,
   StxReserve
 } from './models/arkadiko-tests-stacker.ts';
+
+import { 
+  LiquidationPool
+} from './models/arkadiko-tests-liquidation-fund.ts';
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
@@ -260,36 +265,36 @@ Clarinet.test({
 
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultLiquidator = new VaultLiquidator(chain, deployer);
-    let vaultAuction = new VaultAuction(chain, deployer);
     let stacker = new Stacker(chain, deployer);
     let stackerPayer = new StackerPayer(chain, deployer);
-    
+    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let liquidationPool = new LiquidationPool(chain, deployer);
+
     // Set price, create vault, initiate stacking
     oracleManager.updatePrice("STX", 4);
+    oracleManager.updatePrice("xSTX", 4);
     vaultManager.createVault(deployer, "STX-A", 1500, 1300, true, true);
     vaultManager.createVault(deployer, "STX-A", 21000000, 1300, true, true);
     stacker.initiateStacking(1, 1);
 
     // Update price
     oracleManager.updatePrice("STX", 1.5);
+    oracleManager.updatePrice("xSTX", 1.5);
 
-    let result = vaultLiquidator.notifyRiskyVault(deployer, 1);
-    result.expectOk().expectUint(5200);
+    // Deposit 10K USDA
+    let result = liquidationPool.stake(deployer, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
 
-    result = vaultAuction.bid(deployer, 1000, 1, 0);
-    result.expectOk().expectBool(true);
-
-    // 1.46 (price of STX) * minimum collateral: 296551724 * 1.46
-    result = vaultAuction.bid(deployer, 432.965517, 1, 1);
+    // Start auction
+    result = vaultAuction.startAuction(deployer, 1);
     result.expectOk().expectBool(true);
 
     let call:any = vaultAuction.getAuctionOpen(1);
-    call.result.expectOk().expectBool(false);
+    call.result.expectBool(false);
 
     call = vaultManager.getVaultById(1);
     let vault = call.result.expectTuple();
-    vault['leftover-collateral'].expectUintWithDecimals(536.690564);
+    vault['leftover-collateral'].expectUintWithDecimals(537.037038);
     vault['is-liquidated'].expectBool(true);
     vault['auction-ended'].expectBool(true);
 
@@ -313,17 +318,6 @@ Clarinet.test({
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
-
-    // Check if transfer of yields is approx 450 STX - 10% that we keep
-    // part of it stays with the foundation since not all collateral is usually sold of
-    let [stxTransferEvent1, stxTransferEvent2] = block.receipts[0].events;
-    stxTransferEvent1.stx_transfer_event.sender.expectPrincipal(Utils.qualifiedName('arkadiko-stacker-payer-v1-1'));
-    stxTransferEvent1.stx_transfer_event.recipient.expectPrincipal(deployer.address);
-    stxTransferEvent1.stx_transfer_event.amount.expectInt(215824500);
-
-    stxTransferEvent2.stx_transfer_event.sender.expectPrincipal(Utils.qualifiedName('arkadiko-stacker-payer-v1-1'));
-    stxTransferEvent2.stx_transfer_event.recipient.expectPrincipal(deployer.address);
-    stxTransferEvent2.stx_transfer_event.amount.expectInt(73163250);
   }
 });
 

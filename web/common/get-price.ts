@@ -6,20 +6,6 @@ import {
   contractPrincipalCV,
 } from '@stacks/transactions';
 
-export const getPrice = async (symbol: string) => {
-  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const fetchedPrice = await callReadOnlyFunction({
-    contractAddress,
-    contractName: 'arkadiko-oracle-v1-1',
-    functionName: 'get-price',
-    functionArgs: [stringAsciiCV(symbol || 'stx')],
-    senderAddress: contractAddress,
-    network: network,
-  });
-  const json = cvToJSON(fetchedPrice);
-  return json.value['last-price'].value;
-};
-
 export const getPriceInfo = async (symbol: string) => {
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const fetchedPrice = await callReadOnlyFunction({
@@ -32,6 +18,11 @@ export const getPriceInfo = async (symbol: string) => {
   });
   const json = cvToJSON(fetchedPrice);
   return json.value;
+};
+
+export const getPrice = async (symbol: string) => {
+  const priceInfo = await getPriceInfo(symbol);
+  return priceInfo['last-price'].value;
 };
 
 export const getDikoAmmPrice = async () => {

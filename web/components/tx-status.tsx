@@ -1,9 +1,8 @@
 import React, { Fragment, useContext } from 'react';
 import { AppContext } from '@common/context';
 import { Transition } from '@headlessui/react';
-import { CheckCircleIcon } from '@heroicons/react/outline';
-import { XIcon } from '@heroicons/react/solid';
 import { ExplorerLink } from './explorer-link';
+import { StyledIcon } from './ui/styled-icon';
 
 export const TxStatus = () => {
   const [state, setState] = useContext(AppContext);
@@ -48,7 +47,12 @@ export const TxStatus = () => {
                 <div className="p-4">
                   <div className="flex items-start">
                     <div className="shrink-0">
-                      <CheckCircleIcon className="w-6 h-6 text-green-400" aria-hidden="true" />
+                      <StyledIcon
+                        as="CheckCircleIcon"
+                        size={6}
+                        solid={false}
+                        className="text-green-400"
+                      />
                     </div>
                     <div className="ml-3 w-0 flex-1 pt-0.5">
                       <p className="text-sm font-medium text-gray-900">
@@ -75,7 +79,7 @@ export const TxStatus = () => {
                         </p>
                       )}
                     </div>
-                    <div className="flex shrink-0 ml-4">
+                    <div className="flex ml-4 shrink-0">
                       <button
                         className="inline-flex text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         onClick={() => {
@@ -83,7 +87,7 @@ export const TxStatus = () => {
                         }}
                       >
                         <span className="sr-only">Close</span>
-                        <XIcon className="w-5 h-5" aria-hidden="true" />
+                        <StyledIcon as="XIcon" size={5} />
                       </button>
                     </div>
                   </div>

@@ -19,7 +19,7 @@ import { LotGroup } from '@components/lot-group';
 import { getRPCClient } from '@common/utils';
 import { DocumentSearchIcon, GiftIcon, CashIcon } from '@heroicons/react/outline';
 import { EmptyState } from './ui/empty-state';
-import { Placeholder } from "./ui/placeholder";
+import { Placeholder } from './ui/placeholder';
 
 export const Auctions: React.FC = () => {
   const { doContractCall } = useConnect();
@@ -38,7 +38,7 @@ export const Auctions: React.FC = () => {
     const auctionOpen = async auctionId => {
       const auctionOpenCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-auction-engine-v2-1',
+        contractName: 'arkadiko-auction-engine-v3-1',
         functionName: 'get-auction-open',
         functionArgs: [uintCV(auctionId)],
         senderAddress: stxAddress || '',
@@ -62,7 +62,7 @@ export const Auctions: React.FC = () => {
 
       const auctionIdsCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-auction-engine-v2-1',
+        contractName: 'arkadiko-auction-engine-v3-1',
         functionName: 'get-auction-ids',
         functionArgs: [],
         senderAddress: stxAddress || '',
@@ -73,7 +73,7 @@ export const Auctions: React.FC = () => {
       await asyncForEach(auctionIds, async (auctionId: number) => {
         const auction = await callReadOnlyFunction({
           contractAddress,
-          contractName: 'arkadiko-auction-engine-v2-1',
+          contractName: 'arkadiko-auction-engine-v3-1',
           functionName: 'get-auction-by-id',
           functionArgs: [uintCV(auctionId.value)],
           senderAddress: stxAddress || '',
@@ -83,7 +83,7 @@ export const Auctions: React.FC = () => {
 
         const data = json.value;
         const isOpen = await auctionOpen(data['id'].value);
-        if (isOpen) {
+        if (isOpen && Number(data['collateral-amount'].value) > 0) {
           serializedAuctions.push({
             id: data['id'].value,
             lotId: data['lots-sold'].value,
@@ -91,6 +91,7 @@ export const Auctions: React.FC = () => {
             collateralToken: data['collateral-token'].value,
             debt: '0',
             endsAt: data['ends-at'].value,
+            vaultId: data['vault-id'].value,
           });
         }
       });
@@ -98,7 +99,7 @@ export const Auctions: React.FC = () => {
       const getLastBid = async (auctionId: number, lotId: number) => {
         const lastBid = await callReadOnlyFunction({
           contractAddress,
-          contractName: 'arkadiko-auction-engine-v2-1',
+          contractName: 'arkadiko-auction-engine-v3-1',
           functionName: 'get-last-bid',
           functionArgs: [uintCV(auctionId), uintCV(lotId)],
           senderAddress: stxAddress || '',
@@ -110,7 +111,7 @@ export const Auctions: React.FC = () => {
 
       const lots = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-auction-engine-v2-1',
+        contractName: 'arkadiko-auction-engine-v3-1',
         functionName: 'get-winning-lots',
         functionArgs: [standardPrincipalCV(stxAddress || '')],
         senderAddress: stxAddress || '',
@@ -198,7 +199,9 @@ export const Auctions: React.FC = () => {
             <section>
               <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
                 <div>
-                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">Trade xSTX for STX</h3>
+                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">
+                    Trade xSTX for STX
+                  </h3>
                 </div>
               </header>
               <div className="mt-4">
@@ -223,12 +226,16 @@ export const Auctions: React.FC = () => {
             <section>
               <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
                 <div>
-                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">Your Winning Lots</h3>
+                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">
+                    Your Winning Lots
+                  </h3>
                 </div>
               </header>
-              <div className="mt-4">
+              <div className="mt-4 mb-12">
                 {lots.length > 0 ? (
                   <LotGroup lots={lots} />
+                ) : loadingAuctions ? (
+                  <Placeholder />
                 ) : (
                   <EmptyState
                     Icon={GiftIcon}
@@ -242,11 +249,15 @@ export const Auctions: React.FC = () => {
             <section>
               <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
                 <div>
-                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">Auctions</h3>
+                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">
+                    Auctions
+                  </h3>
                 </div>
               </header>
               <div className="mt-4">
-                <p className="mb-4 text-gray-900 dark:text-zinc-100">Current Block Height: {stacksTipHeight}</p>
+                <p className="mb-4 text-gray-900 dark:text-zinc-100">
+                  Current Block Height: {stacksTipHeight}
+                </p>
                 {auctions.length > 0 ? (
                   <AuctionGroup auctions={auctions} stacksTipHeight={stacksTipHeight} />
                 ) : loadingAuctions ? (

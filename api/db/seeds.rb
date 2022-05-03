@@ -84,6 +84,18 @@ Token.create!(
 )
 
 Token.create!(
+  address: 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5',
+  name: 'wrapped-lydian-token',
+  symbol: 'wLDN'
+)
+
+Token.create!(
+  address: 'SP3MBWGMCVC9KZ5DTAYFMG1D0AEJCR7NENTM3FTK5',
+  name: 'lydian-token',
+  symbol: 'LDN'
+)
+
+Token.create!(
   address: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR',
   name: 'arkadiko-swap-token-diko-usda',
   symbol: 'ARKV1DIKOUSDA'
@@ -117,4 +129,16 @@ Token.create!(
   address: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR',
   name: 'arkadiko-swap-token-wstx-welsh',
   symbol: 'ARKV1WSTXWELSH'
+)
+
+Token.create!(
+  address: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR',
+  name: 'arkadiko-swap-token-wldn-usda',
+  symbol: 'ARKV1WLDNUSDA'
+)
+
+Token.create!(
+  address: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR',
+  name: 'arkadiko-swap-token-ldn-usda',
+  symbol: 'ARKV1LDNUSDA'
 )

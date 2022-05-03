@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
-import { DotsVerticalIcon } from '@heroicons/react/solid';
+import { StyledIcon } from './ui/styled-icon';
 
 interface StakeActionsProps {
   children: React.ReactNode;
@@ -13,7 +13,7 @@ export const StakeActions: React.FC<StakeActionsProps> = ({ children }) => {
         <>
           <Menu.Button className="inline-flex items-center justify-center w-8 h-8 text-gray-400 bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
             <span className="sr-only">Open options</span>
-            <DotsVerticalIcon className="w-5 h-5" aria-hidden="true" />
+            <StyledIcon as="DotsVerticalIcon" size={5} />
           </Menu.Button>
           <Transition
             show={open}
@@ -27,7 +27,7 @@ export const StakeActions: React.FC<StakeActionsProps> = ({ children }) => {
           >
             <Menu.Items
               static
-              className="absolute top-0 z-10 w-48 mx-3 mt-1 origin-top-right bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600 rounded-md shadow-lg right-7 ring-1 ring-black ring-opacity-5 focus:outline-none"
+              className="absolute top-0 z-10 w-48 mx-3 mt-1 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg dark:bg-zinc-800 dark:divide-zinc-600 right-7 ring-1 ring-black ring-opacity-5 focus:outline-none"
             >
               <div className="px-1 py-1">{children}</div>
             </Menu.Items>

@@ -2,11 +2,7 @@ import React, { useContext, useState, useRef } from 'react';
 import { Modal } from '@components/ui/modal';
 import { tokenList } from '@components/token-swap-list';
 import { AppContext } from '@common/context';
-import {
-  AnchorMode,
-  contractPrincipalCV,
-  uintCV
-} from '@stacks/transactions';
+import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
@@ -25,7 +21,7 @@ export const VaultCloseModal: React.FC<Props> = ({
   showCloseModal,
   setShowCloseModal,
   vault,
-  reserveName
+  reserveName,
 }) => {
   const [_, setState] = useContext(AppContext);
 
@@ -36,6 +32,7 @@ export const VaultCloseModal: React.FC<Props> = ({
 
   const closeVault = async () => {
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
+    const tokenAddress = tokenTraits[vault['collateralToken'].toLowerCase()]['address'];
     await doContractCall({
       network,
       contractAddress,
@@ -46,7 +43,7 @@ export const VaultCloseModal: React.FC<Props> = ({
       functionArgs: [
         uintCV(match.params.id),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
+        contractPrincipalCV(tokenAddress, token),
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
           'arkadiko-collateral-types-v1-1'
@@ -54,6 +51,7 @@ export const VaultCloseModal: React.FC<Props> = ({
       ],
       onFinish: data => {
         console.log('finished closing vault!', data, data.txId);
+        setShowCloseModal(false);
         setState(prevState => ({
           ...prevState,
           currentTxId: data.txId,
@@ -75,8 +73,8 @@ export const VaultCloseModal: React.FC<Props> = ({
       initialFocus={inputRef}
     >
       <p className="text-sm text-center text-gray-500">
-        Are you sure you want to close your vault?
-        This change is irreversible and any yield you are waiting for won't be received.
+        Are you sure you want to close your vault? This change is irreversible and any yield you are
+        waiting for won't be received.
       </p>
     </Modal>
   );

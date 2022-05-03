@@ -10,8 +10,8 @@ export const Balances = () => {
       description: 'Reserve of collateralized STX in Vaults.',
     },
     {
-      address: `${contractAddress}.arkadiko-sip10-reserve-v1-1`,
-      name: 'SIP10 Reserve v1',
+      address: `${contractAddress}.arkadiko-sip10-reserve-v2-1`,
+      name: 'SIP10 Reserve v2',
       description: 'Reserve of all SIP10 collateral types.',
     },
     {
@@ -21,8 +21,8 @@ export const Balances = () => {
         'Vault Manager. Freddie is an abstraction layer that interacts with collateral type reserves.',
     },
     {
-      address: `${contractAddress}.arkadiko-auction-engine-v2-1`,
-      name: 'Auction Engine v2',
+      address: `${contractAddress}.arkadiko-auction-engine-v3-1`,
+      name: 'Auction Engine v3',
       description: 'Sells off vault collateral to raise USDA.',
     },
     {
@@ -39,6 +39,12 @@ export const Balances = () => {
     {
       address: `${contractAddress}.arkadiko-governance-v2-1`,
       name: 'Governance v2',
+      description:
+        'Can see, vote and submit a new proposal. A proposal will just update the DAO with new contracts.',
+    },
+    {
+      address: `${contractAddress}.arkadiko-governance-v3-1`,
+      name: 'Governance v3',
       description:
         'Can see, vote and submit a new proposal. A proposal will just update the DAO with new contracts.',
     },
