@@ -306,6 +306,23 @@ export const buildSwapPostConditions = (sender: string, amountSent: bigint, amou
         (parseFloat(amountReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)
       )
     )
+    postConditions.push(
+      makeStandardFungiblePostCondition(
+        sender,
+        FungibleConditionCode.GreaterEqual,
+        (parseFloat(amountReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0),
+        createAssetInfo(tokenY['address'], tokenY['fullName'], tokenY['nameInPair'])
+      )
+    )
+    postConditions.push(
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-swap-v2-1',
+        FungibleConditionCode.GreaterEqual,
+        (parseFloat(amountReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0),
+        createAssetInfo(tokenY['address'], tokenY['fullName'], tokenY['nameInPair'])
+      )
+    )
   } else {
     postConditions.push(
       makeContractFungiblePostCondition(
