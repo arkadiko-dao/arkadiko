@@ -89,7 +89,35 @@
   (vault-id uint)
   (reserve <vault-trait>)
   (coll-type <collateral-types-trait>)
-  (stack-yield bool)
+)
+  (let (
+    (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
+    (stacker-name (get stacker-name vault))
+    (claim-entry (get-claim-by-vault-id vault-id))
+    (sender tx-sender)
+  )
+    (asserts! (not (var-get claim-shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
+    (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
+    (asserts! (> (get usda claim-entry) u0) (err ERR-NOTHING-TO-CLAIM))
+
+    (try! (as-contract (contract-call? .usda-token transfer (get usda claim-entry) tx-sender sender none)))
+
+    (map-set claims { vault-id: vault-id } { usda: u0 })
+    (ok true)
+  )
+)
+
+;; @desc Claim PoX yield and pay off debt
+;; @param vault-id; your vault ID
+;; @param reserve; active STX reserve
+;; @param coll-type; active collateral types contract
+;; @post boolean; returns true if claim was succesful
+(define-public (claim-and-burn
+  (vault-id uint)
+  (reserve <vault-trait>)
+  (coll-type <collateral-types-trait>)
 )
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
@@ -118,7 +146,7 @@
 
 ;; returns the USDA balance of the claim contract
 (define-read-only (get-usda-balance)
-  (contract-call? .usda-token get-balance (as-contract tx-sender))
+  (unwrap-panic (contract-call? .usda-token get-balance (as-contract tx-sender)))
 )
 
 ;; return USDA to the deposit address
