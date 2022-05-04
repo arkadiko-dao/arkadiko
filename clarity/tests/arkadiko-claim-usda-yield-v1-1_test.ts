@@ -228,6 +228,57 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "claim-usda-yield: claim USDA and burn with less debt than yield",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let claimYield = new ClaimUsdaYield(chain, deployer);
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+
+    // Initialize price of STX to $1 in the oracle
+    let result = oracleManager.updatePrice("STX", 1);
+    result.expectOk().expectUintWithDecimals(1);
+
+    // Create new vault
+    result = vaultManager.createVault(deployer, "STX-A", 5000, 50);
+    result.expectOk().expectUintWithDecimals(50);
+
+    let call = await vaultManager.getVaultById(1, deployer);
+    let vault:any = call.result.expectTuple();
+    vault['debt'].expectUintWithDecimals(50);
+
+    // Add one claim
+    result = claimYield.addClaim(deployer, 1, 100);
+    result.expectOk().expectBool(true);
+
+    call = claimYield.getUsdaBalance();
+    call.result.expectUintWithDecimals(100);
+
+    call = await chain.callReadOnlyFn("usda-token", "get-balance", [
+      types.principal(deployer.address),
+    ], deployer.address);
+    call.result.expectOk().expectUintWithDecimals(999950);
+
+    // Claim (and pay back debt)
+    result = claimYield.claimAndBurn(deployer, 1);
+    result.expectOk().expectBool(true);
+
+    call = await vaultManager.getVaultById(1, deployer);
+    vault = call.result.expectTuple();
+    vault['debt'].expectUintWithDecimals(0);
+
+    call = await chain.callReadOnlyFn("usda-token", "get-balance", [
+      types.principal(deployer.address),
+    ], deployer.address);
+    call.result.expectOk().expectUintWithDecimals(999999.999924);
+
+    call = claimYield.getUsdaBalance();
+    call.result.expectUintWithDecimals(0);
+  }
+});
+
+Clarinet.test({
   name: "claim-usda-yield: claim USDA to wallet",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
