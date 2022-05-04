@@ -212,8 +212,18 @@ Clarinet.test({
     result = claimYield.addClaim(deployer, 1, 100);
     result.expectOk().expectBool(true);
 
+    call = await chain.callReadOnlyFn("usda-token", "get-balance", [
+      types.principal(deployer.address),
+    ], deployer.address);
+    call.result.expectOk().expectUintWithDecimals(999899.999848);
+
     result = claimYield.claimAndBurn(deployer, 1);
     result.expectOk().expectBool(true);
+
+    call = await chain.callReadOnlyFn("usda-token", "get-balance", [
+      types.principal(deployer.address),
+    ], deployer.address);
+    call.result.expectOk().expectUintWithDecimals(999999.999848); // 100 USDA more
   }
 });
 
@@ -242,13 +252,23 @@ Clarinet.test({
     result = claimYield.addClaim(deployer, 1, 100);
     result.expectOk().expectBool(true);
 
-    // Claim (and pay back debt)
+    call = await chain.callReadOnlyFn("usda-token", "get-balance", [
+      types.principal(deployer.address),
+    ], deployer.address);
+    call.result.expectOk().expectUintWithDecimals(1000000);
+
+    // Claim USDA to wallet
     result = claimYield.claim(deployer, 1);
     result.expectOk().expectBool(true);
 
     call = await vaultManager.getVaultById(1, deployer);
     vault = call.result.expectTuple();
     vault['debt'].expectUintWithDecimals(100);
+
+    call = await chain.callReadOnlyFn("usda-token", "get-balance", [
+      types.principal(deployer.address),
+    ], deployer.address);
+    call.result.expectOk().expectUintWithDecimals(1000100); // 100 USDA more
   }
 });
 
