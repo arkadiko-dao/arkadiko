@@ -326,9 +326,7 @@ class ClaimUsdaYield {
   claim(user: Account, vaultId: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-claim-usda-yield-v1-1", "claim", [
-        types.uint(vaultId),
-        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.uint(vaultId)
       ], user.address)
     ]);
     return block.receipts[0].result;
