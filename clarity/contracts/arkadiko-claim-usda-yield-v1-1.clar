@@ -126,7 +126,10 @@
     (asserts! (> (get usda claim-entry) u0) (err ERR-NOTHING-TO-CLAIM))
 
     (try! (as-contract (contract-call? .usda-token transfer (get usda claim-entry) tx-sender sender none)))
-    (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id (get usda claim-entry) reserve .arkadiko-token coll-type))
+    (if (> (get debt vault) u0)
+      (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id (get usda claim-entry) reserve .arkadiko-token coll-type))
+      true
+    )
 
     (map-set claims { vault-id: vault-id } { usda: u0 })
     (ok true)

@@ -29,7 +29,7 @@ const wstxTokenAddress = 'wrapped-stx-token'
 const wstxUsdaPoolAddress = 'arkadiko-swap-token-wstx-usda'
 
 Clarinet.test({
-  name: "claim-yield: initial values",
+  name: "claim-usda-yield: initial values",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -46,7 +46,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "claim-yield: add and remove one claim",
+  name: "claim-usda-yield: add and remove one claim",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -111,7 +111,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "claim-yield: add 200 claims at once",
+  name: "claim-usda-yield: add 200 claims at once",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -177,10 +177,9 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "claim-yield: claim USDA and stack",
+  name: "claim-usda-yield: claim USDA and burn",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
 
     let claimYield = new ClaimUsdaYield(chain, deployer);
     let oracleManager = new OracleManager(chain, deployer);
@@ -191,8 +190,53 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(1);
 
     // Create new vault
-    result = vaultManager.createVault(deployer, "STX-A", 5000, 1000);
-    result.expectOk().expectUintWithDecimals(1000);
+    result = vaultManager.createVault(deployer, "STX-A", 5000, 100);
+    result.expectOk().expectUintWithDecimals(100);
+
+    let call = await vaultManager.getVaultById(1, deployer);
+    let vault:any = call.result.expectTuple();
+    vault['debt'].expectUintWithDecimals(100);
+
+    // Add one claim
+    result = claimYield.addClaim(deployer, 1, 100);
+    result.expectOk().expectBool(true);
+
+    // Claim (and pay back debt)
+    result = claimYield.claimAndBurn(deployer, 1);
+    result.expectOk().expectBool(true);
+
+    call = await vaultManager.getVaultById(1, deployer);
+    vault = call.result.expectTuple();
+    vault['debt'].expectUintWithDecimals(0);
+
+    result = claimYield.addClaim(deployer, 1, 100);
+    result.expectOk().expectBool(true);
+
+    result = claimYield.claimAndBurn(deployer, 1);
+    result.expectOk().expectBool(true);
+  }
+});
+
+Clarinet.test({
+  name: "claim-usda-yield: claim USDA to wallet",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let claimYield = new ClaimUsdaYield(chain, deployer);
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+
+    // Initialize price of STX to $1 in the oracle
+    let result = oracleManager.updatePrice("STX", 1);
+    result.expectOk().expectUintWithDecimals(1);
+
+    // Create new vault
+    result = vaultManager.createVault(deployer, "STX-A", 5000, 100);
+    result.expectOk().expectUintWithDecimals(100);
+
+    let call = await vaultManager.getVaultById(1, deployer);
+    let vault:any = call.result.expectTuple();
+    vault['debt'].expectUintWithDecimals(100);
 
     // Add one claim
     result = claimYield.addClaim(deployer, 1, 100);
@@ -201,11 +245,15 @@ Clarinet.test({
     // Claim (and pay back debt)
     result = claimYield.claim(deployer, 1);
     result.expectOk().expectBool(true);
+
+    call = await vaultManager.getVaultById(1, deployer);
+    vault = call.result.expectTuple();
+    vault['debt'].expectUintWithDecimals(100);
   }
 });
 
 Clarinet.test({
-  name: "claim-yield: add multipe claims for same vault",
+  name: "claim-usda-yield: add multipe claims for same vault",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -231,7 +279,7 @@ Clarinet.test({
 // ---------------------------------------------------------
 
 Clarinet.test({
-  name: "claim-yield: only vault owner can claim",
+  name: "claim-usda-yield: only vault owner can claim",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -265,7 +313,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "claim-yield: can only claim once",
+  name: "claim-usda-yield: can only claim once",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -301,7 +349,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "claim-yield: claim with wrong parameters",
+  name: "claim-usda-yield: claim with wrong parameters",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -354,7 +402,7 @@ Clarinet.test({
 // ---------------------------------------------------------
 
 Clarinet.test({
-  name: "claim-yield: only vault owner can claim yield",
+  name: "claim-usda-yield: only vault owner can claim yield",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -383,7 +431,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "claim-yield: only DAO can add claims",
+  name: "claim-usda-yield: only DAO can add claims",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -408,7 +456,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "claim-yield: only DAO can return STX to reserve",
+  name: "claim-usda-yield: only DAO can return STX to reserve",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
