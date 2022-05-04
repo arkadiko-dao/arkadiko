@@ -85,11 +85,7 @@
 ;; @param reserve; active STX reserve
 ;; @param coll-type; active collateral types contract
 ;; @post boolean; returns true if claim was succesful
-(define-public (claim
-  (vault-id uint)
-  (reserve <vault-trait>)
-  (coll-type <collateral-types-trait>)
-)
+(define-public (claim (vault-id uint))
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
     (stacker-name (get stacker-name vault))
@@ -98,8 +94,6 @@
   )
     (asserts! (not (var-get claim-shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq tx-sender (get owner vault)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq (contract-of reserve) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve"))) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq (contract-of coll-type) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "collateral-types"))) (err ERR-NOT-AUTHORIZED))
     (asserts! (> (get usda claim-entry) u0) (err ERR-NOTHING-TO-CLAIM))
 
     (try! (as-contract (contract-call? .usda-token transfer (get usda claim-entry) tx-sender sender none)))
