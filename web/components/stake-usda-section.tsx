@@ -7,7 +7,10 @@ import { NavLink as RouterLink } from 'react-router-dom';
 
 
 export const StakeUsdaSection = ({
-
+  loadingData,
+  userPooledUsda,
+  totalPooledUsda,
+  pooledUsdaDikoApr
 }) => {
   return (
     <>
@@ -47,39 +50,50 @@ export const StakeUsdaSection = ({
                 <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">
                   Your tokens
                 </p>
-                {/* {loading ? (
+                {loadingData ? (
                   <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                ) : ( */}
+                ) : (
                   <div>
                     <p className="text-lg font-semibold dark:text-white">
-                      694.20
+                      {microToReadable(userPooledUsda).toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 6,
+                      })}
                     </p>
                   </div>
-                {/* )} */}
+                )}
               </div>
               <div className="mt-3 md:mt-0">
                 <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">
                   Total in pool
                 </p>
-                {/* {loading ? (
+                {loadingData ? (
                   <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                ) : ( */}
+                ) : (
                   <div>
                     <p className="text-lg font-semibold dark:text-white">
-                      613,615.858295
+                      {microToReadable(totalPooledUsda).toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 6,
+                      })}
                     </p>
                   </div>
-                {/* )} */}
+                )}
               </div>
               <div className="mt-3 md:mt-0">
                 <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">
                   Current APR
                 </p>
-                {/* {loadingData ? (
+                {loadingData ? (
                   <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                ) : ( */}
-                  <p className="text-indigo-600 dark:text-indigo-400">9000%</p>
-                {/* )} */}
+                ) : (
+                  <p className="text-indigo-600 dark:text-indigo-400">
+                    {pooledUsdaDikoApr.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}%
+                  </p>
+                )}
               </div>
 
               <div className="self-center text-right">

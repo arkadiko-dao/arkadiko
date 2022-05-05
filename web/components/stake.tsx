@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Helmet } from 'react-helmet';
 import { Redirect } from 'react-router-dom';
@@ -82,6 +82,11 @@ export const Stake = () => {
   const [totalStxDikoStaked, setTotalStxDikoStaked] = useState(10);
   const [totalStxXbtcStaked, setTotalStxXbtcStaked] = useState(10);
   const [totalXbtcUsdaStaked, setTotalXbtcUsdaStaked] = useState(10);
+  const [userPooledUsda, setUserPooledUsda] = useState(0);
+  const [totalPooledUsda, setTotalPooledUsda] = useState(0);
+  const [dikoRewardsToAdd, setDikoRewardsToAdd] = useState(0);
+  const [pooledUsdaDikoApr, setPooledUsdaDikoApr] = useState(0);
+
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
@@ -403,13 +408,28 @@ export const Stake = () => {
       setLoadingApy(false);
 
       // User staked amounts
-      const [_, userStakedData, userXbtcStakedData, userXbtcUsdaStakedData, stDiko] =
-        await Promise.all([
+      const [
+        _,
+        userStakedData,
+        userXbtcStakedData,
+        userXbtcUsdaStakedData,
+        stDiko,
+        totalPooledUsda,
+        userPooledUsda,
+        epochInfo,
+        dikoEpochRewardsToAdd,
+        pooledUsdaDikoPrice
+      ] = await Promise.all([
           getStakedDiko(),
           getStakingData(),
           getXbtcStakingData(),
           getXbtcUsdaStakingData(),
           getDikoToStDiko(),
+          getTotalPooled(),
+          getUserPooled(),
+          getEpochInfo(),
+          getDikoEpochRewardsToAdd(),
+          getPooledUsdaDikoPrice()
         ]);
 
       // LP value
@@ -468,6 +488,15 @@ export const Stake = () => {
       setLpStxDikoPendingRewards(stxDikoLpPendingRewards);
       setLpStxXbtcPendingRewards(stxXbtcLpPendingRewards);
       setLpXbtcUsdaPendingRewards(xbtcUsdaLpPendingRewards);
+
+      // USDA Staking in Liquidation Pool
+      setTotalPooledUsda(totalPooledUsda);
+      setUserPooledUsda(userPooledUsda);
+      setDikoRewardsToAdd(dikoEpochRewardsToAdd);
+
+      const dikoPerYear = (52560 / epochInfo["blocks"].value) * dikoEpochRewardsToAdd;
+      setPooledUsdaDikoApr((dikoPerYear * pooledUsdaDikoPrice) / totalPooledUsda * 100.0);
+
       setLoadingData(false);
 
       const dikoCooldownInfo = await callReadOnlyFunction({
@@ -784,6 +813,81 @@ export const Stake = () => {
     });
   };
 
+  // TODO: Replace by API price
+  const getPooledUsdaDikoPrice = async () => {
+    const call = await callReadOnlyFunction({
+      contractAddress,
+      contractName: 'arkadiko-swap-v2-1',
+      functionName: 'get-pair-details',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, 'arkadiko-token'),
+        contractPrincipalCV(contractAddress, 'usda-token'),
+      ],
+      senderAddress: stxAddress || '',
+      network: network,
+    });
+    const resultPairDetails = cvToJSON(call).value.value.value;
+    const balanceX = resultPairDetails["balance-x"].value;
+    const balanceY = resultPairDetails["balance-y"].value;
+    return balanceY / balanceX;
+  };
+
+  const getEpochInfo = async () => {
+    const call = await callReadOnlyFunction({
+      contractAddress,
+      contractName: 'arkadiko-liquidation-rewards-diko-v1-1',
+      functionName: 'get-epoch-info',
+      functionArgs: [],
+      senderAddress: stxAddress || '',
+      network: network,
+    });
+    const result = cvToJSON(call).value.value;
+    return result;
+  };
+
+  const getDikoEpochRewardsToAdd = async () => {
+    const call = await callReadOnlyFunction({
+      contractAddress,
+      contractName: 'arkadiko-liquidation-rewards-diko-v1-1',
+      functionName: 'get-rewards-to-add',
+      functionArgs: [],
+      senderAddress: stxAddress || '',
+      network: network,
+    });
+    const result = cvToJSON(call).value;
+    return result;
+  };
+
+  const getTotalPooled = async () => {
+    const call = await callReadOnlyFunction({
+      contractAddress,
+      contractName: 'usda-token',
+      functionName: 'get-balance',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, 'arkadiko-liquidation-pool-v1-1'),
+      ],
+      senderAddress: stxAddress || '',
+      network: network,
+    });
+    const result = cvToJSON(call).value.value;
+    return result;
+  };
+
+  const getUserPooled = async () => {
+    const call = await callReadOnlyFunction({
+      contractAddress,
+      contractName: 'arkadiko-liquidation-pool-v1-1',
+      functionName: 'get-tokens-of',
+      functionArgs: [
+        standardPrincipalCV(stxAddress || ''),
+      ],
+      senderAddress: stxAddress || '',
+      network: network,
+    });
+    const result = cvToJSON(call).value.value;
+    return result;
+  };
+
   const LP_DATA = [
     {
       name: 'dikousda',
@@ -909,6 +1013,10 @@ export const Stake = () => {
             />
 
             <StakeUsdaSection
+              loadingData={loadingData}
+              userPooledUsda={userPooledUsda}
+              totalPooledUsda={totalPooledUsda}
+              pooledUsdaDikoApr={pooledUsdaDikoApr}
             />
 
             <section className="relative mt-8 overflow-hidden">
