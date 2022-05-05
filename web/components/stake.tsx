@@ -22,6 +22,7 @@ import { StakeLpRow } from './stake-lp-row';
 import { Alert } from './ui/alert';
 import axios from 'axios';
 import { StakeDikoSection } from './stake-diko-section';
+import { StakeUsdaSection } from './stake-usda-section';
 
 export const Stake = () => {
   const apiUrl = 'https://arkadiko-api.herokuapp.com';
@@ -905,6 +906,9 @@ export const Stake = () => {
               startDikoCooldown={startDikoCooldown}
               setShowStakeModal={setShowStakeModal}
               setShowUnstakeModal={setShowUnstakeModal}
+            />
+
+            <StakeUsdaSection
             />
 
             <section className="relative mt-8 overflow-hidden">
