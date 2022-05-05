@@ -48,7 +48,7 @@ export const StakeUsdaSection = ({
               </div>
               <div className="mt-3 md:mt-0">
                 <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">
-                  Your tokens
+                  Staked USDA tokens
                 </p>
                 {loadingData ? (
                   <Placeholder className="py-2" width={Placeholder.width.HALF} />
@@ -65,7 +65,7 @@ export const StakeUsdaSection = ({
               </div>
               <div className="mt-3 md:mt-0">
                 <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">
-                  Total in pool
+                  Total USDA in pool
                 </p>
                 {loadingData ? (
                   <Placeholder className="py-2" width={Placeholder.width.HALF} />
