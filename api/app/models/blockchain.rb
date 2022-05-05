@@ -188,7 +188,8 @@ class Blockchain < ApplicationRecord
     return if function_name == 'migrate-add-liquidity' ||
       function_name == 'toggle-pair-enabled' ||
       function_name == 'toggle-swap-shutdown' ||
-      function_name == 'collect-fees'
+      function_name == 'collect-fees' ||
+      function_name == 'get-balances'
 
     contract_address = id.split('.')[0]
     contract_name = id.split('.')[1]
