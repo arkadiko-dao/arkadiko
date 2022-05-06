@@ -418,7 +418,6 @@ export const Stake = () => {
         userPooledUsda,
         epochInfo,
         dikoEpochRewardsToAdd,
-        pooledUsdaDikoPrice
       ] = await Promise.all([
           getStakedDiko(),
           getStakingData(),
@@ -429,7 +428,6 @@ export const Stake = () => {
           getUserPooled(),
           getEpochInfo(),
           getDikoEpochRewardsToAdd(),
-          getPooledUsdaDikoPrice()
         ]);
 
       // LP value
@@ -495,7 +493,7 @@ export const Stake = () => {
       setDikoRewardsToAdd(dikoEpochRewardsToAdd);
 
       const dikoPerYear = (52560 / epochInfo["blocks"].value) * dikoEpochRewardsToAdd;
-      setPooledUsdaDikoApr((dikoPerYear * pooledUsdaDikoPrice) / totalPooledUsda * 100.0);
+      setPooledUsdaDikoApr((dikoPerYear * Number(dikoPrice / 1000000)) / totalPooledUsda * 100.0);
 
       setLoadingData(false);
 
@@ -811,25 +809,6 @@ export const Stake = () => {
       },
       anchorMode: AnchorMode.Any,
     });
-  };
-
-  // TODO: Replace by API price
-  const getPooledUsdaDikoPrice = async () => {
-    const call = await callReadOnlyFunction({
-      contractAddress,
-      contractName: 'arkadiko-swap-v2-1',
-      functionName: 'get-pair-details',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-token'),
-        contractPrincipalCV(contractAddress, 'usda-token'),
-      ],
-      senderAddress: stxAddress || '',
-      network: network,
-    });
-    const resultPairDetails = cvToJSON(call).value.value.value;
-    const balanceX = resultPairDetails["balance-x"].value;
-    const balanceY = resultPairDetails["balance-y"].value;
-    return balanceY / balanceX;
   };
 
   const getEpochInfo = async () => {
