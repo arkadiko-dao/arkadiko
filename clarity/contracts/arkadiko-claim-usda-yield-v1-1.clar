@@ -115,6 +115,7 @@
 )
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
+    (stability-fee (unwrap-panic (contract-call? .arkadiko-freddie-v1-1 get-stability-fee-for-vault vault-id coll-type)))
     (stacker-name (get stacker-name vault))
     (claim-entry (get-claim-by-vault-id vault-id))
     (sender tx-sender)
@@ -126,8 +127,8 @@
     (asserts! (> (get usda claim-entry) u0) (err ERR-NOTHING-TO-CLAIM))
 
     (try! (as-contract (contract-call? .usda-token transfer (get usda claim-entry) tx-sender sender none)))
-    (if (> (get debt vault) u0)
-      (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id (get usda claim-entry) reserve .arkadiko-token coll-type))
+    (if (and (> (get debt vault) u0) (>= (get usda claim-entry) stability-fee))
+      (try! (contract-call? .arkadiko-freddie-v1-1 burn vault-id (- (get usda claim-entry) stability-fee) reserve .arkadiko-token coll-type))
       true
     )
 

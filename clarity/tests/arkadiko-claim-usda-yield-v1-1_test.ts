@@ -207,7 +207,7 @@ Clarinet.test({
 
     call = await vaultManager.getVaultById(1, deployer);
     vault = call.result.expectTuple();
-    vault['debt'].expectUintWithDecimals(0);
+    vault['debt'].expectUint(152); // only what was the stability fee is left
 
     result = claimYield.addClaim(deployer, 1, 100);
     result.expectOk().expectBool(true);
@@ -215,7 +215,7 @@ Clarinet.test({
     call = await chain.callReadOnlyFn("usda-token", "get-balance", [
       types.principal(deployer.address),
     ], deployer.address);
-    call.result.expectOk().expectUintWithDecimals(999899.999848);
+    call.result.expectOk().expectUintWithDecimals(999900);
 
     result = claimYield.claimAndBurn(deployer, 1);
     result.expectOk().expectBool(true);
@@ -223,7 +223,7 @@ Clarinet.test({
     call = await chain.callReadOnlyFn("usda-token", "get-balance", [
       types.principal(deployer.address),
     ], deployer.address);
-    call.result.expectOk().expectUintWithDecimals(999999.999848); // 100 USDA more
+    call.result.expectOk().expectUintWithDecimals(999999.999848); // 100 USDA more, minus 152*10^-6 stability fee
   }
 });
 
@@ -452,16 +452,6 @@ Clarinet.test({
         types.uint(1),
         types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(40401);
-
-    // Wrong collateral types
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-claim-usda-yield-v1-1", "claim-and-burn", [
-        types.uint(1),
-        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1')),
       ], deployer.address)
     ]);
     block.receipts[0].result.expectErr().expectUint(40401);
