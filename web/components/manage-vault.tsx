@@ -63,6 +63,7 @@ export const ManageVault = ({ match }) => {
   const [decimals, setDecimals] = useState(1000000);
   const [stackingEndDate, setStackingEndDate] = useState('');
   const [poxYield, setPoxYield] = useState(0);
+  const [usdaYield, setUsdaYield] = useState(0);
   const [burnBlockHeight, setBurnBlockHeight] = useState(0);
 
   const [loadingVaultData, setLoadingVaultData] = useState(true);
@@ -189,9 +190,20 @@ export const ManageVault = ({ match }) => {
         senderAddress: contractAddress || '',
         network: network,
       });
-
       const poxYield = cvToJSON(yieldCall);
       setPoxYield(poxYield.value['ustx'].value / 1000000);
+
+      const usdaYieldCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-claim-usda-yield-v2-1',
+        functionName: 'get-claim-by-vault-id',
+        functionArgs: [uintCV(vault?.id)],
+        senderAddress: contractAddress || '',
+        network: network,
+      });
+      const poxUsdaYield = cvToJSON(usdaYieldCall);
+      setUsdaYield(poxUsdaYield.value['usda'].value / 1000000);
+
       setLoadingPoxYieldData(false);
     };
 
@@ -432,8 +444,8 @@ export const ManageVault = ({ match }) => {
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-claim-yield-v2-1',
-      functionName: 'claim-to-pay-debt',
+      contractName: 'arkadiko-claim-usda-yield-v2-1',
+      functionName: 'claim-and-burn',
       postConditionMode: 0x01,
       functionArgs: [
         uintCV(match.params.id),
@@ -1294,30 +1306,40 @@ export const ManageVault = ({ match }) => {
                                 width={Placeholder.width.THIRD}
                               />
                             ) : (
-                              <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
-                                {poxYield}{' '}
-                                <span className="text-sm font-normal">
-                                  {vault?.collateralToken.toUpperCase()}
-                                </span>
-                              </p>
+                              <>
+                                <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
+                                  {poxYield}{' '}
+                                  <span className="text-sm font-normal">
+                                    {vault?.collateralToken.toUpperCase()}
+                                  </span>
+                                </p>
+                                <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
+                                  {usdaYield}{' '}
+                                  <span className="text-sm font-normal">
+                                    USDA
+                                  </span>
+                                </p>
+                              </>
                             )}
                           </div>
-                          {poxYield != 0 ? (
+                          {poxYield != 0 || usdaYield != 0 ? (
                             <div>
-                              <button
-                                type="button"
-                                className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                onClick={() => claimYield()}
-                              >
-                                Add as collateral
-                              </button>
-                              {false ? (
+                              {poxYield != 0 ? (
+                                <button
+                                  type="button"
+                                  className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  onClick={() => claimYield()}
+                                >
+                                  Add as collateral
+                                </button>
+                              ) : null}
+                              {usdaYield != 0 ? (
                                 <button
                                   type="button"
                                   className="inline-flex items-center px-3 py-2 ml-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                   onClick={() => claimYieldPayDebt()}
                                 >
-                                  Pay back debt
+                                  Claim USDA and burn debt
                                 </button>
                               ) : null}
                             </div>
