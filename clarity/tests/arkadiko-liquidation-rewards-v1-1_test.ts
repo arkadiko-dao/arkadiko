@@ -15,6 +15,40 @@ import {
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 Clarinet.test({
+  name: "liquidation-rewards: UI contract",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let liquidationPool = new LiquidationPool(chain, deployer);
+    let liquidationRewards = new LiquidationRewards(chain, deployer);
+
+    // Stake
+    let result = liquidationPool.stake(deployer, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Stake
+    result = liquidationPool.stake(wallet_1, 20000);
+    result.expectOk().expectUintWithDecimals(20000);
+
+    // Add rewards
+    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
+
+    // Combined pending rewards for user + reward info
+    let call:any = await chain.callReadOnlyFn("arkadiko-liquidation-ui-v1-1", "get-user-reward-info", [
+      types.uint(0),
+    ], deployer.address);
+    call.result.expectOk().expectTuple()["pending-rewards"].expectUintWithDecimals(100);
+    call.result.expectOk().expectTuple()["token"].expectPrincipal(Utils.qualifiedName("arkadiko-token"));
+    call.result.expectOk().expectTuple()["token-is-stx"].expectBool(false);
+  }
+});
+
+Clarinet.test({
   name: "liquidation-rewards: add and claim rewards",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;

@@ -344,6 +344,10 @@ path = "contracts/arkadiko-liquidation-pool-v1-1.clar"
 depends_on = ["sip-010-trait-ft-standard", "arkadiko-liquidation-rewards-trait-v1", "arkadiko-token"]
 path = "contracts/arkadiko-liquidation-rewards-v1-1.clar"
 
+[contracts.arkadiko-liquidation-ui-v1-1]
+depends_on = ["arkadiko-liquidation-pool-v1-1", "arkadiko-liquidation-rewards-v1-1"]
+path = "contracts/arkadiko-liquidation-ui-v1-1.clar"
+
 [contracts.arkadiko-auction-engine-v4-1]
 depends_on = ["sip-010-trait-ft-standard", "arkadiko-liquidation-pool-trait-v1", "arkadiko-liquidation-rewards-trait-v1", "arkadiko-swap-v2-1"]
 path = "contracts/arkadiko-auction-engine-v4-1.clar"
