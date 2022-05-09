@@ -143,7 +143,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                     >
                       {isVotingOpen ? (
                         <Tooltip
-                          label="A vote is in progress."
+                          label="A vote is in progress. Check it out and have a say in the future of the protocol!"
                           shouldWrapChildren={true}
                           className="z-50"
                         >
@@ -258,7 +258,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   >
                     {isVotingOpen ? (
                       <Tooltip
-                        label="A vote is in progress."
+                        label="A vote is in progress. Check it out and have a say in the future of the protocol!"
                         shouldWrapChildren={true}
                         className="z-50"
                       >
