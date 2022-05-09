@@ -6,6 +6,7 @@ import { useConnect } from '@stacks/connect-react';
 import { bnsName } from '@common/use-stx-address';
 import { ColorThemeToggle } from './color-theme-toggle';
 import { StyledIcon } from './ui/styled-icon';
+import { Tooltip } from '@blockstack/ui';
 
 interface HeaderProps {
   signOut: () => void;
@@ -94,6 +95,16 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                       className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
                       activeClassName="border-indigo-500 text-gray-900"
                     >
+                      <Tooltip
+                        label="A vote is in progress."
+                        shouldWrapChildren={true}
+                        className="z-50"
+                      >
+                        <span className="relative flex w-2 h-2 mr-2">
+                          <span className="absolute inline-flex w-full h-full bg-indigo-400 rounded-full opacity-75 animate-ping dark:bg-indigo-300"></span>
+                          <span className="relative inline-flex w-2 h-2 bg-indigo-500 rounded-full dark:bg-indigo-300"></span>
+                        </span>
+                      </Tooltip>
                       Governance
                     </RouterLink>
 
@@ -194,9 +205,19 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   <Disclosure.Button
                     as={RouterLink}
                     to="/governance"
-                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
+                    className="flex items-center flex-1 py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
                     activeClassName="border-indigo-500 text-gray-900"
                   >
+                    <Tooltip
+                      label="A vote is in progress."
+                      shouldWrapChildren={true}
+                      className="z-50"
+                    >
+                      <span className="relative flex w-2 h-2 mr-2">
+                        <span className="absolute inline-flex w-full h-full bg-indigo-400 rounded-full opacity-75 animate-ping dark:bg-indigo-300"></span>
+                        <span className="relative inline-flex w-2 h-2 bg-indigo-500 rounded-full dark:bg-indigo-300"></span>
+                      </span>
+                    </Tooltip>
                     Governance
                   </Disclosure.Button>
                 </div>
