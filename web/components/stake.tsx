@@ -84,7 +84,6 @@ export const Stake = () => {
   const [totalXbtcUsdaStaked, setTotalXbtcUsdaStaked] = useState(10);
   const [userPooledUsda, setUserPooledUsda] = useState(0);
   const [totalPooledUsda, setTotalPooledUsda] = useState(0);
-  const [dikoRewardsToAdd, setDikoRewardsToAdd] = useState(0);
   const [pooledUsdaDikoApr, setPooledUsdaDikoApr] = useState(0);
 
 
@@ -490,8 +489,8 @@ export const Stake = () => {
       // USDA Staking in Liquidation Pool
       setTotalPooledUsda(totalPooledUsda);
       setUserPooledUsda(userPooledUsda);
-      setDikoRewardsToAdd(dikoEpochRewardsToAdd);
 
+      console.log(dikoEpochRewardsToAdd)
       const dikoPerYear = (52560 / epochInfo["blocks"].value) * dikoEpochRewardsToAdd;
       setPooledUsdaDikoApr((dikoPerYear * Number(dikoPrice / 1000000)) / totalPooledUsda * 100.0);
 
