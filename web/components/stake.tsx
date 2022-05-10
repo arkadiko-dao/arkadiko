@@ -490,7 +490,6 @@ export const Stake = () => {
       setTotalPooledUsda(totalPooledUsda);
       setUserPooledUsda(userPooledUsda);
 
-      console.log(dikoEpochRewardsToAdd)
       const dikoPerYear = (52560 / epochInfo["blocks"].value) * dikoEpochRewardsToAdd;
       setPooledUsdaDikoApr((dikoPerYear * Number(dikoPrice / 1000000)) / totalPooledUsda * 100.0);
 
