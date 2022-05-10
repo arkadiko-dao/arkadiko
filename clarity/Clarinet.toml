@@ -368,6 +368,10 @@ path = "contracts/lydian-airdrop-snapshot-v1-1.clar"
 depends_on = ["arkadiko-dao"]
 path = "contracts/arkadiko-alex-dual-yield-v1-1.clar"
 
+[contracts.arkadiko-claim-usda-yield-v1-1]
+depends_on = ["arkadiko-vault-data-v1-1"]
+path = "contracts/arkadiko-claim-usda-yield-v1-1.clar"
+
 # Tokensoft xBTC
 [contracts.restricted-token-trait]
 path = "contracts/xbtc/restricted-token-trait.clar"
