@@ -42,7 +42,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
     const getData = async () => {
       const proposals = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-governance-v2-1',
+        contractName: 'arkadiko-governance-v3-1',
         functionName: 'get-proposals',
         functionArgs: [],
         senderAddress: stxAddress || '',
@@ -51,19 +51,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
       const json = cvToJSON(proposals);
       const data = json.value.value;
 
-      const proposalsV3 = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-governance-v3-1',
-        functionName: 'get-proposals',
-        functionArgs: [],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const jsonV3 = cvToJSON(proposalsV3);
-      const dataV3 = jsonV3.value.value;
-
-      const allProposals = [...data, ...dataV3];
-      setisVotingOpen(allProposals.some(item => item.value["is-open"].value));
+      setisVotingOpen(data.some(item => item.value["is-open"].value));
     };
 
 
