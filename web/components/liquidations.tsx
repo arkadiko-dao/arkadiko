@@ -304,7 +304,6 @@ export const Liquidations: React.FC = () => {
     };
 
     const getRewardsData = async (startId: Number, endId: Number) => {
-
       var rewardIds = [];
       for (let rewardId = startId; rewardId <= endId; rewardId++) {
         rewardIds.push(rewardId);
@@ -359,6 +358,10 @@ export const Liquidations: React.FC = () => {
       return rewardsDataMerged;
     };
 
+    const sleep = (milliseconds) => {
+      return new Promise(resolve => setTimeout(resolve, milliseconds))
+    };
+
     const fetchInfo = async () => {
       // Fetch info
       const [
@@ -406,17 +409,22 @@ export const Liquidations: React.FC = () => {
       setDikoApr((dikoPerYear * dikoPrice) / totalPooled * 100.0);
       setIsLoading(false);
 
+
       // Fetch all reward info
       var rewards: LiquidationRewardProps[] = [];
-      const batchAmount = 5;
+      const batchAmount = 20;
       const batches = Math.ceil(rewardCount / batchAmount);
-      for (let batch = 0; batch < batches; batch++) {
+      for (let batch = batches-1; batch >= 0; batch--) {
+
+        // Sleep 7 sec
+        await sleep(7000);
+
         const startRewardId = batch * batchAmount;
         const endRewardId = Math.min((batch+1) * batchAmount - 1, rewardCount-1);
         const newRewards = await getRewardsData(startRewardId, endRewardId);
         rewards = rewards.concat(newRewards);
       }
-
+      
       // Group rewards
       const rewardGroups = createGroups(rewards);
       const rewardItems = rewardGroups.map((reward: object) => (
