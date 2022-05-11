@@ -733,7 +733,7 @@ export const Liquidations: React.FC = () => {
                         <Tab.Group>
                           <Tab.List className="group p-0.5 rounded-lg flex w-full bg-gray-50 hover:bg-gray-100 dark:bg-zinc-300 dark:hover:bg-zinc-200">
                             {tabs.map((tab, tabIdx) => (
-                              <Tab as={Fragment}>
+                              <Tab as={Fragment} key={tabIdx}>
                                 {({ selected }) => (
                                   <button className={
                                     classNames(

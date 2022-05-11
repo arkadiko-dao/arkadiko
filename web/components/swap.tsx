@@ -231,7 +231,11 @@ export const Swap: React.FC = () => {
     let priceImpact = 0;
     if (isMultiHop) {
       tokenYAmount = tokenXAmount / currentPrice;
-      priceImpact = 5;
+      const balanceX = pairY['balance_x'] / Math.pow(10, tokenY['decimals']);
+      const balanceY = pairY['balance_y'] / Math.pow(10, tokenX['decimals']);
+      const newBalanceY = balanceY + inputWithoutFees;
+      const newBalanceX = (balanceY * balanceX) / newBalanceY;
+      priceImpact = newBalanceY / newBalanceX / (balanceY / balanceX) - 1.0;
     } else {
       if (inverseDirection) {
         const balanceX = currentPair['balance_x'] / Math.pow(10, tokenY['decimals']);

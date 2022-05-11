@@ -895,7 +895,7 @@ export const ManageVault = ({ match }) => {
                               ) : (
                                 <Alert type={Alert.type.ERROR} title="High liquidation risk">
                                   <p>
-                                    You are very close to being liquidated. If the{' '}
+                                    You are very close to being liquidated. It will happen if the{' '}
                                     {vault?.collateralToken} price drops below{' '}
                                     <span className="font-semibold">${liquidationPrice()} USD</span>
                                     . Pay back the outstanding debt or deposit extra collateral to
