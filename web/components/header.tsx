@@ -9,7 +9,6 @@ import { StyledIcon } from './ui/styled-icon';
 import { Tooltip } from '@blockstack/ui';
 import { callReadOnlyFunction, cvToJSON } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
-import { useSTXAddress } from '@common/use-stx-address';
 
 interface HeaderProps {
   signOut: () => void;
@@ -33,7 +32,6 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
   const { doOpenAuth } = useConnect();
   const name = bnsName();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const stxAddress = useSTXAddress();
   const [isVotingOpen, setisVotingOpen] = useState(false);
 
   useEffect(() => {
@@ -45,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
         contractName: 'arkadiko-governance-v3-1',
         functionName: 'get-proposals',
         functionArgs: [],
-        senderAddress: stxAddress || '',
+        senderAddress: contractAddress,
         network: network,
       });
       const json = cvToJSON(proposals);
