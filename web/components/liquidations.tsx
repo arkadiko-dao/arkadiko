@@ -38,6 +38,7 @@ export const Liquidations: React.FC = () => {
 
   const [state, setState] = useContext(AppContext);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingRewards, setIsLoadingRewards] = useState(true);
   const [rewardData, setRewardData] = useState([]);
   const [stakeAmount, setStakeAmount] = useState(0);
   const [unstakeAmount, setUnstakeAmount] = useState(0);
@@ -287,7 +288,7 @@ export const Liquidations: React.FC = () => {
       return result["start-block"].value;
     };
 
-    const getRewardsData = async () => {
+    const getRewardCount = async () => {
 
       const call = await callReadOnlyFunction({
         contractAddress,
@@ -298,57 +299,48 @@ export const Liquidations: React.FC = () => {
         network: network,
       });
       const maxRewardId = cvToJSON(call).value;
-      console.log("maxRewardId: ", maxRewardId);
+      console.log("Reward IDs: ", maxRewardId);
+      return parseInt(maxRewardId);
+    };
 
+    const getRewardsData = async (startId: Number, endId: Number) => {
       var rewardIds = [];
-      for (let rewardId = 0; rewardId < parseInt(maxRewardId); rewardId++) {
+      for (let rewardId = startId; rewardId <= endId; rewardId++) {
         rewardIds.push(rewardId);
       }
 
       const rewardsData: LiquidationRewardProps[] = [];
       await asyncForEach(rewardIds, async (rewardId: number) => {
-        let resultUserPending = 0;
         try {
           const callUserPending = await callReadOnlyFunction({
             contractAddress,
-            contractName: 'arkadiko-liquidation-rewards-v1-1',
-            functionName: 'get-rewards-of',
+            contractName: 'arkadiko-liquidation-ui-v1-1',
+            functionName: 'get-user-reward-info',
             functionArgs: [
-              standardPrincipalCV(stxAddress || ''),
               uintCV(rewardId),
-              contractPrincipalCV(contractAddress, 'arkadiko-liquidation-pool-v1-1'),
             ],
             senderAddress: stxAddress || '',
             network: network,
           });
-          resultUserPending = cvToJSON(callUserPending).value.value;
+          const result = cvToJSON(callUserPending).value.value;
+
+          if (result['pending-rewards'].value > 0){
+            rewardsData.push({
+              rewardIds: [rewardId],
+              token: result['token'].value,
+              claimable: result['pending-rewards'].value,
+              tokenIsStx: result['token-is-stx'].value,
+            });
+          }
         } catch (e) {
           console.error(e);
         }
-
-        if (resultUserPending > 0) {
-          const call = await callReadOnlyFunction({
-            contractAddress,
-            contractName: 'arkadiko-liquidation-rewards-v1-1',
-            functionName: 'get-reward-data',
-            functionArgs: [
-              uintCV(rewardId)
-            ],
-            senderAddress: stxAddress || '',
-            network: network,
-          });
-          const json = cvToJSON(call);
-          const data = json.value;
-
-          rewardsData.push({
-            rewardIds: [rewardId],
-            token: data['token'].value,
-            claimable: parseInt(resultUserPending),
-            tokenIsStx: data['token-is-stx'].value,
-          });
-        }
       });
 
+      return rewardsData;
+    };
+
+    const createGroups = (rewardsData: LiquidationRewardProps[]) => {
       // Merge in groups to bulk claim
       const rewardsDataMerged: LiquidationRewardProps[] = [];
       for (const rewardData of rewardsData) {
@@ -366,6 +358,10 @@ export const Liquidations: React.FC = () => {
       return rewardsDataMerged;
     };
 
+    const sleep = (milliseconds) => {
+      return new Promise(resolve => setTimeout(resolve, milliseconds))
+    };
+
     const fetchInfo = async () => {
       // Fetch info
       const [
@@ -374,34 +370,23 @@ export const Liquidations: React.FC = () => {
         epochInfo,
         dikoEpochRewardsToAdd,
         currentBlockHeight,
-        rewards,
         stxRedeemable,
         stakerLockup,
         lockupBlocks,
-        dikoPrice
+        dikoPrice,
+        rewardCount
       ] = await Promise.all([
         getTotalPooled(),
         getUserPooled(),
         getEpochInfo(),
         getDikoEpochRewardsToAdd(),
         getCurrentBlockHeight(),
-        getRewardsData(),
         getStxRedeemable(),
         getStakerLockup(),
         getLockup(),
-        getDikoPrice()
+        getDikoPrice(),
+        getRewardCount()
       ]);
-
-      const rewardItems = rewards.map((reward: object) => (
-        <LiquidationReward
-          key={reward.rewardIds}
-          rewardIds={reward.rewardIds}
-          token={reward.token}
-          claimable={reward.claimable}
-          tokenIsStx={reward.tokenIsStx}
-        />
-      ));
-      setRewardData(rewardItems);
 
       setTotalPooled(totalPooled);
       setUserPooled(userPooled);
@@ -420,17 +405,40 @@ export const Liquidations: React.FC = () => {
       setLockupBlocks(lockupBlocks);
       setRedeemableStx(stxRedeemable);
 
-      console.log("epochInfo: ", epochInfo);
-      console.log('diko price:', dikoPrice);
-
-      console.log('dikoEpochRewardsToAdd:', dikoEpochRewardsToAdd);
-      console.log('totalPooled:', totalPooled);
-
       const dikoPerYear = (52560 / epochInfo["blocks"].value) * dikoEpochRewardsToAdd;
       setDikoApr((dikoPerYear * dikoPrice) / totalPooled * 100.0);
       setIsLoading(false);
-    };
 
+
+      // Fetch all reward info
+      var rewards: LiquidationRewardProps[] = [];
+      const batchAmount = 20;
+      const batches = Math.ceil(rewardCount / batchAmount);
+      for (let batch = batches-1; batch >= 0; batch--) {
+
+        // Sleep 7 sec
+        await sleep(7000);
+
+        const startRewardId = batch * batchAmount;
+        const endRewardId = Math.min((batch+1) * batchAmount - 1, rewardCount-1);
+        const newRewards = await getRewardsData(startRewardId, endRewardId);
+        rewards = rewards.concat(newRewards);
+      }
+      
+      // Group rewards
+      const rewardGroups = createGroups(rewards);
+      const rewardItems = rewardGroups.map((reward: object) => (
+        <LiquidationReward
+          key={reward.rewardIds}
+          rewardIds={reward.rewardIds}
+          token={reward.token}
+          claimable={reward.claimable}
+          tokenIsStx={reward.tokenIsStx}
+        />
+      ));
+      setRewardData(rewardItems);
+      setIsLoadingRewards(false);
+    };
 
     fetchInfo();
   }, []);
@@ -487,7 +495,7 @@ export const Liquidations: React.FC = () => {
                 </div>
               </header>
               <div className="mt-4">
-                {isLoading ? (
+                {isLoadingRewards ? (
                   <>
                     <Placeholder className="py-2" width={Placeholder.width.FULL} />
                     <Placeholder className="py-2" width={Placeholder.width.FULL} />
