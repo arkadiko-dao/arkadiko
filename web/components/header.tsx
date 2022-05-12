@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Disclosure } from '@headlessui/react';
 import { AppContext } from '@common/context';
 import { NavLink as RouterLink } from 'react-router-dom';
@@ -6,6 +6,9 @@ import { useConnect } from '@stacks/connect-react';
 import { bnsName } from '@common/use-stx-address';
 import { ColorThemeToggle } from './color-theme-toggle';
 import { StyledIcon } from './ui/styled-icon';
+import { Tooltip } from '@blockstack/ui';
+import { callReadOnlyFunction, cvToJSON } from '@stacks/transactions';
+import { stacksNetwork as network } from '@common/utils';
 
 interface HeaderProps {
   signOut: () => void;
@@ -28,6 +31,36 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
   const showWallet = process.env.REACT_APP_SHOW_CONNECT_WALLET === 'true';
   const { doOpenAuth } = useConnect();
   const name = bnsName();
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const [isVotingOpen, setisVotingOpen] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const getData = async () => {
+      const proposals = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-governance-v3-1',
+        functionName: 'get-proposals',
+        functionArgs: [],
+        senderAddress: contractAddress,
+        network: network,
+      });
+      const json = cvToJSON(proposals);
+      const data = json.value.value;
+
+      setisVotingOpen(data.some(item => item.value["is-open"].value));
+    };
+
+
+    if (mounted) {
+      void getData();
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <Disclosure as="nav" className="relative sticky top-0 z-50 bg-white shadow dark:bg-zinc-900">
@@ -94,6 +127,18 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                       className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
                       activeClassName="border-indigo-500 text-gray-900"
                     >
+                      {isVotingOpen ? (
+                        <Tooltip
+                          label="A vote is in progress. Check it out and have a say in the future of the protocol!"
+                          shouldWrapChildren={true}
+                          className="z-50"
+                        >
+                          <span className="relative flex w-2 h-2 mr-2">
+                            <span className="absolute inline-flex w-full h-full bg-indigo-400 rounded-full opacity-75 animate-ping dark:bg-indigo-300"></span>
+                            <span className="relative inline-flex w-2 h-2 bg-indigo-500 rounded-full dark:bg-indigo-300"></span>
+                          </span>
+                        </Tooltip>
+                      ) : null}
                       Governance
                     </RouterLink>
 
@@ -194,9 +239,21 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   <Disclosure.Button
                     as={RouterLink}
                     to="/governance"
-                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
+                    className="flex items-center flex-1 py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
                     activeClassName="border-indigo-500 text-gray-900"
                   >
+                    {isVotingOpen ? (
+                      <Tooltip
+                        label="A vote is in progress. Check it out and have a say in the future of the protocol!"
+                        shouldWrapChildren={true}
+                        className="z-50"
+                      >
+                        <span className="relative flex w-2 h-2 mr-2">
+                          <span className="absolute inline-flex w-full h-full bg-indigo-400 rounded-full opacity-75 animate-ping dark:bg-indigo-300"></span>
+                          <span className="relative inline-flex w-2 h-2 bg-indigo-500 rounded-full dark:bg-indigo-300"></span>
+                        </span>
+                      </Tooltip>
+                    ) : null}
                     Governance
                   </Disclosure.Button>
                 </div>
