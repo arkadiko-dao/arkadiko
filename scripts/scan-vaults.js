@@ -111,16 +111,16 @@ async function iterateAndCheck() {
   console.log('Last Vault ID is', lastId, ', iterating vaults');
 
   const vaultIds = Array.from(Array(lastId).keys());
-  for (let index = 2042; index > 0; index--) {
+  for (let index = lastId; index > 0; index--) {
     let vault = await getVaultById(index);
     if (!vault['is-liquidated']['value']) {
       // console.log(vault);
       console.log('Querying vault', index);
       const collRatio = await getCollateralizationRatio(index);
       const liqRatio = await getLiquidationRatio(vault['collateral-type']['value']);
-      if (collRatio < liqRatio && Number(collRatio) != 0) {
+      if (Number(collRatio) <= 125 && Number(collRatio) != 0) {
         console.log('Vault', index, 'needs to be liquidated - collateralization ratio:', collRatio, ', liquidation ratio:', liqRatio, 'and debt', vault['debt']['value'] / 1000000);
-        // await liquidateVault(index, vault['collateral-token'].value, !vault['revoked-stacking'].value, nonce);
+        await liquidateVault(index, vault['collateral-token'].value, !vault['revoked-stacking'].value, nonce);
         nonce = nonce + 1;
       }
     }

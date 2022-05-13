@@ -22,7 +22,7 @@ const txOptions = {
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-pool-v1-1'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-rewards-v1-1'),
   ],
-  nonce: new BN(901, 10),
+  nonce: new BN(962, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network
