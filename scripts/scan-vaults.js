@@ -33,21 +33,25 @@ async function getVaultById(vaultId) {
 }
 
 async function getCollateralizationRatio(vaultId) {
-  const vaultTx = await tx.callReadOnlyFunction({
-    contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-freddie-v1-1",
-    functionName: "calculate-current-collateral-to-debt-ratio",
-    functionArgs: [
-      tx.uintCV(vaultId),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v1-1'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v1-1'),
-      tx.falseCV()
-    ],
-    senderAddress: CONTRACT_ADDRESS,
-    network
-  });
+  try {
+    const vaultTx = await tx.callReadOnlyFunction({
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: "arkadiko-freddie-v1-1",
+      functionName: "calculate-current-collateral-to-debt-ratio",
+      functionArgs: [
+        tx.uintCV(vaultId),
+        tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v1-1'),
+        tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v1-1'),
+        tx.falseCV()
+      ],
+      senderAddress: CONTRACT_ADDRESS,
+      network
+    });
 
-  return tx.cvToJSON(vaultTx).value.value;
+    return tx.cvToJSON(vaultTx).value.value;
+  } catch (e) {
+    return 0;
+  }
 }
 
 async function getLiquidationRatio(collateralType) {
@@ -114,8 +118,8 @@ async function iterateAndCheck() {
       console.log('Querying vault', index);
       const collRatio = await getCollateralizationRatio(index);
       const liqRatio = await getLiquidationRatio(vault['collateral-type']['value']);
-      if (collRatio < liqRatio) {
-        console.log('Vault', index, 'needs to be liquidated - collateralization ratio:', collRatio, ', liquidation ratio:', liqRatio);
+      if (Number(collRatio) <= 125 && Number(collRatio) != 0) {
+        console.log('Vault', index, 'needs to be liquidated - collateralization ratio:', collRatio, ', liquidation ratio:', liqRatio, 'and debt', vault['debt']['value'] / 1000000);
         await liquidateVault(index, vault['collateral-token'].value, !vault['revoked-stacking'].value, nonce);
         nonce = nonce + 1;
       }

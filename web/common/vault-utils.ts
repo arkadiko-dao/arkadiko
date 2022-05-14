@@ -61,199 +61,231 @@ export const availableCoinsToMint = (
   return 0;
 };
 
-type TokenTraits = Record<string, { address: string; name: string; swap: string; ft: string }>;
+type TokenTraits = Record<string, { address: string; name: string; swap: string; ft: string; multihop: Array<string>; }>;
 
 export const tokenTraits: TokenTraits = {
   diko: {
     address: contractAddress,
     name: 'arkadiko-token',
     swap: 'arkadiko-token',
+    multihop: [],
     ft: 'diko',
   },
   stx: {
     address: contractAddress,
     name: 'xstx-token',
     swap: 'wrapped-stx-token',
+    multihop: [],
     ft: 'stx',
   },
   xstx: {
     address: contractAddress,
     name: 'xstx-token',
     swap: 'xstx-token',
+    multihop: [],
     ft: 'xstx',
   },
   usda: {
     address: contractAddress,
     name: 'usda-token',
     swap: 'usda-token',
+    multihop: [],
     ft: 'usda',
   },
   xbtc: {
     address: xbtcContractAddress,
     name: 'Wrapped-Bitcoin',
     swap: 'Wrapped-Bitcoin',
+    multihop: [],
     ft: 'wrapped-bitcoin',
   },
   wldn: {
     address: ldnContractAddress,
     name: 'wrapped-lydian-token',
     swap: 'wrapped-lydian-token',
+    multihop: [],
     ft: 'wrapped-lydian',
   },
   ldn: {
     address: ldnContractAddress,
     name: 'lydian-token',
     swap: 'lydian-token',
+    multihop: [],
     ft: 'lydian',
   },
   welsh: {
     address: welshContractAddress,
     name: 'welshcorgicoin-token',
     swap: 'welshcorgicoin-token',
+    multihop: [],
     ft: 'welshcorgicoin',
   },
   dikousda: {
     address: contractAddress,
     name: 'arkadiko-swap-token-diko-usda',
     swap: 'diko-usda',
+    multihop: [],
     ft: 'diko-usda',
   },
   usdadiko: {
     address: contractAddress,
     name: 'arkadiko-swap-token-diko-usda',
     swap: 'diko-usda',
+    multihop: [],
     ft: 'diko-usda',
   },
   wstxusda: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-usda',
     swap: 'wstx-usda',
+    multihop: [],
     ft: 'wstx-usda',
   },
   usdawstx: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-usda',
     swap: 'wstx-usda',
+    multihop: [],
     ft: 'wstx-usda',
   },
   usdastx: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-usda',
     swap: 'wstx-usda',
+    multihop: [],
     ft: 'wstx-usda',
   },
   stxusda: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-usda',
     swap: 'wstx-usda',
+    multihop: [],
     ft: 'wstx-usda',
   },
   wstxdiko: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
+    multihop: ['stx', 'usda', 'diko'],
     ft: 'wstx-diko',
   },
   dikowstx: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
+    multihop: ['diko', 'usda', 'stx'],
     ft: 'wstx-diko',
   },
   dikostx: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
+    multihop: ['diko', 'usda', 'stx'],
     ft: 'wstx-diko',
   },
   wstxxbtc: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-xbtc',
     swap: 'wstx-xbtc',
+    multihop: [],
     ft: 'wstx-xbtc',
   },
   stxxbtc: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-xbtc',
     swap: 'wstx-xbtc',
+    multihop: [],
     ft: 'wstx-xbtc',
   },
   xbtcstx: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-xbtc',
     swap: 'wstx-xbtc',
+    multihop: [],
     ft: 'wstx-xbtc',
   },
   xbtcwstx: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-xbtc',
     swap: 'wstx-xbtc',
+    multihop: [],
     ft: 'wstx-xbtc',
   },
   stxdiko: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
+    multihop: ['diko', 'usda', 'stx'],
     ft: 'wstx-diko',
   },
   xbtcusda: {
     address: contractAddress,
     name: 'arkadiko-swap-token-xbtc-usda',
     swap: 'xbtc-usda',
+    multihop: [],
     ft: 'xbtc-usda',
   },
   usdaxbtc: {
     address: contractAddress,
     name: 'arkadiko-swap-token-xbtc-usda',
     swap: 'xbtc-usda',
+    multihop: [],
     ft: 'xbtc-usda',
   },
   wldnusda: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wldn-usda',
     swap: 'wldn-usda',
+    multihop: [],
     ft: 'wldn-usda'
   },
   usdawldn: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wldn-usda',
     swap: 'wldn-usda',
+    multihop: [],
     ft: 'wldn-usda'
   },
   ldnusda: {
     address: contractAddress,
     name: 'arkadiko-swap-token-ldn-usda',
     swap: 'ldn-usda',
+    multihop: [],
     ft: 'ldn-usda'
   },
   usdaldn: {
     address: contractAddress,
     name: 'arkadiko-swap-token-ldn-usda',
     swap: 'ldn-usda',
+    multihop: [],
     ft: 'ldn-usda'
   },
   wstxwelsh: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-welsh',
     swap: 'wstx-welsh',
+    multihop: [],
     ft: 'wstx-welsh'
   },
   stxwelsh: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-welsh',
     swap: 'wstx-welsh',
+    multihop: [],
     ft: 'wstx-welsh'
   },
   welshwstx: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-welsh',
     swap: 'wstx-welsh',
+    multihop: [],
     ft: 'wstx-welsh'
   },
   welshstx: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-welsh',
     swap: 'wstx-welsh',
+    multihop: [],
     ft: 'wstx-welsh'
   },
 };
