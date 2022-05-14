@@ -7,7 +7,6 @@ import {
   AnchorMode,
   uintCV,
   listCV,
-  contractPrincipalCV,
   makeContractFungiblePostCondition,
   makeContractSTXPostCondition,
   FungibleConditionCode,
@@ -102,9 +101,6 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
 
   return (
     <tr className="bg-white dark:bg-zinc-900">
-      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900 dark:text-zinc-100">{rewardIds.join(", ")}</span>
-      </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         {tokenIsStx ? ( 
           <span className="font-medium text-gray-900 dark:text-zinc-100">STX</span>
