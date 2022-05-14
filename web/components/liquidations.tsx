@@ -314,7 +314,7 @@ export const Liquidations: React.FC = () => {
         try {
           const callUserPending = await callReadOnlyFunction({
             contractAddress,
-            contractName: 'arkadiko-liquidation-ui-v1-1',
+            contractName: 'arkadiko-liquidation-ui-v1-2',
             functionName: 'get-user-reward-info',
             functionArgs: [
               uintCV(rewardId),
@@ -345,7 +345,7 @@ export const Liquidations: React.FC = () => {
       const rewardsDataMerged: LiquidationRewardProps[] = [];
       for (const rewardData of rewardsData) {
         const result = rewardsDataMerged.filter(data => {
-          return data.rewardIds.length < 5 && data.token == rewardData.token && data.tokenIsStx == rewardData.tokenIsStx;
+          return data.rewardIds.length < 50 && data.token == rewardData.token && data.tokenIsStx == rewardData.tokenIsStx;
         });
         if (result.length == 0) {
           rewardsDataMerged.push(rewardData);
