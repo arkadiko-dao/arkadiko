@@ -12,7 +12,6 @@ import { Swap } from './swap';
 import { Pool } from './pool';
 import { AddSwapLiquidity } from './add-swap-liquidity';
 import { RemoveSwapLiquidity } from './remove-swap-liquidity';
-import { Auctions } from './auctions';
 import { Governance } from './governance';
 import { NewVault } from './new-vault';
 import { ManageVault } from './manage-vault';
@@ -44,7 +43,7 @@ export function Routes() {
       <Route exact path="/swap/remove/:currencyIdA/:currencyIdB" component={RemoveSwapLiquidity} />
       <Route exact path="/pool" component={Pool} />
 
-      <Route exact path="/auctions" component={Liquidations} />
+      <Route exact path="/liquidations" component={Liquidations} />
       <Route exact path="/governance" component={Governance} />
       <Route exact path="/stake" component={Stake} />
       <Route exact path="/vaults/new" component={NewVault} />
