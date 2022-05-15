@@ -424,7 +424,7 @@ export const Liquidations: React.FC = () => {
         const newRewards = await getRewardsData(startRewardId, endRewardId);
         rewards = rewards.concat(newRewards);
       }
-      
+
       // Group rewards
       const rewardGroups = createGroups(rewards);
       const rewardItems = rewardGroups.map((reward: object) => (
@@ -472,24 +472,37 @@ export const Liquidations: React.FC = () => {
                       <Placeholder className="py-2" width={Placeholder.width.FULL} />
                     </>
                   ) : (
-                    <p className="mt-2 mb-7">
-                      There are {redeemableStx / 1000000} STX redeemable in the Arkadiko pool. <br />
-                      You have {state.balance['xstx'] / 1000000} xSTX. <br />
-                      <button
-                        type="button"
-                        onClick={() => redeemStx()}
-                        className="mt-2 px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                      >
-                        Redeem
-                      </button>
-                    </p>
+                    <div className="mt-4 shadow sm:rounded-md sm:overflow-hidden">
+                      <div className="px-4 py-5 bg-white dark:bg-zinc-800 sm:p-6">
+                        {(redeemableStx / 1000000) === 0 ? (
+                          <>
+                            <p>There are <span className="font-semibold">no redeemable STX</span> in the Arkadiko pool.</p>
+                            <p className="mt-1">Be sure to check again later to redeem your xSTX for STX.</p>
+                          </>
+                        ) : (
+                          <p>There are <span className="text-lg font-semibold">{redeemableStx / 1000000}</span> STX redeemable in the Arkadiko pool.</p>
+                        )}
+                        <div className="flex items-center justify-between mt-4">
+                          <p>You have <span className="text-lg font-semibold">{state.balance['xstx'] / 1000000}</span> xSTX.</p>
+
+                          <button
+                            type="button"
+                            onClick={() => redeemStx()}
+                            disabled={(redeemableStx / 1000000) === 0}
+                            className="inline-flex justify-center px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                          >
+                            Redeem
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   )}
                 </div>
               </section>
             ): null}
 
             <section>
-              <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
+              <header className="pt-10 pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
                 <div>
                   <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">Your rewards</h3>
                 </div>
@@ -777,7 +790,7 @@ export const Liquidations: React.FC = () => {
                                   />
                                   <button
                                     type="button"
-                                    className="inline-flex justify-center px-4 py-2 mb-4 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                                    className="inline-flex justify-center px-4 py-2 mb-4 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
                                     disabled={buttonStakeDisabled}
                                     onClick={stake}
                                   >
@@ -812,14 +825,12 @@ export const Liquidations: React.FC = () => {
                                   />
                                   <button
                                     type="button"
-                                    className="inline-flex justify-center px-4 py-2 mb-4 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                                    className="inline-flex justify-center px-4 py-2 mb-4 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
                                     disabled={buttonUnstakeDisabled}
                                     onClick={unstake}
                                   >
                                     Remove USDA from pool
                                   </button>
-
-
                                 </>
                               )}
                             </Tab.Panel>
