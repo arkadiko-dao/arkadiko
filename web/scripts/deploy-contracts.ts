@@ -83,6 +83,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-liquidation-rewards-diko-v1-1' },
   { name: 'arkadiko-auction-engine-v4-1' },
   { name: 'arkadiko-liquidation-ui-v1-1' },
+  { name: 'arkadiko-multi-hop-swap-v1-1' },
 
   { name: 'wrapped-lydian-token' },
   { name: 'lydian-airdrop-v1-1' },

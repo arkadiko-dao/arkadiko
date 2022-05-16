@@ -311,9 +311,8 @@ export const microToReadable = (amount: number | string, decimals = 6) => {
   return parseFloat(`${amount}`) / Math.pow(10, decimals);
 };
 
-export const buildSwapPostConditions = (sender: string, amountSent: bigint, amountReceived: number, tokenX: any, tokenY: any) => {
+export const buildSwapPostConditions = (sender: string, amountSent: bigint, amountReceived: number, tokenX: any, tokenY: any, tokenZ: any) => {
   let postConditions = [];
-  console.log(tokenX, tokenY);
 
   if (tokenX['nameInPair'] === 'wstx') {
     postConditions.push(
@@ -328,6 +327,27 @@ export const buildSwapPostConditions = (sender: string, amountSent: bigint, amou
       createAssetInfo(tokenX['address'], tokenX['fullName'], tokenX['nameInPair'])
     )
   )
+
+  if (tokenZ != undefined) {
+    console.log("GOT Z:", tokenZ);
+    postConditions.push(
+      makeStandardFungiblePostCondition(
+        sender,
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(tokenZ['address'], tokenZ['fullName'], tokenZ['nameInPair'])
+      )
+    )
+    postConditions.push(
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-swap-v2-1',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(tokenZ['address'], tokenZ['fullName'], tokenZ['nameInPair'])
+      )
+    )
+  }
 
   if (tokenY['nameInPair'] === 'wstx') {
     postConditions.push(
@@ -366,7 +386,5 @@ export const buildSwapPostConditions = (sender: string, amountSent: bigint, amou
       )
     )
   }
-
-
   return postConditions;
 };

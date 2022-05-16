@@ -352,7 +352,9 @@ export const Swap: React.FC = () => {
     let principalY = contractPrincipalCV(tokenY['address'], tokenYTrait);
     let principalZ = contractPrincipalCV(tokenY['address'], tokenZTrait); // TODO: token Z address
     const amount = uintCV(tokenXAmount * Math.pow(10, tokenX['decimals']));
-    const postConditionMode = 0x01;
+
+    let tokenZ = tokenList.filter((tokenInfo) => (tokenInfo.fullName == tokenYTrait))[0];
+    let postConditions = buildSwapPostConditions(stxAddress || '', amount.value, minimumReceived, tokenX, tokenY, tokenZ);
 
     await doContractCall({
       network,
@@ -369,7 +371,7 @@ export const Swap: React.FC = () => {
         inverseDirectionX ? trueCV() : falseCV(),
         inverseDirectionY ? trueCV() : falseCV()
       ],
-      postConditionMode,
+      postConditions,
       onFinish: data => {
         console.log('finished multihop swap!', data);
         setState(prevState => ({
