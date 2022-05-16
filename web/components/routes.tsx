@@ -43,6 +43,7 @@ export function Routes() {
       <Route exact path="/swap/remove/:currencyIdA/:currencyIdB" component={RemoveSwapLiquidity} />
       <Route exact path="/pool" component={Pool} />
 
+      <Route exact path="/auctions" component={Liquidations} />
       <Route exact path="/liquidations" component={Liquidations} />
       <Route exact path="/governance" component={Governance} />
       <Route exact path="/stake" component={Stake} />
