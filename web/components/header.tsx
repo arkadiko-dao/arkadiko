@@ -102,7 +102,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                       className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
                       activeClassName="border-indigo-500 text-gray-900"
                     >
-                      Vaults
+                      Borrow
                     </RouterLink>
 
                     <RouterLink
@@ -114,12 +114,12 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                     </RouterLink>
 
                     <RouterLink
-                      to="/auctions"
+                      to="/liquidations"
                       exact
                       className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
                       activeClassName="border-indigo-500 text-gray-900"
                     >
-                      Auctions
+                      Liquidations
                     </RouterLink>
 
                     <RouterLink
@@ -215,7 +215,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                     className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
                     activeClassName="border-indigo-500 text-gray-900"
                   >
-                    Vaults
+                    Borrow
                   </Disclosure.Button>
 
                   <Disclosure.Button
@@ -229,11 +229,11 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
 
                   <Disclosure.Button
                     as={RouterLink}
-                    to="/auctions"
+                    to="/liquidations"
                     className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
                     activeClassName="border-indigo-500 text-gray-900"
                   >
-                    Auctions
+                    Liquidations
                   </Disclosure.Button>
 
                   <Disclosure.Button
