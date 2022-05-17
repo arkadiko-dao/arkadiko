@@ -190,7 +190,7 @@ export const Auctions: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Auctions</title>
+        <title>Liquidations</title>
       </Helmet>
 
       {state.userData ? (
@@ -250,7 +250,7 @@ export const Auctions: React.FC = () => {
               <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
                 <div>
                   <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">
-                    Auctions
+                    Liquidations
                   </h3>
                 </div>
               </header>
