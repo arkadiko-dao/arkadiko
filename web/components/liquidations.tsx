@@ -53,6 +53,7 @@ export const Liquidations: React.FC = () => {
   const [redeemableStx, setRedeemableStx] = useState(0);
   const [lockupBlocks, setLockupBlocks] = useState(0);
   const [stakerLockupBlocks, setStakerLockupBlocks] = useState(0);
+  const [rewardLoadingPercentage, setRewardLoadingPercentage] = useState(0);
 
   const onInputStakeChange = (event: any) => {
     const value = event.target.value;
@@ -303,7 +304,7 @@ export const Liquidations: React.FC = () => {
       return parseInt(maxRewardId);
     };
 
-    const getRewardsData = async (startId: Number, endId: Number) => {
+    const getRewardsData = async (startId: Number, endId: Number, totalIds: number, loadedIds: number) => {
       var rewardIds = [];
       for (let rewardId = startId; rewardId <= endId; rewardId++) {
         rewardIds.push(rewardId);
@@ -314,7 +315,7 @@ export const Liquidations: React.FC = () => {
         try {
           const callUserPending = await callReadOnlyFunction({
             contractAddress,
-            contractName: 'arkadiko-liquidation-ui-v1-1',
+            contractName: 'arkadiko-liquidation-ui-v1-2',
             functionName: 'get-user-reward-info',
             functionArgs: [
               uintCV(rewardId),
@@ -335,6 +336,10 @@ export const Liquidations: React.FC = () => {
         } catch (e) {
           console.error(e);
         }
+
+        loadedIds = loadedIds + 1;
+        const percentage = parseInt((loadedIds / totalIds) * 100.0);
+        setRewardLoadingPercentage(percentage);
       });
 
       return rewardsData;
@@ -345,7 +350,7 @@ export const Liquidations: React.FC = () => {
       const rewardsDataMerged: LiquidationRewardProps[] = [];
       for (const rewardData of rewardsData) {
         const result = rewardsDataMerged.filter(data => {
-          return data.rewardIds.length < 5 && data.token == rewardData.token && data.tokenIsStx == rewardData.tokenIsStx;
+          return data.rewardIds.length < 50 && data.token == rewardData.token && data.tokenIsStx == rewardData.tokenIsStx;
         });
         if (result.length == 0) {
           rewardsDataMerged.push(rewardData);
@@ -421,7 +426,8 @@ export const Liquidations: React.FC = () => {
 
         const startRewardId = batch * batchAmount;
         const endRewardId = Math.min((batch+1) * batchAmount - 1, rewardCount-1);
-        const newRewards = await getRewardsData(startRewardId, endRewardId);
+        const rewardsLoaded = (batches-1-batch) * (endRewardId - startRewardId);
+        const newRewards = await getRewardsData(startRewardId, endRewardId, rewardCount, rewardsLoaded);
         rewards = rewards.concat(newRewards);
       }
 
@@ -510,9 +516,13 @@ export const Liquidations: React.FC = () => {
               <div className="mt-4">
                 {isLoadingRewards ? (
                   <>
-                    <Placeholder className="py-2" width={Placeholder.width.FULL} />
-                    <Placeholder className="py-2" width={Placeholder.width.FULL} />
-                    <Placeholder className="py-2" width={Placeholder.width.FULL} />
+                    <div className="flex justify-between mb-1">
+                      <span className="text-base font-medium text-indigo-700 dark:text-white">Loading..</span>
+                      <span className="text-sm font-medium text-indigo-700 dark:text-white">{rewardLoadingPercentage}%</span>
+                    </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                      <div className="bg-indigo-600 h-2.5 rounded-full" style={{ width: rewardLoadingPercentage + "%" }}></div>
+                    </div>
                   </>
                 ) : rewardData.length == 0 ? (
                   <EmptyState
@@ -525,9 +535,6 @@ export const Liquidations: React.FC = () => {
                     <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
                       <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
                         <tr>
-                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-zinc-400">
-                            Reward IDs
-                          </th>
                           <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-zinc-400">
                             Token
                           </th>
