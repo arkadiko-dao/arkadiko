@@ -538,7 +538,7 @@ export const Liquidations: React.FC = () => {
                   <div className="mt-4 shadow sm:rounded-md sm:overflow-hidden">
                     <div className="px-4 py-5 bg-white dark:bg-zinc-800 sm:p-6">
                       <div className="flex justify-between mb-3">
-                        <span className="text-base font-medium dark:text-white">Checking liquidated vaults..</span>
+                        <span className="text-base font-medium dark:text-white">Checking liquidated vaults…</span>
                         <span className="text-sm font-medium text-indigo-700 dark:text-white">{rewardLoadingPercentage}%</span>
                       </div>
                         <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
