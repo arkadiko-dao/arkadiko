@@ -522,7 +522,7 @@ export const Liquidations: React.FC = () => {
                     <div className="px-4 py-5 bg-white dark:bg-zinc-800 sm:p-6">
                       <div className="flex items-center justify-between">
                         <p>
-                          It can take a couple of minutes to check all liquidated vaults. Please be patient.
+                          It can take a couple of minutes to check all liquidated vaults. Thanks for your patience!
                         </p>
                         <button
                           type="button"
