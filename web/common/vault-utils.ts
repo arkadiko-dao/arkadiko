@@ -329,7 +329,6 @@ export const buildSwapPostConditions = (sender: string, amountSent: bigint, amou
   )
 
   if (tokenZ != undefined) {
-    console.log("GOT Z:", tokenZ);
     postConditions.push(
       makeStandardFungiblePostCondition(
         sender,
