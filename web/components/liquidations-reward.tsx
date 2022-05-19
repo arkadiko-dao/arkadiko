@@ -7,7 +7,6 @@ import {
   AnchorMode,
   uintCV,
   listCV,
-  contractPrincipalCV,
   makeContractFungiblePostCondition,
   makeContractSTXPostCondition,
   FungibleConditionCode,
@@ -66,17 +65,23 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
       )
     }
 
+    // Function
+    var functionName = "claim-50-stx-rewards-of";
+    if (token.split('.')[1] == "arkadiko-token") {
+      functionName = "claim-50-diko-rewards-of";
+    } else if (token.split('.')[1] == "Wrapped-Bitcoin") {
+      functionName = "claim-50-xbtc-rewards-of";
+    }
+
     // Call
     await doContractCall({
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-liquidation-rewards-v1-1',
-      functionName: 'claim-many-rewards-of',
+      contractName: 'arkadiko-liquidation-ui-v1-2',
+      functionName: functionName,
       functionArgs: [
         listCV(rewardIds.map((id) =>  uintCV(id))),
-        contractPrincipalCV(token.split('.')[0], token.split('.')[1]),
-        contractPrincipalCV(contractAddress, 'arkadiko-liquidation-pool-v1-1'),
       ],
       postConditions,
       onFinish: data => {
@@ -96,9 +101,6 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
 
   return (
     <tr className="bg-white dark:bg-zinc-900">
-      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900 dark:text-zinc-100">{rewardIds.join(", ")}</span>
-      </td>
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         {tokenIsStx ? ( 
           <span className="font-medium text-gray-900 dark:text-zinc-100">STX</span>
