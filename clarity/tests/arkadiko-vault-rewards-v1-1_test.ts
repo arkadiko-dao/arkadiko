@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.13.0/index.ts";
+} from "https://deno.land/x/clarinet/index.ts";
 
 import { 
   VaultManager,
@@ -49,17 +49,17 @@ Clarinet.test({
     call = vaultRewards.calculateCummulativeRewardPerCollateral();
     call.result.expectUintWithDecimals(128)
 
-    chain.mineEmptyBlock((6*7*144)-5);
+    chain.mineEmptyBlock((6*7*144)-8);
 
     // Need a write action to update the cumm reward 
     vaultManager.createVault(wallet_1, "STX-A", 5, 1);
 
     call = vaultRewards.calculateCummulativeRewardPerCollateral();
-    call.result.expectUintWithDecimals(240298.0593)
+    call.result.expectUintWithDecimals(240178.804680)
 
     // Almost all rewards - 1.2m
     call = vaultRewards.getPendingRewards(deployer);
-    call.result.expectOk().expectUintWithDecimals(1201490.2965)
+    call.result.expectOk().expectUintWithDecimals(1200894.0234)
   },
 });
 

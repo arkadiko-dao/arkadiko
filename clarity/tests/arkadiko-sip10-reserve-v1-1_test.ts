@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.13.0/index.ts";
+} from "https://deno.land/x/clarinet/index.ts";
 
 import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 
@@ -235,7 +235,7 @@ Clarinet.test({
     let contractChange1 = Governance.contractChange("collateral-types", Utils.qualifiedName('arkadiko-collateral-types-tv1-1'), false, false);
     result = governance.createProposal(
       wallet_1, 
-      4, 
+      7, 
       "New collateral types",
       "https://discuss.arkadiko.finance/new-collateral-types",
       [contractChange1]

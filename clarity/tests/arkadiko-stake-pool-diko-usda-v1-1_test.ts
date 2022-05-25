@@ -4,7 +4,7 @@ import {
     Clarinet,
     Tx,
     types,
-  } from "https://deno.land/x/clarinet@v0.13.0/index.ts";
+  } from "https://deno.land/x/clarinet/index.ts";
 
 import { 
   OracleManager,
@@ -384,7 +384,7 @@ Clarinet.test({
 
     // Stake of user in DIKO pool
     result = stakePoolDiko.getStakeOf(deployer, 4134.2337);
-    result.expectOk().expectUintWithDecimals(4228.193691);
+    result.expectOk().expectUintWithDecimals(4384.793458);
 
   }
 });
@@ -885,7 +885,7 @@ Clarinet.test({
       types.principal(Utils.qualifiedName('arkadiko-stake-registry-tv1-1')),
       types.principal(deployer.address)
     ], deployer.address);
-    call.result.expectOk().expectUintWithDecimals(375463.5965)
+    call.result.expectOk().expectUintWithDecimals(374899.8374)
 
     // Advance
     chain.mineEmptyBlock(1500);
@@ -895,7 +895,7 @@ Clarinet.test({
       types.principal(Utils.qualifiedName('arkadiko-stake-registry-tv1-1')),
       types.principal(deployer.address)
     ], deployer.address);
-    call.result.expectOk().expectUintWithDecimals(375463.5965)
+    call.result.expectOk().expectUintWithDecimals(374899.8374)
 
     // Stake funds fails as pool is not active anymore
     let block = chain.mineBlock([

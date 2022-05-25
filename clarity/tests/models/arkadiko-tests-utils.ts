@@ -7,11 +7,11 @@ export function qualifiedName(contractName: string) {
 // Extra methods on String type
 declare global {
   interface String {
-    expectUintWithDecimals(value: number): number;
+    expectUintWithDecimals(value: number): bigint;
   }
 }
 
 // Expect Uint with 6 decimals
-String.prototype.expectUintWithDecimals = function (value: number) {
+String.prototype.expectUintWithDecimals = function (value: number): bigint {
   return this.expectUint(Math.round(value * 1000000));
 };

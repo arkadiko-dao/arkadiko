@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.13.0/index.ts";
+} from "https://deno.land/x/clarinet/index.ts";
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
@@ -95,14 +95,14 @@ Clarinet.test({
     call.result.expectOk().expectUint(0)
 
     // 6 months, 30 days, 144 block per day 
-    chain.mineEmptyBlock((6*30*144)-2);
+    chain.mineEmptyBlock((6*30*144)-4);
 
     // Get tokens
     call = chain.callReadOnlyFn("arkadiko-diko-init", "get-pending-founders-tokens", [], wallet_1.address);
     call.result.expectOk().expectUint(0)
     
     // 1 block later, cliff of 6 months is over
-    chain.mineEmptyBlock(1);
+    chain.mineEmptyBlock(2);
 
     // Get tokens (6 * 437.500) = 2.625m
     call = chain.callReadOnlyFn("arkadiko-diko-init", "get-pending-founders-tokens", [], wallet_1.address);

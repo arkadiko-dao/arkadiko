@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.13.0/index.ts";
+} from "https://deno.land/x/clarinet/index.ts";
 
 import { 
   OracleManager,
@@ -482,7 +482,7 @@ Clarinet.test({ name: "auction engine: liquidate STX vault without enough USDA t
 
     // Reward data
     call = await liquidationRewards.getRewardData(1);
-    call.result.expectTuple()["share-block"].expectUint(12);
+    call.result.expectTuple()["share-block"].expectUint(15);
     call.result.expectTuple()["total-amount"].expectUintWithDecimals(222.222222);
 
     call = await liquidationRewards.getRewardsOf(wallet_1.address, 1);

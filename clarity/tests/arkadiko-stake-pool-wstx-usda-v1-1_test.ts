@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.13.0/index.ts";
+} from "https://deno.land/x/clarinet/index.ts";
 
 import { 
 DikoToken,
@@ -343,7 +343,7 @@ name: "stake-pool-wstx-usda - stake DIKO rewards",
 
     // Stake of user in DIKO pool
     result = stakePoolDiko.getStakeOf(deployer, 4134.2337);
-    result.expectOk().expectUintWithDecimals(14198.378799);
+    result.expectOk().expectUintWithDecimals(14511.578333);
 
   }
 });

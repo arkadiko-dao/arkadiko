@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.13.0/index.ts";
+} from "https://deno.land/x/clarinet/index.ts";
 
 import { 
   LiquidationPool,
@@ -38,7 +38,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(20000);
 
     // Add rewards
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 100);
 
     // Combined pending rewards for user + reward info
     let call:any = await chain.callReadOnlyFn("arkadiko-liquidation-ui-v1-2", "get-user-reward-info", [
@@ -65,25 +65,25 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(20000);
 
     // Add rewards
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(4, "arkadiko-token", 100);
 
     // Combined pending rewards for user + reward info
     let call:any = await chain.callReadOnlyFn("arkadiko-liquidation-ui-v1-2", "get-user-reward-info", [
