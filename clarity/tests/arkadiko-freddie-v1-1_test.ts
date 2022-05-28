@@ -186,15 +186,15 @@ Clarinet.test({
     call = await usdaToken.balanceOf(deployer.address)
     call.result.expectOk().expectUint(balance - fee);
 
-    // // withdraw the USDA from freddie to the deployer's (contract owner) address
-    // result = vaultManager.redeemTokens(fee, 0);
-    // result.expectOk().expectBool(true);
+    // withdraw the USDA from freddie to the deployer's (contract owner) address
+    result = vaultManager.redeemTokens(Number(fee), 0);
+    result.expectOk().expectBool(true);
 
-    // call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-freddie-v1-1'))
-    // call.result.expectOk().expectUint(0);
+    call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-freddie-v1-1'))
+    call.result.expectOk().expectUint(0);
 
-    // call = await usdaToken.balanceOf(deployer.address)
-    // call.result.expectOk().expectUintWithDecimals(1000500);
+    call = await usdaToken.balanceOf(deployer.address)
+    call.result.expectOk().expectUintWithDecimals(1000500);
   }
 });
 
