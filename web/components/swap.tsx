@@ -234,7 +234,9 @@ export const Swap: React.FC = () => {
       const balanceY = pairY['balance_y'] / Math.pow(10, tokenX['decimals']);
       const newBalanceY = balanceY + inputWithoutFees;
       const newBalanceX = (balanceY * balanceX) / newBalanceY;
-      priceImpact = newBalanceY / newBalanceX / (balanceY / balanceX) - 1.0;
+      const poolPrice = balanceY / balanceX;
+      const tradePrice = inputWithoutFees / (balanceX - newBalanceX);
+      priceImpact = tradePrice / poolPrice - 1.0;
     } else {
       if (inverseDirection) {
         const balanceX = currentPair['balance_x'] / Math.pow(10, tokenY['decimals']);
@@ -242,14 +244,18 @@ export const Swap: React.FC = () => {
         const newBalanceY = balanceY + inputWithoutFees;
         const newBalanceX = (balanceY * balanceX) / newBalanceY;
         tokenYAmount = balanceX - newBalanceX;
-        priceImpact = newBalanceY / newBalanceX / (balanceY / balanceX) - 1.0;
+        const poolPrice = balanceY / balanceX;
+        const tradePrice = inputWithoutFees / tokenYAmount;
+        priceImpact = tradePrice / poolPrice - 1.0;
       } else {
         const balanceX = currentPair['balance_x'] / Math.pow(10, tokenX['decimals']);
         const balanceY = currentPair['balance_y'] / Math.pow(10, tokenY['decimals']);
         const newBalanceX = balanceX + inputWithoutFees;
         const newBalanceY = (balanceX * balanceY) / newBalanceX;
         tokenYAmount = balanceY - newBalanceY;
-        priceImpact = newBalanceX / newBalanceY / (balanceX / balanceY) - 1.0;
+        const poolPrice = balanceY / balanceX;
+        const tradePrice = tokenYAmount / inputWithoutFees;
+        priceImpact = poolPrice / tradePrice - 1.0;        
       }
     }
 

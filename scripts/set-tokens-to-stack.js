@@ -11,8 +11,8 @@ async function initiateStacking() {
     contractName: "arkadiko-stx-reserve-v1-1",
     functionName: "set-tokens-to-stack",
     functionArgs: [
-      tx.stringAsciiCV('stacker'),
-      tx.uintCV(6200000000000)
+      tx.stringAsciiCV('stacker-3'),
+      tx.uintCV(2800000000000)
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
