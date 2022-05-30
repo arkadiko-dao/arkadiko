@@ -78,6 +78,13 @@ export const tokenTraits: TokenTraits = {
     multihop: [],
     ft: 'stx',
   },
+  wstx: {
+    address: contractAddress,
+    name: 'wrapped-stx-token',
+    swap: 'wrapped-stx-token',
+    multihop: [],
+    ft: 'wstx',
+  },
   xstx: {
     address: contractAddress,
     name: 'xstx-token',
@@ -324,7 +331,7 @@ export const buildSwapPostConditions = (sender: string, amountSent: bigint, amou
       sender,
       FungibleConditionCode.Equal,
       amountSent,
-      createAssetInfo(tokenX['address'], tokenX['fullName'], tokenX['nameInPair'])
+      createAssetInfo(tokenX['address'], tokenX['fullName'], tokenTraits[tokenX.nameInPair].ft)
     )
   )
 
@@ -334,7 +341,7 @@ export const buildSwapPostConditions = (sender: string, amountSent: bigint, amou
         sender,
         FungibleConditionCode.GreaterEqual,
         0,
-        createAssetInfo(tokenZ['address'], tokenZ['fullName'], tokenZ['nameInPair'])
+        createAssetInfo(tokenZ['address'], tokenZ['fullName'], tokenTraits[tokenZ.nameInPair].ft)
       )
     )
     postConditions.push(
@@ -343,7 +350,7 @@ export const buildSwapPostConditions = (sender: string, amountSent: bigint, amou
         'arkadiko-swap-v2-1',
         FungibleConditionCode.GreaterEqual,
         0,
-        createAssetInfo(tokenZ['address'], tokenZ['fullName'], tokenZ['nameInPair'])
+        createAssetInfo(tokenZ['address'], tokenZ['fullName'], tokenTraits[tokenZ.nameInPair].ft)
       )
     )
   }
@@ -362,7 +369,7 @@ export const buildSwapPostConditions = (sender: string, amountSent: bigint, amou
         sender,
         FungibleConditionCode.GreaterEqual,
         (parseFloat(amountReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0),
-        createAssetInfo(tokenY['address'], tokenY['fullName'], tokenY['nameInPair'])
+        createAssetInfo(tokenY['address'], tokenY['fullName'], tokenTraits[tokenY.nameInPair].ft)
       )
     )
     postConditions.push(
@@ -371,7 +378,7 @@ export const buildSwapPostConditions = (sender: string, amountSent: bigint, amou
         'arkadiko-swap-v2-1',
         FungibleConditionCode.GreaterEqual,
         (parseFloat(amountReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0),
-        createAssetInfo(tokenY['address'], tokenY['fullName'], tokenY['nameInPair'])
+        createAssetInfo(tokenY['address'], tokenY['fullName'], tokenTraits[tokenY.nameInPair].ft)
       )
     )
   } else {
@@ -381,7 +388,7 @@ export const buildSwapPostConditions = (sender: string, amountSent: bigint, amou
         'arkadiko-swap-v2-1',
         FungibleConditionCode.GreaterEqual,
         (parseFloat(amountReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0),
-        createAssetInfo(tokenY['address'], tokenY['fullName'], tokenY['nameInPair'])
+        createAssetInfo(tokenY['address'], tokenY['fullName'], tokenTraits[tokenY.nameInPair].ft)
       )
     )
   }
