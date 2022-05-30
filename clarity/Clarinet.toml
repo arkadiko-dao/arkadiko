@@ -385,6 +385,11 @@ depends_on = []
 path = "contracts/xbtc/Wrapped-Bitcoin.clar"
 depends_on = ["sip-010-trait-ft-standard", "restricted-token-trait"]
 
+# Welsh
+[contracts.welshcorgicoin-token]
+path = "contracts/welsh/welshcorgicoin-token.clar"
+depends_on = ["sip-010-trait-ft-standard"]
+
 # Tests
 [contracts.malicious-ft]
 path = "contracts/tests/malicious-ft.clar"
