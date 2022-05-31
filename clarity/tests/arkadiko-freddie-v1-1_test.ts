@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.13.0/index.ts";
+} from "https://deno.land/x/clarinet@v0.31.0/index.ts";
 
 import { 
   OracleManager,
@@ -187,7 +187,7 @@ Clarinet.test({
     call.result.expectOk().expectUint(balance - fee);
 
     // withdraw the USDA from freddie to the deployer's (contract owner) address
-    result = vaultManager.redeemTokens(fee, 0);
+    result = vaultManager.redeemTokens(Number(fee), 0);
     result.expectOk().expectBool(true);
 
     call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-freddie-v1-1'))
