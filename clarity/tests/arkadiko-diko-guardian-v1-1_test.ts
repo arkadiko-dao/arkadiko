@@ -2,7 +2,7 @@ import {
   Account,
   Chain,
   Clarinet
-} from "https://deno.land/x/clarinet@v0.13.0/index.ts";
+} from "https://deno.land/x/clarinet@v0.31.0/index.ts";
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
