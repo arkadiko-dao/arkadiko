@@ -249,32 +249,33 @@ export const Liquidations: React.FC = () => {
     // Fetch all reward info
     const rewardCount = await getRewardCount();
     var rewards: LiquidationRewardProps[] = [];
-    const batchAmount = 20;
+    const batchAmount = 15;
     const batches = Math.ceil(rewardCount / batchAmount);
     for (let batch = batches-1; batch >= 0; batch--) {
 
-      // Sleep 7 sec
-      await sleep(7000);
+      // Sleep 10 sec
+      await sleep(10000);
 
       const startRewardId = batch * batchAmount;
       const endRewardId = Math.min((batch+1) * batchAmount - 1, rewardCount-1);
       const rewardsLoaded = (batches-1-batch) * (endRewardId - startRewardId);
       const newRewards = await getRewardsData(startRewardId, endRewardId, rewardCount, rewardsLoaded);
       rewards = rewards.concat(newRewards);
+
+      // Group rewards
+      const rewardGroups = createGroups(rewards);
+      const rewardItems = rewardGroups.map((reward: object) => (
+        <LiquidationReward
+          key={reward.rewardIds}
+          rewardIds={reward.rewardIds}
+          token={reward.token}
+          claimable={reward.claimable}
+          tokenIsStx={reward.tokenIsStx}
+        />
+      ));
+      setRewardData(rewardItems);
     }
 
-    // Group rewards
-    const rewardGroups = createGroups(rewards);
-    const rewardItems = rewardGroups.map((reward: object) => (
-      <LiquidationReward
-        key={reward.rewardIds}
-        rewardIds={reward.rewardIds}
-        token={reward.token}
-        claimable={reward.claimable}
-        tokenIsStx={reward.tokenIsStx}
-      />
-    ));
-    setRewardData(rewardItems);
     setIsLoadingRewards(false);
   };
 
@@ -546,21 +547,25 @@ export const Liquidations: React.FC = () => {
                         </div>
                     </div>
                   </div>
-                ) : rewardData.length == 0 ? (
+                ): null}
+              </div>
+
+              <div className="mt-4">
+                {rewardData.length == 0 && startLoadingRewards && !isLoadingRewards ? (
                   <EmptyState
                     Icon={CashIcon}
                     title="You have no rewards to claim."
                     description="DIKO and liquidation rewards will appear here."
                   />
-                ) : (
+                ) : rewardData.length != 0 && startLoadingRewards ? (
                   <>
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600 shadow sm:rounded-md sm:overflow-hidden">
                       <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
                         <tr>
                           <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-zinc-400">
                             Token
                           </th>
-                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-zinc-400">
+                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-center text-gray-500 dark:text-zinc-400">
                             Amount
                           </th>
                           <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-zinc-400"></th>
@@ -569,7 +574,7 @@ export const Liquidations: React.FC = () => {
                       <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600">{rewardData}</tbody>
                     </table>
                   </>
-                )}
+                ): null}
               </div>
             </section>
 
