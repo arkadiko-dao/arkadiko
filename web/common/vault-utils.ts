@@ -1,3 +1,12 @@
+import {
+  makeStandardSTXPostCondition,
+  makeStandardFungiblePostCondition,
+  FungibleConditionCode,
+  makeContractFungiblePostCondition,
+  makeContractSTXPostCondition,
+  createAssetInfo
+} from '@stacks/transactions';
+
 export const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 export const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
 export const welshContractAddress = process.env.WELSH_CONTRACT_ADDRESS || '';
@@ -68,6 +77,13 @@ export const tokenTraits: TokenTraits = {
     swap: 'wrapped-stx-token',
     multihop: [],
     ft: 'stx',
+  },
+  wstx: {
+    address: contractAddress,
+    name: 'wrapped-stx-token',
+    swap: 'wrapped-stx-token',
+    multihop: [],
+    ft: 'wstx',
   },
   xstx: {
     address: contractAddress,
@@ -300,4 +316,81 @@ export const contractsMap = {
 
 export const microToReadable = (amount: number | string, decimals = 6) => {
   return parseFloat(`${amount}`) / Math.pow(10, decimals);
+};
+
+export const buildSwapPostConditions = (sender: string, amountSent: bigint, amountReceived: number, tokenX: any, tokenY: any, tokenZ: any) => {
+  let postConditions = [];
+
+  if (tokenX['nameInPair'] === 'wstx') {
+    postConditions.push(
+      makeStandardSTXPostCondition(sender, FungibleConditionCode.Equal, amountSent)
+    );
+  }
+  postConditions.push(
+    makeStandardFungiblePostCondition(
+      sender,
+      FungibleConditionCode.Equal,
+      amountSent,
+      createAssetInfo(tokenX['address'], tokenX['fullName'], tokenTraits[tokenX.nameInPair].ft)
+    )
+  )
+
+  if (tokenZ != undefined) {
+    postConditions.push(
+      makeStandardFungiblePostCondition(
+        sender,
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(tokenZ['address'], tokenZ['fullName'], tokenTraits[tokenZ.nameInPair].ft)
+      )
+    )
+    postConditions.push(
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-swap-v2-1',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(tokenZ['address'], tokenZ['fullName'], tokenTraits[tokenZ.nameInPair].ft)
+      )
+    )
+  }
+
+  if (tokenY['nameInPair'] === 'wstx') {
+    postConditions.push(
+      makeContractSTXPostCondition(
+        contractAddress,
+        'arkadiko-swap-v2-1',
+        FungibleConditionCode.GreaterEqual,
+        (parseFloat(amountReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)
+      )
+    )
+    postConditions.push(
+      makeStandardFungiblePostCondition(
+        sender,
+        FungibleConditionCode.GreaterEqual,
+        (parseFloat(amountReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0),
+        createAssetInfo(tokenY['address'], tokenY['fullName'], tokenTraits[tokenY.nameInPair].ft)
+      )
+    )
+    postConditions.push(
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-swap-v2-1',
+        FungibleConditionCode.GreaterEqual,
+        (parseFloat(amountReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0),
+        createAssetInfo(tokenY['address'], tokenY['fullName'], tokenTraits[tokenY.nameInPair].ft)
+      )
+    )
+  } else {
+    postConditions.push(
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-swap-v2-1',
+        FungibleConditionCode.GreaterEqual,
+        (parseFloat(amountReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0),
+        createAssetInfo(tokenY['address'], tokenY['fullName'], tokenTraits[tokenY.nameInPair].ft)
+      )
+    )
+  }
+  return postConditions;
 };

@@ -16,7 +16,8 @@ export const tokenList = [
     logo: '/assets/tokens/usda.svg',
     listed: true,
     address: contractAddress,
-    decimals: 6,
+    fullName: 'usda-token',
+    decimals: 6
   },
   {
     id: 2,
@@ -25,7 +26,8 @@ export const tokenList = [
     logo: '/assets/tokens/diko.svg',
     listed: true,
     address: contractAddress,
-    decimals: 6,
+    fullName: 'arkadiko-token',
+    decimals: 6
   },
   {
     id: 3,
@@ -34,7 +36,8 @@ export const tokenList = [
     logo: '/assets/tokens/stx.svg',
     listed: true,
     address: contractAddress,
-    decimals: 6,
+    fullName: 'wrapped-stx-token',
+    decimals: 6
   },
   {
     id: 4,
@@ -43,6 +46,7 @@ export const tokenList = [
     logo: '/assets/tokens/xbtc.svg',
     listed: true,
     address: xbtcContractAddress,
+    fullName: 'Wrapped-Bitcoin',
     decimals: 8,
   },
   {
@@ -70,7 +74,8 @@ export const tokenList = [
     logo: '/assets/tokens/welsh.png',
     listed: true,
     address: welshContractAddress,
-    decimals: 6,
+    fullName: 'welshcorgicoin-token',
+    decimals: 6
   },
 ];
 

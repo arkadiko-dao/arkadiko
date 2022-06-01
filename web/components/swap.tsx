@@ -4,12 +4,11 @@ import { AppContext } from '@common/context';
 import { Container } from './home';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
-import { microToReadable } from '@common/vault-utils';
 import { AnchorMode, contractPrincipalCV, uintCV, trueCV, falseCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
-import { tokenTraits } from '@common/vault-utils';
+import { microToReadable, tokenTraits, buildSwapPostConditions } from '@common/vault-utils';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { SwapSettings } from '@components/swap-settings';
 import { getBalance } from '@components/app';
@@ -359,7 +358,9 @@ export const Swap: React.FC = () => {
     let principalY = contractPrincipalCV(tokenY['address'], tokenYTrait);
     let principalZ = contractPrincipalCV(tokenY['address'], tokenZTrait); // TODO: token Z address
     const amount = uintCV(tokenXAmount * Math.pow(10, tokenX['decimals']));
-    const postConditionMode = 0x01;
+
+    let tokenZ = tokenList.filter((tokenInfo) => (tokenInfo.fullName == tokenYTrait))[0];
+    let postConditions = buildSwapPostConditions(stxAddress || '', amount.value, minimumReceived, tokenX, tokenY, tokenZ);
 
     await doContractCall({
       network,
@@ -376,7 +377,7 @@ export const Swap: React.FC = () => {
         inverseDirectionX ? trueCV() : falseCV(),
         inverseDirectionY ? trueCV() : falseCV()
       ],
-      postConditionMode,
+      postConditions,
       onFinish: data => {
         console.log('finished multihop swap!', data);
         setState(prevState => ({
@@ -404,7 +405,8 @@ export const Swap: React.FC = () => {
     const tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
     let principalX = contractPrincipalCV(tokenX['address'], tokenXTrait);
     let principalY = contractPrincipalCV(tokenY['address'], tokenYTrait);
-    const postConditionMode = 0x01;
+    const amount = uintCV(tokenXAmount * Math.pow(10, tokenX['decimals']));
+
     if (inverseDirection) {
       contractName = 'swap-y-for-x';
       const tmpPrincipal = principalX;
@@ -414,8 +416,8 @@ export const Swap: React.FC = () => {
       tokenNameX = tokenNameY;
       tokenNameY = tmpName;
     }
+    let postConditions = buildSwapPostConditions(stxAddress || '', amount.value, minimumReceived, tokenX, tokenY);
 
-    const amount = uintCV(tokenXAmount * Math.pow(10, tokenX['decimals']));
     await doContractCall({
       network,
       contractAddress,
@@ -428,7 +430,7 @@ export const Swap: React.FC = () => {
         amount,
         uintCV((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
       ],
-      postConditionMode,
+      postConditions,
       onFinish: data => {
         console.log('finished swap!', data);
         setState(prevState => ({

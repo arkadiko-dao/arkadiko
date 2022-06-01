@@ -239,6 +239,11 @@ path = "contracts/xbtc/restricted-token-trait.clar"
 [contracts.Wrapped-Bitcoin]
 path = "contracts/xbtc/Wrapped-Bitcoin.clar"
 
+# Welsh
+[contracts.welshcorgicoin-token]
+path = "contracts/welsh/welshcorgicoin-token.clar"
+depends_on = ["sip-010-trait-ft-standard"]
+
 # Tests
 [contracts.malicious-ft]
 path = "contracts/tests/malicious-ft.clar"
