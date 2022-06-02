@@ -226,8 +226,10 @@ export const Liquidations: React.FC = () => {
         rewardsDataMerged.push(rewardData);
       } else {
         let existingData = result[0];
-        existingData.rewardIds.push(rewardData.rewardIds[0]);
-        existingData.claimable = parseInt(existingData.claimable) + parseInt(rewardData.claimable);
+        if (!existingData.rewardIds.includes(rewardData.rewardIds[0])) {
+          existingData.rewardIds.push(rewardData.rewardIds[0]);
+          existingData.claimable = parseInt(existingData.claimable) + parseInt(rewardData.claimable);
+        }
       }
     }
     return rewardsDataMerged;
