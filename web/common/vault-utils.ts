@@ -392,5 +392,6 @@ export const buildSwapPostConditions = (sender: string, amountSent: bigint, amou
       )
     )
   }
+
   return postConditions;
 };

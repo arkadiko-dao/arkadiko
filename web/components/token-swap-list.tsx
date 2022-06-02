@@ -56,6 +56,7 @@ export const tokenList = [
     logo: '/assets/tokens/lydian.svg',
     listed: false,
     address: ldnContractAddress,
+    fullName: 'wrapped-lydian-token',
     decimals: 6
   },
   {
@@ -65,6 +66,7 @@ export const tokenList = [
     logo: '/assets/tokens/lydian.svg',
     listed: true,
     address: ldnContractAddress,
+    fullName: 'lydian-token',
     decimals: 6
   },
   {
