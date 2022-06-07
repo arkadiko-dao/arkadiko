@@ -5,7 +5,7 @@ const utils = require('./utils');
 const network = utils.resolveNetwork();
 const BN = require('bn.js');
 
-const stackerName = 'stacker-3';
+const stackerName = 'stacker';
 
 async function getLastVaultId() {
   const lastVaultTx = await tx.callReadOnlyFunction({
