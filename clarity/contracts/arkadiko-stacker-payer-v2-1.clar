@@ -7,6 +7,11 @@
 (define-constant ERR-BURN-HEIGHT-NOT-REACHED u222)
 
 (define-data-var stacker-payer-shutdown-activated bool false)
+(define-data-var stx-redeemable uint u0)
+
+(define-read-only (has-redemptions)
+  (> (var-get stx-redeemable) u0)
+)
 
 (define-public (toggle-stacker-payer-shutdown)
   (begin
@@ -35,7 +40,28 @@
   )
 )
 
-(define-public (redeem-xstx (ustx-amount uint))
-  (ok true)
+(define-public (set-stx-redeemable (ustx-amount uint))
+  (let (
+    (dao-address (contract-call? .arkadiko-dao get-dao-owner))
+  )
+    (asserts! (is-eq contract-caller dao-address) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set stx-redeemable ustx-amount))
+  )
 )
 
+(define-public (redeem-stx (ustx-amount uint))
+  (let (
+    (sender tx-sender)
+  )
+    (try! (contract-call? .arkadiko-dao burn-token .xstx-token ustx-amount sender))
+    (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-auto-payoff ustx-amount))
+
+    (ok true)
+  )
+)
+
+(define-private (min-of (i1 uint) (i2 uint))
+  (if (< i1 i2)
+      i1
+      i2))
