@@ -50,6 +50,7 @@ class PoxCalculator
   def self.calculate_liqs
     total_amount = 0
     stacked_amount = 0
+    total_sold = 0
     offset = 0
     data = HTTParty.get("https://stacks-node-api.stacks.co/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-auction-engine-v4-1/transactions?limit=50&offset=#{offset}&unanchored=true")
     results = data.parsed_response['results']
@@ -61,23 +62,33 @@ class PoxCalculator
         begin
           collateral_amount = tx.parsed_response['events'][0]['contract_log']['value']['repr'].split("(collateral u")[1].split(") ")[0]
           stck_amount = tx.parsed_response['events'][0]['contract_log']['value']['repr'].split("(stacked-tokens u")[1].split(") ")[0]
+          tx_sold = tx.parsed_response['events'][15]['contract_log']['value']['repr'].split("(total-collateral-sold u")[1].split(") ")[0]
           total_amount += collateral_amount.to_i
           stacked_amount += stck_amount.to_i
+          total_sold += tx_sold.to_i
         rescue
           begin
-            collateral_amount = tx.parsed_response['events'][2]['contract_log']['value']['repr'].split("(collateral u")[1].split(") ")[0]
-            stck_amount = tx.parsed_response['events'][2]['contract_log']['value']['repr'].split("(stacked-tokens u")[1].split(") ")[0]
-            total_amount += collateral_amount.to_i
-            stacked_amount += stck_amount.to_i
+            # either we had to mint some DIKO or it was a non-stacking vault
+            next if tx.parsed_response['events'][7]['contract_log']['value']['repr'].split('(collateral-token "STX")').length > 0
           rescue
-            puts "Failed TX with id #{txid}"
+            begin
+              collateral_amount = tx.parsed_response['events'][2]['contract_log']['value']['repr'].split("(collateral u")[1].split(") ")[0]
+              stck_amount = tx.parsed_response['events'][2]['contract_log']['value']['repr'].split("(stacked-tokens u")[1].split(") ")[0]
+              tx_sold = tx.parsed_response['events'][17]['contract_log']['value']['repr'].split("(total-collateral-sold u")[1].split(") ")[0]
+              total_amount += collateral_amount.to_i
+              stacked_amount += stck_amount.to_i
+              total_sold += tx_sold.to_i
+            rescue
+              puts "Failed TX with id #{txid}"
+            end
           end
         end
-        sleep(2)
+        sleep(1)
       end
 
       puts "Total Collateral: #{total_amount}"
       puts "Stacked Collateral: #{stacked_amount}"
+      puts "Total Collateral Sold: #{total_sold}"
       offset += 50
 
       data = HTTParty.get("https://stacks-node-api.stacks.co/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-auction-engine-v4-1/transactions?limit=50&offset=#{offset}&unanchored=true")
