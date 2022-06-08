@@ -91,6 +91,15 @@
   )
 )
 
+(define-read-only (get-stx-redeemable-helper)
+  (let (
+    (freddie-redeemable (unwrap-panic (contract-call? .arkadiko-freddie-v1-1 get-stx-redeemable)))
+  )
+    (+ freddie-redeemable (var-get stx-redeemable))
+  )
+)
+
+
 (define-public (redeem-stx-helper (ustx-amount uint))
   (let (
     (sender tx-sender)
