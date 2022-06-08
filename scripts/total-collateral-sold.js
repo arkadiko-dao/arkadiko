@@ -39,9 +39,9 @@ async function iterateAndUnlock() {
     auction = await getAuctionById(index);
     if (auction['collateral-token']['value'] === 'xSTX') {
       totalCollateral += auction['total-collateral-sold']['value'];
+      console.log(`(map-set vaults-redeemed { vault-id: ${auction['vault-id']['value']} } { redeemed: true }`)
     }
     await new Promise(r => setTimeout(r, 1000));
-    console.log(totalCollateral);
   }
 
   console.log(totalCollateral);
