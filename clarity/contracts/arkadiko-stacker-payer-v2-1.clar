@@ -3,9 +3,12 @@
 
 (define-constant ERR-NOT-AUTHORIZED u22401)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u221)
+(define-constant ERR-VAULT-ALREADY-REDEEMED u222)
+(define-constant ERR-AUCTION-RUNNING u223)
 
 (define-data-var stacker-payer-shutdown-activated bool false)
 (define-data-var stx-redeemable uint u0)
+(define-map vaults-redeemed { vault-id: uint } { redeemed: bool })
 
 (define-read-only (get-stx-redeemable)
   (var-get stx-redeemable)
@@ -13,6 +16,10 @@
 
 (define-read-only (has-stx-redeemable)
   (> (var-get stx-redeemable) u0)
+)
+
+(define-read-only (has-vault-redeemed (vault-id uint))
+  (is-some (map-get? vaults-redeemed vault-id))
 )
 
 (define-read-only (is-enabled)
@@ -50,6 +57,17 @@
     (asserts! (is-eq contract-caller dao-address) (err ERR-NOT-AUTHORIZED))
 
     (ok (var-set stx-redeemable ustx-amount))
+  )
+)
+
+(define-public (add-stx-redeemable (vault-id uint))
+  (let (
+    (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
+  )
+    (asserts! (not (has-vault-redeemed)) (err ERR-VAULT-ALREADY-REDEEMED))
+    (asserts! (get auction-ended vault) (err ERR-AUCTION-RUNNING))
+
+    (ok true)
   )
 )
 
