@@ -76,43 +76,23 @@ export const Liquidations: React.FC = () => {
   };
 
   const redeemStx = async () => {
-    if (redeemableStx > 0) {
-      await doContractCall({
-        network,
-        contractAddress,
-        stxAddress,
-        contractName: 'arkadiko-freddie-v1-1',
-        functionName: 'redeem-stx',
-        functionArgs: [uintCV(state.balance['xstx'])],
-        postConditionMode: 0x01,
-        onFinish: data => {
-          setState(prevState => ({
-            ...prevState,
-            currentTxId: data.txId,
-            currentTxStatus: 'pending',
-          }));
-        },
-        anchorMode: AnchorMode.Any,
-      });
-    } else {
-      await doContractCall({
-        network,
-        contractAddress,
-        stxAddress,
-        contractName: 'arkadiko-stacker-payer-v2-1',
-        functionName: 'redeem-stx',
-        functionArgs: [uintCV(state.balance['xstx'])],
-        postConditionMode: 0x01,
-        onFinish: data => {
-          setState(prevState => ({
-            ...prevState,
-            currentTxId: data.txId,
-            currentTxStatus: 'pending',
-          }));
-        },
-        anchorMode: AnchorMode.Any,
-      });
-    }
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stacker-payer-v2-1',
+      functionName: 'redeem-stx-helper',
+      functionArgs: [uintCV(state.balance['xstx'])],
+      postConditionMode: 0x01,
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
   };
 
   const stake = async () => {

@@ -91,6 +91,20 @@
   )
 )
 
+(define-public (redeem-stx-helper (ustx-amount uint))
+  (let (
+    (sender tx-sender)
+    (freddie-total-redeemable (unwrap-panic (contract-call? .arkadiko-freddie-v1-1 get-stx-redeemable)))
+  )
+    (try! (contract-call? .arkadiko-freddie-v1-1 redeem-stx ustx-amount))
+
+    (if (> ustx-amount freddie-total-redeemable)
+      (redeem-stx (- ustx-amount freddie-total-redeemable))
+      (ok true)
+    )
+  )
+)
+
 (define-private (min-of (i1 uint) (i2 uint))
   (if (< i1 i2)
       i1
