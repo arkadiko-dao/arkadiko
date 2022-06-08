@@ -88,7 +88,7 @@
     (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-auto-payoff amount))
     (try! (as-contract (stx-transfer? amount tx-sender sender)))
 
-    (ok true)
+    (ok (var-set stx-redeemable amount))
   )
 )
 
