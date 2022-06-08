@@ -5,6 +5,7 @@
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u221)
 (define-constant ERR-VAULT-ALREADY-REDEEMED u222)
 (define-constant ERR-AUCTION-RUNNING u223)
+(define-constant ERR-WRONG-COLLATERAL u224)
 
 (define-data-var stacker-payer-shutdown-activated bool false)
 (define-data-var stx-redeemable uint u0)
@@ -63,11 +64,15 @@
 (define-public (add-stx-redeemable (vault-id uint))
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
+    (stx-redeemable (var-get stx-redeemable))
+    (difference (- (get collateral vault) (get stacked-tokens vault)))
   )
     (asserts! (not (has-vault-redeemed)) (err ERR-VAULT-ALREADY-REDEEMED))
     (asserts! (get auction-ended vault) (err ERR-AUCTION-RUNNING))
+    (asserts! (is-eq (get collateral-token vault) "xSTX") (err ERR-WRONG-COLLATERAL))
 
-    (ok true)
+    (map-set vaults-redeemed { vault-id: vault-id } { redeemed: true })
+    (ok (var-set stx-redeemable (+ stx-redeemable difference)))
   )
 )
 
