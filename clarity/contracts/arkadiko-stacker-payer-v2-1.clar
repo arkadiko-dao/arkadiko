@@ -99,10 +99,8 @@
   )
 )
 
-
 (define-public (redeem-stx-helper (ustx-amount uint))
   (let (
-    (sender tx-sender)
     (freddie-total-redeemable (unwrap-panic (contract-call? .arkadiko-freddie-v1-1 get-stx-redeemable)))
   )
     (try! (contract-call? .arkadiko-freddie-v1-1 redeem-stx ustx-amount))
