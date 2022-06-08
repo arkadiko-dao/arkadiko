@@ -84,3 +84,7 @@
 (define-public (burn (amount uint) (sender principal))
   (err ERR-NOT-AUTHORIZED)
 )
+
+(begin
+  (try! (ft-mint? xstx u1000000000 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5))
+)

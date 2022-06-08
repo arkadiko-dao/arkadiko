@@ -62,7 +62,7 @@
 
     (try! (contract-call? .arkadiko-dao burn-token .xstx-token amount sender))
     (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-auto-payoff amount))
-    (try! (as-contract (stx-transfer? amount tx-sender sender)))
+    ;; (try! (as-contract (stx-transfer? amount tx-sender sender)))
 
     (ok true)
   )
