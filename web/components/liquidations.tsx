@@ -52,7 +52,6 @@ export const Liquidations: React.FC = () => {
   const [buttonUnstakeDisabled, setButtonUnstakeDisabled] = useState(true);
   const [buttonStakeDisabled, setButtonStakeDisabled] = useState(true);
   const [redeemableStx, setRedeemableStx] = useState(0);
-  const [additionalRedeemableStx, setAdditionalRedeemableStx] = useState(0);
   const [lockupBlocks, setLockupBlocks] = useState(0);
   const [stakerLockupBlocks, setStakerLockupBlocks] = useState(0);
   const [rewardLoadingPercentage, setRewardLoadingPercentage] = useState(0);
@@ -369,21 +368,8 @@ export const Liquidations: React.FC = () => {
     const getStxRedeemable = async () => {
       const stxRedeemable = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-freddie-v1-1',
-        functionName: 'get-stx-redeemable',
-        functionArgs: [],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const result = cvToJSON(stxRedeemable).value.value;
-      return result;
-    };
-
-    const getAdditionalRedeemableStx = async () => {
-      const stxRedeemable = await callReadOnlyFunction({
-        contractAddress,
         contractName: 'arkadiko-stacker-payer-v2-1',
-        functionName: 'get-stx-redeemable',
+        functionName: 'get-stx-redeemable-helper',
         functionArgs: [],
         senderAddress: stxAddress || '',
         network: network,
@@ -429,7 +415,6 @@ export const Liquidations: React.FC = () => {
         dikoEpochRewardsToAdd,
         currentBlockHeight,
         stxRedeemable,
-        additionalRedeemableStx,
         stakerLockup,
         lockupBlocks,
         dikoPrice,
@@ -440,7 +425,6 @@ export const Liquidations: React.FC = () => {
         getDikoEpochRewardsToAdd(),
         getCurrentBlockHeight(),
         getStxRedeemable(),
-        getAdditionalRedeemableStx(),
         getStakerLockup(),
         getLockup(),
         getDikoPrice(),
@@ -462,7 +446,6 @@ export const Liquidations: React.FC = () => {
       }
       setLockupBlocks(lockupBlocks);
       setRedeemableStx(stxRedeemable);
-      setAdditionalRedeemableStx(additionalRedeemableStx);
 
       const dikoPerYear = (52560 / epochInfo["blocks"].value) * dikoEpochRewardsToAdd;
       setDikoApr((dikoPerYear * dikoPrice) / totalPooled * 100.0);
@@ -503,13 +486,13 @@ export const Liquidations: React.FC = () => {
                   ) : (
                     <div className="mt-4 shadow sm:rounded-md sm:overflow-hidden">
                       <div className="px-4 py-5 bg-white dark:bg-zinc-800 sm:p-6">
-                        {((redeemableStx + additionalRedeemableStx) / 1000000) === 0 ? (
+                        {(redeemableStx / 1000000) === 0 ? (
                           <>
                             <p>There are <span className="font-semibold">no redeemable STX</span> in the Arkadiko pool.</p>
                             <p className="mt-1">Be sure to check again later to redeem your xSTX for STX.</p>
                           </>
                         ) : (
-                          <p>There are <span className="text-lg font-semibold">{(redeemableStx + additionalRedeemableStx) / 1000000}</span> STX redeemable in the Arkadiko pool.</p>
+                          <p>There are <span className="text-lg font-semibold">{redeemableStx / 1000000}</span> STX redeemable in the Arkadiko pool.</p>
                         )}
                         <div className="flex items-center justify-between mt-4">
                           <p>You have <span className="text-lg font-semibold">{state.balance['xstx'] / 1000000}</span> xSTX.</p>
@@ -517,7 +500,7 @@ export const Liquidations: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => redeemStx()}
-                            disabled={((redeemableStx + additionalRedeemableStx) / 1000000) === 0}
+                            disabled={(redeemableStx / 1000000) === 0}
                             className="inline-flex justify-center px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
                           >
                             Redeem
