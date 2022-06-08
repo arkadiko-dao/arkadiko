@@ -1,16 +1,25 @@
-(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
-(use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
-(use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
+;; Implementation of Stacker Payer
+;; which allows users to redeem xSTX for STX
 
 (define-constant ERR-NOT-AUTHORIZED u22401)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u221)
-(define-constant ERR-BURN-HEIGHT-NOT-REACHED u222)
 
 (define-data-var stacker-payer-shutdown-activated bool false)
 (define-data-var stx-redeemable uint u0)
 
-(define-read-only (has-redemptions)
+(define-read-only (get-stx-redeemable)
+  (var-get stx-redeemable)
+)
+
+(define-read-only (has-stx-redeemable)
   (> (var-get stx-redeemable) u0)
+)
+
+(define-read-only (is-enabled)
+  (and
+    (not (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)))
+    (not (var-get stacker-payer-shutdown-activated))
+  )
 )
 
 (define-public (toggle-stacker-payer-shutdown)
@@ -23,13 +32,7 @@
 
 (define-public (return-stx-to-reserve (ustx-amount uint))
   (begin
-    (asserts!
-      (and
-        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
-        (is-eq (var-get stacker-payer-shutdown-activated) false)
-      )
-      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
-    )
+    (asserts! (is-enabled) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
 
     (if (> ustx-amount u0)
       (as-contract
@@ -53,9 +56,13 @@
 (define-public (redeem-stx (ustx-amount uint))
   (let (
     (sender tx-sender)
+    (amount (min-of ustx-amount (var-get stx-redeemable)))
   )
-    (try! (contract-call? .arkadiko-dao burn-token .xstx-token ustx-amount sender))
-    (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-auto-payoff ustx-amount))
+    (asserts! (is-enabled) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
+
+    (try! (contract-call? .arkadiko-dao burn-token .xstx-token amount sender))
+    (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-auto-payoff amount))
+    (try! (as-contract (stx-transfer? amount tx-sender sender)))
 
     (ok true)
   )
