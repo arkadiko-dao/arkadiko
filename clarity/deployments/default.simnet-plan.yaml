@@ -215,6 +215,10 @@ plan:
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/arkadiko-stacker-payer-v1-1.clar
         - emulated-contract-publish:
+            contract-name: arkadiko-stacker-payer-v2-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-stacker-payer-v2-1.clar
+        - emulated-contract-publish:
             contract-name: arkadiko-stacker-3-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/arkadiko-stacker-3-v1-1.clar
