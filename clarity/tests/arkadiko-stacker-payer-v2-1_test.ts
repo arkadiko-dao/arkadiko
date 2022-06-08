@@ -20,12 +20,12 @@ Clarinet.test({
   name: "stacker-payer: set STX redeemable and enable/shutdown stacker payer",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
 
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-payer-v2-1", "set-stx-redeemable", [
         types.uint(1000000000), // 1000 STX
-      ], wallet_1.address)
+      ], wallet_2.address)
     ]);
     block.receipts[0].result.expectErr().expectUint(22401);
 
@@ -36,7 +36,7 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    let call = chain.callReadOnlyFn("arkadiko-stacker-payer-v2-1", "get-stx-redeemable", [], wallet_1.address);
+    let call = chain.callReadOnlyFn("arkadiko-stacker-payer-v2-1", "get-stx-redeemable", [], wallet_2.address);
     call.result.expectUintWithDecimals(1000);
 
     block = chain.mineBlock([
@@ -47,7 +47,7 @@ Clarinet.test({
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-payer-v2-1", "redeem-stx", [
         types.uint(1000000000), // 1000 STX
-      ], wallet_1.address)
+      ], wallet_2.address)
     ]);
     block.receipts[0].result.expectErr().expectUint(221);
 
@@ -62,7 +62,7 @@ Clarinet.test({
   name: "stacker-payer: burn xSTX to redeem STX",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
@@ -81,7 +81,7 @@ Clarinet.test({
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-payer-v2-1", "redeem-stx", [
         types.uint(1000000000), // 1000 STX
-      ], wallet_1.address)
+      ], wallet_2.address)
     ]);
 
     let [_, burn_event, transfer_event] = block.receipts[0].events;
@@ -95,7 +95,7 @@ Clarinet.test({
   name: "stacker-payer: burn maximum xSTX",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
@@ -114,7 +114,7 @@ Clarinet.test({
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-payer-v2-1", "redeem-stx", [
         types.uint(1000000000), // try redeeming 1000 STX, max will be 100 STX
-      ], wallet_1.address)
+      ], wallet_2.address)
     ]);
     let [_, burn_event, transfer_event] = block.receipts[0].events;
     burn_event.ft_burn_event.amount.expectInt(100000000);
