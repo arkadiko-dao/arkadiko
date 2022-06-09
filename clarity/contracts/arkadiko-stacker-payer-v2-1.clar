@@ -87,6 +87,7 @@
     (amount (min-of ustx-amount (var-get stx-redeemable)))
   )
     (asserts! (is-enabled) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
+    (asserts! (> amount u0) (ok true))
 
     (try! (contract-call? .arkadiko-dao burn-token .xstx-token amount sender))
     (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-auto-payoff amount))
