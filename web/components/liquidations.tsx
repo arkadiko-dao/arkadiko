@@ -223,13 +223,16 @@ export const Liquidations: React.FC = () => {
         return data.rewardIds.length < 50 && data.token == rewardData.token && data.tokenIsStx == rewardData.tokenIsStx;
       });
       if (result.length == 0) {
-        rewardsDataMerged.push(rewardData);
+        rewardsDataMerged.push({
+          rewardIds: rewardData.rewardIds,
+          token: rewardData.token,
+          claimable: rewardData.claimable,
+          tokenIsStx: rewardData.tokenIsStx,
+        });
       } else {
         let existingData = result[0];
-        if (!existingData.rewardIds.includes(rewardData.rewardIds[0])) {
-          existingData.rewardIds.push(rewardData.rewardIds[0]);
-          existingData.claimable = parseInt(existingData.claimable) + parseInt(rewardData.claimable);
-        }
+        existingData.rewardIds.push(rewardData.rewardIds[0]);
+        existingData.claimable = parseInt(existingData.claimable) + parseInt(rewardData.claimable);
       }
     }
     return rewardsDataMerged;
