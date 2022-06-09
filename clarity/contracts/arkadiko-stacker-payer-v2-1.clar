@@ -6,6 +6,7 @@
 (define-constant ERR-VAULT-ALREADY-REDEEMED u222)
 (define-constant ERR-AUCTION-RUNNING u223)
 (define-constant ERR-WRONG-COLLATERAL u224)
+(define-constant ERR-NOT-LIQUIDATED u225)
 
 (define-data-var stacker-payer-shutdown-activated bool false)
 (define-data-var stx-redeemable uint u181000000000)
@@ -65,10 +66,14 @@
   (let (
     (auction (contract-call? .arkadiko-auction-engine-v4-1 get-auction-by-id auction-id))
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id (get vault-id auction)))
-    (difference (- (get total-collateral-sold auction) (get stacked-tokens vault)))
+    (difference (if (> (get total-collateral-sold auction) (get stacked-tokens vault))
+      (- (get total-collateral-sold auction) (get stacked-tokens vault))
+      u0
+    ))
   )
     (asserts! (not (has-vault-redeemed (get vault-id auction))) (err ERR-VAULT-ALREADY-REDEEMED))
     (asserts! (get auction-ended vault) (err ERR-AUCTION-RUNNING))
+    (asserts! (get is-liquidated vault) (err ERR-NOT-LIQUIDATED))
     (asserts! (is-eq (get collateral-token vault) "xSTX") (err ERR-WRONG-COLLATERAL))
 
     (map-set vaults-redeemed { vault-id: (get vault-id auction) } { redeemed: true })
