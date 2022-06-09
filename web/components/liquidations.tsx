@@ -224,7 +224,7 @@ export const Liquidations: React.FC = () => {
       });
       if (result.length == 0) {
         rewardsDataMerged.push({
-          rewardIds: rewardData.rewardIds,
+          rewardIds: rewardData.rewardIds.slice(),
           token: rewardData.token,
           claimable: rewardData.claimable,
           tokenIsStx: rewardData.tokenIsStx,
