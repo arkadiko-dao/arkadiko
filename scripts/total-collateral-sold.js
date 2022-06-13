@@ -32,10 +32,10 @@ async function getAuctionById(auctionId) {
 }
 
 async function iterateAndUnlock() {
-  const lastId = 329;
+  const lastId = 385;
   let auction;
   let totalCollateral = 0;
-  for (let index = 1; index <= lastId; index++) {
+  for (let index = 300; index <= lastId; index++) {
     auction = await getAuctionById(index);
     if (auction['collateral-token']['value'] === 'xSTX') {
       totalCollateral += auction['total-collateral-sold']['value'];
