@@ -79,8 +79,8 @@ export const Liquidations: React.FC = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'redeem-stx',
+      contractName: 'arkadiko-stacker-payer-v2-1',
+      functionName: 'redeem-stx-helper',
       functionArgs: [uintCV(state.balance['xstx'])],
       postConditionMode: 0x01,
       onFinish: data => {
@@ -371,13 +371,13 @@ export const Liquidations: React.FC = () => {
     const getStxRedeemable = async () => {
       const stxRedeemable = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-freddie-v1-1',
-        functionName: 'get-stx-redeemable',
+        contractName: 'arkadiko-stacker-payer-v2-1',
+        functionName: 'get-stx-redeemable-helper',
         functionArgs: [],
         senderAddress: stxAddress || '',
         network: network,
       });
-      const result = cvToJSON(stxRedeemable).value.value;
+      const result = cvToJSON(stxRedeemable).value;
       return result;
     };
 
