@@ -116,10 +116,11 @@ class LiquidationRewards {
     ], this.deployer.address);
   }
   
-  addReward(shareBlock: number, token: string, totalAmount: number, isStx: boolean = false) {
+  addReward(shareBlock: number, unlockBlock:number, token: string, totalAmount: number, isStx: boolean = false) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "add-reward", [
         types.uint(shareBlock),
+        types.uint(unlockBlock),
         types.bool(isStx),
         types.principal(Utils.qualifiedName(token)),
         types.uint(totalAmount * 1000000)

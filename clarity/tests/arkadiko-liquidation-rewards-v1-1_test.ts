@@ -32,11 +32,11 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(20000);
 
     // Add rewards
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
     result.expectOk().expectBool(true);
 
     // Add rewards
-    result = liquidationRewards.addReward(2, "arkadiko-token", 300);
+    result = liquidationRewards.addReward(2, 0, "arkadiko-token", 300);
     result.expectOk().expectBool(true);
 
     // Reward data
@@ -97,12 +97,80 @@ Clarinet.test({
   }
 });
 
+Clarinet.test({
+  name: "liquidation-rewards: add and claim rewards with lockup",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let liquidationPool = new LiquidationPool(chain, deployer);
+    let liquidationRewards = new LiquidationRewards(chain, deployer);
+
+    // Stake
+    let result = liquidationPool.stake(deployer, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Add rewards - unlock block 50
+    result = liquidationRewards.addReward(1, 50, "arkadiko-token", 100);
+    result.expectOk().expectBool(true);
+
+    // Add rewards - unlock block 100
+    result = liquidationRewards.addReward(2, 100, "arkadiko-token", 300);
+    result.expectOk().expectBool(true);
+
+    // Reward data
+    let call:any = await liquidationRewards.getRewardData(0);
+    call.result.expectTuple()["share-block"].expectUint(1);
+    call.result.expectTuple()["unlock-block"].expectUint(50);
+    call.result.expectTuple()["total-amount"].expectUintWithDecimals(100);
+
+    // Rewards 0
+    call = await liquidationRewards.getRewardsOf(deployer.address, 0);
+    call.result.expectOk().expectUintWithDecimals(100);
+
+    // Rewards 1
+    call = await liquidationRewards.getRewardsOf(deployer.address, 1);
+    call.result.expectOk().expectUintWithDecimals(300);
+
+
+    // No rewards claimed yet
+    call = await liquidationRewards.getRewardsClaimed(deployer.address, 0);
+    call.result.expectTuple()['claimed-amount'].expectUintWithDecimals(0);
+    call = await liquidationRewards.getRewardsClaimed(deployer.address, 1);
+    call.result.expectTuple()['claimed-amount'].expectUintWithDecimals(0);
+
+    // Claim reward 0 - fails as unlock block not reached
+    result = liquidationRewards.claimRewards(deployer, 0, "arkadiko-token");
+    result.expectErr().expectUint(30005);
+
+    // Advance 50 blocks
+    chain.mineEmptyBlock(50);
+
+    // Claim reward 0
+    result = liquidationRewards.claimRewards(deployer, 0, "arkadiko-token");
+    result.expectOk().expectUintWithDecimals(100);
+
+    // Claim reward 1 - fails as unlock block not reached
+    result = liquidationRewards.claimRewards(deployer, 1, "arkadiko-token");
+    result.expectErr().expectUint(30005);
+
+    // Rewards claimed
+    call = await liquidationRewards.getRewardsClaimed(deployer.address, 0);
+    call.result.expectTuple()['claimed-amount'].expectUintWithDecimals(100);
+    call = await liquidationRewards.getRewardsClaimed(deployer.address, 1);
+    call.result.expectTuple()['claimed-amount'].expectUintWithDecimals(0);
+
+    // No rewards left
+    call = await liquidationRewards.getRewardsOf(deployer.address, 0);
+    call.result.expectOk().expectUintWithDecimals(0);
+    call = await liquidationRewards.getRewardsOf(deployer.address, 1);
+    call.result.expectOk().expectUintWithDecimals(300);
+  }
+});
 
 Clarinet.test({
   name: "liquidation-rewards: add rewards and claim at once",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
 
     let liquidationPool = new LiquidationPool(chain, deployer);
     let liquidationRewards = new LiquidationRewards(chain, deployer);
@@ -112,15 +180,15 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(10000);
 
     // Add rewards
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
     result.expectOk().expectBool(true);
-    result = liquidationRewards.addReward(2, "arkadiko-token", 200);
+    result = liquidationRewards.addReward(2, 0, "arkadiko-token", 200);
     result.expectOk().expectBool(true);
-    result = liquidationRewards.addReward(3, "arkadiko-token", 300);
+    result = liquidationRewards.addReward(3, 0, "arkadiko-token", 300);
     result.expectOk().expectBool(true);
-    result = liquidationRewards.addReward(4, "arkadiko-token", 400);
+    result = liquidationRewards.addReward(4, 0, "arkadiko-token", 400);
     result.expectOk().expectBool(true);
-    result = liquidationRewards.addReward(5, "arkadiko-token", 500);
+    result = liquidationRewards.addReward(5, 0, "arkadiko-token", 500);
     result.expectOk().expectBool(true);
 
     // Pending rewards
@@ -325,7 +393,7 @@ Clarinet.test({
     let liquidationRewards = new LiquidationRewards(chain, deployer);
 
     // Add rewards
-    let result = liquidationRewards.addReward(1, "arkadiko-token", 100);
+    let result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
     result.expectOk().expectBool(true);
 
     // Claim reward fails
@@ -348,11 +416,11 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(10000);
 
     // Add rewards
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
     result.expectOk().expectBool(true);
 
     // Add rewards
-    result = liquidationRewards.addReward(2, "arkadiko-token", 300);
+    result = liquidationRewards.addReward(2, 0, "arkadiko-token", 300);
     result.expectOk().expectBool(true);
 
     // Rewards 0
@@ -364,7 +432,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Add rewards fails
-    result = liquidationRewards.addReward(2, "arkadiko-token", 300);
+    result = liquidationRewards.addReward(2, 0, "arkadiko-token", 300);
     result.expectErr().expectUint(30003);
 
     // Claim reward fails
@@ -376,7 +444,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Add rewards
-    result = liquidationRewards.addReward(2, "arkadiko-token", 300);
+    result = liquidationRewards.addReward(2, 0, "arkadiko-token", 300);
     result.expectOk().expectBool(true);
 
     // Claim reward
@@ -433,7 +501,7 @@ Clarinet.test({
     let liquidationRewards = new LiquidationRewards(chain, deployer);
 
     // Can add DIKO rrewards
-    let result = liquidationRewards.addReward(1, "arkadiko-token", 100);
+    let result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
     result.expectOk().expectBool(true);
 
     // Disable DIKO
@@ -441,11 +509,11 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Can not add DIKO rewards
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
     result.expectErr().expectUint(30004);
 
     // Can still add STX rewards
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100, true);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100, true);
     result.expectOk().expectBool(true);
 
     // Enable DIKO again
@@ -453,7 +521,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Can add DIKO rewards again
-    result = liquidationRewards.addReward(1, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
     result.expectOk().expectBool(true);
   }
 });

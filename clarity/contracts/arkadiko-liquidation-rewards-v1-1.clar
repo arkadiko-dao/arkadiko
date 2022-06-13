@@ -7,6 +7,7 @@
 (define-constant ERR-WRONG-TOKEN u30002)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u30003)
 (define-constant ERR-TOKEN-NOT-WHITELISTED u30004)
+(define-constant ERR-REWARD-LOCKED u30005)
 
 ;; Variables
 (define-data-var total-reward-ids uint u0)
@@ -22,6 +23,7 @@
   } 
   {
     share-block: uint, ;; block on which USDA shares are calculated
+    unlock-block: uint,
     token-is-stx: bool,
     token: principal,
     total-amount: uint
@@ -55,7 +57,7 @@
 ;; @param reward-id; the reward
 (define-read-only (get-reward-data (reward-id uint))
   (default-to
-    { share-block: u0, token-is-stx: false, token: .usda-token, total-amount: u0 }
+    { share-block: u0, unlock-block: u0, token-is-stx: false, token: .usda-token, total-amount: u0 }
     (map-get? reward-data { reward-id : reward-id  })
   )
 )
@@ -101,7 +103,7 @@
 ;; @param share-block; block on which user shares in USDA pool are checked
 ;; @param token; the reward token
 ;; @param total-amount; amount of rewards
-(define-public (add-reward (share-block uint) (token-is-stx bool) (token <ft-trait>) (total-amount uint))
+(define-public (add-reward (share-block uint) (unlock-block uint) (token-is-stx bool) (token <ft-trait>) (total-amount uint))
   (let (
     (reward-id (var-get total-reward-ids))
   )
@@ -117,6 +119,7 @@
     ;; Add reward to map
     (map-set reward-data  { reward-id: reward-id } { 
       share-block: share-block,
+      unlock-block: unlock-block,
       token-is-stx: token-is-stx,
       token: (contract-of token),
       total-amount: total-amount
@@ -165,6 +168,7 @@
   )
     (asserts! (not (get-shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq (contract-of token) (get token reward-info)) (err ERR-WRONG-TOKEN))
+    (asserts! (> block-height (get unlock-block reward-info)) (err ERR-REWARD-LOCKED))
 
     (if (is-eq reward-amount u0)
       (ok u0)
