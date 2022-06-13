@@ -220,7 +220,7 @@
     (token-address (get collateral-address auction))
     (token-string (get collateral-token auction))
     (token-is-stx (is-eq token-string "STX"))
-    (token-unlock-height (+ (get-unlock-height (get vault-id auction)) u144))
+    (token-unlock-height (get-unlock-height (get vault-id auction)))
   )
     (asserts! (not (shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))

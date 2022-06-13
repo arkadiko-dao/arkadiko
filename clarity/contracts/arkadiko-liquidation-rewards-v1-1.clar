@@ -72,6 +72,23 @@
   )
 )
 
+;; @desc get reward data combined with user info
+;; @param reward-id; the reward
+(define-public (get-user-reward-info (reward-id uint))
+  (let (
+    (sender-rewards (unwrap-panic (get-rewards-of tx-sender reward-id .arkadiko-liquidation-pool-v1-1)))
+    (rewards-data (get-reward-data reward-id))
+  )
+    (ok {
+      reward-id: reward-id,
+      pending-rewards: sender-rewards,
+      unlocked: (> block-height (get unlock-block rewards-data)),
+      token: (get token rewards-data),
+      token-is-stx: (get token-is-stx rewards-data)
+    })
+  )
+)
+
 (define-read-only (token-whitelisted (token principal))
   (get whitelisted (default-to
     { whitelisted: false }
@@ -83,15 +100,6 @@
   (or
     (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated))
     (var-get shutdown-activated)
-  )
-)
-
-;; @desc toggles the killswitch
-(define-public (toggle-shutdown)
-  (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
-
-    (ok (var-set shutdown-activated (not (var-get shutdown-activated))))
   )
 )
 
@@ -186,25 +194,42 @@
   )
 )
 
-;; @desc claim multiple rewards at once
-;; @param reward-ids; the rewards to claim
-;; @param token; the reward token
-;; @param liquidation-pool; the pool on which shares are based
-(define-public (claim-many-rewards-of (reward-ids (list 5 uint)) (token <ft-trait>) (liquidation-pool <liquidation-pool-trait>))
-  (let (
-    (id-0 (element-at reward-ids u0))
-    (id-1 (element-at reward-ids u1))
-    (id-2 (element-at reward-ids u2))
-    (id-3 (element-at reward-ids u3))
-    (id-4 (element-at reward-ids u4))
-  )
-    (if (is-none id-0) u0 (try! (claim-rewards-of (unwrap-panic id-0) token liquidation-pool)))
-    (if (is-none id-1) u0 (try! (claim-rewards-of (unwrap-panic id-1) token liquidation-pool)))
-    (if (is-none id-2) u0 (try! (claim-rewards-of (unwrap-panic id-2) token liquidation-pool)))
-    (if (is-none id-3) u0 (try! (claim-rewards-of (unwrap-panic id-3) token liquidation-pool)))
-    (if (is-none id-4) u0 (try! (claim-rewards-of (unwrap-panic id-4) token liquidation-pool)))
+;; ---------------------------------------------------------
+;; Claim helpers
+;; ---------------------------------------------------------
+
+(define-public (claim-50-stx-rewards-of (reward-ids (list 50 uint)))
+  (begin
+    (map claim-stx-rewards-of reward-ids)
     (ok true)
   )
+)
+
+(define-public (claim-50-diko-rewards-of (reward-ids (list 50 uint)))
+  (begin
+    (map claim-diko-rewards-of reward-ids)
+    (ok true)
+  )
+)
+
+(define-public (claim-50-xbtc-rewards-of (reward-ids (list 50 uint)))
+  (begin
+    (map claim-xbtc-rewards-of reward-ids)
+    (ok true)
+  )
+)
+
+(define-public (claim-stx-rewards-of (reward-id uint))
+  (claim-rewards-of reward-id .xstx-token .arkadiko-liquidation-pool-v1-1)
+)
+
+(define-public (claim-diko-rewards-of (reward-id uint))
+  (claim-rewards-of reward-id .arkadiko-token .arkadiko-liquidation-pool-v1-1)
+)
+
+(define-public (claim-xbtc-rewards-of (reward-id uint))
+  ;; TODO - UPDATE ADDRESS FOR MAINNET
+  (claim-rewards-of reward-id 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin .arkadiko-liquidation-pool-v1-1)
 )
 
 ;; ---------------------------------------------------------
@@ -218,6 +243,14 @@
     (map-set reward-tokens  { token: token } { whitelisted: whitelisted })
     
     (ok true)
+  )
+)
+
+(define-public (toggle-shutdown)
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
+
+    (ok (var-set shutdown-activated (not (var-get shutdown-activated))))
   )
 )
 

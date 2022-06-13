@@ -12,7 +12,22 @@ import {
   LiquidationRewardsDiko
 } from './models/arkadiko-tests-liquidation-fund.ts';
 
+import { 
+  OracleManager,
+  DikoToken,
+  XstxManager,
+} from './models/arkadiko-tests-tokens.ts';
+
+import { 
+  VaultManager,
+  VaultAuctionV4 
+} from './models/arkadiko-tests-vaults.ts';
+
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
+
+// ---------------------------------------------------------
+// Add and claim
+// ---------------------------------------------------------
 
 Clarinet.test({
   name: "liquidation-rewards: add and claim rewards",
@@ -168,65 +183,6 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "liquidation-rewards: add rewards and claim at once",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-
-    let liquidationPool = new LiquidationPool(chain, deployer);
-    let liquidationRewards = new LiquidationRewards(chain, deployer);
-
-    // Stake
-    let result = liquidationPool.stake(deployer, 10000);
-    result.expectOk().expectUintWithDecimals(10000);
-
-    // Add rewards
-    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
-    result.expectOk().expectBool(true);
-    result = liquidationRewards.addReward(2, 0, "arkadiko-token", 200);
-    result.expectOk().expectBool(true);
-    result = liquidationRewards.addReward(3, 0, "arkadiko-token", 300);
-    result.expectOk().expectBool(true);
-    result = liquidationRewards.addReward(4, 0, "arkadiko-token", 400);
-    result.expectOk().expectBool(true);
-    result = liquidationRewards.addReward(5, 0, "arkadiko-token", 500);
-    result.expectOk().expectBool(true);
-
-    // Pending rewards
-    let call = await liquidationRewards.getRewardsOf(deployer.address, 0);
-    call.result.expectOk().expectUintWithDecimals(100);
-    call = await liquidationRewards.getRewardsOf(deployer.address, 1);
-    call.result.expectOk().expectUintWithDecimals(200);
-    call = await liquidationRewards.getRewardsOf(deployer.address, 2);
-    call.result.expectOk().expectUintWithDecimals(300);
-    call = await liquidationRewards.getRewardsOf(deployer.address, 3);
-    call.result.expectOk().expectUintWithDecimals(400);
-    call = await liquidationRewards.getRewardsOf(deployer.address, 4);
-    call.result.expectOk().expectUintWithDecimals(500);
-
-    // 5 rewards
-    call = await liquidationRewards.getTotalRewardIds();
-    call.result.expectUint(5);
-
-    // Claim 0 and 2 at once
-    let rewardIds = [types.uint(0), types.uint(2), types.uint(4)];
-    result = liquidationRewards.claimManyRewards(rewardIds, "arkadiko-token");
-    result.expectOk().expectBool(true);
-
-    // Pending rewards
-    call = await liquidationRewards.getRewardsOf(deployer.address, 0);
-    call.result.expectOk().expectUintWithDecimals(0);
-    call = await liquidationRewards.getRewardsOf(deployer.address, 1);
-    call.result.expectOk().expectUintWithDecimals(200);
-    call = await liquidationRewards.getRewardsOf(deployer.address, 2);
-    call.result.expectOk().expectUintWithDecimals(0);
-    call = await liquidationRewards.getRewardsOf(deployer.address, 3);
-    call.result.expectOk().expectUintWithDecimals(400);
-    call = await liquidationRewards.getRewardsOf(deployer.address, 4);
-    call.result.expectOk().expectUintWithDecimals(0);
-  }
-});
-
-Clarinet.test({
   name: "liquidation-rewards: add diko staking rewards",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -315,6 +271,10 @@ Clarinet.test({
   }
 });
 
+// ---------------------------------------------------------
+// Admin
+// ---------------------------------------------------------
+
 Clarinet.test({
   name: "liquidation-rewards: update epoch info",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -384,6 +344,43 @@ Clarinet.test({
 
   }
 });
+
+Clarinet.test({
+  name: "liquidation-rewards: whitelist tokens",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let liquidationRewards = new LiquidationRewards(chain, deployer);
+
+    // Can add DIKO rrewards
+    let result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result.expectOk().expectBool(true);
+
+    // Disable DIKO
+    result = liquidationRewards.updateRewardToken("arkadiko-token", false)
+    result.expectOk().expectBool(true);
+
+    // Can not add DIKO rewards
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result.expectErr().expectUint(30004);
+
+    // Can still add STX rewards
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100, true);
+    result.expectOk().expectBool(true);
+
+    // Enable DIKO again
+    result = liquidationRewards.updateRewardToken("arkadiko-token", true)
+    result.expectOk().expectBool(true);
+
+    // Can add DIKO rewards again
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result.expectOk().expectBool(true);
+  }
+});
+
+// ---------------------------------------------------------
+// Errors
+// ---------------------------------------------------------
 
 Clarinet.test({
   name: "liquidation-rewards: try to claim rewards with wrong token",
@@ -493,35 +490,244 @@ Clarinet.test({
   }
 });
 
+// ---------------------------------------------------------
+// Helpers (UI)
+// ---------------------------------------------------------
+
 Clarinet.test({
-  name: "liquidation-rewards: whitelist tokens",
+  name: "liquidation-rewards: get user reward info",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
 
+    let liquidationPool = new LiquidationPool(chain, deployer);
     let liquidationRewards = new LiquidationRewards(chain, deployer);
 
-    // Can add DIKO rrewards
-    let result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
-    result.expectOk().expectBool(true);
+    // Stake
+    let result = liquidationPool.stake(wallet_1, 20000);
+    result.expectOk().expectUintWithDecimals(20000);
 
-    // Disable DIKO
-    result = liquidationRewards.updateRewardToken("arkadiko-token", false)
-    result.expectOk().expectBool(true);
-
-    // Can not add DIKO rewards
+    // Add rewards
     result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
-    result.expectErr().expectUint(30004);
 
-    // Can still add STX rewards
-    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100, true);
-    result.expectOk().expectBool(true);
+    // Combined pending rewards for user + reward info
+    let call:any = await chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-1", "get-user-reward-info", [
+      types.uint(0),
+    ], wallet_1.address);
+    call.result.expectOk().expectTuple()["pending-rewards"].expectUintWithDecimals(100);
+    call.result.expectOk().expectTuple()["token"].expectPrincipal(Utils.qualifiedName("arkadiko-token"));
+    call.result.expectOk().expectTuple()["token-is-stx"].expectBool(false);
+  }
+});
 
-    // Enable DIKO again
-    result = liquidationRewards.updateRewardToken("arkadiko-token", true)
-    result.expectOk().expectBool(true);
+Clarinet.test({
+  name: "liquidation-rewards: bulk claim diko",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
 
-    // Can add DIKO rewards again
+    let liquidationPool = new LiquidationPool(chain, deployer);
+    let liquidationRewards = new LiquidationRewards(chain, deployer);
+    let dikoToken = new DikoToken(chain, deployer);
+
+    // Stake
+    let result = liquidationPool.stake(wallet_1, 20000);
+    result.expectOk().expectUintWithDecimals(20000);
+
+    // Add rewards
     result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
+
+    // Combined pending rewards for user + reward info
+    let call:any = await chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-1", "get-user-reward-info", [
+      types.uint(0),
+    ], wallet_1.address);
+    call.result.expectOk().expectTuple()["pending-rewards"].expectUintWithDecimals(100);
+    call.result.expectOk().expectTuple()["token"].expectPrincipal(Utils.qualifiedName("arkadiko-token"));
+    call.result.expectOk().expectTuple()["token-is-stx"].expectBool(false);
+
+    // List of reward IDs
+    let rewardIds = [
+      types.uint(0),
+      types.uint(1), 
+      types.uint(2),
+      types.uint(3),
+      types.uint(4),
+      types.uint(5),
+      types.uint(6),
+      types.uint(7),
+      types.uint(8),
+      types.uint(9),
+      types.uint(10),
+      types.uint(11),
+      types.uint(12),
+      types.uint(13),
+      types.uint(14),
+      types.uint(15),
+      types.uint(16),
+      types.uint(17),
+      types.uint(18),
+    ];
+
+    // Start balance = 150k diko
+    call = dikoToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(150000);  
+
+    // Claim all at once
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "claim-50-diko-rewards-of", [
+        types.list(rewardIds),
+      ], wallet_1.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true)
+
+    // Balance = 150k initial + 100 * 19
+    call = dikoToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(151900);  
+  }
+});
+
+Clarinet.test({
+  name: "liquidation-rewards: bulk claim stx",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let xstxManager = new XstxManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let liquidationPool = new LiquidationPool(chain, deployer);
+    let liquidationRewards = new LiquidationRewards(chain, deployer);
+
+    // Initialize price of STX to $2 in the oracle
+    let result = oracleManager.updatePrice("STX", 3);
+    result = oracleManager.updatePrice("xSTX", 3);
+
+    // Create vault - 1500 STX, 1000 USDA
+    result = vaultManager.createVault(deployer, "STX-A", 1500, 1000, false, false);
+    result.expectOk().expectUintWithDecimals(1000);
+    result = vaultManager.createVault(deployer, "STX-A", 1500, 1000, false, false);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    // Upate price to $1.0
+    result = oracleManager.updatePrice("STX", 1);
+    result = oracleManager.updatePrice("xSTX", 1);
+
+    // Deposit 10K USDA
+    result = liquidationPool.stake(wallet_1, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Start auction
+    result = vaultAuction.startAuction(deployer, 1, "xstx-token", "arkadiko-stx-reserve-v1-1");
     result.expectOk().expectBool(true);
+    result = vaultAuction.startAuction(deployer, 2, "xstx-token", "arkadiko-stx-reserve-v1-1");
+    result.expectOk().expectBool(true);
+
+    // Rewards
+    let call:any = await liquidationRewards.getRewardsOf(wallet_1.address, 0);
+    call.result.expectOk().expectUintWithDecimals(1111.111111);
+    call = await liquidationRewards.getRewardsOf(wallet_1.address, 1);
+    call.result.expectOk().expectUintWithDecimals(1111.111111);
+
+    // Claim reward
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "claim-50-stx-rewards-of", [
+        types.list([types.uint(0), types.uint(1)]),
+      ], wallet_1.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true)
+
+    // Rewards
+    call = await liquidationRewards.getRewardsOf(wallet_1.address, 0);
+    call.result.expectOk().expectUintWithDecimals(0);
+    call = await liquidationRewards.getRewardsOf(wallet_1.address, 1);
+    call.result.expectOk().expectUintWithDecimals(0);
+  }
+});
+
+Clarinet.test({
+  name: "liquidation-rewards: bulk claim xstx",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let xstxManager = new XstxManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let liquidationPool = new LiquidationPool(chain, deployer);
+    let liquidationRewards = new LiquidationRewards(chain, deployer);
+
+    // Initialize price of STX to $2 in the oracle
+    let result = oracleManager.updatePrice("STX", 3);
+    result = oracleManager.updatePrice("xSTX", 3);
+
+    // Create vault - 1500 STX, 1000 USDA
+    result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+    result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    // Upate price to $1.0
+    result = oracleManager.updatePrice("STX", 1);
+    result = oracleManager.updatePrice("xSTX", 1);
+
+    // Deposit 10K USDA
+    result = liquidationPool.stake(wallet_1, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Start auction
+    result = vaultAuction.startAuction(deployer, 1, "xstx-token", "arkadiko-sip10-reserve-v2-1");
+    result.expectOk().expectBool(true);
+    result = vaultAuction.startAuction(deployer, 2, "xstx-token", "arkadiko-sip10-reserve-v2-1");
+    result.expectOk().expectBool(true);
+
+    // xSTX
+    let call:any = await xstxManager.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUint(0);
+
+    // Rewards
+    call = await liquidationRewards.getRewardsOf(wallet_1.address, 0);
+    call.result.expectOk().expectUintWithDecimals(1111.111111);
+    call = await liquidationRewards.getRewardsOf(wallet_1.address, 1);
+    call.result.expectOk().expectUintWithDecimals(1111.111111);
+
+    // Claim reward
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "claim-50-stx-rewards-of", [
+        types.list([types.uint(0), types.uint(1)]),
+      ], wallet_1.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true)
+
+    // Rewards
+    call = await liquidationRewards.getRewardsOf(wallet_1.address, 0);
+    call.result.expectOk().expectUintWithDecimals(0);
+    call = await liquidationRewards.getRewardsOf(wallet_1.address, 1);
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    // xSTX
+    call = await xstxManager.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(2222.222222);
   }
 });

@@ -140,17 +140,6 @@ class LiquidationRewards {
     return block.receipts[0].result;
   }
 
-  claimManyRewards(rewardIds: string[], token: string) {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "claim-many-rewards-of", [
-        types.list(rewardIds),
-        types.principal(Utils.qualifiedName(token)),
-        types.principal(Utils.qualifiedName('arkadiko-liquidation-pool-v1-1')),
-      ], this.deployer.address)
-    ]);
-    return block.receipts[0].result;
-  }
-
   toggleEmergencyShutdown() {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "toggle-shutdown", [
