@@ -374,7 +374,7 @@ export const Liquidations: React.FC = () => {
         senderAddress: stxAddress || '',
         network: network,
       });
-      const result = cvToJSON(stxRedeemable).value.value;
+      const result = cvToJSON(stxRedeemable).value;
       return result;
     };
 
