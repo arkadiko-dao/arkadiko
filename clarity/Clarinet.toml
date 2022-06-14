@@ -211,6 +211,9 @@ path = "contracts/arkadiko-liquidation-pool-v1-1.clar"
 [contracts.arkadiko-liquidation-rewards-v1-1]
 path = "contracts/arkadiko-liquidation-rewards-v1-1.clar"
 
+[contracts.arkadiko-liquidation-rewards-ui-v2-1]
+path = "contracts/arkadiko-liquidation-rewards-ui-v2-1.clar"
+
 [contracts.arkadiko-liquidation-ui-v1-2]
 path = "contracts/arkadiko-liquidation-ui-v1-2.clar"
 

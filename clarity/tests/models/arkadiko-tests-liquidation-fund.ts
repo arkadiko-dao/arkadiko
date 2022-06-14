@@ -109,6 +109,14 @@ class LiquidationRewards {
     ], this.deployer.address);
   }
 
+  getUserRewardInfo(user: string, rewardId: number) {
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-1", "get-user-reward-info", [
+      types.uint(rewardId),
+      types.principal(user),
+      types.principal(Utils.qualifiedName('arkadiko-liquidation-pool-v1-1')),
+    ], this.deployer.address);
+  }
+
   getRewardsClaimed(user: string, rewardId: number) {
     return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-1", "get-reward-claimed", [
       types.uint(rewardId),
@@ -224,3 +232,45 @@ class LiquidationRewardsDiko {
 
 }
 export { LiquidationRewardsDiko };
+
+
+// ---------------------------------------------------------
+// Liquidation UI
+// ---------------------------------------------------------
+
+class LiquidationUI {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  getUserTracking(user: string) {
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-ui-v2-1", "get-user-tracking", [
+      types.principal(user)
+    ], this.deployer.address);
+  }
+
+  claimDikoRewards(user: string, rewardIds: any) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-rewards-ui-v2-1", "claim-50-diko-rewards-of", [
+        types.list(rewardIds),
+      ], user)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  claimStxRewards(user: string, rewardIds: any) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-liquidation-rewards-ui-v2-1", "claim-50-stx-rewards-of", [
+        types.list(rewardIds),
+      ], user)
+    ]);
+    return block.receipts[0].result;
+  }
+
+}
+export { LiquidationUI };
+

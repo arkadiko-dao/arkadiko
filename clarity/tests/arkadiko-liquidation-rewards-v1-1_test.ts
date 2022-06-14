@@ -9,7 +9,8 @@ import {
 import { 
   LiquidationPool,
   LiquidationRewards,
-  LiquidationRewardsDiko
+  LiquidationRewardsDiko,
+  LiquidationUI
 } from './models/arkadiko-tests-liquidation-fund.ts';
 
 import { 
@@ -511,9 +512,7 @@ Clarinet.test({
     result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
 
     // Combined pending rewards for user + reward info
-    let call:any = await chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-1", "get-user-reward-info", [
-      types.uint(0),
-    ], wallet_1.address);
+    let call:any = await liquidationRewards.getUserRewardInfo(wallet_1.address, 0)
     call.result.expectOk().expectTuple()["pending-rewards"].expectUintWithDecimals(100);
     call.result.expectOk().expectTuple()["token"].expectPrincipal(Utils.qualifiedName("arkadiko-token"));
     call.result.expectOk().expectTuple()["token-is-stx"].expectBool(false);
@@ -529,7 +528,8 @@ Clarinet.test({
     let liquidationPool = new LiquidationPool(chain, deployer);
     let liquidationRewards = new LiquidationRewards(chain, deployer);
     let dikoToken = new DikoToken(chain, deployer);
-
+    let liquidationUI = new LiquidationUI(chain, deployer);
+    
     // Stake
     let result = liquidationPool.stake(wallet_1, 20000);
     result.expectOk().expectUintWithDecimals(20000);
@@ -556,9 +556,7 @@ Clarinet.test({
     result = liquidationRewards.addReward(1, 0, "arkadiko-token", 100);
 
     // Combined pending rewards for user + reward info
-    let call:any = await chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-1", "get-user-reward-info", [
-      types.uint(0),
-    ], wallet_1.address);
+    let call:any = await liquidationRewards.getUserRewardInfo(wallet_1.address, 0)
     call.result.expectOk().expectTuple()["pending-rewards"].expectUintWithDecimals(100);
     call.result.expectOk().expectTuple()["token"].expectPrincipal(Utils.qualifiedName("arkadiko-token"));
     call.result.expectOk().expectTuple()["token-is-stx"].expectBool(false);
@@ -591,12 +589,8 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(150000);  
 
     // Claim all at once
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "claim-50-diko-rewards-of", [
-        types.list(rewardIds),
-      ], wallet_1.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true)
+    result = liquidationUI.claimDikoRewards(wallet_1.address, rewardIds);
+    result.expectOk().expectBool(true)
 
     // Balance = 150k initial + 100 * 19
     call = dikoToken.balanceOf(wallet_1.address);
@@ -612,11 +606,11 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let oracleManager = new OracleManager(chain, deployer);
-    let xstxManager = new XstxManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
     let vaultAuction = new VaultAuctionV4(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
     let liquidationRewards = new LiquidationRewards(chain, deployer);
+    let liquidationUI = new LiquidationUI(chain, deployer);
 
     // Initialize price of STX to $2 in the oracle
     let result = oracleManager.updatePrice("STX", 3);
@@ -649,12 +643,8 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(1111.111111);
 
     // Claim reward
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "claim-50-stx-rewards-of", [
-        types.list([types.uint(0), types.uint(1)]),
-      ], wallet_1.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true)
+    result = liquidationUI.claimStxRewards(wallet_1.address, [types.uint(0), types.uint(1)]);
+    result.expectOk().expectBool(true)
 
     // Rewards
     call = await liquidationRewards.getRewardsOf(wallet_1.address, 0);
@@ -677,6 +667,7 @@ Clarinet.test({
     let vaultAuction = new VaultAuctionV4(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
     let liquidationRewards = new LiquidationRewards(chain, deployer);
+    let liquidationUI = new LiquidationUI(chain, deployer);
 
     // Initialize price of STX to $2 in the oracle
     let result = oracleManager.updatePrice("STX", 3);
@@ -713,12 +704,8 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(1111.111111);
 
     // Claim reward
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "claim-50-stx-rewards-of", [
-        types.list([types.uint(0), types.uint(1)]),
-      ], wallet_1.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true)
+    result = liquidationUI.claimStxRewards(wallet_1.address, [types.uint(0), types.uint(1)]);
+    result.expectOk().expectBool(true)
 
     // Rewards
     call = await liquidationRewards.getRewardsOf(wallet_1.address, 0);
@@ -729,5 +716,46 @@ Clarinet.test({
     // xSTX
     call = await xstxManager.balanceOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(2222.222222);
+  }
+});
+
+// ---------------------------------------------------------
+// UI tracking
+// ---------------------------------------------------------
+
+Clarinet.test({
+  name: "liquidation-rewards: add and claim rewards",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let liquidationPool = new LiquidationPool(chain, deployer);
+    let liquidationRewards = new LiquidationRewards(chain, deployer);
+    let liquidationUI = new LiquidationUI(chain, deployer);
+
+    // Stake
+    let result = liquidationPool.stake(deployer, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Add rewards
+    for (let index = 0; index <= 60; index++) {
+      result = liquidationRewards.addReward(1, 0, "arkadiko-token", 10);
+      result.expectOk().expectBool(true);
+    }
+
+    // Get user last reward ID
+    let call:any = await liquidationUI.getUserTracking(deployer.address);
+    call.result.expectTuple()['last-reward-id'].expectUint(0)
+
+    // Claim rewards
+    var rewardIds = [];
+    for (let index = 0; index < 50; index++) {
+      rewardIds.push(types.uint(index));
+    }
+    result = liquidationUI.claimDikoRewards(deployer.address, rewardIds);
+    result.expectOk().expectBool(true)
+
+    // User last reward ID is now 50
+    call = await liquidationUI.getUserTracking(deployer.address);
+    call.result.expectTuple()['last-reward-id'].expectUint(50)
   }
 });

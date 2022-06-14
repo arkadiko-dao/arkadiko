@@ -74,9 +74,9 @@
 
 ;; @desc get reward data combined with user info
 ;; @param reward-id; the reward
-(define-public (get-user-reward-info (reward-id uint))
+(define-public (get-user-reward-info (reward-id uint) (user principal) (liquidation-pool <liquidation-pool-trait>))
   (let (
-    (sender-rewards (unwrap-panic (get-rewards-of tx-sender reward-id .arkadiko-liquidation-pool-v1-1)))
+    (sender-rewards (unwrap-panic (get-rewards-of user reward-id liquidation-pool)))
     (rewards-data (get-reward-data reward-id))
   )
     (ok {
@@ -192,44 +192,6 @@
       )
     )
   )
-)
-
-;; ---------------------------------------------------------
-;; Claim helpers
-;; ---------------------------------------------------------
-
-(define-public (claim-50-stx-rewards-of (reward-ids (list 50 uint)))
-  (begin
-    (map claim-stx-rewards-of reward-ids)
-    (ok true)
-  )
-)
-
-(define-public (claim-50-diko-rewards-of (reward-ids (list 50 uint)))
-  (begin
-    (map claim-diko-rewards-of reward-ids)
-    (ok true)
-  )
-)
-
-(define-public (claim-50-xbtc-rewards-of (reward-ids (list 50 uint)))
-  (begin
-    (map claim-xbtc-rewards-of reward-ids)
-    (ok true)
-  )
-)
-
-(define-public (claim-stx-rewards-of (reward-id uint))
-  (claim-rewards-of reward-id .xstx-token .arkadiko-liquidation-pool-v1-1)
-)
-
-(define-public (claim-diko-rewards-of (reward-id uint))
-  (claim-rewards-of reward-id .arkadiko-token .arkadiko-liquidation-pool-v1-1)
-)
-
-(define-public (claim-xbtc-rewards-of (reward-id uint))
-  ;; TODO - UPDATE ADDRESS FOR MAINNET
-  (claim-rewards-of reward-id 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin .arkadiko-liquidation-pool-v1-1)
 )
 
 ;; ---------------------------------------------------------
