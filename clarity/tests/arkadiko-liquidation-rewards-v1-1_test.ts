@@ -24,6 +24,11 @@ import {
   VaultAuctionV4 
 } from './models/arkadiko-tests-vaults.ts';
 
+import { 
+  Stacker,
+  StxReserve
+} from './models/arkadiko-tests-stacker.ts';
+
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 // ---------------------------------------------------------
@@ -180,6 +185,79 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(0);
     call = await liquidationRewards.getRewardsOf(deployer.address, 1);
     call.result.expectOk().expectUintWithDecimals(300);
+  }
+});
+
+
+Clarinet.test({
+  name: "liquidation-rewards: claim xSTX from stacking vault",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let liquidationPool = new LiquidationPool(chain, deployer);
+    let liquidationRewards = new LiquidationRewards(chain, deployer);
+    let stxReserve = new StxReserve(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
+
+    // Initialize price of STX to $2 in the oracle
+    let result = oracleManager.updatePrice("STX", 3);
+    result = oracleManager.updatePrice("xSTX", 3);
+
+    // Create vault
+    result = vaultManager.createVault(deployer, "STX-A", 21000000, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+    result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    // Stack STX
+    let call:any = stxReserve.getTokensToStack("stacker");
+    call.result.expectOk().expectUintWithDecimals(21001500); 
+
+    result = stacker.initiateStacking(10, 1);
+    result.expectOk().expectUintWithDecimals(21001500);
+
+    call = stacker.getStxBalance();
+    call.result.expectUintWithDecimals(21001500);
+    call = stacker.getStackingUnlockHeight();
+    call.result.expectOk().expectUint(300);
+
+    // Upate price to $1.0
+    result = oracleManager.updatePrice("STX", 1);
+    result = oracleManager.updatePrice("xSTX", 1);
+
+    // Deposit 10K USDA
+    result = liquidationPool.stake(wallet_1, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Start auction
+    result = vaultAuction.startAuction(deployer, 2, "xstx-token", "arkadiko-sip10-reserve-v2-1");
+    result.expectOk().expectBool(true);
+
+    // Reward data
+    call = await liquidationRewards.getRewardData(0);
+    call.result.expectTuple()["share-block"].expectUint(9);
+    call.result.expectTuple()["unlock-block"].expectUint(300);
+    call.result.expectTuple()["total-amount"].expectUintWithDecimals(1111.111111);
+
+    // Can not claim as not unlocked yet
+    result = liquidationRewards.claimRewards(wallet_1, 0, "xstx-token");
+    result.expectErr().expectUint(30005);
+
+    // Advance to over block 300
+    chain.mineEmptyBlock(300-9);
+
+    // Claim reward
+    result = liquidationRewards.claimRewards(wallet_1, 0, "xstx-token");
+    result.expectOk().expectUintWithDecimals(1111.111111);
+
+            // No rewards claimed yet
+    call = await liquidationRewards.getRewardsClaimed(wallet_1.address, 0);
+    call.result.expectTuple()['claimed-amount'].expectUintWithDecimals(1111.111111);
   }
 });
 
@@ -724,7 +802,7 @@ Clarinet.test({
 // ---------------------------------------------------------
 
 Clarinet.test({
-  name: "liquidation-rewards: add and claim rewards",
+  name: "liquidation-rewards: track last reward id for user",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
