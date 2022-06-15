@@ -30,6 +30,7 @@ import { Tab } from '@headlessui/react';
 import { InformationCircleIcon, MinusCircleIcon, PlusCircleIcon } from '@heroicons/react/solid';
 import { classNames } from '@common/class-names';
 import { Alert } from './ui/alert';
+import { principalCV } from '@stacks/transactions/dist/clarity/types/principalCV';
 
 export const Liquidations: React.FC = () => {
   const { doContractCall } = useConnect();
@@ -185,10 +186,12 @@ export const Liquidations: React.FC = () => {
       try {
         const callUserPending = await callReadOnlyFunction({
           contractAddress,
-          contractName: 'arkadiko-liquidation-ui-v1-2',
+          contractName: 'arkadiko-liquidation-rewards-v1-1',
           functionName: 'get-user-reward-info',
           functionArgs: [
             uintCV(rewardId),
+            principalCV(stxAddress),
+            contractPrincipalCV(contractAddress, 'arkadiko-liquidation-pool-v1-1'),
           ],
           senderAddress: stxAddress || '',
           network: network,
@@ -201,6 +204,7 @@ export const Liquidations: React.FC = () => {
             token: result['token'].value,
             claimable: result['pending-rewards'].value,
             tokenIsStx: result['token-is-stx'].value,
+            unlockBlock: result['unlock-block'].value
           });
         }
       } catch (e) {
@@ -220,7 +224,10 @@ export const Liquidations: React.FC = () => {
     const rewardsDataMerged: LiquidationRewardProps[] = [];
     for (const rewardData of rewardsData) {
       const result = rewardsDataMerged.filter(data => {
-        return data.rewardIds.length < 50 && data.token == rewardData.token && data.tokenIsStx == rewardData.tokenIsStx;
+        return data.rewardIds.length < 50 
+          && data.token == rewardData.token 
+          && data.tokenIsStx == rewardData.tokenIsStx
+          && data.unlockBlock == rewardData.unlockBlock;
       });
       if (result.length == 0) {
         rewardsDataMerged.push({
@@ -228,6 +235,7 @@ export const Liquidations: React.FC = () => {
           token: rewardData.token,
           claimable: rewardData.claimable,
           tokenIsStx: rewardData.tokenIsStx,
+          unlockBlock: rewardData.unlockBlock
         });
       } else {
         let existingData = result[0];
@@ -276,6 +284,7 @@ export const Liquidations: React.FC = () => {
           token={reward.token}
           claimable={reward.claimable}
           tokenIsStx={reward.tokenIsStx}
+          unlockBlock={reward.unlockBlock}
         />
       ));
       setRewardData(rewardItems);

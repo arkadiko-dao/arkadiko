@@ -82,7 +82,7 @@
     (ok {
       reward-id: reward-id,
       pending-rewards: sender-rewards,
-      unlocked: (> block-height (get unlock-block rewards-data)),
+      unlock-block: (get unlock-block rewards-data),
       token: (get token rewards-data),
       token-is-stx: (get token-is-stx rewards-data)
     })

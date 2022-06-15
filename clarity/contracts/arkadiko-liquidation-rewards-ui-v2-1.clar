@@ -92,5 +92,5 @@
 
 (define-public (claim-xbtc-rewards-of (reward-id uint))
   ;; TODO - UPDATE ADDRESS FOR MAINNET
-  (contract-call? .arkadiko-liquidation-rewards-v1-1 claim-rewards-of reward-id 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin .arkadiko-liquidation-pool-v1-1)
+  (contract-call? .arkadiko-liquidation-rewards-v1-1 claim-rewards-of reward-id .Wrapped-Bitcoin .arkadiko-liquidation-pool-v1-1)
 )

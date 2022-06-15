@@ -20,13 +20,15 @@ export interface LiquidationRewardProps {
   token: string;
   claimable: number;
   tokenIsStx: boolean;
+  unlockBlock: number;
 }
 
 export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
   rewardIds,
   token,
   claimable,
-  tokenIsStx
+  tokenIsStx,
+  unlockBlock
 }) => {
   const { doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
@@ -78,7 +80,7 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-liquidation-ui-v1-2',
+      contractName: 'arkadiko-liquidation-rewards-ui-v2-1',
       functionName: functionName,
       functionArgs: [
         listCV(rewardIds.map((id) =>  uintCV(id))),
