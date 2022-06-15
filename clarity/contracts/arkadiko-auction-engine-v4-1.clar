@@ -281,8 +281,7 @@
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
     (stacker (get stacker-name vault))
   )
-   (if (and (is-eq "STX" (get collateral-token vault)) (> (get stacked-tokens vault) u0))
-
+   (if (> (get stacked-tokens vault) u0)
       (if (is-eq stacker "stacker")
         (unwrap-panic (contract-call? .arkadiko-stacker-v1-1 get-stacking-unlock-burn-height))
         (if (is-eq stacker "stacker-2")
@@ -296,7 +295,6 @@
           )
         )
       )
-
       u0
     )
   )
