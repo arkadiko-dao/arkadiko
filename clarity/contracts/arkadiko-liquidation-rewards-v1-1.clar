@@ -22,8 +22,8 @@
     reward-id: uint,
   } 
   {
-    share-block: uint, ;; block on which USDA shares are calculated
-    unlock-block: uint,
+    share-block: uint, ;; STX block on which USDA shares are calculated
+    unlock-block: uint, ;; BTC block on which stacking tokens unlock
     token-is-stx: bool,
     token: principal,
     total-amount: uint
@@ -176,7 +176,7 @@
   )
     (asserts! (not (get-shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq (contract-of token) (get token reward-info)) (err ERR-WRONG-TOKEN))
-    (asserts! (> block-height (get unlock-block reward-info)) (err ERR-REWARD-LOCKED))
+    (asserts! (> burn-block-height (get unlock-block reward-info)) (err ERR-REWARD-LOCKED))
 
     (if (is-eq reward-amount u0)
       (ok u0)
