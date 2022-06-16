@@ -56,6 +56,7 @@ export const Liquidations: React.FC = () => {
   const [lockupBlocks, setLockupBlocks] = useState(0);
   const [stakerLockupBlocks, setStakerLockupBlocks] = useState(0);
   const [rewardLoadingPercentage, setRewardLoadingPercentage] = useState(0);
+  const [burnBlockHeight, setBurnBlockHeight] = useState(0);
 
   const onInputStakeChange = (event: any) => {
     const value = event.target.value;
@@ -204,7 +205,8 @@ export const Liquidations: React.FC = () => {
             token: result['token'].value,
             claimable: result['pending-rewards'].value,
             tokenIsStx: result['token-is-stx'].value,
-            unlockBlock: result['unlock-block'].value
+            unlockBlock: result['unlock-block'].value,
+            currentBlock: burnBlockHeight
           });
         }
       } catch (e) {
@@ -235,7 +237,8 @@ export const Liquidations: React.FC = () => {
           token: rewardData.token,
           claimable: rewardData.claimable,
           tokenIsStx: rewardData.tokenIsStx,
-          unlockBlock: rewardData.unlockBlock
+          unlockBlock: rewardData.unlockBlock,
+          currentBlock: rewardData.currentBlock
         });
       } else {
         let existingData = result[0];
@@ -277,7 +280,7 @@ export const Liquidations: React.FC = () => {
 
       // Group rewards
       const rewardGroups = createGroups(rewards);
-      const rewardItems = rewardGroups.map((reward: object) => (
+      var rewardItems = rewardGroups.map((reward: object) => (
         <LiquidationReward
           key={reward.rewardIds}
           rewardIds={reward.rewardIds}
@@ -285,8 +288,27 @@ export const Liquidations: React.FC = () => {
           claimable={reward.claimable}
           tokenIsStx={reward.tokenIsStx}
           unlockBlock={reward.unlockBlock}
+          currentBlock={reward.currentBlock}
         />
       ));
+
+      // Sort groups
+      rewardItems = rewardItems.sort(function(a, b) {
+        if (a.props.unlockBlock > burnBlockHeight && b.props.unlockBlock > burnBlockHeight) {
+          return a.props.unlockBlock > b.props.unlockBlock ? 1 : -1;
+        } else if (a.props.unlockBlock > burnBlockHeight && b.props.unlockBlock < burnBlockHeight) {
+          return 1;
+        } else if (a.props.unlockBlock < burnBlockHeight && b.props.unlockBlock > burnBlockHeight) {
+          return -1;
+        }
+        if (a.props.claimable < b.props.claimable) {
+          return 1;
+        } else if (a.props.claimable > b.props.claimable) {
+          return -1;
+        }
+        return 0;
+      });
+
       setRewardData(rewardItems);
     }
 
@@ -418,6 +440,13 @@ export const Liquidations: React.FC = () => {
       return result["start-block"].value;
     };
 
+    const getBurnBlockHeight = async () => {
+      const client = getRPCClient();
+      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
+      const data = await response.json();
+      return data['burn_block_height'];
+    };
+
     const fetchInfo = async () => {
       // Fetch info
       const [
@@ -430,6 +459,7 @@ export const Liquidations: React.FC = () => {
         stakerLockup,
         lockupBlocks,
         dikoPrice,
+        burnBlock
       ] = await Promise.all([
         getTotalPooled(),
         getUserPooled(),
@@ -440,6 +470,7 @@ export const Liquidations: React.FC = () => {
         getStakerLockup(),
         getLockup(),
         getDikoPrice(),
+        getBurnBlockHeight()
       ]);
 
       setTotalPooled(totalPooled);
@@ -447,6 +478,7 @@ export const Liquidations: React.FC = () => {
       setDikoEndBlock(epochInfo["end-block"].value);
       setDikoRewardsToAdd(dikoEpochRewardsToAdd);
       setCurrentBlockHeight(currentBlockHeight);
+      setBurnBlockHeight(burnBlock);
 
       setButtonStakeDisabled(false);
       setButtonUnstakeDisabled(userPooled == 0)
@@ -582,7 +614,9 @@ export const Liquidations: React.FC = () => {
                           <th className="px-6 py-3 text-xs font-medium tracking-wider text-center text-gray-500 dark:text-zinc-400">
                             Amount
                           </th>
-                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-zinc-400"></th>
+                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-zinc-400">
+                            Claim
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600">{rewardData}</tbody>

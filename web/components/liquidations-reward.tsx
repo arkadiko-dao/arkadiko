@@ -21,6 +21,7 @@ export interface LiquidationRewardProps {
   claimable: number;
   tokenIsStx: boolean;
   unlockBlock: number;
+  currentBlock: number;
 }
 
 export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
@@ -28,7 +29,8 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
   token,
   claimable,
   tokenIsStx,
-  unlockBlock
+  unlockBlock,
+  currentBlock
 }) => {
   const { doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
@@ -133,13 +135,20 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
       </td>
       <td className="px-6 py-4 text-sm text-right text-gray-500 whitespace-nowrap">
         <span className="font-medium text-gray-900 dark:text-zinc-100">
-          <button
-            type="button"
-            onClick={() => claim()}
-            className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Claim
-          </button>
+          { currentBlock > unlockBlock ? (
+            <button
+              type="button"
+              onClick={() => claim()}
+              className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Claim
+            </button>
+          ) : (
+            <>
+              {unlockBlock - currentBlock + 1} blocks left
+              (≈ xx days, xx hours)
+            </>
+          )}
         </span>
       </td>
     </tr>
