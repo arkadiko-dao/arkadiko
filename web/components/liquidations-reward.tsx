@@ -118,10 +118,17 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
       </td>
       <td className="px-6 py-4 text-sm text-center text-gray-500 whitespace-nowrap">
         <span className="font-medium text-gray-900 dark:text-zinc-100">
-          {microToReadable(claimable).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 6,
-          })}
+          {token.split('.')[1] == "Wrapped-Bitcoin" ? (
+            microToReadable(claimable / 100).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 6,
+            })
+          ) : (
+            microToReadable(claimable).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 6,
+            })
+          )}
         </span>
       </td>
       <td className="px-6 py-4 text-sm text-right text-gray-500 whitespace-nowrap">
