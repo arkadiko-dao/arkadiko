@@ -229,7 +229,7 @@ export const Liquidations: React.FC = () => {
         return data.rewardIds.length < 50 
           && data.token == rewardData.token 
           && data.tokenIsStx == rewardData.tokenIsStx
-          && data.unlockBlock == rewardData.unlockBlock;
+          && ((data.unlockBlock < burnBlockHeight && rewardData.unlockBlock < burnBlockHeight) || data.unlockBlock == rewardData.unlockBlock)
       });
       if (result.length == 0) {
         rewardsDataMerged.push({
