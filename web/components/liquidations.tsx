@@ -57,6 +57,7 @@ export const Liquidations: React.FC = () => {
   const [stakerLockupBlocks, setStakerLockupBlocks] = useState(0);
   const [rewardLoadingPercentage, setRewardLoadingPercentage] = useState(0);
   const [burnBlockHeight, setBurnBlockHeight] = useState(0);
+  const [userFirstRewardId, setUserFirstRewardId] = useState(0);
 
   const onInputStakeChange = (event: any) => {
     const value = event.target.value;
@@ -267,7 +268,8 @@ export const Liquidations: React.FC = () => {
     var rewards: LiquidationRewardProps[] = [];
     const batchAmount = 15;
     const batches = Math.ceil(rewardCount / batchAmount);
-    for (let batch = batches-1; batch >= 0; batch--) {
+    const endBatch = Math.floor(userFirstRewardId / batchAmount);
+    for (let batch = batches-1; batch >= endBatch; batch--) {
 
       // Sleep 10 sec
       await sleep(10000);
@@ -440,6 +442,21 @@ export const Liquidations: React.FC = () => {
       return result["start-block"].value;
     };
 
+    const getUserFirstRewardId = async () => {
+      const call = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-liquidation-rewards-ui-v2-1',
+        functionName: 'get-user-tracking',
+        functionArgs: [
+          standardPrincipalCV(stxAddress || ''),
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const result = cvToJSON(call).value;
+      return result["last-reward-id"].value;
+    };
+
     const getBurnBlockHeight = async () => {
       const client = getRPCClient();
       const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
@@ -459,7 +476,8 @@ export const Liquidations: React.FC = () => {
         stakerLockup,
         lockupBlocks,
         dikoPrice,
-        burnBlock
+        burnBlock,
+        userFirstRewardId
       ] = await Promise.all([
         getTotalPooled(),
         getUserPooled(),
@@ -470,7 +488,8 @@ export const Liquidations: React.FC = () => {
         getStakerLockup(),
         getLockup(),
         getDikoPrice(),
-        getBurnBlockHeight()
+        getBurnBlockHeight(),
+        getUserFirstRewardId()
       ]);
 
       setTotalPooled(totalPooled);
@@ -479,7 +498,8 @@ export const Liquidations: React.FC = () => {
       setDikoRewardsToAdd(dikoEpochRewardsToAdd);
       setCurrentBlockHeight(currentBlockHeight);
       setBurnBlockHeight(burnBlock);
-
+      setUserFirstRewardId(userFirstRewardId);
+      
       setButtonStakeDisabled(false);
       setButtonUnstakeDisabled(userPooled == 0)
 
