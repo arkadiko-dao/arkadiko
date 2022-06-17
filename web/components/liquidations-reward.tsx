@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { useConnect } from '@stacks/connect-react';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, blocksToTime } from '@common/utils';
 import { microToReadable } from '@common/vault-utils';
 import {
   AnchorMode,
@@ -146,7 +146,7 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
           ) : (
             <>
               {unlockBlock - currentBlock + 1} blocks left
-              (≈ xx days, xx hours)
+              (≈ {blocksToTime(unlockBlock - currentBlock + 1)})
             </>
           )}
         </span>
