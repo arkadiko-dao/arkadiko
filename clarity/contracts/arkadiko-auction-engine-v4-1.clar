@@ -7,7 +7,7 @@
 (use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
 (use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)
 (use-trait liquidation-pool-trait .arkadiko-liquidation-pool-trait-v1.liquidation-pool-trait)
-(use-trait liquidation-rewards-trait .arkadiko-liquidation-rewards-trait-v2.liquidation-rewards-trait)
+(use-trait liquidation-rewards-trait .arkadiko-liquidation-rewards-trait-v1.liquidation-rewards-trait)
 
 ;; constants
 (define-constant ERR-NOT-AUTHORIZED u31401)
@@ -21,7 +21,6 @@
 (define-data-var auction-engine-shutdown-activated bool false)
 (define-data-var last-auction-id uint u0)
 (define-data-var auction-fee uint u0)
-(define-data-var unlock-height-extra uint u0)
 
 (define-map auctions
   { id: uint }
@@ -221,7 +220,6 @@
     (token-address (get collateral-address auction))
     (token-string (get collateral-token auction))
     (token-is-stx (is-eq token-string "STX"))
-    (token-unlock-height (+ (get-unlock-height (get vault-id auction)) (var-get unlock-height-extra)))
   )
     (asserts! (not (shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
@@ -255,7 +253,7 @@
         (try! (as-contract (contract-call? vault-manager redeem-auction-collateral ft token-string reserve collateral-sold (as-contract tx-sender)))) 
 
         ;; Deposit collateral token
-        (try! (as-contract (contract-call? liquidation-rewards add-reward block-height token-unlock-height token-is-stx ft collateral-without-fee)))
+        (try! (as-contract (contract-call? liquidation-rewards add-reward block-height token-is-stx ft collateral-without-fee)))
 
         ;; Update auction
         (map-set auctions { id: auction-id } (merge auction {
@@ -272,32 +270,6 @@
 
     (print { type: "auction", action: "burn-usda", data: auction })
     (ok usda-to-use)
-  )
-)
-
-;; @desc get block height on which stacked STX will unlock
-;; @param vault-id; the vault to liquidate
-(define-read-only (get-unlock-height (vault-id uint))
-  (let (
-    (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
-    (stacker (get stacker-name vault))
-  )
-   (if (> (get stacked-tokens vault) u0)
-      (if (is-eq stacker "stacker")
-        (unwrap-panic (contract-call? .arkadiko-stacker-v1-1 get-stacking-unlock-burn-height))
-        (if (is-eq stacker "stacker-2")
-          (unwrap-panic (contract-call? .arkadiko-stacker-2-v1-1 get-stacking-unlock-burn-height))
-          (if (is-eq stacker "stacker-3")
-            (unwrap-panic (contract-call? .arkadiko-stacker-3-v1-1 get-stacking-unlock-burn-height))
-            (if (is-eq stacker "stacker-4")
-              (unwrap-panic (contract-call? .arkadiko-stacker-4-v1-1 get-stacking-unlock-burn-height))
-              u0
-            )
-          )
-        )
-      )
-      u0
-    )
   )
 )
 
@@ -465,13 +437,5 @@
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
     (var-set auction-fee new-fee)
     (ok new-fee)
-  )
-)
-
-(define-public (update-unlock-height-extra (new-unlock-height-extra uint))
-  (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
-    (var-set unlock-height-extra new-unlock-height-extra)
-    (ok new-unlock-height-extra)
   )
 )

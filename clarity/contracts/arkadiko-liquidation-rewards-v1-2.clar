@@ -107,11 +107,11 @@
 ;; Add rewards
 ;; ---------------------------------------------------------
 
-;; @desc add rewards to the contract
-;; @param share-block; block on which user shares in USDA pool are checked
-;; @param token; the reward token
-;; @param total-amount; amount of rewards
-(define-public (add-reward (share-block uint) (unlock-block uint) (token-is-stx bool) (token <ft-trait>) (total-amount uint))
+(define-public (add-reward (share-block uint) (token-is-stx bool) (token <ft-trait>) (total-amount uint))
+  (add-reward-locked share-block u0 token-is-stx token total-amount)
+)
+
+(define-public (add-reward-locked (share-block uint) (unlock-block uint) (token-is-stx bool) (token <ft-trait>) (total-amount uint))
   (let (
     (reward-id (var-get total-reward-ids))
   )

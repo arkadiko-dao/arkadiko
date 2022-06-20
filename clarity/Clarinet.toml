@@ -232,9 +232,6 @@ path = "contracts/arkadiko-auction-engine-v4-2.clar"
 [contracts.arkadiko-liquidation-rewards-diko-v1-1]
 path = "contracts/arkadiko-liquidation-rewards-diko-v1-1.clar"
 
-[contracts.arkadiko-liquidation-rewards-diko-v1-2]
-path = "contracts/arkadiko-liquidation-rewards-diko-v1-2.clar"
-
 [contracts.wrapped-lydian-token]
 path = "contracts/wrapped-lydian-token.clar"
 

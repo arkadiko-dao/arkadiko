@@ -2,6 +2,8 @@
 
 (define-trait liquidation-rewards-trait
   (
-    (add-reward (uint uint bool <ft-trait> uint) (response bool uint))
+    (add-reward (uint bool <ft-trait> uint) (response bool uint))
+
+    (add-reward-locked (uint uint bool <ft-trait> uint) (response bool uint))
   )
 )

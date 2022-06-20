@@ -255,7 +255,7 @@
         (try! (as-contract (contract-call? vault-manager redeem-auction-collateral ft token-string reserve collateral-sold (as-contract tx-sender)))) 
 
         ;; Deposit collateral token
-        (try! (as-contract (contract-call? liquidation-rewards add-reward block-height token-unlock-height token-is-stx ft collateral-without-fee)))
+        (try! (as-contract (contract-call? liquidation-rewards add-reward-locked block-height token-unlock-height token-is-stx ft collateral-without-fee)))
 
         ;; Update auction
         (map-set auctions { id: auction-id } (merge auction {
