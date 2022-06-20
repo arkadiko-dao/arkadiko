@@ -16,6 +16,7 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { tokenTraits } from '@common/vault-utils';
 
 export interface LiquidationRewardProps {
+  version: number;
   rewardIds: number[];
   token: string;
   claimable: number;
@@ -25,6 +26,7 @@ export interface LiquidationRewardProps {
 }
 
 export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
+  version,
   rewardIds,
   token,
   claimable,
@@ -39,13 +41,16 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
 
   const claim = async () => {
 
+    var rewardsContract = version == 1 ? 'arkadiko-liquidation-rewards-v1-1' : 'arkadiko-liquidation-rewards-v1-2';
+    var claimContract = version == 1 ? 'arkadiko-liquidation-ui-v1-2' : 'arkadiko-liquidation-rewards-ui-v2-1';
+
     const postConditions = [];
     if (tokenIsStx) {
       // PC
       postConditions.push(
         makeContractSTXPostCondition(
           contractAddress,
-          'arkadiko-liquidation-rewards-v1-1',
+          rewardsContract,
           FungibleConditionCode.Equal,
           uintCV(claimable).value,
         )
@@ -61,7 +66,7 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
       postConditions.push(
         makeContractFungiblePostCondition(
           contractAddress,
-          'arkadiko-liquidation-rewards-v1-1',
+          rewardsContract,
           FungibleConditionCode.Equal,
           uintCV(claimable).value,
           createAssetInfo(token.split('.')[0], token.split('.')[1], tokenName)
@@ -82,7 +87,7 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-liquidation-rewards-ui-v2-1',
+      contractName: claimContract,
       functionName: functionName,
       functionArgs: [
         listCV(rewardIds.map((id) =>  uintCV(id))),
