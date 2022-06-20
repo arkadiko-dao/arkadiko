@@ -91,18 +91,18 @@ class LiquidationRewards {
   }
 
   getTotalRewardIds() {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-1", "get-total-reward-ids", [
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-2", "get-total-reward-ids", [
     ], this.deployer.address);
   }
 
   getRewardData(rewardId: number) {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-1", "get-reward-data", [
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-2", "get-reward-data", [
       types.uint(rewardId),
     ], this.deployer.address);
   }
 
   getRewardsOf(user: string, rewardId: number) {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-1", "get-rewards-of", [
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-2", "get-rewards-of", [
       types.principal(user),
       types.uint(rewardId),
       types.principal(Utils.qualifiedName('arkadiko-liquidation-pool-v1-1')),
@@ -110,7 +110,7 @@ class LiquidationRewards {
   }
 
   getUserRewardInfo(user: string, rewardId: number) {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-1", "get-user-reward-info", [
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-2", "get-user-reward-info", [
       types.uint(rewardId),
       types.principal(user),
       types.principal(Utils.qualifiedName('arkadiko-liquidation-pool-v1-1')),
@@ -118,7 +118,7 @@ class LiquidationRewards {
   }
 
   getRewardsClaimed(user: string, rewardId: number) {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-1", "get-reward-claimed", [
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-v1-2", "get-reward-claimed", [
       types.uint(rewardId),
       types.principal(user),
     ], this.deployer.address);
@@ -126,7 +126,7 @@ class LiquidationRewards {
   
   addReward(shareBlock: number, unlockBlock:number, token: string, totalAmount: number, isStx: boolean = false) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "add-reward", [
+      Tx.contractCall("arkadiko-liquidation-rewards-v1-2", "add-reward", [
         types.uint(shareBlock),
         types.uint(unlockBlock),
         types.bool(isStx),
@@ -139,7 +139,7 @@ class LiquidationRewards {
 
   claimRewards(user: Account, rewardId: number, token: string) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "claim-rewards-of", [
+      Tx.contractCall("arkadiko-liquidation-rewards-v1-2", "claim-rewards-of", [
         types.uint(rewardId),
         types.principal(Utils.qualifiedName(token)),
         types.principal(Utils.qualifiedName('arkadiko-liquidation-pool-v1-1')),
@@ -150,7 +150,7 @@ class LiquidationRewards {
 
   toggleEmergencyShutdown() {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "toggle-shutdown", [
+      Tx.contractCall("arkadiko-liquidation-rewards-v1-2", "toggle-shutdown", [
       ], this.deployer.address)
     ]);
     return block.receipts[0].result;
@@ -158,7 +158,7 @@ class LiquidationRewards {
 
   updateRewardToken(token: string, whitelisted: boolean) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-rewards-v1-1", "update-reward-tokens", [
+      Tx.contractCall("arkadiko-liquidation-rewards-v1-2", "update-reward-tokens", [
         types.principal(Utils.qualifiedName(token)),
         types.bool(whitelisted)
       ], this.deployer.address)
@@ -183,29 +183,29 @@ class LiquidationRewardsDiko {
   }
 
   getEndEpochBlock() {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-diko-v1-1", "get-end-epoch-block", [
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-diko-v1-2", "get-end-epoch-block", [
     ], this.deployer.address);
   }
 
   getEpochRate() {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-diko-v1-1", "get-epoch-rate", [
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-diko-v1-2", "get-epoch-rate", [
     ], this.deployer.address);
   }
 
   getBlocksPerEpoch() {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-diko-v1-1", "get-blocks-per-epoch", [
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-diko-v1-2", "get-blocks-per-epoch", [
     ], this.deployer.address);
   }
 
   getEpochInfo() {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-diko-v1-1", "get-epoch-info", [
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-diko-v1-2", "get-epoch-info", [
     ], this.deployer.address);
   }
 
   addRewards() {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-rewards-diko-v1-1", "add-rewards", [
-        types.principal(Utils.qualifiedName('arkadiko-liquidation-rewards-v1-1')),
+      Tx.contractCall("arkadiko-liquidation-rewards-diko-v1-2", "add-rewards", [
+        types.principal(Utils.qualifiedName('arkadiko-liquidation-rewards-v1-2')),
       ], this.deployer.address)
     ]);
     return block.receipts[0].result;
@@ -213,7 +213,7 @@ class LiquidationRewardsDiko {
 
   updateEpoch(rate: number, length: number, endBlock: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-rewards-diko-v1-1", "update-epoch-data", [
+      Tx.contractCall("arkadiko-liquidation-rewards-diko-v1-2", "update-epoch-data", [
         types.uint(rate * 1000000),
         types.uint(length),
         types.uint(endBlock),
@@ -224,7 +224,7 @@ class LiquidationRewardsDiko {
 
   toggleEmergencyShutdown() {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-rewards-diko-v1-1", "toggle-shutdown", [
+      Tx.contractCall("arkadiko-liquidation-rewards-diko-v1-2", "toggle-shutdown", [
       ], this.deployer.address)
     ]);
     return block.receipts[0].result;

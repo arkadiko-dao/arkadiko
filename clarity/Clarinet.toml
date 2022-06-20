@@ -202,6 +202,9 @@ path = "contracts/arkadiko-xstx-migrate.clar"
 [contracts.arkadiko-liquidation-rewards-trait-v1]
 path = "contracts/arkadiko-liquidation-rewards-trait-v1.clar"
 
+[contracts.arkadiko-liquidation-rewards-trait-v2]
+path = "contracts/arkadiko-liquidation-rewards-trait-v2.clar"
+
 [contracts.arkadiko-liquidation-pool-trait-v1]
 path = "contracts/arkadiko-liquidation-pool-trait-v1.clar"
 
@@ -210,6 +213,9 @@ path = "contracts/arkadiko-liquidation-pool-v1-1.clar"
 
 [contracts.arkadiko-liquidation-rewards-v1-1]
 path = "contracts/arkadiko-liquidation-rewards-v1-1.clar"
+
+[contracts.arkadiko-liquidation-rewards-v1-2]
+path = "contracts/arkadiko-liquidation-rewards-v1-2.clar"
 
 [contracts.arkadiko-liquidation-rewards-ui-v2-1]
 path = "contracts/arkadiko-liquidation-rewards-ui-v2-1.clar"
@@ -220,8 +226,14 @@ path = "contracts/arkadiko-liquidation-ui-v1-2.clar"
 [contracts.arkadiko-auction-engine-v4-1]
 path = "contracts/arkadiko-auction-engine-v4-1.clar"
 
+[contracts.arkadiko-auction-engine-v4-2]
+path = "contracts/arkadiko-auction-engine-v4-2.clar"
+
 [contracts.arkadiko-liquidation-rewards-diko-v1-1]
 path = "contracts/arkadiko-liquidation-rewards-diko-v1-1.clar"
+
+[contracts.arkadiko-liquidation-rewards-diko-v1-2]
+path = "contracts/arkadiko-liquidation-rewards-diko-v1-2.clar"
 
 [contracts.wrapped-lydian-token]
 path = "contracts/wrapped-lydian-token.clar"

@@ -41,8 +41,8 @@
 
 (define-private (has-claimed-reward (reward-id uint))
  (let (
-    (pending-rewards (unwrap-panic (contract-call? .arkadiko-liquidation-rewards-v1-1 get-rewards-of tx-sender reward-id .arkadiko-liquidation-pool-v1-1)))
-    (total-reward-ids (contract-call? .arkadiko-liquidation-rewards-v1-1 get-total-reward-ids))
+    (pending-rewards (unwrap-panic (contract-call? .arkadiko-liquidation-rewards-v1-2 get-rewards-of tx-sender reward-id .arkadiko-liquidation-pool-v1-1)))
+    (total-reward-ids (contract-call? .arkadiko-liquidation-rewards-v1-2 get-total-reward-ids))
  )
   (if (and 
     (< reward-id total-reward-ids)
@@ -83,14 +83,14 @@
 )
 
 (define-public (claim-stx-rewards-of (reward-id uint))
-  (contract-call? .arkadiko-liquidation-rewards-v1-1 claim-rewards-of reward-id .xstx-token .arkadiko-liquidation-pool-v1-1)
+  (contract-call? .arkadiko-liquidation-rewards-v1-2 claim-rewards-of reward-id .xstx-token .arkadiko-liquidation-pool-v1-1)
 )
 
 (define-public (claim-diko-rewards-of (reward-id uint))
-  (contract-call? .arkadiko-liquidation-rewards-v1-1 claim-rewards-of reward-id .arkadiko-token .arkadiko-liquidation-pool-v1-1)
+  (contract-call? .arkadiko-liquidation-rewards-v1-2 claim-rewards-of reward-id .arkadiko-token .arkadiko-liquidation-pool-v1-1)
 )
 
 (define-public (claim-xbtc-rewards-of (reward-id uint))
   ;; TODO - UPDATE ADDRESS FOR MAINNET
-  (contract-call? .arkadiko-liquidation-rewards-v1-1 claim-rewards-of reward-id .Wrapped-Bitcoin .arkadiko-liquidation-pool-v1-1)
+  (contract-call? .arkadiko-liquidation-rewards-v1-2 claim-rewards-of reward-id .Wrapped-Bitcoin .arkadiko-liquidation-pool-v1-1)
 )
