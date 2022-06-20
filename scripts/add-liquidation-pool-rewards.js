@@ -9,7 +9,7 @@ async function getEpochEndBlock() {
 
   const vaultTx = await tx.callReadOnlyFunction({
     contractAddress: CONTRACT_ADDRESS,
-    contractName: 'arkadiko-liquidation-rewards-diko-v1-1',
+    contractName: 'arkadiko-liquidation-rewards-diko-v1-2',
     functionName: 'get-end-epoch-block',
     functionArgs: [],
     senderAddress: CONTRACT_ADDRESS,
@@ -23,10 +23,10 @@ async function addRewards() {
 
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: 'arkadiko-liquidation-rewards-diko-v1-1',
+    contractName: 'arkadiko-liquidation-rewards-diko-v1-2',
     functionName: 'add-rewards',
     functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-rewards-v1-1'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-rewards-v1-2'),
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
