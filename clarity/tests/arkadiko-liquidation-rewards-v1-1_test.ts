@@ -815,7 +815,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(10000);
 
     // Add rewards
-    for (let index = 0; index <= 60; index++) {
+    for (let index = 0; index <= 80; index++) {
       result = liquidationRewards.addReward(1, 0, "arkadiko-token", 10);
       result.expectOk().expectBool(true);
     }
@@ -826,14 +826,38 @@ Clarinet.test({
 
     // Claim rewards
     var rewardIds = [];
-    for (let index = 0; index < 50; index++) {
+    for (let index = 0; index < 25; index++) {
       rewardIds.push(types.uint(index));
     }
     result = liquidationUI.claimDikoRewards(deployer.address, rewardIds);
     result.expectOk().expectBool(true)
 
-    // User last reward ID is now 50
+    // User last reward ID is updated
     call = await liquidationUI.getUserTracking(deployer.address);
-    call.result.expectTuple()['last-reward-id'].expectUint(50)
+    call.result.expectTuple()['last-reward-id'].expectUint(25);
+
+    // Claim rewards
+    var rewardIds = [];
+    for (let index = 25; index < 50; index++) {
+      rewardIds.push(types.uint(index));
+    }
+    result = liquidationUI.claimDikoRewards(deployer.address, rewardIds);
+    result.expectOk().expectBool(true)
+
+    // User last reward ID is updated
+    call = await liquidationUI.getUserTracking(deployer.address);
+    call.result.expectTuple()['last-reward-id'].expectUint(50);
+
+    // Claim rewards
+    var rewardIds = [];
+    for (let index = 50; index < 75; index++) {
+      rewardIds.push(types.uint(index));
+    }
+    result = liquidationUI.claimDikoRewards(deployer.address, rewardIds);
+    result.expectOk().expectBool(true)
+
+    // User last reward ID is updated
+    call = await liquidationUI.getUserTracking(deployer.address);
+    call.result.expectTuple()['last-reward-id'].expectUint(75);
   }
 });
