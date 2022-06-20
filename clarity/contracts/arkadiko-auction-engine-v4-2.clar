@@ -21,6 +21,7 @@
 (define-data-var auction-engine-shutdown-activated bool false)
 (define-data-var last-auction-id uint u0)
 (define-data-var auction-fee uint u0)
+(define-data-var unlock-height-extra uint u0)
 
 (define-map auctions
   { id: uint }
@@ -220,7 +221,7 @@
     (token-address (get collateral-address auction))
     (token-string (get collateral-token auction))
     (token-is-stx (is-eq token-string "STX"))
-    (token-unlock-height (get-unlock-height (get vault-id auction)))
+    (token-unlock-height (+ (get-unlock-height (get vault-id auction)) (var-get unlock-height-extra)))
   )
     (asserts! (not (shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
@@ -464,5 +465,13 @@
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
     (var-set auction-fee new-fee)
     (ok new-fee)
+  )
+)
+
+(define-public (update-unlock-height-extra (new-unlock-height-extra uint))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
+    (var-set unlock-height-extra new-unlock-height-extra)
+    (ok new-unlock-height-extra)
   )
 )
