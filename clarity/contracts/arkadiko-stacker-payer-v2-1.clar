@@ -64,7 +64,7 @@
 
 (define-public (add-stx-redeemable (auction-id uint))
   (let (
-    (auction (contract-call? .arkadiko-auction-engine-v4-2 get-auction-by-id auction-id))
+    (auction (contract-call? .arkadiko-auction-engine-v4-1 get-auction-by-id auction-id))
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id (get vault-id auction)))
     (difference (if (> (get total-collateral-sold auction) (get stacked-tokens vault))
       (- (get total-collateral-sold auction) (get stacked-tokens vault))
@@ -120,7 +120,7 @@
 
 (define-public (release-stacked-stx (auction-id uint))
   (let (
-    (auction (contract-call? .arkadiko-auction-engine-v4-2 get-auction-by-id auction-id))
+    (auction (contract-call? .arkadiko-auction-engine-v4-1 get-auction-by-id auction-id))
   )
     (try! (contract-call? .arkadiko-freddie-v1-1 release-stacked-stx (get vault-id auction)))
     (try! (add-stx-redeemable auction-id))
