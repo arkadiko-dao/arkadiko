@@ -35,6 +35,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-stake-pool-trait-v1' },
   { name: 'arkadiko-liquidation-pool-trait-v1' },
   { name: 'arkadiko-liquidation-rewards-trait-v1' },
+  { name: 'arkadiko-liquidation-rewards-trait-v2' },
 
   { name: 'restricted-token-trait', file: 'xbtc/restricted-token-trait' },
 
@@ -88,6 +89,9 @@ const contracts: Contract[] = [
   { name: 'arkadiko-liquidation-ui-v1-2' },
   { name: 'arkadiko-liquidation-rewards-ui-v2-1' },
   { name: 'arkadiko-stacker-payer-v2-1' },
+  { name: 'arkadiko-stacker-payer-v2-2' },
+  { name: 'arkadiko-liquidation-rewards-v1-2' },
+  { name: 'arkadiko-auction-engine-v4-2' },
 
   { name: 'wrapped-lydian-token' },
   { name: 'lydian-airdrop-v1-1' },

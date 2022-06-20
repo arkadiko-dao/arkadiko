@@ -33,13 +33,6 @@ async function transact() {
           'can-burn': tx.trueCV()
         }),
         tx.tupleCV({
-          'name': tx.stringAsciiCV("liquidation-rewards-diko"),
-          'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-liquidation-rewards-diko-v1-2"),
-          'can-mint': tx.trueCV(),
-          'can-burn': tx.trueCV()
-        }),
-        tx.tupleCV({
           'name': tx.stringAsciiCV("liquidation-rewards"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
           'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-liquidation-rewards-v1-2"),
