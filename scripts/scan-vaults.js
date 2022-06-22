@@ -118,7 +118,7 @@ async function iterateAndCheck() {
       console.log('Querying vault', index);
       const collRatio = await getCollateralizationRatio(index);
       const liqRatio = await getLiquidationRatio(vault['collateral-type']['value']);
-      if (Number(collRatio) <= 125 && Number(collRatio) != 0) {
+      if (Number(collRatio) <= Number(liqRatio) && Number(collRatio) != 0) {
         console.log('Vault', index, 'needs to be liquidated - collateralization ratio:', collRatio, ', liquidation ratio:', liqRatio, 'and debt', vault['debt']['value'] / 1000000);
         await liquidateVault(index, vault['collateral-token'].value, !vault['revoked-stacking'].value, nonce);
         nonce = nonce + 1;
