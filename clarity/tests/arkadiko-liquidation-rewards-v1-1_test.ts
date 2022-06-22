@@ -80,7 +80,7 @@ Clarinet.test({
 
     // No rewards claimed yet
     call = await liquidationRewards.getRewardsClaimed(deployer.address, 0);
-    call.result.expectTuple()['claimed-amount'].expectUintWithDecimals(0);
+    call.result.expectTuple()['claimed'].expectBool(false);
 
     // Claim reward
     result = liquidationRewards.claimRewards(deployer, 0, "arkadiko-token");
@@ -88,7 +88,7 @@ Clarinet.test({
 
     // Rewards claimed
     call = await liquidationRewards.getRewardsClaimed(deployer.address, 0);
-    call.result.expectTuple()['claimed-amount'].expectUintWithDecimals(100);
+    call.result.expectTuple()['claimed'].expectBool(true);
 
     // No rewards left
     call = await liquidationRewards.getRewardsOf(deployer.address, 0);
@@ -155,9 +155,9 @@ Clarinet.test({
 
     // No rewards claimed yet
     call = await liquidationRewards.getRewardsClaimed(deployer.address, 0);
-    call.result.expectTuple()['claimed-amount'].expectUintWithDecimals(0);
+    call.result.expectTuple()['claimed'].expectBool(false);
     call = await liquidationRewards.getRewardsClaimed(deployer.address, 1);
-    call.result.expectTuple()['claimed-amount'].expectUintWithDecimals(0);
+    call.result.expectTuple()['claimed'].expectBool(false);
 
     // Claim reward 0 - fails as unlock block not reached
     result = liquidationRewards.claimRewards(deployer, 0, "arkadiko-token");
@@ -176,9 +176,9 @@ Clarinet.test({
 
     // Rewards claimed
     call = await liquidationRewards.getRewardsClaimed(deployer.address, 0);
-    call.result.expectTuple()['claimed-amount'].expectUintWithDecimals(100);
+    call.result.expectTuple()['claimed'].expectBool(true);
     call = await liquidationRewards.getRewardsClaimed(deployer.address, 1);
-    call.result.expectTuple()['claimed-amount'].expectUintWithDecimals(0);
+    call.result.expectTuple()['claimed'].expectBool(false);
 
     // No rewards left
     call = await liquidationRewards.getRewardsOf(deployer.address, 0);
@@ -257,7 +257,7 @@ Clarinet.test({
 
             // No rewards claimed yet
     call = await liquidationRewards.getRewardsClaimed(wallet_1.address, 0);
-    call.result.expectTuple()['claimed-amount'].expectUintWithDecimals(1111.111111);
+    call.result.expectTuple()['claimed'].expectBool(true);
   }
 });
 
