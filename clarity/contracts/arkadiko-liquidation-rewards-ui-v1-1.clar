@@ -31,7 +31,7 @@
     ))
     (claimed-all (fold and (map has-claimed-reward reward-list) true))
   )
-    (if (is-eq claimed-all true)
+    (if claimed-all
       (map-set user-tracking  { user: tx-sender } { last-reward-id: (+ last-id u25) })
       true
     )
