@@ -6,12 +6,8 @@
 (define-constant ERR-UNTRUSTED-ORACLE u852)
 (define-constant ERR-NOT-AUTHORIZED u8401)
 
-(define-data-var oracle-owner principal tx-sender)
-
 (define-constant symbol-stxusd 0x535458555344) ;; "STXUSD" as a buff
-(define-constant redstone-value-shift u100000000)
-(define-constant stacks-base u1000000)
-(define-constant redstone-stacks-base-diff (/ redstone-value-shift stacks-base))
+(define-data-var oracle-owner principal tx-sender)
 
 ;; A map of all trusted oracles, indexed by their 33 byte compressed public key.
 (define-map trusted-oracles (buff 33) bool)
