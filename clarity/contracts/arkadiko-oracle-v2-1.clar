@@ -53,6 +53,7 @@
   )
     (asserts! (is-trusted-oracle signer) ERR-UNTRUSTED-ORACLE)
 
+    (map-set prices { token: token } { last-price: price, last-block: block-height, decimals: decimals })
     (ok true)
   )
 )
