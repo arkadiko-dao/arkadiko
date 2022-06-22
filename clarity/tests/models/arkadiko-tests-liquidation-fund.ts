@@ -248,14 +248,14 @@ class LiquidationUI {
   }
 
   getUserTracking(user: string) {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-ui-v2-1", "get-user-tracking", [
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-ui-v1-2", "get-user-tracking", [
       types.principal(user)
     ], this.deployer.address);
   }
 
   claimDikoRewards(user: string, rewardIds: any) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-rewards-ui-v2-1", "claim-50-diko-rewards-of", [
+      Tx.contractCall("arkadiko-liquidation-rewards-ui-v1-2", "claim-50-diko-rewards-of", [
         types.list(rewardIds),
       ], user)
     ]);
@@ -264,7 +264,7 @@ class LiquidationUI {
 
   claimStxRewards(user: string, rewardIds: any) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-rewards-ui-v2-1", "claim-50-stx-rewards-of", [
+      Tx.contractCall("arkadiko-liquidation-rewards-ui-v1-2", "claim-50-stx-rewards-of", [
         types.list(rewardIds),
       ], user)
     ]);

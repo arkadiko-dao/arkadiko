@@ -42,7 +42,7 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
   const claim = async () => {
 
     var rewardsContract = version == 1 ? 'arkadiko-liquidation-rewards-v1-1' : 'arkadiko-liquidation-rewards-v1-2';
-    var claimContract = version == 1 ? 'arkadiko-liquidation-ui-v1-2' : 'arkadiko-liquidation-rewards-ui-v2-1';
+    var claimContract = version == 1 ? 'arkadiko-liquidation-rewards-ui-v1-1' : 'arkadiko-liquidation-rewards-ui-v1-2';
 
     const postConditions = [];
     if (tokenIsStx) {

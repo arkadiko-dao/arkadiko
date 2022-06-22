@@ -192,7 +192,22 @@ export const Liquidations: React.FC = () => {
   const getUserFirstRewardId = async () => {
     const call = await callReadOnlyFunction({
       contractAddress,
-      contractName: 'arkadiko-liquidation-rewards-ui-v2-1',
+      contractName: 'arkadiko-liquidation-rewards-ui-v1-2',
+      functionName: 'get-user-tracking',
+      functionArgs: [
+        standardPrincipalCV(stxAddress || ''),
+      ],
+      senderAddress: stxAddress || '',
+      network: network,
+    });
+    const result = cvToJSON(call).value;
+    return result["last-reward-id"].value;
+  };
+
+  const getUserFirstRewardIdV1 = async () => {
+    const call = await callReadOnlyFunction({
+      contractAddress,
+      contractName: 'arkadiko-liquidation-rewards-ui-v1-1',
       functionName: 'get-user-tracking',
       functionArgs: [
         standardPrincipalCV(stxAddress || ''),
@@ -345,7 +360,8 @@ export const Liquidations: React.FC = () => {
     const rewardCount = await getRewardCount();
     const rewardCountV1 = await getRewardCountV1();
     const userFirstRewardId = await getUserFirstRewardId();
-    const totalRewardCount = (rewardCount - userFirstRewardId) + rewardCountV1;
+    const userFirstRewardIdV1 = await getUserFirstRewardIdV1();
+    const totalRewardCount = (rewardCount - userFirstRewardId) + (rewardCountV1 - userFirstRewardIdV1);
     var loadedRewardCount = 0;
 
     var rewards: LiquidationRewardProps[] = [];
@@ -364,7 +380,7 @@ export const Liquidations: React.FC = () => {
       setRewardLoadingPercentage(Math.floor((loadedRewardCount / totalRewardCount) * 100.0))
     }
 
-    for (let index = rewardCountV1-1; index >= 0; index--) {
+    for (let index = rewardCountV1-1; index >= userFirstRewardIdV1; index--) {
       const rewardData = await getRewardsDataV1(index);
       if (rewardData != null) {
         rewards.push(rewardData);
