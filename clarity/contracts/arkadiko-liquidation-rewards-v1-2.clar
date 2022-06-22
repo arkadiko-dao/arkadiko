@@ -36,7 +36,7 @@
     user: principal
   } 
   {
-    claimed-amount: uint
+    claimed: bool
   }
 )
 
@@ -67,7 +67,7 @@
 ;; @param user; the user who claimed
 (define-read-only (get-reward-claimed (reward-id uint) (user principal))
   (default-to
-    { claimed-amount: u0 }
+    { claimed: false }
     (map-get? reward-claimed { reward-id : reward-id, user: user })
   )
 )
@@ -156,11 +156,14 @@
     (user-shares (unwrap-panic (contract-call? liquidation-pool get-shares-at user share-block)))
     (total-rewards (/ (* user-shares total-amount) u10000000))
 
-    (claimed (get claimed-amount (get-reward-claimed reward-id user)))
+    (claimed (get claimed (get-reward-claimed reward-id user)))
   )
     (asserts! (is-eq (contract-of liquidation-pool) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "liquidation-pool"))) (ok u0))
 
-    (ok (- total-rewards claimed))
+    (if claimed 
+      (ok u0)
+      (ok total-rewards)
+    )
   )
 )
 
@@ -186,7 +189,7 @@
           (try! (as-contract (contract-call? token transfer reward-amount (as-contract tx-sender) user none)))
         )
 
-        (map-set reward-claimed  { reward-id: reward-id, user: user } { claimed-amount: reward-amount })
+        (map-set reward-claimed  { reward-id: reward-id, user: user } { claimed: true })
 
         (ok reward-amount)
       )

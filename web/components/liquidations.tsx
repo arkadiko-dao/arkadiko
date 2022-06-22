@@ -316,42 +316,7 @@ export const Liquidations: React.FC = () => {
     });
   };
 
-  const sleep = (milliseconds) => {
-    return new Promise(resolve => setTimeout(resolve, milliseconds))
-  };
-
-  const loadRewards = async () => {
-    setStartLoadingRewards(true);
-
-    // Fetch all reward info
-    const rewardCount = await getRewardCount();
-    const rewardCountV1 = await getRewardCountV1();
-    const userFirstRewardId = await getUserFirstRewardId();
-
-    var rewards: LiquidationRewardProps[] = [];
-    const batchAmount = 15;
-
-    for (let index = rewardCount-1; index >= userFirstRewardId; index--) {
-      const rewardData = await getRewardsData(index);
-      if (rewardData != null) {
-        rewards.push(rewardData);
-      }
-      if (index % batchAmount == 0) {
-        await sleep(10000); // 10 sec
-      }
-    }
-
-    for (let index = rewardCountV1-1; index >= 0; index--) {
-      const rewardData = await getRewardsDataV1(index);
-      if (rewardData != null) {
-        rewards.push(rewardData);
-      }
-      if (index % batchAmount == 0) {
-        await sleep(10000); // 10 sec
-      }
-    }
-
-    // Group rewards
+  const setGroups = (rewards: LiquidationRewardProps[]) => {
     const rewardGroups = createGroups(rewards);
     var rewardItems = rewardGroups.map((reward: object) => (
       <LiquidationReward
@@ -367,7 +332,52 @@ export const Liquidations: React.FC = () => {
     ));
     rewardItems = sortGroups(rewardItems);
     setRewardData(rewardItems);
+  };
 
+  const sleep = (milliseconds) => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
+  };
+
+  const loadRewards = async () => {
+    setStartLoadingRewards(true);
+
+    // Fetch all reward info
+    const rewardCount = await getRewardCount();
+    const rewardCountV1 = await getRewardCountV1();
+    const userFirstRewardId = await getUserFirstRewardId();
+    const totalRewardCount = (rewardCount - userFirstRewardId) + rewardCountV1;
+    var loadedRewardCount = 0;
+
+    var rewards: LiquidationRewardProps[] = [];
+    const batchAmount = 15;
+
+    for (let index = rewardCount-1; index >= userFirstRewardId; index--) {
+      const rewardData = await getRewardsData(index);
+      if (rewardData != null) {
+        rewards.push(rewardData);
+        setGroups(rewards);
+      }
+      if (index % batchAmount == 0) {
+        await sleep(10000); // 10 sec
+      }
+      loadedRewardCount += 1;
+      setRewardLoadingPercentage(Math.floor((loadedRewardCount / totalRewardCount) * 100.0))
+    }
+
+    for (let index = rewardCountV1-1; index >= 0; index--) {
+      const rewardData = await getRewardsDataV1(index);
+      if (rewardData != null) {
+        rewards.push(rewardData);
+        setGroups(rewards);
+      }
+      if (index % batchAmount == 0) {
+        await sleep(10000); // 10 sec
+      }
+      loadedRewardCount += 1;
+      setRewardLoadingPercentage(Math.floor((loadedRewardCount / totalRewardCount) * 100.0))
+    }
+
+    setGroups(rewards);
     setIsLoadingRewards(false);
   };
 

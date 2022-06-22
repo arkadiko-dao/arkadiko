@@ -40,18 +40,7 @@
 )
 
 (define-private (has-claimed-reward (reward-id uint))
- (let (
-    (pending-rewards (unwrap-panic (contract-call? .arkadiko-liquidation-rewards-v1-2 get-rewards-of tx-sender reward-id .arkadiko-liquidation-pool-v1-1)))
-    (total-reward-ids (contract-call? .arkadiko-liquidation-rewards-v1-2 get-total-reward-ids))
- )
-  (if (and 
-    (< reward-id total-reward-ids)
-    (is-eq pending-rewards u0)
-  )
-    true
-    false
-  )
- )
+  (get claimed (contract-call? .arkadiko-liquidation-rewards-v1-2 get-reward-claimed reward-id tx-sender))
 )
 
 ;; ---------------------------------------------------------
