@@ -164,11 +164,23 @@ export const Vault: React.FC<VaultProps> = ({
           </td>
           <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-zinc-400 whitespace-nowrap">
             <span className="text-gray-900 dark:text-zinc-100">
-              {(collateral / decimals).toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 6,
-              })}{' '}
-              {collateralToken.toUpperCase()}
+              {isLiquidated && auctionEnded && Number(leftoverCollateral) > 0 && Number(stackedTokens) === 0 ? (
+                <>
+                  {(leftoverCollateral / decimals).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 6,
+                  })}{' '}
+                  {collateralToken.toUpperCase()}
+                </>
+              ) : (
+                <>
+                  {(collateral / decimals).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 6,
+                  })}{' '}
+                  {collateralToken.toUpperCase()}
+                </>
+              )}
             </span>
           </td>
           <td className="px-6 py-4 text-sm text-left text-gray-900 dark:text-zinc-100 whitespace-nowrap">
