@@ -79,6 +79,12 @@ path = "contracts/arkadiko-stacker-payer-v1-1.clar"
 [contracts.arkadiko-stacker-payer-v2-1]
 path = "contracts/arkadiko-stacker-payer-v2-1.clar"
 
+[contracts.arkadiko-stacker-payer-v3-1]
+path = "contracts/arkadiko-stacker-payer-v3-1.clar"
+
+[contracts.arkadiko-stacker-payer-v3-2]
+path = "contracts/arkadiko-stacker-payer-v3-2.clar"
+
 [contracts.arkadiko-mock-stacker-v1-1]
 path = "contracts/arkadiko-mock-stacker-v1-1.clar"
 

@@ -90,7 +90,8 @@ const contracts: Contract[] = [
   { name: 'arkadiko-liquidation-rewards-ui-v1-1' },
   { name: 'arkadiko-liquidation-rewards-ui-v1-2' },
   { name: 'arkadiko-stacker-payer-v2-1' },
-  { name: 'arkadiko-stacker-payer-v2-2' },
+  { name: 'arkadiko-stacker-payer-v3-1' },
+  { name: 'arkadiko-stacker-payer-v3-2' },
   { name: 'arkadiko-liquidation-rewards-v1-2' },
   { name: 'arkadiko-auction-engine-v4-2' },
 
