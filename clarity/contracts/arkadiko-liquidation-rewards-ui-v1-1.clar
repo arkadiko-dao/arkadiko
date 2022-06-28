@@ -40,7 +40,19 @@
 )
 
 (define-private (has-claimed-reward (reward-id uint))
-  (> (get claimed-amount (contract-call? .arkadiko-liquidation-rewards-v1-1 get-reward-claimed reward-id tx-sender)) u0)
+  (let (
+    (claimed (get claimed-amount (contract-call? .arkadiko-liquidation-rewards-v1-1 get-reward-claimed reward-id tx-sender)))
+  )
+    (if (is-eq claimed u0)
+      (let (
+        (share-block (get share-block (contract-call? .arkadiko-liquidation-rewards-v1-1 get-reward-data reward-id)))
+        (user-shares (unwrap-panic (contract-call? .arkadiko-liquidation-pool-v1-1 get-shares-at tx-sender share-block)))
+      )
+        (is-eq user-shares u0)
+      )
+      true
+    )
+  )
 )
 
 ;; ---------------------------------------------------------
@@ -52,7 +64,6 @@
     (map claim-stx-rewards-of reward-ids)
     (unwrap-panic (increase-last-reward-id))
     (unwrap-panic (increase-last-reward-id))
-    (unwrap-panic (increase-last-reward-id))
     (ok true)
   )
 )
@@ -62,7 +73,6 @@
     (map claim-diko-rewards-of reward-ids)
     (unwrap-panic (increase-last-reward-id))
     (unwrap-panic (increase-last-reward-id))
-    (unwrap-panic (increase-last-reward-id))
     (ok true)
   )
 )
@@ -70,7 +80,6 @@
 (define-public (claim-50-xbtc-rewards-of (reward-ids (list 50 uint)))
   (begin
     (map claim-xbtc-rewards-of reward-ids)
-    (unwrap-panic (increase-last-reward-id))
     (unwrap-panic (increase-last-reward-id))
     (unwrap-panic (increase-last-reward-id))
     (ok true)
