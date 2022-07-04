@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ['@stacks/eslint-config', 'plugin:jest/recommended'],
+  extends: ['@stacks/eslint-config'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     tsconfigRootDir: __dirname,

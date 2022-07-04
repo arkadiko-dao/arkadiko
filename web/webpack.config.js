@@ -153,7 +153,9 @@ module.exports = {
             plugins: [
               // plugin-proposal-decorators is only needed if you're using experimental decorators in TypeScript
               // ["@babel/plugin-proposal-decorators", { legacy: true }],
-              ['@babel/plugin-proposal-class-properties', { loose: true }],
+              ['@babel/plugin-proposal-class-properties', { 'loose': true }],
+              ['@babel/plugin-proposal-private-property-in-object', { 'loose': true }],
+              ['@babel/plugin-proposal-private-methods', { 'loose': true }],
               '@babel/plugin-transform-runtime',
               '@babel/plugin-proposal-nullish-coalescing-operator',
               '@babel/plugin-proposal-optional-chaining',

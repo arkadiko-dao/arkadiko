@@ -52,7 +52,6 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
       setisVotingOpen(data.some(item => item.value["is-open"].value));
     };
 
-
     if (mounted) {
       void getData();
     }
