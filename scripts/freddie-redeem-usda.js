@@ -9,7 +9,7 @@ const txOptions = {
   contractAddress: CONTRACT_ADDRESS,
   contractName: 'arkadiko-freddie-v1-1',
   functionName: 'redeem-tokens',
-  functionArgs: [tx.uintCV(6160446868387), tx.uintCV(0)],
+  functionArgs: [tx.uintCV(28288355973), tx.uintCV(5364781782)],
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network

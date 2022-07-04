@@ -4,12 +4,11 @@ import { AppContext } from '@common/context';
 import { Container } from './home';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
-import { microToReadable } from '@common/vault-utils';
-import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
+import { AnchorMode, contractPrincipalCV, uintCV, trueCV, falseCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
-import { tokenTraits } from '@common/vault-utils';
+import { microToReadable, tokenTraits, buildSwapPostConditions } from '@common/vault-utils';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { SwapSettings } from '@components/swap-settings';
 import { getBalance } from '@components/app';
@@ -22,13 +21,21 @@ import { StyledIcon } from './ui/styled-icon';
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
   const [tokenX, setTokenX] = useState(tokenList[2]);
-  const [tokenY, setTokenY] = useState(tokenList[1]);
+  const [tokenY, setTokenY] = useState(tokenList[0]);
   const [tokenXAmount, setTokenXAmount] = useState<number>();
   const [tokenYAmount, setTokenYAmount] = useState(0.0);
   const [balanceSelectedTokenX, setBalanceSelectedTokenX] = useState(0.0);
   const [balanceSelectedTokenY, setBalanceSelectedTokenY] = useState(0.0);
   const [currentPrice, setCurrentPrice] = useState(0.0);
   const [currentPair, setCurrentPair] = useState();
+
+  // multihop variables
+  const [isMultiHop, setIsMultiHop] = useState(false);
+  const [pairX, setPairX] = useState();
+  const [pairY, setPairY] = useState();
+  const [inverseDirectionX, setInverseDirectionX] = useState(false);
+  const [inverseDirectionY, setInverseDirectionY] = useState(false);
+
   const [inverseDirection, setInverseDirection] = useState(false);
   const [slippageTolerance, setSlippageTolerance] = useState(4.0);
   const [minimumReceived, setMinimumReceived] = useState(0);
@@ -111,45 +118,96 @@ export const Swap: React.FC = () => {
       setTokenXAmount(0.0);
       setTokenYAmount(0.0);
       setLoadingData(true);
+      setIsMultiHop(false);
       setExchangeRateSwitched(false);
 
-      const tokenXContract = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
-      const tokenYContract = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
-      const json3 = pairs[`${tokenXContract}/${tokenYContract}`];
-      console.log('Pair Details:', json3);
-      if (json3) {
-        setCurrentPair(json3);
-        setPairEnabled(json3['enabled']);
-        const balanceX = json3['balance_x'];
-        const balanceY = json3['balance_y'];
-        const ratio = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']);
-        const basePrice = Number((ratio * balanceX) / balanceY);
-        setCurrentPrice(basePrice);
-        setSwapLink(`swap/add/${tokenX.name}/${tokenY.name}`);
-        setInverseDirection(false);
-        setFoundPair(true);
-        setLoadingData(false);
-      } else if (pairs[`${tokenYContract}/${tokenXContract}`]) {
-        const json4 = pairs[`${tokenYContract}/${tokenXContract}`];
-        console.log('found pair...', json4);
-        setCurrentPair(json4);
-        setPairEnabled(json4['enabled']);
-        setInverseDirection(true);
-        const balanceX = json4['balance_x'];
-        const balanceY = json4['balance_y'];
-        const ratio = Math.pow(10, tokenX['decimals']) / Math.pow(10, tokenY['decimals']);
-        const basePrice = Number(balanceY / (ratio * balanceX));
-        setCurrentPrice(basePrice);
-        setFoundPair(true);
-        setLoadingData(false);
-        setSwapLink(`swap/add/${tokenY.name}/${tokenX.name}`);
+      const swapPair = `${tokenX['nameInPair']}${tokenY['nameInPair']}`;
+      const pair = tokenTraits[swapPair];
+      if (pair && pair['multihop'].length > 0) {
+        setIsMultiHop(true);
+        console.log('Multihop pair found!', pair['multihop']);
+        const tokenXContract = tokenTraits[pair['multihop'][0]]['swap'];
+        const tokenYContract = tokenTraits[pair['multihop'][1]]['swap'];
+        const tokenZContract = tokenTraits[pair['multihop'][2]]['swap'];
+        let json3 = pairs[`${tokenXContract}/${tokenYContract}`];
+        if (!json3) {
+          json3 = pairs[`${tokenYContract}/${tokenXContract}`];
+          if (!json3) {
+            setFoundPair(false);
+            setLoadingData(false);
+            return;
+          }
+          setInverseDirectionX(true);
+        }
+        let json4 = pairs[`${tokenYContract}/${tokenZContract}`];
+        if (!json4) {
+          json4 = pairs[`${tokenZContract}/${tokenYContract}`];
+          if (!json4) {
+            setFoundPair(false);
+            setLoadingData(false);
+            return;
+          }
+          setInverseDirectionY(true);
+        }
+
+        if (json3 && json4) {
+          setCurrentPair(json3);
+          setPairEnabled(json3['enabled'] && json4['enabled']);
+          setPairX(json3);
+          setPairY(json4);
+          const balanceOneX = json3['balance_x'];
+          const balanceOneY = json3['balance_y'];
+          const balanceTwoX = json4['balance_x'];
+          const balanceTwoY = json4['balance_y'];
+          const ratioOne = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']); // TODO
+          const ratioTwo = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']); // TODO
+          const basePrice = Number((ratioOne * balanceOneX) / balanceOneY);
+          const secondPrice = Number((ratioTwo * balanceTwoX) / balanceTwoY);
+          setCurrentPrice(basePrice / secondPrice);
+          setFoundPair(true);
+          setLoadingData(false);
+        }
       } else {
-        setFoundPair(false);
-        setLoadingData(false);
+        const tokenXContract = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
+        const tokenYContract = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
+        const json3 = pairs[`${tokenXContract}/${tokenYContract}`];
+        console.log('Pair Details:', json3);
+        if (json3) {
+          setCurrentPair(json3);
+          setPairEnabled(json3['enabled']);
+          const balanceX = json3['balance_x'];
+          const balanceY = json3['balance_y'];
+          const ratio = Math.pow(10, tokenY['decimals']) / Math.pow(10, tokenX['decimals']);
+          const basePrice = Number((ratio * balanceX) / balanceY);
+          setCurrentPrice(basePrice);
+          setSwapLink(`swap/add/${tokenX.name}/${tokenY.name}`);
+          setInverseDirection(false);
+          setFoundPair(true);
+          setLoadingData(false);
+        } else if (pairs[`${tokenYContract}/${tokenXContract}`]) {
+          const json4 = pairs[`${tokenYContract}/${tokenXContract}`];
+          console.log('found pair...', json4);
+          setCurrentPair(json4);
+          setPairEnabled(json4['enabled']);
+          setInverseDirection(true);
+          const balanceX = json4['balance_x'];
+          const balanceY = json4['balance_y'];
+          const ratio = Math.pow(10, tokenX['decimals']) / Math.pow(10, tokenY['decimals']);
+          const basePrice = Number(balanceY / (ratio * balanceX));
+          setCurrentPrice(basePrice);
+          setFoundPair(true);
+          setLoadingData(false);
+          setSwapLink(`swap/add/${tokenY.name}/${tokenX.name}`);
+        } else {
+          setFoundPair(false);
+          setLoadingData(false);
+        }
       }
     };
 
-    resolvePair();
+    if (Object.keys(pairs).length > 0) {
+      resolvePair();
+    }
   }, [pairs, tokenX, tokenY]);
 
   useEffect(() => {
@@ -162,25 +220,61 @@ export const Swap: React.FC = () => {
     if (!currentPair || tokenXAmount === 0 || tokenXAmount === undefined) {
       return;
     }
+    if (isMultiHop && (!pairX || !pairY)) {
+      return;
+    }
 
+    const slippage = (100 - slippageTolerance) / 100;
     const inputWithoutFees = Number(tokenXAmount) * 0.997;
     let tokenYAmount = 0;
     let priceImpact = 0;
-    const slippage = (100 - slippageTolerance) / 100;
-    if (inverseDirection) {
-      const balanceX = currentPair['balance_x'] / Math.pow(10, tokenY['decimals']);
-      const balanceY = currentPair['balance_y'] / Math.pow(10, tokenX['decimals']);
-      const newBalanceY = balanceY + inputWithoutFees;
-      const newBalanceX = (balanceY * balanceX) / newBalanceY;
-      tokenYAmount = balanceX - newBalanceX;
-      priceImpact = newBalanceY / newBalanceX / (balanceY / balanceX) - 1.0;
+    if (isMultiHop) {
+      tokenYAmount = tokenXAmount / currentPrice;
+
+      var balanceX1 = pairX['balance_x'] / Math.pow(10, tokenX['decimals']);
+      var balanceY1 = pairX['balance_y'] / Math.pow(10, tokenY['decimals']);
+      if (inverseDirectionX) {
+        balanceY1 = pairX['balance_x'] / Math.pow(10, tokenX['decimals']);
+        balanceX1 = pairX['balance_y'] / Math.pow(10, tokenY['decimals']);
+      }
+
+      var balanceX2 = pairY['balance_x'] / Math.pow(10, tokenY['decimals']);
+      var balanceY2 = pairY['balance_y'] / Math.pow(10, tokenY['decimals']);
+      if (inverseDirectionY) {
+        balanceY2 = pairY['balance_x'] / Math.pow(10, tokenY['decimals']);
+        balanceX2 = pairY['balance_y'] / Math.pow(10, tokenY['decimals']);
+      }
+
+      const newBalanceX1 = balanceX1 + inputWithoutFees;
+      const newBalanceY1 = (balanceX1 * balanceY1) / newBalanceX1;
+      const out1 = balanceY1 - newBalanceY1;
+      const newBalanceX2 = balanceX2 + out1;
+      const newBalanceY2 = (balanceX2 * balanceY2) / newBalanceX2;
+      const out2 = balanceY2 - newBalanceY2;
+
+      const tradePrice = out2 / inputWithoutFees;
+      const poolPrice = (balanceY2 / balanceX2) * (balanceY1 / balanceX1);
+      priceImpact = poolPrice / tradePrice - 1.0;
     } else {
-      const balanceX = currentPair['balance_x'] / Math.pow(10, tokenX['decimals']);
-      const balanceY = currentPair['balance_y'] / Math.pow(10, tokenY['decimals']);
-      const newBalanceX = balanceX + inputWithoutFees;
-      const newBalanceY = (balanceX * balanceY) / newBalanceX;
-      tokenYAmount = balanceY - newBalanceY;
-      priceImpact = newBalanceX / newBalanceY / (balanceX / balanceY) - 1.0;
+      if (inverseDirection) {
+        const balanceX = currentPair['balance_x'] / Math.pow(10, tokenY['decimals']);
+        const balanceY = currentPair['balance_y'] / Math.pow(10, tokenX['decimals']);
+        const newBalanceY = balanceY + inputWithoutFees;
+        const newBalanceX = (balanceY * balanceX) / newBalanceY;
+        tokenYAmount = balanceX - newBalanceX;
+        const poolPrice = balanceY / balanceX;
+        const tradePrice = inputWithoutFees / tokenYAmount;
+        priceImpact = tradePrice / poolPrice - 1.0;
+      } else {
+        const balanceX = currentPair['balance_x'] / Math.pow(10, tokenX['decimals']);
+        const balanceY = currentPair['balance_y'] / Math.pow(10, tokenY['decimals']);
+        const newBalanceX = balanceX + inputWithoutFees;
+        const newBalanceY = (balanceX * balanceY) / newBalanceX;
+        tokenYAmount = balanceY - newBalanceY;
+        const poolPrice = balanceY / balanceX;
+        const tradePrice = tokenYAmount / inputWithoutFees;
+        priceImpact = poolPrice / tradePrice - 1.0;        
+      }
     }
 
     setMinimumReceived(tokenYAmount * slippage);
@@ -199,8 +293,7 @@ export const Swap: React.FC = () => {
     );
 
     if (
-      Number(tokenXAmount) * Math.pow(10, tokenX['decimals']) >
-      state.balance[tokenX['name'].toLowerCase()]
+      Number(tokenXAmount) * Math.pow(10, tokenX['decimals']) > state.balance[tokenX['name'].toLowerCase()]
     ) {
       setInsufficientBalance(true);
     }
@@ -268,7 +361,61 @@ export const Swap: React.FC = () => {
     setTokenY(newTokenY);
   };
 
+  const swapTokensMultihop = async () => {
+    const swapPair = `${tokenX['nameInPair']}${tokenY['nameInPair']}`;
+    const pair = tokenTraits[swapPair];
+    const tokenXTrait = tokenTraits[pair['multihop'][0]]['swap'];
+    const tokenYTrait = tokenTraits[pair['multihop'][1]]['swap'];
+    const tokenZTrait = tokenTraits[pair['multihop'][2]]['swap'];
+
+    if (!pair || pair['multihop'].length === 0) {
+      return;
+    }
+
+    let principalX = contractPrincipalCV(tokenX['address'], tokenXTrait);
+    let principalY = contractPrincipalCV(tokenY['address'], tokenYTrait);
+    let principalZ = contractPrincipalCV(tokenY['address'], tokenZTrait); // TODO: token Z address
+    const amount = uintCV(tokenXAmount * Math.pow(10, tokenX['decimals']));
+
+    let tokenZ = tokenList.filter((tokenInfo) => (tokenInfo.fullName == tokenYTrait))[0];
+    let postConditions = buildSwapPostConditions(stxAddress || '', amount.value, minimumReceived, tokenX, tokenY, tokenZ);
+
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-multi-hop-swap-v1-1',
+      functionName: 'swap-x-for-z',
+      functionArgs: [
+        principalX,
+        principalY,
+        principalZ,
+        amount,
+        uintCV((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
+        inverseDirectionX ? trueCV() : falseCV(),
+        inverseDirectionY ? trueCV() : falseCV()
+      ],
+      postConditions,
+      onFinish: data => {
+        console.log('finished multihop swap!', data);
+        setState(prevState => ({
+          ...prevState,
+          showTxModal: true,
+          currentTxMessage: '',
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
   const swapTokens = async () => {
+    if (isMultiHop) {
+      swapTokensMultihop();
+      return;
+    }
+
     let contractName = 'swap-x-for-y';
     let tokenNameX = tokenX['name'];
     let tokenNameY = tokenY['name'];
@@ -276,7 +423,8 @@ export const Swap: React.FC = () => {
     const tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
     let principalX = contractPrincipalCV(tokenX['address'], tokenXTrait);
     let principalY = contractPrincipalCV(tokenY['address'], tokenYTrait);
-    const postConditionMode = 0x01;
+    const amount = uintCV(tokenXAmount * Math.pow(10, tokenX['decimals']));
+
     if (inverseDirection) {
       contractName = 'swap-y-for-x';
       const tmpPrincipal = principalX;
@@ -286,8 +434,8 @@ export const Swap: React.FC = () => {
       tokenNameX = tokenNameY;
       tokenNameY = tmpName;
     }
+    let postConditions = buildSwapPostConditions(stxAddress || '', amount.value, minimumReceived, tokenX, tokenY);
 
-    const amount = uintCV(tokenXAmount * Math.pow(10, tokenX['decimals']));
     await doContractCall({
       network,
       contractAddress,
@@ -300,7 +448,7 @@ export const Swap: React.FC = () => {
         amount,
         uintCV((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
       ],
-      postConditionMode,
+      postConditions,
       onFinish: data => {
         console.log('finished swap!', data);
         setState(prevState => ({
@@ -490,36 +638,64 @@ export const Swap: React.FC = () => {
                     {loadingData ? (
                       <Placeholder className="justify-end pt-3" width={Placeholder.width.THIRD} />
                     ) : foundPair ? (
-                      <div className="flex items-center justify-end mt-2">
-                        <p className="text-sm font-semibold text-right text-gray-400 dark:text-zinc-200">
-                          {exchangeRateSwitched ? (
-                            <>
-                              1 {tokenX.name} ≈{' '}
-                              {(1 / currentPrice).toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 6,
-                              })}{' '}
-                              {tokenY.name}
-                            </>
-                          ) : (
-                            <>
-                              1 {tokenY.name} ≈{' '}
-                              {currentPrice.toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 6,
-                              })}{' '}
-                              {tokenX.name}
-                            </>
-                          )}
-                        </p>
-                        <button
-                          type="button"
-                          onClick={switchExchangeRate}
-                          className="ml-2 text-gray-400 hover:text-indigo-700 dark:hover:text-indigo-400"
-                        >
-                          <StyledIcon as="SwitchHorizontalIcon" size={5} />
-                        </button>
-                      </div>
+                      <>
+                        <div className="flex items-center justify-end mt-2">
+                          <p className="text-sm font-semibold text-right text-gray-400 dark:text-zinc-200">
+                            {exchangeRateSwitched ? (
+                              <>
+                                1 {tokenX.name} ≈{' '}
+                                {(1 / currentPrice).toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 6,
+                                })}{' '}
+                                {tokenY.name}
+                              </>
+                            ) : (
+                              <>
+                                1 {tokenY.name} ≈{' '}
+                                {currentPrice.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 6,
+                                })}{' '}
+                                {tokenX.name}
+                              </>
+                            )}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={switchExchangeRate}
+                            className="ml-2 text-gray-400 hover:text-indigo-700 dark:hover:text-indigo-400"
+                          >
+                            <StyledIcon as="SwitchHorizontalIcon" size={5} />
+                          </button>
+                        </div>
+                        {isMultiHop ? (
+                          <div className="flex items-center justify-end mt-2">
+                            <div className="flex items-center group">
+                              <img
+                                className="inline-block w-6 h-6 rounded-full shrink-0 ring-2 ring-white dark:ring-zinc-800"
+                                src={tokenList[2].logo}
+                                alt=""
+                              />
+                              <span className="ml-1.5 mr-1 text-sm">{tokenList[2].name}</span>
+                              <StyledIcon as="ChevronRightIcon" size={5} />
+                              <img
+                                className="inline-block w-6 h-6 rounded-full shrink-0 ring-2 ring-white dark:ring-zinc-800"
+                                src={tokenList[0].logo}
+                                alt=""
+                              />
+                              <span className="ml-1.5 mr-1 text-sm">{tokenList[0].name}</span>
+                              <StyledIcon as="ChevronRightIcon" size={5} />
+                              <img
+                                className="inline-block w-6 h-6 rounded-full shrink-0 ring-2 ring-white dark:ring-zinc-800"
+                                src={tokenList[1].logo}
+                                alt=""
+                              />
+                              <span className="ml-1.5 mr-1 text-sm">{tokenList[1].name}</span>
+                            </div>
+                          </div>
+                        ) : null}
+                      </>
                     ) : null}
 
                     {state.userData ? (
@@ -562,7 +738,7 @@ export const Swap: React.FC = () => {
                       </button>
                     )}
                   </form>
-                  {foundPair ? (
+                  {foundPair && swapLink ? (
                     <div className="w-full mt-3 text-center">
                       <RouterLink
                         className="text-sm font-medium text-indigo-700 rounded-sm dark:text-indigo-200 dark:focus:ring-indigo-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

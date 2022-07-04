@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.13.0/index.ts";
+} from "https://deno.land/x/clarinet@v0.31.0/index.ts";
 
 import * as Utils from './arkadiko-tests-utils.ts';
 
@@ -251,3 +251,106 @@ class ClaimYield {
 
 }
 export { ClaimYield };
+
+
+// ---------------------------------------------------------
+// Claim USDA  yield
+// ---------------------------------------------------------
+
+class ClaimUsdaYield {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  getClaimByVaultId(vaultId: number) {
+    return this.chain.callReadOnlyFn("arkadiko-claim-usda-yield-v1-1", "get-claim-by-vault-id", [types.uint(vaultId)], this.deployer.address);
+  }
+
+  getUsdaBalance() {
+    return this.chain.callReadOnlyFn("arkadiko-claim-usda-yield-v1-1", "get-usda-balance", [], this.deployer.address);
+  }
+
+  addClaim(user: Account, vaultId: number, amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-claim-usda-yield-v1-1", "add-claim", [
+        types.tuple({
+          'to': types.uint(vaultId),
+          'usda': types.uint(amount * 1000000)
+        })
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  removeClaim(user: Account, vaultId: number, amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-claim-usda-yield-v1-1", "remove-claim", [
+        types.tuple({
+          'to': types.uint(vaultId),
+          'usda': types.uint(amount * 1000000)
+        })
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  static createClaimTuple(vaultId: number, amount: number) {
+    return types.tuple({
+      'to': types.uint(vaultId),
+      'usda': types.uint(amount * 1000000)
+    })
+  }
+
+  addClaims(user: Account, claims: string[]) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-claim-usda-yield-v1-1", "add-claims", [
+        types.list(claims)
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  removeClaims(user: Account, claims: string[]) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-claim-usda-yield-v1-1", "remove-claims", [
+        types.list(claims)
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  claim(user: Account, vaultId: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-claim-usda-yield-v1-1", "claim", [
+        types.uint(vaultId)
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  claimAndBurn(user: Account, vaultId: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-claim-usda-yield-v1-1", "claim-and-burn", [
+        types.uint(vaultId),
+        types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  returnUsda(user: Account, amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-claim-usda-yield-v1-1", "return-usda", [
+        types.uint(amount),
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+}
+export { ClaimUsdaYield };

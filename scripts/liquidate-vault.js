@@ -3,6 +3,7 @@ const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
+const BN = require('bn.js');
 
 const vaultId = process.argv.slice(2)[0];
 console.log('Trying to liquidate vault with ID', vaultId);

@@ -188,7 +188,8 @@ class Blockchain < ApplicationRecord
     return if function_name == 'migrate-add-liquidity' ||
       function_name == 'toggle-pair-enabled' ||
       function_name == 'toggle-swap-shutdown' ||
-      function_name == 'collect-fees'
+      function_name == 'collect-fees' ||
+      function_name == 'get-balances'
 
     contract_address = id.split('.')[0]
     contract_name = id.split('.')[1]
@@ -196,9 +197,9 @@ class Blockchain < ApplicationRecord
 
     token_x = result['contract_call']['function_args'][0]['repr']
     token_y = result['contract_call']['function_args'][1]['repr']
-    token_x_address = token_x.split('.')[0]
+    token_x_address = token_x.split('.')[0].gsub("'", '')
     token_x_name = token_x.split('.')[1]
-    token_y_address = token_y.split('.')[0]
+    token_y_address = token_y.split('.')[0].gsub("'", '')
     token_y_name = token_y.split('.')[1]
     pool = Pool.find_by(
       token_x_address: token_x_address,

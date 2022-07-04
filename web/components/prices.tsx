@@ -80,6 +80,7 @@ export const Prices = () => {
       senderKey: privateKeyToString(senderKey),
       network: network,
       anchorMode: AnchorMode.Any,
+      fee: new BN(500000),
     });
     await broadcastTransaction(transaction, network);
   };

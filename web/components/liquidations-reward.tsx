@@ -6,19 +6,24 @@ import { microToReadable } from '@common/vault-utils';
 import {
   AnchorMode,
   uintCV,
-  contractPrincipalCV,
+  listCV,
+  makeContractFungiblePostCondition,
+  makeContractSTXPostCondition,
+  FungibleConditionCode,
+  createAssetInfo
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
+import { tokenTraits } from '@common/vault-utils';
 
 export interface LiquidationRewardProps {
-  rewardId: number;
+  rewardIds: number[];
   token: string;
   claimable: number;
   tokenIsStx: boolean;
 }
 
 export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
-  rewardId,
+  rewardIds,
   token,
   claimable,
   tokenIsStx
@@ -29,18 +34,56 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
   const [state, setState] = useContext(AppContext);
 
   const claim = async () => {
+
+    const postConditions = [];
+    if (tokenIsStx) {
+      // PC
+      postConditions.push(
+        makeContractSTXPostCondition(
+          contractAddress,
+          'arkadiko-liquidation-rewards-v1-1',
+          FungibleConditionCode.Equal,
+          uintCV(claimable).value,
+        )
+      )
+    } else {
+      // FT name
+      const tokenTraitsKey = Object.keys(tokenTraits).filter((key) => 
+        (tokenTraits[key].address == token.split('.')[0] && tokenTraits[key].swap == token.split('.')[1])
+      );
+      const tokenName = tokenTraits[tokenTraitsKey].ft;
+
+      // PC
+      postConditions.push(
+        makeContractFungiblePostCondition(
+          contractAddress,
+          'arkadiko-liquidation-rewards-v1-1',
+          FungibleConditionCode.Equal,
+          uintCV(claimable).value,
+          createAssetInfo(token.split('.')[0], token.split('.')[1], tokenName)
+        )
+      )
+    }
+
+    // Function
+    var functionName = "claim-50-stx-rewards-of";
+    if (token.split('.')[1] == "arkadiko-token") {
+      functionName = "claim-50-diko-rewards-of";
+    } else if (token.split('.')[1] == "Wrapped-Bitcoin") {
+      functionName = "claim-50-xbtc-rewards-of";
+    }
+
+    // Call
     await doContractCall({
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-liquidation-rewards-v1-1',
-      functionName: 'claim-rewards-of',
+      contractName: 'arkadiko-liquidation-ui-v1-2',
+      functionName: functionName,
       functionArgs: [
-        uintCV(rewardId),
-        contractPrincipalCV(token.split('.')[0], token.split('.')[1]),
-        contractPrincipalCV(contractAddress, 'arkadiko-liquidation-pool-v1-1'),
+        listCV(rewardIds.map((id) =>  uintCV(id))),
       ],
-      postConditionMode: 0x01,
+      postConditions,
       onFinish: data => {
         setState(prevState => ({
           ...prevState,
@@ -59,9 +102,6 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
   return (
     <tr className="bg-white dark:bg-zinc-900">
       <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
-        <span className="font-medium text-gray-900 dark:text-zinc-100">{rewardId}</span>
-      </td>
-      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
         {tokenIsStx ? ( 
           <span className="font-medium text-gray-900 dark:text-zinc-100">STX</span>
         ) : token.split('.')[1] == "xstx-token" ? (
@@ -74,15 +114,22 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
           <span className="font-medium text-gray-900 dark:text-zinc-100">{token.split('.')[1]}</span>
         )}
       </td>
-      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+      <td className="px-6 py-4 text-sm text-center text-gray-500 whitespace-nowrap">
         <span className="font-medium text-gray-900 dark:text-zinc-100">
-          {microToReadable(claimable).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 6,
-          })}
+          {token.split('.')[1] == "Wrapped-Bitcoin" ? (
+            microToReadable(claimable / 100).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 6,
+            })
+          ) : (
+            microToReadable(claimable).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 6,
+            })
+          )}
         </span>
       </td>
-      <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+      <td className="px-6 py-4 text-sm text-right text-gray-500 whitespace-nowrap">
         <span className="font-medium text-gray-900 dark:text-zinc-100">
           <button
             type="button"

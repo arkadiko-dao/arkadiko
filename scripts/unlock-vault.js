@@ -22,24 +22,11 @@ async function unlockVault(vaultId, nonce) {
   return utils.processing(result, transaction.txid(), 0);
 }
 
-let nonce = 705;
-
+let nonce = 910;
 ids = [
-  1681,
-  1629,
-  1632,
-  1628,
-  1635,
-  1640,
+  1610,
+  2021
 ];
-
-// 1629,
-// 1640,
-// 1541,
-// 1635,
-// 1681,
-// 1632,
-// 1534,
 
 async function asyncForEach(array, callback) {
   for (let index = 0; index < array.length; index++) {
