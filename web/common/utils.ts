@@ -25,5 +25,4 @@ export const getRPCClient = () => {
   return new RPCClient(coreApiUrl);
 };
 
-export const stacksNetwork = env === 'mainnet' ? new StacksMainnet() : new StacksTestnet();
-stacksNetwork.coreApiUrl = coreApiUrl;
+export const stacksNetwork = env === 'mainnet' ? new StacksMainnet({ url: coreApiUrl }) : new StacksTestnet({ url: coreApiUrl });
