@@ -1528,7 +1528,7 @@
     "@types/node" "^14.14.43"
     buffer "^6.0.3"
 
-"@stacks/connect-react@^17.0.0":
+"@stacks/connect-react@^17.0.8":
   version "17.0.8"
   resolved "https://registry.yarnpkg.com/@stacks/connect-react/-/connect-react-17.0.8.tgz#e5c313db4e02f3a2da383f14795cb188c2d55fe1"
   integrity sha512-eOCXPgADb5n6TMg4Ltcp6j7ZBZ0ijbfUvHw/+rcRT+FuO1Xf/xPxtS3y2UbEKLPtnkD/kC75LUxj8rIAIlXNYQ==

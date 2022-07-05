@@ -31,7 +31,7 @@
     "@stacks/auth": "^4.3.0",
     "@stacks/blockchain-api-client": "^3.0.3",
     "@stacks/connect": "^6.8.8",
-    "@stacks/connect-react": "^17.0.0",
+    "@stacks/connect-react": "^17.0.8",
     "@stacks/network": "^4.3.0",
     "@stacks/rpc-client": "^0.8.18",
     "@stacks/transactions": "4.3.0",
