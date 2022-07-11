@@ -19,6 +19,8 @@ import { initiateConnection } from '@common/websocket-tx-updater';
 import ScrollToTop from '@components/scroll-to-top';
 import { Redirect } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import { Buffer } from "buffer";
+(globalThis as any).Buffer = Buffer;
 
 export const getBalance = async (address: string) => {
   const client = getRPCClient();
