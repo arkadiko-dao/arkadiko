@@ -174,6 +174,10 @@ module.exports = {
     new webpack.optimize.LimitChunkCountPlugin({
       maxChunks: 1,
     }),
+    new webpack.ProvidePlugin({
+      // you must `npm install buffer` to use this.
+      Buffer: ['buffer', 'Buffer']
+    }),
     isDevelopment && new ReactRefreshWebpackPlugin(),
   ].filter(Boolean),
 };
