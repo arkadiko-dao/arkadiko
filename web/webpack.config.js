@@ -157,7 +157,10 @@ module.exports = {
       chunks: ['main', 'common'],
       ...hmtlProdOpts,
     }),
-
+    new webpack.ProvidePlugin({
+      // you must `npm install buffer` to use this.
+      Buffer: ['buffer', 'Buffer']
+    }),
     new CopyWebpackPlugin([
       {
         from: path.join(sourceRootPath, '../', 'public', 'assets'),
@@ -173,10 +176,6 @@ module.exports = {
     new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime-.+[.]js/]),
     new webpack.optimize.LimitChunkCountPlugin({
       maxChunks: 1,
-    }),
-    new webpack.ProvidePlugin({
-      // you must `npm install buffer` to use this.
-      Buffer: ['buffer', 'Buffer']
     }),
     isDevelopment && new ReactRefreshWebpackPlugin(),
   ].filter(Boolean),
