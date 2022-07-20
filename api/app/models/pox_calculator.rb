@@ -1,5 +1,5 @@
 class PoxCalculator
-  def self.calculate_yields(names: ['stacker'], file: 'vaults-pox-35.json', ustx_stacked: 7_926_691_578_143, ustx_yield: 8_261_229_000)
+  def self.calculate_yields(names:, file:, ustx_stacked:, ustx_yield:)
     file = File.open("files/#{file}")
     data = JSON.load(file)
     vaults = {}
@@ -23,7 +23,7 @@ class PoxCalculator
     vaults
   end
 
-  def self.calculate_usda_yields(names: ['stacker'], file: 'vaults-pox-35.json', ustx_stacked: 7_926_691_578_143, usda_yield: 13_031_389_921)
+  def self.calculate_usda_yields(names:, file:, ustx_stacked:, usda_yield:)
     file = File.open("files/#{file}")
     data = JSON.load(file)
     vaults = {}
@@ -35,7 +35,7 @@ class PoxCalculator
 
       collateral = vault['collateral']['value']
       stacked = vault['stacked-tokens']['value']
-      ratio = 0.96 * collateral / ustx_stacked.to_f
+      ratio = collateral / ustx_stacked.to_f
       vaults[vault['id']['value']] = {
         'collateral': collateral,
         'stacked': stacked,
@@ -96,11 +96,11 @@ class PoxCalculator
     end
   end
 
-  def self.build_clarity_list_tuples(names:, file: 'vaults-pox-35.json', yield_type: 'usda')
+  def self.build_clarity_list_tuples(names:, file: 'vaults-pox-36.json', yield_type: 'ustx', ustx_stacked: 6_819_684_758_593, yield_earned: 21_896_722_900)
     if yield_type == 'usda'
-      vaults = calculate_usda_yields(names: names, file: file)
+      vaults = calculate_usda_yields(names: names, file: file, ustx_stacked: ustx_stacked, usda_yield: yield_earned)
     else
-      vaults = calculate_yields(names: names, file: file)
+      vaults = calculate_yields(names: names, file: file, ustx_stacked: ustx_stacked, ustx_yield: yield_earned)
     end
     vaults.each do |vault_id, value|
       puts "tx.tupleCV({ 'to': tx.uintCV(#{vault_id}), '#{yield_type}': tx.uintCV(#{value[:yield]}) }),"
