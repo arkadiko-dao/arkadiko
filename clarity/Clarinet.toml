@@ -43,6 +43,9 @@ path = "contracts/arkadiko-oracle-trait-v1.clar"
 [contracts.arkadiko-oracle-v1-1]
 path = "contracts/arkadiko-oracle-v1-1.clar"
 
+[contracts.arkadiko-oracle-v2-1]
+path = "contracts/arkadiko-oracle-v2-1.clar"
+
 [contracts.arkadiko-vault-data-v1-1]
 path = "contracts/arkadiko-vault-data-v1-1.clar"
 
