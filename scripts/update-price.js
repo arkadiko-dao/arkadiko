@@ -112,3 +112,37 @@ rp(requestOptions).then(async (response) => {
 });
 
 // setPrice(1.15, 45000); // 0.5 USD
+
+const setatALEXPrice = async (atALEXPrice) => {
+  let nonce = await utils.getNonce(CONTRACT_ADDRESS);
+  const priceWithDecimals = atALEXPrice.toFixed(6) * 1000000;
+
+  const txOptions = {
+    contractAddress: CONTRACT_ADDRESS,
+    contractName: CONTRACT_NAME,
+    functionName: FUNCTION_NAME,
+    functionArgs: [tx.stringAsciiCV('atALEX'), tx.uintCV(new BN(priceWithDecimals)), tx.uintCV(1000000)],
+    senderKey: process.env.STACKS_PRIVATE_KEY,
+    nonce: new BN(nonce),
+    postConditionMode: 1,
+    network
+  };
+  const transaction = await tx.makeContractCall(txOptions);
+  const result = tx.broadcastTransaction(transaction, network);
+  await utils.processing(result, transaction.txid(), 0);
+};
+
+const atALEXrequestOptions = {
+  method: 'GET',
+  uri: 'https://hasura-console.alexlab.co/api/rest/oracle_price/autoalex',
+  json: true,
+  gzip: false
+};
+
+rp(atALEXrequestOptions).then(async (response) => {
+  let atALEXPrice = response['laplace_current_token_price']['0']['avg_price_usd'];
+  let atALEXName = response['laplace_current_token_price']['0']['token'];
+  if (atALEXName == "auto-alex") {
+    await setatALEXPrice(atALEXPrice);
+  }
+});
