@@ -82,7 +82,7 @@ async function liquidateVault(vaultId, tokenName, stacking, nonce) {
 
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: 'arkadiko-auction-engine-v4-1',
+    contractName: 'arkadiko-auction-engine-v4-2',
     functionName: 'start-auction',
     functionArgs: [
       tx.uintCV(vaultId),
@@ -92,7 +92,7 @@ async function liquidateVault(vaultId, tokenName, stacking, nonce) {
       tx.contractPrincipalCV(tokenAddress, token),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, reserve),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-pool-v1-1'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-rewards-v1-1'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-rewards-v1-2'),
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
