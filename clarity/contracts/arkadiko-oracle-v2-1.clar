@@ -2,6 +2,7 @@
 
 (define-constant ERR-NOT-WHITELISTED u851)
 (define-constant ERR-UNTRUSTED-ORACLE u852)
+(define-constant ERR-UNKNOWN-SYMBOL u853)
 (define-constant ERR-NOT-AUTHORIZED u8401)
 
 (define-data-var oracle-owner principal tx-sender)
@@ -36,11 +37,15 @@
 )
 
 (define-read-only (is-trusted-oracle (pubkey (response (buff 33) uint)))
-	(default-to false (map-get? trusted-oracles (unwrap-panic pubkey)))
+  (let (
+    (key (unwrap! pubkey false))
+  )
+    (default-to false (map-get? trusted-oracles key))
+  )
 )
 
 (define-read-only (get-symbol-buff (buff (buff 32)))
-	(default-to "" (map-get? symbol-buff buff))
+  (map-get? symbol-buff buff)
 )
 
 ;; ---------------------------------------------------------
@@ -89,22 +94,20 @@
   (let (
     ;; TODO - Update for mainnet
     (signers (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.redstone-verify recover-signer-multi timestamp entries signatures))
+  
+    (update-result (map update-price-redstone entries))
   )
     (asserts! (is-trusted-oracles signers) (err ERR-UNTRUSTED-ORACLE))
 
-    (map update-price-redstone entries)
-
-    (ok true)
+    (ok update-result)
   )
 )
 
 (define-private (update-price-redstone (entry {symbol: (buff 32), value: uint}))
   (let (
-    (token (get-symbol-buff (get symbol entry)))
+    (token (unwrap! (get-symbol-buff (get symbol entry)) (err ERR-UNKNOWN-SYMBOL)))
   )
-    ;; TODO: if token equals "" it means it can't be updated via Redstone
-
-    (map-set prices { token: token } { last-price: (get value entry), last-block: block-height, decimals: u8 })
+    (map-set prices { token: token } { last-price: (get value entry), last-block: block-height, decimals: u100000000 })
 
     (ok true)
   )
