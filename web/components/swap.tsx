@@ -230,13 +230,31 @@ export const Swap: React.FC = () => {
     let priceImpact = 0;
     if (isMultiHop) {
       tokenYAmount = tokenXAmount / currentPrice;
-      const balanceX = pairY['balance_x'] / Math.pow(10, tokenY['decimals']);
-      const balanceY = pairY['balance_y'] / Math.pow(10, tokenX['decimals']);
-      const newBalanceY = balanceY + inputWithoutFees;
-      const newBalanceX = (balanceY * balanceX) / newBalanceY;
-      const poolPrice = balanceY / balanceX;
-      const tradePrice = inputWithoutFees / (balanceX - newBalanceX);
-      priceImpact = tradePrice / poolPrice - 1.0;
+
+      var balanceX1 = pairX['balance_x'] / Math.pow(10, tokenX['decimals']);
+      var balanceY1 = pairX['balance_y'] / Math.pow(10, tokenY['decimals']);
+      if (inverseDirectionX) {
+        balanceY1 = pairX['balance_x'] / Math.pow(10, tokenX['decimals']);
+        balanceX1 = pairX['balance_y'] / Math.pow(10, tokenY['decimals']);
+      }
+
+      var balanceX2 = pairY['balance_x'] / Math.pow(10, tokenY['decimals']);
+      var balanceY2 = pairY['balance_y'] / Math.pow(10, tokenY['decimals']);
+      if (inverseDirectionY) {
+        balanceY2 = pairY['balance_x'] / Math.pow(10, tokenY['decimals']);
+        balanceX2 = pairY['balance_y'] / Math.pow(10, tokenY['decimals']);
+      }
+
+      const newBalanceX1 = balanceX1 + inputWithoutFees;
+      const newBalanceY1 = (balanceX1 * balanceY1) / newBalanceX1;
+      const out1 = balanceY1 - newBalanceY1;
+      const newBalanceX2 = balanceX2 + out1;
+      const newBalanceY2 = (balanceX2 * balanceY2) / newBalanceX2;
+      const out2 = balanceY2 - newBalanceY2;
+
+      const tradePrice = out2 / inputWithoutFees;
+      const poolPrice = (balanceY2 / balanceX2) * (balanceY1 / balanceX1);
+      priceImpact = poolPrice / tradePrice - 1.0;
     } else {
       if (inverseDirection) {
         const balanceX = currentPair['balance_x'] / Math.pow(10, tokenY['decimals']);
