@@ -43,6 +43,9 @@ path = "contracts/arkadiko-oracle-trait-v1.clar"
 [contracts.arkadiko-oracle-v1-1]
 path = "contracts/arkadiko-oracle-v1-1.clar"
 
+[contracts.arkadiko-oracle-v2-1]
+path = "contracts/arkadiko-oracle-v2-1.clar"
+
 [contracts.arkadiko-vault-data-v1-1]
 path = "contracts/arkadiko-vault-data-v1-1.clar"
 
@@ -234,6 +237,10 @@ path = "contracts/arkadiko-alex-dual-yield-v1-1.clar"
 
 [contracts.arkadiko-claim-usda-yield-v1-1]
 path = "contracts/arkadiko-claim-usda-yield-v1-1.clar"
+
+# Redstone
+[contracts.redstone-verify]
+path = "contracts/redstone/redstone-verify.clar"
 
 # Tokensoft xBTC
 [contracts.restricted-token-trait]
