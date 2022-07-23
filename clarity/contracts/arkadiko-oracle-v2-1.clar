@@ -1,21 +1,14 @@
 (impl-trait .arkadiko-oracle-trait-v1.oracle-trait)
 
-;; for now this is a fairly centralised Oracle, which is subject to failure.
-;; Ideally, we implement a Chainlink Price Feed Oracle ASAP
 (define-constant ERR-NOT-WHITELISTED u851)
 (define-constant ERR-UNTRUSTED-ORACLE u852)
 (define-constant ERR-NOT-AUTHORIZED u8401)
 
-(define-constant symbol-stxusd 0x535458555344) ;; "STXUSD" as a buff
 (define-data-var oracle-owner principal tx-sender)
 
-;; A map of all trusted oracles, indexed by their 33 byte compressed public key.
-(define-map trusted-oracles (buff 33) bool)
-(map-set trusted-oracles 0x035ca791fed34bf9e9d54c0ce4b9626e1382cf13daa46aa58b657389c24a751cc6 true)
-
-(define-read-only (is-trusted-oracle (pubkey (buff 33)))
-	(default-to false (map-get? trusted-oracles pubkey))
-)
+;; ---------------------------------------------------------
+;; Maps
+;; ---------------------------------------------------------
 
 (define-map prices
   { token: (string-ascii 12) }
@@ -26,6 +19,52 @@
   }
 )
 
+(define-map trusted-oracles (buff 33) bool)
+
+(define-map symbol-buff (buff 32) (string-ascii 12))
+
+;; ---------------------------------------------------------
+;; Getters
+;; ---------------------------------------------------------
+
+(define-read-only (is-trusted-oracles (pubkey (list 8 (response (buff 33) uint))))
+	(let (
+    (trusted (map is-trusted-oracle pubkey))
+  )
+    (is-eq (index-of trusted false) none)
+  )
+)
+
+(define-read-only (is-trusted-oracle (pubkey (response (buff 33) uint)))
+	(default-to false (map-get? trusted-oracles (unwrap-panic pubkey)))
+)
+
+(define-read-only (get-symbol-buff (buff (buff 32)))
+	(default-to "" (map-get? symbol-buff buff))
+)
+
+;; ---------------------------------------------------------
+;; Admin
+;; ---------------------------------------------------------
+
+(define-public (set-trusted-oracle (pubkey (buff 33)) (trusted bool))
+  (begin
+    (asserts! (is-eq tx-sender (var-get oracle-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (map-set trusted-oracles pubkey trusted)
+    (ok true)
+  )
+)
+
+(define-public (set-symbol-buff (buff (buff 32)) (token (string-ascii 12)))
+  (begin
+    (asserts! (is-eq tx-sender (var-get oracle-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (map-set symbol-buff buff token)
+    (ok true)
+  )
+)
+
 (define-public (set-oracle-owner (address principal))
   (begin
     (asserts! (is-eq tx-sender (var-get oracle-owner)) (err ERR-NOT-AUTHORIZED))
@@ -34,35 +73,46 @@
   )
 )
 
-(define-public (update-price (token (string-ascii 12)) (price uint) (decimals uint) (timestamp (optional uint)) (signature (optional (buff 65))))
+;; ---------------------------------------------------------
+;; Update price
+;; ---------------------------------------------------------
+
+(define-public (update-price (token (string-ascii 12)) (price uint) (decimals uint))
   (begin
-    (if (or (is-eq token "STX") (is-eq token "BTC") (is-eq token "xBTC") (is-eq token "XBTC") (is-eq token "xSTX") (is-eq token "XSTX"))
-      (update-redstone token price decimals (unwrap-panic timestamp) (unwrap-panic signature))
-      (update-custodial token price decimals)
-    )
+    (asserts! (is-eq tx-sender (var-get oracle-owner)) (err ERR-NOT-WHITELISTED))
+    (map-set prices { token: token } { last-price: price, last-block: block-height, decimals: decimals })
+    (ok price)
   )
 )
 
-(define-private (update-redstone (token (string-ascii 12)) (price uint) (decimals uint) (timestamp uint) (signature (buff 65)))
+(define-public (update-prices-redstone (timestamp uint) (entries (list 10 {symbol: (buff 32), value: uint})) (signatures (list 8 (buff 65))))
   (let (
-    (signer (try! (contract-call? 'SPDBEG5X8XD50SPM1JJH0E5CTXGDV5NJTKAKKR5V.redstone-verify recover-signer timestamp (list {value: price, symbol: symbol-stxusd}) signature)))
+    ;; TODO - Update for mainnet
+    (signers (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.redstone-verify recover-signer-multi timestamp entries signatures))
   )
-    (asserts! (is-trusted-oracle signer) ERR-UNTRUSTED-ORACLE)
+    (asserts! (is-trusted-oracles signers) (err ERR-UNTRUSTED-ORACLE))
 
-    (map-set prices { token: token } { last-price: price, last-block: block-height, decimals: decimals })
+    (map update-price-redstone entries)
+
     (ok true)
   )
 )
 
-(define-private (update-custodial (token (string-ascii 12)) (price uint) (decimals uint))
-  (if (is-eq tx-sender (var-get oracle-owner))
-    (begin
-      (map-set prices { token: token } { last-price: price, last-block: block-height, decimals: decimals })
-      (ok price)
-    )
-    (err ERR-NOT-WHITELISTED)
+(define-private (update-price-redstone (entry {symbol: (buff 32), value: uint}))
+  (let (
+    (token (get-symbol-buff (get symbol entry)))
+  )
+    ;; TODO: if token equals "" it means it can't be updated via Redstone
+
+    (map-set prices { token: token } { last-price: (get value entry), last-block: block-height, decimals: u8 })
+
+    (ok true)
   )
 )
+
+;; ---------------------------------------------------------
+;; Get price
+;; ---------------------------------------------------------
 
 (define-read-only (get-price (token (string-ascii 12)))
   (unwrap! (map-get? prices { token: token }) { last-price: u0, last-block: u0, decimals: u0 })
