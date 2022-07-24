@@ -6,6 +6,7 @@
     "request-promise": "4.2.6",
     "@stacks/network": "^1.2.2",
     "@stacks/transactions": "^1.3.3",
-    "@stacks/stacking": "^1.4.1"
+    "@stacks/stacking": "^1.4.1",
+    "redstone-api-extended": "^1.0.9"
   }
 }
