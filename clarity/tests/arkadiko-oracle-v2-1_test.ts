@@ -203,6 +203,67 @@ Clarinet.test({
   },
 });
 
+
+Clarinet.test({
+  name: "oracle: can not alter Redstone prices",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    // Test signature
+    let signature = "0x80517fa7ea136fa54522338145ebcad95f0be7c4d7c43c522fff0f97686d7ffa581d422619ef2c2718471c31f1af6084a03571f93e3e3bde346cedd2ced71f9100";
+
+    // Get public key for signature
+    let call:any = await chain.callReadOnlyFn("redstone-verify", "recover-signer-multi", [
+      types.uint(1650000000000),
+      types.list([
+        types.tuple({
+          'symbol': types.buff("BTC"),
+          'value': types.uint(2200000000000)
+        })
+      ]),
+      types.list(Array(8).fill(signature))
+    ], deployer.address);
+
+    // Public key for signature
+    let pubKey = call.result.expectList()[0].expectOk();
+    
+    // Add Redstone symbol
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v2-1", "set-redstone-symbol-to-tokens", [
+        types.buff("BTC"),
+        types.list([types.ascii("xBTC")]),
+      ], deployer.address),
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    // Set trusted oracle
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v2-1", "set-trusted-oracle", [
+        pubKey,
+        types.bool(true),
+      ], deployer.address),
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    // Update wrong BTC price
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v2-1", "update-prices-redstone", [
+        types.uint(1650000000000),
+        types.list([
+          types.tuple({
+            'symbol': types.buff("BTC"),
+            'value': types.uint(6600000000000)
+          })
+        ]),
+        types.list(Array(8).fill(signature))
+
+      ], wallet_1.address),
+    ]);
+    block.receipts[0].result.expectErr().expectUint(852);
+  },
+});
+
 Clarinet.test({
   name: "oracle: can not update token price via Redstone if oracle not trusted",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -247,7 +308,21 @@ Clarinet.test({
 
     // Test signature and key
     let signature = "0x80517fa7ea136fa54522338145ebcad95f0be7c4d7c43c522fff0f97686d7ffa581d422619ef2c2718471c31f1af6084a03571f93e3e3bde346cedd2ced71f9100";
-    let pubKey = "0x036ea89f49abceba56ccf41b876075b7ef41ae035edd6152bf56c22832cbf27bde";
+
+    // Get public key for signature
+    let call:any = await chain.callReadOnlyFn("redstone-verify", "recover-signer-multi", [
+      types.uint(1650000000000),
+      types.list([
+        types.tuple({
+          'symbol': types.buff("DIKO"),
+          'value': types.uint(3000000)
+        })
+      ]),
+      types.list(Array(8).fill(signature))
+    ], deployer.address);
+
+    // Public key for signature
+    let pubKey = call.result.expectList()[0].expectOk();
     
     // Set trusted oracle
     let block = chain.mineBlock([
@@ -264,8 +339,8 @@ Clarinet.test({
         types.uint(1650000000000),
         types.list([
           types.tuple({
-            'symbol': types.buff("BTC"),
-            'value': types.uint(2200000000000)
+            'symbol': types.buff("DIKO"),
+            'value': types.uint(3000000)
           })
         ]),
         types.list(Array(8).fill(signature))
