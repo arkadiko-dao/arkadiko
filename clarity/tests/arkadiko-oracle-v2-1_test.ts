@@ -57,9 +57,9 @@ Clarinet.test({
     
     // Add Redstone symbol
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-1", "set-symbol-buff", [
+      Tx.contractCall("arkadiko-oracle-v2-1", "set-redstone-symbol-to-tokens", [
         types.buff("BTC"),
-        types.ascii("xBTC"),
+        types.list([types.ascii("xBTC")]),
       ], deployer.address),
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
@@ -129,17 +129,17 @@ Clarinet.test({
     
     // Add Redstone symbol
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-1", "set-symbol-buff", [
+      Tx.contractCall("arkadiko-oracle-v2-1", "set-redstone-symbol-to-tokens", [
         types.buff("BTC"),
-        types.ascii("xBTC"),
+        types.list([types.ascii("xBTC")]),
       ], deployer.address),
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
     
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-1", "set-symbol-buff", [
+      Tx.contractCall("arkadiko-oracle-v2-1", "set-redstone-symbol-to-tokens", [
         types.buff("STX"),
-        types.ascii("STX"),
+        types.list([types.ascii("STX"), types.ascii("xSTX")]),
       ], deployer.address),
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
@@ -173,6 +173,12 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectList()[0].expectOk().expectBool(true);
 
+    call = await chain.callReadOnlyFn("arkadiko-oracle-v2-1", "get-redstone-symbol-to-tokens", [
+      types.buff("STX")
+    ], deployer.address);
+    call.result.expectSome().expectList()[0].expectAscii("STX");
+    call.result.expectSome().expectList()[1].expectAscii("xSTX");
+
     // Get price
     call = await chain.callReadOnlyFn("arkadiko-oracle-v2-1", "get-price", [
       types.ascii("xBTC"),
@@ -183,6 +189,13 @@ Clarinet.test({
 
     call = await chain.callReadOnlyFn("arkadiko-oracle-v2-1", "get-price", [
       types.ascii("STX"),
+    ], deployer.address);
+    call.result.expectTuple()["decimals"].expectUint(100000000);
+    call.result.expectTuple()["last-block"].expectUint(4);
+    call.result.expectTuple()["last-price"].expectUint(40000000);
+
+    call = await chain.callReadOnlyFn("arkadiko-oracle-v2-1", "get-price", [
+      types.ascii("xSTX"),
     ], deployer.address);
     call.result.expectTuple()["decimals"].expectUint(100000000);
     call.result.expectTuple()["last-block"].expectUint(4);
@@ -201,9 +214,9 @@ Clarinet.test({
     
     // Add Redstone symbol
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-1", "set-symbol-buff", [
+      Tx.contractCall("arkadiko-oracle-v2-1", "set-redstone-symbol-to-tokens", [
         types.buff("BTC"),
-        types.ascii("xBTC"),
+        types.list([types.ascii("xBTC")]),
       ], deployer.address),
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
@@ -244,11 +257,6 @@ Clarinet.test({
       ], deployer.address),
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
-
-    let call:any = await chain.callReadOnlyFn("arkadiko-oracle-v2-1", "get-symbol-buff", [
-      types.buff("BTC")
-    ], deployer.address);
-    // call.result.expectNone();
 
     // Update BTC price
     block = chain.mineBlock([
@@ -306,9 +314,9 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-1", "set-symbol-buff", [
+      Tx.contractCall("arkadiko-oracle-v2-1", "set-redstone-symbol-to-tokens", [
         types.buff("BTC"),
-        types.ascii("xBTC"),
+        types.list([types.ascii("xBTC")]),
       ], wallet_1.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(8401);

@@ -22,7 +22,8 @@
 
 (define-map trusted-oracles (buff 33) bool)
 
-(define-map symbol-buff (buff 32) (string-ascii 12))
+(define-map redstone-symbol-to-tokens (buff 32) (list 4 (string-ascii 12)))
+
 
 ;; ---------------------------------------------------------
 ;; Getters
@@ -44,8 +45,8 @@
   )
 )
 
-(define-read-only (get-symbol-buff (buff (buff 32)))
-  (map-get? symbol-buff buff)
+(define-read-only (get-redstone-symbol-to-tokens (buff (buff 32)))
+  (map-get? redstone-symbol-to-tokens buff)
 )
 
 ;; ---------------------------------------------------------
@@ -61,11 +62,11 @@
   )
 )
 
-(define-public (set-symbol-buff (buff (buff 32)) (token (string-ascii 12)))
+(define-public (set-redstone-symbol-to-tokens (buff (buff 32)) (tokens (list 4 (string-ascii 12))))
   (begin
     (asserts! (is-eq tx-sender (var-get oracle-owner)) (err ERR-NOT-AUTHORIZED))
 
-    (map-set symbol-buff buff token)
+    (map-set redstone-symbol-to-tokens buff tokens)
     (ok true)
   )
 )
@@ -103,12 +104,22 @@
   )
 )
 
+;; To loop over all entries
 (define-private (update-price-redstone (entry {symbol: (buff 32), value: uint}))
   (let (
-    (token (unwrap! (get-symbol-buff (get symbol entry)) (err ERR-UNKNOWN-SYMBOL)))
-  )
-    (map-set prices { token: token } { last-price: (get value entry), last-block: block-height, decimals: u100000000 })
+    (tokens (unwrap! (get-redstone-symbol-to-tokens (get symbol entry)) (err ERR-UNKNOWN-SYMBOL)))
+    (value (get value entry))
 
+  )
+    (map update-price-redstone-token tokens (list value value value value))
+    (ok true)
+  )
+)
+
+;; To loop over all tokens for one symbol
+(define-private (update-price-redstone-token (token (string-ascii 12)) (value uint))
+  (begin
+    (map-set prices { token: token } { last-price: value, last-block: block-height, decimals: u100000000 })
     (ok true)
   )
 )
