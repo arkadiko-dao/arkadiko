@@ -135,3 +135,14 @@
 (define-public (fetch-price (token (string-ascii 12)))
   (ok (get-price token))
 )
+
+;; ---------------------------------------------------------
+;; Init
+;; ---------------------------------------------------------
+
+(begin
+  (map-set trusted-oracles 0x035ca791fed34bf9e9d54c0ce4b9626e1382cf13daa46aa58b657389c24a751cc6 true)
+
+  (map-set redstone-symbol-to-tokens 0x535458 (list "STX" "xSTX"))
+  (map-set redstone-symbol-to-tokens 0x425443 (list "BTC" "xBTC"))
+)
