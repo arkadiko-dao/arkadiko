@@ -38,8 +38,12 @@ const contracts: Contract[] = [
 
   { name: 'restricted-token-trait', file: 'xbtc/restricted-token-trait' },
 
+  // Oracle test
+  { name: 'redstone-verify', file: 'redstone/redstone-verify' },
+
   // Contracts
   { name: 'arkadiko-oracle-v1-1' },
+  { name: 'arkadiko-oracle-v2-1' },
   { name: 'arkadiko-token' },
   { name: 'arkadiko-collateral-types-v1-1' },
   { name: 'arkadiko-dao' },
