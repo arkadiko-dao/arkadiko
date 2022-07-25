@@ -5,7 +5,7 @@ const utils = require('./utils');
 const network = utils.resolveNetwork();
 const BN = require('bn.js');
 
-const stackerName = 'stacker-3';
+const stackerName = 'stacker';
 
 async function getLastVaultId() {
   const lastVaultTx = await tx.callReadOnlyFunction({
@@ -67,6 +67,8 @@ async function iterateAndUnlock() {
       console.log('Unlocking vault', index);
       await unlockVault(index, nonce);
       nonce = nonce + 1;
+    } else {
+      console.log(index);
     }
     await new Promise(r => setTimeout(r, 1000));
   }

@@ -79,8 +79,8 @@ export const Liquidations: React.FC = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'redeem-stx',
+      contractName: 'arkadiko-stacker-payer-v3-1',
+      functionName: 'redeem-stx-helper',
       functionArgs: [uintCV(state.balance['xstx'])],
       postConditionMode: 0x01,
       onFinish: data => {
@@ -223,13 +223,16 @@ export const Liquidations: React.FC = () => {
         return data.rewardIds.length < 50 && data.token == rewardData.token && data.tokenIsStx == rewardData.tokenIsStx;
       });
       if (result.length == 0) {
-        rewardsDataMerged.push(rewardData);
+        rewardsDataMerged.push({
+          rewardIds: rewardData.rewardIds.slice(),
+          token: rewardData.token,
+          claimable: rewardData.claimable,
+          tokenIsStx: rewardData.tokenIsStx,
+        });
       } else {
         let existingData = result[0];
-        if (!existingData.rewardIds.includes(rewardData.rewardIds[0])) {
-          existingData.rewardIds.push(rewardData.rewardIds[0]);
-          existingData.claimable = parseInt(existingData.claimable) + parseInt(rewardData.claimable);
-        }
+        existingData.rewardIds.push(rewardData.rewardIds[0]);
+        existingData.claimable = parseInt(existingData.claimable) + parseInt(rewardData.claimable);
       }
     }
     return rewardsDataMerged;
@@ -368,13 +371,13 @@ export const Liquidations: React.FC = () => {
     const getStxRedeemable = async () => {
       const stxRedeemable = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-freddie-v1-1',
-        functionName: 'get-stx-redeemable',
+        contractName: 'arkadiko-stacker-payer-v3-1',
+        functionName: 'get-stx-redeemable-helper',
         functionArgs: [],
         senderAddress: stxAddress || '',
         network: network,
       });
-      const result = cvToJSON(stxRedeemable).value.value;
+      const result = cvToJSON(stxRedeemable).value;
       return result;
     };
 
@@ -470,48 +473,52 @@ export const Liquidations: React.FC = () => {
         <Container>
           <main className="relative flex-1 py-12">
 
-            {state.balance['xstx'] > 0 ? (
-              <section>
-                <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
-                  <div>
-                    <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">Trade xSTX for STX</h3>
-                  </div>
-                </header>
-                <div className="mt-4">
-                  {isLoading ? (
-                    <>
-                      <Placeholder className="py-2" width={Placeholder.width.FULL} />
-                      <Placeholder className="py-2" width={Placeholder.width.FULL} />
-                    </>
-                  ) : (
-                    <div className="mt-4 shadow sm:rounded-md sm:overflow-hidden">
-                      <div className="px-4 py-5 bg-white dark:bg-zinc-800 sm:p-6">
-                        {(redeemableStx / 1000000) === 0 ? (
-                          <>
-                            <p>There are <span className="font-semibold">no redeemable STX</span> in the Arkadiko pool.</p>
-                            <p className="mt-1">Be sure to check again later to redeem your xSTX for STX.</p>
-                          </>
-                        ) : (
-                          <p>There are <span className="text-lg font-semibold">{redeemableStx / 1000000}</span> STX redeemable in the Arkadiko pool.</p>
-                        )}
-                        <div className="flex items-center justify-between mt-4">
-                          <p>You have <span className="text-lg font-semibold">{state.balance['xstx'] / 1000000}</span> xSTX.</p>
+            <section>
+              <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
+                <div>
+                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">Trade xSTX for STX</h3>
+                </div>
+              </header>
+              <div className="mt-4">
+                <div className="mt-4 shadow sm:rounded-md sm:overflow-hidden">
+                  <div className="px-4 py-5 bg-white dark:bg-zinc-800 sm:p-6">
+                    <div className="flex items-center justify-between">
+                      {isLoading ? (
+                        <>
+                          <Placeholder className="py-2" width={Placeholder.width.FULL} />
+                          <Placeholder className="py-2" width={Placeholder.width.FULL} />
+                        </>
+                      ) : (
+                        <>
+                          <p>
+                            You have <span className="text-lg font-semibold">{state.balance['xstx'] / 1000000}</span> xSTX. {' '}
+                            {redeemableStx != 0 ? (
+                              <>
+                                There are <span className="font-semibold">no redeemable STX</span> in the Arkadiko pool.
+                                Be sure to check again later.
+                              </>
+                            ) : (
+                              <>
+                                There are <span className="text-lg font-semibold">{redeemableStx / 1000000}</span> STX redeemable in the Arkadiko pool.
+                              </>
+                            )}
+                          </p>
 
                           <button
                             type="button"
                             onClick={() => redeemStx()}
-                            disabled={(redeemableStx / 1000000) === 0}
+                            disabled={redeemableStx == 0 || state.balance['xstx'] == 0}
                             className="inline-flex justify-center px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
                           >
                             Redeem
                           </button>
-                        </div>
-                      </div>
+                        </>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
-              </section>
-            ): null}
+              </div>
+            </section>
 
             <section>
               <header className="pt-10 pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
