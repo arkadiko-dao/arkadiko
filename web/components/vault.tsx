@@ -62,7 +62,7 @@ export const Vault: React.FC<VaultProps> = ({
   const stxAddress = useSTXAddress();
   const [stabilityFee, setStabilityFee] = useState(0);
   const [_, setState] = useContext(AppContext);
-  const decimals = collateralToken.toLowerCase() === 'stx' ? 1000000 : 100000000;
+  const decimals = (collateralToken.toLowerCase() === 'stx' || collateralToken.toLocaleLowerCase() === 'xstx') ? 1000000 : 100000000;
 
   useEffect(() => {
     const fetchFees = async () => {
