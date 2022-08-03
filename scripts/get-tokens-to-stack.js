@@ -10,7 +10,7 @@ async function getTokensToStack() {
     contractAddress: CONTRACT_ADDRESS,
     contractName: "arkadiko-stx-reserve-v1-1",
     functionName: "get-tokens-to-stack",
-    functionArgs: [tx.stringAsciiCV("stacker")],
+    functionArgs: [tx.stringAsciiCV("stacker-4")],
     senderAddress: CONTRACT_ADDRESS,
     network
   });
