@@ -15,7 +15,7 @@ async function transact() {
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
       tx.uintCV(48225),
       tx.uintCV(720),
-      tx.stringUtf8CV('Auction engine V4.2'),
+      tx.stringUtf8CV('AIP12 Auction engine V4.2'),
       tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/501'),
       tx.listCV([
         tx.tupleCV({
