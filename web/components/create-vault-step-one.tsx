@@ -3,7 +3,7 @@ import { AppContext } from '@common/context';
 import { CollateralType } from '@components/collateral-type';
 import { NewVaultWizardNav } from './new-vault-wizard-nav';
 import { tokenList } from '@components/token-swap-list';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 interface VaultProps {
   setStep: (arg: number) => void;

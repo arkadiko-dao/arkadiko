@@ -12,6 +12,7 @@ import { ArchiveIcon } from '@heroicons/react/outline';
 import { Placeholder } from './ui/placeholder';
 import { Prices } from './prices';
 import { NavLink as RouterLink } from 'react-router-dom';
+import { CollateralCard } from './collateral-card';
 
 export const Mint = () => {
   const address = useSTXAddress();
@@ -163,7 +164,7 @@ export const Mint = () => {
         <section className="mt-12">
           <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:items-end sm:justify-between">
             <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
-              Your vaults
+              Your positions
             </h3>
 
             {vaults.length &&
@@ -214,21 +215,29 @@ export const Mint = () => {
             <>
               <EmptyState
                 Icon={ArchiveIcon}
-                title="You currently have no open vaults."
-                description="Start creating a new vault and unleash the power of self repaying-loans!"
-              />
-
-              <div className="flex justify-center my-4">
-                <RouterLink
-                  to={`/vaults/new`}
-                  exact
-                  className="inline-flex px-6 py-3 text-base font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  Create Vault
-                </RouterLink>
-              </div>
+                title="You currently have no open positions."
+              >
+                <p className="mt-2 text-base text-gray-500 dark:text-zinc-400 md:ml-8">
+                  Start creating <a className="text-indigo-500 underline decoration-1 dark:text-indigo-300 underline-offset-2 dark:hover:text-indigo-200 hover:text-indigo-700" href="#borrow">a new vault below</a> and unleash the power of self repaying-loans!
+                </p>
+              </EmptyState>
             </>
           )}
+        </section>
+
+        <section className="mt-12" id="borrow">
+          <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
+            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
+              Start borrowing
+            </h3>
+            <p className="max-w-3xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
+              Borrow against your favorite assets now.
+            </p>
+          </header>
+
+          <div className="grid grid-cols-1 gap-8 mt-4 sm:grid-cols-3">
+            <CollateralCard types={collateralTypes} />
+          </div>
         </section>
 
         <Prices />
