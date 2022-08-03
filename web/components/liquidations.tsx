@@ -615,7 +615,7 @@ export const Liquidations: React.FC = () => {
                         <>
                           <p>
                             You have <span className="text-lg font-semibold">{state.balance['xstx'] / 1000000}</span> xSTX. {' '}
-                            {redeemableStx != 0 ? (
+                            {redeemableStx == 0 ? (
                               <>
                                 There are <span className="font-semibold">no redeemable STX</span> in the Arkadiko pool.
                                 Be sure to check again later.
