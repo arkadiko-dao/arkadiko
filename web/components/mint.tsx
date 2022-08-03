@@ -244,7 +244,21 @@ export const Mint = () => {
               <CollateralCard types={collateralTypes} />
             {/* </div> */}
           </div>
+        </section>
 
+        <section className="mt-12" id="borrow">
+          <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
+            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
+              Start borrowing
+            </h3>
+            <p className="max-w-3xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
+              Borrow against your favorite assets now.
+            </p>
+          </header>
+
+          <div className="grid grid-cols-1 gap-8 mt-4 sm:grid-cols-3">
+            <CollateralCard types={collateralTypes} />
+          </div>
         </section>
 
         <Prices />
