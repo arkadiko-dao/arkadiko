@@ -255,10 +255,12 @@ export const Mint = () => {
               Borrow against your favorite assets now.
             </p>
           </header>
-
-          <div className="grid grid-cols-1 gap-8 mt-4 sm:grid-cols-3">
-            <CollateralCard types={collateralTypes} />
+          <div className="flex items-center justify-center mt-4 space-x-8">
+            {/* <div className="grid grid-cols-1 gap-8 mt-4 sm:grid-cols-3"> */}
+              <CollateralCard types={collateralTypes} />
+            {/* </div> */}
           </div>
+
         </section>
 
         <Prices />
