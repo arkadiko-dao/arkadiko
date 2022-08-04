@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { CollateralTypeProps } from '@common/context';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { StyledIcon } from './ui/styled-icon';
+import { AppContext } from '@common/context';
+import { microToReadable } from '@common/vault-utils';
+
 
 export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
+  const [state, setState] = useContext(AppContext);
   const collateralItems: CollateralTypeProps[] = [];
 
   ['STX-A', 'XBTC-A'].forEach((tokenString: string) => {
@@ -64,8 +68,37 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
             <div className={`px-4 py-5 mt-8 mb-4 rounded-lg bg-${collateral.token} bg-opacity-[.08] flex items-center justify-center`}>
               <StyledIcon as="SparklesIcon" size={6} className={`brightness-50 dark:brightness-100 text-${collateral.token}/80 mr-6 shrink-0`} />
               <div className="flex flex-col">
-                <p className={`text-sm font-semibold brightness-75 text-${collateral.token}`}>With 5000 <span className="text-xs">{collateral.token}</span>,</p>
-                <p className={`text-lg font-semibold text-${collateral.token} brightness-50 dark:brightness-100`}>borrow up to 2500 <span className="text-sm">USDA</span></p>
+                <p className={`text-sm font-semibold brightness-75 text-${collateral.token}`}>
+                  With{' '}
+                  {state.userData ?
+                    collateral.token === "STX" ?
+                      state.balance["stx"] > 0 ?
+                        `${microToReadable(state.balance["stx"]).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 6,
+                        })}`
+                      :
+                      `2000`
+                    :
+                    collateral.token === "xBTC" ?
+                      (parseFloat(state.balance["xbtc"] !== '0.00')) ?
+                        `${(parseFloat(state.balance["xbtc"]) / 100000000).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 6,
+                        })}`
+                      :
+                      `2`
+                      : null
+                    : null
+                  }
+                  <span className="text-xs">
+                    {' '}{collateral.token}
+                  </span>,</p>
+                <p className={`text-lg font-semibold text-${collateral.token} brightness-50 dark:brightness-100`}>
+                  {/* Calculations go here */}
+                  borrow up to 2500
+                  <span className="text-sm">USDA</span>
+                </p>
               </div>
             </div>
 
