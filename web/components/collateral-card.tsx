@@ -12,9 +12,9 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
       'STX-A': {
         label: 'Keep stacking while borrowing',
         logo: '/assets/tokens/stx.svg',
-        path: '/vaults/new'
+        path: '/vaults/new#stx'
       },
-      'xBTC': {
+      'XBTC-A': {
         label: 'Borrow against the hardest money',
         logo: '/assets/tokens/xbtc.svg',
         path: '/vaults/new?type=xBTC-A&token=xBTC'
@@ -39,14 +39,12 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
         liquidationPenalty: coll['liquidationPenalty'],
         collateralToDebtRatio: coll['collateralToDebtRatio'],
         maximumDebt: coll['maximumDebt'],
-        label: collExtraInfo['label'],
-        logo: collExtraInfo['logo'],
+        label: collExtraInfo[tokenString]?.['label'],
+        logo: collExtraInfo[tokenString]?.['logo'],
+        path: collExtraInfo[tokenString]?.['path']
       });
     }
-
   });
-
-  console.log(collateralItems)
 
   return (
     <>
@@ -56,10 +54,10 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
             <div className="flex items-start justify-between">
               <div className="mr-6">
                 <h2 className="text-xl font-medium font-semibold leading-6 text-gray-700 dark:text-zinc-100">{collateral.token}</h2>
-                <p className="mt-1.5">Keep stacking while borrowing</p>
+                <p className="mt-1.5">{collateral.label}</p>
               </div>
               <div className={`flex items-center justify-center w-20 h-20 shrink-0 origin-bottom bg-white/80 rounded-md shadow-2xl shadow-${collateral.token}/10 rotate-6 scale-[0.95] transition duration-700 ease-in-out group-hover:rotate-0 group-hover:scale-100 group-hover:-translate-y-1 border border-gray-400/30`}>
-                <img className="w-12 h-12" src="/assets/tokens/stx.svg" alt="" />
+                <img className="w-12 h-12" src={collateral.logo} alt="" />
               </div>
             </div>
 
@@ -92,8 +90,9 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
               </div>
             </dl>
 
+
             <RouterLink
-              to={`/`}
+              to={collateral.path}
               exact
               className="w-full px-6 py-3 mt-6 text-base font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
