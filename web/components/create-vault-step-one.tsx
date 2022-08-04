@@ -42,7 +42,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep }) => {
             <button
               type="button"
               className={`w-1/2 p-6 text-lg font-semibold text-center text-gray-500 dark:text-zinc-300 bg-white dark:bg-zinc-700 rounded-md shadow md:w-1/6 hover:bg-white/80 ${
-                collateralTypeChoice === 'stx'
+                collateralTypeChoice === 'stx' || (location.hash.indexOf('stx') === 1)
                   ? 'border border-indigo-500/60'
                   : 'border border-transparent'
               }`}
@@ -60,7 +60,7 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep }) => {
             <button
               type="button"
               className={`w-1/2 p-6 ml-6 text-lg font-semibold text-center text-gray-500 dark:text-zinc-300 bg-white dark:bg-zinc-700 rounded-md shadow md:w-1/6 hover:bg-white/80 ${
-                collateralTypeChoice === 'xbtc'
+                collateralTypeChoice === 'xbtc' || (location.hash.indexOf('xbtc') === 1)
                   ? 'border border-indigo-500/60'
                   : 'border border-transparent'
               }`}
