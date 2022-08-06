@@ -1,14 +1,35 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { CollateralTypeProps } from '@common/context';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { StyledIcon } from './ui/styled-icon';
 import { AppContext } from '@common/context';
 import { microToReadable } from '@common/vault-utils';
-
+import { getPrice } from '@common/get-price';
 
 export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
   const [state, setState] = useContext(AppContext);
   const collateralItems: CollateralTypeProps[] = [];
+  const [stxPrice, setStxPrice] = useState(0);
+  const [btcPrice, setBtcPrice] = useState(0);
+
+  useEffect(() => {
+
+    const fetchInfo = async () => {
+      // Fetch info
+      const [
+        stxPrice,
+        btcPrice
+      ] = await Promise.all([
+        getPrice("STX"),
+        getPrice("xBTC"),
+      ]);
+
+      setStxPrice(stxPrice / 1000000);
+      setBtcPrice(btcPrice / 1000000);
+    };
+
+    fetchInfo();
+  }, []);
 
   ['STX-A', 'XBTC-A'].forEach((tokenString: string) => {
     const coll = types?.[tokenString];
@@ -74,8 +95,8 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
                     collateral.token === "STX" ?
                       state.balance["stx"] > 0 ?
                         `${microToReadable(state.balance["stx"]).toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 6,
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 0,
                         })}`
                       :
                       `2000`
@@ -87,7 +108,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
                           maximumFractionDigits: 6,
                         })}`
                       :
-                      `2`
+                      `1`
                       : null
                     : null
                   }
@@ -95,9 +116,35 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
                     {' '}{collateral.token}
                   </span>,</p>
                 <p className={`text-lg font-semibold text-${collateral.token} brightness-50 dark:brightness-100`}>
-                  {/* Calculations go here */}
-                  borrow up to 2500
-                  <span className="text-sm">USDA</span>
+                  borrow up to {' '}
+
+                  {collateral.token === "STX" ?
+                    state.userData && state.balance["stx"] > 0 ?
+                      ((microToReadable(state.balance["stx"]) * stxPrice) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      })
+                    :
+                    ((2000 * stxPrice) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 0,
+                    })
+                  :
+                  collateral.token === "xBTC" ?
+                    state.userData && (parseFloat(state.balance["xbtc"] !== '0.00')) ?
+                      (((parseFloat(state.balance["xbtc"]) / 100000000) * btcPrice) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      })
+                    :
+                    ((1 * btcPrice) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 0,
+                    })
+                    : null
+                  }
+
+                  <span className="text-sm"> USDA</span>
                 </p>
               </div>
             </div>
