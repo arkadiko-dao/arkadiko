@@ -31,10 +31,15 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
     fetchInfo();
   }, []);
 
-  ['STX-A', 'XBTC-A'].forEach((tokenString: string) => {
+  ['STX-A', 'STX-B', 'XBTC-A'].forEach((tokenString: string) => {
     const coll = types?.[tokenString];
     const collExtraInfo = {
       'STX-A': {
+        label: 'Keep stacking while borrowing',
+        logo: '/assets/tokens/stx.svg',
+        path: '/vaults/new#stx'
+      },
+      'STX-B': {
         label: 'Keep stacking while borrowing',
         logo: '/assets/tokens/stx.svg',
         path: '/vaults/new#stx'
@@ -159,7 +164,12 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
               <div className="flex justify-between">
                 <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-400">Current liquidity available</dt>
                 <dd className="flex text-sm font-semibold text-right text-gray-700/70 dark:text-zinc-50/80">
-                  <span className="flex-grow"></span>
+                  <span className="flex-grow">{
+                    ((collateral.maximumDebt - collateral.totalDebt) / 1000000).toLocaleString(undefined, {
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 0,
+                    })
+                  }</span>
                 </dd>
               </div>
               <div className="flex justify-between">
