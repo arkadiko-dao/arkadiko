@@ -260,7 +260,6 @@ export const Mint = () => {
               <CollateralCard types={collateralTypes} />
             {/* </div> */}
           </div>
-
         </section>
 
         <Prices />
