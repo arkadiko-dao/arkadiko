@@ -34,7 +34,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
     fetchInfo();
   }, []);
 
-  ['STX-A', 'STX-B', 'XBTC-A'].forEach((tokenString: string) => {
+  ['STX-A', 'XBTC-A'].forEach((tokenString: string) => {
     const coll = types?.[tokenString];
     const collExtraInfo = {
       'STX-A': {
@@ -48,11 +48,6 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
           iconColor: 'text-STX/80',
           innerText: 'text-STX'
         }
-      },
-      'STX-B': {
-        label: 'Keep stacking while borrowing',
-        logo: '/assets/tokens/stx.svg',
-        path: '/vaults/new#stx'
       },
       'XBTC-A': {
         label: 'Borrow against the hardest money',
