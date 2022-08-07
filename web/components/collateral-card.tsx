@@ -5,9 +5,12 @@ import { StyledIcon } from './ui/styled-icon';
 import { AppContext } from '@common/context';
 import { microToReadable } from '@common/vault-utils';
 import { getPrice } from '@common/get-price';
+import { useConnect } from '@stacks/connect-react';
 
 export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
   const [state, setState] = useContext(AppContext);
+  const { doOpenAuth } = useConnect();
+
   const collateralItems: CollateralTypeProps[] = [];
   const [stxPrice, setStxPrice] = useState(0);
   const [btcPrice, setBtcPrice] = useState(0);
@@ -91,9 +94,8 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
               <div className="flex flex-col">
                 <p className={`text-sm font-semibold brightness-75 text-${collateral.token}`}>
                   With{' '}
-                  {state.userData ?
-                    collateral.token === "STX" ?
-                      state.balance["stx"] > 0 ?
+                  {collateral.token === "STX" ?
+                      state.userData && state.balance["stx"] > 0 ?
                         `${microToReadable(state.balance["stx"]).toLocaleString(undefined, {
                           minimumFractionDigits: 0,
                           maximumFractionDigits: 0,
@@ -102,7 +104,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
                       `2000`
                     :
                     collateral.token === "xBTC" ?
-                      (parseFloat(state.balance["xbtc"] !== '0.00')) ?
+                      state.userData && (parseFloat(state.balance["xbtc"] !== '0.00')) ?
                         `${(parseFloat(state.balance["xbtc"]) / 100000000).toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 6,
@@ -110,7 +112,6 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
                       :
                       `1`
                       : null
-                    : null
                   }
                   <span className="text-xs">
                     {' '}{collateral.token}
@@ -175,14 +176,24 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
               </div>
             </dl>
 
+            {state.userData ? (
+              <RouterLink
+                to={collateral.path}
+                exact
+                className="w-full px-6 py-3 mt-6 text-base font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Borrow
+              </RouterLink>
+            ) : (
+              <button
+                type="button"
+                onClick={() => doOpenAuth()}
+                className="w-full px-6 py-3 mt-6 text-base font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Connect Wallet
+              </button>
+            )}
 
-            <RouterLink
-              to={collateral.path}
-              exact
-              className="w-full px-6 py-3 mt-6 text-base font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Borrow
-            </RouterLink>
           </div>
         </div>
       ))}
