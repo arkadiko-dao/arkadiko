@@ -166,6 +166,23 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   </div>
                 ) : (
                   <div className="hidden lg:ml-6 lg:flex lg:space-x-6 lg:items-center">
+
+                    <RouterLink
+                      to="/swap"
+                      className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
+                      activeClassName="border-indigo-500 text-gray-900"
+                    >
+                      Swap
+                    </RouterLink>
+
+                    <RouterLink
+                      to="/vaults"
+                      className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
+                      activeClassName="border-indigo-500 text-gray-900"
+                    >
+                      Borrow
+                    </RouterLink>
+
                     {showWallet ? (
                       <div>
                         <button
