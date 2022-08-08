@@ -81,7 +81,7 @@ export const tokenList = [
     decimals: 6
   },
   {
-    id: 7,
+    id: 8,
     name: 'atALEX',
     nameInPair: 'atalex',
     logo: '/assets/tokens/alex.png',

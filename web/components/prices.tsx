@@ -112,7 +112,7 @@ export const Prices = () => {
     },
     {
       token: 'atALEX',
-      logo: tokenList[3].logo,
+      logo: tokenList[7].logo,
       price: xbtcPrice / 1000000,
       unit: '$',
       block: xbtcBlockUpdate,

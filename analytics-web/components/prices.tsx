@@ -81,6 +81,14 @@ export const Prices: React.FC = () => {
       blockAgo: xbtcBlockAgoUpdate,
     },
     {
+      token: 'atALEX',
+      logo: tokenList[7].logo,
+      price: xbtcPrice / 1000000,
+      unit: '$',
+      block: xbtcBlockUpdate,
+      blockAgo: xbtcBlockAgoUpdate,
+    },
+    {
       token: 'USDA',
       logo: tokenList[0].logo,
       price: usdaPrice / 1000000,
