@@ -7,6 +7,7 @@ export const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 export const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
 export const welshContractAddress = process.env.WELSH_CONTRACT_ADDRESS || '';
 export const ldnContractAddress = process.env.LDN_CONTRACT_ADDRESS || '';
+export const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS
 
 export const tokenList = [
   {
@@ -78,6 +79,16 @@ export const tokenList = [
     address: welshContractAddress,
     fullName: 'welshcorgicoin-token',
     decimals: 6
+  },
+  {
+    id: 7,
+    name: 'atALEX',
+    nameInPair: 'atalex',
+    logo: '/assets/tokens/alex.png',
+    listed: false,
+    address: atAlexContractAddress,
+    fullName: 'auto-alex',
+    decimals: 8
   },
 ];
 

@@ -29,6 +29,7 @@ export const getBalance = async (address: string) => {
   const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
   const welshContractAddress = process.env.WELSH_CONTRACT_ADDRESS || '';
   const ldnContractAddress = process.env.LDN_CONTRACT_ADDRESS || '';
+  const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
 
   const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
   const usdaBalance = data.fungible_tokens[`${contractAddress}.usda-token::usda`];
@@ -60,6 +61,7 @@ export const getBalance = async (address: string) => {
     data.fungible_tokens[
       `${welshContractAddress}.welshcorgicoin-token::welshcorgicoin`
     ];
+  const atAlexBalance = data.fungible_tokens[`${atAlexContractAddress}.auto-alex::auto-alex`];
 
   return {
     stx: Number(data.stx.balance) - Number(data.stx.locked),
@@ -71,6 +73,7 @@ export const getBalance = async (address: string) => {
     wldn: wldnBalance ? wldnBalance.balance : 0,
     ldn: ldnBalance ? ldnBalance.balance : 0,
     welsh: welshBalance ? welshBalance.balance : 0,
+    atalex: atAlexBalance ? atAlexBalance.balance : 0,
     dikousda: lpDikoUsdaBalance ? lpDikoUsdaBalance.balance : 0,
     wstxusda: lpStxUsdaBalance ? lpStxUsdaBalance.balance : 0,
     wstxdiko: lpStxDikoBalance ? lpStxDikoBalance.balance : 0,

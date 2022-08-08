@@ -111,6 +111,14 @@ export const Prices = () => {
       blockAgo: xbtcBlockAgoUpdate,
     },
     {
+      token: 'atALEX',
+      logo: tokenList[3].logo,
+      price: xbtcPrice / 1000000,
+      unit: '$',
+      block: xbtcBlockUpdate,
+      blockAgo: xbtcBlockAgoUpdate,
+    },
+    {
       token: 'USDA',
       logo: tokenList[0].logo,
       price: usdaPrice / 1000000,
