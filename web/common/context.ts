@@ -12,6 +12,7 @@ interface UserBalance {
   wldn: number;
   ldn: number;
   welsh: number;
+  atalex: number;
   dikousda: number;
   wstxusda: number;
   wstxdiko: number;
@@ -42,7 +43,7 @@ export interface AppState {
   userData: UserData | null;
   balance: UserBalance;
   vaults: VaultProps[];
-  definedCollateralTypes: [string, string, string];
+  definedCollateralTypes: [string, string, string, string];
   collateralTypes: object;
   showTxModal: boolean;
   currentTxId: string;
@@ -61,6 +62,7 @@ export const defaultBalance = () => {
     wldn: 0,
     ldn: 0,
     welsh: 0,
+    atalex: 0,
     dikousda: undefined,
     stxusda: undefined,
     wstxusda: undefined,
@@ -82,7 +84,7 @@ export const defaultState = (): AppState => {
       userData: userSession.loadUserData(),
       balance: defaultBalance(),
       vaults: [],
-      definedCollateralTypes: ['STX-A', 'STX-B', 'XBTC-A'],
+      definedCollateralTypes: ['STX-A', 'STX-B', 'XBTC-A', 'ATALEX-A'],
       collateralTypes: [],
       currentTxId: '',
       currentTxStatus: '',
@@ -95,7 +97,7 @@ export const defaultState = (): AppState => {
     userData: null,
     balance: defaultBalance(),
     vaults: [],
-    definedCollateralTypes: ['STX-A', 'STX-B', 'XBTC-A'],
+    definedCollateralTypes: ['STX-A', 'STX-B', 'XBTC-A', 'ATALEX-A'],
     collateralTypes: [],
     currentTxId: '',
     currentTxStatus: '',
