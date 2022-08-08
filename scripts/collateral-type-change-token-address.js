@@ -12,10 +12,11 @@ async function transact() {
     functionName: 'change-token-address',
     functionArgs: [
       tx.stringAsciiCV('STX-A'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'xstx-token')
+      tx.contractPrincipalCV('SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9', 'auto-alex')
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
+    nonce: new BN(2071, 10),
     network
   };
 

@@ -7,15 +7,14 @@ const BN = require('bn.js');
 
 async function transact() {
   const list = tx.listCV([
-    tx.tupleCV({ 'key': tx.stringAsciiCV('name'), 'new-value': tx.stringAsciiCV('Auto ALEX') }),
-    tx.tupleCV({ 'key': tx.stringAsciiCV('token'), 'new-value': tx.stringAsciiCV('atALEX') }),
-    tx.tupleCV({ 'key': tx.stringAsciiCV('token-type'), 'new-value': tx.stringAsciiCV('ATALEX-A') }),
-    tx.tupleCV({ 'key': tx.stringAsciiCV('token-address'), 'new-value': tx.contractPrincipalCV('SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9', 'auto-alex') }),
-    tx.tupleCV({ 'key': tx.stringAsciiCV('url'), 'new-value': tx.stringAsciiCV('https://alexlab.co/') }),
     tx.tupleCV({ 'key': tx.stringAsciiCV('liquidation-ratio'), 'new-value': tx.uintCV(new BN(180)) }),
     tx.tupleCV({ 'key': tx.stringAsciiCV('collateral-to-debt-ratio'), 'new-value': tx.uintCV(new BN(400)) }),
+    tx.tupleCV({ 'key': tx.stringAsciiCV('total-debt'), 'new-value': tx.uintCV(new BN(0)) }),
     tx.tupleCV({ 'key': tx.stringAsciiCV('maximum-debt'), 'new-value': tx.uintCV(new BN(0)) }),
-    tx.tupleCV({ 'key': tx.stringAsciiCV('liquidation-penalty'), 'new-value': tx.uintCV(new BN(2000)) })
+    tx.tupleCV({ 'key': tx.stringAsciiCV('liquidation-penalty'), 'new-value': tx.uintCV(new BN(2000)) }),
+    tx.tupleCV({ 'key': tx.stringAsciiCV('stability-fee'), 'new-value': tx.uintCV(new BN(7610350076)) }),    
+    tx.tupleCV({ 'key': tx.stringAsciiCV('stability-fee-decimals'), 'new-value': tx.uintCV(new BN(16)) }),    
+    tx.tupleCV({ 'key': tx.stringAsciiCV('stability-fee-apy'), 'new-value': tx.uintCV(new BN(400)) }),    
   ]);
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
