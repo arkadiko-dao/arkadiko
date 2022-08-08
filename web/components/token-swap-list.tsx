@@ -84,7 +84,7 @@ export const tokenList = [
     id: 8,
     name: 'atALEX',
     nameInPair: 'atalex',
-    logo: '/assets/tokens/alex.png',
+    logo: '/assets/tokens/atalex.png',
     listed: false,
     address: atAlexContractAddress,
     fullName: 'auto-alex',
