@@ -77,7 +77,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
   return (
     <>
       {collateralItems.map((collateral) => (
-        <div key={collateral.tokenType} className={`group border border-${collateral.token}/5 hover:border-${collateral.token}/10 shadow-md shadow-${collateral.token}/10 flex flex-col col-span-1 bg-gradient-to-br from-${collateral.token}/5 to-${collateral.token}/10 divide-y divide-gray-200 rounded-md transition duration-700 ease-in-out w-1/3`}>
+        <div key={collateral.tokenType} className={`group border border-${collateral.token}/5 hover:border-${collateral.token}/10 shadow-md shadow-${collateral.token}/10 flex flex-col col-span-1 bg-gradient-to-br from-${collateral.token}/5 to-${collateral.token}/10 divide-y divide-gray-200 rounded-md transition duration-700 ease-in-out sm:w-1/3`}>
           <div className="flex flex-col flex-1 px-6 py-8">
             <div className="flex items-start justify-between">
               <div className="mr-6">

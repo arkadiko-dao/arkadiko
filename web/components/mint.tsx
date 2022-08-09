@@ -228,7 +228,7 @@ export const Mint = () => {
             )}
           </section>
         ) : null}
-        
+
 
         <section className="mt-12" id="borrow">
           <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
@@ -239,7 +239,7 @@ export const Mint = () => {
               Borrow against your favorite assets now.
             </p>
           </header>
-          <div className="flex items-center justify-center mt-4 space-x-8">
+          <div className="mt-4 space-y-8 sm:space-x-8 sm:flex sm:items-center sm:justify-center sm:space-y-0">
             {/* <div className="grid grid-cols-1 gap-8 mt-4 sm:grid-cols-3"> */}
               <CollateralCard types={collateralTypes} />
             {/* </div> */}
