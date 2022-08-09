@@ -8,12 +8,22 @@ module.exports = {
     './components/**/*.tsx',
     './public/html/*.html'
   ],
+  safelist: [
+    { pattern: /STX/ },
+    { pattern: /xBTC/ },
+    { pattern: /atAlex/ },
+  ],
   theme: {
     extend: {
       fontFamily: {
         headings: ['Kollektif', ...defaultTheme.fontFamily.sans],
         sans: ['Montserrat', ...defaultTheme.fontFamily.sans],
       },
+      colors: {
+        'STX': '#5546FF',
+        'xBTC': '#F7931A',
+        'atAlex': '#A714FD'
+      }
     },
   },
   variants: {
