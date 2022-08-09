@@ -3,7 +3,7 @@ import { AppContext } from '@common/context';
 import { CollateralType } from '@components/collateral-type';
 import { NewVaultWizardNav } from './new-vault-wizard-nav';
 import { tokenList } from '@components/token-swap-list';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 interface VaultProps {
   setStep: (arg: number) => void;
@@ -17,7 +17,6 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep }) => {
 
   useEffect(() => {
     setStep(0);
-    history.replace({ type: null, token: null });
   }, []);
 
   const stxCollateralTypes = Object.fromEntries(
@@ -43,11 +42,16 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep }) => {
             <button
               type="button"
               className={`w-1/2 p-6 text-lg font-semibold text-center text-gray-500 dark:text-zinc-300 bg-white dark:bg-zinc-700 rounded-md shadow md:w-1/6 hover:bg-white/80 ${
-                collateralTypeChoice === 'stx'
+                collateralTypeChoice === 'stx' || (location.hash.indexOf('stx') === 1)
                   ? 'border border-indigo-500/60'
                   : 'border border-transparent'
               }`}
-              onClick={() => setCollateralTypeChoice('stx')}
+              onClick={
+                () => {
+                  setCollateralTypeChoice('stx');
+                  history.push(`#stx`);
+                }
+              }
             >
               <img className="w-10 h-10 mx-auto mb-3 rounded-full" src={tokenList[2].logo} alt="" />
               STX
@@ -56,11 +60,16 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep }) => {
             <button
               type="button"
               className={`w-1/2 p-6 ml-6 text-lg font-semibold text-center text-gray-500 dark:text-zinc-300 bg-white dark:bg-zinc-700 rounded-md shadow md:w-1/6 hover:bg-white/80 ${
-                collateralTypeChoice === 'xbtc'
+                collateralTypeChoice === 'xbtc' || (location.hash.indexOf('xbtc') === 1)
                   ? 'border border-indigo-500/60'
                   : 'border border-transparent'
               }`}
-              onClick={() => setCollateralTypeChoice('xbtc')}
+              onClick={
+                () => {
+                  setCollateralTypeChoice('xbtc');
+                  history.push(`#xbtc`);
+                }
+              }
             >
               <img className="w-10 h-10 mx-auto mb-3 rounded-full" src={tokenList[3].logo} alt="" />
               xBTC
@@ -68,9 +77,9 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep }) => {
           </div>
 
           <div className="md:max-w-4xl md:mx-auto">
-            {collateralTypeChoice === 'stx' ? (
+            {collateralTypeChoice === 'stx' || (location.hash.indexOf('stx') === 1) ? (
               <CollateralType types={stxCollateralTypes} setStep={setStep} />
-            ) : collateralTypeChoice === 'xbtc' ? (
+            ) : collateralTypeChoice === 'xbtc' || (location.hash.indexOf('xbtc') === 1) ? (
               <CollateralType types={xBtcCollateralTypes} setStep={setStep} />
             ) : null}
           </div>
