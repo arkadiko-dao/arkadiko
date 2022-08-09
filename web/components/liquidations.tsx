@@ -568,7 +568,7 @@ export const Liquidations: React.FC = () => {
                   />
                 ) : rewardData.length != 0 && startLoadingRewards ? (
                   <>
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600 shadow sm:rounded-md sm:overflow-hidden">
+                    <table className="min-w-full divide-y divide-gray-200 shadow dark:divide-zinc-600 sm:rounded-md sm:overflow-hidden">
                       <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
                         <tr>
                           <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-zinc-400">
@@ -784,7 +784,7 @@ export const Liquidations: React.FC = () => {
                   </div>
 
                   <div className="sm:col-span-2">
-                    <div className="relative bg-white rounded-lg shadow dark:bg-zinc-900">
+                    <div className="relative bg-white rounded-lg shadow dark:bg-zinc-800">
                       <div className="flex flex-col p-4">
                         <Tab.Group>
                           <Tab.List className="group p-0.5 rounded-lg flex w-full bg-gray-50 hover:bg-gray-100 dark:bg-zinc-300 dark:hover:bg-zinc-200">

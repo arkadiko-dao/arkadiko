@@ -31,6 +31,7 @@ import { Placeholder } from './ui/placeholder';
 import { Alert } from './ui/alert';
 import { PoxTimeline } from '@components/pox-timeline';
 import { StyledIcon } from './ui/styled-icon';
+import { Status } from './ui/health-status';
 
 export const ManageVault = ({ match }) => {
   const { doContractCall } = useConnect();
@@ -540,53 +541,24 @@ export const ManageVault = ({ match }) => {
                   />
                 ) : (
                   <>
-                    {/* TODO: Make component out of this */}
                     {debtClass(collateralType?.liquidationRatio, debtRatio) == 'text-green-500' ? (
-                      <span className="overflow-hidden group inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-green-100 text-green-800 h-6">
-                        <StyledIcon as="ShieldCheckIcon" size={5} className="mr-2" />
-                        Healthy
-                        <span className="flex items-center flex-shrink-0 invisible w-0 h-0 group-hover:w-full group-hover:visible group-hover:h-6">
-                          <svg
-                            className="w-1.5 h-1.5 mx-1 flex-shrink-0"
-                            fill="currentColor"
-                            viewBox="0 0 8 8"
-                          >
-                            <circle cx={4} cy={4} r={3} />
-                          </svg>
-                          <span className="flex-shrink-0">Low liquidation risk</span>
-                        </span>
-                      </span>
-                    ) : debtClass(collateralType?.liquidationRatio, debtRatio) ==
-                      'text-orange-500' ? (
-                      <span className="overflow-hidden group inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800 h-6">
-                        <StyledIcon as="ExclamationIcon" size={5} className="mr-2" />
-                        Warning
-                        <span className="flex items-center flex-shrink-0 invisible w-0 h-0 group-hover:w-full group-hover:visible group-hover:h-6">
-                          <svg
-                            className="w-1.5 h-1.5 mx-1 flex-shrink-0"
-                            fill="currentColor"
-                            viewBox="0 0 8 8"
-                          >
-                            <circle cx={4} cy={4} r={3} />
-                          </svg>
-                          <span className="flex-shrink-0">Medium liquidation risk</span>
-                        </span>
-                      </span>
+                      <Status
+                        type={Status.type.SUCCESS }
+                        label='Healthy'
+                        labelHover='Low liquidation risk'
+                      />
+                    ) : debtClass(collateralType?.liquidationRatio, debtRatio) == 'text-orange-500' ? (
+                      <Status
+                        type={Status.type.WARNING}
+                        label='Warning'
+                        labelHover='Medium liquidation risk'
+                      />
                     ) : (
-                      <span className="overflow-hidden group inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-red-100 text-red-800 h-6">
-                        <StyledIcon as="ShieldExclamationIcon" size={5} className="mr-2" />
-                        Danger
-                        <span className="flex items-center flex-shrink-0 invisible w-0 h-0 group-hover:w-full group-hover:visible group-hover:h-6">
-                          <svg
-                            className="w-1.5 h-1.5 mx-1 flex-shrink-0"
-                            fill="currentColor"
-                            viewBox="0 0 8 8"
-                          >
-                            <circle cx={4} cy={4} r={3} />
-                          </svg>
-                          <span className="flex-shrink-0">High liquidation risk</span>
-                        </span>
-                      </span>
+                      <Status
+                        type={Status.type.ERROR}
+                        label='Danger'
+                        labelHover='High liquidation risk'
+                      />
                     )}
                   </>
                 )
