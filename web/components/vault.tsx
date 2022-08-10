@@ -151,7 +151,7 @@ export const Vault: React.FC<VaultProps> = ({
 
   return (
     <>
-      <div className="relative bg-white border rounded-md border-gray-200/80 dark:border-zinc-800 dark:bg-zinc-800 shadom-sm">
+      <div className={`relative border rounded-md shadom-sm ${debtRatio < Number(collateralData?.liquidationRatio) ? 'bg-red-50/30 border-red-600/60' : 'bg-white dark:bg-zinc-800 border-gray-200/80 dark:border-zinc-800'}`}>
         <div className="px-6 py-4 border-b border-gray-100 dark:border-zinc-600">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -231,7 +231,7 @@ export const Vault: React.FC<VaultProps> = ({
                 className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
               >
                 <span className="absolute inset-0" aria-hidden="true"></span>
-                Manage Vault
+                Manage
                 <StyledIcon as="ArrowRightIcon" size={5} className="ml-2 -rotate-45" />
               </RouterLink>
             )}
