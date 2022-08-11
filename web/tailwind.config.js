@@ -8,11 +8,6 @@ module.exports = {
     './components/**/*.tsx',
     './public/html/*.html'
   ],
-  safelist: [
-    { pattern: /STX/ },
-    { pattern: /xBTC/ },
-    { pattern: /atAlex/ },
-  ],
   theme: {
     extend: {
       fontFamily: {
