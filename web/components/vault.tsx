@@ -151,7 +151,7 @@ export const Vault: React.FC<VaultProps> = ({
 
   return (
     <>
-      <div className={`relative border rounded-md shadom-sm ${debtRatio < Number(collateralData?.liquidationRatio) ? 'bg-red-50/30 border-red-600/60' : 'bg-white dark:bg-zinc-800 border-gray-200/80 dark:border-zinc-800'}`}>
+      <div className={`relative border rounded-md shadom-sm ${debtRatio != 0 ? (debtRatio < Number(collateralData?.liquidationRatio) ? 'bg-red-50/30 border-red-600/60' : 'bg-white dark:bg-zinc-800 border-gray-200/80 dark:border-zinc-800') : 'bg-white dark:bg-zinc-800 border-gray-200/80 dark:border-zinc-800'}`}>
         <div className="px-6 py-4 border-b border-gray-100 dark:border-zinc-600">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -161,25 +161,27 @@ export const Vault: React.FC<VaultProps> = ({
               </h2>
             </div>
             <>
-              {debtClass(collateralData?.liquidationRatio, debtRatio) == 'text-green-500' ? (
-                <Status
-                  type={Status.type.SUCCESS }
-                  label='Healthy'
-                  labelHover='Low liquidation risk'
-                />
-              ) : debtClass(collateralData?.liquidationRatio, debtRatio) == 'text-orange-500' ? (
-                <Status
-                  type={Status.type.WARNING}
-                  label='Warning'
-                  labelHover='Medium liquidation risk'
-                />
-              ) : (
-                <Status
-                  type={Status.type.ERROR}
-                  label='Danger'
-                  labelHover='High liquidation risk'
-                />
-              )}
+              {debtRatio != 0 ? (
+                debtClass(collateralData?.liquidationRatio, debtRatio) == 'text-green-500' ? (
+                  <Status
+                    type={Status.type.SUCCESS }
+                    label='Healthy'
+                    labelHover='Low liquidation risk'
+                  />
+                ) : debtClass(collateralData?.liquidationRatio, debtRatio) == 'text-orange-500' ? (
+                  <Status
+                    type={Status.type.WARNING}
+                    label='Warning'
+                    labelHover='Medium liquidation risk'
+                  />
+                ) : (
+                  <Status
+                    type={Status.type.ERROR}
+                    label='Danger'
+                    labelHover='High liquidation risk'
+                  />
+                )
+              ) : null}
             </>
           </div>
         </div>
