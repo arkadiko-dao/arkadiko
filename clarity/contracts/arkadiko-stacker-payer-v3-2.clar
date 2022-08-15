@@ -9,7 +9,7 @@
 (define-constant ERR-NOT-LIQUIDATED u225)
 
 (define-data-var stacker-payer-shutdown-activated bool false)
-(define-data-var stx-redeemable uint u20000000000)
+(define-data-var stx-redeemable uint u45650000000)
 (define-map vaults-redeemed { vault-id: uint } { redeemed: bool })
 
 (define-read-only (get-stx-redeemable)
