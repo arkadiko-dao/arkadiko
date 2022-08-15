@@ -119,6 +119,7 @@ export const App: React.FC = () => {
         wldn: account.wldn.toString(),
         ldn: account.ldn.toString(),
         welsh: account.welsh.toString(),
+        atalex: account.welsh.toString(),
         dikousda: account.dikousda.toString(),
         wstxusda: account.wstxusda.toString(),
         wstxdiko: account.wstxdiko.toString(),
