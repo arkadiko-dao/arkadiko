@@ -41,23 +41,51 @@
 
 (define-private (has-claimed-reward (reward-id uint))
   (let (
-    (claimed (get claimed (contract-call? .arkadiko-liquidation-rewards-v1-2 get-reward-claimed reward-id tx-sender)))
+    (claimed (get claimed-amount (contract-call? .arkadiko-liquidation-rewards-v1-1 get-reward-claimed reward-id tx-sender)))
   )
-    (if claimed
-      true
+    (if (is-eq claimed u0)
       (let (
-        (share-block (get share-block (contract-call? .arkadiko-liquidation-rewards-v1-2 get-reward-data reward-id)))
-        (user-shares (unwrap-panic (contract-call? .arkadiko-liquidation-pool-v1-1 get-shares-at tx-sender share-block)))
+        (share-block (get share-block (contract-call? .arkadiko-liquidation-rewards-v1-1 get-reward-data reward-id)))
       )
-        (is-eq user-shares u0)
+        (if (is-eq share-block u0)
+          false
+          (let (
+            (user-shares (unwrap-panic (contract-call? .arkadiko-liquidation-pool-v1-1 get-shares-at tx-sender share-block)))
+          )
+            (is-eq user-shares u0)
+          )
+        )
       )
+      true
     )
   )
 )
 
+
 ;; ---------------------------------------------------------
 ;; Claim helpers
 ;; ---------------------------------------------------------
+
+(define-public (claim-simple-50-stx-rewards-of (reward-ids (list 50 uint)))
+  (begin
+    (map claim-stx-rewards-of reward-ids)
+    (ok true)
+  )
+)
+
+(define-public (claim-simple-50-diko-rewards-of (reward-ids (list 50 uint)))
+  (begin
+    (map claim-diko-rewards-of reward-ids)
+    (ok true)
+  )
+)
+
+(define-public (claim-simple-50-xbtc-rewards-of (reward-ids (list 50 uint)))
+  (begin
+    (map claim-xbtc-rewards-of reward-ids)
+    (ok true)
+  )
+)
 
 (define-public (claim-50-stx-rewards-of (reward-ids (list 50 uint)))
   (begin
@@ -87,14 +115,14 @@
 )
 
 (define-public (claim-stx-rewards-of (reward-id uint))
-  (contract-call? .arkadiko-liquidation-rewards-v1-2 claim-rewards-of reward-id .xstx-token .arkadiko-liquidation-pool-v1-1)
+  (contract-call? .arkadiko-liquidation-rewards-v1-1 claim-rewards-of reward-id .xstx-token .arkadiko-liquidation-pool-v1-1)
 )
 
 (define-public (claim-diko-rewards-of (reward-id uint))
-  (contract-call? .arkadiko-liquidation-rewards-v1-2 claim-rewards-of reward-id .arkadiko-token .arkadiko-liquidation-pool-v1-1)
+  (contract-call? .arkadiko-liquidation-rewards-v1-1 claim-rewards-of reward-id .arkadiko-token .arkadiko-liquidation-pool-v1-1)
 )
 
 (define-public (claim-xbtc-rewards-of (reward-id uint))
   ;; TODO - UPDATE ADDRESS FOR MAINNET
-  (contract-call? .arkadiko-liquidation-rewards-v1-2 claim-rewards-of reward-id .Wrapped-Bitcoin .arkadiko-liquidation-pool-v1-1)
+  (contract-call? .arkadiko-liquidation-rewards-v1-1 claim-rewards-of reward-id .Wrapped-Bitcoin .arkadiko-liquidation-pool-v1-1)
 )

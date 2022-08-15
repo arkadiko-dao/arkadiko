@@ -814,19 +814,33 @@ Clarinet.test({
     let result = liquidationPool.stake(deployer, 10000);
     result.expectOk().expectUintWithDecimals(10000);
 
+    // Add 20 rewards
+    for (let index = 0; index < 20; index++) {
+      result = liquidationRewards.addReward(1, 0, "arkadiko-token", 10);
+      result.expectOk().expectBool(true);
+    }
+
+    // Claim 20 rewards
+    var rewardIds = [];
+    for (let index = 0; index < 20; index++) {
+      rewardIds.push(types.uint(index));
+    }
+    result = liquidationUI.claimDikoRewards(deployer.address, rewardIds);
+    result.expectOk().expectBool(true)
+
+    // Get user last reward ID
+    let call:any = await liquidationUI.getUserTracking(deployer.address);
+    call.result.expectTuple()['last-reward-id'].expectUint(0)
+
     // Add rewards
     for (let index = 0; index <= 80; index++) {
       result = liquidationRewards.addReward(1, 0, "arkadiko-token", 10);
       result.expectOk().expectBool(true);
     }
 
-    // Get user last reward ID
-    let call:any = await liquidationUI.getUserTracking(deployer.address);
-    call.result.expectTuple()['last-reward-id'].expectUint(0)
-
-    // Claim rewards
+    // Claim 5 rewards
     var rewardIds = [];
-    for (let index = 0; index < 25; index++) {
+    for (let index = 20; index < 25; index++) {
       rewardIds.push(types.uint(index));
     }
     result = liquidationUI.claimDikoRewards(deployer.address, rewardIds);

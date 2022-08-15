@@ -192,7 +192,7 @@ export const Liquidations: React.FC = () => {
   const getUserFirstRewardId = async () => {
     const call = await callReadOnlyFunction({
       contractAddress,
-      contractName: 'arkadiko-liquidation-rewards-ui-v1-2',
+      contractName: 'arkadiko-liquidation-rewards-ui-v2-2',
       functionName: 'get-user-tracking',
       functionArgs: [
         standardPrincipalCV(stxAddress || ''),
@@ -207,7 +207,7 @@ export const Liquidations: React.FC = () => {
   const getUserFirstRewardIdV1 = async () => {
     const call = await callReadOnlyFunction({
       contractAddress,
-      contractName: 'arkadiko-liquidation-rewards-ui-v1-1',
+      contractName: 'arkadiko-liquidation-rewards-ui-v2-1',
       functionName: 'get-user-tracking',
       functionArgs: [
         standardPrincipalCV(stxAddress || ''),
