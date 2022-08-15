@@ -222,6 +222,7 @@ export const App: React.FC = () => {
       };
       void getData();
     } else {
+      fetchCollateralTypes(contractAddress);
       fetchStackingCycle();
     }
   }, []);

@@ -121,7 +121,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
       const filteredAry = errors.filter(e => e !== error[0] && e !== funnyError[0]);
       if (parseFloat(value) > maximumToMint / 1000000) {
         setErrors(filteredAry.concat(error));
-      } else if (value <= parseFloat(maximumToMint / 2500000)) {
+      } else if (value <= parseFloat(maximumToMint / 10000000)) {
         setErrors(filteredAry.concat(funnyError));
       } else {
         setErrors(filteredAry);

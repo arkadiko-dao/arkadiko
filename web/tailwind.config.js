@@ -14,6 +14,11 @@ module.exports = {
         headings: ['Kollektif', ...defaultTheme.fontFamily.sans],
         sans: ['Montserrat', ...defaultTheme.fontFamily.sans],
       },
+      colors: {
+        'STX': '#5546FF',
+        'xBTC': '#F7931A',
+        'atAlex': '#A714FD'
+      }
     },
   },
   variants: {

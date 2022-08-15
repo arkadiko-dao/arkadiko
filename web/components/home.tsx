@@ -16,26 +16,8 @@ export const Home: React.FC = () => {
   const [state, _] = useContext(AppContext);
 
   return (
-    <>
-      {state.userData ? (
-        <Container>
-          <Mint />
-        </Container>
-      ) : (
-        <div className="w-full min-h-screen overflow-hidden bg-gray-100 dark:bg-zinc-900">
-          <div className="px-6 mx-auto lg:px-8 sm:pb-12">
-            <main className="pt-12 pb-12 sm:pt-0">
-              <div className="relative max-w-[554px] mx-auto">
-                <img
-                  className={'filter blur transition duration-200 ease-in-out'}
-                  src="/assets/onboarding/swap.png"
-                  alt=""
-                />
-              </div>
-            </main>
-          </div>
-        </div>
-      )}
-    </>
+    <Container>
+        <Mint />
+    </Container>
   );
 };
