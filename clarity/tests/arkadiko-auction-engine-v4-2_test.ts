@@ -25,7 +25,7 @@ import {
 import { 
   LiquidationPool,
   LiquidationRewards
-} from './models/arkadiko-tests-liquidation-fund.ts';
+} from './models/arkadiko-tests-liquidation-pool.ts';
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 

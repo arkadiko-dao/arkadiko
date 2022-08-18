@@ -11,7 +11,7 @@ import {
   LiquidationRewards,
   LiquidationRewardsDiko,
   LiquidationUI
-} from './models/arkadiko-tests-liquidation-fund.ts';
+} from './models/arkadiko-tests-liquidation-pool.ts';
 
 import { 
   OracleManager,
