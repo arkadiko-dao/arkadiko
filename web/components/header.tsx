@@ -9,6 +9,9 @@ import { StyledIcon } from './ui/styled-icon';
 import { Tooltip } from '@blockstack/ui';
 import { callReadOnlyFunction, cvToJSON } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
+import { getPendingTransactions } from '@common/transactions';
+import { MempoolContractCallTransaction } from '@blockstack/stacks-blockchain-api-types';
+import { useSTXAddress } from '@common/use-stx-address';
 
 interface HeaderProps {
   signOut: () => void;
@@ -31,8 +34,10 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
   const showWallet = process.env.REACT_APP_SHOW_CONNECT_WALLET === 'true';
   const { doOpenAuth } = useConnect();
   const name = bnsName();
+  const address = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [isVotingOpen, setisVotingOpen] = useState(false);
+  const [pendingTransactions, setPendingTransactions] = useState<MempoolContractCallTransaction[]>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -52,8 +57,19 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
       setisVotingOpen(data.some(item => item.value["is-open"].value));
     };
 
+    const fetchTransactions = async () => {
+      if (mounted && address) {
+        const pending = await getPendingTransactions(address || '', contractAddress || '');
+        const pendingMap = pending.map((tx: MempoolContractCallTransaction) => {
+          return tx;
+        });
+        setPendingTransactions(pendingMap);
+      }
+    };
+
     if (mounted) {
       void getData();
+      void fetchTransactions();
     }
 
     return () => {
@@ -143,12 +159,27 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
 
                     <button
                       type="button"
-                      className="block px-1 text-sm font-medium text-gray-500 dark:text-white hover:text-gray-700 "
+                      className="flex items-center px-1 text-sm font-medium text-gray-500 dark:text-white hover:text-gray-700 "
                       onClick={() => {
                         setShowSidebar(true);
                       }}
                     >
-                      <span className="inline-block w-3 h-3 pt-2 mr-2 bg-green-400 border-2 border-white rounded-full"></span>
+                      {pendingTransactions.length > 0 ?
+                        <Tooltip
+                          label={`You have pending transactions. Be sure to take them into account before making new ones.`}
+                          className="z-50"
+                        >
+                          <span className="inline-block w-4 h-4 mr-2">
+                            <StyledIcon
+                              as="ClockIcon"
+                              size={4}
+                              className="text-yellow-400"
+                            />
+                          </span>
+                        </Tooltip>
+                      :
+                        <span className="inline-block w-3 h-3 mr-2 bg-green-400 rounded-full"></span>
+                      }
                       {shortAddress(name)}
                     </button>
 
@@ -282,7 +313,22 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                         setShowSidebar(true);
                       }}
                     >
-                      <span className="inline-block w-3 h-3 pt-2 mr-2 bg-green-400 border-2 border-white rounded-full"></span>
+                      {pendingTransactions.length > 0 ?
+                        <Tooltip
+                          label={`You have pending transactions. Be sure to take them into account before making new ones.`}
+                          className="z-50"
+                        >
+                          <span className="inline-block w-4 h-4 mr-2">
+                            <StyledIcon
+                              as="ClockIcon"
+                              size={4}
+                              className="text-yellow-400"
+                            />
+                          </span>
+                        </Tooltip>
+                      :
+                        <span className="inline-block w-3 h-3 mr-2 bg-green-400 rounded-full"></span>
+                      }
                       {shortAddress(name)}
                     </button>
 
