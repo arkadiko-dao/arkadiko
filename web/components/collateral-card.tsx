@@ -145,7 +145,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
                           maximumFractionDigits: 6,
                         })}`
                       :
-                      `20,000`
+                      `50,000`
                       : null
                   }
                   <span className="text-xs">
@@ -185,7 +185,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
                         maximumFractionDigits: 0,
                       })
                     :
-                    ((20000 * atAlexPrice) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                    ((50000 * atAlexPrice) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
                       minimumFractionDigits: 0,
                       maximumFractionDigits: 0,
                     })
