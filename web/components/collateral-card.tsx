@@ -70,11 +70,11 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
         logo: '/assets/tokens/atalex.svg',
         path: '/vaults/new?type=ATALEX-A&token=atALEX',
         classes: {
-          wrapper: 'border-STX/5 hover:border-STX/10 shadow-STX/10 from-STX/5 to-STX/10',
-          tokenShadow: 'shadow-STX/10',
-          innerBg: 'bg-STX',
-          iconColor: 'text-STX/80',
-          innerText: 'text-STX'
+          wrapper: 'border-atAlex/5 hover:border-atAlex/10 shadow-atAlex/10 from-atAlex/5 to-atAlex/10',
+          tokenShadow: 'shadow-atAlex/10',
+          innerBg: 'bg-atAlex',
+          iconColor: 'text-atAlex/80',
+          innerText: 'text-atAlex'
         }
       }
     };
