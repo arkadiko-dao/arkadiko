@@ -14,6 +14,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
   const collateralItems: CollateralTypeProps[] = [];
   const [stxPrice, setStxPrice] = useState(0);
   const [btcPrice, setBtcPrice] = useState(0);
+  const [atAlexPrice, setAtAlexPrice] = useState(0);
 
   useEffect(() => {
 
@@ -21,20 +22,23 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
       // Fetch info
       const [
         stxPrice,
-        btcPrice
+        btcPrice,
+        atAlexPrice
       ] = await Promise.all([
         getPrice("STX"),
         getPrice("xBTC"),
+        getPrice("atALEX")
       ]);
 
       setStxPrice(stxPrice / 1000000);
       setBtcPrice(btcPrice / 1000000);
+      setAtAlexPrice(atAlexPrice / 1000000);
     };
 
     fetchInfo();
   }, []);
 
-  ['STX-A', 'XBTC-A'].forEach((tokenString: string) => {
+  ['STX-A', 'XBTC-A', 'ATALEX-A'].forEach((tokenString: string) => {
     const coll = types?.[tokenString];
     const collExtraInfo = {
       'STX-A': {
@@ -61,17 +65,24 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
           innerText: 'text-xBTC'
         }
       },
-      //'atAlex': {
-      //   label: 'Random catch phrase here',
-      //   logo: '/assets/tokens/atalex.svg',
-      //   path: ''
-      // }
+      'ATALEX-A': {
+        label: 'The auto-compounding ALEX governance token',
+        logo: '/assets/tokens/atalex.svg',
+        path: '/vaults/new?type=ATALEX-A&token=atALEX',
+        classes: {
+          wrapper: 'border-STX/5 hover:border-STX/10 shadow-STX/10 from-STX/5 to-STX/10',
+          tokenShadow: 'shadow-STX/10',
+          innerBg: 'bg-STX',
+          iconColor: 'text-STX/80',
+          innerText: 'text-STX'
+        }
+      }
     };
 
     if (coll) {
       collateralItems.push({
-        name: coll['name'],
-        token: coll['token'],
+        name: coll['name'] || 'atALEX',
+        token: coll['token'] || 'atALEX',
         tokenType: coll['tokenType'],
         url: coll['url'],
         totalDebt: coll['totalDebt'],
@@ -126,6 +137,15 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
                         })}`
                       :
                       `1`
+                    :
+                    collateral.token === "atALEX" ?
+                      state.userData && (parseFloat(state.balance["atalex"] !== '0.00')) ?
+                        `${(parseFloat(state.balance["atalex"]) / 100000000).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 6,
+                        })}`
+                      :
+                      `20,000`
                       : null
                   }
                   <span className="text-xs">
@@ -154,6 +174,18 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
                       })
                     :
                     ((1 * btcPrice) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 0,
+                    })
+                  :
+                  collateral.token === "atALEX" ?
+                    state.userData && (parseFloat(state.balance["atalex"] !== '0.00')) ?
+                      (((parseFloat(state.balance["atalex"]) / 100000000) * btcPrice) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      })
+                    :
+                    ((20000 * atAlexPrice) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
                       minimumFractionDigits: 0,
                       maximumFractionDigits: 0,
                     })
