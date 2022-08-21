@@ -15,43 +15,29 @@ async function transact() {
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
       tx.uintCV(48225),
       tx.uintCV(720),
-      tx.stringUtf8CV('Liquidation pool with auction engine'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/452'),
+      tx.stringUtf8CV('AIP12 Auction engine V4.2'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/501'),
       tx.listCV([
         tx.tupleCV({
           'name': tx.stringAsciiCV("auction-engine"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-auction-engine-v4-1"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-auction-engine-v4-2"),
           'can-mint': tx.trueCV(),
           'can-burn': tx.trueCV()
         }),
         tx.tupleCV({
           'name': tx.stringAsciiCV("liquidator"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-auction-engine-v4-1"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-auction-engine-v4-2"),
           'can-mint': tx.trueCV(),
           'can-burn': tx.trueCV()
         }),
         tx.tupleCV({
-          'name': tx.stringAsciiCV("liquidation-rewards-diko"),
+          'name': tx.stringAsciiCV("stacker-payer"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-liquidation-rewards-diko-v1-1"),
-          'can-mint': tx.trueCV(),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-stacker-payer-v3-2"),
+          'can-mint': tx.falseCV(),
           'can-burn': tx.trueCV()
-        }),
-        tx.tupleCV({
-          'name': tx.stringAsciiCV("liquidation-rewards"),
-          'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-liquidation-rewards-v1-1"),
-          'can-mint': tx.falseCV(),
-          'can-burn': tx.falseCV()
-        }),
-        tx.tupleCV({
-          'name': tx.stringAsciiCV("liquidation-pool"),
-          'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-liquidation-pool-v1-1"),
-          'can-mint': tx.falseCV(),
-          'can-burn': tx.falseCV()
         })
       ])
     ],

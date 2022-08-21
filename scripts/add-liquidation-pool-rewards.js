@@ -26,7 +26,7 @@ async function addRewards() {
     contractName: 'arkadiko-liquidation-rewards-diko-v1-1',
     functionName: 'add-rewards',
     functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-rewards-v1-1'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-rewards-v1-2'),
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,

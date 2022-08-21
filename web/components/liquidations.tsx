@@ -30,6 +30,7 @@ import { Tab } from '@headlessui/react';
 import { InformationCircleIcon, MinusCircleIcon, PlusCircleIcon } from '@heroicons/react/solid';
 import { classNames } from '@common/class-names';
 import { Alert } from './ui/alert';
+import { principalCV } from '@stacks/transactions/dist/clarity/types/principalCV';
 
 export const Liquidations: React.FC = () => {
   const { doContractCall } = useConnect();
@@ -55,6 +56,7 @@ export const Liquidations: React.FC = () => {
   const [lockupBlocks, setLockupBlocks] = useState(0);
   const [stakerLockupBlocks, setStakerLockupBlocks] = useState(0);
   const [rewardLoadingPercentage, setRewardLoadingPercentage] = useState(0);
+  const [burnBlockHeight, setBurnBlockHeight] = useState(0);
 
   const onInputStakeChange = (event: any) => {
     const value = event.target.value;
@@ -79,7 +81,7 @@ export const Liquidations: React.FC = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-stacker-payer-v3-1',
+      contractName: 'arkadiko-stacker-payer-v3-2',
       functionName: 'redeem-stx-helper',
       functionArgs: [uintCV(state.balance['xstx'])],
       postConditionMode: 0x01,
@@ -159,8 +161,7 @@ export const Liquidations: React.FC = () => {
     });
   };
 
-  const getRewardCount = async () => {
-
+  const getRewardCountV1 = async () => {
     const call = await callReadOnlyFunction({
       contractAddress,
       contractName: 'arkadiko-liquidation-rewards-v1-1',
@@ -170,49 +171,116 @@ export const Liquidations: React.FC = () => {
       network: network,
     });
     const maxRewardId = cvToJSON(call).value;
-    console.log("Reward IDs: ", maxRewardId);
+    console.log("Reward IDs V1: ", maxRewardId);
     return parseInt(maxRewardId);
   };
 
-  const getRewardsData = async (startId: Number, endId: Number, totalIds: number, loadedIds: number) => {
-    var rewardIds = [];
-    for (let rewardId = startId; rewardId <= endId; rewardId++) {
-      rewardIds.push(rewardId);
-    }
-
-    const rewardsData: LiquidationRewardProps[] = [];
-    await asyncForEach(rewardIds, async (rewardId: number) => {
-      try {
-        const callUserPending = await callReadOnlyFunction({
-          contractAddress,
-          contractName: 'arkadiko-liquidation-ui-v1-2',
-          functionName: 'get-user-reward-info',
-          functionArgs: [
-            uintCV(rewardId),
-          ],
-          senderAddress: stxAddress || '',
-          network: network,
-        });
-        const result = cvToJSON(callUserPending).value.value;
-
-        if (result['pending-rewards'].value > 0){
-          rewardsData.push({
-            rewardIds: [rewardId],
-            token: result['token'].value,
-            claimable: result['pending-rewards'].value,
-            tokenIsStx: result['token-is-stx'].value,
-          });
-        }
-      } catch (e) {
-        console.error(e);
-      }
-
-      loadedIds = loadedIds + 1;
-      const percentage = parseInt(Math.floor((loadedIds / (totalIds * 1.01)) * 100.0));
-      setRewardLoadingPercentage(percentage);
+  const getRewardCount = async () => {
+    const call = await callReadOnlyFunction({
+      contractAddress,
+      contractName: 'arkadiko-liquidation-rewards-v1-2',
+      functionName: 'get-total-reward-ids',
+      functionArgs: [],
+      senderAddress: stxAddress || '',
+      network: network,
     });
+    const maxRewardId = cvToJSON(call).value;
+    console.log("Reward IDs V2: ", maxRewardId);
+    return parseInt(maxRewardId);
+  };
 
-    return rewardsData;
+  const getUserFirstRewardId = async () => {
+    const call = await callReadOnlyFunction({
+      contractAddress,
+      contractName: 'arkadiko-liquidation-rewards-ui-v2-2',
+      functionName: 'get-user-tracking',
+      functionArgs: [
+        standardPrincipalCV(stxAddress || ''),
+      ],
+      senderAddress: stxAddress || '',
+      network: network,
+    });
+    const result = cvToJSON(call).value;
+    return result["last-reward-id"].value;
+  };
+
+  const getUserFirstRewardIdV1 = async () => {
+    const call = await callReadOnlyFunction({
+      contractAddress,
+      contractName: 'arkadiko-liquidation-rewards-ui-v2-1',
+      functionName: 'get-user-tracking',
+      functionArgs: [
+        standardPrincipalCV(stxAddress || ''),
+      ],
+      senderAddress: stxAddress || '',
+      network: network,
+    });
+    const result = cvToJSON(call).value;
+    return result["last-reward-id"].value;
+  };
+
+  const getRewardsData = async (rewardId: Number) => {
+    try {
+      const callUserPending = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-liquidation-rewards-v1-2',
+        functionName: 'get-user-reward-info',
+        functionArgs: [
+          uintCV(rewardId),
+          principalCV(stxAddress),
+          contractPrincipalCV(contractAddress, 'arkadiko-liquidation-pool-v1-1'),
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const result = cvToJSON(callUserPending).value.value;
+
+      if (result['pending-rewards'].value > 0){
+        return {
+          version: 2,
+          rewardIds: [rewardId],
+          token: result['token'].value,
+          claimable: result['pending-rewards'].value,
+          tokenIsStx: result['token-is-stx'].value,
+          unlockBlock: result['unlock-block'].value,
+          currentBlock: burnBlockHeight
+        };
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return null;
+  };
+
+  const getRewardsDataV1 = async (rewardId: Number) => {
+    try {
+      const callUserPending = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-liquidation-ui-v1-2',
+        functionName: 'get-user-reward-info',
+        functionArgs: [
+          uintCV(rewardId),
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const result = cvToJSON(callUserPending).value.value;
+
+      if (result['pending-rewards'].value > 0){
+        return {
+          version: 1,
+          rewardIds: [rewardId],
+          token: result['token'].value,
+          claimable: result['pending-rewards'].value,
+          tokenIsStx: result['token-is-stx'].value,
+          unlockBlock: 0,
+          currentBlock: burnBlockHeight
+        };
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return null;
   };
 
   const createGroups = (rewardsData: LiquidationRewardProps[]) => {
@@ -220,14 +288,21 @@ export const Liquidations: React.FC = () => {
     const rewardsDataMerged: LiquidationRewardProps[] = [];
     for (const rewardData of rewardsData) {
       const result = rewardsDataMerged.filter(data => {
-        return data.rewardIds.length < 50 && data.token == rewardData.token && data.tokenIsStx == rewardData.tokenIsStx;
+        return data.rewardIds.length < 50 
+          && data.version == rewardData.version
+          && data.token == rewardData.token 
+          && data.tokenIsStx == rewardData.tokenIsStx
+          && ((data.unlockBlock < burnBlockHeight && rewardData.unlockBlock < burnBlockHeight) || data.unlockBlock == rewardData.unlockBlock)
       });
       if (result.length == 0) {
         rewardsDataMerged.push({
+          version: rewardData.version,
           rewardIds: rewardData.rewardIds.slice(),
           token: rewardData.token,
           claimable: rewardData.claimable,
           tokenIsStx: rewardData.tokenIsStx,
+          unlockBlock: rewardData.unlockBlock,
+          currentBlock: rewardData.currentBlock
         });
       } else {
         let existingData = result[0];
@@ -238,49 +313,87 @@ export const Liquidations: React.FC = () => {
     return rewardsDataMerged;
   };
 
+  const sortGroups = (rewardsData: LiquidationReward[]) => {
+    return rewardsData.sort(function(a, b) {
+      if (a.props.unlockBlock > burnBlockHeight && b.props.unlockBlock > burnBlockHeight) {
+        return a.props.unlockBlock > b.props.unlockBlock ? 1 : -1;
+      } else if (a.props.unlockBlock > burnBlockHeight && b.props.unlockBlock < burnBlockHeight) {
+        return 1;
+      } else if (a.props.unlockBlock < burnBlockHeight && b.props.unlockBlock > burnBlockHeight) {
+        return -1;
+      }
+      if (a.props.claimable < b.props.claimable) {
+        return 1;
+      } else if (a.props.claimable > b.props.claimable) {
+        return -1;
+      }
+      return 0;
+    });
+  };
+
+  const setGroups = (rewards: LiquidationRewardProps[]) => {
+    const rewardGroups = createGroups(rewards);
+    var rewardItems = rewardGroups.map((reward: object) => (
+      <LiquidationReward
+        key={reward.rewardIds}
+        version={reward.version}
+        rewardIds={reward.rewardIds}
+        token={reward.token}
+        claimable={reward.claimable}
+        tokenIsStx={reward.tokenIsStx}
+        unlockBlock={reward.unlockBlock}
+        currentBlock={reward.currentBlock}
+      />
+    ));
+    rewardItems = sortGroups(rewardItems);
+    setRewardData(rewardItems);
+  };
+
   const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
   };
-
-  async function asyncForEach(array, callback) {
-    for (let index = 0; index < array.length; index++) {
-      await callback(array[index], index, array);
-    }
-  }
 
   const loadRewards = async () => {
     setStartLoadingRewards(true);
 
     // Fetch all reward info
     const rewardCount = await getRewardCount();
+    const rewardCountV1 = await getRewardCountV1();
+    const userFirstRewardId = await getUserFirstRewardId();
+    const userFirstRewardIdV1 = await getUserFirstRewardIdV1();
+    const totalRewardCount = (rewardCount - userFirstRewardId) + (rewardCountV1 - userFirstRewardIdV1);
+    var loadedRewardCount = 0;
+
     var rewards: LiquidationRewardProps[] = [];
     const batchAmount = 15;
-    const batches = Math.ceil(rewardCount / batchAmount);
-    for (let batch = batches-1; batch >= 0; batch--) {
 
-      // Sleep 10 sec
-      await sleep(10000);
-
-      const startRewardId = batch * batchAmount;
-      const endRewardId = Math.min((batch+1) * batchAmount - 1, rewardCount-1);
-      const rewardsLoaded = (batches-1-batch) * (endRewardId - startRewardId);
-      const newRewards = await getRewardsData(startRewardId, endRewardId, rewardCount, rewardsLoaded);
-      rewards = rewards.concat(newRewards);
-
-      // Group rewards
-      const rewardGroups = createGroups(rewards);
-      const rewardItems = rewardGroups.map((reward: object) => (
-        <LiquidationReward
-          key={reward.rewardIds}
-          rewardIds={reward.rewardIds}
-          token={reward.token}
-          claimable={reward.claimable}
-          tokenIsStx={reward.tokenIsStx}
-        />
-      ));
-      setRewardData(rewardItems);
+    for (let index = rewardCount-1; index >= userFirstRewardId; index--) {
+      const rewardData = await getRewardsData(index);
+      if (rewardData != null) {
+        rewards.push(rewardData);
+        setGroups(rewards);
+      }
+      if (index % batchAmount == 0) {
+        await sleep(10000); // 10 sec
+      }
+      loadedRewardCount += 1;
+      setRewardLoadingPercentage(Math.floor((loadedRewardCount / totalRewardCount) * 100.0))
     }
 
+    for (let index = rewardCountV1-1; index >= userFirstRewardIdV1; index--) {
+      const rewardData = await getRewardsDataV1(index);
+      if (rewardData != null) {
+        rewards.push(rewardData);
+        setGroups(rewards);
+      }
+      if (index % batchAmount == 0) {
+        await sleep(10000); // 10 sec
+      }
+      loadedRewardCount += 1;
+      setRewardLoadingPercentage(Math.floor((loadedRewardCount / totalRewardCount) * 100.0))
+    }
+
+    setGroups(rewards);
     setIsLoadingRewards(false);
   };
 
@@ -371,7 +484,7 @@ export const Liquidations: React.FC = () => {
     const getStxRedeemable = async () => {
       const stxRedeemable = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-stacker-payer-v3-1',
+        contractName: 'arkadiko-stacker-payer-v3-2',
         functionName: 'get-stx-redeemable-helper',
         functionArgs: [],
         senderAddress: stxAddress || '',
@@ -409,6 +522,13 @@ export const Liquidations: React.FC = () => {
       return result["start-block"].value;
     };
 
+    const getBurnBlockHeight = async () => {
+      const client = getRPCClient();
+      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
+      const data = await response.json();
+      return data['burn_block_height'];
+    };
+
     const fetchInfo = async () => {
       // Fetch info
       const [
@@ -421,6 +541,7 @@ export const Liquidations: React.FC = () => {
         stakerLockup,
         lockupBlocks,
         dikoPrice,
+        burnBlock,
       ] = await Promise.all([
         getTotalPooled(),
         getUserPooled(),
@@ -431,6 +552,7 @@ export const Liquidations: React.FC = () => {
         getStakerLockup(),
         getLockup(),
         getDikoPrice(),
+        getBurnBlockHeight(),
       ]);
 
       setTotalPooled(totalPooled);
@@ -438,7 +560,8 @@ export const Liquidations: React.FC = () => {
       setDikoEndBlock(epochInfo["end-block"].value);
       setDikoRewardsToAdd(dikoEpochRewardsToAdd);
       setCurrentBlockHeight(currentBlockHeight);
-
+      setBurnBlockHeight(burnBlock);
+      
       setButtonStakeDisabled(false);
       setButtonUnstakeDisabled(userPooled == 0)
 
@@ -577,7 +700,9 @@ export const Liquidations: React.FC = () => {
                           <th className="px-6 py-3 text-xs font-medium tracking-wider text-center text-gray-500 dark:text-zinc-400">
                             Amount
                           </th>
-                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-zinc-400"></th>
+                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-zinc-400">
+                            Claim
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600">{rewardData}</tbody>
