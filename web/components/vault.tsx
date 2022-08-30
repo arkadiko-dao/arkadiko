@@ -14,6 +14,10 @@ import {
 import { resolveReserveName } from '@common/vault-utils';
 import { tokenTraits } from '@common/vault-utils';
 import { useSTXAddress } from '@common/use-stx-address';
+import { tokenList } from './token-swap-list';
+import { StyledIcon } from './ui/styled-icon';
+import { Status } from './ui/health-status';
+
 export interface VaultProps {
   key: string;
   id: string;
@@ -29,7 +33,6 @@ export interface VaultProps {
   collateralData: object;
   stackedTokens: number;
   revokedStacking: boolean;
-  showAsTable: boolean;
 }
 
 export const debtClass = (liquidationRatio: number, ratio: number) => {
@@ -55,7 +58,6 @@ export const Vault: React.FC<VaultProps> = ({
   leftoverCollateral,
   collateralData,
   stackedTokens,
-  showAsTable = true,
 }) => {
   const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -63,6 +65,7 @@ export const Vault: React.FC<VaultProps> = ({
   const [stabilityFee, setStabilityFee] = useState(0);
   const [_, setState] = useContext(AppContext);
   const decimals = (collateralToken.toLowerCase() === 'stx' || collateralToken.toLocaleLowerCase() === 'xstx') ? 1000000 : 100000000;
+  const collateralListInfo = tokenList.find(token => token['name'] === collateralToken);
 
   useEffect(() => {
     const fetchFees = async () => {
@@ -83,14 +86,6 @@ export const Vault: React.FC<VaultProps> = ({
 
     fetchFees();
   }, []);
-
-  const debtBackgroundClass = (ratio: number) => {
-    if (ratio && ratio < Number(collateralData?.liquidationRatio)) {
-      return 'bg-red-300/50';
-    }
-
-    return 'bg-white dark:bg-zinc-800';
-  };
 
   let debtRatio = 0;
   if (id) {
@@ -130,206 +125,97 @@ export const Vault: React.FC<VaultProps> = ({
     });
   };
 
+  const positionData = [
+    {
+      label: `${collateralToken} amount`,
+      amount: (collateral / decimals).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 6,
+        }),
+      unit: collateralToken.toUpperCase()
+    },
+    {
+      label: 'Debt',
+      amount: (debt / 1000000).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 6,
+      }),
+      unit: 'USDA'
+    },
+    {
+      label: 'Health',
+      amount: debtRatio,
+      unit: '%'
+    }
+  ]
+
   return (
     <>
-      {showAsTable ? (
-        <tr className={`${debtBackgroundClass(debtRatio)}`}>
-          <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-zinc-400 whitespace-nowrap">
-            <span className="text-gray-900 dark:text-zinc-100">
-              <RouterLink to={`vaults/${id}`} exact className="px-2.5 py-1.5">
-                {id}
-              </RouterLink>
-            </span>
-          </td>
-          <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-zinc-400 whitespace-nowrap">
-            <span className="text-gray-900 dark:text-zinc-100">{collateralType.toUpperCase()}</span>
-          </td>
-          <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-zinc-400 whitespace-nowrap">
-            <span className={`${debtClass(collateralData?.liquidationRatio, debtRatio)}`}>
-              {debtRatio}% (&gt; {collateralData?.liquidationRatio}%)
-            </span>
-          </td>
-          <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-zinc-400 whitespace-nowrap">
-            <span className="text-gray-900 dark:text-zinc-100">${stabilityFee / 1000000} USDA</span>
-          </td>
-          <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-zinc-400 whitespace-nowrap">
-            <span className="text-gray-900 dark:text-zinc-100">
-              $
-              {(debt / 1000000).toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 6,
-              })}{' '}
-              USDA
-            </span>
-          </td>
-          <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-zinc-400 whitespace-nowrap">
-            <span className="text-gray-900 dark:text-zinc-100">
-              {isLiquidated && auctionEnded && Number(leftoverCollateral) > 0 && Number(stackedTokens) === 0 ? (
-                <>
-                  {(leftoverCollateral / decimals).toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 6,
-                  })}{' '}
-                  {collateralToken.toUpperCase()}
-                </>
-              ) : (
-                <>
-                  {(collateral / decimals).toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 6,
-                  })}{' '}
-                  {collateralToken.toUpperCase()}
-                </>
-              )}
-            </span>
-          </td>
-          <td className="px-6 py-4 text-sm text-left text-gray-900 dark:text-zinc-100 whitespace-nowrap">
-            <span className="text-gray-900 dark:text-zinc-100">
-              {isLiquidated ? (
-                auctionEnded ? (
-                  Number(leftoverCollateral) > 0 && Number(stackedTokens) === 0 ? (
-                    <button
-                      type="button"
-                      className="text-indigo-600 hover:text-indigo-900"
-                      onClick={() => callWithdrawLeftoverCollateral()}
-                    >
-                      Withdraw Leftover Collateral
-                    </button>
-                  ) : (
-                    <span>Vault liquidated & closed</span>
-                  )
+      <div className={`relative border rounded-md shadom-sm ${debtRatio != 0 ? (debtRatio < Number(collateralData?.liquidationRatio) ? 'bg-red-50/30 border-red-600/60' : 'bg-white dark:bg-zinc-800 border-gray-200/80 dark:border-zinc-800') : 'bg-white dark:bg-zinc-800 border-gray-200/80 dark:border-zinc-800'}`}>
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-zinc-600">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <img className="w-8 h-8 mr-3 rounded-full shrink-0" src={collateralListInfo?.logo} alt="" />
+              <h2 className="text-xl font-medium font-semibold leading-6 text-gray-700 dark:text-zinc-100">
+                {collateralToken} &middot; <span className="text-sm font-normal">{collateralType.toUpperCase()}</span>
+              </h2>
+            </div>
+            <>
+              {debtRatio != 0 ? (
+                debtClass(collateralData?.liquidationRatio, debtRatio) == 'text-green-500' ? (
+                  <Status
+                    type={Status.type.SUCCESS }
+                    label='Healthy'
+                    labelHover='Low liquidation risk'
+                  />
+                ) : debtClass(collateralData?.liquidationRatio, debtRatio) == 'text-orange-500' ? (
+                  <Status
+                    type={Status.type.WARNING}
+                    label='Warning'
+                    labelHover='Medium liquidation risk'
+                  />
                 ) : (
-                  <span>Auctioning Collateral...</span>
+                  <Status
+                    type={Status.type.ERROR}
+                    label='Danger'
+                    labelHover='High liquidation risk'
+                  />
                 )
-              ) : (
-                <RouterLink
-                  to={`vaults/${id}`}
-                  exact
-                  className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400"
-                >
-                  Manage
-                </RouterLink>
-              )}
-            </span>
-          </td>
-        </tr>
-      ) : (
-        <div role="listitem" className="bg-white dark:bg-zinc-800">
-          <table className="w-full">
-            <thead>
-              <tr>
-                <th className="sr-only" scope="col">
-                  Vaults details
-                </th>
-                <th className="sr-only" scope="col">
-                  Data
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-zinc-600">
-              <tr>
-                <th
-                  className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
-                  scope="row"
-                >
-                  <div className="flex items-center">Vault ID</div>
-                </th>
-                <td className="py-5 pr-4">
-                  <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
-                    {id}
-                  </span>
-                </td>
-              </tr>
-
-              <tr className="border-t border-gray-200 dark:border-zinc-600">
-                <th
-                  className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
-                  scope="row"
-                >
-                  <div className="flex items-center">Collateral Type</div>
-                </th>
-                <td className="py-5 pr-4">
-                  <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
-                    {collateralType.toUpperCase()}
-                  </span>
-                </td>
-              </tr>
-
-              <tr className="border-t border-gray-200 dark:border-zinc-600">
-                <th
-                  className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
-                  scope="row"
-                >
-                  Current Collateralization
-                </th>
-                <td className="py-5 pr-4">
-                  <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
+              ) : null}
+            </>
+          </div>
+        </div>
+        <div className="p-6">
+          <dl className="space-y-2">
+            {positionData.map(item => (
+              <div key={item.label}>
+                <dt className="text-sm leading-6 text-gray-500 dark:text-zinc-400">
+                  {item.label}
+                </dt>
+                <dd className="text-lg font-semibold dark:text-white">
+                  {item.label === "Health" ? (
                     <span className={`${debtClass(collateralData?.liquidationRatio, debtRatio)}`}>
-                      {debtRatio}% (&gt; {collateralData?.liquidationRatio}%)
+                      {item.amount}{item.unit} <span className="text-sm">(&gt; {collateralData?.liquidationRatio}%)</span>
                     </span>
-                  </span>
-                </td>
-              </tr>
+                  )
+                  :
+                    <>
+                      {item.amount}{' '}
+                      <span className="text-sm">{item.unit}</span>
+                    </>
+                  }
+                </dd>
+              </div>
+            ))}
+          </dl>
 
-              <tr className="border-t border-gray-200 dark:border-zinc-600">
-                <th
-                  className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
-                  scope="row"
-                >
-                  Stability Fee Owed
-                </th>
-                <td className="py-5 pr-4">
-                  <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
-                    ${stabilityFee / 1000000} USDA
-                  </span>
-                </td>
-              </tr>
-
-              <tr className="border-t border-gray-200 dark:border-zinc-600">
-                <th
-                  className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
-                  scope="row"
-                >
-                  USDA amount
-                </th>
-                <td className="py-5 pr-4">
-                  <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
-                    $
-                    {(debt / 1000000).toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                    })}{' '}
-                    USDA
-                  </span>
-                </td>
-              </tr>
-
-              <tr className="border-t border-gray-200 dark:border-zinc-600">
-                <th
-                  className="px-4 py-5 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
-                  scope="row"
-                >
-                  Collateral amount
-                </th>
-                <td className="py-5 pr-4">
-                  <span className="block text-sm text-right text-gray-700 dark:text-zinc-100">
-                    {(collateral / decimals).toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                    })}{' '}
-                    {collateralToken.toUpperCase()}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div className="px-4 py-5 border-t border-b border-gray-200 dark:border-zinc-600">
+          <div className="text-right">
             {isLiquidated ? (
               auctionEnded ? (
                 leftoverCollateral > 0 && stackedTokens === 0 ? (
                   <button
                     type="button"
-                    className="block w-full px-4 py-2 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    className="inline-flex px-4 py-2 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     onClick={() => callWithdrawLeftoverCollateral()}
                   >
                     Withdraw Leftover Collateral
@@ -344,14 +230,16 @@ export const Vault: React.FC<VaultProps> = ({
               <RouterLink
                 to={`vaults/${id}`}
                 exact
-                className="block w-full px-4 py-2 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
               >
-                Manage Vault
+                <span className="absolute inset-0" aria-hidden="true"></span>
+                Manage
+                <StyledIcon as="ArrowRightIcon" size={5} className="ml-2 -rotate-45" />
               </RouterLink>
             )}
           </div>
         </div>
-      )}
+      </div>
     </>
   );
 };
