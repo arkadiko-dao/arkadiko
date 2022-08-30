@@ -23,14 +23,17 @@ export const Prices = () => {
   const [dikoPrice, setDikoPrice] = useState(0.0);
   const [xbtcPrice, setXbtcPrice] = useState(0.0);
   const [usdaPrice, setUsdaPrice] = useState(1.0);
+  const [atAlexPrice, setAtAlexPrice] = useState(0.0);
   const [stxBlockUpdate, setStxBlockUpdate] = useState(0.0);
   const [xbtcBlockUpdate, setXbtcBlockUpdate] = useState(0.0);
   const [usdaBlockUpdate, setUsdaBlockUpdate] = useState(0.0);
   const [dikoBlockUpdate, setDikoBlockUpdate] = useState(0.0);
+  const [atAlexBlockUpdate, setAtAlexBlockUpdate] = useState(0.0);
   const [stxBlockAgoUpdate, setStxBlockAgoUpdate] = useState(0.0);
   const [xbtcBlockAgoUpdate, setXbtcBlockAgoUpdate] = useState(0.0);
   const [usdaBlockAgoUpdate, setUsdaBlockAgoUpdate] = useState(0.0);
   const [dikoBlockAgoUpdate, setDikoBlockAgoUpdate] = useState(0.0);
+  const [atAlexBlockAgeUpdate, setAtAlexBlockAgeUpdate] = useState(0.0);
   const [loadingPrices, setLoadingPrices] = useState(true);
   const apiUrl = 'https://arkadiko-api.herokuapp.com';
 
@@ -55,6 +58,10 @@ export const Prices = () => {
       setUsdaPrice(response['usda']['last_price']);
       setUsdaBlockUpdate(response['usda']['price_last_updated']);
       setUsdaBlockAgoUpdate(currentBlock - response['usda']['price_last_updated']);
+
+      setAtAlexPrice(response['atalex']['last_price']);
+      setAtAlexBlockUpdate(response['atalex']['price_last_updated']);
+      setAtAlexBlockAgeUpdate(currentBlock - response['atalex']['price_last_updated']);
 
       setLoadingPrices(false);
     };
@@ -109,6 +116,14 @@ export const Prices = () => {
       unit: '$',
       block: xbtcBlockUpdate,
       blockAgo: xbtcBlockAgoUpdate,
+    },
+    {
+      token: 'atALEX',
+      logo: tokenList[7].logo,
+      price: atAlexPrice / 1000000,
+      unit: '$',
+      block: atAlexBlockUpdate,
+      blockAgo: atAlexBlockAgeUpdate,
     },
     {
       token: 'USDA',

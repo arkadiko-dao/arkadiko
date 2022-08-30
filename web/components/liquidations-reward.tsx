@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { useConnect } from '@stacks/connect-react';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, blocksToTime } from '@common/utils';
 import { microToReadable } from '@common/vault-utils';
 import {
   AnchorMode,
@@ -16,17 +16,23 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { tokenTraits } from '@common/vault-utils';
 
 export interface LiquidationRewardProps {
+  version: number;
   rewardIds: number[];
   token: string;
   claimable: number;
   tokenIsStx: boolean;
+  unlockBlock: number;
+  currentBlock: number;
 }
 
 export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
+  version,
   rewardIds,
   token,
   claimable,
-  tokenIsStx
+  tokenIsStx,
+  unlockBlock,
+  currentBlock
 }) => {
   const { doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
@@ -35,13 +41,16 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
 
   const claim = async () => {
 
+    var rewardsContract = version == 1 ? 'arkadiko-liquidation-rewards-v1-1' : 'arkadiko-liquidation-rewards-v1-2';
+    var claimContract = version == 1 ? 'arkadiko-liquidation-rewards-ui-v2-1' : 'arkadiko-liquidation-rewards-ui-v2-2';
+
     const postConditions = [];
     if (tokenIsStx) {
       // PC
       postConditions.push(
         makeContractSTXPostCondition(
           contractAddress,
-          'arkadiko-liquidation-rewards-v1-1',
+          rewardsContract,
           FungibleConditionCode.Equal,
           uintCV(claimable).value,
         )
@@ -57,7 +66,7 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
       postConditions.push(
         makeContractFungiblePostCondition(
           contractAddress,
-          'arkadiko-liquidation-rewards-v1-1',
+          rewardsContract,
           FungibleConditionCode.Equal,
           uintCV(claimable).value,
           createAssetInfo(token.split('.')[0], token.split('.')[1], tokenName)
@@ -78,7 +87,7 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-liquidation-ui-v1-2',
+      contractName: claimContract,
       functionName: functionName,
       functionArgs: [
         listCV(rewardIds.map((id) =>  uintCV(id))),
@@ -131,13 +140,20 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
       </td>
       <td className="px-6 py-4 text-sm text-right text-gray-500 whitespace-nowrap">
         <span className="font-medium text-gray-900 dark:text-zinc-100">
-          <button
-            type="button"
-            onClick={() => claim()}
-            className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Claim
-          </button>
+          { currentBlock > unlockBlock ? (
+            <button
+              type="button"
+              onClick={() => claim()}
+              className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Claim
+            </button>
+          ) : (
+            <>
+              {unlockBlock - currentBlock + 1} blocks left
+              (≈ {blocksToTime(unlockBlock - currentBlock + 1)})
+            </>
+          )}
         </span>
       </td>
     </tr>

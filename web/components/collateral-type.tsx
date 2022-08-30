@@ -7,7 +7,7 @@ import { StyledIcon } from './ui/styled-icon';
 
 export const CollateralType: React.FC<CollateralTypeProps> = ({ types, setStep }) => {
   const collateralItems: CollateralTypeProps[] = [];
-  ['STX-A', 'STX-B', 'XBTC-A'].forEach((tokenString: string) => {
+  ['STX-A', 'STX-B', 'XBTC-A', 'ATALEX-A'].forEach((tokenString: string) => {
     const coll = types?.[tokenString];
     if (coll) {
       collateralItems.push({

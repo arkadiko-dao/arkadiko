@@ -8,11 +8,11 @@ const BN = require('bn.js');
 async function transact() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: 'arkadiko-governance-v2-1',
+    contractName: 'arkadiko-governance-v3-1',
     functionName: 'return-votes-to-member',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-token'),
-      tx.uintCV(1),
+      tx.uintCV(17),
       tx.standardPrincipalCV('SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR')
     ],
     fee: new BN(100000, 10),
