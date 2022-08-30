@@ -10,7 +10,7 @@ console.log('Trying to liquidate vault with ID', vaultId);
 
 const txOptions = {
   contractAddress: CONTRACT_ADDRESS,
-  contractName: 'arkadiko-auction-engine-v4-1',
+  contractName: 'arkadiko-auction-engine-v4-2',
   functionName: 'start-auction',
   functionArgs: [
     tx.uintCV(vaultId),
@@ -20,7 +20,7 @@ const txOptions = {
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'xstx-token'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stx-reserve-v1-1'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-pool-v1-1'),
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-rewards-v1-1'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-rewards-v1-2'),
   ],
   nonce: new BN(962, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,

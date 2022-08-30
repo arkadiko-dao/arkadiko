@@ -25,7 +25,7 @@ import {
 import { 
   LiquidationPool,
   LiquidationRewards
-} from './models/arkadiko-tests-liquidation-fund.ts';
+} from './models/arkadiko-tests-liquidation-pool.ts';
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
@@ -134,7 +134,7 @@ Clarinet.test({ name: "auction engine: add fee and withdraw fees",
     call.result.expectBool(false);
 
     // 1% of 1500 STX
-    call = await xstxManager.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v4-1'));
+    call = await xstxManager.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v4-2'));
     call.result.expectOk().expectUintWithDecimals(15);
 
     // Deployer no xSTX yet
@@ -146,7 +146,7 @@ Clarinet.test({ name: "auction engine: add fee and withdraw fees",
     result.expectOk().expectBool(true);
 
     // 15 xSTX transferred
-    call = await xstxManager.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v4-1'));
+    call = await xstxManager.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v4-2'));
     call.result.expectOk().expectUintWithDecimals(0);
     call = await xstxManager.balanceOf(deployer.address);
     call.result.expectOk().expectUintWithDecimals(15);
@@ -304,7 +304,7 @@ Clarinet.test({ name: "auction engine: liquidate stacking STX vault, 1 wallet",
     call.result.expectOk().expectUint(0);
 
     // xSTX rewards contract
-    call = await xstxManager.balanceOf(Utils.qualifiedName('arkadiko-liquidation-rewards-v1-1'));
+    call = await xstxManager.balanceOf(Utils.qualifiedName('arkadiko-liquidation-rewards-v1-2'));
     call.result.expectOk().expectUintWithDecimals(1111.111111);
 
     // Rewards
@@ -392,7 +392,7 @@ Clarinet.test({ name: "auction engine: liquidate STX vault, multiple wallets",
     call.result.expectOk().expectUintWithDecimals(7000);
 
     // xSTX rewards contract
-    call = await xstxManager.balanceOf(Utils.qualifiedName('arkadiko-liquidation-rewards-v1-1'));
+    call = await xstxManager.balanceOf(Utils.qualifiedName('arkadiko-liquidation-rewards-v1-2'));
     call.result.expectOk().expectUintWithDecimals(1111.111111);
 
     // Rewards
@@ -434,7 +434,7 @@ Clarinet.test({ name: "auction engine: liquidate STX vault without enough USDA t
     result = vaultAuction.startAuction(deployer, 1);
     result.expectOk().expectBool(true);
 
-    let call:any = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v4-1'));
+    let call:any = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v4-2'));
     call.result.expectOk().expectUintWithDecimals(0);
 
     // Check auction parameters
@@ -547,7 +547,7 @@ Clarinet.test({ name: "auction engine: liquidate xBTC vault, multiple wallets",
     call.result.expectOk().expectUintWithDecimals(6500);
 
     // xBTC rewards contract
-    call = await xbtcToken.balanceOf(Utils.qualifiedName('arkadiko-liquidation-rewards-v1-1'));
+    call = await xbtcToken.balanceOf(Utils.qualifiedName('arkadiko-liquidation-rewards-v1-2'));
     call.result.expectOk().expectUintWithDecimals(0.083333);
 
     // Rewards

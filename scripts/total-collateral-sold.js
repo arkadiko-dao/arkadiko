@@ -21,7 +21,7 @@ async function getVaultById(vaultId) {
 async function getAuctionById(auctionId) {
   const vaultTx = await tx.callReadOnlyFunction({
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-auction-engine-v4-1",
+    contractName: "arkadiko-auction-engine-v4-2",
     functionName: "get-auction-by-id",
     functionArgs: [tx.uintCV(auctionId)],
     senderAddress: CONTRACT_ADDRESS,
@@ -32,10 +32,10 @@ async function getAuctionById(auctionId) {
 }
 
 async function iterateAndUnlock() {
-  const lastId = 500;
+  const lastId = 517; // update ID with last auction ID when new vaults need to be checked
   let auction;
   let totalCollateral = 0;
-  for (let index = 362; index <= lastId; index++) {
+  for (let index = 517; index <= lastId; index++) {
     auction = await getAuctionById(index);
     if (auction['collateral-token']['value'] === 'xSTX') {
       totalCollateral += auction['total-collateral-sold']['value'];
