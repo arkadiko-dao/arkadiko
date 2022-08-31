@@ -11,6 +11,7 @@ export const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 export const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
 export const welshContractAddress = process.env.WELSH_CONTRACT_ADDRESS || '';
 export const ldnContractAddress = process.env.LDN_CONTRACT_ADDRESS || '';
+export const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
 
 export const getLiquidationPrice = (
   liquidationRatio: number,
@@ -295,6 +296,13 @@ export const tokenTraits: TokenTraits = {
     multihop: [],
     ft: 'wstx-welsh'
   },
+  atalex: {
+    address: atAlexContractAddress,
+    name: 'auto-alex',
+    swap: 'auto-alex',
+    multihop: [],
+    ft: 'auto-alex'
+  }
 };
 
 export const resolveReserveName = (collateralToken: string) => {

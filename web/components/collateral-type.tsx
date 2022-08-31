@@ -11,9 +11,9 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types, setStep }
     const coll = types?.[tokenString];
     if (coll) {
       collateralItems.push({
-        name: coll['name'],
-        token: coll['token'],
-        tokenType: coll['tokenType'],
+        name: coll['name'] || 'Auto ALEX',
+        token: coll['token'] || 'atALEX',
+        tokenType: coll['tokenType'] || 'atALEX-A',
         url: coll['url'],
         totalDebt: coll['totalDebt'],
         stabilityFee: coll['stabilityFee'],

@@ -16,7 +16,7 @@ import {
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ExplorerLink } from './explorer-link';
-import { resolveReserveName, tokenTraits } from '@common/vault-utils';
+import { atAlexContractAddress, resolveReserveName, tokenTraits } from '@common/vault-utils';
 import { AppContext } from '@common/context';
 import { Alert } from './ui/alert';
 
@@ -64,7 +64,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       postConditions = [
         makeStandardSTXPostCondition(address || '', FungibleConditionCode.Equal, amount.value),
       ];
-    } else {
+    } else if (coinAmounts['token-name'].toLowerCase() === 'xbtc') {
       postConditions = [
         makeStandardFungiblePostCondition(
           address || '',
@@ -74,6 +74,20 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
             xbtcContractAddress,
             'Wrapped-Bitcoin',
             'wrapped-bitcoin'
+          )
+        ),
+      ];
+    } else {
+      // atALEX
+      postConditions = [
+        makeStandardFungiblePostCondition(
+          address || '',
+          FungibleConditionCode.LessEqual,
+          amount.value,
+          createAssetInfo(
+            atAlexContractAddress,
+            'auto-alex',
+            'auto-alex'
           )
         ),
       ];

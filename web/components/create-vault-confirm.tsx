@@ -65,9 +65,9 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
           </div>
         </header>
 
-        <div className="max-w-4xl mx-auto mt-4 shadow sm:rounded-md sm:overflow-hidden">
-          <div className="px-4 py-5 space-y-6 bg-white dark:bg-zinc-800 sm:p-6">
-            {tokenName.includes('STX') ? (
+        {tokenName.includes('STX') ? (
+          <div className="max-w-4xl mx-auto mt-4 shadow sm:rounded-md sm:overflow-hidden">
+            <div className="px-4 py-5 space-y-6 bg-white dark:bg-zinc-800 sm:p-6">
               <div>
                 <div className="flex items-center">
                   <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
@@ -137,9 +137,9 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                   </div>
                 ) : null}
               </div>
-            ) : null}
+            </div>
           </div>
-        </div>
+        ) : null}
 
         <div className="max-w-4xl mx-auto mt-4 shadow sm:rounded-md sm:overflow-hidden">
           <div className="px-4 py-5 space-y-6 bg-white dark:bg-zinc-800 sm:p-6">
