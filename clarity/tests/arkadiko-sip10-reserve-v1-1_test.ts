@@ -15,8 +15,6 @@ import {
 
 import { 
   VaultManager,
-  VaultLiquidator,
-  VaultAuction 
 } from './models/arkadiko-tests-vaults.ts';
 
 import { 

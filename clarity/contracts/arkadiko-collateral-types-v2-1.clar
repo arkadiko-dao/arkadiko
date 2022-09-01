@@ -194,8 +194,8 @@
       token-address: .xstx-token,
       url: "https://www.stacks.co/",
       total-debt: u571001546892,
-      liquidation-ratio: u140, ;;175
-      collateral-to-debt-ratio: u185, ;; ~52% LTV
+      liquidation-ratio: u175, ;; TODO: change to 140 on mainnet
+      collateral-to-debt-ratio: u400, ;; TODO: change to u185 on mainnet (~52% LTV)
       maximum-debt: u3500000000000, ;; 3.5M
       liquidation-penalty: u1000, ;; 10% in basis points
       stability-fee: u7610350076, ;; 4% / 365 days / (24*6) blocks = 0.00007610350076 fee per block
