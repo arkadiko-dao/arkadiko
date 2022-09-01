@@ -230,7 +230,7 @@
       token-address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin, ;; TODO: use SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR on mainnet
       url: "https://www.tokensoft.io/",
       total-debt: u51474852253,
-      liquidation-ratio: u130,
+      liquidation-ratio: u150, ;; TODO: set to u130 on mainnet
       collateral-to-debt-ratio: u180, ;; ~55% LTV
       maximum-debt: u1000000000000, ;; 1M
       liquidation-penalty: u1000, ;; 10% in basis points
