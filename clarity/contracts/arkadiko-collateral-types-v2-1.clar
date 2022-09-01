@@ -191,12 +191,12 @@
       name: "Stacks",
       token: "STX",
       token-type: "STX-A",
-      token-address: OWNER,
+      token-address: .xstx-token,
       url: "https://www.stacks.co/",
-      total-debt: u0,
-      liquidation-ratio: u175, ;;175
-      collateral-to-debt-ratio: u400, ;; ~25% LTV
-      maximum-debt: u1000000000000000, ;; 1B
+      total-debt: u571001546892,
+      liquidation-ratio: u140, ;;175
+      collateral-to-debt-ratio: u185, ;; ~52% LTV
+      maximum-debt: u3500000000000, ;; 3.5M
       liquidation-penalty: u1000, ;; 10% in basis points
       stability-fee: u7610350076, ;; 4% / 365 days / (24*6) blocks = 0.00007610350076 fee per block
       stability-fee-decimals: u16,
@@ -209,11 +209,11 @@
       name: "Stacks",
       token: "STX",
       token-type: "STX-B",
-      token-address: OWNER,
+      token-address: .xstx-token,
       url: "https://www.stacks.co/",
-      total-debt: u0,
-      liquidation-ratio: u150,
-      collateral-to-debt-ratio: u300, ;; ~33% LTV
+      total-debt: u17897073109,
+      liquidation-ratio: u130,
+      collateral-to-debt-ratio: u180, ;; ~55% LTV
       maximum-debt: u500000000000000, ;; 500M
       liquidation-penalty: u1300, ;; 13% in basis points
       stability-fee: u1331811263, ;; 7% / 365 days / (24*6) blocks = 0.0001331811263 fee per block
@@ -227,13 +227,13 @@
       name: "Wrapped Bitcoin",
       token: "xBTC",
       token-type: "xBTC-A",
-      token-address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin,
+      token-address: 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin,
       url: "https://www.tokensoft.io/",
-      total-debt: u0,
-      liquidation-ratio: u150,
-      collateral-to-debt-ratio: u250, ;; ~50% LTV
-      maximum-debt: u500000000000000, ;; 500M
-      liquidation-penalty: u1000, ;; 13% in basis points
+      total-debt: u51474852253,
+      liquidation-ratio: u130,
+      collateral-to-debt-ratio: u180, ;; ~55% LTV
+      maximum-debt: u1000000000000, ;; 1M
+      liquidation-penalty: u1000, ;; 10% in basis points
       stability-fee: u7610350076, ;; 4% / 365 days / (24*6) blocks = 0.00007610350076 fee per block
       stability-fee-decimals: u16,
       stability-fee-apy: u400 ;; 400 basis points
@@ -253,7 +253,7 @@
       maximum-debt: u200000000000, ;; 200K max debt
       liquidation-penalty: u2000, ;; 20% in basis points
       stability-fee: u7610350076, ;; 4% / 365 days / (24*6) blocks = 0.00007610350076 fee per block
-      stability-fee-decimals: u15,
+      stability-fee-decimals: u16,
       stability-fee-apy: u400 ;; 400 basis points
     }
   )
