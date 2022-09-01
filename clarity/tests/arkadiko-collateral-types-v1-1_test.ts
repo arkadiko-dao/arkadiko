@@ -73,7 +73,7 @@ Clarinet.test({
     let result = collateralTypeManager.getTotalDebt('STX-A');
     result['result'].expectOk().expectUint(0);
     result = collateralTypeManager.getMaximumDebt('STX-A');
-    result['result'].expectOk().expectUint(1000000000000000);
+    result['result'].expectOk().expectUint(3500000000000);
 
     let oracleUpdate = oracleManager.updatePrice("STX", 100);
     oracleUpdate.expectOk().expectUintWithDecimals(100);
