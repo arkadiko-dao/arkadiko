@@ -110,7 +110,7 @@ export const ManageVault = ({ match }) => {
 
         const type = await callReadOnlyFunction({
           contractAddress,
-          contractName: 'arkadiko-collateral-types-v1-1',
+          contractName: 'arkadiko-collateral-types-v2-1',
           functionName: 'get-collateral-type-by-name',
           functionArgs: [stringAsciiCV(data['collateral-type'].value)],
           senderAddress: senderAddress || contractAddress,
@@ -170,7 +170,7 @@ export const ManageVault = ({ match }) => {
         functionName: 'get-stability-fee-for-vault',
         functionArgs: [
           uintCV(vault?.id),
-          contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v1-1'),
+          contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v2-1'),
         ],
         senderAddress: contractAddress || '',
         network: network,
@@ -216,7 +216,7 @@ export const ManageVault = ({ match }) => {
           functionName: 'calculate-current-collateral-to-debt-ratio',
           functionArgs: [
             uintCV(vault.id),
-            contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v1-1'),
+            contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v2-1'),
             contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v1-1'),
             falseCV(),
           ],
@@ -424,7 +424,7 @@ export const ManageVault = ({ match }) => {
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v1-1'
+          'arkadiko-collateral-types-v2-1'
         ),
         falseCV(),
       ],
@@ -453,7 +453,7 @@ export const ManageVault = ({ match }) => {
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v1-1'
+          'arkadiko-collateral-types-v2-1'
         ),
       ],
       onFinish: data => {

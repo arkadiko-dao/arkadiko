@@ -344,7 +344,7 @@ Clarinet.test({
         types.uint(1),
         types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v2-1')),
         types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1'))
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v2-1'))
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(4401);

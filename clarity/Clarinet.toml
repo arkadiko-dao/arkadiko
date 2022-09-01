@@ -16,6 +16,9 @@ path = "contracts/arkadiko-dao-token-trait-v1.clar"
 [contracts.arkadiko-collateral-types-v1-1]
 path = "contracts/arkadiko-collateral-types-v1-1.clar"
 
+[contracts.arkadiko-collateral-types-v2-1]
+path = "contracts/arkadiko-collateral-types-v2-1.clar"
+
 [contracts.arkadiko-collateral-types-tv1-1]
 path = "contracts/tests/arkadiko-collateral-types-tv1-1.clar"
 
