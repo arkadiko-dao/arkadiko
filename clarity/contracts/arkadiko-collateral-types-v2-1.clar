@@ -193,7 +193,7 @@
       token-type: "STX-A",
       token-address: .xstx-token,
       url: "https://www.stacks.co/",
-      total-debt: u571001546892,
+      total-debt: u0, ;; TODO: set total debt on mainnet
       liquidation-ratio: u175, ;; TODO: change to 140 on mainnet
       collateral-to-debt-ratio: u400, ;; TODO: change to u185 on mainnet (~52% LTV)
       maximum-debt: u3500000000000, ;; 3.5M
