@@ -468,6 +468,33 @@ export const ManageVault = ({ match }) => {
     });
   };
 
+  const vaultDetails = [
+    {
+      label: 'Collateral to Debt ratio',
+      help: 'The amount of collateral you deposit in a vault versus the stablecoin debt you are minting against it',
+      data: debtRatio,
+      unit: '%'
+    },
+    {
+      label: 'Minimum Ratio (before liquidation)',
+      help: 'The collateral-to-debt ratio when your vault gets liquidated',
+      data: collateralType?.liquidationRatio,
+      unit: '%'
+    },
+    {
+      label: 'Liquidation penalty',
+      help: 'The penalty you pay when your vault gets liquidated',
+      data: collateralType?.liquidationPenalty,
+      unit: '%'
+    },
+    {
+      label: 'Stability fee',
+      help: 'Yearly interest you pay on your USDA loan',
+      data: stabilityFee / 1000000,
+      unit: 'USDA'
+    }
+  ]
+
   return (
     <Container>
       {auctionEnded && <Redirect to="/vaults" />}
@@ -574,108 +601,59 @@ export const ManageVault = ({ match }) => {
                     Vault details
                   </h3>
                 </div>
-                <div className="flex flex-col h-full px-4 py-3">
-                  <dl>
-                    <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                      <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
-                        <p className="text-sm font-normal leading-6 text-gray-500 dark:text-zinc-400">
-                          Collateral to Debt ratio
-                        </p>
-                        <Tooltip
-                          shouldWrapChildren={true}
-                          label={`The amount of collateral you deposit in a vault versus the stablecoin debt you are minting against it`}
-                        >
-                          <StyledIcon
-                            as="InformationCircleIcon"
-                            size={5}
-                            className="block ml-2 text-gray-400"
-                          />
-                        </Tooltip>
-                      </dt>
-                      <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
-                        {loadingVaultData ? (
-                          <Placeholder
-                            className="justify-end py-2"
-                            color={Placeholder.color.INDIGO}
-                            width={Placeholder.width.FULL}
-                          />
-                        ) : (
-                          <p
-                            className={`text-base font-semibold leading-none ${debtClass(
-                              collateralType?.liquidationRatio,
-                              debtRatio
-                            )}`}
+                <div className="flex flex-col h-full px-4 py-3 mb-4">
+                  <dl className="space-y-2">
+                    {vaultDetails.map(detail => (
+                      <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto" key={detail.label}>
+                        <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                          <p className="text-sm font-normal leading-6 text-gray-500 dark:text-zinc-400">
+                            {detail.label}
+                          </p>
+                          <Tooltip
+                            shouldWrapChildren={true}
+                            label={detail.help}
                           >
-                            {debtRatio}
-                            <span className="text-sm font-normal">%</span>
-                          </p>
-                        )}
-                      </dd>
-                    </div>
-
-                    <div className="mt-2 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                      <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
-                        <p className="text-sm font-normal leading-6 text-gray-500 dark:text-zinc-400">
-                          Minimum Ratio (before liquidation)
-                        </p>
-                        <Tooltip
-                          shouldWrapChildren={true}
-                          label={`The collateral-to-debt ratio when your vault gets liquidated`}
-                        >
-                          <StyledIcon
-                            as="InformationCircleIcon"
-                            size={5}
-                            className="block ml-2 text-gray-400"
-                          />
-                        </Tooltip>
-                      </dt>
-                      <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
-                        {loadingVaultData ? (
-                          <Placeholder
-                            className="justify-end py-2"
-                            color={Placeholder.color.INDIGO}
-                            width={Placeholder.width.FULL}
-                          />
-                        ) : (
-                          <p className="text-lg font-semibold leading-none">
-                            {collateralType?.liquidationRatio}
-                            <span className="text-sm font-normal">%</span>
-                          </p>
-                        )}
-                      </dd>
-                    </div>
-
-                    <div className="mt-2 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                      <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
-                        <p className="text-sm font-normal leading-6 text-gray-500 dark:text-zinc-400">
-                          Liquidation penalty
-                        </p>
-                        <Tooltip
-                          shouldWrapChildren={true}
-                          label={`The penalty you pay when your vault gets liquidated`}
-                        >
-                          <StyledIcon
-                            as="InformationCircleIcon"
-                            size={5}
-                            className="block ml-2 text-gray-400"
-                          />
-                        </Tooltip>
-                      </dt>
-                      <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
-                        {loadingVaultData ? (
-                          <Placeholder
-                            className="justify-end py-2"
-                            color={Placeholder.color.INDIGO}
-                            width={Placeholder.width.FULL}
-                          />
-                        ) : (
-                          <p className="text-lg font-semibold leading-none">
-                            {collateralType?.liquidationPenalty}
-                            <span className="text-sm font-normal">%</span>
-                          </p>
-                        )}
-                      </dd>
-                    </div>
+                            <StyledIcon
+                              as="InformationCircleIcon"
+                              size={5}
+                              className="block ml-2 text-gray-400"
+                            />
+                          </Tooltip>
+                        </dt>
+                        <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
+                          {loadingVaultData ? (
+                            <Placeholder
+                              className="justify-end py-2"
+                              color={Placeholder.color.INDIGO}
+                              width={Placeholder.width.FULL}
+                            />
+                          ) : (
+                            <>
+                              {detail.label === 'Collateral to Debt ratio' ? (
+                                <p
+                                  className={`text-base font-semibold leading-none ${debtClass(
+                                    collateralType?.liquidationRatio,
+                                    debtRatio
+                                  )}`}
+                                >
+                                  {detail.data}
+                                  <span className="text-sm font-normal ml-0.5">%</span>
+                                </p>
+                              ) : (
+                                <p
+                                  className="text-base font-semibold leading-none"
+                                >
+                                  {detail.data}
+                                  <span className="text-sm font-normal ml-0.5">
+                                    {detail.label === "Stability fee" ? 'USDA' : '%'}
+                                  </span>
+                                </p>
+                              )}
+                            </>
+                          )}
+                        </dd>
+                      </div>
+                    ))}
                   </dl>
 
                   <div className="p-3 mt-auto rounded-md bg-gray-50 dark:bg-gray-200">
