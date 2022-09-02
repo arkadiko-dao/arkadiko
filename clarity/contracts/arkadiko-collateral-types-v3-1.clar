@@ -243,7 +243,7 @@
     { name: "ATALEX-A" }
     {
       name: "Auto ALEX",
-      token: "auto-alex",
+      token: "auto-alex", ;; this should be the token's symbol on the ft contract
       token-type: "atALEX-A",
       token-address: 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.auto-alex,
       url: "https://alexlab.co/",

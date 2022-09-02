@@ -59,9 +59,9 @@ export const Prices = () => {
       setUsdaBlockUpdate(response['usda']['price_last_updated']);
       setUsdaBlockAgoUpdate(currentBlock - response['usda']['price_last_updated']);
 
-      setAtAlexPrice(response['atalex']['last_price']);
-      setAtAlexBlockUpdate(response['atalex']['price_last_updated']);
-      setAtAlexBlockAgeUpdate(currentBlock - response['atalex']['price_last_updated']);
+      setAtAlexPrice(response['auto-alex']['last_price']);
+      setAtAlexBlockUpdate(response['auto-alex']['price_last_updated']);
+      setAtAlexBlockAgeUpdate(currentBlock - response['auto-alex']['price_last_updated']);
 
       setLoadingPrices(false);
     };
