@@ -53,7 +53,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       contractPrincipalCV(tokenAddress, token),
       contractPrincipalCV(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
-        'arkadiko-collateral-types-v1-1'
+        'arkadiko-collateral-types-v2-1'
       ),
       contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1'),
     ];

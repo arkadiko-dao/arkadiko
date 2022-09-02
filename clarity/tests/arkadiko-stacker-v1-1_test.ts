@@ -145,7 +145,7 @@ Clarinet.test({
         types.uint(1),
         types.principal(Utils.qualifiedName('wrapped-stx-token')),
         types.principal(Utils.qualifiedName('usda-token')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v2-1')),
         types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-token'))
       ], deployer.address)
@@ -209,7 +209,7 @@ Clarinet.test({
         types.uint(1),
         types.principal(Utils.qualifiedName('wrapped-stx-token')),
         types.principal(Utils.qualifiedName('usda-token')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v2-1')),
         types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-token'))
       ], wallet_1.address)

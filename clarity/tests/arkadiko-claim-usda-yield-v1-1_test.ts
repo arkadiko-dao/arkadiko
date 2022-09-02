@@ -451,7 +451,7 @@ Clarinet.test({
       Tx.contractCall("arkadiko-claim-usda-yield-v1-1", "claim-and-burn", [
         types.uint(1),
         types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v2-1')),
       ], deployer.address)
     ]);
     block.receipts[0].result.expectErr().expectUint(40401);

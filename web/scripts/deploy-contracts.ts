@@ -42,7 +42,7 @@ const contracts: Contract[] = [
   // Contracts
   { name: 'arkadiko-oracle-v1-1' },
   { name: 'arkadiko-token' },
-  { name: 'arkadiko-collateral-types-v1-1' },
+  { name: 'arkadiko-collateral-types-v2-1' },
   { name: 'arkadiko-dao' },
   { name: 'usda-token' },
   { name: 'arkadiko-stx-reserve-v1-1' },

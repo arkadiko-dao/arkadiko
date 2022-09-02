@@ -40,7 +40,7 @@ async function getCollateralizationRatio(vaultId) {
       functionName: "calculate-current-collateral-to-debt-ratio",
       functionArgs: [
         tx.uintCV(vaultId),
-        tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v1-1'),
+        tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v2-1'),
         tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v1-1'),
         tx.falseCV()
       ],
@@ -57,7 +57,7 @@ async function getCollateralizationRatio(vaultId) {
 async function getLiquidationRatio(collateralType) {
   const vaultTx = await tx.callReadOnlyFunction({
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-collateral-types-v1-1",
+    contractName: "arkadiko-collateral-types-v2-1",
     functionName: "get-liquidation-ratio",
     functionArgs: [tx.stringAsciiCV(collateralType)],
     senderAddress: CONTRACT_ADDRESS,
@@ -87,7 +87,7 @@ async function liquidateVault(vaultId, tokenName, stacking, nonce) {
     functionArgs: [
       tx.uintCV(vaultId),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-freddie-v1-1'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v1-1'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v2-1'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v1-1'),
       tx.contractPrincipalCV(tokenAddress, token),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, reserve),

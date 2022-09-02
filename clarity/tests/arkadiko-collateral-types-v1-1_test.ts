@@ -73,7 +73,7 @@ Clarinet.test({
     let result = collateralTypeManager.getTotalDebt('STX-A');
     result['result'].expectOk().expectUint(0);
     result = collateralTypeManager.getMaximumDebt('STX-A');
-    result['result'].expectOk().expectUint(1000000000000000);
+    result['result'].expectOk().expectUint(3500000000000);
 
     let oracleUpdate = oracleManager.updatePrice("STX", 100);
     oracleUpdate.expectOk().expectUintWithDecimals(100);
@@ -96,7 +96,7 @@ Clarinet.test({
     let vaultManager = new VaultManager(chain, deployer);
     let collateralTypeManager = new CollateralTypeManager(chain, deployer);
     let result = collateralTypeManager.getMaximumDebt('STX-A');
-    result['result'].expectOk().expectUint(1000000000000000);
+    result['result'].expectOk().expectUint(3500000000000);
 
     let res = collateralTypeManager.changeMaximumDebt('STX-A', 100000);
     res.expectOk();
@@ -120,7 +120,7 @@ Clarinet.test({
 
     let collateralTypeManager = new CollateralTypeManager(chain, deployer);
     let result = collateralTypeManager.getTokenAddress('STX-A');
-    result['result'].expectOk().expectPrincipal(deployer.address);
+    result['result'].expectOk().expectPrincipal(`${deployer.address}.xstx-token`);
 
     let res = collateralTypeManager.changeTokenAddress('STX-A', wallet_1.address);
     res.expectOk();

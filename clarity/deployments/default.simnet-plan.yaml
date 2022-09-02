@@ -154,9 +154,9 @@ plan:
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/arkadiko-auction-engine-trait-v1.clar
         - emulated-contract-publish:
-            contract-name: arkadiko-collateral-types-v1-1
+            contract-name: arkadiko-collateral-types-v2-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-collateral-types-v1-1.clar
+            path: contracts/arkadiko-collateral-types-v2-1.clar
         - emulated-contract-publish:
             contract-name: arkadiko-stacker-3-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
