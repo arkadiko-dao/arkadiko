@@ -38,7 +38,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
     fetchInfo();
   }, []);
 
-  ['STX-A', 'XBTC-A'].forEach((tokenString: string) => {
+  ['STX-A', 'XBTC-A', 'ATALEX-A'].forEach((tokenString: string) => {
     const coll = types?.[tokenString];
     const collExtraInfo = {
       'STX-A': {
@@ -63,6 +63,18 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
           innerBg: 'bg-xBTC',
           iconColor: 'text-xBTC/80',
           innerText: 'text-xBTC'
+        }
+      },
+      'ATALEX-A': {
+        label: 'The auto-compounding ALEX governance token',
+        logo: '/assets/tokens/atalex.svg',
+        path: '/vaults/new?type=ATALEX-A&token=atALEX',
+        classes: {
+          wrapper: 'border-atAlex/5 hover:border-atAlex/10 shadow-atAlex/10 from-atAlex/5 to-atAlex/10',
+          tokenShadow: 'shadow-atAlex/10',
+          innerBg: 'bg-atAlex',
+          iconColor: 'text-atAlex/80',
+          innerText: 'text-atAlex'
         }
       }
     };
