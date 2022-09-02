@@ -231,7 +231,7 @@
       url: "https://www.tokensoft.io/",
       total-debt: u51474852253,
       liquidation-ratio: u150, ;; TODO: set to u130 on mainnet
-      collateral-to-debt-ratio: u180, ;; ~55% LTV
+      collateral-to-debt-ratio: u250, ;; TODO: set to u180, ~55% LTV on mainnet
       maximum-debt: u1000000000000, ;; 1M
       liquidation-penalty: u1000, ;; 10% in basis points
       stability-fee: u7610350076, ;; 4% / 365 days / (24*6) blocks = 0.00007610350076 fee per block
