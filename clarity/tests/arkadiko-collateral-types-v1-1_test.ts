@@ -120,7 +120,7 @@ Clarinet.test({
 
     let collateralTypeManager = new CollateralTypeManager(chain, deployer);
     let result = collateralTypeManager.getTokenAddress('STX-A');
-    result['result'].expectOk().expectPrincipal(deployer.address);
+    result['result'].expectOk().expectPrincipal(`${deployer.address}.xstx-token`);
 
     let res = collateralTypeManager.changeTokenAddress('STX-A', wallet_1.address);
     res.expectOk();
