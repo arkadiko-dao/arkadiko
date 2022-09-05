@@ -141,9 +141,6 @@ export const VaultDepositModal: React.FC<Props> = ({
         </span>
         .
       </p>
-      <p className="text-sm text-center text-gray-500 dark:text-zinc-400">
-        We will automatically harvest any DIKO you are eligible for when depositing.
-      </p>
 
       <div className="my-4">
         <Alert>
