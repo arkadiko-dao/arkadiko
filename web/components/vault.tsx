@@ -75,7 +75,7 @@ export const Vault: React.FC<VaultProps> = ({
         functionName: 'get-stability-fee-for-vault',
         functionArgs: [
           uintCV(id),
-          contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v2-1'),
+          contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v3-1'),
         ],
         senderAddress: contractAddress || '',
         network: network,
@@ -109,7 +109,7 @@ export const Vault: React.FC<VaultProps> = ({
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', token),
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v2-1'
+          'arkadiko-collateral-types-v3-1'
         ),
       ],
       postConditionMode: 0x01,

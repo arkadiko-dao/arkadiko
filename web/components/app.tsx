@@ -137,7 +137,7 @@ export const App: React.FC = () => {
     ['STX-A', 'STX-B', 'XBTC-A', 'ATALEX-A'].forEach(async token => {
       const types = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-collateral-types-v2-1',
+        contractName: 'arkadiko-collateral-types-v3-1',
         functionName: 'get-collateral-type-by-name',
         functionArgs: [stringAsciiCV(token)],
         senderAddress: address,

@@ -49,7 +49,7 @@ export const VaultMintModal: React.FC<Props> = ({
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v2-1'
+          'arkadiko-collateral-types-v3-1'
         ),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1'),
       ],

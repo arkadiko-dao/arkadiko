@@ -72,7 +72,7 @@ export const VaultBurnModal: React.FC<Props> = ({
         contractPrincipalCV(tokenAddress, token),
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v2-1'
+          'arkadiko-collateral-types-v3-1'
         ),
       ],
       postConditions,
