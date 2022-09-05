@@ -8,7 +8,7 @@ import { getPrice } from '@common/get-price';
 import { useConnect } from '@stacks/connect-react';
 
 export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
-  const [state, setState] = useContext(AppContext);
+  const [state, _] = useContext(AppContext);
   const { doOpenAuth } = useConnect();
 
   const collateralItems: CollateralTypeProps[] = [];
@@ -17,7 +17,6 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
   const [atAlexPrice, setAtAlexPrice] = useState(0);
 
   useEffect(() => {
-
     const fetchInfo = async () => {
       // Fetch info
       const [
@@ -130,7 +129,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
                       `2000`
                     :
                     collateral.token === "xBTC" ?
-                      state.userData && (parseFloat(state.balance["xbtc"] !== '0.00')) ?
+                      state.userData && (parseFloat(state.balance["xbtc"] !== '0')) ?
                         `${(parseFloat(state.balance["xbtc"]) / 100000000).toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 6,
@@ -138,11 +137,11 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
                       :
                       `1`
                     :
-                    collateral.token === "atALEX" ?
-                      state.userData && (parseFloat(state.balance["atalex"] !== '0.00')) ?
+                    collateral.token === "auto-alex" ?
+                      state.userData && state.balance["atalex"] > 0 ?
                         `${(parseFloat(state.balance["atalex"]) / 100000000).toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 6,
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 0,
                         })}`
                       :
                       `50,000`
@@ -178,9 +177,9 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
                       maximumFractionDigits: 0,
                     })
                   :
-                  collateral.token === "atALEX" ?
+                  collateral.token === "auto-alex" ?
                     state.userData && (parseFloat(state.balance["atalex"] !== '0.00')) ?
-                      (((parseFloat(state.balance["atalex"]) / 100000000) * btcPrice) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                      (((parseFloat(state.balance["atalex"]) / 100000000) * atAlexPrice) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0,
                       })
