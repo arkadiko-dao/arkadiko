@@ -271,6 +271,13 @@ path = "contracts/xbtc/Wrapped-Bitcoin.clar"
 path = "contracts/welsh/welshcorgicoin-token.clar"
 depends_on = ["sip-010-trait-ft-standard"]
 
+# atALEX
+[contracts.trait-ownable]
+path = "contracts/atalex/trait-ownable.clar"
+
+[contracts.auto-alex]
+path = "contracts/atalex/auto-alex.clar"
+
 # Tests
 [contracts.malicious-ft]
 path = "contracts/tests/malicious-ft.clar"

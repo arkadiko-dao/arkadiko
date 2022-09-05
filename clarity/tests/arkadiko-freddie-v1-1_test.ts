@@ -96,6 +96,37 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "freddie: calculate collateralization ratio for atALEX",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+
+    // 1 atALEX = $5
+    let result = oracleManager.updatePrice("atALEX", 5, 100000000);
+    result.expectOk().expectUintWithDecimals(5);
+
+    // 1 atALEX, 10K USDA
+    result = vaultManager.createVault(deployer, "ATALEX-A", 100, 10000, false, false, 'arkadiko-sip10-reserve-v2-1', 'auto-alex');
+    result.expectOk().expectUintWithDecimals(10000);
+
+    let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
+    call.result.expectOk().expectUint(499);
+
+    // 1 atALEX, 20K USDA
+    // collateral-to-debt-ratio = 250
+    // 50.000 / 2.5 = 20.000
+    result = vaultManager.createVault(deployer, "ATALEX-A", 100, 20000, false, false, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin'); 
+    result.expectOk().expectUintWithDecimals(20000);
+
+    // Can not mint 20.001 USDA
+    result = vaultManager.createVault(deployer, "ATALEX-A", 100, 20001, false, false, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin'); 
+    result.expectErr().expectUint(49);
+  }
+});
+
+Clarinet.test({
   name: "freddie: calculate collateralization ratio with accrued stability fee",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
