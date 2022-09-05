@@ -55,9 +55,10 @@ export const Prices: React.FC = () => {
       setUsdaBlockAgoUpdate(currentBlock - usdaPrice['last-block'].value)
 
       const atAlexPrice = await getPriceInfo('auto-alex');
-      setAtAlexPrice(atAlexPrice['last_price'].value / 100);
-      setAtAlexBlockUpdate(atAlexPrice['price_last_updated'].value);
-      setAtAlexBlockAgeUpdate(currentBlock - atAlexPrice['price_last_updated'].value);
+      console.log(atAlexPrice);
+      setAtAlexPrice(atAlexPrice['last-price'].value / 100);
+      setAtAlexBlockUpdate(atAlexPrice['last-block'].value);
+      setAtAlexBlockAgeUpdate(currentBlock - atAlexPrice['last-block'].value);
 
       setLoadingPrices(false);
     };
