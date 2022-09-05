@@ -59,7 +59,7 @@ export const Prices = () => {
       setUsdaBlockUpdate(response['usda']['price_last_updated']);
       setUsdaBlockAgoUpdate(currentBlock - response['usda']['price_last_updated']);
 
-      setAtAlexPrice(response['auto-alex']['last_price']);
+      setAtAlexPrice(response['auto-alex']['last_price'] / 100);
       setAtAlexBlockUpdate(response['auto-alex']['price_last_updated']);
       setAtAlexBlockAgeUpdate(currentBlock - response['auto-alex']['price_last_updated']);
 
