@@ -660,7 +660,7 @@ export const ManageVault = ({ match }) => {
                     <p className="text-xs font-semibold leading-none text-gray-400 uppercase dark:text-gray-500">
                       Current {vault?.collateralToken} price
                     </p>
-                    <p className="mt-1 text-sm font-semibold text-gray-900">${price / 1000000}</p>
+                    <p className="mt-1 text-sm font-semibold text-gray-900">${price / decimals}</p>
                   </div>
                 </div>
               </div>
@@ -693,7 +693,7 @@ export const ManageVault = ({ match }) => {
                           ) : (
                             <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
                               {availableCoinsToMint(
-                                price,
+                                vault?.collateralToken === 'auto-alex' ? price / 100 : price,
                                 collateralLocked(),
                                 outstandingDebt(),
                                 collateralType?.collateralToDebtRatio
