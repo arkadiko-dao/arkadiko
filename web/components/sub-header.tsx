@@ -41,7 +41,7 @@ export const SubHeader: React.FC = () => {
               </span>
               <span className="block text-sm sm:mt-0 sm:inline-block">
                 <span className="font-semibold">
-                  {microToReadable(state.balance['atalex'] / 100).toLocaleString(undefined, {
+                  {microToReadable(state.balance['auto-alex'] / 100).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 6,
                   })}

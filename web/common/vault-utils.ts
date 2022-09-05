@@ -296,7 +296,7 @@ export const tokenTraits: TokenTraits = {
     multihop: [],
     ft: 'wstx-welsh'
   },
-  atalex: {
+  'auto-alex': {
     address: atAlexContractAddress,
     name: 'auto-alex',
     swap: 'auto-alex',

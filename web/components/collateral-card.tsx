@@ -67,7 +67,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
       'ATALEX-A': {
         label: 'The auto-compounding ALEX governance token',
         logo: '/assets/tokens/atalex.svg',
-        path: '/vaults/new?type=ATALEX-A&token=atALEX',
+        path: '/vaults/new?type=ATALEX-A&token=auto-alex',
         classes: {
           wrapper: 'border-atAlex/5 hover:border-atAlex/10 shadow-atAlex/10 from-atAlex/5 to-atAlex/10',
           tokenShadow: 'shadow-atAlex/10',
@@ -80,8 +80,8 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
 
     if (coll) {
       collateralItems.push({
-        name: coll['name'] || 'atALEX',
-        token: coll['token'] || 'atALEX',
+        name: coll['name'],
+        token: coll['token'],
         tokenType: coll['tokenType'],
         url: coll['url'],
         totalDebt: coll['totalDebt'],
