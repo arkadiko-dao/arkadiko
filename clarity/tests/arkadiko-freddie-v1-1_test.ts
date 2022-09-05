@@ -107,7 +107,7 @@ Clarinet.test({
     let result = oracleManager.updatePrice("auto-alex", 0.05, 100000000);
     result.expectOk().expectUintWithDecimals(0.05);
 
-    // 10 atALEX, 1 USDA
+    // 100 atALEX collateral, 1 USDA debt
     result = vaultManager.createVault(deployer, "ATALEX-A", 10000, 1, false, false, 'arkadiko-sip10-reserve-v2-1', 'auto-alex');
     result.expectOk().expectUintWithDecimals(1);
 
