@@ -110,7 +110,7 @@ export const VaultDepositModal: React.FC<Props> = ({
 
   const depositMaxAmount = () => {
     const token = vault['collateralToken'].toLowerCase();
-    const decimals = token === 'xbtc' ? 100000000 : 1000000;
+    const decimals = token === 'xbtc' || token === 'auto-alex' ? 100000000 : 1000000;
     if (token === 'stx') {
       setExtraCollateralDeposit((state.balance['stx'] / decimals - 1).toString());
     } else {
