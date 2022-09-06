@@ -19,7 +19,8 @@ export const getLiquidationPrice = (
   stxCollateral: number,
   collateralToken: string
 ) => {
-  const denominator = collateralToken.toLocaleLowerCase().includes('xbtc') ? 1 : 100;
+  const token = collateralToken.toLocaleLowerCase();
+  const denominator = token.includes('xbtc') || token.includes('alex') ? 1 : 100;
   return ((liquidationRatio * coinsMinted) / (stxCollateral * denominator)).toFixed(4);
 };
 
