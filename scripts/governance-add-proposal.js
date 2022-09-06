@@ -13,7 +13,7 @@ async function transact() {
     functionName: 'propose',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
-      tx.uintCV(73800),
+      tx.uintCV(74200),
       tx.uintCV(250),
       tx.stringUtf8CV('AIP11 - Upgrade collateral types to include atALEX'),
       tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/509'),
@@ -21,13 +21,12 @@ async function transact() {
         tx.tupleCV({
           'name': tx.stringAsciiCV("collateral-types"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-collateral-types-v2-1"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-collateral-types-v3-1"),
           'can-mint': tx.falseCV(),
           'can-burn': tx.falseCV()
         }),
       ])
     ],
-    fee: new BN(650),
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network

@@ -73,7 +73,7 @@ export const getBalance = async (address: string) => {
     wldn: wldnBalance ? wldnBalance.balance : 0,
     ldn: ldnBalance ? ldnBalance.balance : 0,
     welsh: welshBalance ? welshBalance.balance : 0,
-    atalex: atAlexBalance ? atAlexBalance.balance : 0,
+    'auto-alex': atAlexBalance ? atAlexBalance.balance : 0,
     dikousda: lpDikoUsdaBalance ? lpDikoUsdaBalance.balance : 0,
     wstxusda: lpStxUsdaBalance ? lpStxUsdaBalance.balance : 0,
     wstxdiko: lpStxDikoBalance ? lpStxDikoBalance.balance : 0,
@@ -119,7 +119,7 @@ export const App: React.FC = () => {
         wldn: account.wldn.toString(),
         ldn: account.ldn.toString(),
         welsh: account.welsh.toString(),
-        atalex: account.atalex.toString(),
+        'auto-alex': account['auto-alex'].toString(),
         dikousda: account.dikousda.toString(),
         wstxusda: account.wstxusda.toString(),
         wstxdiko: account.wstxdiko.toString(),
@@ -137,7 +137,7 @@ export const App: React.FC = () => {
     ['STX-A', 'STX-B', 'XBTC-A', 'ATALEX-A'].forEach(async token => {
       const types = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-collateral-types-v2-1',
+        contractName: 'arkadiko-collateral-types-v3-1',
         functionName: 'get-collateral-type-by-name',
         functionArgs: [stringAsciiCV(token)],
         senderAddress: address,

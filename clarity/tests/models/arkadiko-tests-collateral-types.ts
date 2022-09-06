@@ -16,62 +16,62 @@ class CollateralTypeManager {
   }
 
   getTokenAddress(collateralType: string) {
-    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v2-1", "get-token-address", [
+    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v3-1", "get-token-address", [
       types.ascii(collateralType),
     ], this.deployer.address);
   }
 
   getTotalDebt(collateralType: string) {
-    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v2-1", "get-total-debt", [
+    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v3-1", "get-total-debt", [
       types.ascii(collateralType),
     ], this.deployer.address);
   }
 
   getMaximumDebt(collateralType: string) {
-    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v2-1", "get-maximum-debt", [
+    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v3-1", "get-maximum-debt", [
       types.ascii(collateralType),
     ], this.deployer.address);
   }
 
   getCollateralToDebtRatio(collateralType: string) {
-    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v2-1", "get-collateral-to-debt-ratio", [
+    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v3-1", "get-collateral-to-debt-ratio", [
       types.ascii(collateralType),
     ], this.deployer.address);
   }
 
   getStabilityFee(collateralType: string) {
-    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v2-1", "get-stability-fee", [
+    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v3-1", "get-stability-fee", [
       types.ascii(collateralType),
     ], this.deployer.address);
   }
 
   getStabilityFeeDecimals(collateralType: string) {
-    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v2-1", "get-stability-fee-decimals", [
+    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v3-1", "get-stability-fee-decimals", [
       types.ascii(collateralType),
     ], this.deployer.address);
   }
 
   getStabilityFeeApy(collateralType: string) {
-    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v2-1", "get-stability-fee-apy", [
+    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v3-1", "get-stability-fee-apy", [
       types.ascii(collateralType),
     ], this.deployer.address);
   }
 
   getLiquidationRatio(collateralType: string) {
-    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v2-1", "get-liquidation-ratio", [
+    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v3-1", "get-liquidation-ratio", [
       types.ascii(collateralType),
     ], this.deployer.address);
   }
 
   getLiquidationPenalty(collateralType: string) {
-    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v2-1", "get-liquidation-penalty", [
+    return this.chain.callReadOnlyFn("arkadiko-collateral-types-v3-1", "get-liquidation-penalty", [
       types.ascii(collateralType),
     ], this.deployer.address);
   }
 
   changeLiquidationParameters(collateralType: string, liquidationPenalty: number, liquidationRatio: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-collateral-types-v2-1", "change-risk-parameters", [
+      Tx.contractCall("arkadiko-collateral-types-v3-1", "change-risk-parameters", [
         types.ascii(collateralType),
         types.list([
           types.tuple({
@@ -90,7 +90,7 @@ class CollateralTypeManager {
 
   changeCollateralToDebtRatio(collateralType: string, debtRatio: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-collateral-types-v2-1", "change-risk-parameters", [
+      Tx.contractCall("arkadiko-collateral-types-v3-1", "change-risk-parameters", [
         types.ascii(collateralType),
         types.list([
           types.tuple({
@@ -105,7 +105,7 @@ class CollateralTypeManager {
 
   changeMaximumDebt(collateralType: string, maximumDebt: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-collateral-types-v2-1", "change-risk-parameters", [
+      Tx.contractCall("arkadiko-collateral-types-v3-1", "change-risk-parameters", [
         types.ascii(collateralType),
         types.list([
           types.tuple({
@@ -120,7 +120,7 @@ class CollateralTypeManager {
 
   changeTokenAddress(collateralType: string, principal: string) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-collateral-types-v2-1", "change-token-address", [
+      Tx.contractCall("arkadiko-collateral-types-v3-1", "change-token-address", [
         types.ascii(collateralType),
         types.principal(principal)
       ], this.deployer.address)

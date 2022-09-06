@@ -154,9 +154,9 @@ plan:
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/arkadiko-auction-engine-trait-v1.clar
         - emulated-contract-publish:
-            contract-name: arkadiko-collateral-types-v2-1
+            contract-name: arkadiko-collateral-types-v3-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-collateral-types-v2-1.clar
+            path: contracts/arkadiko-collateral-types-v3-1.clar
         - emulated-contract-publish:
             contract-name: arkadiko-stacker-3-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
@@ -245,6 +245,14 @@ plan:
             contract-name: Wrapped-Bitcoin
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/xbtc/Wrapped-Bitcoin.clar
+        - emulated-contract-publish:
+            contract-name: trait-ownable
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/atalex/trait-ownable.clar
+        - emulated-contract-publish:
+            contract-name: auto-alex
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/atalex/auto-alex.clar
         - emulated-contract-publish:
             contract-name: arkadiko-liquidation-rewards-ui-v2-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM

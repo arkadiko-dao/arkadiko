@@ -16,8 +16,8 @@ path = "contracts/arkadiko-dao-token-trait-v1.clar"
 [contracts.arkadiko-collateral-types-v1-1]
 path = "contracts/arkadiko-collateral-types-v1-1.clar"
 
-[contracts.arkadiko-collateral-types-v2-1]
-path = "contracts/arkadiko-collateral-types-v2-1.clar"
+[contracts.arkadiko-collateral-types-v3-1]
+path = "contracts/arkadiko-collateral-types-v3-1.clar"
 
 [contracts.arkadiko-collateral-types-tv1-1]
 path = "contracts/tests/arkadiko-collateral-types-tv1-1.clar"
@@ -270,6 +270,13 @@ path = "contracts/xbtc/Wrapped-Bitcoin.clar"
 [contracts.welshcorgicoin-token]
 path = "contracts/welsh/welshcorgicoin-token.clar"
 depends_on = ["sip-010-trait-ft-standard"]
+
+# atALEX
+[contracts.trait-ownable]
+path = "contracts/atalex/trait-ownable.clar"
+
+[contracts.auto-alex]
+path = "contracts/atalex/auto-alex.clar"
 
 # Tests
 [contracts.malicious-ft]

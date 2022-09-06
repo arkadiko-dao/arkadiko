@@ -83,7 +83,7 @@ export const tokenList = [
   {
     id: 8,
     name: 'atALEX',
-    nameInPair: 'atalex',
+    nameInPair: 'auto-alex',
     logo: '/assets/tokens/atalex.png',
     listed: false,
     address: atAlexContractAddress,

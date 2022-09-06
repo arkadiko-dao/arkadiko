@@ -8,7 +8,7 @@ const BN = require('bn.js');
 async function transact() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: 'arkadiko-collateral-types-v2-1',
+    contractName: 'arkadiko-collateral-types-v3-1',
     functionName: 'change-token-address',
     functionArgs: [
       tx.stringAsciiCV('ATALEX-A'),

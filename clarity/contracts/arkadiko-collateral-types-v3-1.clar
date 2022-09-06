@@ -243,9 +243,9 @@
     { name: "ATALEX-A" }
     {
       name: "Auto ALEX",
-      token: "atALEX",
+      token: "auto-alex", ;; this should be the token's symbol on the ft contract
       token-type: "atALEX-A",
-      token-address: 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.auto-alex,
+      token-address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.auto-alex, ;; TODO: use SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9 on mainnet
       url: "https://alexlab.co/",
       total-debt: u0,
       liquidation-ratio: u180, 

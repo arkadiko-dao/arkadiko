@@ -91,7 +91,7 @@ export const VaultDepositModal: React.FC<Props> = ({
         contractPrincipalCV(tokenAddress, token),
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v2-1'
+          'arkadiko-collateral-types-v3-1'
         ),
       ],
       postConditions,
@@ -110,7 +110,7 @@ export const VaultDepositModal: React.FC<Props> = ({
 
   const depositMaxAmount = () => {
     const token = vault['collateralToken'].toLowerCase();
-    const decimals = token === 'xbtc' ? 100000000 : 1000000;
+    const decimals = token === 'xbtc' || token === 'auto-alex' ? 100000000 : 1000000;
     if (token === 'stx') {
       setExtraCollateralDeposit((state.balance['stx'] / decimals - 1).toString());
     } else {
@@ -140,9 +140,6 @@ export const VaultDepositModal: React.FC<Props> = ({
           {vault?.collateralToken.toUpperCase()}
         </span>
         .
-      </p>
-      <p className="text-sm text-center text-gray-500 dark:text-zinc-400">
-        We will automatically harvest any DIKO you are eligible for when depositing.
       </p>
 
       <div className="my-4">

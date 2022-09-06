@@ -18,7 +18,7 @@ async function transact() {
   ]);
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: 'arkadiko-collateral-types-v2-1',
+    contractName: 'arkadiko-collateral-types-v3-1',
     functionName: 'change-risk-parameters',
     functionArgs: [
       tx.stringAsciiCV('ATALEX-A'),

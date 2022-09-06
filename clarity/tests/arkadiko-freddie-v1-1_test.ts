@@ -96,6 +96,31 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "freddie: calculate collateralization ratio for atALEX",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+
+    // 1 atALEX = $0.05
+    let result = oracleManager.updatePrice("auto-alex", 0.05, 100000000);
+    result.expectOk().expectUintWithDecimals(0.05);
+
+    // 100 atALEX collateral, 1 USDA debt
+    result = vaultManager.createVault(deployer, "ATALEX-A", 10000, 1, false, false, 'arkadiko-sip10-reserve-v2-1', 'auto-alex');
+    result.expectOk().expectUintWithDecimals(1);
+
+    let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
+    call.result.expectOk().expectUint(500);
+
+    // Can not mint 2 USDA
+    result = vaultManager.createVault(deployer, "ATALEX-A", 10000, 2, false, false, 'arkadiko-sip10-reserve-v2-1', 'auto-alex'); 
+    result.expectErr().expectUint(49);
+  }
+});
+
+Clarinet.test({
   name: "freddie: calculate collateralization ratio with accrued stability fee",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;

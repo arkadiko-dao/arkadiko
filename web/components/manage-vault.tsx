@@ -110,7 +110,7 @@ export const ManageVault = ({ match }) => {
 
         const type = await callReadOnlyFunction({
           contractAddress,
-          contractName: 'arkadiko-collateral-types-v2-1',
+          contractName: 'arkadiko-collateral-types-v3-1',
           functionName: 'get-collateral-type-by-name',
           functionArgs: [stringAsciiCV(data['collateral-type'].value)],
           senderAddress: senderAddress || contractAddress,
@@ -170,7 +170,7 @@ export const ManageVault = ({ match }) => {
         functionName: 'get-stability-fee-for-vault',
         functionArgs: [
           uintCV(vault?.id),
-          contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v2-1'),
+          contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v3-1'),
         ],
         senderAddress: contractAddress || '',
         network: network,
@@ -216,7 +216,7 @@ export const ManageVault = ({ match }) => {
           functionName: 'calculate-current-collateral-to-debt-ratio',
           functionArgs: [
             uintCV(vault.id),
-            contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v2-1'),
+            contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v3-1'),
             contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v1-1'),
             falseCV(),
           ],
@@ -424,7 +424,7 @@ export const ManageVault = ({ match }) => {
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v2-1'
+          'arkadiko-collateral-types-v3-1'
         ),
         falseCV(),
       ],
@@ -453,7 +453,7 @@ export const ManageVault = ({ match }) => {
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v2-1'
+          'arkadiko-collateral-types-v3-1'
         ),
       ],
       onFinish: data => {
@@ -660,7 +660,7 @@ export const ManageVault = ({ match }) => {
                     <p className="text-xs font-semibold leading-none text-gray-400 uppercase dark:text-gray-500">
                       Current {vault?.collateralToken} price
                     </p>
-                    <p className="mt-1 text-sm font-semibold text-gray-900">${price / 1000000}</p>
+                    <p className="mt-1 text-sm font-semibold text-gray-900">${price / decimals}</p>
                   </div>
                 </div>
               </div>
@@ -693,7 +693,7 @@ export const ManageVault = ({ match }) => {
                           ) : (
                             <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
                               {availableCoinsToMint(
-                                price,
+                                vault?.collateralToken === 'auto-alex' ? price / 100 : price,
                                 collateralLocked(),
                                 outstandingDebt(),
                                 collateralType?.collateralToDebtRatio

@@ -134,7 +134,7 @@ class StackerPayer {
         types.uint(vaultId),
         types.principal(Utils.qualifiedName('wrapped-stx-token')),
         types.principal(Utils.qualifiedName('usda-token')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v2-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
         types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-token'))
       ], this.deployer.address)
@@ -222,7 +222,7 @@ class ClaimYield {
       Tx.contractCall("arkadiko-claim-yield-v2-1", "claim", [
         types.uint(vaultId),
         types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v2-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
         types.bool(stack)
       ], user.address)
     ]);
@@ -234,7 +234,7 @@ class ClaimYield {
       Tx.contractCall("arkadiko-claim-yield-v2-1", "claim-to-pay-debt", [
         types.uint(vaultId),
         types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v2-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
       ], user.address)
     ]);
     return block.receipts[0].result;
@@ -337,7 +337,7 @@ class ClaimUsdaYield {
       Tx.contractCall("arkadiko-claim-usda-yield-v1-1", "claim-and-burn", [
         types.uint(vaultId),
         types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v2-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
       ], user.address)
     ]);
     return block.receipts[0].result;
