@@ -352,7 +352,7 @@ export const Stake = () => {
         return;
       }
 
-      const totalStakingRewardsYear1 = 23500000;
+      const totalStakingRewardsYear1 = 11750000;
       const dikoPoolRewards = totalStakingRewardsYear1 * 0.1;
       const dikoApr = dikoPoolRewards / totalDikoStaked;
       setApy(Number((100 * dikoApr).toFixed(2)));
