@@ -84,6 +84,21 @@
     (ok true)
   )
 )
+
+(define-public (claim-25-rewards-of (reward-ids (list 25 uint)) (token <ft-trait>) (increase-reward-id bool))
+  (let (
+    (token-list (list token token token token token token token token token token token token token token token token token token token token token token token token token))
+  )
+    (map claim-rewards-of reward-ids token-list)
+    (if increase-reward-id
+      (begin
+        (unwrap-panic (increase-last-reward-id))
+      )
+      false
+    )
+    (ok true)
+  )
+)
  
 (define-public (claim-rewards-of (reward-id uint) (token <ft-trait>))
   (contract-call? .arkadiko-liquidation-rewards-v1-2 claim-rewards-of reward-id token .arkadiko-liquidation-pool-v1-1)

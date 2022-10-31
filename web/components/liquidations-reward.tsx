@@ -147,7 +147,7 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
       contractAddress,
       stxAddress,
       contractName: claimContract,
-      functionName: "claim-50-rewards-of",
+      functionName: rewardIds.length <= 25 ? "claim-25-rewards-of" : "claim-50-rewards-of",
       functionArgs: [
         listCV(rewardIds.map((id) =>  uintCV(id))),
         contractPrincipalCV(token.split('.')[0], token.split('.')[1]),
