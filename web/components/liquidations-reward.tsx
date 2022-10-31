@@ -10,7 +10,9 @@ import {
   makeContractFungiblePostCondition,
   makeContractSTXPostCondition,
   FungibleConditionCode,
-  createAssetInfo
+  createAssetInfo,
+  contractPrincipalCV,
+  trueCV
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { tokenTraits } from '@common/vault-utils';
@@ -39,10 +41,10 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [state, setState] = useContext(AppContext);
 
-  const claim = async () => {
+  const claimV1 = async () => {
 
-    var rewardsContract = version == 1 ? 'arkadiko-liquidation-rewards-v1-1' : 'arkadiko-liquidation-rewards-v1-2';
-    var claimContract = version == 1 ? 'arkadiko-liquidation-rewards-ui-v2-1' : 'arkadiko-liquidation-rewards-ui-v2-2';
+    var rewardsContract = 'arkadiko-liquidation-rewards-v1-1';
+    var claimContract = 'arkadiko-liquidation-rewards-ui-v2-1';
 
     const postConditions = [];
     if (tokenIsStx) {
@@ -102,6 +104,73 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
       },
       anchorMode: AnchorMode.Any,
     });
+  }
+
+  const claimV2 = async () => {
+
+    var rewardsContract = 'arkadiko-liquidation-rewards-v1-2';
+    var claimContract = 'arkadiko-liquidation-rewards-ui-v2-3';
+
+    const postConditions = [];
+    if (tokenIsStx) {
+      // PC
+      postConditions.push(
+        makeContractSTXPostCondition(
+          contractAddress,
+          rewardsContract,
+          FungibleConditionCode.Equal,
+          uintCV(claimable).value,
+        )
+      )
+    } else {
+      // FT name
+      const tokenTraitsKey = Object.keys(tokenTraits).filter((key) => 
+        (tokenTraits[key].address == token.split('.')[0] && tokenTraits[key].swap == token.split('.')[1])
+      );
+      const tokenName = tokenTraits[tokenTraitsKey].ft;
+
+      // PC
+      postConditions.push(
+        makeContractFungiblePostCondition(
+          contractAddress,
+          rewardsContract,
+          FungibleConditionCode.Equal,
+          uintCV(claimable).value,
+          createAssetInfo(token.split('.')[0], token.split('.')[1], tokenName)
+        )
+      )
+    }
+
+    // Call
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: claimContract,
+      functionName: "claim-50-rewards-of",
+      functionArgs: [
+        listCV(rewardIds.map((id) =>  uintCV(id))),
+        contractPrincipalCV(token.split('.')[0], token.split('.')[1]),
+        trueCV()
+      ],
+      postConditions,
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  }
+
+  const claim = async () => {
+    if (version == 1) {
+      await claimV1();
+    } else {
+      await claimV2();
+    }
   };
 
   useEffect(() => {
