@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.31.0/index.ts";
+} from "https://deno.land/x/clarinet/index.ts";
 
 import { 
   Swap,
