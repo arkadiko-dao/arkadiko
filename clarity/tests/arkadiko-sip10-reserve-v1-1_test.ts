@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.31.0/index.ts";
+} from "https://deno.land/x/clarinet/index.ts";
 
 import { assert } from "https://deno.land/std@0.90.0/testing/asserts.ts";
 
@@ -15,8 +15,6 @@ import {
 
 import { 
   VaultManager,
-  VaultLiquidator,
-  VaultAuction 
 } from './models/arkadiko-tests-vaults.ts';
 
 import { 
@@ -344,7 +342,7 @@ Clarinet.test({
         types.uint(1),
         types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v2-1')),
         types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1'))
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1'))
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(4401);

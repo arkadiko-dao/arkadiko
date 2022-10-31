@@ -13,7 +13,7 @@ async function payVault() {
       tx.uintCV(1), // vault ID
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wrapped-stx-token'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'usda-token'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v1-1'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v3-1'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stx-reserve-v1-1'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-token')
     ],

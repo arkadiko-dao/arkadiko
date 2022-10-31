@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.31.0/index.ts";
+} from "https://deno.land/x/clarinet/index.ts";
 
 import { 
   Swap,
@@ -69,7 +69,7 @@ Clarinet.test({
     call.result.expectUintWithDecimals(21000000);
 
     call = stacker.getStackingUnlockHeight();
-    call.result.expectOk().expectUint(300);
+    call.result.expectOk().expectUint(2100);
 
     // now imagine the vault owner changes his mind and revokes stacking
     result = vaultManager.toggleStacking(deployer, 1);
@@ -79,8 +79,8 @@ Clarinet.test({
     let vault = call.result.expectTuple();
     vault['revoked-stacking'].expectBool(true);
 
-    // now we wait until the burn-block-height (300 blocks) is mined
-    chain.mineEmptyBlock(300);
+    // now we wait until the burn-block-height (2100 blocks) is mined
+    chain.mineEmptyBlock(2100);
 
     result = stacker.requestStxForPayout(1000);
     result.expectOk().expectBool(true);
@@ -135,7 +135,7 @@ Clarinet.test({
     vault['is-liquidated'].expectBool(true);
     vault['auction-ended'].expectBool(true);
 
-    chain.mineEmptyBlock(300);
+    chain.mineEmptyBlock(2100);
 
     result = stacker.requestStxForPayout(1000);
     result.expectOk().expectBool(true)
@@ -145,7 +145,7 @@ Clarinet.test({
         types.uint(1),
         types.principal(Utils.qualifiedName('wrapped-stx-token')),
         types.principal(Utils.qualifiedName('usda-token')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
         types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-token'))
       ], deployer.address)
@@ -209,7 +209,7 @@ Clarinet.test({
         types.uint(1),
         types.principal(Utils.qualifiedName('wrapped-stx-token')),
         types.principal(Utils.qualifiedName('usda-token')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
         types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-token'))
       ], wallet_1.address)
@@ -418,7 +418,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(21001000);
 
     // Advance until end of stacking
-    chain.mineEmptyBlock(300);
+    chain.mineEmptyBlock(2100);
 
     // Deposit extra
     result = vaultManager.deposit(deployer, 1, 500);

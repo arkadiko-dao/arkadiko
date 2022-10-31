@@ -8,33 +8,36 @@ import { getPrice } from '@common/get-price';
 import { useConnect } from '@stacks/connect-react';
 
 export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
-  const [state, setState] = useContext(AppContext);
+  const [state, _] = useContext(AppContext);
   const { doOpenAuth } = useConnect();
 
   const collateralItems: CollateralTypeProps[] = [];
   const [stxPrice, setStxPrice] = useState(0);
   const [btcPrice, setBtcPrice] = useState(0);
+  const [atAlexPrice, setAtAlexPrice] = useState(0);
 
   useEffect(() => {
-
     const fetchInfo = async () => {
       // Fetch info
       const [
         stxPrice,
-        btcPrice
+        btcPrice,
+        atAlexPrice
       ] = await Promise.all([
         getPrice("STX"),
         getPrice("xBTC"),
+        getPrice("atALEX")
       ]);
 
       setStxPrice(stxPrice / 1000000);
       setBtcPrice(btcPrice / 1000000);
+      setAtAlexPrice(atAlexPrice / 1000000);
     };
 
     fetchInfo();
   }, []);
 
-  ['STX-A', 'XBTC-A'].forEach((tokenString: string) => {
+  ['STX-A', 'XBTC-A', 'ATALEX-A'].forEach((tokenString: string) => {
     const coll = types?.[tokenString];
     const collExtraInfo = {
       'STX-A': {
@@ -61,11 +64,18 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
           innerText: 'text-xBTC'
         }
       },
-      //'atAlex': {
-      //   label: 'Random catch phrase here',
-      //   logo: '/assets/tokens/atalex.svg',
-      //   path: ''
-      // }
+      'ATALEX-A': {
+        label: 'The auto-compounding ALEX governance token',
+        logo: '/assets/tokens/atalex.svg',
+        path: '/vaults/new?type=ATALEX-A&token=auto-alex',
+        classes: {
+          wrapper: 'border-atAlex/5 hover:border-atAlex/10 shadow-atAlex/10 from-atAlex/5 to-atAlex/10',
+          tokenShadow: 'shadow-atAlex/10',
+          innerBg: 'bg-atAlex',
+          iconColor: 'text-atAlex/80',
+          innerText: 'text-atAlex'
+        }
+      }
     };
 
     if (coll) {
@@ -119,13 +129,22 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
                       `2000`
                     :
                     collateral.token === "xBTC" ?
-                      state.userData && (parseFloat(state.balance["xbtc"] !== '0.00')) ?
+                      state.userData && (parseFloat(state.balance["xbtc"] !== '0')) ?
                         `${(parseFloat(state.balance["xbtc"]) / 100000000).toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 6,
                         })}`
                       :
                       `1`
+                    :
+                    collateral.token === "auto-alex" ?
+                      state.userData && state.balance["atalex"] > 0 ?
+                        `${(parseFloat(state.balance["atalex"]) / 100000000).toLocaleString(undefined, {
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 0,
+                        })}`
+                      :
+                      `50,000`
                       : null
                   }
                   <span className="text-xs">
@@ -154,6 +173,18 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
                       })
                     :
                     ((1 * btcPrice) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 0,
+                    })
+                  :
+                  collateral.token === "auto-alex" ?
+                    state.userData && (parseFloat(state.balance["atalex"] !== '0.00')) ?
+                      (((parseFloat(state.balance["atalex"]) / 100000000) * atAlexPrice) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      })
+                    :
+                    ((50000 * atAlexPrice) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
                       minimumFractionDigits: 0,
                       maximumFractionDigits: 0,
                     })

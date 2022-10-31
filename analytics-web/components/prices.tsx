@@ -9,14 +9,20 @@ export const Prices: React.FC = () => {
   const [dikoPrice, setDikoPrice] = useState(0.0);
   const [xbtcPrice, setXbtcPrice] = useState(0.0);
   const [usdaPrice, setUsdaPrice] = useState(1.0);
+  const [atAlexPrice, setAtAlexPrice] = useState(0.0);
+
   const [stxBlockUpdate, setStxBlockUpdate] = useState(0.0);
   const [xbtcBlockUpdate, setXbtcBlockUpdate] = useState(0.0);
   const [usdaBlockUpdate, setUsdaBlockUpdate] = useState(0.0);
   const [dikoBlockUpdate, setDikoBlockUpdate] = useState(0.0);
+  const [atAlexBlockUpdate, setAtAlexBlockUpdate] = useState(0.0);
+
   const [stxBlockAgoUpdate, setStxBlockAgoUpdate] = useState(0.0);
   const [xbtcBlockAgoUpdate, setXbtcBlockAgoUpdate] = useState(0.0);
   const [usdaBlockAgoUpdate, setUsdaBlockAgoUpdate] = useState(0.0);
   const [dikoBlockAgoUpdate, setDikoBlockAgoUpdate] = useState(0.0);
+  const [atAlexBlockAgeUpdate, setAtAlexBlockAgeUpdate] = useState(0.0);
+
   const [loadingPrices, setLoadingPrices] = useState(true);
 
   useEffect(() => {
@@ -47,6 +53,12 @@ export const Prices: React.FC = () => {
       setUsdaPrice(usdaPrice['last-price'].value);
       setUsdaBlockUpdate(usdaPrice['last-block'].value);
       setUsdaBlockAgoUpdate(currentBlock - usdaPrice['last-block'].value)
+
+      const atAlexPrice = await getPriceInfo('auto-alex');
+      console.log(atAlexPrice);
+      setAtAlexPrice(atAlexPrice['last-price'].value / 100);
+      setAtAlexBlockUpdate(atAlexPrice['last-block'].value);
+      setAtAlexBlockAgeUpdate(currentBlock - atAlexPrice['last-block'].value);
 
       setLoadingPrices(false);
     };
@@ -79,6 +91,14 @@ export const Prices: React.FC = () => {
       unit: '$',
       block: xbtcBlockUpdate,
       blockAgo: xbtcBlockAgoUpdate,
+    },
+    {
+      token: 'atALEX',
+      logo: tokenList[7].logo,
+      price: atAlexPrice / 1000000,
+      unit: '$',
+      block: atAlexBlockUpdate,
+      blockAgo: atAlexBlockAgeUpdate,
     },
     {
       token: 'USDA',

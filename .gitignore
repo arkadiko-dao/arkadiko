@@ -102,3 +102,6 @@ typings/
 
 # IntelliJ
 .idea
+
+# Clarinet requirements
+.requirements

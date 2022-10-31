@@ -13,6 +13,7 @@ class PoxCalculator
       stacked = vault['stacked-tokens']['value']
       ratio = collateral / ustx_stacked.to_f
       vaults[vault['id']['value']] = {
+        'debt': vault['debt']['value'],
         'collateral': collateral,
         'stacked': stacked,
         'ratio': ratio,
@@ -37,6 +38,7 @@ class PoxCalculator
       stacked = vault['stacked-tokens']['value']
       ratio = collateral / ustx_stacked.to_f
       vaults[vault['id']['value']] = {
+        'debt': vault['debt']['value'],
         'collateral': collateral,
         'stacked': stacked,
         'ratio': ratio,
@@ -96,7 +98,7 @@ class PoxCalculator
     end
   end
 
-  def self.build_clarity_list_tuples(names:, file: 'vaults-pox-38.json', yield_type: 'usda', ustx_stacked: 5_743_010_903_991, yield_earned: 12_208_000_000)
+  def self.build_clarity_list_tuples(names:, file: 'vaults-pox-43.json', yield_type: 'usda', ustx_stacked: 5_026_400_508_747, yield_earned: 5_747_180_000)
     if yield_type == 'usda'
       vaults = calculate_usda_yields(names: names, file: file, ustx_stacked: ustx_stacked, usda_yield: yield_earned)
     else

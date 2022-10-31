@@ -96,6 +96,12 @@ Token.create!(
 )
 
 Token.create!(
+  address: 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9',
+  name: 'auto-alex',
+  symbol: 'auto-alex'
+)
+
+Token.create!(
   address: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR',
   name: 'arkadiko-swap-token-diko-usda',
   symbol: 'ARKV1DIKOUSDA'

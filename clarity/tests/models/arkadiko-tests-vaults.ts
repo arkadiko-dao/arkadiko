@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.31.0/index.ts";
+} from "https://deno.land/x/clarinet/index.ts";
 
 import * as Utils from './arkadiko-tests-utils.ts';
 
@@ -40,7 +40,7 @@ class VaultManager {
       "calculate-current-collateral-to-debt-ratio",
       [
         types.uint(vaultId),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1')),
         types.bool(true)
       ],
@@ -51,7 +51,7 @@ class VaultManager {
   getStabilityFee(vaultId: number, caller: Account = this.deployer) {
     return this.chain.callReadOnlyFn("arkadiko-freddie-v1-1", "get-stability-fee-for-vault", [
       types.uint(vaultId),
-      types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1'))
+      types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1'))
     ], caller.address);
   }
 
@@ -76,7 +76,7 @@ class VaultManager {
         types.ascii(collateralType),
         types.principal(Utils.qualifiedName(reserve)),
         types.principal(Utils.qualifiedName(token)),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], user.address)
     ]);
@@ -96,7 +96,7 @@ class VaultManager {
         types.uint(extraCollateral * 1000000),
         types.principal(Utils.qualifiedName(reserve)),
         types.principal(Utils.qualifiedName(token)),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1'))
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1'))
       ], user.address)
     ]);
     return block.receipts[0].result;
@@ -108,7 +108,7 @@ class VaultManager {
         types.uint(vaultId),
         types.uint(amount * 1000000), 
         types.principal(Utils.qualifiedName(reserve)),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], user.address),
     ]);
@@ -128,7 +128,7 @@ class VaultManager {
         types.uint(amount * 1000000),
         types.principal(Utils.qualifiedName(reserve)),
         types.principal(Utils.qualifiedName(token)),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1'))
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1'))
       ], user.address),
     ]);
     return block.receipts[0].result;
@@ -145,7 +145,7 @@ class VaultManager {
         types.uint(vaultId),
         types.principal(Utils.qualifiedName(reserve)),
         types.principal(Utils.qualifiedName(token)),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1'))
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1'))
       ], user.address),
     ]);
     return block.receipts[0].result;
@@ -164,7 +164,7 @@ class VaultManager {
         types.uint(amount * 1000000),
         types.principal(Utils.qualifiedName(reserve)),
         types.principal(Utils.qualifiedName(token)),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], user.address)
     ]);
@@ -175,7 +175,7 @@ class VaultManager {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "pay-stability-fee", [
         types.uint(vaultId),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1'))
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1'))
       ], user.address)
     ]);
     return block.receipts[0].result;
@@ -232,7 +232,7 @@ class VaultManager {
         types.uint(1),
         types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v2-1')),
         types.principal(Utils.qualifiedName(token)),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1'))
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1'))
       ], user.address)
     ]);
     return block.receipts[0].result;
@@ -252,7 +252,7 @@ class VaultManager {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-freddie-v1-1", "accrue-stability-fee", [
         types.uint(vaultId),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1'))
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1'))
       ], this.deployer.address)
     ]);
     return block.receipts[0].result;
@@ -260,7 +260,7 @@ class VaultManager {
 
   changeStabilityFeeParameters(collateralType: string, stabilityFee: number, stabilityFeeApy: number, stabilityFeeDecimals: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-collateral-types-v1-1", "change-risk-parameters", [
+      Tx.contractCall("arkadiko-collateral-types-v3-1", "change-risk-parameters", [
         types.ascii(collateralType),
         types.list([
           types.tuple({
@@ -321,7 +321,7 @@ class VaultLiquidator {
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-auction-engine-v2-1')),
         types.uint(vaultId),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1'))
       ], user.address),
     ]);
@@ -410,7 +410,7 @@ class VaultAuction {
       Tx.contractCall("arkadiko-auction-engine-v2-1", "bid", [
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
         types.uint(auctionId),
         types.uint(lot),
         types.uint(bid * 1000000)
@@ -431,7 +431,7 @@ class VaultAuction {
           Utils.qualifiedName('arkadiko-sip10-reserve-v1-1'), 
         ),
         types.principal(
-          Utils.qualifiedName('arkadiko-collateral-types-v1-1'), 
+          Utils.qualifiedName('arkadiko-collateral-types-v3-1'), 
         ),
         types.uint(auctionId),
         types.uint(lot)
@@ -452,7 +452,7 @@ class VaultAuction {
           Utils.qualifiedName('arkadiko-stx-reserve-v1-1'),
         ),
         types.principal(
-          Utils.qualifiedName('arkadiko-collateral-types-v1-1'), 
+          Utils.qualifiedName('arkadiko-collateral-types-v3-1'), 
         ),
         types.uint(auctionId),
         types.uint(lot)
@@ -473,7 +473,7 @@ class VaultAuction {
           Utils.qualifiedName('arkadiko-sip10-reserve-v1-1'),
         ),
         types.principal(
-          Utils.qualifiedName('arkadiko-collateral-types-v1-1'), 
+          Utils.qualifiedName('arkadiko-collateral-types-v3-1'), 
         ),
         types.uint(auctionId),
         types.uint(lot)
@@ -494,7 +494,7 @@ class VaultAuction {
           Utils.qualifiedName('arkadiko-sip10-reserve-v1-1'),
         ),
         types.principal(
-          Utils.qualifiedName('arkadiko-collateral-types-v1-1'), 
+          Utils.qualifiedName('arkadiko-collateral-types-v3-1'), 
         ),
         types.uint(auctionId),
         types.uint(lot)
@@ -507,7 +507,7 @@ class VaultAuction {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v2-1", "close-auction", [
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
         types.uint(auctionId)
       ], user.address)
     ]);
@@ -611,7 +611,7 @@ class VaultAuctionV4 {
       Tx.contractCall("arkadiko-auction-engine-v4-2", "start-auction", [
         types.uint(vaultId),
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1')),
         types.principal(Utils.qualifiedName(token)),
         types.principal(Utils.qualifiedName(reserve)),
@@ -627,7 +627,7 @@ class VaultAuctionV4 {
       Tx.contractCall("arkadiko-auction-engine-v4-2", "burn-usda", [
         types.uint(auctionId),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
         types.principal(Utils.qualifiedName(token)),
         types.principal(Utils.qualifiedName(reserve)),

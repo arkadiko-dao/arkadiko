@@ -68,20 +68,21 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   };
 
   useEffect(() => {
-    const fetchPrice = async () => {
+    const fetchPrice = async (tokenKey: string) => {
       if (!tokenName) {
         return;
       }
 
       const price = await getPrice(tokenName);
-      setPrice(price / 1000000);
+      const decimals = tokenKey === 'auto-alex' ? 100000000 : 1000000;
+      setPrice(price / decimals);
     };
 
     if (tokenName) {
-      fetchPrice();
       const tokenKey = tokenName.toLowerCase() as UserBalanceKeys;
       setTokenKey(tokenKey);
       setDecimals(tokenKey === 'stx' ? 1000000 : 100000000);
+      fetchPrice(tokenKey);
       setIsLoading(false);
     }
   }, [tokenName]);
@@ -146,7 +147,8 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
 
   useEffect(() => {
     if (collateralAmount && coinAmount) {
-      const amount = tokenName.toLocaleLowerCase().includes('xbtc')
+      const token = tokenName.toLocaleLowerCase();
+      const amount = token.includes('xbtc') || token.includes('alex')
         ? collateralAmount * 100
         : collateralAmount;
       setLiquidationPrice(

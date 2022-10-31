@@ -11,6 +11,7 @@ export const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 export const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
 export const welshContractAddress = process.env.WELSH_CONTRACT_ADDRESS || '';
 export const ldnContractAddress = process.env.LDN_CONTRACT_ADDRESS || '';
+export const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
 
 export const getLiquidationPrice = (
   liquidationRatio: number,
@@ -18,7 +19,8 @@ export const getLiquidationPrice = (
   stxCollateral: number,
   collateralToken: string
 ) => {
-  const denominator = collateralToken.toLocaleLowerCase().includes('xbtc') ? 1 : 100;
+  const token = collateralToken.toLocaleLowerCase();
+  const denominator = token.includes('xbtc') || token.includes('alex') ? 1 : 100;
   return ((liquidationRatio * coinsMinted) / (stxCollateral * denominator)).toFixed(4);
 };
 
@@ -38,9 +40,11 @@ export const availableCollateralToWithdraw = (
   collateralToken: string
 ) => {
   // 200 = (stxCollateral * 111) / 5
-  const minimumStxCollateral = (collateralToDebt * coinsMinted) / (price / 10000);
+  const token = collateralToken.toLocaleLowerCase();
+  const decimals = token.includes('alex') ? 1000000 : 10000;
+  const minimumStxCollateral = (collateralToDebt * coinsMinted) / (price / decimals);
   if (currentStxCollateral - minimumStxCollateral > 0) {
-    const decimals = collateralToken.toLocaleLowerCase().includes('xbtc') ? 8 : 6;
+    const decimals = token.includes('xbtc') || token.includes('alex') ? 8 : 6;
     return (currentStxCollateral - minimumStxCollateral).toFixed(decimals);
   }
 
@@ -295,6 +299,13 @@ export const tokenTraits: TokenTraits = {
     multihop: [],
     ft: 'wstx-welsh'
   },
+  'auto-alex': {
+    address: atAlexContractAddress,
+    name: 'auto-alex',
+    swap: 'auto-alex',
+    multihop: [],
+    ft: 'auto-alex'
+  }
 };
 
 export const resolveReserveName = (collateralToken: string) => {

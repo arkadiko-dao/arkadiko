@@ -13,15 +13,15 @@ async function transact() {
     functionName: 'propose',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
-      tx.uintCV(61320),
-      tx.uintCV(1008),
-      tx.stringUtf8CV('AIP10 Update LTVs and Liquidation Ratios'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/493'),
+      tx.uintCV(74200),
+      tx.uintCV(250),
+      tx.stringUtf8CV('AIP11 - Upgrade collateral types to include atALEX'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/509'),
       tx.listCV([
         tx.tupleCV({
-          'name': tx.stringAsciiCV("aip10-arkadiko-update-tvl-liquidation-ratio"),
+          'name': tx.stringAsciiCV("collateral-types"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "aip10-arkadiko-update-tvl-liquidation-ratio"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-collateral-types-v3-1"),
           'can-mint': tx.falseCV(),
           'can-burn': tx.falseCV()
         }),

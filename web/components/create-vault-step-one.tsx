@@ -25,6 +25,9 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep }) => {
   const xBtcCollateralTypes = Object.fromEntries(
     Object.entries(collateralTypes).filter(([key]) => key.includes('XBTC'))
   );
+  const atAlexCollateralTypes = Object.fromEntries(
+    Object.entries(collateralTypes).filter(([key]) => key.includes('ATALEX'))
+  );
 
   return (
     <>
@@ -74,6 +77,24 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep }) => {
               <img className="w-10 h-10 mx-auto mb-3 rounded-full" src={tokenList[3].logo} alt="" />
               xBTC
             </button>
+
+            <button
+              type="button"
+              className={`w-1/2 p-6 ml-6 text-lg font-semibold text-center text-gray-500 dark:text-zinc-300 bg-white dark:bg-zinc-700 rounded-md shadow md:w-1/6 hover:bg-white/80 ${
+                collateralTypeChoice === 'auto-alex' || (location.hash.indexOf('auto-alex') === 1)
+                  ? 'border border-indigo-500/60'
+                  : 'border border-transparent'
+              }`}
+              onClick={
+                () => {
+                  setCollateralTypeChoice('auto-alex');
+                  history.push(`#auto-alex`);
+                }
+              }
+            >
+              <img className="w-10 h-10 mx-auto mb-3 rounded-full" src={tokenList[7].logo} alt="" />
+              atALEX
+            </button>
           </div>
 
           <div className="md:max-w-4xl md:mx-auto">
@@ -81,6 +102,8 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep }) => {
               <CollateralType types={stxCollateralTypes} setStep={setStep} />
             ) : collateralTypeChoice === 'xbtc' || (location.hash.indexOf('xbtc') === 1) ? (
               <CollateralType types={xBtcCollateralTypes} setStep={setStep} />
+            ) : collateralTypeChoice === 'auto-alex' || (location.hash.indexOf('auto-alex') === 1) ? (
+              <CollateralType types={atAlexCollateralTypes} setStep={setStep} />
             ) : null}
           </div>
         </div>

@@ -4,7 +4,7 @@ import {
   Clarinet,
   Tx,
   types,
-} from "https://deno.land/x/clarinet@v0.31.0/index.ts";
+} from "https://deno.land/x/clarinet/index.ts";
 
 import { 
   LiquidationPool,
@@ -224,7 +224,7 @@ Clarinet.test({
     call = stacker.getStxBalance();
     call.result.expectUintWithDecimals(21001500);
     call = stacker.getStackingUnlockHeight();
-    call.result.expectOk().expectUint(300);
+    call.result.expectOk().expectUint(2100);
 
     // Upate price to $1.0
     result = oracleManager.updatePrice("STX", 1);
@@ -241,15 +241,15 @@ Clarinet.test({
     // Reward data
     call = await liquidationRewards.getRewardData(0);
     call.result.expectTuple()["share-block"].expectUint(9);
-    call.result.expectTuple()["unlock-block"].expectUint(300);
+    call.result.expectTuple()["unlock-block"].expectUint(2100);
     call.result.expectTuple()["total-amount"].expectUintWithDecimals(1111.111111);
 
     // Can not claim as not unlocked yet
     result = liquidationRewards.claimRewards(wallet_1, 0, "xstx-token");
     result.expectErr().expectUint(30005);
 
-    // Advance to over block 300
-    chain.mineEmptyBlock(300-9);
+    // Advance to over block 2100
+    chain.mineEmptyBlock(2100-9);
 
     // Claim reward
     result = liquidationRewards.claimRewards(wallet_1, 0, "xstx-token");

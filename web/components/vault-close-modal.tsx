@@ -46,7 +46,7 @@ export const VaultCloseModal: React.FC<Props> = ({
         contractPrincipalCV(tokenAddress, token),
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v1-1'
+          'arkadiko-collateral-types-v3-1'
         ),
       ],
       onFinish: data => {

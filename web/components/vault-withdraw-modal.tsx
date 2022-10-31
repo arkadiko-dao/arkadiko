@@ -40,7 +40,7 @@ export const VaultWithdrawModal: React.FC<Props> = ({
     }
 
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
-    const decimals = token === 'Wrapped-Bitcoin' ? 100000000 : 1000000;
+    const decimals = token === 'Wrapped-Bitcoin' || token === 'auto-alex' ? 100000000 : 1000000;
     const amount = uintCV(Number((parseFloat(collateralToWithdraw) * decimals).toFixed(0)));
     const tokenAddress = tokenTraits[vault['collateralToken'].toLowerCase()]['address'];
     await doContractCall({
@@ -56,7 +56,7 @@ export const VaultWithdrawModal: React.FC<Props> = ({
         contractPrincipalCV(tokenAddress, token),
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v1-1'
+          'arkadiko-collateral-types-v3-1'
         ),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1'),
       ],
