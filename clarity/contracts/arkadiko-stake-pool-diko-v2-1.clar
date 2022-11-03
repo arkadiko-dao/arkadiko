@@ -166,6 +166,7 @@
 ;; @desc get amount of pending rewards for staker
 ;; @param registry-trait; used to get reward per block
 ;; @param staker; staker to get pending rewards for
+;; @param token; reward token
 ;; @post uint; returns pending rewards
 (define-public (get-pending-rewards (registry-trait <stake-registry-trait>) (staker principal) (token <ft-trait>))
   (let (
@@ -180,6 +181,9 @@
   )
 )
 
+;; @desc claim all pending rewards
+;; @param registry-trait; used to get reward per block
+;; @post uint; returns claimed rewards
 (define-public (claim-pending-rewards (registry-trait <stake-registry-trait>))
   (begin
     (try! (claim-pending-rewards-helper registry-trait .arkadiko-token))
@@ -189,6 +193,7 @@
 
 ;; @desc claim pending rewards
 ;; @param registry-trait; used to get reward per block
+;; @param token; reward token
 ;; @post uint; returns claimed rewards
 (define-public (claim-pending-rewards-helper (registry-trait <stake-registry-trait>) (token <ft-trait>))
   (let (
@@ -210,6 +215,9 @@
 ;; Cummulative rewards
 ;; ---------------------------------------------------------
 
+;; @desc increase cummulative rewards per stake for all reward tokens
+;; @param registry-trait; used to get reward per block
+;; @post uint; new cummulative rewards per stake
 (define-public (increase-cumm-reward-per-stake (registry-trait <stake-registry-trait>))
   (begin
     (unwrap-panic (increase-cumm-reward-per-stake-helper registry-trait .arkadiko-token))
@@ -219,7 +227,7 @@
 
 ;; @desc increase cummulative rewards per stake
 ;; @param registry-trait; used to get reward per block
-;; @param token: rewards token
+;; @param token: reward token
 ;; @post uint; new cummulative rewards per stake
 (define-public (increase-cumm-reward-per-stake-helper (registry-trait <stake-registry-trait>) (token <ft-trait>))
   (let (
