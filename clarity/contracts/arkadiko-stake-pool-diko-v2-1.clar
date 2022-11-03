@@ -102,7 +102,6 @@
     ;; Transfer tokens and update map
     (try! (contract-call? token transfer amount staker (as-contract tx-sender) none))
     (map-set stakes { staker: staker } { amount: (+ current-stake-amount amount) })
-    (map-set stake-rewards { staker: staker, token: (contract-of token) } { cumm-reward-per-stake: (get cumm-reward-per-stake (get-reward-of (contract-of token))) })
 
     (ok amount)
   )
@@ -131,7 +130,6 @@
     ;; Transfer tokens and update map
     (try! (as-contract (contract-call? token transfer amount tx-sender staker none)))
     (map-set stakes { staker: staker } { amount: (- current-stake-amount amount) })
-    (map-set stake-rewards { staker: staker, token: (contract-of token) } { cumm-reward-per-stake: (get cumm-reward-per-stake (get-reward-of (contract-of token))) })
 
     (ok amount)
   )
