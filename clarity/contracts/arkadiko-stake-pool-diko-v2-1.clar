@@ -17,7 +17,6 @@
 (define-constant ERR-REWARDS-CALC (err u110002))
 (define-constant ERR-INSUFFICIENT-STAKE (err u110003))
 (define-constant ERR-WRONG-REGISTRY (err u110004))
-(define-constant ERR-NOT-MANAGER (err u110005))
 
 ;; ---------------------------------------------------------
 ;; Variables
