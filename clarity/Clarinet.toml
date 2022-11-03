@@ -130,6 +130,9 @@ path = "contracts/arkadiko-stake-pool-diko-v1-1.clar"
 [contracts.arkadiko-stake-pool-diko-v1-2]
 path = "contracts/arkadiko-stake-pool-diko-v1-2.clar"
 
+[contracts.arkadiko-stake-pool-diko-v2-1]
+path = "contracts/arkadiko-stake-pool-diko-v2-1.clar"
+
 [contracts.arkadiko-stake-pool-diko-slash-v1-1]
 path = "contracts/arkadiko-stake-pool-diko-slash-v1-1.clar"
 
