@@ -25,6 +25,31 @@ function hexToBytesHelper(hex: string) {
   return array;
 }
 
+
+// TODO: remove this test
+Clarinet.test({
+  name: "oracle: can recover signer",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "test-recover", [
+        types.buff(hexToBytes("0x78124709d15ef20a7d8d28ce25e8dbeeedb379da1d6b8e484db5651437a947b5")),
+        types.buff(hexToBytes("0x6205ae1bda59b0219a609b4c0e2d1d3577328712cc5d2475467f8a310fe1017fcc2b902160fc40dadae392f335275dc85c198114b0957670ed43642291477a2e00"))
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBuff(hexToBytes("0x0360c0934ebd2931636c4b2d38df5267f64bb70e7b1c01acbf3f85d4b35a8b2545"));
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "test-recover", [
+        types.buff(hexToBytes("0xde687244ff02c254e19f8738be991a4d6a510fecce8534f75d4f55b23094eecc")),
+        types.buff(hexToBytes("0xcc5891e319c0e8c72ca22657572c7ddf03719f97abdf52a044f0a0119dbffcf448b65e004e5df308ea896c7462a6e8cc4577acc960b0d1031618c06e2c94016000"))
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBuff(hexToBytes("0x0360c0934ebd2931636c4b2d38df5267f64bb70e7b1c01acbf3f85d4b35a8b2545"));
+  }
+});
+
 Clarinet.test({
   name: "oracle: can recover signer",
   async fn(chain: Chain, accounts: Map<string, Account>) {

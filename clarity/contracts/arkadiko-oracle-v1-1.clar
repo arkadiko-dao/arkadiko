@@ -58,6 +58,7 @@
 ;; Message signing
 ;; ---------------------------------------------------------
 
+;; TODO: remove this test method
 (define-public (update-price-owner (token (string-ascii 12)) (price uint) (decimals uint))
   (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
@@ -91,6 +92,10 @@
 ;; ---------------------------------------------------------
 ;; Message signing
 ;; ---------------------------------------------------------
+
+(define-read-only (test-recover (message (buff 32)) (signature (buff 65)))
+  (secp256k1-recover? message signature)
+)
 
 (define-read-only (pubkey-price-signer (block uint) (token-id uint) (price uint) (decimals uint) (signature (buff 65)))
   (secp256k1-recover? (get-signable-message-hash block token-id price decimals) signature)
