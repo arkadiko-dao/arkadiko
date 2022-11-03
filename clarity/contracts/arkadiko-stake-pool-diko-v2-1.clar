@@ -158,6 +158,9 @@
     (staker tx-sender)
     (current-stake-amount (get amount (get-stake-of staker)))
   )
+    (asserts! (>= current-stake-amount amount) ERR-INSUFFICIENT-STAKE)
+    ;; TODO: check if token = DIKO or esDIKO
+
     ;; Update total stake and increase cummulative rewards
     (var-set total-staked (- (var-get total-staked) amount))
     (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
