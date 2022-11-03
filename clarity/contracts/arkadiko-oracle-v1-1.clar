@@ -98,7 +98,7 @@
 
 (define-read-only (check-price-signer (block uint) (token-id uint) (price uint) (decimals uint) (signature (buff 65)))
   (let (
-    (pubKey (unwrap-panic (pubkey-price-signer block token-id price decimals signature)))
+    (pubKey (unwrap! (pubkey-price-signer block token-id price decimals signature) u0))
   )
     (if (is-trusted-oracle pubKey) u1 u0)
   )
