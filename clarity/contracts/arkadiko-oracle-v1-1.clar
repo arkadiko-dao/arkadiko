@@ -43,3 +43,7 @@
 (define-public (fetch-price (token (string-ascii 12)))
   (ok (get-price token))
 )
+
+(define-read-only (recover-signer (message (buff 32)) (signature (buff 65)))
+	(secp256k1-recover? message signature)
+)
