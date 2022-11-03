@@ -241,21 +241,54 @@
 ;; @param token: rewards token
 ;; @post uint; the cummulative rewards per stake
 (define-public (calculate-cumm-reward-per-stake (registry-trait <stake-registry-trait>) (token <ft-trait>))
+  (if (is-eq (contract-of token) .arkadiko-token)
+    (calculate-cumm-diko-reward-per-stake registry-trait)
+    (calculate-cumm-usda-reward-per-stake)
+  )
+)
 
-  ;; TODO: distinguish between DIKO & USDA
-
+;; @desc get the cumm DIKO rewards per stake for current block height
+;; @param registry-trait; used to get reward per block
+;; @post uint; the cummulative rewards per stake
+(define-public (calculate-cumm-diko-reward-per-stake (registry-trait <stake-registry-trait>))
   (let (
     (current-total-staked (var-get total-staked))
-    (current-cumm-reward-per-stake (get cumm-reward-per-stake (get-reward-of (contract-of token)))) 
+    (current-cumm-reward-per-stake (get cumm-reward-per-stake (get-reward-of .arkadiko-token))) 
     (rewards-per-block (unwrap-panic (contract-call? registry-trait get-rewards-per-block-for-pool (as-contract tx-sender))))
   )
     (asserts! (is-eq (contract-of registry-trait) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-WRONG-REGISTRY)
-    (asserts! (> block-height (get last-reward-increase-block (get-reward-of (contract-of token)))) (ok current-cumm-reward-per-stake))
+    (asserts! (> block-height (get last-reward-increase-block (get-reward-of .arkadiko-token))) (ok current-cumm-reward-per-stake))
     (asserts! (> current-total-staked u0) (ok current-cumm-reward-per-stake))
 
     (let (
-      (block-diff (- block-height (get last-reward-increase-block (get-reward-of (contract-of token)))))
+      (block-diff (- block-height (get last-reward-increase-block (get-reward-of .arkadiko-token))))
       (total-rewards-to-distribute (* rewards-per-block block-diff))
+      (reward-added-per-token (/ (* total-rewards-to-distribute u1000000) current-total-staked))
+      (new-cumm-reward-per-stake (+ current-cumm-reward-per-stake reward-added-per-token))
+    )
+      (ok new-cumm-reward-per-stake)
+    )
+  )
+)
+
+;; @desc get the cumm USDA rewards per stake for current block height
+;; @post uint; the cummulative rewards per stake
+(define-public (calculate-cumm-usda-reward-per-stake)
+  (let (
+    (current-total-staked (var-get total-staked))
+    (current-cumm-reward-per-stake (get cumm-reward-per-stake (get-reward-of .usda-token))) 
+    (usda-balance (unwrap-panic (contract-call? .usda-token get-balance .freddie-v1-1)))
+  )
+    (asserts! (> block-height (get last-reward-increase-block (get-reward-of .usda-token))) (ok current-cumm-reward-per-stake))
+    (asserts! (> current-total-staked u0) (ok current-cumm-reward-per-stake))
+
+    ;; TODO: make sure this contract can mint/burn
+    ;; Transfer from Freddie to this contract
+    (try! (contract-call? .arkadiko-dao burn-token .usda-token usda-balance .freddie-v1-1))
+    (try! (contract-call? .arkadiko-dao mint-token .usda-token usda-balance .arkadiko-stake-pool-diko-v2-1))
+
+    (let (
+      (total-rewards-to-distribute usda-balance)
       (reward-added-per-token (/ (* total-rewards-to-distribute u1000000) current-total-staked))
       (new-cumm-reward-per-stake (+ current-cumm-reward-per-stake reward-added-per-token))
     )
