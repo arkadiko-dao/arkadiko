@@ -48,18 +48,47 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    // 0x8dc3e8b6aa44fb7fda529bfeda4cc8224f1891319584d80cfdc5130174978934126c28f046538b8a7a3da2ca86c323532db7311cf82d658d3695b1c6e822552a00
-    // 0x031dffceed346fbab08f75b4b2b00ab6549412219080cb3d3dcca19ed22d62f38c
+    // Private key: 0x7e49e3061e04403cf9488419c3d165424df89c78eb51ec32acbe7f6b018348b3
+    // Signature: 0x6205ae1bda59b0219a609b4c0e2d1d3577328712cc5d2475467f8a310fe1017fcc2b902160fc40dadae392f335275dc85c198114b0957670ed43642291477a2e00
+    // Public key: 0x0360c0934ebd2931636c4b2d38df5267f64bb70e7b1c01acbf3f85d4b35a8b2545
 
-    // 0xc05898909e2326ac24894a3e34f8cb284b9d02ace1aae855e2d6f8b2c560d91f8a5a6a2ab899d494a6d810cc96c4789e69213a43203ce62ae2752dfb769b907801
-    // 0x03f058f106ef48a2760b082133f58e6b46848de51282a9b35cf709658e69a93e74
+    // Private key: 0x642b73572da1fad94d7b878ad2b34e797c0255d2fdac97e110769aa99a39883d
+    // Signature: 0x84ea665cf75f6cdccf4b1f89d53de69142ba711142dc2037febf480fca4cd646fd205fd5e217a53f68a219ce9b999c2bc4f48a28356450850024ca6b7fa31b7401
+    // Public key: 0x035fbb068f1f2297b227fe1959080f49b3ad93606cf7b3e3b1f7fa90b5989bdce9
 
-    // 0x4335a4b28534f616c90507dd56443ea148738eda2c2cc1e2f248f48808ef0bff91e747f3ef4a0c8e173cc01e3d2774fc23f7ff13737ebcb6c79222d1c3e4660b01
-    // 0x023937499304d93bda3c67b67d25284bcce6add7db45cace520873474a05b2a410
+    // Private key: 0xf7e4b0a94984a61f8d4e65fc8272dbd50c65ac8420e06c1627fae9f10c8a197f
+    // Signature: 0x2eb8a9d0f6663fa07d9f9ce4f123894601a8b1471781f36abc1fd18e620cbde56c645951d6ae16b4ca30bb374d9a6dd04b075ebbc7e928d7d5114f269f25246f00
+    // Public key: 0x0359fbce5f0e4e2f0fa0db5c28038c64c252ac4fc4f0688fb5022044980dd9bbd4
+
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "pubkey-price-signer", [
+        types.uint(80100),
+        types.uint(1),
+        types.uint(20343),
+        types.uint(8),
+        "0x6205ae1bda59b0219a609b4c0e2d1d3577328712cc5d2475467f8a310fe1017fcc2b902160fc40dadae392f335275dc85c198114b0957670ed43642291477a2e00"
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBuff(hexToBytes("0x0360c0934ebd2931636c4b2d38df5267f64bb70e7b1c01acbf3f85d4b35a8b2545"));
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "pubkey-price-signer", [
+        types.uint(80200),
+        types.uint(1),
+        types.uint(20143),
+        types.uint(8),
+        "0xcc5891e319c0e8c72ca22657572c7ddf03719f97abdf52a044f0a0119dbffcf448b65e004e5df308ea896c7462a6e8cc4577acc960b0d1031618c06e2c94016000"
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBuff(hexToBytes("0x0360c0934ebd2931636c4b2d38df5267f64bb70e7b1c01acbf3f85d4b35a8b2545"));
+
+
+
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-oracle-v1-1", "set-trusted-oracle", [
-        "0x031dffceed346fbab08f75b4b2b00ab6549412219080cb3d3dcca19ed22d62f38c",
+        "0x0360c0934ebd2931636c4b2d38df5267f64bb70e7b1c01acbf3f85d4b35a8b2545",
         types.bool(true)
       ], deployer.address)
     ]);
@@ -67,7 +96,7 @@ Clarinet.test({
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-oracle-v1-1", "set-trusted-oracle", [
-        "0x03f058f106ef48a2760b082133f58e6b46848de51282a9b35cf709658e69a93e74",
+        "0x035fbb068f1f2297b227fe1959080f49b3ad93606cf7b3e3b1f7fa90b5989bdce9",
         types.bool(true)
       ], deployer.address)
     ]);
@@ -75,7 +104,7 @@ Clarinet.test({
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-oracle-v1-1", "set-trusted-oracle", [
-        "0x023937499304d93bda3c67b67d25284bcce6add7db45cace520873474a05b2a410",
+        "0x0359fbce5f0e4e2f0fa0db5c28038c64c252ac4fc4f0688fb5022044980dd9bbd4",
         types.bool(true)
       ], deployer.address)
     ]);
@@ -88,9 +117,9 @@ Clarinet.test({
         types.uint(20343),
         types.uint(8),
         types.list([
-          "0x8dc3e8b6aa44fb7fda529bfeda4cc8224f1891319584d80cfdc5130174978934126c28f046538b8a7a3da2ca86c323532db7311cf82d658d3695b1c6e822552a00",
-          "0xc05898909e2326ac24894a3e34f8cb284b9d02ace1aae855e2d6f8b2c560d91f8a5a6a2ab899d494a6d810cc96c4789e69213a43203ce62ae2752dfb769b907801",
-          "0x4335a4b28534f616c90507dd56443ea148738eda2c2cc1e2f248f48808ef0bff91e747f3ef4a0c8e173cc01e3d2774fc23f7ff13737ebcb6c79222d1c3e4660b01"
+          "0x6205ae1bda59b0219a609b4c0e2d1d3577328712cc5d2475467f8a310fe1017fcc2b902160fc40dadae392f335275dc85c198114b0957670ed43642291477a2e00",
+          "0x84ea665cf75f6cdccf4b1f89d53de69142ba711142dc2037febf480fca4cd646fd205fd5e217a53f68a219ce9b999c2bc4f48a28356450850024ca6b7fa31b7401",
+          "0x2eb8a9d0f6663fa07d9f9ce4f123894601a8b1471781f36abc1fd18e620cbde56c645951d6ae16b4ca30bb374d9a6dd04b075ebbc7e928d7d5114f269f25246f00"
         ])
       ], deployer.address)
     ]);
@@ -102,6 +131,33 @@ Clarinet.test({
       ], deployer.address)
     ]);
     block.receipts[0].result.expectTuple()["last-price"].expectUint(20343);
+
+
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "get-signable-message-hash", [
+        types.uint(80200),
+        types.uint(1),
+        types.uint(20143),
+        types.uint(8)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectBuff(hexToBytes("0xde687244ff02c254e19f8738be991a4d6a510fecce8534f75d4f55b23094eecc"))
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price-multi", [
+        types.uint(80200),
+        types.uint(1),
+        types.uint(20143),
+        types.uint(8),
+        types.list([
+          "0xcc5891e319c0e8c72ca22657572c7ddf03719f97abdf52a044f0a0119dbffcf448b65e004e5df308ea896c7462a6e8cc4577acc960b0d1031618c06e2c94016000",
+          "0x7c9f2780bedd7b0d7112faf581aedb9c6b71b6716586f52ad139f92e7c199306d444916c4bfe8857fe734ae7b4a75b42741f884366e7aa635b520567f1efbe0100",
+          "0xf62be4cbe1590cd4077922c62a5cf5be4f16aed015faeacea5302b300ae9927e355370f7219ab852605c0dac49ed49bca04dae5674399cde17414bcad8ffe10101"
+        ])
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
   }
 });
 
