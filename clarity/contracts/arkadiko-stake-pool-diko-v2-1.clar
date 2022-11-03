@@ -2,11 +2,16 @@
 ;; @version 2.0
 
 ;; TODO: update stake-registry so this pool can get DIKO rewards
+;; TODO: update arkadiko-dao so this pool can burn/mint USDA
 
 ;; Traits
 (use-trait stake-registry-trait .arkadiko-stake-registry-trait-v1.stake-registry-trait)
 ;; TODO: update address
 (use-trait ft-trait 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sip-010-trait-ft-standard.sip-010-trait)
+
+;; ---------------------------------------------------------
+;; Constants
+;; ---------------------------------------------------------
 
 ;; Errors
 (define-constant ERR-REWARDS-CALC (err u110002))
@@ -14,9 +19,18 @@
 (define-constant ERR-WRONG-REGISTRY (err u110004))
 (define-constant ERR-NOT-MANAGER (err u110005))
 
+;; ---------------------------------------------------------
+;; Variables
+;; ---------------------------------------------------------
+
 ;; Variables
 (define-data-var total-staked uint u0) ;; DIKO, esDIKO & MultiplierPoints
 
+;; ---------------------------------------------------------
+;; Maps
+;; ---------------------------------------------------------
+
+;; Track reward info for token
 (define-map rewards 
   { token: principal } 
   {
@@ -282,7 +296,6 @@
     (asserts! (> block-height (get last-reward-increase-block (get-reward-of .usda-token))) (ok current-cumm-reward-per-stake))
     (asserts! (> current-total-staked u0) (ok current-cumm-reward-per-stake))
 
-    ;; TODO: make sure this contract can mint/burn
     ;; Transfer from Freddie to this contract
     (try! (contract-call? .arkadiko-dao burn-token .usda-token usda-balance .freddie-v1-1))
     (try! (contract-call? .arkadiko-dao mint-token .usda-token usda-balance .arkadiko-stake-pool-diko-v2-1))
