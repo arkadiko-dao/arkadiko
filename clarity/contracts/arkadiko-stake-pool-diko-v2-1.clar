@@ -43,6 +43,7 @@
   { staker: principal } 
   {
     amount: uint, ;; TODO: split for DIKO & esDIKO
+    ;; TODO: track multiplier points
   }
 )
 
