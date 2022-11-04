@@ -1,5 +1,5 @@
 export function hexToBytes(hex: string) {
-	return hexToBytesHelper(hex.substring(0, 2) === '0x' ? hex.substring(2) : hex);
+  return hexToBytesHelper(hex.substring(0, 2) === '0x' ? hex.substring(2) : hex);
 }
 
 function hexToBytesHelper(hex: string) {
