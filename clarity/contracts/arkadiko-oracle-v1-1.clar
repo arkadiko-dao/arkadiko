@@ -25,10 +25,10 @@
   }
 )
 
-(define-map token-id-to-name uint (string-ascii 12))
-(define-map token-name-to-id (string-ascii 12) uint)
-
 (define-map trusted-oracles (buff 33) bool)
+
+(define-map token-id-to-names uint (list 4 (string-ascii 12)))
+(define-map token-name-to-id (string-ascii 12) uint)
 
 ;; ---------------------------------------------------------
 ;; Getters
@@ -39,11 +39,11 @@
 )
 
 (define-read-only (get-token-id-from-name (name (string-ascii 12)))
-  (unwrap-panic (map-get? token-name-to-id name))
+  (default-to u0 (map-get? token-name-to-id name))
 )
 
-(define-read-only (get-token-name-from-id (id uint))
-  (unwrap-panic (map-get? token-id-to-name id))
+(define-read-only (get-token-names-from-id (id uint))
+  (default-to (list ) (map-get? token-id-to-names id))
 )
 
 (define-read-only (get-price (token (string-ascii 12)))
@@ -69,8 +69,6 @@
 ;; TODO: need to check if at least 3 DIFFERENT signatures
 (define-public (update-price-multi (block uint) (token-id uint) (price uint) (decimals uint) (signatures (list 10 (buff 65))))
   (let (
-    (token-name (get-token-name-from-id token-id))
-
     (block-list (list block block block block block block block block block block))
     (token-id-list (list token-id token-id token-id token-id token-id token-id token-id token-id token-id token-id))
     (price-list (list price price price price price price price price price price))
@@ -78,13 +76,30 @@
 
     (check-result (fold + (map check-price-signer block-list token-id-list price-list decimals-list signatures) u0))
   )
+    ;; TODO: check if block too old
+
     (if (>= check-result (var-get minimum-valid-signers))
-      (begin
-        (map-set prices { token: token-name } { last-price: price, last-block: block-height, decimals: decimals })
-        (ok true)
-      )
+      (update-price-multi-helper token-id price decimals)
       (ok false)
     )
+  )
+)
+
+(define-private (update-price-multi-helper (token-id uint) (price uint) (decimals uint) )
+  (let (
+    (names-list (get-token-names-from-id token-id))
+    (prices-list (list price price price price))
+    (decimals-list (list decimals decimals decimals decimals))
+  )
+    (map update-price-token names-list prices-list decimals-list)
+    (ok true)
+  )
+)
+
+(define-private (update-price-token (token (string-ascii 12)) (price uint) (decimals uint))
+  (begin
+    (map-set prices { token: token } { last-price: price, last-block: block-height, decimals: decimals })
+    (ok true)
   )
 )
 
@@ -130,10 +145,13 @@
 ;; ---------------------------------------------------------
 
 (define-public (set-token-id (token-id uint) (token-name (string-ascii 12)))
-  (begin
+  (let (
+    (current-list (get-token-names-from-id token-id))
+    (new-list (unwrap-panic (as-max-len? (append current-list token-name) u4)))
+  )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
-    (map-set token-id-to-name token-id token-name)
+    (map-set token-id-to-names token-id new-list)
     (map-set token-name-to-id token-name token-id)
     (ok true)
   )
@@ -162,12 +180,19 @@
 ;; ---------------------------------------------------------
 
 (begin
-  ;; TODO: need list of names
-  (map-set token-id-to-name u0 "STX")
-  (map-set token-name-to-id "STX" u0)
+  (map-set token-id-to-names u1 (list "STX" "xSTX"))
+  (map-set token-name-to-id "STX" u1)
+  (map-set token-name-to-id "xSTX" u1)
 
-  (map-set token-id-to-name u1 "BTC")
-  (map-set token-name-to-id "BTC" u1)
-  
-  ;; TODO: other tokens
+  (map-set token-id-to-names u2 (list "xBTC"))
+  (map-set token-name-to-id "xBTC" u2)
+
+  (map-set token-id-to-names u3 (list "USDA"))
+  (map-set token-name-to-id "USDA" u3)
+
+  (map-set token-id-to-names u4 (list "DIKO"))
+  (map-set token-name-to-id "DIKO" u4)
+
+  (map-set token-id-to-names u5 (list "auto-alex"))
+  (map-set token-name-to-id "auto-alex" u5)
 )
