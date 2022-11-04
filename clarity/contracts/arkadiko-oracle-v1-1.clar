@@ -1,3 +1,6 @@
+;; @contract Arkadiko multisig oracle
+;; @version 2.0
+
 (impl-trait .arkadiko-oracle-trait-v1.oracle-trait)
 
 ;; ---------------------------------------------------------
@@ -36,22 +39,27 @@
 ;; Getters
 ;; ---------------------------------------------------------
 
+;; @desc check if given public key is trusted
 (define-read-only (is-trusted-oracle (pubkey (buff 33)))
   (default-to false (map-get? trusted-oracles pubkey))
 )
 
+;; @desc get token ID for given name
 (define-read-only (get-token-id-from-name (name (string-ascii 12)))
   (default-to u0 (map-get? token-name-to-id name))
 )
 
+;; @desc get list of token names for given token ID
 (define-read-only (get-token-names-from-id (id uint))
   (default-to (list ) (map-get? token-id-to-names id))
 )
 
+;; @desc get price info for given token name
 (define-read-only (get-price (token (string-ascii 12)))
   (unwrap! (map-get? prices { token: token }) { last-price: u0, last-block: u0, decimals: u0 })
 )
 
+;; @desc get price info response for given token name
 (define-public (fetch-price (token (string-ascii 12)))
   (ok (get-price token))
 )
@@ -60,6 +68,11 @@
 ;; Message signing
 ;; ---------------------------------------------------------
 
+;; @desc update token price as DAO owner
+;; @param token; token to update price for
+;; @param price; price value
+;; @param decimals; amount of decimals
+;; @post bool; returns true
 (define-public (update-price-owner (token (string-ascii 12)) (price uint) (decimals uint))
   (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
@@ -68,6 +81,13 @@
   )
 )
 
+;; @desc update token price as multisig node
+;; @param block; the block on which the message was created
+;; @param token-id; token ID to update price for
+;; @param price; price value
+;; @param decimals; amount of decimals
+;; @param signatures; list of signatures from oracle nodes
+;; @post bool; returns true if successful
 (define-public (update-price-multi (block uint) (token-id uint) (price uint) (decimals uint) (signatures (list 10 (buff 65))))
   (let (
     (block-list (list block block block block block block block block block block))
@@ -87,24 +107,28 @@
   )
 )
 
+;; Helper method to update price for given token ID
+;; Will iterate over all token names based on token ID
 (define-private (update-price-multi-helper (token-id uint) (price uint) (decimals uint) )
   (let (
     (names-list (get-token-names-from-id token-id))
     (prices-list (list price price price price))
     (decimals-list (list decimals decimals decimals decimals))
   )
-    (map update-price-token names-list prices-list decimals-list)
+    (map update-price-token-iter names-list prices-list decimals-list)
     (ok true)
   )
 )
 
-(define-private (update-price-token (token (string-ascii 12)) (price uint) (decimals uint))
+;; Helper method to iterate over all token names and update prices
+(define-private (update-price-token-iter (token (string-ascii 12)) (price uint) (decimals uint))
   (begin
     (map-set prices { token: token } { last-price: price, last-block: block-height, decimals: decimals })
     (ok true)
   )
 )
 
+;; Check if given list contains duplicates
 (define-read-only (check-unique-signatures (signatures (list 10 (buff 65))))
   (let (
     (index-list (list u0 u1 u2 u3 u4 u5 u6 u7 u8 u9))
@@ -115,6 +139,10 @@
   )
 )
 
+;; Helper method to iterate over all signatures in a list and find duplicates
+;; The clarity method 'index-of' returns the first index of an element in the list
+;; If the current index is not equal to the index returned by 'index-of',
+;; we know the element already appeared in the list previously and is not unique.
 (define-read-only (check-unique-signatures-iter (index uint) (signature (buff 65)) (signatures (list 10 (buff 65))))
   (is-eq index (unwrap-panic (index-of signatures signature)))
 )
@@ -123,10 +151,13 @@
 ;; Message signers
 ;; ---------------------------------------------------------
 
+;; Recover the public key given the values and a signature
 (define-read-only (pubkey-price-signer (block uint) (token-id uint) (price uint) (decimals uint) (signature (buff 65)))
   (secp256k1-recover? (get-signable-message-hash block token-id price decimals) signature)
 )
 
+;; Recover the public key given the values and a signature, check if trusted
+;; If not trusted it could be that the oracle itself is not trusted, or the values have been tampered with
 (define-read-only (check-price-signer (block uint) (token-id uint) (price uint) (decimals uint) (signature (buff 65)))
   (let (
     (pubKey (unwrap! (pubkey-price-signer block token-id price decimals signature) u0))
@@ -139,6 +170,7 @@
 ;; Signable message
 ;; ---------------------------------------------------------
 
+;; Create a message hash to sign, given price values
 (define-read-only (get-signable-message-hash (block uint) (token-id uint) (price uint) (decimals uint))
   (keccak256 (concat (concat (concat (uint256-to-buff-be block) (uint256-to-buff-be token-id)) (uint256-to-buff-be price)) (uint256-to-buff-be decimals)))
 )
@@ -160,6 +192,7 @@
 ;; Admin
 ;; ---------------------------------------------------------
 
+;; Link token ID to token name
 (define-public (set-token-id (token-id uint) (token-name (string-ascii 12)))
   (let (
     (current-list (get-token-names-from-id token-id))
@@ -173,6 +206,7 @@
   )
 )
 
+;; Set minimum signers needed to update price
 (define-public (set-minimum-valid-signers (minimum uint))
   (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
@@ -182,6 +216,7 @@
   )
 )
 
+;; Add trusted oracle public keys
 (define-public (set-trusted-oracle (pubkey (buff 33)) (trusted bool))
   (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
