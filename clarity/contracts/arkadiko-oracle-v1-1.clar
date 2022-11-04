@@ -5,6 +5,8 @@
 ;; ---------------------------------------------------------
 
 (define-constant ERR-NOT-AUTHORIZED u8401)
+(define-constant ERR-OLD-MESSAGE u8402)
+(define-constant ERR-SIGNATURES-NOT-UNIQUE u8403)
 
 ;; ---------------------------------------------------------
 ;; Variables
@@ -66,7 +68,6 @@
   )
 )
 
-;; TODO: need to check if at least 3 DIFFERENT signatures
 (define-public (update-price-multi (block uint) (token-id uint) (price uint) (decimals uint) (signatures (list 10 (buff 65))))
   (let (
     (block-list (list block block block block block block block block block block))
@@ -76,7 +77,8 @@
 
     (check-result (fold + (map check-price-signer block-list token-id-list price-list decimals-list signatures) u0))
   )
-    ;; TODO: check if block too old
+    (asserts! (< block-height (+ block u10)) (err ERR-OLD-MESSAGE))
+    (asserts! (check-unique-signatures signatures) (err ERR-SIGNATURES-NOT-UNIQUE))
 
     (if (>= check-result (var-get minimum-valid-signers))
       (update-price-multi-helper token-id price decimals)
@@ -101,6 +103,20 @@
     (map-set prices { token: token } { last-price: price, last-block: block-height, decimals: decimals })
     (ok true)
   )
+)
+
+(define-read-only (check-unique-signatures (signatures (list 10 (buff 65))))
+  (let (
+    (index-list (list u0 u1 u2 u3 u4 u5 u6 u7 u8 u9))
+    (signatures-list (list signatures signatures signatures signatures signatures signatures signatures signatures signatures signatures))
+    (checks (map check-unique-signatures-iter index-list signatures signatures-list))
+  )
+    (fold and checks true)
+  )
+)
+
+(define-read-only (check-unique-signatures-iter (index uint) (signature (buff 65)) (signatures (list 10 (buff 65))))
+  (is-eq index (unwrap-panic (index-of signatures signature)))
 )
 
 ;; ---------------------------------------------------------
