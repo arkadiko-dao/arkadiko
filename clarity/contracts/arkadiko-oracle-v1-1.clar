@@ -58,7 +58,6 @@
 ;; Message signing
 ;; ---------------------------------------------------------
 
-;; TODO: remove this test method
 (define-public (update-price-owner (token (string-ascii 12)) (price uint) (decimals uint))
   (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
@@ -90,12 +89,8 @@
 )
 
 ;; ---------------------------------------------------------
-;; Message signing
+;; Message signers
 ;; ---------------------------------------------------------
-
-(define-read-only (test-recover (message (buff 32)) (signature (buff 65)))
-  (secp256k1-recover? message signature)
-)
 
 (define-read-only (pubkey-price-signer (block uint) (token-id uint) (price uint) (decimals uint) (signature (buff 65)))
   (secp256k1-recover? (get-signable-message-hash block token-id price decimals) signature)
@@ -108,6 +103,10 @@
     (if (is-trusted-oracle pubKey) u1 u0)
   )
 )
+
+;; ---------------------------------------------------------
+;; Signable message
+;; ---------------------------------------------------------
 
 (define-read-only (get-signable-message-hash (block uint) (token-id uint) (price uint) (decimals uint))
   (keccak256 (concat (concat (concat (uint256-to-buff-be block) (uint256-to-buff-be token-id)) (uint256-to-buff-be price)) (uint256-to-buff-be decimals)))
@@ -156,4 +155,19 @@
     (map-set trusted-oracles pubkey trusted)
     (ok true)
   )
+)
+
+;; ---------------------------------------------------------
+;; Init
+;; ---------------------------------------------------------
+
+(begin
+  ;; TODO: need list of names
+  (map-set token-id-to-name u0 "STX")
+  (map-set token-name-to-id "STX" u0)
+
+  (map-set token-id-to-name u1 "BTC")
+  (map-set token-name-to-id "BTC" u1)
+  
+  ;; TODO: other tokens
 )

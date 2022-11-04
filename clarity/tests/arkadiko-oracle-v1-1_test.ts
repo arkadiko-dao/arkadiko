@@ -6,55 +6,14 @@ import {
   types,
 } from "https://deno.land/x/clarinet/index.ts";
 
+import { hexToBytes } from "./utils.ts"
 
-// TODO: move to utils file
-function hexToBytes(hex: string) {
-	return hexToBytesHelper(hex.substring(0, 2) === '0x' ? hex.substring(2) : hex);
-}
-
-function hexToBytesHelper(hex: string) {
-  if (typeof hex !== 'string')
-    throw new TypeError('hexToBytes: expected string, got ' + typeof hex);
-  if (hex.length % 2)
-    throw new Error(`hexToBytes: received invalid unpadded hex, got: ${hex.length}`);
-  const array = new Uint8Array(hex.length / 2);
-  for (let i = 0; i < array.length; i++) {
-    const j = i * 2;
-    array[i] = Number.parseInt(hex.slice(j, j + 2), 16);
-  }
-  return array;
-}
-
-
-// TODO: remove this test
 Clarinet.test({
-  name: "oracle: can recover signer",
+  name: "oracle: can get signer public key from values+signature",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "test-recover", [
-        types.buff(hexToBytes("0x78124709d15ef20a7d8d28ce25e8dbeeedb379da1d6b8e484db5651437a947b5")),
-        types.buff(hexToBytes("0x6205ae1bda59b0219a609b4c0e2d1d3577328712cc5d2475467f8a310fe1017fcc2b902160fc40dadae392f335275dc85c198114b0957670ed43642291477a2e00"))
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBuff(hexToBytes("0x0360c0934ebd2931636c4b2d38df5267f64bb70e7b1c01acbf3f85d4b35a8b2545"));
-
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "test-recover", [
-        types.buff(hexToBytes("0xde687244ff02c254e19f8738be991a4d6a510fecce8534f75d4f55b23094eecc")),
-        types.buff(hexToBytes("0xcc5891e319c0e8c72ca22657572c7ddf03719f97abdf52a044f0a0119dbffcf448b65e004e5df308ea896c7462a6e8cc4577acc960b0d1031618c06e2c94016000"))
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBuff(hexToBytes("0x0360c0934ebd2931636c4b2d38df5267f64bb70e7b1c01acbf3f85d4b35a8b2545"));
-  }
-});
-
-Clarinet.test({
-  name: "oracle: can recover signer",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-
+    // Message for given values
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-oracle-v1-1", "get-signable-message-hash", [
         types.uint(80100),
@@ -65,7 +24,53 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectBuff(hexToBytes("0x78124709d15ef20a7d8d28ce25e8dbeeedb379da1d6b8e484db5651437a947b5"))
 
+    // Private key: 0x7e49e3061e04403cf9488419c3d165424df89c78eb51ec32acbe7f6b018348b3
+    // Public key: 0x021ebedfa96c656445f79ebda84b19e8be419679bd16fa78f31d945e1c77822d74
     block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "pubkey-price-signer", [
+        types.uint(80100),
+        types.uint(1),
+        types.uint(20343),
+        types.uint(8),
+        "0x7f01e10f318a7f4675245dcc12873277351d2d0e4c9b609a21b059da1bae05622e7a4791226443ed707695b01481195cc85d2735f392e3dada40fc6021902bcc00"
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBuff(hexToBytes("0x021ebedfa96c656445f79ebda84b19e8be419679bd16fa78f31d945e1c77822d74"));
+
+    // Private key: 0x642b73572da1fad94d7b878ad2b34e797c0255d2fdac97e110769aa99a39883a
+    // Public key: 0x03ef31e82184edb6ce19b77bf44bcb53340243aa0190d9688466760cd5af2fded2
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "pubkey-price-signer", [
+        types.uint(80100),
+        types.uint(1),
+        types.uint(20343),
+        types.uint(8),
+        "0x5b580290ae6064dbb9a9bd44ee15cd88a4edfe17baa4f45f575abba7ff87825a02fad02b2c86dfdf9f97f6f92e86a9aab90cab321787c51e94ea4d13764fab3d00"
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBuff(hexToBytes("0x03ef31e82184edb6ce19b77bf44bcb53340243aa0190d9688466760cd5af2fded2"));
+
+    // Private key: 0xf7e4b0a94984a61f8d4e65fc8272dbd50c65ac8420e06c1627fae9f10c8a197f
+    // Public key: 0x029f3a1023151193a31eb36575601151df8706c8b3b50c243fee5e03abe2cf3107
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "pubkey-price-signer", [
+        types.uint(80100),
+        types.uint(1),
+        types.uint(20343),
+        types.uint(8),
+        "0xe5bd0c628ed11fbc6af3811747b1a801468923f1e49c9f7da03f66f6d0a9b82e6f24259f264f11d5d728e9c7bb5e074bd06d9a4d37bb30cab416aed65159646c00"
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBuff(hexToBytes("0x029f3a1023151193a31eb36575601151df8706c8b3b50c243fee5e03abe2cf3107"));
+  }
+});
+
+Clarinet.test({
+  name: "oracle: multisig price update",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let block = chain.mineBlock([
       Tx.contractCall("arkadiko-oracle-v1-1", "set-token-id", [
         types.uint(1),
         types.ascii("BTC")
@@ -73,67 +78,47 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    // Private key: 0x7e49e3061e04403cf9488419c3d165424df89c78eb51ec32acbe7f6b018348b3
-    // Signature: 0x6205ae1bda59b0219a609b4c0e2d1d3577328712cc5d2475467f8a310fe1017fcc2b902160fc40dadae392f335275dc85c198114b0957670ed43642291477a2e00
-    // Public key: 0x0360c0934ebd2931636c4b2d38df5267f64bb70e7b1c01acbf3f85d4b35a8b2545
 
-    // Private key: 0x642b73572da1fad94d7b878ad2b34e797c0255d2fdac97e110769aa99a39883d
-    // Signature: 0x84ea665cf75f6cdccf4b1f89d53de69142ba711142dc2037febf480fca4cd646fd205fd5e217a53f68a219ce9b999c2bc4f48a28356450850024ca6b7fa31b7401
-    // Public key: 0x035fbb068f1f2297b227fe1959080f49b3ad93606cf7b3e3b1f7fa90b5989bdce9
+    // Private key: 0x7e49e3061e04403cf9488419c3d165424df89c78eb51ec32acbe7f6b018348b3
+    // Public key: 0x021ebedfa96c656445f79ebda84b19e8be419679bd16fa78f31d945e1c77822d74
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "set-trusted-oracle", [
+        "0x021ebedfa96c656445f79ebda84b19e8be419679bd16fa78f31d945e1c77822d74",
+        types.bool(true)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    // Private key: 0x642b73572da1fad94d7b878ad2b34e797c0255d2fdac97e110769aa99a39883a
+    // Public key: 0x03ef31e82184edb6ce19b77bf44bcb53340243aa0190d9688466760cd5af2fded2
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "set-trusted-oracle", [
+        "0x03ef31e82184edb6ce19b77bf44bcb53340243aa0190d9688466760cd5af2fded2",
+        types.bool(true)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
 
     // Private key: 0xf7e4b0a94984a61f8d4e65fc8272dbd50c65ac8420e06c1627fae9f10c8a197f
-    // Signature: 0x2eb8a9d0f6663fa07d9f9ce4f123894601a8b1471781f36abc1fd18e620cbde56c645951d6ae16b4ca30bb374d9a6dd04b075ebbc7e928d7d5114f269f25246f00
-    // Public key: 0x0359fbce5f0e4e2f0fa0db5c28038c64c252ac4fc4f0688fb5022044980dd9bbd4
-
-
+    // Public key: 0x029f3a1023151193a31eb36575601151df8706c8b3b50c243fee5e03abe2cf3107
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "pubkey-price-signer", [
+      Tx.contractCall("arkadiko-oracle-v1-1", "set-trusted-oracle", [
+        "0x029f3a1023151193a31eb36575601151df8706c8b3b50c243fee5e03abe2cf3107",
+        types.bool(true)
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    // Update price
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "get-signable-message-hash", [
         types.uint(80100),
         types.uint(1),
         types.uint(20343),
-        types.uint(8),
-        "0x6205ae1bda59b0219a609b4c0e2d1d3577328712cc5d2475467f8a310fe1017fcc2b902160fc40dadae392f335275dc85c198114b0957670ed43642291477a2e00"
+        types.uint(8)
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectOk().expectBuff(hexToBytes("0x0360c0934ebd2931636c4b2d38df5267f64bb70e7b1c01acbf3f85d4b35a8b2545"));
-
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "pubkey-price-signer", [
-        types.uint(80200),
-        types.uint(1),
-        types.uint(20143),
-        types.uint(8),
-        "0xcc5891e319c0e8c72ca22657572c7ddf03719f97abdf52a044f0a0119dbffcf448b65e004e5df308ea896c7462a6e8cc4577acc960b0d1031618c06e2c94016000"
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBuff(hexToBytes("0x0360c0934ebd2931636c4b2d38df5267f64bb70e7b1c01acbf3f85d4b35a8b2545"));
-
-
-
-
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "set-trusted-oracle", [
-        "0x0360c0934ebd2931636c4b2d38df5267f64bb70e7b1c01acbf3f85d4b35a8b2545",
-        types.bool(true)
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
-
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "set-trusted-oracle", [
-        "0x035fbb068f1f2297b227fe1959080f49b3ad93606cf7b3e3b1f7fa90b5989bdce9",
-        types.bool(true)
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
-
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "set-trusted-oracle", [
-        "0x0359fbce5f0e4e2f0fa0db5c28038c64c252ac4fc4f0688fb5022044980dd9bbd4",
-        types.bool(true)
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
+    block.receipts[0].result.expectBuff(hexToBytes("0x78124709d15ef20a7d8d28ce25e8dbeeedb379da1d6b8e484db5651437a947b5"))
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-oracle-v1-1", "update-price-multi", [
@@ -142,9 +127,9 @@ Clarinet.test({
         types.uint(20343),
         types.uint(8),
         types.list([
-          "0x6205ae1bda59b0219a609b4c0e2d1d3577328712cc5d2475467f8a310fe1017fcc2b902160fc40dadae392f335275dc85c198114b0957670ed43642291477a2e00",
-          "0x84ea665cf75f6cdccf4b1f89d53de69142ba711142dc2037febf480fca4cd646fd205fd5e217a53f68a219ce9b999c2bc4f48a28356450850024ca6b7fa31b7401",
-          "0x2eb8a9d0f6663fa07d9f9ce4f123894601a8b1471781f36abc1fd18e620cbde56c645951d6ae16b4ca30bb374d9a6dd04b075ebbc7e928d7d5114f269f25246f00"
+          "0x7f01e10f318a7f4675245dcc12873277351d2d0e4c9b609a21b059da1bae05622e7a4791226443ed707695b01481195cc85d2735f392e3dada40fc6021902bcc00",
+          "0x5b580290ae6064dbb9a9bd44ee15cd88a4edfe17baa4f45f575abba7ff87825a02fad02b2c86dfdf9f97f6f92e86a9aab90cab321787c51e94ea4d13764fab3d00",
+          "0xe5bd0c628ed11fbc6af3811747b1a801468923f1e49c9f7da03f66f6d0a9b82e6f24259f264f11d5d728e9c7bb5e074bd06d9a4d37bb30cab416aed65159646c00"
         ])
       ], deployer.address)
     ]);
@@ -157,8 +142,7 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectTuple()["last-price"].expectUint(20343);
 
-
-
+    // Update price
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-oracle-v1-1", "get-signable-message-hash", [
         types.uint(80200),
@@ -176,13 +160,20 @@ Clarinet.test({
         types.uint(20143),
         types.uint(8),
         types.list([
-          "0xcc5891e319c0e8c72ca22657572c7ddf03719f97abdf52a044f0a0119dbffcf448b65e004e5df308ea896c7462a6e8cc4577acc960b0d1031618c06e2c94016000",
-          "0x7c9f2780bedd7b0d7112faf581aedb9c6b71b6716586f52ad139f92e7c199306d444916c4bfe8857fe734ae7b4a75b42741f884366e7aa635b520567f1efbe0100",
-          "0xf62be4cbe1590cd4077922c62a5cf5be4f16aed015faeacea5302b300ae9927e355370f7219ab852605c0dac49ed49bca04dae5674399cde17414bcad8ffe10101"
+          "0xf4fcbf9d11a0f044a052dfab979f7103df7d2c575726a22cc7e8c019e39158cc6001942c6ec0181603d1b060c9ac7745cce8a662746c89ea08f35d4e005eb64800",
+          "0x45a8ba6288edf22e2561946f64f5029d9671d20c1eb09b561cf0336f11eb5d0353af9bbb93d21f6220ef5f064e131b3d4b7f8b98251179caf60360f41363599400",
+          "0x7e92e90a302b30a5ceeafa15d0ae164fbef55c2ac6227907d40c59e1cbe42bf601e1ffd8ca4b4117de9c397456ae4da0bc49ed49ac0d5c6052b89a21f770533501"
         ])
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v1-1", "get-price", [
+        types.ascii("BTC")
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectTuple()["last-price"].expectUint(20143);
   }
 });
 
