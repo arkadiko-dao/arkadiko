@@ -54,6 +54,11 @@
   (default-to (list ) (map-get? token-id-to-names id))
 )
 
+;; @desc get minimum valid signers needed
+(define-read-only (get-minimum-valid-signers)
+  (var-get minimum-valid-signers)
+)
+
 ;; @desc get price info for given token name
 (define-read-only (get-price (token (string-ascii 12)))
   (unwrap! (map-get? prices { token: token }) { last-price: u0, last-block: u0, decimals: u0 })
