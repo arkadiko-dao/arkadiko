@@ -246,6 +246,71 @@ class StakePoolDiko {
 }
 export { StakePoolDiko };
 
+
+// ---------------------------------------------------------
+// DIKO pool V2.0
+// ---------------------------------------------------------
+
+class StakePoolDikoV2 {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  getRewardOf(token: string) {
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v2-1", "get-reward-of", [
+      types.principal(Utils.qualifiedName(token)),
+    ], this.deployer.address);
+  }
+
+  getStakeOf(user: Account) {
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v2-1", "get-stake-of", [
+      types.principal(user.address),
+    ], this.deployer.address);
+  }
+
+  getStakeRewardsOf(user: Account, token: string) {
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v2-1", "get-stake-rewards-of", [
+      types.principal(user.address),
+      types.principal(Utils.qualifiedName(token)),
+    ], this.deployer.address);
+  }
+
+  getTotalStaked() {
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v2-1", "get-total-staked", [
+    ], this.deployer.address);
+  }
+
+  stake(user: Account, token: string, amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "stake", [
+        types.principal(Utils.qualifiedName("arkadiko-stake-registry-v1-1")),
+        types.principal(Utils.qualifiedName(token)),
+        types.uint(amount * 1000000),
+    ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  unstake(user: Account, token: string, amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "stake", [
+        types.principal(Utils.qualifiedName("arkadiko-stake-registry-v1-1")),
+        types.principal(Utils.qualifiedName(token)),
+        types.uint(amount * 1000000),
+    ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+
+
+}
+export { StakePoolDikoV2 };
+
 // ---------------------------------------------------------
 // DIKO/USDA pool
 // ---------------------------------------------------------

@@ -40,6 +40,9 @@ path = "contracts/arkadiko-governance-v3-1.clar"
 [contracts.arkadiko-token]
 path = "contracts/arkadiko-token.clar"
 
+[contracts.escrowed-diko-token]
+path = "contracts/escrowed-diko-token.clar"
+
 [contracts.arkadiko-oracle-trait-v1]
 path = "contracts/arkadiko-oracle-trait-v1.clar"
 

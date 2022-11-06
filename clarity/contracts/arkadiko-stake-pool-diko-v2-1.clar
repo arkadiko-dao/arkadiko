@@ -296,6 +296,7 @@
     (current-cumm-reward-per-stake (get cumm-reward-per-stake (get-reward-of .usda-token))) 
     (usda-balance (unwrap-panic (contract-call? .usda-token get-balance .freddie-v1-1)))
   )
+    (asserts! (> usda-balance u0) (ok current-cumm-reward-per-stake))
     (asserts! (> block-height (get last-reward-increase-block (get-reward-of .usda-token))) (ok current-cumm-reward-per-stake))
     (asserts! (> current-total-staked u0) (ok current-cumm-reward-per-stake))
 

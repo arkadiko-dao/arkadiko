@@ -1,0 +1,52 @@
+import {
+  Account,
+  Chain,
+  Clarinet,
+  Tx,
+  types,
+} from "https://deno.land/x/clarinet/index.ts";
+
+import { 
+  DikoToken,
+  StDikoToken
+} from './models/arkadiko-tests-tokens.ts';
+
+import { 
+  StakeRegistry,
+  StakePoolDikoV2
+} from './models/arkadiko-tests-stake.ts';
+
+import { 
+  Governance,
+  Dao
+} from './models/arkadiko-tests-governance.ts';
+
+import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
+
+// ---------------------------------------------------------
+// Helper function
+// ---------------------------------------------------------
+
+// ---------------------------------------------------------
+// Staking
+// ---------------------------------------------------------
+
+Clarinet.test({
+name: "diko-staking: add pool and get pool info",
+async fn(chain: Chain, accounts: Map<string, Account>) {
+  let deployer = accounts.get("deployer")!;
+  let wallet_1 = accounts.get("wallet_1")!;
+
+  let stakePool = new StakePoolDikoV2(chain, deployer);
+  let stakeRegistry = new StakeRegistry(chain, deployer);
+
+  let result = stakePool.stake(wallet_1, "arkadiko-token", 100);
+  result.expectOk().expectUintWithDecimals(100);
+
+  let call:any = stakePool.getStakeOf(wallet_1);
+  call.result.expectTuple()["amount"].expectUintWithDecimals(100);    
+
+  result = stakePool.unstake(wallet_1, "arkadiko-token", 100);
+  result.expectOk().expectUintWithDecimals(100);
+}
+});
