@@ -46,6 +46,18 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let call:any = stakePool.getStakeOf(wallet_1);
   call.result.expectTuple()["amount"].expectUintWithDecimals(100);    
 
+  chain.mineEmptyBlock(20);
+
+  let block = chain.mineBlock([
+    Tx.contractCall("usda-token", "transfer", [
+      types.uint(10 * 1000000),
+      types.principal(deployer.address),
+      types.principal(Utils.qualifiedName("freddie-v1-1")),
+      types.none(),
+    ], deployer.address)
+  ]);
+  block.receipts[0].result.expectOk();
+
   result = stakePool.unstake(wallet_1, "arkadiko-token", 100);
   result.expectOk().expectUintWithDecimals(100);
 }

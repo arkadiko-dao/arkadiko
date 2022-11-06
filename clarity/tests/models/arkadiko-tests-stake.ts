@@ -290,23 +290,21 @@ class StakePoolDikoV2 {
         types.principal(Utils.qualifiedName("arkadiko-stake-registry-v1-1")),
         types.principal(Utils.qualifiedName(token)),
         types.uint(amount * 1000000),
-    ], user.address)
+      ], user.address)
     ]);
     return block.receipts[0].result;
   }
 
   unstake(user: Account, token: string, amount: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "stake", [
+      Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "unstake", [
         types.principal(Utils.qualifiedName("arkadiko-stake-registry-v1-1")),
         types.principal(Utils.qualifiedName(token)),
         types.uint(amount * 1000000),
-    ], user.address)
+      ], user.address)
     ]);
     return block.receipts[0].result;
   }
-
-
 
 }
 export { StakePoolDikoV2 };
