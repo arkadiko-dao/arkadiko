@@ -146,6 +146,8 @@
   (let (
     (vested-diko (calculate-vested-diko staker))
   )
+    (asserts! (> vested-diko u0) (ok u0))
+
     ;; Mint DIKO for user, burn esDIKO
     (try! (contract-call? .arkadiko-dao mint-token .arkadiko-token vested-diko staker))
     (try! (ft-burn? esdiko vested-diko staker))
