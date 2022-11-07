@@ -290,6 +290,13 @@ class StakePoolDikoV2 {
     ], this.deployer.address);
   }
 
+  getPendingRewards(user: Account) {
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v2-1", "get-pending-rewards", [
+      types.principal(Utils.qualifiedName("arkadiko-stake-registry-v1-1")),
+      types.principal(user.address),
+    ], this.deployer.address);
+  }
+
   stake(user: Account, token: string, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "stake", [
@@ -312,6 +319,14 @@ class StakePoolDikoV2 {
     return block.receipts[0].result;
   }
 
+  claimPendingRewards(user: Account) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "claim-pending-rewards", [
+        types.principal(Utils.qualifiedName("arkadiko-stake-registry-v1-1")),
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
 }
 export { StakePoolDikoV2 };
 

@@ -161,7 +161,7 @@
     (let (
       ;; Calculate points to burn
       (updated-stakes (get-stake-of staker))
-      (points-to-burn (* (/ amount (get amount updated-stakes)) (get points updated-stakes)))
+      (points-to-burn (/ (* (/ (* amount u1000000) (+ (get diko updated-stakes) (get esdiko updated-stakes))) (get points updated-stakes)) u1000000))
     )
       ;; Update total stake and increase cummulative rewards
       (var-set total-staked (- (var-get total-staked) amount points-to-burn))
@@ -200,13 +200,13 @@
 ;; @post tuple; returns pending rewards
 (define-public (get-pending-rewards (registry-trait <stake-registry-trait>) (staker principal))
   (let (
-    (usda-rewards (get-pending-rewards-helper registry-trait staker .usda-token))
-    (diko-rewards (get-pending-rewards-helper registry-trait staker .escrowed-diko-token))
+    (usda-rewards (unwrap-panic (get-pending-rewards-helper registry-trait staker .usda-token)))
+    (esdiko-rewards (unwrap-panic (get-pending-rewards-helper registry-trait staker .escrowed-diko-token)))
     (point-rewards (calculate-multiplier-points staker))
   )
     (ok {
       usda: usda-rewards,
-      diko: diko-rewards,
+      esdiko: esdiko-rewards,
       point: point-rewards
     })
   )
@@ -245,7 +245,7 @@
 
     ;; Update last-block and points to reflect added points
     ;; Update total-staked with points added
-    (map-set stakes { staker: staker } (merge current-stakes { last-update-block: block-height, amount: (+ (get amount current-stakes) new-points), points: new-points }))
+    (map-set stakes { staker: staker } (merge current-stakes { last-update-block: block-height, amount: (+ (get amount current-stakes) added-points), points: new-points }))
     (var-set total-staked (+ (var-get total-staked) added-points))
 
     (ok true)
@@ -253,7 +253,7 @@
 )
 
 ;; Claim pending rewards for given token
-(define-private (claim-pending-rewards-helper (registry-trait <stake-registry-trait>) (token <ft-trait>))
+(define-public (claim-pending-rewards-helper (registry-trait <stake-registry-trait>) (token <ft-trait>))
   (let (
     (staker tx-sender)
     (increase-result (unwrap-panic (increase-cumm-reward-per-stake-helper registry-trait token)))
@@ -262,7 +262,7 @@
   )
     (asserts! (>= pending-rewards u1) (ok u0))
 
-    (try! (contract-call? .arkadiko-dao mint-token .escrowed-diko-token pending-rewards staker))
+    (try! (as-contract (contract-call? token transfer pending-rewards tx-sender staker none)))
     (map-set stake-rewards { staker: staker, token: (contract-of token) } { cumm-reward-per-stake: (get cumm-reward-per-stake (get-reward-of (contract-of token))) })
 
     (ok pending-rewards)
@@ -324,15 +324,15 @@
 ;; @post uint; the cummulative rewards per stake
 (define-public (calculate-cumm-reward-per-stake (registry-trait <stake-registry-trait>) (token <ft-trait>))
   (if (is-eq (contract-of token) .escrowed-diko-token)
-    (calculate-cumm-diko-reward-per-stake registry-trait)
+    (calculate-cumm-esdiko-reward-per-stake registry-trait)
     (calculate-cumm-usda-reward-per-stake)
   )
 )
 
-;; @desc get the cumm DIKO rewards per stake for current block height
+;; @desc get the cumm esDIKO rewards per stake for current block height
 ;; @param registry-trait; used to get reward per block
 ;; @post uint; the cummulative rewards per stake
-(define-public (calculate-cumm-diko-reward-per-stake (registry-trait <stake-registry-trait>))
+(define-public (calculate-cumm-esdiko-reward-per-stake (registry-trait <stake-registry-trait>))
   (let (
     (current-total-staked (var-get total-staked))
     (current-cumm-reward-per-stake (get cumm-reward-per-stake (get-reward-of .escrowed-diko-token))) 
@@ -348,6 +348,10 @@
       (reward-added-per-token (/ (* total-rewards-to-distribute u1000000) current-total-staked))
       (new-cumm-reward-per-stake (+ current-cumm-reward-per-stake reward-added-per-token))
     )
+      ;; Mint esDIKO for this contract
+      (try! (as-contract (contract-call? .arkadiko-dao mint-token .escrowed-diko-token total-rewards-to-distribute tx-sender)))
+
+      (map-set rewards { token: .escrowed-diko-token } { cumm-reward-per-stake: new-cumm-reward-per-stake, last-reward-increase-block: block-height})
       (ok new-cumm-reward-per-stake)
     )
   )
@@ -374,6 +378,7 @@
       (reward-added-per-token (/ (* total-rewards-to-distribute u1000000) current-total-staked))
       (new-cumm-reward-per-stake (+ current-cumm-reward-per-stake reward-added-per-token))
     )
+      (map-set rewards { token: .usda-token } { cumm-reward-per-stake: new-cumm-reward-per-stake, last-reward-increase-block: block-height})
       (ok new-cumm-reward-per-stake)
     )
   )
