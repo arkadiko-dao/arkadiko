@@ -363,14 +363,14 @@
   (let (
     (current-total-staked (var-get total-staked))
     (current-cumm-reward-per-stake (get cumm-reward-per-stake (get-reward-of .usda-token))) 
-    (usda-balance (unwrap-panic (contract-call? .usda-token get-balance .freddie-v1-1)))
+    (usda-balance (unwrap-panic (contract-call? .usda-token get-balance .arkadiko-freddie-v1-1)))
   )
     (asserts! (> usda-balance u0) (ok current-cumm-reward-per-stake))
     (asserts! (> block-height (get last-reward-increase-block (get-reward-of .usda-token))) (ok current-cumm-reward-per-stake))
     (asserts! (> current-total-staked u0) (ok current-cumm-reward-per-stake))
 
     ;; Transfer from Freddie to this contract
-    (try! (contract-call? .arkadiko-dao burn-token .usda-token usda-balance .freddie-v1-1))
+    (try! (contract-call? .arkadiko-dao burn-token .usda-token usda-balance .arkadiko-freddie-v1-1))
     (try! (contract-call? .arkadiko-dao mint-token .usda-token usda-balance .arkadiko-stake-pool-diko-v2-1))
 
     (let (

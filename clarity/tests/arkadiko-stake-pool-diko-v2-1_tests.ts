@@ -183,7 +183,7 @@ Clarinet.test({
       Tx.contractCall("usda-token", "transfer", [
         types.uint(10 * 1000000),
         types.principal(deployer.address),
-        types.principal(Utils.qualifiedName("freddie-v1-1")),
+        types.principal(Utils.qualifiedName("arkadiko-freddie-v1-1")),
         types.none(),
       ], deployer.address)
     ]);
