@@ -194,14 +194,30 @@
 ;; User rewards
 ;; ---------------------------------------------------------
 
-;; TODO: method to get all pending rewards at once
-
 ;; @desc get amount of pending rewards for staker
+;; @param registry-trait; used to get reward per block
+;; @param staker; staker to get pending rewards for
+;; @post tuple; returns pending rewards
+(define-public (get-pending-rewards (registry-trait <stake-registry-trait>) (staker principal))
+  (let (
+    (usda-rewards (get-pending-rewards-helper registry-trait staker .usda-token))
+    (diko-rewards (get-pending-rewards-helper registry-trait staker .escrowed-diko-token))
+    (point-rewards (calculate-multiplier-points staker))
+  )
+    (ok {
+      usda: usda-rewards,
+      diko: diko-rewards,
+      point: point-rewards
+    })
+  )
+)
+
+;; @desc get amount of pending rewards for given staker and token
 ;; @param registry-trait; used to get reward per block
 ;; @param staker; staker to get pending rewards for
 ;; @param token; reward token
 ;; @post uint; returns pending rewards
-(define-public (get-pending-rewards (registry-trait <stake-registry-trait>) (staker principal) (token <ft-trait>))
+(define-public (get-pending-rewards-helper (registry-trait <stake-registry-trait>) (staker principal) (token <ft-trait>))
   (let (
     (stake-amount (get amount (get-stake-of staker)))
     (current-cumm-reward (unwrap-panic (calculate-cumm-reward-per-stake registry-trait token)))
@@ -224,7 +240,7 @@
     (added-points (calculate-multiplier-points staker))
     (new-points (+ added-points (get points current-stakes)))
   )
-    (try! (claim-pending-rewards-helper registry-trait .arkadiko-token))
+    (try! (claim-pending-rewards-helper registry-trait .escrowed-diko-token))
     (try! (claim-pending-rewards-helper registry-trait .usda-token))
 
     ;; Update last-block and points to reflect added points
@@ -241,7 +257,7 @@
   (let (
     (staker tx-sender)
     (increase-result (unwrap-panic (increase-cumm-reward-per-stake-helper registry-trait token)))
-    (pending-rewards (unwrap! (get-pending-rewards registry-trait staker token) ERR-REWARDS-CALC))
+    (pending-rewards (unwrap! (get-pending-rewards-helper registry-trait staker token) ERR-REWARDS-CALC))
     (stake-of (get-stake-of staker))
   )
     (asserts! (>= pending-rewards u1) (ok u0))
@@ -284,7 +300,7 @@
 ;; @post uint; new cummulative rewards per stake
 (define-public (increase-cumm-reward-per-stake (registry-trait <stake-registry-trait>))
   (begin
-    (unwrap-panic (increase-cumm-reward-per-stake-helper registry-trait .arkadiko-token))
+    (unwrap-panic (increase-cumm-reward-per-stake-helper registry-trait .escrowed-diko-token))
     (increase-cumm-reward-per-stake-helper registry-trait .usda-token)
   )
 )
@@ -307,7 +323,7 @@
 ;; @param token: rewards token
 ;; @post uint; the cummulative rewards per stake
 (define-public (calculate-cumm-reward-per-stake (registry-trait <stake-registry-trait>) (token <ft-trait>))
-  (if (is-eq (contract-of token) .arkadiko-token)
+  (if (is-eq (contract-of token) .escrowed-diko-token)
     (calculate-cumm-diko-reward-per-stake registry-trait)
     (calculate-cumm-usda-reward-per-stake)
   )
@@ -319,15 +335,15 @@
 (define-public (calculate-cumm-diko-reward-per-stake (registry-trait <stake-registry-trait>))
   (let (
     (current-total-staked (var-get total-staked))
-    (current-cumm-reward-per-stake (get cumm-reward-per-stake (get-reward-of .arkadiko-token))) 
+    (current-cumm-reward-per-stake (get cumm-reward-per-stake (get-reward-of .escrowed-diko-token))) 
     (rewards-per-block (unwrap-panic (contract-call? registry-trait get-rewards-per-block-for-pool (as-contract tx-sender))))
   )
     (asserts! (is-eq (contract-of registry-trait) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-WRONG-REGISTRY)
-    (asserts! (> block-height (get last-reward-increase-block (get-reward-of .arkadiko-token))) (ok current-cumm-reward-per-stake))
+    (asserts! (> block-height (get last-reward-increase-block (get-reward-of .escrowed-diko-token))) (ok current-cumm-reward-per-stake))
     (asserts! (> current-total-staked u0) (ok current-cumm-reward-per-stake))
 
     (let (
-      (block-diff (- block-height (get last-reward-increase-block (get-reward-of .arkadiko-token))))
+      (block-diff (- block-height (get last-reward-increase-block (get-reward-of .escrowed-diko-token))))
       (total-rewards-to-distribute (* rewards-per-block block-diff))
       (reward-added-per-token (/ (* total-rewards-to-distribute u1000000) current-total-staked))
       (new-cumm-reward-per-stake (+ current-cumm-reward-per-stake reward-added-per-token))
