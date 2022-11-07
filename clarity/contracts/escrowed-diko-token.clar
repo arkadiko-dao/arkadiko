@@ -4,13 +4,10 @@
 
 (define-fungible-token esdiko)
 
-(define-data-var token-uri (string-utf8 256) u"")
-
-;; TODO: setters and getters
-(define-data-var req-staked-diko uint u250000) ;; 25% = 250000
-
-;; errors
 (define-constant ERR-NOT-AUTHORIZED u1401)
+
+(define-data-var token-uri (string-utf8 256) u"")
+(define-data-var req-staked-diko uint u250000) ;; 25% = 250000
 
 ;; ---------------------------------------------------------
 ;; Maps
@@ -24,10 +21,27 @@
   }
 )
 
+(define-map whitelist principal bool)
+
+;; ---------------------------------------------------------
+;; Getters
+;; ---------------------------------------------------------
+
 (define-read-only (get-vesting-of (staker principal))
   (default-to
     { last-update-block: u0, stake-amount: u0 }
     (map-get? vesting { staker: staker })
+  )
+)
+
+(define-read-only (get-req-staked-diko) 
+  (var-get req-staked-diko)
+)
+
+(define-read-only (is-whitelisted (contract principal)) 
+  (default-to
+    false
+    (map-get? whitelist contract)
   )
 )
 
@@ -69,9 +83,7 @@
 (define-public (transfer (amount uint) (sender principal) (recipient principal) (memo (optional (buff 34))))
   (begin
     (asserts! (is-eq tx-sender sender) (err ERR-NOT-AUTHORIZED))
-
-    ;; TODO: check if sender and recipient are whitelisted
-    ;; Can only send from/to diko pool to stake
+    (asserts! (or (is-whitelisted sender) (is-whitelisted recipient)) (err ERR-NOT-AUTHORIZED))
 
     (match (ft-transfer? esdiko amount sender recipient)
       response (begin
@@ -131,8 +143,10 @@
 ;; Used by DIKO pool to signal a change in stake amount
 ;; When stake amount changes, vesting changes
 (define-public (update-staking (staker principal) (amount uint))
-  ;; TODO: whitelist pool, only pool can call this method
-  (get-vested-diko staker amount)
+  (begin
+    (asserts! (is-whitelisted contract-caller) (err ERR-NOT-AUTHORIZED))
+    (get-vested-diko staker amount)
+  )
 )
 
 ;; Used by this contract to signal a change in balance
@@ -177,11 +191,32 @@
 )
 
 ;; ---------------------------------------------------------
+;; Admin
+;; ---------------------------------------------------------
+
+(define-public (set-req-staked-diko (value uint))
+  (begin 
+    (asserts! (is-eq tx-sender .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
+    (var-set req-staked-diko value)
+    (ok value)
+  )
+)
+
+(define-public (set-whitelist (contract principal) (enabled bool))
+  (begin 
+    (asserts! (is-eq tx-sender .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
+    (map-set whitelist contract enabled)
+    (ok enabled)
+  )
+)
+
+;; ---------------------------------------------------------
 ;; Init
 ;; ---------------------------------------------------------
 
-;; Test environments
 (begin
+  (map-set whitelist .arkadiko-stake-pool-diko-v2-1 true)
+
   ;; TODO: do not do this on testnet or mainnet
   (try! (ft-mint? esdiko u890000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
 )
