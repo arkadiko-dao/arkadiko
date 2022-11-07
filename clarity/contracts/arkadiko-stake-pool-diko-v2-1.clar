@@ -1,13 +1,10 @@
 ;; @contract DIKO Stake Pool
 ;; @version 2.0
 
-;; TODO: update stake-registry so this pool can get DIKO rewards
-;; TODO: update arkadiko-dao so this pool can burn/mint USDA
-
 ;; Traits
-(use-trait stake-registry-trait .arkadiko-stake-registry-trait-v1.stake-registry-trait)
 ;; TODO: update address
 (use-trait ft-trait 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sip-010-trait-ft-standard.sip-010-trait)
+(use-trait stake-registry-trait .arkadiko-stake-registry-trait-v1.stake-registry-trait)
 
 ;; ---------------------------------------------------------
 ;; Constants
@@ -17,6 +14,7 @@
 (define-constant ERR-REWARDS-CALC (err u110002))
 (define-constant ERR-INSUFFICIENT-STAKE (err u110003))
 (define-constant ERR-WRONG-REGISTRY (err u110004))
+(define-constant ERR-WRONG-TOKEN (err u110005))
 
 ;; ---------------------------------------------------------
 ;; Variables
@@ -42,8 +40,11 @@
 (define-map stakes 
   { staker: principal } 
   {
-    amount: uint, ;; TODO: split for DIKO & esDIKO
-    ;; TODO: track multiplier points
+    last-update-block: uint,
+    amount: uint,
+    diko: uint,
+    esdiko: uint,
+    points: uint 
   }
 )
 
@@ -73,7 +74,7 @@
 ;; @desc get staker info
 (define-read-only (get-stake-of (staker principal))
   (default-to
-    { amount: u0 }
+    { last-update-block: u0, amount: u0, diko: u0, esdiko: u0, points: u0 }
     (map-get? stakes { staker: staker })
   )
 )
@@ -103,11 +104,12 @@
 (define-public (stake (registry-trait <stake-registry-trait>) (token <ft-trait>) (amount uint))
   (let (
     (staker tx-sender)
-    (current-stake-amount (get amount (get-stake-of staker)))
   )
+    (asserts! (or (is-eq (contract-of token) .arkadiko-token) (is-eq (contract-of token) .escrowed-diko-token)) ERR-WRONG-TOKEN)
+
     ;; This method will increase the cumm-rewards-per-stake, and set it for the staker
+    ;; It also makes sure the multiplier points are credited to the staker
     (try! (claim-pending-rewards registry-trait))
-    ;; TODO: check if token = DIKO or esDIKO
 
     ;; Update total stake and increase cummulative rewards
     (var-set total-staked (+ (var-get total-staked) amount))
@@ -115,7 +117,19 @@
 
     ;; Transfer tokens and update map
     (try! (contract-call? token transfer amount staker (as-contract tx-sender) none))
-    (map-set stakes { staker: staker } { amount: (+ current-stake-amount amount) })
+    (if (is-eq (contract-of token) .arkadiko-token)
+      (map-set stakes { staker: staker } (merge (get-stake-of staker) { 
+        amount: (+ (get amount (get-stake-of staker)) amount),
+        diko: (+ (get diko (get-stake-of staker)) amount) 
+      }))
+      (map-set stakes { staker: staker } (merge (get-stake-of staker) { 
+        amount: (+ (get amount (get-stake-of staker)) amount),
+        esdiko: (+ (get esdiko (get-stake-of staker)) amount) 
+      }))
+    )
+
+    ;; Notify esDIKO
+    (try! (contract-call? .escrowed-diko-token update-staking staker (+ (get amount (get-stake-of staker)) amount)))
 
     (ok amount)
   )
@@ -129,12 +143,18 @@
 (define-public (unstake (registry-trait <stake-registry-trait>) (token <ft-trait>) (amount uint))
   (let (
     (staker tx-sender)
-    (current-stake-amount (get amount (get-stake-of staker)))
+    (current-stakes (get-stake-of staker))
+
+    ;; TODO: Burn points
   )
-    (asserts! (>= current-stake-amount amount) ERR-INSUFFICIENT-STAKE)
-    ;; TODO: check if token = DIKO or esDIKO
+    (asserts! (or (is-eq (contract-of token) .arkadiko-token) (is-eq (contract-of token) .escrowed-diko-token)) ERR-WRONG-TOKEN)
+    (asserts! (or
+      (and (is-eq (contract-of token) .arkadiko-token) (>= (get diko (get-stake-of staker)) amount))
+      (and (is-eq (contract-of token) .escrowed-diko-token) (>= (get esdiko (get-stake-of staker)) amount))
+    ) ERR-INSUFFICIENT-STAKE)
 
     ;; This method will increase the cumm-rewards-per-stake, and set it for the staker
+    ;; It also makes sure the multiplier points are credited to the staker
     (try! (claim-pending-rewards registry-trait))
 
     ;; Update total stake and increase cummulative rewards
@@ -143,33 +163,20 @@
 
     ;; Transfer tokens and update map
     (try! (as-contract (contract-call? token transfer amount tx-sender staker none)))
-    (map-set stakes { staker: staker } { amount: (- current-stake-amount amount) })
+        (if (is-eq (contract-of token) .arkadiko-token)
+      (map-set stakes { staker: staker } (merge (get-stake-of staker) { 
+        amount: (- (get amount (get-stake-of staker)) amount),
+        diko: (- (get diko (get-stake-of staker)) amount) 
+      }))
+      (map-set stakes { staker: staker } (merge (get-stake-of staker) { 
+        amount: (- (get amount (get-stake-of staker)) amount),
+        esdiko: (- (get esdiko (get-stake-of staker)) amount) 
+      }))
+    )
 
-    (ok amount)
-  )
-)
-
-;; @desc unstake tokens without claiming rewards
-;; @param registry-trait; used to get reward per block
-;; @param token; token to unstake
-;; @param amount; amount to unstake
-;; @post uint; returns unstaked amount
-(define-public (emergency-unstake (registry-trait <stake-registry-trait>) (token <ft-trait>) (amount uint))
-  (let (
-    (staker tx-sender)
-    (current-stake-amount (get amount (get-stake-of staker)))
-  )
-    (asserts! (>= current-stake-amount amount) ERR-INSUFFICIENT-STAKE)
-    ;; TODO: check if token = DIKO or esDIKO
-
-    ;; Update total stake and increase cummulative rewards
-    (var-set total-staked (- (var-get total-staked) amount))
-    (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
-
-    ;; Transfer tokens and update map
-    (try! (as-contract (contract-call? token transfer amount tx-sender staker none)))
-    (map-set stakes { staker: staker } { amount: (- current-stake-amount amount) })
-
+    ;; Notify esDIKO
+    (try! (contract-call? .escrowed-diko-token update-staking staker (+ (get amount (get-stake-of staker)) amount)))
+    
     (ok amount)
   )
 )
@@ -177,6 +184,8 @@
 ;; ---------------------------------------------------------
 ;; User rewards
 ;; ---------------------------------------------------------
+
+;; TODO: method to get all pending rewards at once
 
 ;; @desc get amount of pending rewards for staker
 ;; @param registry-trait; used to get reward per block
@@ -200,17 +209,24 @@
 ;; @param registry-trait; used to get reward per block
 ;; @post uint; returns claimed rewards
 (define-public (claim-pending-rewards (registry-trait <stake-registry-trait>))
-  (begin
+  (let (
+    (staker tx-sender)
+    (current-stakes (get-stake-of staker))
+    (added-points (calculate-multiplier-points staker))
+    (new-points (+ added-points (get points current-stakes)))
+  )
     (try! (claim-pending-rewards-helper registry-trait .arkadiko-token))
-    (claim-pending-rewards-helper registry-trait .usda-token)
+    (try! (claim-pending-rewards-helper registry-trait .usda-token))
+
+    (map-set stakes { staker: staker } (merge current-stakes { last-update-block: block-height, amount: (+ (get amount current-stakes) new-points), points: new-points }))
+    (var-set total-staked (+ (var-get total-staked) added-points))
+
+    (ok true)
   )
 )
 
-;; @desc claim pending rewards
-;; @param registry-trait; used to get reward per block
-;; @param token; reward token
-;; @post uint; returns claimed rewards
-(define-public (claim-pending-rewards-helper (registry-trait <stake-registry-trait>) (token <ft-trait>))
+;; Claim pending rewards for given token
+(define-private (claim-pending-rewards-helper (registry-trait <stake-registry-trait>) (token <ft-trait>))
   (let (
     (staker tx-sender)
     (increase-result (unwrap-panic (increase-cumm-reward-per-stake-helper registry-trait token)))
@@ -219,10 +235,32 @@
   )
     (asserts! (>= pending-rewards u1) (ok u0))
 
-    (try! (contract-call? .arkadiko-dao mint-token .arkadiko-token pending-rewards staker))
+    (try! (contract-call? .arkadiko-dao mint-token .escrowed-diko-token pending-rewards staker))
     (map-set stake-rewards { staker: staker, token: (contract-of token) } { cumm-reward-per-stake: (get cumm-reward-per-stake (get-reward-of (contract-of token))) })
 
     (ok pending-rewards)
+  )
+)
+
+;; ---------------------------------------------------------
+;; Multiplier points
+;; ---------------------------------------------------------
+
+;; @desc get pending multiplier points (100% APR)
+;; @param staker; the staker
+;; @post uint; returns pending points
+(define-read-only (calculate-multiplier-points (staker principal))
+  (let (
+    (current-stakes (get-stake-of staker))
+    (total-tokens (+ (get diko current-stakes) (get esdiko current-stakes)))
+    (last-update (get last-update-block current-stakes))
+    (block-diff (- block-height last-update))
+    (reward-per-block (/ (* total-tokens u1000000) (* u144 u365)))
+  )
+    (asserts! (> total-tokens u0) u0)
+    (asserts! (> block-diff u0) u0)
+
+    (/ (* block-diff reward-per-block) u1000000)
   )
 )
 

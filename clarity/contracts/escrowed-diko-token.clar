@@ -10,6 +10,25 @@
 (define-constant ERR-NOT-AUTHORIZED u1401)
 
 ;; ---------------------------------------------------------
+;; Maps
+;; ---------------------------------------------------------
+
+(define-map vesting 
+  { staker: principal } 
+  {
+    last-update-block: uint,
+    stake-amount: uint
+  }
+)
+
+(define-read-only (get-vesting-of (staker principal))
+  (default-to
+    { last-update-block: u0, stake-amount: u0 }
+    (map-get? vesting { staker: staker })
+  )
+)
+
+;; ---------------------------------------------------------
 ;; SIP-10 Functions
 ;; ---------------------------------------------------------
 
@@ -89,6 +108,40 @@
     (ft-burn? esdiko amount sender)
   )
 )
+
+;; ---------------------------------------------------------
+;; Vesting
+;; ---------------------------------------------------------
+
+(define-public (update-staking (staker principal) (amount uint))
+  (let (
+    (diko-to-claim (calculate-vested-diko staker))
+  )
+    ;; TODO: only pool can call this method
+
+    (try! (contract-call? .arkadiko-dao mint-token .arkadiko-token diko-to-claim staker))
+
+    ;; TODO: calculate amount to burn and burn
+
+    (map-set vesting { staker: staker } { last-update-block: block-height, stake-amount: amount })
+    (ok diko-to-claim)
+  )
+)
+
+(define-read-only (calculate-vested-diko (staker principal)) 
+  (let (
+    (vesting-info (get-vesting-of staker))
+    (block-diff (- block-height (get last-update-block vesting-info)))
+    (esdiko-balance (get-balance staker))
+  )
+    ;; TODO
+    u123
+  )
+)
+
+;; ---------------------------------------------------------
+;; Init
+;; ---------------------------------------------------------
 
 ;; Test environments
 (begin

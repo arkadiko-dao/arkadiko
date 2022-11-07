@@ -246,6 +246,20 @@
       can-burn: true
     }
   )
+  (map-set contracts
+    { name: "escrowed-diko" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.escrowed-diko-token
+    }
+  )
+  (map-set contracts-data
+    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.escrowed-diko-token }
+    {
+      can-mint: true,
+      can-burn: true
+    }
+  )
 
   (map-set contracts
     { name: "stake-pool-diko-usda" }

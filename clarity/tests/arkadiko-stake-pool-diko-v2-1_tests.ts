@@ -45,6 +45,9 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   let call:any = stakePool.getStakeOf(wallet_1);
   call.result.expectTuple()["amount"].expectUintWithDecimals(100);    
+  call.result.expectTuple()["diko"].expectUintWithDecimals(100);    
+  call.result.expectTuple()["esdiko"].expectUintWithDecimals(0);    
+  call.result.expectTuple()["points"].expectUintWithDecimals(0);    
 
   chain.mineEmptyBlock(20);
 
@@ -57,6 +60,19 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
     ], deployer.address)
   ]);
   block.receipts[0].result.expectOk();
+
+  // 
+  call = stakePool.calculateMultiplierPoints(wallet_1);
+  call.result.expectUintWithDecimals(0.041856);    
+
+  result = stakePool.stake(wallet_1, "arkadiko-token", 100);
+  result.expectOk().expectUintWithDecimals(100);
+
+  call = stakePool.getStakeOf(wallet_1);
+  call.result.expectTuple()["amount"].expectUintWithDecimals(200.041856);    
+  call.result.expectTuple()["diko"].expectUintWithDecimals(200);    
+  call.result.expectTuple()["esdiko"].expectUintWithDecimals(0);    
+  call.result.expectTuple()["points"].expectUintWithDecimals(0.041856);    
 
   result = stakePool.unstake(wallet_1, "arkadiko-token", 100);
   result.expectOk().expectUintWithDecimals(100);

@@ -284,6 +284,12 @@ class StakePoolDikoV2 {
     ], this.deployer.address);
   }
 
+  calculateMultiplierPoints(user: Account) {
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v2-1", "calculate-multiplier-points", [
+      types.principal(user.address),
+    ], this.deployer.address);
+  }
+
   stake(user: Account, token: string, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "stake", [
