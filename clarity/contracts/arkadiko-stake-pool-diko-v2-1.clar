@@ -111,27 +111,31 @@
     ;; It also makes sure the multiplier points are credited to the staker
     (try! (claim-pending-rewards registry-trait))
 
-    ;; Update total stake and increase cummulative rewards
-    (var-set total-staked (+ (var-get total-staked) amount))
-    (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
-
-    ;; Transfer tokens and update map
-    (try! (contract-call? token transfer amount staker (as-contract tx-sender) none))
-    (if (is-eq (contract-of token) .arkadiko-token)
-      (map-set stakes { staker: staker } (merge (get-stake-of staker) { 
-        amount: (+ (get amount (get-stake-of staker)) amount),
-        diko: (+ (get diko (get-stake-of staker)) amount) 
-      }))
-      (map-set stakes { staker: staker } (merge (get-stake-of staker) { 
-        amount: (+ (get amount (get-stake-of staker)) amount),
-        esdiko: (+ (get esdiko (get-stake-of staker)) amount) 
-      }))
+    (let (
+      (updated-stakes (get-stake-of staker))
     )
+      ;; Update total stake and increase cummulative rewards
+      (var-set total-staked (+ (var-get total-staked) amount))
+      (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
 
-    ;; Notify esDIKO
-    (try! (contract-call? .escrowed-diko-token update-staking staker (+ (get amount (get-stake-of staker)) amount)))
+      ;; Transfer tokens and update map
+      (try! (contract-call? token transfer amount staker (as-contract tx-sender) none))
+      (if (is-eq (contract-of token) .arkadiko-token)
+        (map-set stakes { staker: staker } (merge updated-stakes { 
+          amount: (+ (get amount updated-stakes) amount),
+          diko: (+ (get diko updated-stakes) amount) 
+        }))
+        (map-set stakes { staker: staker } (merge updated-stakes { 
+          amount: (+ (get amount updated-stakes) amount),
+          esdiko: (+ (get esdiko updated-stakes) amount) 
+        }))
+      )
 
-    (ok amount)
+      ;; Notify esDIKO
+      (try! (contract-call? .escrowed-diko-token update-staking staker (get amount (get-stake-of staker))))
+
+      (ok amount)
+    )
   )
 )
 
@@ -143,9 +147,6 @@
 (define-public (unstake (registry-trait <stake-registry-trait>) (token <ft-trait>) (amount uint))
   (let (
     (staker tx-sender)
-    (current-stakes (get-stake-of staker))
-
-    ;; TODO: Burn points
   )
     (asserts! (or (is-eq (contract-of token) .arkadiko-token) (is-eq (contract-of token) .escrowed-diko-token)) ERR-WRONG-TOKEN)
     (asserts! (or
@@ -157,27 +158,35 @@
     ;; It also makes sure the multiplier points are credited to the staker
     (try! (claim-pending-rewards registry-trait))
 
-    ;; Update total stake and increase cummulative rewards
-    (var-set total-staked (- (var-get total-staked) amount))
-    (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
-
-    ;; Transfer tokens and update map
-    (try! (as-contract (contract-call? token transfer amount tx-sender staker none)))
-        (if (is-eq (contract-of token) .arkadiko-token)
-      (map-set stakes { staker: staker } (merge (get-stake-of staker) { 
-        amount: (- (get amount (get-stake-of staker)) amount),
-        diko: (- (get diko (get-stake-of staker)) amount) 
-      }))
-      (map-set stakes { staker: staker } (merge (get-stake-of staker) { 
-        amount: (- (get amount (get-stake-of staker)) amount),
-        esdiko: (- (get esdiko (get-stake-of staker)) amount) 
-      }))
+    (let (
+      ;; Calculate points to burn
+      (updated-stakes (get-stake-of staker))
+      (points-to-burn (* (/ amount (get amount updated-stakes)) (get points updated-stakes)))
     )
+      ;; Update total stake and increase cummulative rewards
+      (var-set total-staked (- (var-get total-staked) amount points-to-burn))
+      (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
 
-    ;; Notify esDIKO
-    (try! (contract-call? .escrowed-diko-token update-staking staker (+ (get amount (get-stake-of staker)) amount)))
-    
-    (ok amount)
+      ;; Transfer tokens and update map
+      (try! (as-contract (contract-call? token transfer amount tx-sender staker none)))
+      (if (is-eq (contract-of token) .arkadiko-token)
+        (map-set stakes { staker: staker } (merge updated-stakes { 
+          amount: (- (get amount updated-stakes) amount points-to-burn),
+          diko: (- (get diko updated-stakes) amount),
+          points: (- (get points updated-stakes) points-to-burn)
+        }))
+        (map-set stakes { staker: staker } (merge updated-stakes { 
+          amount: (- (get amount updated-stakes) amount points-to-burn),
+          esdiko: (- (get esdiko updated-stakes) amount),
+          points: (- (get points updated-stakes) points-to-burn)
+        }))
+      )
+
+      ;; Notify esDIKO
+      (try! (contract-call? .escrowed-diko-token update-staking staker (get amount (get-stake-of staker))))
+
+      (ok amount)
+    )    
   )
 )
 
@@ -218,6 +227,8 @@
     (try! (claim-pending-rewards-helper registry-trait .arkadiko-token))
     (try! (claim-pending-rewards-helper registry-trait .usda-token))
 
+    ;; Update last-block and points to reflect added points
+    ;; Update total-staked with points added
     (map-set stakes { staker: staker } (merge current-stakes { last-update-block: block-height, amount: (+ (get amount current-stakes) new-points), points: new-points }))
     (var-set total-staked (+ (var-get total-staked) added-points))
 
