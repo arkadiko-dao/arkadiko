@@ -6,6 +6,9 @@
 
 (define-data-var token-uri (string-utf8 256) u"")
 
+;; TODO: setters and getters
+(define-data-var req-staked-diko uint u250000) ;; 25% = 250000
+
 ;; errors
 (define-constant ERR-NOT-AUTHORIZED u1401)
 
@@ -64,21 +67,24 @@
 )
 
 (define-public (transfer (amount uint) (sender principal) (recipient principal) (memo (optional (buff 34))))
-  
-  ;; TODO: whitelist sender/recipient
-  (err ERR-NOT-AUTHORIZED)
+  (begin
+    (asserts! (is-eq tx-sender sender) (err ERR-NOT-AUTHORIZED))
 
-  ;; (begin
-  ;;   (asserts! (is-eq tx-sender sender) (err ERR-NOT-AUTHORIZED))
+    ;; TODO: check if sender and recipient are whitelisted
+    ;; Can only send from/to diko pool to stake
 
-  ;;   (match (ft-transfer? esdiko amount sender recipient)
-  ;;     response (begin
-  ;;       (print memo)
-  ;;       (ok response)
-  ;;     )
-  ;;     error (err error)
-  ;;   )
-  ;; )
+    (match (ft-transfer? esdiko amount sender recipient)
+      response (begin
+        (print memo)
+        (begin
+          (try! (update-balance sender))
+          (try! (update-balance recipient))
+          (ok response)
+        )
+      )
+      error (err error)
+    )
+  )
 )
 
 ;; ---------------------------------------------------------
@@ -87,25 +93,34 @@
 
 ;; Mint method for DAO
 (define-public (mint-for-dao (amount uint) (recipient principal))
-  (begin
+  (let (
+    (result (ft-mint? esdiko amount recipient))
+  )
     (asserts! (is-eq contract-caller .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
-    (ft-mint? esdiko amount recipient)
+    (try! (update-balance recipient))
+    result
   )
 )
 
 ;; Burn method for DAO
 (define-public (burn-for-dao (amount uint) (sender principal))
-  (begin
+  (let (
+    (result (ft-burn? esdiko amount sender))
+  )
     (asserts! (is-eq contract-caller .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
-    (ft-burn? esdiko amount sender)
+    (try! (update-balance sender))
+    result
   )
 )
 
 ;; Burn external
 (define-public (burn (amount uint) (sender principal))
-  (begin
+  (let (
+    (result (ft-burn? esdiko amount sender))
+  )
     (asserts! (is-eq tx-sender sender) (err ERR-NOT-AUTHORIZED))
-    (ft-burn? esdiko amount sender)
+    (try! (update-balance sender))
+    result
   )
 )
 
@@ -113,29 +128,49 @@
 ;; Vesting
 ;; ---------------------------------------------------------
 
+;; Used by DIKO pool to signal a change in stake amount
+;; When stake amount changes, vesting changes
 (define-public (update-staking (staker principal) (amount uint))
+  ;; TODO: whitelist pool, only pool can call this method
+  (get-vested-diko staker amount)
+)
+
+;; Used by this contract to signal a change in balance
+;; When esDIKO balance, vesting changes
+(define-private (update-balance (user principal))
+  (get-vested-diko user (get stake-amount (get-vesting-of user)))
+)
+
+;; Helper method to get vested DIKO
+(define-private (get-vested-diko (staker principal) (stake-amount uint))
   (let (
-    (diko-to-claim (calculate-vested-diko staker))
+    (vested-diko (calculate-vested-diko staker))
   )
-    ;; TODO: only pool can call this method
+    ;; Mint DIKO for user, burn esDIKO
+    (try! (contract-call? .arkadiko-dao mint-token .arkadiko-token vested-diko staker))
+    (try! (ft-burn? esdiko vested-diko staker))
 
-    (try! (contract-call? .arkadiko-dao mint-token .arkadiko-token diko-to-claim staker))
-
-    ;; TODO: calculate amount to burn and burn
-
-    (map-set vesting { staker: staker } { last-update-block: block-height, stake-amount: amount })
-    (ok diko-to-claim)
+    ;; Update vesting info
+    (map-set vesting { staker: staker } { last-update-block: block-height, stake-amount: stake-amount })
+    (ok vested-diko)
   )
 )
 
+;; Calculate amount of esDIKO that is vested
+;; esDIKO is linearly vesting over 1 year
 (define-read-only (calculate-vested-diko (staker principal)) 
   (let (
     (vesting-info (get-vesting-of staker))
     (block-diff (- block-height (get last-update-block vesting-info)))
-    (esdiko-balance (get-balance staker))
+    (esdiko-balance (unwrap-panic (get-balance staker)))
+    (can-vest (* (/ u1000000 (var-get req-staked-diko)) (get stake-amount vesting-info)))
+    (max-vest (if (> can-vest esdiko-balance)
+      esdiko-balance
+      can-vest
+    ))
+    (vest-per-block (/ (* max-vest u1000000) (* u144 u365)))
   )
-    ;; TODO
-    u123
+    (/ (* block-diff vest-per-block) u1000000)
   )
 )
 
