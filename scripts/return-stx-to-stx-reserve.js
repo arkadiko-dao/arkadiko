@@ -1,6 +1,6 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-const CONTRACT_NAME = 'arkadiko-stacker-v1-1';
+const CONTRACT_NAME = 'arkadiko-stacker-3-v1-1';
 const FUNCTION_NAME = 'return-stx';
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
@@ -11,7 +11,7 @@ const txOptions = {
   contractName: CONTRACT_NAME,
   functionName: FUNCTION_NAME,
   functionArgs: [
-    tx.uintCV(6200000000000),
+    tx.uintCV(2100130000000),
   ],
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
