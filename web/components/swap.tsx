@@ -375,8 +375,7 @@ export const Swap: React.FC = () => {
     let principalX = contractPrincipalCV(tokenX['address'], tokenXTrait);
     let principalY = contractPrincipalCV(tokenY['address'], tokenYTrait);
     let principalZ = contractPrincipalCV(tokenY['address'], tokenZTrait); // TODO: token Z address
-    const amount = uintCV(tokenXAmount * Math.pow(10, tokenX['decimals']));
-
+    const amount = uintCV((parseFloat(tokenXAmount) * Math.pow(10, tokenX['decimals'])).toFixed(0));
     let tokenZ = tokenList.filter((tokenInfo) => (tokenInfo.fullName == tokenYTrait))[0];
     let postConditions = buildSwapPostConditions(stxAddress || '', amount.value, minimumReceived, tokenX, tokenY, tokenZ);
 
