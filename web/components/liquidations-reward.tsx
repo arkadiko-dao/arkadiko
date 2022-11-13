@@ -37,12 +37,11 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
   const { doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const [state, setState] = useContext(AppContext);
+  const [_, setState] = useContext(AppContext);
 
   const claim = async () => {
-
     var rewardsContract = version == 1 ? 'arkadiko-liquidation-rewards-v1-1' : 'arkadiko-liquidation-rewards-v1-2';
-    var claimContract = version == 1 ? 'arkadiko-liquidation-rewards-ui-v2-1' : 'arkadiko-liquidation-rewards-ui-v2-2';
+    var claimContract = version == 1 ? 'arkadiko-liquidation-rewards-ui-v2-1' : 'arkadiko-liquidation-rewards-ui-v2-3';
 
     const postConditions = [];
     if (tokenIsStx) {
@@ -76,10 +75,12 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
 
     // Function
     var functionName = "claim-50-stx-rewards-of";
-    if (token.split('.')[1] == "arkadiko-token") {
+    if (token.split('.')[1] === "arkadiko-token") {
       functionName = "claim-50-diko-rewards-of";
-    } else if (token.split('.')[1] == "Wrapped-Bitcoin") {
+    } else if (token.split('.')[1] === "Wrapped-Bitcoin") {
       functionName = "claim-50-xbtc-rewards-of";
+    } else if (token.split('.')[1] === 'auto-alex') {
+      functionName = 'claim-50-atalex-rewards-of';
     }
 
     // Call
@@ -103,10 +104,6 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
       anchorMode: AnchorMode.Any,
     });
   };
-
-  useEffect(() => {
-
-  }, []);
 
   return (
     <tr className="bg-white dark:bg-zinc-900">

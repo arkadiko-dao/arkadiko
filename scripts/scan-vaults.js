@@ -1,6 +1,7 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const XBTC_CONTRACT_ADDRESS = process.env.XBTC_CONTRACT_ADDRESS;
+const ATALEX_CONTRACT_ADDRESS = process.env.ATALEX_CONTRACT_ADDRESS;
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
@@ -79,6 +80,10 @@ async function liquidateVault(vaultId, tokenName, stacking, nonce) {
     token = 'Wrapped-Bitcoin';
     tokenAddress = XBTC_CONTRACT_ADDRESS;
   }
+  if (tokenName === 'auto-alex') {
+    token = 'auto-alex';
+    tokenAddress = ATALEX_CONTRACT_ADDRESS;
+  }
 
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
@@ -105,7 +110,7 @@ async function liquidateVault(vaultId, tokenName, stacking, nonce) {
   return await utils.processing(result, transaction.txid(), 0);
 }
 
-let nonce = 2468;// await utils.getNonce(CONTRACT_ADDRESS);
+let nonce = 2485;// await utils.getNonce(CONTRACT_ADDRESS);
 async function checkIt(index) {
   let vault = await getVaultById(index);
   if (!vault['is-liquidated']['value']) {
@@ -126,7 +131,7 @@ async function iterateAndCheck() {
   console.log('Last Vault ID is', lastId, ', iterating vaults');
 
   const vaultIds = Array.from(Array(lastId).keys());
-  for (let index = lastId; index > 0; index--) {
+  for (let index = 2208; index > 0; index--) {
     try {
       checkIt(index);
     } catch (e) {
