@@ -56,8 +56,12 @@
           false
           (let (
             (user-shares (unwrap-panic (contract-call? .arkadiko-liquidation-pool-v1-1 get-shares-at tx-sender share-block)))
+            (claimed-amount (get claimed-amount (contract-call? .arkadiko-liquidation-rewards-v1-1 get-reward-claimed reward-id tx-sender)))
           )
-            (is-eq user-shares u0)
+            (if (is-eq user-shares u0)
+              true
+              (> claimed-amount u0)
+            )
           )
         )
       )
