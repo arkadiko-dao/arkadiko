@@ -105,24 +105,34 @@ async function liquidateVault(vaultId, tokenName, stacking, nonce) {
   return await utils.processing(result, transaction.txid(), 0);
 }
 
+let nonce = 2468;// await utils.getNonce(CONTRACT_ADDRESS);
+async function checkIt(index) {
+  let vault = await getVaultById(index);
+  if (!vault['is-liquidated']['value']) {
+    // console.log(vault);
+    console.log('Querying vault', index);
+    const collRatio = await getCollateralizationRatio(index);
+    const liqRatio = await getLiquidationRatio(vault['collateral-type']['value']);
+    if (Number(collRatio) <= Number(liqRatio) && Number(collRatio) != 0) {
+      console.log('Vault', index, 'needs to be liquidated - collateralization ratio:', collRatio, ', liquidation ratio:', liqRatio, 'and debt', vault['debt']['value'] / 1000000);
+      await liquidateVault(index, vault['collateral-token'].value, !vault['revoked-stacking'].value, nonce);
+      nonce = nonce + 1;
+    }
+  }
+}
+
 async function iterateAndCheck() {
-  let nonce = await utils.getNonce(CONTRACT_ADDRESS);
   const lastId = await getLastVaultId();
   console.log('Last Vault ID is', lastId, ', iterating vaults');
 
   const vaultIds = Array.from(Array(lastId).keys());
   for (let index = lastId; index > 0; index--) {
-    let vault = await getVaultById(index);
-    if (!vault['is-liquidated']['value']) {
-      // console.log(vault);
-      console.log('Querying vault', index);
-      const collRatio = await getCollateralizationRatio(index);
-      const liqRatio = await getLiquidationRatio(vault['collateral-type']['value']);
-      if (Number(collRatio) <= Number(liqRatio) && Number(collRatio) != 0) {
-        console.log('Vault', index, 'needs to be liquidated - collateralization ratio:', collRatio, ', liquidation ratio:', liqRatio, 'and debt', vault['debt']['value'] / 1000000);
-        await liquidateVault(index, vault['collateral-token'].value, !vault['revoked-stacking'].value, nonce);
-        nonce = nonce + 1;
-      }
+    try {
+      checkIt(index);
+    } catch (e) {
+      console.log('something terrible happened...');
+      await new Promise(r => setTimeout(r, 2000));
+      checkIt(index);
     }
     await new Promise(r => setTimeout(r, 2000));
   }
