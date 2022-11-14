@@ -23,7 +23,6 @@ import {
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
-
 Clarinet.test({
   name: "governance: add proposal and check proposal data",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -828,48 +827,34 @@ Clarinet.test({
   name: "governance: can not propose vote if not enough DIKO/stDIKO balance",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
     let wallet_2 = accounts.get("wallet_2")!;
 
     let governance = new Governance(chain, deployer);
     let dikoToken = new DikoToken(chain, deployer);
     let stDikoToken = new StDikoToken(chain, deployer);
 
-    // Total supply = 53.190.000
-    let call = dikoToken.totalSupply();
-    call.result.expectOk().expectUintWithDecimals(53190000);
-
-    // Locked DIKO = 50.000.000
-    call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-diko-init'));
-    call.result.expectOk().expectUintWithDecimals(50000000);
-
-    // Total liquid supply = 53.190.000 - 50.000.000 = 3.190.000
-    // User has 150.000 = 4.7%
-    call = dikoToken.balanceOf(wallet_1.address);
+    // Total liquid supply = 3.047.975
+    // User has 150.000
+    let call = dikoToken.balanceOf(wallet_2.address);
     call.result.expectOk().expectUintWithDecimals(150000);
-    call = dikoToken.balanceOf(wallet_2.address);
-    call.result.expectOk().expectUintWithDecimals(150000);
-
-    call = stDikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(0);
     call = stDikoToken.balanceOf(wallet_2.address);
     call.result.expectOk().expectUintWithDecimals(0);
 
-    // Burn so wallet_2 has less than 0.25%
+    // Burn so wallet_2 has 0.25%
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-token", "burn", [
-        types.uint(149300 * 1000000),
+        types.uint(142380 * 1000000),
         types.principal(wallet_2.address)
       ], wallet_2.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
     call = dikoToken.balanceOf(wallet_2.address);
-    call.result.expectOk().expectUintWithDecimals(700);
+    call.result.expectOk().expectUintWithDecimals(7620);
     call = stDikoToken.balanceOf(wallet_2.address);
     call.result.expectOk().expectUintWithDecimals(0);
 
-    // Create proposal to start at block 1
+    // Can create proposal 
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     let result = governance.createProposal(
       wallet_2, 
@@ -878,8 +863,32 @@ Clarinet.test({
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
     );
-    result.expectErr().expectUint(31);
+    result.expectOk().expectBool(true);
 
+    // Burn so wallet_2 has less than 0.25%
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-token", "burn", [
+        types.uint(1 * 1000000),
+        types.principal(wallet_2.address)
+      ], wallet_2.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    call = dikoToken.balanceOf(wallet_2.address);
+    call.result.expectOk().expectUintWithDecimals(7619);
+    call = stDikoToken.balanceOf(wallet_2.address);
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    // Can not create proposal
+    let contractChange2 = Governance.contractChange("freddie", Utils.qualifiedName('freddie'), true, true);
+    result = governance.createProposal(
+      wallet_2, 
+      4, 
+      "Test Title 2",
+      "https://discuss.arkadiko.finance/my/very/long/url/path2",
+      [contractChange2]
+    );
+    result.expectErr().expectUint(31);
   }
 });
 
