@@ -285,7 +285,7 @@ Clarinet.test({
         types.uint(1000000)
       ], deployer.address),
     ]);
-    block.receipts[0].result.expectOk().expectBool(true);
+    block.receipts[0].result.expectOk().expectUint(1000000);
   },
 });
 

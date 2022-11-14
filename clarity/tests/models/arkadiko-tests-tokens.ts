@@ -22,7 +22,7 @@ class OracleManager {
 
   updatePrice(token: string, price: number, decimals: number = 1000000) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "update-price", [
+      Tx.contractCall("arkadiko-oracle-v1-1", "update-price-owner", [
         types.ascii(token),
         types.uint(price * 1000000),
         types.uint(decimals)

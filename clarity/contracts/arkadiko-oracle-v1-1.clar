@@ -82,7 +82,7 @@
   (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
     (map-set prices { token: token } { last-price: price, last-block: block-height, decimals: decimals })
-    (ok true)
+    (ok price)
   )
 )
 
