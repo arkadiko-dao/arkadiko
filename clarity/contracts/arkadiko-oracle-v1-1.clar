@@ -240,7 +240,8 @@
   (map-set token-name-to-id "STX" u1)
   (map-set token-name-to-id "xSTX" u1)
 
-  (map-set token-id-to-names u2 (list "xBTC"))
+  (map-set token-id-to-names u2 (list "BTC" "xBTC"))
+  (map-set token-name-to-id "BTC" u2)
   (map-set token-name-to-id "xBTC" u2)
 
   (map-set token-id-to-names u3 (list "USDA"))
@@ -249,6 +250,7 @@
   (map-set token-id-to-names u4 (list "DIKO"))
   (map-set token-name-to-id "DIKO" u4)
 
-  (map-set token-id-to-names u5 (list "auto-alex"))
+  (map-set token-id-to-names u5 (list "atALEX" "auto-alex"))
+  (map-set token-name-to-id "atALEX" u5)
   (map-set token-name-to-id "auto-alex" u5)
 )
