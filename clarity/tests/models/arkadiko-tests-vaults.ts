@@ -664,5 +664,26 @@ class VaultAuctionV4 {
     return block.receipts[0].result;
   }
 
+  getCollateralDiscountedPrice(auctionId: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-auction-engine-v4-2", "get-collateral-discounted-price", [
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1')),
+        types.uint(auctionId),
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  burnUsdaAmount(auctionId: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-auction-engine-v4-2", "burn-usda-amount", [
+        types.uint(auctionId),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-liquidation-pool-v1-1')),
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
 }
 export { VaultAuctionV4 };
