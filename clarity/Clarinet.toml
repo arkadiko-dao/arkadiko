@@ -88,6 +88,9 @@ path = "contracts/arkadiko-stacker-payer-v3-1.clar"
 [contracts.arkadiko-stacker-payer-v3-2]
 path = "contracts/arkadiko-stacker-payer-v3-2.clar"
 
+[contracts.arkadiko-stacker-payer-v3-3]
+path = "contracts/arkadiko-stacker-payer-v3-3.clar"
+
 [contracts.arkadiko-mock-stacker-v1-1]
 path = "contracts/arkadiko-mock-stacker-v1-1.clar"
 
@@ -243,6 +246,9 @@ path = "contracts/arkadiko-auction-engine-v4-1.clar"
 
 [contracts.arkadiko-auction-engine-v4-2]
 path = "contracts/arkadiko-auction-engine-v4-2.clar"
+
+[contracts.arkadiko-auction-engine-v4-3]
+path = "contracts/arkadiko-auction-engine-v4-3.clar"
 
 [contracts.arkadiko-liquidation-rewards-diko-v1-1]
 path = "contracts/arkadiko-liquidation-rewards-diko-v1-1.clar"
