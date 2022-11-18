@@ -64,7 +64,7 @@
 
 (define-public (add-stx-redeemable (auction-id uint))
   (let (
-    (auction (contract-call? .arkadiko-auction-engine-v4-2 get-auction-by-id auction-id))
+    (auction (contract-call? .arkadiko-auction-engine-v4-3 get-auction-by-id auction-id))
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id (get vault-id auction)))
     (difference (if (> (get total-collateral-sold auction) (get stacked-tokens vault))
       (- (get total-collateral-sold auction) (get stacked-tokens vault))
@@ -120,7 +120,7 @@
 
 (define-public (release-stacked-stx (auction-id uint))
   (let (
-    (auction (contract-call? .arkadiko-auction-engine-v4-2 get-auction-by-id auction-id))
+    (auction (contract-call? .arkadiko-auction-engine-v4-3 get-auction-by-id auction-id))
   )
     (try! (contract-call? .arkadiko-freddie-v1-1 release-stacked-stx (get vault-id auction)))
     (try! (add-stx-redeemable auction-id))
@@ -132,12 +132,6 @@
 (define-private (min-of (i1 uint) (i2 uint))
   (if (< i1 i2)
       i1
-      i2))
-
-
-;; Initialization
-(begin
-  ;; TODO: update for mainnet
-  (map-set vaults-redeemed { vault-id: u409 } { redeemed: true })
-  (map-set vaults-redeemed { vault-id: u675 } { redeemed: true })
+      i2
+  )
 )
