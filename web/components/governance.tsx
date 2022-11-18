@@ -45,6 +45,17 @@ export const Governance = () => {
       const jsonV3 = cvToJSON(proposalsV3);
       const dataV3 = jsonV3.value.value;
 
+      const proposalsV4 = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-governance-v4-1',
+        functionName: 'get-proposals',
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const jsonV4 = cvToJSON(proposalsV4);
+      const dataV4 = jsonV4.value.value;
+
       const proposalsV1 = await callReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-governance-v1-1',
@@ -100,6 +111,23 @@ export const Governance = () => {
       });
 
       dataV3.forEach((element: object) => {
+        if (element.value['id'].value != 0) {
+          serializedProposals.push({
+            id: element.value['id'].value,
+            title: element.value['title'].value,
+            url: element.value['url'].value,
+            proposer: element.value['proposer'].value,
+            forVotes: element.value['yes-votes'].value,
+            against: element.value['no-votes'].value,
+            changes: extractChanges(element.value['contract-changes']),
+            isOpen: element.value['is-open'].value,
+            startBlockHeight: element.value['start-block-height'].value,
+            endBlockHeight: element.value['end-block-height'].value,
+          });
+        }
+      });
+
+      dataV4.forEach((element: object) => {
         if (element.value['id'].value != 0) {
           serializedProposals.push({
             id: element.value['id'].value,
