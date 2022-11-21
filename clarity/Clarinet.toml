@@ -235,6 +235,9 @@ path = "contracts/arkadiko-liquidation-rewards-ui-v2-1.clar"
 [contracts.arkadiko-liquidation-rewards-ui-v2-2]
 path = "contracts/arkadiko-liquidation-rewards-ui-v2-2.clar"
 
+[contracts.arkadiko-liquidation-rewards-ui-v2-3]
+path = "contracts/arkadiko-liquidation-rewards-ui-v2-3.clar"
+
 [contracts.arkadiko-liquidation-ui-v1-2]
 path = "contracts/arkadiko-liquidation-ui-v1-2.clar"
 
