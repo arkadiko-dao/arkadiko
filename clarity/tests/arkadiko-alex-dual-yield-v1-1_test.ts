@@ -48,7 +48,7 @@ Clarinet.test({name: "dual yield: mint DIKO",
     block.receipts[0].result.expectErr().expectUint(32401);
 
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v2-1", "add-contract-address", [
+      Tx.contractCall("arkadiko-governance-v4-1", "add-contract-address", [
         types.ascii("arkadiko-alex-dual-yield-v1-1"),
         types.principal(deployer.address),
         types.principal(Utils.qualifiedName("arkadiko-alex-dual-yield-v1-1")),
@@ -109,7 +109,7 @@ Clarinet.test({name: "dual yield: mint for recipient",
 
     // mint for 1 cycle
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v2-1", "add-contract-address", [
+      Tx.contractCall("arkadiko-governance-v4-1", "add-contract-address", [
         types.ascii("arkadiko-alex-dual-yield-v1-1"),
         types.principal(deployer.address),
         types.principal(Utils.qualifiedName("arkadiko-alex-dual-yield-v1-1")),

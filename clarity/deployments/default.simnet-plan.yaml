@@ -437,9 +437,9 @@ plan:
             path: contracts/arkadiko-governance-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-governance-v3-1
+            contract-name: arkadiko-governance-v4-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-governance-v3-1.clar
+            path: contracts/arkadiko-governance-v4-1.clar
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: arkadiko-stake-pool-diko-v1-1

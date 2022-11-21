@@ -37,6 +37,9 @@ path = "contracts/arkadiko-governance-v2-1.clar"
 [contracts.arkadiko-governance-v3-1]
 path = "contracts/arkadiko-governance-v3-1.clar"
 
+[contracts.arkadiko-governance-v4-1]
+path = "contracts/arkadiko-governance-v4-1.clar"
+
 [contracts.arkadiko-token]
 path = "contracts/arkadiko-token.clar"
 
