@@ -9,19 +9,18 @@ const BN = require('bn.js');
 async function transact() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: 'arkadiko-governance-v3-1',
+    contractName: 'arkadiko-governance-v4-1',
     functionName: 'propose',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
-      tx.uintCV(74200),
-      tx.uintCV(250),
-      tx.stringUtf8CV('AIP11 - Upgrade collateral types to include atALEX'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/509'),
+      tx.uintCV(83895),
+      tx.stringUtf8CV('Upgrade Governance to v4'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/523'),
       tx.listCV([
         tx.tupleCV({
-          'name': tx.stringAsciiCV("collateral-types"),
+          'name': tx.stringAsciiCV("governance"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-collateral-types-v3-1"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-governance-v4-1"),
           'can-mint': tx.falseCV(),
           'can-burn': tx.falseCV()
         }),

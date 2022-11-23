@@ -45,7 +45,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
     const getData = async () => {
       const proposals = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-governance-v3-1',
+        contractName: 'arkadiko-governance-v4-1',
         functionName: 'get-proposals',
         functionArgs: [],
         senderAddress: contractAddress,
