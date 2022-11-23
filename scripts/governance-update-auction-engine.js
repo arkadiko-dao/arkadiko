@@ -10,12 +10,11 @@ async function transact() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
     contractName: 'arkadiko-governance-v4-1',
-    functionName: 'propose',
+    functionName: 'propose-dao',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
       tx.uintCV(48225),
-      tx.uintCV(720),
-      tx.stringUtf8CV('AIP13 Auction engine V4.3'),
+      tx.stringUtf8CV('Auction engine V4.3'),
       tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/529'),
       tx.listCV([
         tx.tupleCV({
