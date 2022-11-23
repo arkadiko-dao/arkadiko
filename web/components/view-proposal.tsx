@@ -43,8 +43,6 @@ export const ViewProposal = ({ match }) => {
       ? 'arkadiko-governance-v1-1'
       : match.params.id <= 6
       ? 'arkadiko-governance-v2-1'
-      : match.params.id <= 22
-      ? 'arkadiko-governance-v3-1'
       : 'arkadiko-governance-v4-1';
 
   useEffect(() => {
