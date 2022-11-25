@@ -10,7 +10,7 @@ console.log('Trying to liquidate vault with ID', vaultId);
 
 const txOptions = {
   contractAddress: CONTRACT_ADDRESS,
-  contractName: 'arkadiko-auction-engine-v4-2',
+  contractName: 'arkadiko-auction-engine-v4-3',
   functionName: 'start-auction',
   functionArgs: [
     tx.uintCV(vaultId),
