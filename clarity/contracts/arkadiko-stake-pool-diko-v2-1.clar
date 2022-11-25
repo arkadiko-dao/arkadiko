@@ -131,8 +131,9 @@
         }))
       )
 
-      ;; Notify esDIKO
-      (try! (contract-call? .escrowed-diko-token update-staking staker (get amount (get-stake-of staker))))
+      ;; Notify vesting
+      ;; TODO: make contract dynamic
+      (try! (contract-call? .arkadiko-vest-esdiko-v1-1 update-staking staker (get amount (get-stake-of staker))))
 
       (ok amount)
     )
@@ -182,8 +183,9 @@
         }))
       )
 
-      ;; Notify esDIKO
-      (try! (contract-call? .escrowed-diko-token update-staking staker (get amount (get-stake-of staker))))
+      ;; Notify vesting
+      ;; TODO: make contract dynamic
+      (try! (contract-call? .arkadiko-vest-esdiko-v1-1 update-staking staker (get amount (get-stake-of staker))))
 
       (ok amount)
     )    
