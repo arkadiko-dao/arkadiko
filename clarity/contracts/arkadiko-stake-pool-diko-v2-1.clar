@@ -5,6 +5,8 @@
 ;; TODO: update address
 (use-trait ft-trait 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sip-010-trait-ft-standard.sip-010-trait)
 (use-trait stake-registry-trait .arkadiko-stake-registry-trait-v1.stake-registry-trait)
+;; Old trait, needed to not break governance contract
+(impl-trait .arkadiko-stake-pool-diko-trait-v1.stake-pool-diko-trait)
 
 ;; ---------------------------------------------------------
 ;; Constants
@@ -90,6 +92,11 @@
 ;; @desc get variable total-staked
 (define-read-only (get-total-staked)
   (var-get total-staked)
+)
+
+;; @desc needed in the governance contract
+(define-read-only (diko-stdiko-ratio)
+  (ok u1000000)
 )
 
 ;; ---------------------------------------------------------

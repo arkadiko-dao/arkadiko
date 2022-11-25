@@ -12,13 +12,11 @@ import {
 } from "./models/arkadiko-tests-governance.ts";
 
 import { 
-  StakeRegistry,
-  StakePoolDikoV1
+  StakePoolDikoV2
 } from './models/arkadiko-tests-stake.ts';
 
 import { 
-  DikoToken,
-  StDikoToken
+  DikoToken
 } from './models/arkadiko-tests-tokens.ts';
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
@@ -86,49 +84,6 @@ Clarinet.test({
 
     call = governance.getMemberVotes(1, wallet_1);
     call.result.expectTuple()["vote-count"].expectUint(0);
-  }
-});
-
-Clarinet.test({
-  name: "governance: add proposal as user with stDIKO only, no DIKO",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
-
-    let governance = new Governance(chain, deployer);
-    let stakeRegistry = new StakeRegistry(chain, deployer);
-    let dikoToken = new DikoToken(chain, deployer);
-    let stDikoToken = new StDikoToken(chain, deployer);
-
-    // Stake
-    let result = stakeRegistry.stake(
-      wallet_1, 
-      'arkadiko-stake-pool-diko-v1-2',
-      'arkadiko-token',
-      150000
-    );
-    result.expectOk().expectUintWithDecimals(150000);
-
-    // No DIKO left
-    let call = dikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUint(0);  
-
-    // Got stDIKO
-    call = stDikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(150000);  
- 
-    // Should be able to create poposal
-    // No DIKO in wallet, but enough stDIKO
-    let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('oracle'), true, true);
-    result = governance.createProposal(
-      wallet_1, 
-      10, 
-      "Test Title",
-      "https://discuss.arkadiko.finance/my/very/long/url/path",
-      [contractChange]
-    );
-    result.expectOk().expectBool(true);
-
   }
 });
 
@@ -376,7 +331,7 @@ Clarinet.test({
 
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-governance-tv1-1", "propose", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v2-1')),
         types.uint(1505),
         types.utf8("Replace Oracle"),
         types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),        
@@ -387,7 +342,7 @@ Clarinet.test({
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-governance-tv1-1", "vote-for", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v2-1')),
         types.principal(Utils.qualifiedName('arkadiko-token')),
         types.uint(1),
         types.uint(10 * 1000000)
@@ -420,7 +375,7 @@ Clarinet.test({
     // So we need to shut down the old governance module
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-governance-v4-1", "propose", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v2-1')),
         types.uint(2504),
         types.uint(123),
         types.utf8("Replace Oracle"),
@@ -435,7 +390,7 @@ Clarinet.test({
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-governance-v4-1", "propose", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v2-1')),
         types.uint(2504),
         types.uint(123),
         types.utf8("Replace Oracle"),
@@ -496,36 +451,23 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "governance: end proposal and return DIKO and stDIKO to voters",
+  name: "governance: end proposal and return DIKO to voters",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
     let wallet_2 = accounts.get("wallet_2")!;
 
     let governance = new Governance(chain, deployer);
-    let stakeRegistry = new StakeRegistry(chain, deployer);
-    let stakePoolDiko = new StakePoolDikoV1(chain, deployer);
     let dikoToken = new DikoToken(chain, deployer);
-    let stDikoToken = new StDikoToken(chain, deployer);
+    let dikoPool = new StakePoolDikoV2(chain, deployer);
 
-    // Stake DIKO to get stDIKO 
-    let result = stakeRegistry.stake(wallet_1, 'arkadiko-stake-pool-diko-v1-2', 'arkadiko-token', 100);
+    // Stake DIKO
+    let result = dikoPool.stake(wallet_1, 'arkadiko-token', 100);
     result.expectOk().expectUintWithDecimals(100);
 
-    // Advance 3 block, so that DIKO/stDIKO ratio is not 1 anymore
-    chain.mineEmptyBlock(3);
-
-    // Stake DIKO to get stDIKO again, at different rate
-    result = stakeRegistry.stake(wallet_1, 'arkadiko-stake-pool-diko-v1-2', 'arkadiko-token', 100);
-    result.expectOk().expectUintWithDecimals(24.201384);
-
-    // Total stDIKO balance for user is now ~124
-    let call:any = stDikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(124.201384);   
-
     // Total DIKO balance is 
-    call = dikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(149800);  
+    let call:any = dikoToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(149900);  
 
     // Create proposal to start at block 1
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
@@ -538,40 +480,25 @@ Clarinet.test({
     );
     result.expectOk().expectBool(true);
 
+    // Advance
+    chain.mineEmptyBlock(3);
+
     // Vote with DIKO
     result = governance.voteForProposal(wallet_1, 7, 10, "arkadiko-token");
     result.expectOk().expectUint(3200);
     result = governance.voteAgainstProposal(wallet_1, 7, 1, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
-    // DIKO/stDIKO ratio = ~4
-    call = stakePoolDiko.getDikoStdikoRatio();
-    call.result.expectOk().expectUintWithDecimals(4.131995);
-
-    // Vote with stDIKO - 10 stDIKO = ~40 DIKO
-    result = governance.voteForProposal(wallet_1, 7, 10, "stdiko-token");
-    result.expectOk().expectUint(3200);
-    result = governance.voteAgainstProposal(wallet_1, 7, 1, "stdiko-token");
-    result.expectOk().expectUint(3200);
-
-    // Total votes from wallet: 11 DIKO + 11 stDIKO
-    // Where the 1 stDIKO = ~4 DIKO
-    // So total is ~56 votes
+    // Total votes from wallet: 11 DIKO
     call = governance.getMemberVotes(7, wallet_1);
-    call.result.expectTuple()["vote-count"].expectUintWithDecimals(56.451945);
-
-    // stDIKO balance has decreased by 11
-    call = stDikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(113.201384);   
+    call.result.expectTuple()["vote-count"].expectUintWithDecimals(11);
 
     // DIKO balance has decreased by 11
     call = dikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(149789);  
+    call.result.expectOk().expectUintWithDecimals(149889);  
 
     // Tokens used to vote
     call = governance.getMemberVoteTokens(7, wallet_1, "arkadiko-token");
-    call.result.expectTuple()["amount"].expectUintWithDecimals(11);
-    call = governance.getMemberVoteTokens(7, wallet_1, "stdiko-token");
     call.result.expectTuple()["amount"].expectUintWithDecimals(11);
 
     result = governance.voteForProposal(wallet_2, 7, 15000, "arkadiko-token");
@@ -591,21 +518,12 @@ Clarinet.test({
     result = governance.returnVotes(7, wallet_1, "arkadiko-token");
     result.expectOk();
 
-    // Return stDIKO to members
-    result = governance.returnVotes(7, wallet_1, "stdiko-token");
-    result.expectOk();
-
     // Should have initial amount back
-    call = stDikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(124.201384);   
-
     call = dikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(149800);  
+    call.result.expectOk().expectUintWithDecimals(149900);  
 
     // Tokens used to vote
     call = governance.getMemberVoteTokens(7, wallet_1, "arkadiko-token");
-    call.result.expectTuple()["amount"].expectUintWithDecimals(0);
-    call = governance.getMemberVoteTokens(7, wallet_1, "stdiko-token");
     call.result.expectTuple()["amount"].expectUintWithDecimals(0);
   }
 });
@@ -618,7 +536,6 @@ Clarinet.test({
     let wallet_2 = accounts.get("wallet_2")!;
 
     let governance = new Governance(chain, deployer);
-    let stakeRegistry = new StakeRegistry(chain, deployer);
 
     // Create proposal to start at block 1
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
@@ -824,21 +741,18 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "governance: can not propose vote if not enough DIKO/stDIKO balance",
+  name: "governance: can not propose vote if not enough DIKO balance",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_2 = accounts.get("wallet_2")!;
 
     let governance = new Governance(chain, deployer);
     let dikoToken = new DikoToken(chain, deployer);
-    let stDikoToken = new StDikoToken(chain, deployer);
 
     // Total liquid supply = 3.047.975
     // User has 150.000
     let call = dikoToken.balanceOf(wallet_2.address);
     call.result.expectOk().expectUintWithDecimals(150000);
-    call = stDikoToken.balanceOf(wallet_2.address);
-    call.result.expectOk().expectUintWithDecimals(0);
 
     // Burn so wallet_2 has 0.25%
     let block = chain.mineBlock([
@@ -851,8 +765,6 @@ Clarinet.test({
 
     call = dikoToken.balanceOf(wallet_2.address);
     call.result.expectOk().expectUintWithDecimals(7620);
-    call = stDikoToken.balanceOf(wallet_2.address);
-    call.result.expectOk().expectUintWithDecimals(0);
 
     // Can create proposal 
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
@@ -876,8 +788,6 @@ Clarinet.test({
 
     call = dikoToken.balanceOf(wallet_2.address);
     call.result.expectOk().expectUintWithDecimals(7619);
-    call = stDikoToken.balanceOf(wallet_2.address);
-    call.result.expectOk().expectUintWithDecimals(0);
 
     // Can not create proposal
     let contractChange2 = Governance.contractChange("freddie", Utils.qualifiedName('freddie'), true, true);
