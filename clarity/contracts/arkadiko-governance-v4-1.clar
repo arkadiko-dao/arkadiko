@@ -1,7 +1,7 @@
 ;; @contract Arkadiko governance
 ;; Can see, vote and submit a new proposal
 ;; A proposal will just update the DAO with new contracts.
-;; @version 3.1
+;; @version 4.1
 
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait stake-pool-diko-trait .arkadiko-stake-pool-diko-trait-v1.stake-pool-diko-trait)
@@ -190,7 +190,7 @@
     )
     (asserts! (>= start-block-height block-height) (err ERR-BLOCK-HEIGHT-PASSED))
 
-    ;; Requires 0.25% of the supply 
+    ;; Requires 0.25% of the supply
     (asserts! (>= proposer-total-balance (* u25 (/ supply u10000))) (err ERR-NOT-ENOUGH-BALANCE))
     ;; Mutate
     (map-set proposals

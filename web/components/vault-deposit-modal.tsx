@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef, useEffect } from 'react';
+import React, { useContext, useState, useRef } from 'react';
 import { Modal } from '@components/ui/modal';
 import { tokenList } from '@components/token-swap-list';
 import { AppContext } from '@common/context';
@@ -41,6 +41,7 @@ export const VaultDepositModal: React.FC<Props> = ({
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
+  const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
 
   const senderAddress = useSTXAddress();
   const { doContractCall } = useConnect();
@@ -51,7 +52,7 @@ export const VaultDepositModal: React.FC<Props> = ({
       return;
     }
     const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
-    const decimals = token === 'Wrapped-Bitcoin' ? 100000000 : 1000000;
+    const decimals = token === 'Wrapped-Bitcoin' || token === 'auto-alex' ? 100000000 : 1000000;
     const tokenAddress = tokenTraits[vault['collateralToken'].toLowerCase()]['address'];
 
     let postConditions: any[] = [];
@@ -63,7 +64,7 @@ export const VaultDepositModal: React.FC<Props> = ({
           new BN(parseFloat(extraCollateralDeposit) * decimals)
         ),
       ];
-    } else {
+    } else if (vault['collateralToken'].toLowerCase() === 'xbtc') {
       postConditions = [
         makeStandardFungiblePostCondition(
           senderAddress || '',
@@ -73,6 +74,19 @@ export const VaultDepositModal: React.FC<Props> = ({
             xbtcContractAddress,
             'Wrapped-Bitcoin',
             'wrapped-bitcoin'
+          )
+        ),
+      ];
+    } else {
+      postConditions = [
+        makeStandardFungiblePostCondition(
+          senderAddress || '',
+          FungibleConditionCode.LessEqual,
+          new BN(parseFloat(extraCollateralDeposit) * decimals),
+          createAssetInfo(
+            atAlexContractAddress,
+            'auto-alex',
+            'auto-alex'
           )
         ),
       ];
@@ -142,15 +156,17 @@ export const VaultDepositModal: React.FC<Props> = ({
         .
       </p>
 
-      <div className="my-4">
-        <Alert>
-          <p>
-            When depositing in a vault that is already stacking, keep in mind that your extra
-            collateral will be <span className="font-semibold">locked but not stacked</span>. You
-            won't be able to stack these STX until the cooldown cycle!
-          </p>
-        </Alert>
-      </div>
+      {vault && vault['collateralToken'] && vault['collateralToken'].toLowerCase() === 'stx' ? (
+        <div className="my-4">
+          <Alert>
+            <p>
+              When depositing in a vault that is already stacking, keep in mind that your extra
+              collateral will be <span className="font-semibold">locked but not stacked</span>. You
+              won't be able to stack these STX until the cooldown cycle!
+            </p>
+          </Alert>
+        </div>
+      ) : null}
 
       <div className="mt-6">
         <InputAmount

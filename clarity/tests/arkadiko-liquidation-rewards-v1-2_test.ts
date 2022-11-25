@@ -667,7 +667,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(150000);  
 
     // Claim all at once
-    result = liquidationUI.claimDikoRewards(wallet_1.address, rewardIds);
+    result = liquidationUI.claimRewards(wallet_1.address, rewardIds, "arkadiko-token", false);
     result.expectOk().expectBool(true)
 
     // Balance = 150k initial + 100 * 19
@@ -721,7 +721,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(1111.111111);
 
     // Claim reward
-    result = liquidationUI.claimStxRewards(wallet_1.address, [types.uint(0), types.uint(1)]);
+    result = liquidationUI.claimRewards(wallet_1.address, [types.uint(0), types.uint(1)], "xstx-token", false);
     result.expectOk().expectBool(true)
 
     // Rewards
@@ -782,7 +782,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(1111.111111);
 
     // Claim reward
-    result = liquidationUI.claimStxRewards(wallet_1.address, [types.uint(0), types.uint(1)]);
+    result = liquidationUI.claimRewards(wallet_1.address, [types.uint(0), types.uint(1)], "xstx-token", false);
     result.expectOk().expectBool(true)
 
     // Rewards
@@ -794,84 +794,5 @@ Clarinet.test({
     // xSTX
     call = await xstxManager.balanceOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(2222.222222);
-  }
-});
-
-// ---------------------------------------------------------
-// UI tracking
-// ---------------------------------------------------------
-
-Clarinet.test({
-  name: "liquidation-rewards: track last reward id for user",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-
-    let liquidationPool = new LiquidationPool(chain, deployer);
-    let liquidationRewards = new LiquidationRewards(chain, deployer);
-    let liquidationUI = new LiquidationUI(chain, deployer);
-
-    // Stake
-    let result = liquidationPool.stake(deployer, 10000);
-    result.expectOk().expectUintWithDecimals(10000);
-
-    // Add 20 rewards
-    for (let index = 0; index < 20; index++) {
-      result = liquidationRewards.addReward(1, 0, "arkadiko-token", 10);
-      result.expectOk().expectBool(true);
-    }
-
-    // Claim 20 rewards
-    var rewardIds = [];
-    for (let index = 0; index < 20; index++) {
-      rewardIds.push(types.uint(index));
-    }
-    result = liquidationUI.claimDikoRewards(deployer.address, rewardIds);
-    result.expectOk().expectBool(true)
-
-    // Get user last reward ID
-    let call:any = await liquidationUI.getUserTracking(deployer.address);
-    call.result.expectTuple()['last-reward-id'].expectUint(0)
-
-    // Add rewards
-    for (let index = 0; index <= 80; index++) {
-      result = liquidationRewards.addReward(1, 0, "arkadiko-token", 10);
-      result.expectOk().expectBool(true);
-    }
-
-    // Claim 5 rewards
-    var rewardIds = [];
-    for (let index = 20; index < 25; index++) {
-      rewardIds.push(types.uint(index));
-    }
-    result = liquidationUI.claimDikoRewards(deployer.address, rewardIds);
-    result.expectOk().expectBool(true)
-
-    // User last reward ID is updated
-    call = await liquidationUI.getUserTracking(deployer.address);
-    call.result.expectTuple()['last-reward-id'].expectUint(25);
-
-    // Claim rewards
-    var rewardIds = [];
-    for (let index = 25; index < 50; index++) {
-      rewardIds.push(types.uint(index));
-    }
-    result = liquidationUI.claimDikoRewards(deployer.address, rewardIds);
-    result.expectOk().expectBool(true)
-
-    // User last reward ID is updated
-    call = await liquidationUI.getUserTracking(deployer.address);
-    call.result.expectTuple()['last-reward-id'].expectUint(50);
-
-    // Claim rewards
-    var rewardIds = [];
-    for (let index = 50; index < 75; index++) {
-      rewardIds.push(types.uint(index));
-    }
-    result = liquidationUI.claimDikoRewards(deployer.address, rewardIds);
-    result.expectOk().expectBool(true)
-
-    // User last reward ID is updated
-    call = await liquidationUI.getUserTracking(deployer.address);
-    call.result.expectTuple()['last-reward-id'].expectUint(75);
   }
 });

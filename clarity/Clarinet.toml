@@ -37,6 +37,9 @@ path = "contracts/arkadiko-governance-v2-1.clar"
 [contracts.arkadiko-governance-v3-1]
 path = "contracts/arkadiko-governance-v3-1.clar"
 
+[contracts.arkadiko-governance-v4-1]
+path = "contracts/arkadiko-governance-v4-1.clar"
+
 [contracts.arkadiko-token]
 path = "contracts/arkadiko-token.clar"
 
@@ -240,6 +243,9 @@ path = "contracts/arkadiko-liquidation-rewards-ui-v2-1.clar"
 
 [contracts.arkadiko-liquidation-rewards-ui-v2-2]
 path = "contracts/arkadiko-liquidation-rewards-ui-v2-2.clar"
+
+[contracts.arkadiko-liquidation-rewards-ui-v2-3]
+path = "contracts/arkadiko-liquidation-rewards-ui-v2-3.clar"
 
 [contracts.arkadiko-liquidation-ui-v1-2]
 path = "contracts/arkadiko-liquidation-ui-v1-2.clar"
