@@ -77,7 +77,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(50000);
 
     // 1 xBTC, 10K USDA
-    result = vaultManager.createVault(deployer, "XBTC-A", 100, 10000, false, false, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin');
+    result = vaultManager.createVault(deployer, "XBTC-A", 1 * 100, 10000, false, false, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin');
     result.expectOk().expectUintWithDecimals(10000);
 
     let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
@@ -86,11 +86,11 @@ Clarinet.test({
     // 1 xBTC, 20K USDA
     // collateral-to-debt-ratio = 250
     // 50.000 / 2.5 = 20.000
-    result = vaultManager.createVault(deployer, "XBTC-A", 100, 20000, false, false, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin'); 
+    result = vaultManager.createVault(deployer, "XBTC-A", 1 * 100, 20000, false, false, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin'); 
     result.expectOk().expectUintWithDecimals(20000);
 
     // Can not mint 20.001 USDA
-    result = vaultManager.createVault(deployer, "XBTC-A", 100, 20001, false, false, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin'); 
+    result = vaultManager.createVault(deployer, "XBTC-A", 1 * 100, 20001, false, false, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin'); 
     result.expectErr().expectUint(49);
   }
 });
@@ -104,18 +104,20 @@ Clarinet.test({
     let vaultManager = new VaultManager(chain, deployer);
 
     // 1 atALEX = $0.05
-    let result = oracleManager.updatePrice("auto-alex", 0.05, 100000000);
-    result.expectOk().expectUintWithDecimals(0.05);
+    // Pushed with 8 decimals instead of 6 so * 100
+    let result = oracleManager.updatePrice("auto-alex", (0.05 * 100), 10000000000);
+    result.expectOk().expectUintWithDecimals(0.05 * 100);
 
-    // 100 atALEX collateral, 1 USDA debt
-    result = vaultManager.createVault(deployer, "ATALEX-A", 10000, 1, false, false, 'arkadiko-sip10-reserve-v2-1', 'auto-alex');
+    // 100 atALEX collateral = $5
+    // 1 USDA debt
+    result = vaultManager.createVault(deployer, "ATALEX-A", 100 * 100, 1, false, false, 'arkadiko-sip10-reserve-v2-1', 'auto-alex');
     result.expectOk().expectUintWithDecimals(1);
 
     let call = vaultManager.getCurrentCollateralToDebtRatio(1, deployer);
     call.result.expectOk().expectUint(500);
 
     // Can not mint 2 USDA
-    result = vaultManager.createVault(deployer, "ATALEX-A", 10000, 2, false, false, 'arkadiko-sip10-reserve-v2-1', 'auto-alex'); 
+    result = vaultManager.createVault(deployer, "ATALEX-A", 100 * 100, 2, false, false, 'arkadiko-sip10-reserve-v2-1', 'auto-alex'); 
     result.expectErr().expectUint(49);
   }
 });

@@ -10,32 +10,31 @@ async function transact() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
     contractName: 'arkadiko-governance-v4-1',
-    functionName: 'propose',
+    functionName: 'propose-dao',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
       tx.uintCV(48225),
-      tx.uintCV(720),
-      tx.stringUtf8CV('AIP12 Auction engine V4.2'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/501'),
+      tx.stringUtf8CV('Auction engine V4.3'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/529'),
       tx.listCV([
         tx.tupleCV({
           'name': tx.stringAsciiCV("auction-engine"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-auction-engine-v4-2"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-auction-engine-v4-3"),
           'can-mint': tx.trueCV(),
           'can-burn': tx.trueCV()
         }),
         tx.tupleCV({
           'name': tx.stringAsciiCV("liquidator"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-auction-engine-v4-2"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-auction-engine-v4-3"),
           'can-mint': tx.trueCV(),
           'can-burn': tx.trueCV()
         }),
         tx.tupleCV({
           'name': tx.stringAsciiCV("stacker-payer"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-stacker-payer-v3-2"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-stacker-payer-v3-3"),
           'can-mint': tx.falseCV(),
           'can-burn': tx.trueCV()
         })
