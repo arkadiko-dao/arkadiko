@@ -207,9 +207,8 @@
 ;; @param registry-trait; used to get reward per block
 ;; @param staker; staker to get pending rewards for
 ;; @post tuple; returns pending rewards
-(define-public (get-pending-rewards (registry-trait <stake-registry-trait>) (staker principal))
+(define-read-only (get-pending-rewards (registry-trait <stake-registry-trait>) (staker principal))
   (let (
-    (increase-result (try! (increase-cumm-reward-per-stake registry-trait)))
     (usda-rewards (unwrap-panic (get-pending-rewards-helper registry-trait staker .usda-token)))
     (esdiko-rewards (unwrap-panic (get-pending-rewards-helper registry-trait staker .escrowed-diko-token)))
     (point-rewards (calculate-multiplier-points staker))
@@ -227,7 +226,7 @@
 ;; @param staker; staker to get pending rewards for
 ;; @param token; reward token
 ;; @post uint; returns pending rewards
-(define-public (get-pending-rewards-helper (registry-trait <stake-registry-trait>) (staker principal) (token principal))
+(define-read-only (get-pending-rewards-helper (registry-trait <stake-registry-trait>) (staker principal) (token principal))
   (let (
     (stake-amount (get amount (get-stake-of staker)))
     (current-cumm-reward (get cumm-reward-per-stake (get-reward-of token)))
@@ -250,6 +249,7 @@
     (added-points (calculate-multiplier-points staker))
     (new-points (+ added-points (get points current-stakes)))
   )
+    (try! (increase-cumm-reward-per-stake registry-trait))
     (try! (claim-pending-rewards-helper registry-trait .escrowed-diko-token))
     (try! (claim-pending-rewards-helper registry-trait .usda-token))
 
