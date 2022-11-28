@@ -292,6 +292,41 @@ Clarinet.test({
   }
 });
 
+Clarinet.test({
+  name: "diko-staking: no USDA revenue to distribute",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+  
+    let stakePool = new StakePoolDikoV2(chain, deployer);
+
+    let result = stakePool.stake(wallet_1, "arkadiko-token", 100);
+    result.expectOk().expectUintWithDecimals(100);
+
+    // First epoch initialised
+    let call:any = stakePool.getRevenueInfo();
+    call.result.expectTuple()["revenue-block-rewards"].expectUintWithDecimals(0);
+    call.result.expectTuple()["revenue-next-total"].expectUintWithDecimals(0);
+
+    // Adds revenues for next epoch
+    result = stakePool.updateRevenue();
+    result.expectOk().expectBool(true);
+
+    call = stakePool.getRevenueInfo();
+    call.result.expectTuple()["revenue-block-rewards"].expectUintWithDecimals(0);
+    call.result.expectTuple()["revenue-next-total"].expectUintWithDecimals(0);
+
+    // Move to next epoch
+    chain.mineEmptyBlock(1015);
+    result = stakePool.updateRevenue();
+    result.expectOk().expectBool(true);
+    
+    call = stakePool.getRevenueInfo();
+    call.result.expectTuple()["revenue-block-rewards"].expectUintWithDecimals(0);
+    call.result.expectTuple()["revenue-next-total"].expectUintWithDecimals(0);
+  }
+});
+
 // ---------------------------------------------------------
 // Admin
 // ---------------------------------------------------------
@@ -465,10 +500,5 @@ Clarinet.test({
     result.expectErr().expectUint(110003);
   }
 });
-
-// TODO:
-// - Can not unstake more than staked (DIKO, esDIKO)
-// - Check all errors..
-// - What if no revenue in freddie? 
 
 // TODO: check esDIKO, USDA, MP reward distribution over 3 users
