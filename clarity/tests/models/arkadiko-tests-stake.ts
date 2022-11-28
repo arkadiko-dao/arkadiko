@@ -327,6 +327,15 @@ class StakePoolDikoV2 {
     ]);
     return block.receipts[0].result;
   }
+
+  increaseCummRewardPerStake() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "increase-cumm-reward-per-stake", [
+        types.principal(Utils.qualifiedName("arkadiko-stake-registry-v1-1")),
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
 }
 export { StakePoolDikoV2 };
 

@@ -49,9 +49,12 @@ Clarinet.test({
 
     chain.mineEmptyBlock(200);  
 
+    result = stakePool.increaseCummRewardPerStake();
+    result.expectOk().expectBool(true);
+
     call = stakePool.getPendingRewards(wallet_1);
     call.result.expectOk().expectTuple()["esdiko"].expectUintWithDecimals(12590.6211);    
-    call.result.expectOk().expectTuple()["point"].expectUintWithDecimals(0.38242);    
+    call.result.expectOk().expectTuple()["point"].expectUintWithDecimals(0.384322);    
     call.result.expectOk().expectTuple()["usda"].expectUintWithDecimals(0);  
   
     result = stakePool.unstake(wallet_1, "arkadiko-token", 100);
@@ -202,10 +205,14 @@ Clarinet.test({
     call = usdaToken.balanceOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(1000000);  
 
+    result = stakePool.increaseCummRewardPerStake();
+    result.expectOk().expectBool(true);
+
     call = stakePool.getPendingRewards(wallet_1);
     call.result.expectOk().expectTuple()["esdiko"].expectUintWithDecimals(1378.0779);    
-    call.result.expectOk().expectTuple()["point"].expectUintWithDecimals(0.041856);    
-    call.result.expectOk().expectTuple()["usda"].expectUintWithDecimals(10);  
+    call.result.expectOk().expectTuple()["point"].expectUintWithDecimals(0.043759);    
+    call.result.expectOk().expectTuple()["usda"].expectUintWithDecimals(0);  
+    // TODO: have USDA to claim
 
     result = stakePool.claimPendingRewards(wallet_1);
     result.expectOk().expectBool(true);
@@ -214,13 +221,13 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(149900);   
 
     call = esDikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(10000 + 1378.0779); 
+    call.result.expectOk().expectUintWithDecimals(10000 + 1440.7178); 
 
     call = usdaToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(1000000 + 10); 
+    call.result.expectOk().expectUintWithDecimals(1000000); 
 
     call = stakePool.getStakeOf(wallet_1);   
-    call.result.expectTuple()["points"].expectUintWithDecimals(0.041856);    
+    call.result.expectTuple()["points"].expectUintWithDecimals(0.043759);    
   }
 });
 
