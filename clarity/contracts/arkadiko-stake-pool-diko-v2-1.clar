@@ -13,10 +13,8 @@
 
 ;; Errors
 (define-constant ERR-NOT-AUTHORIZED u110001)
-(define-constant ERR-REWARDS-CALC (err u110002))
+(define-constant ERR-WRONG-TOKEN (err u110002))
 (define-constant ERR-INSUFFICIENT-STAKE (err u110003))
-(define-constant ERR-WRONG-REGISTRY (err u110004))
-(define-constant ERR-WRONG-TOKEN (err u110005))
 
 ;; ---------------------------------------------------------
 ;; Variables
@@ -286,7 +284,7 @@
 (define-private (claim-pending-rewards-helper (token <ft-trait>))
   (let (
     (staker tx-sender)
-    (pending-rewards (unwrap! (get-pending-rewards-helper staker (contract-of token)) ERR-REWARDS-CALC))
+    (pending-rewards (unwrap-panic (get-pending-rewards-helper staker (contract-of token))))
     (stake-of (get-stake-of staker))
   )
     (asserts! (>= pending-rewards u1) (ok u0))

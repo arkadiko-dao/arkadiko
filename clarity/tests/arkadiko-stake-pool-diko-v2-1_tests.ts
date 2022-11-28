@@ -410,7 +410,6 @@ Clarinet.test({
   
     let stakePool = new StakePoolDikoV2(chain, deployer);
 
-    // Update length
     let result = stakePool.setRevenueEpochLength(wallet_1, 144);
     result.expectErr().expectUint(110001);
   }
@@ -424,13 +423,48 @@ Clarinet.test({
   
     let stakePool = new StakePoolDikoV2(chain, deployer);
 
-    // Update length
     let result = stakePool.setEsDikoBlockRewards(wallet_1, 2);
     result.expectErr().expectUint(110001);
   }
 });
 
+Clarinet.test({
+  name: "diko-staking: can only stake/unstake DIKO and esDIKO",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+  
+    let stakePool = new StakePoolDikoV2(chain, deployer);
 
+    let result = stakePool.stake(wallet_1, "usda-token", 100);
+    result.expectErr().expectUint(110002);
+
+    result = stakePool.unstake(wallet_1, "usda-token", 100);
+    result.expectErr().expectUint(110002);
+  }
+});
+
+Clarinet.test({
+  name: "diko-staking: can not unstake more DIKO/esDIKO than staked",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+  
+    let stakePool = new StakePoolDikoV2(chain, deployer);
+
+    let result = stakePool.stake(wallet_1, "arkadiko-token", 100);
+    result.expectOk().expectUintWithDecimals(100);
+
+    result = stakePool.stake(wallet_1, "escrowed-diko-token", 100);
+    result.expectOk().expectUintWithDecimals(100);
+
+    result = stakePool.unstake(wallet_1, "arkadiko-token", 101);
+    result.expectErr().expectUint(110003);
+
+    result = stakePool.unstake(wallet_1, "escrowed-diko-token", 101);
+    result.expectErr().expectUint(110003);
+  }
+});
 
 // TODO:
 // - Can not unstake more than staked (DIKO, esDIKO)
