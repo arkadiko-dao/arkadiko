@@ -13,6 +13,7 @@
 ;; ---------------------------------------------------------
 
 ;; Errors
+(define-constant ERR-NOT-AUTHORIZED u110001)
 (define-constant ERR-REWARDS-CALC (err u110002))
 (define-constant ERR-INSUFFICIENT-STAKE (err u110003))
 (define-constant ERR-WRONG-REGISTRY (err u110004))
@@ -24,6 +25,11 @@
 
 ;; Variables
 (define-data-var total-staked uint u0) ;; DIKO, esDIKO & MultiplierPoints
+
+(define-data-var revenue-epoch-length uint u1008) 
+(define-data-var revenue-epoch-end uint u0) 
+(define-data-var revenue-block-rewards uint u0) 
+(define-data-var revenue-next-total uint u0) 
 
 ;; ---------------------------------------------------------
 ;; Maps
@@ -121,9 +127,10 @@
     (let (
       (updated-stakes (get-stake-of staker))
     )
-      ;; Update total stake and increase cummulative rewards
+      ;; Update total stake, increase cummulative rewards and update revenue
       (var-set total-staked (+ (var-get total-staked) amount))
-      (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
+      (try! (increase-cumm-reward-per-stake registry-trait))
+      (try! (update-revenue))
 
       ;; Transfer tokens and update map
       (try! (contract-call? token transfer amount staker (as-contract tx-sender) none))
@@ -171,9 +178,10 @@
       (updated-stakes (get-stake-of staker))
       (points-to-burn (/ (* (/ (* amount u1000000) (+ (get diko updated-stakes) (get esdiko updated-stakes))) (get points updated-stakes)) u1000000))
     )
-      ;; Update total stake and increase cummulative rewards
+      ;; Update total stake, increase cummulative rewards and update revenue
       (var-set total-staked (- (var-get total-staked) amount points-to-burn))
-      (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
+      (try! (increase-cumm-reward-per-stake registry-trait))
+      (try! (update-revenue))
 
       ;; Transfer tokens and update map
       (try! (as-contract (contract-call? token transfer amount tx-sender staker none)))
@@ -250,6 +258,7 @@
     (new-points (+ added-points (get points current-stakes)))
   )
     (try! (increase-cumm-reward-per-stake registry-trait))
+    (try! (update-revenue))
     (try! (claim-pending-rewards-helper registry-trait .escrowed-diko-token))
     (try! (claim-pending-rewards-helper registry-trait .usda-token))
 
@@ -310,7 +319,7 @@
 (define-public (increase-cumm-reward-per-stake (registry-trait <stake-registry-trait>))
   (begin
     (try! (increase-cumm-esdiko-reward-per-stake registry-trait))
-    (try! (increase-cumm-usda-reward-per-stake))
+    (unwrap-panic (increase-cumm-usda-reward-per-stake))
     (ok true)
   )
 )
@@ -353,24 +362,71 @@
   (let (
     (current-total-staked (var-get total-staked))
     (current-cumm-reward-per-stake (get cumm-reward-per-stake (get-reward-of .usda-token))) 
-    (usda-balance (unwrap-panic (contract-call? .usda-token get-balance .arkadiko-freddie-v1-1)))
+    (last-increase-block (get last-reward-increase-block (get-reward-of .usda-token)))
+    (block-end (if (> block-height (var-get revenue-epoch-end))
+      (var-get revenue-epoch-end)
+      block-height
+    ))
+    (block-diff (- block-end last-increase-block))
   )
-    (asserts! (> usda-balance u0) (ok current-cumm-reward-per-stake))
-    (asserts! (> block-height (get last-reward-increase-block (get-reward-of .usda-token))) (ok current-cumm-reward-per-stake))
+    (asserts! (> block-end last-increase-block) (ok current-cumm-reward-per-stake))
     (asserts! (> current-total-staked u0) (ok current-cumm-reward-per-stake))
 
-    ;; Transfer from Freddie to this contract
-    (try! (contract-call? .arkadiko-dao burn-token .usda-token usda-balance .arkadiko-freddie-v1-1))
-    (try! (contract-call? .arkadiko-dao mint-token .usda-token usda-balance .arkadiko-stake-pool-diko-v2-1))
-
     (let (
-      ;; TODO: should be based on gathered USDA from last week
-      (total-rewards-to-distribute usda-balance)
+      (total-rewards-to-distribute (* (var-get revenue-block-rewards) block-diff))
       (reward-added-per-token (/ (* total-rewards-to-distribute u1000000) current-total-staked))
       (new-cumm-reward-per-stake (+ current-cumm-reward-per-stake reward-added-per-token))
     )
-      (map-set rewards { token: .usda-token } { cumm-reward-per-stake: new-cumm-reward-per-stake, last-reward-increase-block: block-height})
+      (map-set rewards { token: .usda-token } { cumm-reward-per-stake: new-cumm-reward-per-stake, last-reward-increase-block: block-end})
       (ok new-cumm-reward-per-stake)
     )
+  )
+)
+
+;; ---------------------------------------------------------
+;; Revenue
+;; ---------------------------------------------------------
+
+;; @desc update revenue info
+;; @post bool; always true
+(define-public (update-revenue)
+  (begin
+    ;; Update vars if epoch ended
+    (if (> block-height (var-get revenue-epoch-end))
+      (begin
+        (var-set revenue-block-rewards (/ (var-get revenue-next-total) (var-get revenue-epoch-length)))
+        (var-set revenue-epoch-end (+ (var-get revenue-epoch-end) (var-get revenue-epoch-length)))
+        (var-set revenue-next-total u0)
+      )
+      false
+    )
+
+    ;; Transfer USDA revenue from Freddie to this contract
+    (let (
+      (usda-balance (unwrap-panic (contract-call? .usda-token get-balance .arkadiko-freddie-v1-1)))
+    )
+      (if (> usda-balance u0)
+        (begin
+          (try! (contract-call? .arkadiko-dao burn-token .usda-token usda-balance .arkadiko-freddie-v1-1))
+          (try! (contract-call? .arkadiko-dao mint-token .usda-token usda-balance .arkadiko-stake-pool-diko-v2-1))
+          (var-set revenue-next-total (+ (var-get revenue-next-total) usda-balance))
+        )
+        false
+      )
+    )
+
+    (ok true)
+  )
+)
+
+;; ---------------------------------------------------------
+;; Admin
+;; ---------------------------------------------------------
+
+(define-public (set-revenue-epoch-length (length uint))
+  (begin 
+    (asserts! (is-eq tx-sender .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
+    (var-set revenue-epoch-length length)
+    (ok length)
   )
 )
