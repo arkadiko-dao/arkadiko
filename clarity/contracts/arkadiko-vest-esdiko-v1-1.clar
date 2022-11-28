@@ -1,4 +1,16 @@
-(define-constant ERR-NOT-AUTHORIZED u120001)
+;; @contract esDIKO vesting
+;; @version 1.0
+
+;; ---------------------------------------------------------
+;; Constants
+;; ---------------------------------------------------------
+
+(define-constant ERR-NOT-AUTHORIZED (err u120001))
+(define-constant ERR-INSUFFICIENT-VESTING (err u120002))
+
+;; ---------------------------------------------------------
+;; Variables
+;; ---------------------------------------------------------
 
 (define-data-var req-staked-diko uint u250000) ;; 25% = 250000
 (define-data-var stake-pool-diko principal .arkadiko-stake-pool-diko-v2-1)
@@ -66,11 +78,13 @@
     (user tx-sender)
     (user-info (get-vesting-of user))
   )
+    (asserts! (<= amount (get vesting-amount user-info)) ERR-INSUFFICIENT-VESTING)
+
     ;; Transfer esDIKO to user
-    (try! (contract-call? .escrowed-diko-token transfer amount (as-contract tx-sender) user none))
+    (try! (as-contract (contract-call? .escrowed-diko-token transfer amount (as-contract tx-sender) user none)))
 
     ;; Update user vesting
-    (unwrap-panic (update-user-vesting user (get stake-amount user-info) (+ (get vesting-amount user-info) amount)))
+    (unwrap-panic (update-user-vesting user (get stake-amount user-info) (- (get vesting-amount user-info) amount)))
 
     (ok amount)
   )
@@ -85,12 +99,20 @@
 (define-public (claim-diko)
   (let (
     (user tx-sender)
-    (vested-diko (get claimable (get-vesting-of user)))
+    (vested-diko (get-vested-diko user))
+    (user-info (get-vesting-of user))
   )
     ;; Mint DIKO for user, burn esDIKO
     (try! (contract-call? .arkadiko-dao mint-token .arkadiko-token vested-diko user))
     (try! (contract-call? .arkadiko-dao burn-token .escrowed-diko-token vested-diko user))
-    
+
+    ;; Update user info
+    (map-set vesting { user: user } (merge user-info {
+        last-update-block: block-height, 
+        vesting-amount: (- (get vesting-amount user-info) vested-diko), 
+        claimable: u0
+    }))
+
     (ok vested-diko)
   )
 )
@@ -105,7 +127,7 @@
   (let (
     (user-info (get-vesting-of user))
   )
-    (asserts! (is-eq (get-stake-pool-diko) contract-caller) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq (get-stake-pool-diko) contract-caller) ERR-NOT-AUTHORIZED)
     (update-user-vesting user amount (get vesting-amount user-info))
   )
 )
@@ -113,27 +135,35 @@
 ;; Helper method to update user vesting info
 (define-private (update-user-vesting (user principal) (stake-amount uint) (vesting-amount uint))
   (let (
-    (vested-diko (calculate-vested-diko user))
-    (current-claimable (get claimable (get-vesting-of user)))
+    (claimable (get-vested-diko user))
   )
-    (asserts! (> vested-diko u0) (ok false))
-
     ;; Update vesting info
     (map-set vesting { user: user } 
       { 
         last-update-block: block-height, 
         stake-amount: stake-amount, 
         vesting-amount: vesting-amount, 
-        claimable: (+ current-claimable vested-diko) 
+        claimable: claimable
       }
     )
     (ok true)
   )
 )
 
+;; @desc get total vested DIKO for user
+;; @post uint; vested DIKO
+(define-read-only (get-vested-diko (user principal)) 
+  (let (
+    (current-claimable (get claimable (get-vesting-of user)))
+    (new-claimable (calculate-newly-vested-diko user))
+  )
+    (+ current-claimable new-claimable)
+  )
+)
+
 ;; Calculate amount of esDIKO that is vested
 ;; esDIKO is linearly vesting over 1 year
-(define-read-only (calculate-vested-diko (user principal)) 
+(define-read-only (calculate-newly-vested-diko (user principal)) 
   (let (
     (vesting-info (get-vesting-of user))
     (block-diff (- block-height (get last-update-block vesting-info)))
@@ -153,17 +183,21 @@
 ;; Admin
 ;; ---------------------------------------------------------
 
+;; @desc set max required staked amount
+;; @post uint; required staked amount
 (define-public (set-req-staked-diko (value uint))
   (begin 
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) ERR-NOT-AUTHORIZED)
     (var-set req-staked-diko value)
     (ok value)
   )
 )
 
-(define-public (set-stake-pooldiko (contract principal))
+;; @desc set stake pool diko which can update a users's stake amount
+;; @post principal; the set contract
+(define-public (set-stake-pool-diko (contract principal))
   (begin 
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) ERR-NOT-AUTHORIZED)
     (var-set stake-pool-diko contract)
     (ok contract)
   )

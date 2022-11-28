@@ -12,7 +12,7 @@
 ;; ---------------------------------------------------------
 
 ;; Errors
-(define-constant ERR-NOT-AUTHORIZED u110001)
+(define-constant ERR-NOT-AUTHORIZED (err u110001))
 (define-constant ERR-WRONG-TOKEN (err u110002))
 (define-constant ERR-INSUFFICIENT-STAKE (err u110003))
 
@@ -443,7 +443,7 @@
 ;; @post bool; epoch length
 (define-public (set-revenue-epoch-length (length uint))
   (begin 
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) ERR-NOT-AUTHORIZED)
     (var-set revenue-epoch-length length)
     (ok length)
   )
@@ -453,7 +453,7 @@
 ;; @post bool; rewards per block
 (define-public (set-esdiko-block-rewards (block-rewards uint))
   (begin 
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) ERR-NOT-AUTHORIZED)
     (var-set esdiko-block-rewards block-rewards)
     (ok block-rewards)
   )

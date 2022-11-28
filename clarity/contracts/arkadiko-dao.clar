@@ -247,14 +247,14 @@
     }
   )
   (map-set contracts
-    { name: "escrowed-diko" }
+    { name: "vest-esdiko" }
     {
       address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
-      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.escrowed-diko-token
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-vest-esdiko-v1-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.escrowed-diko-token }
+    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-vest-esdiko-v1-1 }
     {
       can-mint: true,
       can-burn: true
