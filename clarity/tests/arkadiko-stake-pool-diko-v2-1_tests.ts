@@ -293,8 +293,144 @@ Clarinet.test({
 });
 
 // ---------------------------------------------------------
+// Admin
+// ---------------------------------------------------------
+
+Clarinet.test({
+  name: "diko-staking: admin can set epoch length",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+  
+    let stakePool = new StakePoolDikoV2(chain, deployer);
+
+    let block = chain.mineBlock([
+      Tx.contractCall("usda-token", "transfer", [
+        types.uint(100 * 1000000),
+        types.principal(deployer.address),
+        types.principal(Utils.qualifiedName("arkadiko-freddie-v1-1")),
+        types.none(),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk();
+  
+    let result = stakePool.stake(wallet_1, "arkadiko-token", 100);
+    result.expectOk().expectUintWithDecimals(100);
+
+    // First epoch initialised
+    let call:any = stakePool.getRevenueInfo();
+    call.result.expectTuple()["revenue-block-rewards"].expectUintWithDecimals(0.099206);
+    call.result.expectTuple()["revenue-epoch-end"].expectUint(1010);
+    call.result.expectTuple()["revenue-epoch-length"].expectUint(1008);
+
+    // Update length
+    result = stakePool.setRevenueEpochLength(deployer, 144);
+    result.expectOk().expectUint(144);
+
+    // Only the length was updated
+    call = stakePool.getRevenueInfo();
+    call.result.expectTuple()["revenue-block-rewards"].expectUintWithDecimals(0.099206);
+    call.result.expectTuple()["revenue-epoch-end"].expectUint(1010);
+    call.result.expectTuple()["revenue-epoch-length"].expectUint(144);
+
+    // New revenues
+    block = chain.mineBlock([
+      Tx.contractCall("usda-token", "transfer", [
+        types.uint(200 * 1000000),
+        types.principal(deployer.address),
+        types.principal(Utils.qualifiedName("arkadiko-freddie-v1-1")),
+        types.none(),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk();
+
+    // Add revenues
+    result = stakePool.updateRevenue();
+    result.expectOk().expectBool(true);
+
+    // Move to next epoch
+    chain.mineEmptyBlock(1015);
+    result = stakePool.updateRevenue();
+    result.expectOk().expectBool(true);
+
+    call = stakePool.getRevenueInfo();
+    call.result.expectTuple()["revenue-block-rewards"].expectUintWithDecimals(1.388888); // 200/144
+    call.result.expectTuple()["revenue-epoch-end"].expectUint(1154); // 1010+144
+    call.result.expectTuple()["revenue-epoch-length"].expectUint(144);
+  }
+});
+
+Clarinet.test({
+  name: "diko-staking: admin can set esDIKO rewards per block",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+  
+    let stakePool = new StakePoolDikoV2(chain, deployer);
+
+    let result = stakePool.stake(wallet_1, "arkadiko-token", 100);
+    result.expectOk().expectUintWithDecimals(100);
+
+    chain.mineEmptyBlock(20);
+
+    let call:any = stakePool.getEsDikoBlockRewards();
+    call.result.expectUintWithDecimals(1);
+
+    result = stakePool.increaseCummRewardPerStake();
+    result.expectOk().expectBool(true);
+
+    call = stakePool.getPendingRewards(wallet_1);
+    call.result.expectOk().expectTuple()["esdiko"].expectUintWithDecimals(21);    
+
+    chain.mineEmptyBlock(20);
+
+    result = stakePool.setEsDikoBlockRewards(deployer, 2);
+    result.expectOk().expectUintWithDecimals(2);
+
+    call = stakePool.getEsDikoBlockRewards();
+    call.result.expectUintWithDecimals(2);
+
+    result = stakePool.increaseCummRewardPerStake();
+    result.expectOk().expectBool(true);
+
+    call = stakePool.getPendingRewards(wallet_1);
+    call.result.expectOk().expectTuple()["esdiko"].expectUintWithDecimals(65); 
+  }
+});
+
+// ---------------------------------------------------------
 // Errors
 // ---------------------------------------------------------
+
+Clarinet.test({
+  name: "diko-staking: only admin can set epoch length",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+  
+    let stakePool = new StakePoolDikoV2(chain, deployer);
+
+    // Update length
+    let result = stakePool.setRevenueEpochLength(wallet_1, 144);
+    result.expectErr().expectUint(110001);
+  }
+});
+
+Clarinet.test({
+  name: "diko-staking: only admin can set esDIKO rewards per block",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+  
+    let stakePool = new StakePoolDikoV2(chain, deployer);
+
+    // Update length
+    let result = stakePool.setEsDikoBlockRewards(wallet_1, 2);
+    result.expectErr().expectUint(110001);
+  }
+});
+
+
 
 // TODO:
 // - Can not unstake more than staked (DIKO, esDIKO)

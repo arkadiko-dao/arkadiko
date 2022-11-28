@@ -51,9 +51,9 @@
 )
 
 (define-public (set-token-uri (value (string-utf8 256)))
-  (if (is-eq tx-sender .arkadiko-dao)
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
     (ok (var-set token-uri value))
-    (err ERR-NOT-AUTHORIZED)
   )
 )
 
@@ -110,7 +110,7 @@
 
 (define-public (set-whitelist (contract principal) (enabled bool))
   (begin 
-    (asserts! (is-eq tx-sender .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
     (map-set whitelist contract enabled)
     (ok enabled)
   )

@@ -155,7 +155,7 @@
 
 (define-public (set-req-staked-diko (value uint))
   (begin 
-    (asserts! (is-eq tx-sender .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
     (var-set req-staked-diko value)
     (ok value)
   )
@@ -163,7 +163,7 @@
 
 (define-public (set-stake-pooldiko (contract principal))
   (begin 
-    (asserts! (is-eq tx-sender .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
     (var-set stake-pool-diko contract)
     (ok contract)
   )

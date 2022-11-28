@@ -445,7 +445,7 @@
 ;; @post bool; epoch length
 (define-public (set-revenue-epoch-length (length uint))
   (begin 
-    (asserts! (is-eq tx-sender .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
     (var-set revenue-epoch-length length)
     (ok length)
   )
@@ -455,7 +455,7 @@
 ;; @post bool; rewards per block
 (define-public (set-esdiko-block-rewards (block-rewards uint))
   (begin 
-    (asserts! (is-eq tx-sender .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
     (var-set esdiko-block-rewards block-rewards)
     (ok block-rewards)
   )

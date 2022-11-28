@@ -301,6 +301,11 @@ class StakePoolDikoV2 {
     ], this.deployer.address);
   }
 
+  getEsDikoBlockRewards() {
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v2-1", "get-esdiko-block-rewards", [
+    ], this.deployer.address);
+  }
+
   stake(user: Account, token: string, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "stake", [
@@ -341,6 +346,24 @@ class StakePoolDikoV2 {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "update-revenue", [
       ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  setRevenueEpochLength(user: Account, length: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "set-revenue-epoch-length", [
+        types.uint(length),
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  setEsDikoBlockRewards(user: Account, rewards: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "set-esdiko-block-rewards", [
+        types.uint(rewards * 1000000),
+      ], user.address)
     ]);
     return block.receipts[0].result;
   }
