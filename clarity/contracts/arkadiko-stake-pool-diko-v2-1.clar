@@ -209,6 +209,7 @@
 ;; @post tuple; returns pending rewards
 (define-public (get-pending-rewards (registry-trait <stake-registry-trait>) (staker principal))
   (let (
+    (increase-result (try! (increase-cumm-reward-per-stake registry-trait)))
     (usda-rewards (unwrap-panic (get-pending-rewards-helper registry-trait staker .usda-token)))
     (esdiko-rewards (unwrap-panic (get-pending-rewards-helper registry-trait staker .escrowed-diko-token)))
     (point-rewards (calculate-multiplier-points staker))
@@ -226,11 +227,11 @@
 ;; @param staker; staker to get pending rewards for
 ;; @param token; reward token
 ;; @post uint; returns pending rewards
-(define-public (get-pending-rewards-helper (registry-trait <stake-registry-trait>) (staker principal) (token <ft-trait>))
+(define-public (get-pending-rewards-helper (registry-trait <stake-registry-trait>) (staker principal) (token principal))
   (let (
     (stake-amount (get amount (get-stake-of staker)))
-    (current-cumm-reward (unwrap-panic (increase-cumm-reward-per-stake-helper registry-trait token)))
-    (user-cumm-reward (get cumm-reward-per-stake (get-stake-rewards-of staker (contract-of token))))
+    (current-cumm-reward (get cumm-reward-per-stake (get-reward-of token)))
+    (user-cumm-reward (get cumm-reward-per-stake (get-stake-rewards-of staker token)))
     (amount-owed-per-token (- current-cumm-reward user-cumm-reward))
     (rewards-decimals (* stake-amount amount-owed-per-token))
     (rewards-result (/ rewards-decimals u1000000))
@@ -262,10 +263,10 @@
 )
 
 ;; Claim pending rewards for given token
-(define-public (claim-pending-rewards-helper (registry-trait <stake-registry-trait>) (token <ft-trait>))
+(define-private (claim-pending-rewards-helper (registry-trait <stake-registry-trait>) (token <ft-trait>))
   (let (
     (staker tx-sender)
-    (pending-rewards (unwrap! (get-pending-rewards-helper registry-trait staker token) ERR-REWARDS-CALC))
+    (pending-rewards (unwrap! (get-pending-rewards-helper registry-trait staker (contract-of token)) ERR-REWARDS-CALC))
     (stake-of (get-stake-of staker))
   )
     (asserts! (>= pending-rewards u1) (ok u0))
@@ -308,19 +309,9 @@
 ;; @post uint; new cummulative rewards per stake
 (define-public (increase-cumm-reward-per-stake (registry-trait <stake-registry-trait>))
   (begin
-    (unwrap-panic (increase-cumm-reward-per-stake-helper registry-trait .escrowed-diko-token))
-    (increase-cumm-reward-per-stake-helper registry-trait .usda-token)
-  )
-)
-
-;; @desc increase cummulative rewards per stake for given reward tokens
-;; @param registry-trait; used to get reward per block
-;; @param token: rewards token
-;; @post uint; the cummulative rewards per stake
-(define-public (increase-cumm-reward-per-stake-helper (registry-trait <stake-registry-trait>) (token <ft-trait>))
-  (if (is-eq (contract-of token) .escrowed-diko-token)
-    (increase-cumm-esdiko-reward-per-stake registry-trait)
-    (increase-cumm-usda-reward-per-stake)
+    (try! (increase-cumm-esdiko-reward-per-stake registry-trait))
+    (try! (increase-cumm-usda-reward-per-stake))
+    (ok true)
   )
 )
 
@@ -373,6 +364,7 @@
     (try! (contract-call? .arkadiko-dao mint-token .usda-token usda-balance .arkadiko-stake-pool-diko-v2-1))
 
     (let (
+      ;; TODO: should be based on gathered USDA from last week
       (total-rewards-to-distribute usda-balance)
       (reward-added-per-token (/ (* total-rewards-to-distribute u1000000) current-total-staked))
       (new-cumm-reward-per-stake (+ current-cumm-reward-per-stake reward-added-per-token))
