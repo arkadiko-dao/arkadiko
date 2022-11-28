@@ -26,6 +26,7 @@
 (define-data-var total-staked uint u0) ;; DIKO, esDIKO & MultiplierPoints
 (define-data-var esdiko-block-rewards uint u1000000) ;; TODO: set for mainnet
 
+(define-data-var revenue-initialised bool false) 
 (define-data-var revenue-epoch-length uint u1008) 
 (define-data-var revenue-epoch-end uint u0) 
 (define-data-var revenue-block-rewards uint u0) 
@@ -98,6 +99,21 @@
 ;; @desc get variable total-staked
 (define-read-only (get-total-staked)
   (var-get total-staked)
+)
+
+;; @desc get esDIKO rewards per block
+(define-read-only (get-esdiko-block-rewards)
+  (var-get esdiko-block-rewards)
+)
+
+;; @desc get revenue info
+(define-read-only (get-revenue-info)
+  {
+    revenue-epoch-length: (var-get revenue-epoch-length),
+    revenue-epoch-end: (var-get revenue-epoch-end),
+    revenue-block-rewards: (var-get revenue-block-rewards),
+    revenue-next-total: (var-get revenue-next-total)
+  }
 )
 
 ;; @desc needed in the governance contract
@@ -406,6 +422,17 @@
       )
     )
 
+    ;; Initialise - start first epoch with revenue just added
+    (if (var-get revenue-initialised)
+      false
+      (begin
+        (var-set revenue-block-rewards (/ (var-get revenue-next-total) (var-get revenue-epoch-length)))
+        (var-set revenue-epoch-end (+ block-height (var-get revenue-epoch-length)))
+        (var-set revenue-next-total u0)
+        (var-set revenue-initialised true)
+      )
+    )
+
     (ok true)
   )
 )
@@ -414,10 +441,22 @@
 ;; Admin
 ;; ---------------------------------------------------------
 
+;; @desc update revenue epoch length
+;; @post bool; epoch length
 (define-public (set-revenue-epoch-length (length uint))
   (begin 
     (asserts! (is-eq tx-sender .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
     (var-set revenue-epoch-length length)
     (ok length)
+  )
+)
+
+;; @desc update esDIKO rewards per block
+;; @post bool; rewards per block
+(define-public (set-esdiko-block-rewards (block-rewards uint))
+  (begin 
+    (asserts! (is-eq tx-sender .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
+    (var-set esdiko-block-rewards block-rewards)
+    (ok block-rewards)
   )
 )

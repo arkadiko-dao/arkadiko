@@ -168,6 +168,68 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "diko-staking: track USDA revenue",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+  
+    let stakePool = new StakePoolDikoV2(chain, deployer);
+
+    let block = chain.mineBlock([
+      Tx.contractCall("usda-token", "transfer", [
+        types.uint(100 * 1000000),
+        types.principal(deployer.address),
+        types.principal(Utils.qualifiedName("arkadiko-freddie-v1-1")),
+        types.none(),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk();
+  
+    let result = stakePool.stake(wallet_1, "arkadiko-token", 100);
+    result.expectOk().expectUintWithDecimals(100);
+
+    // First epoch initialised
+    let call:any = stakePool.getRevenueInfo();
+    call.result.expectTuple()["revenue-block-rewards"].expectUintWithDecimals(0.099206); // 100 / 1008
+    call.result.expectTuple()["revenue-epoch-end"].expectUint(1010);
+    call.result.expectTuple()["revenue-epoch-length"].expectUint(1008);
+    call.result.expectTuple()["revenue-next-total"].expectUintWithDecimals(0);
+
+    // New revenues
+    block = chain.mineBlock([
+      Tx.contractCall("usda-token", "transfer", [
+        types.uint(200 * 1000000),
+        types.principal(deployer.address),
+        types.principal(Utils.qualifiedName("arkadiko-freddie-v1-1")),
+        types.none(),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk();
+
+    // Adds revenues for next epoch
+    result = stakePool.updateRevenue();
+    result.expectOk().expectBool(true);
+
+    call = stakePool.getRevenueInfo();
+    call.result.expectTuple()["revenue-block-rewards"].expectUintWithDecimals(0.099206);
+    call.result.expectTuple()["revenue-epoch-end"].expectUint(1010);
+    call.result.expectTuple()["revenue-epoch-length"].expectUint(1008);
+    call.result.expectTuple()["revenue-next-total"].expectUintWithDecimals(200);
+
+    // Move to next epoch
+    chain.mineEmptyBlock(1015);
+    result = stakePool.updateRevenue();
+    result.expectOk().expectBool(true);
+    
+    call = stakePool.getRevenueInfo();
+    call.result.expectTuple()["revenue-block-rewards"].expectUintWithDecimals(0.198412); // 200 / 1008
+    call.result.expectTuple()["revenue-epoch-end"].expectUint(2018);
+    call.result.expectTuple()["revenue-epoch-length"].expectUint(1008);
+    call.result.expectTuple()["revenue-next-total"].expectUintWithDecimals(0);
+  }
+});
+
+Clarinet.test({
   name: "diko-staking: can claim esDIKO, USDA and MP rewards",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -178,20 +240,20 @@ Clarinet.test({
     let esDikoToken = new EsDikoToken(chain, deployer);
     let usdaToken = new UsdaToken(chain, deployer);
 
-    let result = stakePool.stake(wallet_1, "arkadiko-token", 100);
-    result.expectOk().expectUintWithDecimals(100);
-
-    chain.mineEmptyBlock(20);
-
     let block = chain.mineBlock([
       Tx.contractCall("usda-token", "transfer", [
-        types.uint(10 * 1000000),
+        types.uint(100 * 1000000),
         types.principal(deployer.address),
         types.principal(Utils.qualifiedName("arkadiko-freddie-v1-1")),
         types.none(),
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk();
+
+    let result = stakePool.stake(wallet_1, "arkadiko-token", 100);
+    result.expectOk().expectUintWithDecimals(100);
+
+    chain.mineEmptyBlock(20);
 
     let call:any = stakePool.getStakeOf(wallet_1);   
     call.result.expectTuple()["points"].expectUintWithDecimals(0);
@@ -209,10 +271,9 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     call = stakePool.getPendingRewards(wallet_1);
-    call.result.expectOk().expectTuple()["esdiko"].expectUintWithDecimals(22);    
-    call.result.expectOk().expectTuple()["point"].expectUintWithDecimals(0.043759);    
-    call.result.expectOk().expectTuple()["usda"].expectUintWithDecimals(0);  
-    // TODO: have USDA to claim
+    call.result.expectOk().expectTuple()["esdiko"].expectUintWithDecimals(21);    
+    call.result.expectOk().expectTuple()["point"].expectUintWithDecimals(0.041856);    
+    call.result.expectOk().expectTuple()["usda"].expectUintWithDecimals(2.2817);  
 
     result = stakePool.claimPendingRewards(wallet_1);
     result.expectOk().expectBool(true);
@@ -221,13 +282,13 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(149900);   
 
     call = esDikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(10000 + 23); 
+    call.result.expectOk().expectUintWithDecimals(10000 + 22); 
 
     call = usdaToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(1000000); 
+    call.result.expectOk().expectUintWithDecimals(1000000 + 2.3809); 
 
     call = stakePool.getStakeOf(wallet_1);   
-    call.result.expectTuple()["points"].expectUintWithDecimals(0.043759);    
+    call.result.expectTuple()["points"].expectUintWithDecimals(0.041856);    
   }
 });
 
@@ -238,5 +299,6 @@ Clarinet.test({
 // TODO:
 // - Can not unstake more than staked (DIKO, esDIKO)
 // - Check all errors..
+// - What if no revenue in freddie? 
 
 // TODO: check esDIKO, USDA, MP reward distribution over 3 users

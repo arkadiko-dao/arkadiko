@@ -296,6 +296,11 @@ class StakePoolDikoV2 {
     ], this.deployer.address);
   }
 
+  getRevenueInfo() {
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v2-1", "get-revenue-info", [
+    ], this.deployer.address);
+  }
+
   stake(user: Account, token: string, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "stake", [
@@ -327,6 +332,14 @@ class StakePoolDikoV2 {
   increaseCummRewardPerStake() {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "increase-cumm-reward-per-stake", [
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  updateRevenue() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "update-revenue", [
       ], this.deployer.address)
     ]);
     return block.receipts[0].result;
