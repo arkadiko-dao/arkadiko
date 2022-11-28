@@ -11,7 +11,6 @@
 ;; Constants
 ;; ---------------------------------------------------------
 
-;; Errors
 (define-constant ERR-NOT-AUTHORIZED (err u110001))
 (define-constant ERR-WRONG-TOKEN (err u110002))
 (define-constant ERR-INSUFFICIENT-STAKE (err u110003))
@@ -20,7 +19,6 @@
 ;; Variables
 ;; ---------------------------------------------------------
 
-;; Variables
 (define-data-var total-staked uint u0) ;; DIKO, esDIKO & MultiplierPoints
 (define-data-var esdiko-block-rewards uint u1000000) ;; TODO: set for mainnet
 
@@ -43,7 +41,7 @@
   }
 )
 
-;; Track ammount and cummulative reward for staker
+;; Track staking amounts
 (define-map stakes 
   { staker: principal } 
   {

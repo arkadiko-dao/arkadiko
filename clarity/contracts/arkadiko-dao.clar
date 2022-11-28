@@ -260,6 +260,20 @@
       can-burn: true
     }
   )
+  (map-set contracts
+    { name: "stake-pool-lp" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-lp-v2-1
+    }
+  )
+  (map-set contracts-data
+    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-lp-v2-1 }
+    {
+      can-mint: true,
+      can-burn: true
+    }
+  )
 
   (map-set contracts
     { name: "stake-pool-diko-usda" }
