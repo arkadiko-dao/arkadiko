@@ -9,11 +9,13 @@
 
 (define-constant ERR-NOT-AUTHORIZED (err u120001))
 (define-constant ERR-INSUFFICIENT-VESTING (err u120002))
+(define-constant ERR-INACTIVE (err u120003))
 
 ;; ---------------------------------------------------------
 ;; Variables
 ;; ---------------------------------------------------------
 
+(define-data-var contract-active bool true)
 (define-data-var req-staked-diko uint u250000) ;; 25% = 250000
 (define-data-var stake-pool-diko principal .arkadiko-stake-pool-diko-v2-1)
 
@@ -35,6 +37,12 @@
 ;; Getters
 ;; ---------------------------------------------------------
 
+;; @desc check if contract is activate
+(define-read-only (get-contract-active)
+  (var-get contract-active)
+)
+
+;; @desc get vesting info for user
 (define-read-only (get-vesting-of (user principal))
   (default-to
     { last-update-block: u0, stake-amount: u0, vesting-amount: u0, claimable: u0 }
@@ -42,10 +50,12 @@
   )
 )
 
+;; @desc get required staked diko to vest 100%
 (define-read-only (get-req-staked-diko) 
   (var-get req-staked-diko)
 )
 
+;; @desc get stake pool diko
 (define-read-only (get-stake-pool-diko) 
   (var-get stake-pool-diko)
 )
@@ -62,6 +72,8 @@
     (user tx-sender)
     (user-info (get-vesting-of user))
   )
+    (asserts! (get-contract-active) ERR-INACTIVE)
+
     ;; Transfer esDIKO to contract
     (try! (contract-call? .escrowed-diko-token transfer amount user (as-contract tx-sender) none))
 
@@ -80,6 +92,7 @@
     (user tx-sender)
     (user-info (get-vesting-of user))
   )
+    (asserts! (get-contract-active) ERR-INACTIVE)
     (asserts! (<= amount (get vesting-amount user-info)) ERR-INSUFFICIENT-VESTING)
 
     ;; Transfer esDIKO to user
@@ -104,6 +117,8 @@
     (vested-diko (get-vested-diko user))
     (user-info (get-vesting-of user))
   )
+    (asserts! (get-contract-active) ERR-INACTIVE)
+    
     ;; Mint DIKO for user, burn esDIKO
     (try! (contract-call? .arkadiko-dao mint-token .arkadiko-token vested-diko user))
     (try! (contract-call? .arkadiko-dao burn-token .escrowed-diko-token vested-diko user))
@@ -202,5 +217,16 @@
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) ERR-NOT-AUTHORIZED)
     (var-set stake-pool-diko contract)
     (ok contract)
+  )
+)
+
+;; @desc activate or deactivate contract
+;; @param active; activate or not
+;; @post bool; always true
+(define-public (set-contract-active (active bool))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) ERR-NOT-AUTHORIZED)
+    (var-set contract-active active)
+    (ok true)
   )
 )

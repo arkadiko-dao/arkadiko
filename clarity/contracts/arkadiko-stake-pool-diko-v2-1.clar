@@ -13,11 +13,13 @@
 (define-constant ERR-NOT-AUTHORIZED (err u110001))
 (define-constant ERR-WRONG-TOKEN (err u110002))
 (define-constant ERR-INSUFFICIENT-STAKE (err u110003))
+(define-constant ERR-INACTIVE (err u110004))
 
 ;; ---------------------------------------------------------
 ;; Variables
 ;; ---------------------------------------------------------
 
+(define-data-var contract-active bool true)
 (define-data-var total-staked uint u0) ;; DIKO, esDIKO & MultiplierPoints
 (define-data-var esdiko-rewards-rate uint u100000) ;; TODO: set for mainnet
 
@@ -66,6 +68,11 @@
 ;; ---------------------------------------------------------
 ;; Getters
 ;; ---------------------------------------------------------
+
+;; @desc check if contract is activate
+(define-read-only (get-contract-active)
+  (var-get contract-active)
+)
 
 ;; @desc get reward info
 (define-read-only (get-reward-of (token principal))
@@ -129,6 +136,7 @@
   (let (
     (staker tx-sender)
   )
+    (asserts! (get-contract-active) ERR-INACTIVE)
     (asserts! (or (is-eq (contract-of token) .arkadiko-token) (is-eq (contract-of token) .escrowed-diko-token)) ERR-WRONG-TOKEN)
 
     ;; This method will increase the cumm-rewards-per-stake, and set it for the staker
@@ -173,6 +181,7 @@
   (let (
     (staker tx-sender)
   )
+    (asserts! (get-contract-active) ERR-INACTIVE)
     (asserts! (or (is-eq (contract-of token) .arkadiko-token) (is-eq (contract-of token) .escrowed-diko-token)) ERR-WRONG-TOKEN)
     (asserts! (or
       (and (is-eq (contract-of token) .arkadiko-token) (>= (get diko (get-stake-of staker)) amount))
@@ -263,6 +272,7 @@
     (added-points (calculate-multiplier-points staker))
     (new-points (+ added-points (get points current-stakes)))
   )
+    (asserts! (get-contract-active) ERR-INACTIVE)
     (try! (increase-cumm-reward-per-stake))
     (try! (update-revenue))
     (try! (claim-pending-rewards-helper .escrowed-diko-token))
@@ -454,5 +464,16 @@
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) ERR-NOT-AUTHORIZED)
     (var-set esdiko-rewards-rate block-rewards)
     (ok block-rewards)
+  )
+)
+
+;; @desc activate or deactivate contract
+;; @param active; activate or not
+;; @post bool; always true
+(define-public (set-contract-active (active bool))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) ERR-NOT-AUTHORIZED)
+    (var-set contract-active active)
+    (ok true)
   )
 )

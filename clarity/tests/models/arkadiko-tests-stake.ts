@@ -130,6 +130,15 @@ class StakePoolDiko {
     ]);
     return block.receipts[0].result;
   }
+
+  setContractActive(user: Account, active: boolean) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "set-contract-active", [
+        types.bool(active),
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
 }
 export { StakePoolDiko };
 
@@ -242,6 +251,15 @@ class StakePoolLp {
         types.principal(Utils.qualifiedName(token)),
         types.bool(enabled),
         types.uint(blockRewards * 1000000)
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  setContractActive(user: Account, active: boolean) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-lp-v2-1", "set-contract-active", [
+        types.bool(active),
       ], user.address)
     ]);
     return block.receipts[0].result;

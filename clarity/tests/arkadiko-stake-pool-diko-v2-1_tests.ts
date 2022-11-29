@@ -429,9 +429,47 @@ Clarinet.test({
   }
 });
 
+Clarinet.test({
+  name: "diko-staking: can not stake, unstake or claim if contract not active",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let stakePool = new StakePoolDiko(chain, deployer);
+
+    let result = stakePool.stake(wallet_1, "arkadiko-token", 100);
+    result.expectOk().expectUintWithDecimals(100);
+
+    result = stakePool.setContractActive(deployer, false);
+    result.expectOk().expectBool(true);
+
+    result = stakePool.stake(wallet_1, "arkadiko-token", 100);
+    result.expectErr().expectUint(110004);
+
+    result = stakePool.unstake(wallet_1, "arkadiko-token", 100);
+    result.expectErr().expectUint(110004);
+
+    result = stakePool.claimPendingRewards(wallet_1);
+    result.expectErr().expectUint(110004);
+  }
+});
+
 // ---------------------------------------------------------
 // Errors
 // ---------------------------------------------------------
+
+Clarinet.test({
+  name: "diko-staking: only admin can activate/deactivate contract",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_3 = accounts.get("wallet_3")!;
+
+    let stakePool = new StakePoolDiko(chain, deployer);
+
+    let result = stakePool.setContractActive(wallet_3, false);
+    result.expectErr().expectUint(110001);
+  }
+});
 
 Clarinet.test({
   name: "diko-staking: only admin can set epoch length",
@@ -496,5 +534,3 @@ Clarinet.test({
     result.expectErr().expectUint(110003);
   }
 });
-
-// TODO: check esDIKO, USDA, MP reward distribution over 3 users

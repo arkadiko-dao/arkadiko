@@ -102,5 +102,14 @@ class Vesting {
     ]);
     return block.receipts[0].result;
   }
+
+  setContractActive(user: Account, active: boolean) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-vest-esdiko-v1-1", "set-contract-active", [
+        types.bool(active),
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
 }
 export { Vesting };

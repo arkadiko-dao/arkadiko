@@ -239,6 +239,34 @@ Clarinet.test({
   }
 });
 
+Clarinet.test({
+  name: "stake-pool-lp: can not stake, unstake or claim if contract not active",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_3 = accounts.get("wallet_3")!;
+
+    let stakePool = new StakePoolLp(chain, deployer);
+
+    let result = stakePool.stake(wallet_3, wstxUsdaPoolAddress, 10);
+    result.expectOk().expectUintWithDecimals(10);
+
+    result = stakePool.setContractActive(deployer, false);
+    result.expectOk().expectBool(true);
+
+    result = stakePool.stake(wallet_3, wstxUsdaPoolAddress, 10);
+    result.expectErr().expectUint(110004);
+
+    result = stakePool.unstake(wallet_3, wstxUsdaPoolAddress, 10);
+    result.expectErr().expectUint(110004);
+
+    result = stakePool.claimPendingRewards(wallet_3, wstxUsdaPoolAddress);
+    result.expectErr().expectUint(110004);
+
+    result = stakePool.stakePendingRewards(wallet_3, wstxUsdaPoolAddress);
+    result.expectErr().expectUint(110004);
+  }
+});
+
 // ---------------------------------------------------------
 // Errors
 // ---------------------------------------------------------
@@ -257,13 +285,25 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "stake-pool-lp: only admin can activate/deactivate contract",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_3 = accounts.get("wallet_3")!;
+
+    let stakePool = new StakePoolLp(chain, deployer);
+
+    let result = stakePool.setContractActive(wallet_3, false);
+    result.expectErr().expectUint(110001);
+  }
+});
+
+Clarinet.test({
   name: "stake-pool-lp: can not unstake more than staked",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_3 = accounts.get("wallet_3")!;
 
     let stakePool = new StakePoolLp(chain, deployer);
-    let esDikoToken = new EsDikoToken(chain, deployer);
 
     let result = stakePool.stake(wallet_3, wstxUsdaPoolAddress, 10);
     result.expectOk().expectUintWithDecimals(10);

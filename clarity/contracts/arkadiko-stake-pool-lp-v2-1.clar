@@ -13,6 +13,13 @@
 (define-constant ERR-NOT-AUTHORIZED (err u110001))
 (define-constant ERR-WRONG-TOKEN (err u110002))
 (define-constant ERR-INSUFFICIENT-STAKE (err u110003))
+(define-constant ERR-INACTIVE (err u110004))
+
+;; ---------------------------------------------------------
+;; Variables
+;; ---------------------------------------------------------
+
+(define-data-var contract-active bool true)
 
 ;; ---------------------------------------------------------
 ;; Maps
@@ -45,6 +52,11 @@
 ;; ---------------------------------------------------------
 ;; Getters
 ;; ---------------------------------------------------------
+
+;; @desc check if contract is activate
+(define-read-only (get-contract-active)
+  (var-get contract-active)
+)
 
 ;; @desc get token info
 (define-read-only (get-token-info-of (token principal))
@@ -90,6 +102,7 @@
     (token-info (get-token-info-of (contract-of token)))
   )
     (asserts! (get enabled token-info) ERR-WRONG-TOKEN)
+    (asserts! (get-contract-active) ERR-INACTIVE)
 
     ;; This method will increase the cumm-rewards-per-stake, and set it for the staker
     (try! (claim-pending-rewards (contract-of token)))
@@ -124,6 +137,7 @@
     (staker tx-sender)
     (token-info (get-token-info-of (contract-of token)))
   )
+    (asserts! (get-contract-active) ERR-INACTIVE)
     (asserts! (get enabled (get-token-info-of (contract-of token))) ERR-WRONG-TOKEN)
     (asserts! (<= amount (get total-staked (get-staker-info-of staker (contract-of token)))) ERR-INSUFFICIENT-STAKE)
 
@@ -186,6 +200,7 @@
     (pending-rewards (unwrap-panic (get-pending-rewards staker token)))
   )
     (asserts! (> pending-rewards u0) (ok u0))
+    (asserts! (get-contract-active) ERR-INACTIVE)
 
     ;; Mint esDIKO
     (try! (contract-call? .arkadiko-dao mint-token .escrowed-diko-token pending-rewards staker))
@@ -206,6 +221,7 @@
   (let (
     (claimed-amount (try! (claim-pending-rewards token)))
   )
+    (asserts! (get-contract-active) ERR-INACTIVE)
     (contract-call? diko-pool stake .escrowed-diko-token claimed-amount vesting)
   )
 )
@@ -266,6 +282,17 @@
   ) 
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) ERR-NOT-AUTHORIZED)
     (map-set tokens { token: token } (merge token-info { enabled: enabled, rewards-rate: rewards-rate }))
+    (ok true)
+  )
+)
+
+;; @desc activate or deactivate contract
+;; @param active; activate or not
+;; @post bool; always true
+(define-public (set-contract-active (active bool))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) ERR-NOT-AUTHORIZED)
+    (var-set contract-active active)
     (ok true)
   )
 )

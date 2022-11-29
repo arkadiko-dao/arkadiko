@@ -282,9 +282,44 @@ Clarinet.test({
   },
 });
 
+Clarinet.test({
+  name: "vest-esdiko: can not start/end vesting or claim if contract not active",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let vesting = new Vesting(chain, deployer);
+
+    let result = vesting.setContractActive(deployer, false);
+    result.expectOk().expectBool(true);
+
+    result = vesting.startVesting(wallet_1, 100);
+    result.expectErr().expectUint(120003);
+
+    result = vesting.endVesting(wallet_1, 90);
+    result.expectErr().expectUint(120003);
+
+    result = vesting.claimDiko(wallet_1);
+    result.expectErr().expectUint(120003);
+  }
+});
+
 // ---------------------------------------------------------
 // Errors
 // ---------------------------------------------------------
+
+Clarinet.test({
+  name: "vest-esdiko: only admin can activate/deactivate contract",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let vesting = new Vesting(chain, deployer);
+
+    let result = vesting.setContractActive(wallet_1, false);
+    result.expectErr().expectUint(120001);
+  }
+});
 
 Clarinet.test({
   name: "vest-esdiko: only admin can set required staking",
