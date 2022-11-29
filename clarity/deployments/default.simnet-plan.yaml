@@ -171,8 +171,6 @@ plan:
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/stdiko-token.clar
             clarity-version: 1
-    - id: 1
-      transactions:
         - emulated-contract-publish:
             contract-name: arkadiko-governance-v2-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
@@ -298,8 +296,6 @@ plan:
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/arkadiko-auction-engine-trait-v1.clar
             clarity-version: 1
-    - id: 2
-      transactions:
         - emulated-contract-publish:
             contract-name: arkadiko-liquidator-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
@@ -425,8 +421,6 @@ plan:
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/arkadiko-oracle-v1-1.clar
             clarity-version: 1
-    - id: 3
-      transactions:
         - emulated-contract-publish:
             contract-name: arkadiko-governance-v3-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
