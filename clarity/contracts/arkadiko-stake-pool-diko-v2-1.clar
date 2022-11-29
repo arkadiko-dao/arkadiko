@@ -20,7 +20,7 @@
 ;; ---------------------------------------------------------
 
 (define-data-var total-staked uint u0) ;; DIKO, esDIKO & MultiplierPoints
-(define-data-var esdiko-block-rewards uint u1000000) ;; TODO: set for mainnet
+(define-data-var esdiko-rewards-rate uint u100000) ;; TODO: set for mainnet
 
 (define-data-var revenue-initialised bool false) 
 (define-data-var revenue-epoch-length uint u1008) 
@@ -97,9 +97,9 @@
   (var-get total-staked)
 )
 
-;; @desc get esDIKO rewards per block
-(define-read-only (get-esdiko-block-rewards)
-  (var-get esdiko-block-rewards)
+;; @desc get esDIKO rewards rate
+(define-read-only (get-esdiko-rewards-rate)
+  (var-get esdiko-rewards-rate)
 )
 
 ;; @desc get revenue info
@@ -345,8 +345,9 @@
         (ok u0)
       )
       (let (
+        (total-block-rewards (contract-call? .arkadiko-diko-guardian-v1-1 get-staking-rewards-per-block))
         (block-diff (- block-height (get last-reward-increase-block (get-reward-of .escrowed-diko-token))))
-        (total-rewards-to-distribute (* (var-get esdiko-block-rewards) block-diff))
+        (total-rewards-to-distribute (/ (* (var-get esdiko-rewards-rate) block-diff total-block-rewards) u1000000))
         (reward-added-per-token (/ (* total-rewards-to-distribute u1000000) current-total-staked))
         (new-cumm-reward-per-stake (+ current-cumm-reward-per-stake reward-added-per-token))
       )
@@ -447,12 +448,12 @@
   )
 )
 
-;; @desc update esDIKO rewards per block
-;; @post bool; rewards per block
-(define-public (set-esdiko-block-rewards (block-rewards uint))
+;; @desc update esDIKO rewards rate
+;; @post bool; rewards rate
+(define-public (set-esdiko-rewards-rate (block-rewards uint))
   (begin 
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) ERR-NOT-AUTHORIZED)
-    (var-set esdiko-block-rewards block-rewards)
+    (var-set esdiko-rewards-rate block-rewards)
     (ok block-rewards)
   )
 )

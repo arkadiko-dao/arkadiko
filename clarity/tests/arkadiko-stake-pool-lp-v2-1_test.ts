@@ -35,17 +35,17 @@ Clarinet.test({
     let call:any = stakePool.getTokenInfoOf(dikoUsdaPoolAddress);
     call.result.expectTuple()["enabled"].expectBool(true);
     call.result.expectTuple()["total-staked"].expectUintWithDecimals(0);
-    call.result.expectTuple()["block-rewards"].expectUintWithDecimals(1);
+    call.result.expectTuple()["rewards-rate"].expectUintWithDecimals(0.25);
     call.result.expectTuple()["last-reward-increase-block"].expectUint(0);
     call.result.expectTuple()["cumm-reward-per-stake"].expectUintWithDecimals(0);
 
     call = stakePool.getTokenInfoOf(wstxUsdaPoolAddress);
     call.result.expectTuple()["enabled"].expectBool(true);
-    call.result.expectTuple()["block-rewards"].expectUintWithDecimals(2);
+    call.result.expectTuple()["rewards-rate"].expectUintWithDecimals(0.35);
 
     call = stakePool.getTokenInfoOf(xbtcUsdaPoolAddress);
     call.result.expectTuple()["enabled"].expectBool(true);
-    call.result.expectTuple()["block-rewards"].expectUintWithDecimals(3);
+    call.result.expectTuple()["rewards-rate"].expectUintWithDecimals(0.1);
 
     call = stakePool.getTokenInfoOf("usda-token");
     call.result.expectTuple()["enabled"].expectBool(false);
@@ -71,30 +71,33 @@ Clarinet.test({
     let result = stakePool.stake(wallet_1, wstxUsdaPoolAddress, 10);
     result.expectOk().expectUintWithDecimals(10);
 
+    // At the start there are 626 esDIKO rewards per block, 35% for this pool = 219
+    // 219 / 10 = 21.9
     let call:any = stakePool.getStakerInfoOf(wallet_1, wstxUsdaPoolAddress);
     call.result.expectTuple()["total-staked"].expectUintWithDecimals(10);
-    call.result.expectTuple()["cumm-reward-per-stake"].expectUintWithDecimals(0.2);
+    call.result.expectTuple()["cumm-reward-per-stake"].expectUintWithDecimals(21.923967);
 
     call = stakePool.getTokenInfoOf(wstxUsdaPoolAddress);
     call.result.expectTuple()["total-staked"].expectUintWithDecimals(10);
-    call.result.expectTuple()["block-rewards"].expectUintWithDecimals(2);
+    call.result.expectTuple()["rewards-rate"].expectUintWithDecimals(0.35);
     call.result.expectTuple()["last-reward-increase-block"].expectUint(1);
-    call.result.expectTuple()["cumm-reward-per-stake"].expectUintWithDecimals(0.2);
+    call.result.expectTuple()["cumm-reward-per-stake"].expectUintWithDecimals(21.923967);
 
     call = stakePool.calculateCummRewardPerStake(wstxUsdaPoolAddress);
-    call.result.expectUintWithDecimals(0.4);
+    call.result.expectUintWithDecimals(43.847934);
 
     chain.mineEmptyBlock(10);  
 
+    // 21.9 * 12 blocks = 263
     call = stakePool.calculateCummRewardPerStake(wstxUsdaPoolAddress);
-    call.result.expectUintWithDecimals(2.4);
+    call.result.expectUintWithDecimals(263.087605);
 
-    // 2 rewards per block, for 10 blocks
+    // 219 * 11 blocks = ~2409
     call = stakePool.getPendingRewards(wallet_1, wstxUsdaPoolAddress);
-    call.result.expectOk().expectUintWithDecimals(22);
+    call.result.expectOk().expectUintWithDecimals(2411.63638);
 
     result = stakePool.claimPendingRewards(wallet_1, wstxUsdaPoolAddress);
-    result.expectOk().expectUintWithDecimals(22);
+    result.expectOk().expectUintWithDecimals(2411.63638);
   }
 });
 
@@ -113,13 +116,13 @@ Clarinet.test({
     chain.mineEmptyBlock(10);  
 
     let call = stakePool.getPendingRewards(wallet_1, wstxUsdaPoolAddress);
-    call.result.expectOk().expectUintWithDecimals(22);
+    call.result.expectOk().expectUintWithDecimals(2411.63638);
 
     result = stakePool.unstake(wallet_1, wstxUsdaPoolAddress, 10);
     result.expectOk().expectUintWithDecimals(10);
 
     call = esDikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(10022); 
+    call.result.expectOk().expectUintWithDecimals(12411.63638); 
   }
 });
 
@@ -138,14 +141,14 @@ Clarinet.test({
     chain.mineEmptyBlock(10);  
 
     let call = stakePool.getPendingRewards(wallet_1, wstxUsdaPoolAddress);
-    call.result.expectOk().expectUintWithDecimals(22);
+    call.result.expectOk().expectUintWithDecimals(2411.63638);
 
     result = stakePool.stakePendingRewards(wallet_1, wstxUsdaPoolAddress);
-    result.expectOk().expectUintWithDecimals(22);
+    result.expectOk().expectUintWithDecimals(2411.63638);
 
     call = stakePoolDiko.getStakeOf(wallet_1);
-    call.result.expectTuple()["amount"].expectUintWithDecimals(22);    
-    call.result.expectTuple()["esdiko"].expectUintWithDecimals(22);    
+    call.result.expectTuple()["amount"].expectUintWithDecimals(2411.63638);    
+    call.result.expectTuple()["esdiko"].expectUintWithDecimals(2411.63638);    
   }
 });
 
@@ -192,13 +195,13 @@ Clarinet.test({
     chain.mineEmptyBlock(10);  
 
     let call = stakePool.getPendingRewards(wallet_1, wstxUsdaPoolAddress);
-    call.result.expectOk().expectUintWithDecimals(22);
+    call.result.expectOk().expectUintWithDecimals(2411.63638);
 
-    result = stakePool.setTokenInfo(deployer, wstxUsdaPoolAddress, true, 1);
+    result = stakePool.setTokenInfo(deployer, wstxUsdaPoolAddress, true, 0.35/2);
     result.expectOk().expectBool(true);
 
     call = stakePool.getPendingRewards(wallet_1, wstxUsdaPoolAddress);
-    call.result.expectOk().expectUintWithDecimals(12);
+    call.result.expectOk().expectUintWithDecimals(1315.43803);
   }
 });
 

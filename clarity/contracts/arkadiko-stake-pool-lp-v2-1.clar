@@ -25,7 +25,7 @@
   {
     enabled: bool,
     total-staked: uint,
-    block-rewards: uint,
+    rewards-rate: uint,
     last-reward-increase-block: uint,
     cumm-reward-per-stake: uint
   }
@@ -50,7 +50,7 @@
 ;; @desc get token info
 (define-read-only (get-token-info-of (token principal))
   (default-to
-    { enabled: false, total-staked: u0, block-rewards: u0, last-reward-increase-block: u0, cumm-reward-per-stake: u0 }
+    { enabled: false, total-staked: u0, rewards-rate: u0, last-reward-increase-block: u0, cumm-reward-per-stake: u0 }
     (map-get? tokens { token: token })
   )
 )
@@ -226,8 +226,9 @@
     (if (is-eq (get total-staked token-info) u0)
       u0
       (let (
+        (total-block-rewards (contract-call? .arkadiko-diko-guardian-v1-1 get-staking-rewards-per-block))
         (block-diff (- block-height (get last-reward-increase-block token-info)))
-        (total-rewards-to-distribute (* (get block-rewards token-info) block-diff))
+        (total-rewards-to-distribute (/ (* (get rewards-rate token-info) block-diff total-block-rewards) u1000000))
         (reward-added-per-token (/ (* total-rewards-to-distribute u1000000) (get total-staked token-info)))
         (new-cumm-reward-per-stake (+ (get cumm-reward-per-stake token-info) reward-added-per-token))
       )
@@ -244,14 +245,14 @@
 ;; @desc set token info
 ;; @param token; token to update
 ;; @param enabled; if token is enabled
-;; @param block-rewards; rewards per block for staking token
+;; @param rewards-rate; rewards rate for staking token
 ;; @post bool; always true
-(define-public (set-token-info (token principal) (enabled bool) (block-rewards uint))
+(define-public (set-token-info (token principal) (enabled bool) (rewards-rate uint))
   (let (
     (token-info (get-token-info-of token))
   ) 
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) ERR-NOT-AUTHORIZED)
-    (map-set tokens { token: token } (merge token-info { enabled: enabled, block-rewards: block-rewards }))
+    (map-set tokens { token: token } (merge token-info { enabled: enabled, rewards-rate: rewards-rate }))
     (ok true)
   )
 )
@@ -261,25 +262,25 @@
 ;; ---------------------------------------------------------
 
 (begin
-  ;; TODO: update block-rewards for mainnet
+  ;; TODO: update rewards-rate for mainnet
   (map-set tokens { token: .arkadiko-swap-token-diko-usda } {
     enabled: true,
     total-staked: u0,
-    block-rewards: u1000000,
+    rewards-rate: u250000, ;; 25%
     last-reward-increase-block: u0,
     cumm-reward-per-stake: u0 
   })
   (map-set tokens { token: .arkadiko-swap-token-wstx-usda } {
     enabled: true,
     total-staked: u0,
-    block-rewards: u2000000,
+    rewards-rate: u350000, ;; 35%
     last-reward-increase-block: u0,
     cumm-reward-per-stake: u0
   })
   (map-set tokens { token: .arkadiko-swap-token-xbtc-usda } {
     enabled: true,
     total-staked: u0,
-    block-rewards: u3000000,
+    rewards-rate: u100000, ;; 10%
     last-reward-increase-block: u0,
     cumm-reward-per-stake: u0
   })
