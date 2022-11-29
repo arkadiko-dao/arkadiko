@@ -92,5 +92,4 @@
 (begin
   ;; TODO: do not do this on testnet or mainnet
   (try! (ft-mint? wstx-usda u100000000 'ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC))
-  (try! (ft-mint? wstx-usda u100000000 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5))
 )

@@ -170,7 +170,7 @@ export { LiquidationRewards };
 
 
 // ---------------------------------------------------------
-// Liquidation rewards Diko
+// Liquidation rewards esDiko
 // ---------------------------------------------------------
 
 class LiquidationRewardsEsDiko {

@@ -64,16 +64,16 @@ Clarinet.test({
   name: "stake-pool-lp: stake and claim",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_3 = accounts.get("wallet_3")!;
 
     let stakePool = new StakePoolLp(chain, deployer);
 
-    let result = stakePool.stake(wallet_1, wstxUsdaPoolAddress, 10);
+    let result = stakePool.stake(wallet_3, wstxUsdaPoolAddress, 10);
     result.expectOk().expectUintWithDecimals(10);
 
     // At the start there are 626 esDIKO rewards per block, 35% for this pool = 219
     // 219 / 10 = 21.9
-    let call:any = stakePool.getStakerInfoOf(wallet_1, wstxUsdaPoolAddress);
+    let call:any = stakePool.getStakerInfoOf(wallet_3, wstxUsdaPoolAddress);
     call.result.expectTuple()["total-staked"].expectUintWithDecimals(10);
     call.result.expectTuple()["cumm-reward-per-stake"].expectUintWithDecimals(21.923967);
 
@@ -93,10 +93,10 @@ Clarinet.test({
     call.result.expectUintWithDecimals(263.087605);
 
     // 219 * 11 blocks = ~2409
-    call = stakePool.getPendingRewards(wallet_1, wstxUsdaPoolAddress);
+    call = stakePool.getPendingRewards(wallet_3, wstxUsdaPoolAddress);
     call.result.expectOk().expectUintWithDecimals(2411.63638);
 
-    result = stakePool.claimPendingRewards(wallet_1, wstxUsdaPoolAddress);
+    result = stakePool.claimPendingRewards(wallet_3, wstxUsdaPoolAddress);
     result.expectOk().expectUintWithDecimals(2411.63638);
   }
 });
@@ -105,24 +105,24 @@ Clarinet.test({
   name: "stake-pool-lp: can unstake, which claims rewards",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_3 = accounts.get("wallet_3")!;
 
     let stakePool = new StakePoolLp(chain, deployer);
     let esDikoToken = new EsDikoToken(chain, deployer);
 
-    let result = stakePool.stake(wallet_1, wstxUsdaPoolAddress, 10);
+    let result = stakePool.stake(wallet_3, wstxUsdaPoolAddress, 10);
     result.expectOk().expectUintWithDecimals(10);
 
     chain.mineEmptyBlock(10);  
 
-    let call = stakePool.getPendingRewards(wallet_1, wstxUsdaPoolAddress);
+    let call = stakePool.getPendingRewards(wallet_3, wstxUsdaPoolAddress);
     call.result.expectOk().expectUintWithDecimals(2411.63638);
 
-    result = stakePool.unstake(wallet_1, wstxUsdaPoolAddress, 10);
+    result = stakePool.unstake(wallet_3, wstxUsdaPoolAddress, 10);
     result.expectOk().expectUintWithDecimals(10);
 
-    call = esDikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(12411.63638); 
+    call = esDikoToken.balanceOf(wallet_3.address);
+    call.result.expectOk().expectUintWithDecimals(2411.63638); 
   }
 });
 
@@ -130,23 +130,23 @@ Clarinet.test({
   name: "stake-pool-lp: can immediately stake esDIKO rewards",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_3 = accounts.get("wallet_3")!;
 
     let stakePool = new StakePoolLp(chain, deployer);
     let stakePoolDiko = new StakePoolDikoV2(chain, deployer);
 
-    let result = stakePool.stake(wallet_1, wstxUsdaPoolAddress, 10);
+    let result = stakePool.stake(wallet_3, wstxUsdaPoolAddress, 10);
     result.expectOk().expectUintWithDecimals(10);
 
     chain.mineEmptyBlock(10);  
 
-    let call = stakePool.getPendingRewards(wallet_1, wstxUsdaPoolAddress);
+    let call = stakePool.getPendingRewards(wallet_3, wstxUsdaPoolAddress);
     call.result.expectOk().expectUintWithDecimals(2411.63638);
 
-    result = stakePool.stakePendingRewards(wallet_1, wstxUsdaPoolAddress);
+    result = stakePool.stakePendingRewards(wallet_3, wstxUsdaPoolAddress);
     result.expectOk().expectUintWithDecimals(2411.63638);
 
-    call = stakePoolDiko.getStakeOf(wallet_1);
+    call = stakePoolDiko.getStakeOf(wallet_3);
     call.result.expectTuple()["amount"].expectUintWithDecimals(2411.63638);    
     call.result.expectTuple()["esdiko"].expectUintWithDecimals(2411.63638);    
   }
@@ -160,23 +160,23 @@ Clarinet.test({
   name: "stake-pool-lp: admin can enable/disable token",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_3 = accounts.get("wallet_3")!;
 
     let stakePool = new StakePoolLp(chain, deployer);
 
-    let result = stakePool.stake(wallet_1, wstxUsdaPoolAddress, 10);
+    let result = stakePool.stake(wallet_3, wstxUsdaPoolAddress, 10);
     result.expectOk().expectUintWithDecimals(10);
 
     result = stakePool.setTokenInfo(deployer, wstxUsdaPoolAddress, false, 2);
     result.expectOk().expectBool(true);
 
-    result = stakePool.stake(wallet_1, wstxUsdaPoolAddress, 10);
+    result = stakePool.stake(wallet_3, wstxUsdaPoolAddress, 10);
     result.expectErr().expectUint(110002);
 
     result = stakePool.setTokenInfo(deployer, wstxUsdaPoolAddress, true, 2);
     result.expectOk().expectBool(true);
 
-    result = stakePool.stake(wallet_1, wstxUsdaPoolAddress, 10);
+    result = stakePool.stake(wallet_3, wstxUsdaPoolAddress, 10);
     result.expectOk().expectUintWithDecimals(10);
   }
 });
@@ -185,22 +185,22 @@ Clarinet.test({
   name: "stake-pool-lp: admin can set block rewards for token",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_3 = accounts.get("wallet_3")!;
 
     let stakePool = new StakePoolLp(chain, deployer);
 
-    let result = stakePool.stake(wallet_1, wstxUsdaPoolAddress, 10);
+    let result = stakePool.stake(wallet_3, wstxUsdaPoolAddress, 10);
     result.expectOk().expectUintWithDecimals(10);
 
     chain.mineEmptyBlock(10);  
 
-    let call = stakePool.getPendingRewards(wallet_1, wstxUsdaPoolAddress);
+    let call = stakePool.getPendingRewards(wallet_3, wstxUsdaPoolAddress);
     call.result.expectOk().expectUintWithDecimals(2411.63638);
 
     result = stakePool.setTokenInfo(deployer, wstxUsdaPoolAddress, true, 0.35/2);
     result.expectOk().expectBool(true);
 
-    call = stakePool.getPendingRewards(wallet_1, wstxUsdaPoolAddress);
+    call = stakePool.getPendingRewards(wallet_3, wstxUsdaPoolAddress);
     call.result.expectOk().expectUintWithDecimals(1315.43803);
   }
 });
@@ -213,11 +213,11 @@ Clarinet.test({
   name: "stake-pool-lp: only admin can update token info",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_3 = accounts.get("wallet_3")!;
 
     let stakePool = new StakePoolLp(chain, deployer);
 
-    let result = stakePool.setTokenInfo(wallet_1, wstxUsdaPoolAddress, true, 1);
+    let result = stakePool.setTokenInfo(wallet_3, wstxUsdaPoolAddress, true, 1);
     result.expectErr().expectUint(110001);
   }
 });
@@ -226,15 +226,15 @@ Clarinet.test({
   name: "stake-pool-lp: can not unstake more than staked",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_3 = accounts.get("wallet_3")!;
 
     let stakePool = new StakePoolLp(chain, deployer);
     let esDikoToken = new EsDikoToken(chain, deployer);
 
-    let result = stakePool.stake(wallet_1, wstxUsdaPoolAddress, 10);
+    let result = stakePool.stake(wallet_3, wstxUsdaPoolAddress, 10);
     result.expectOk().expectUintWithDecimals(10);
 
-    result = stakePool.unstake(wallet_1, wstxUsdaPoolAddress, 11);
+    result = stakePool.unstake(wallet_3, wstxUsdaPoolAddress, 11);
     result.expectErr().expectUint(110003);
   }
 });
