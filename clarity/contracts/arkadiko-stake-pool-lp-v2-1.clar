@@ -4,6 +4,8 @@
 ;; Traits
 ;; TODO: update address
 (use-trait ft-trait 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sip-010-trait-ft-standard.sip-010-trait)
+(use-trait stake-pool-diko-trait .arkadiko-stake-pool-diko-trait-v2.stake-pool-diko-trait)
+(use-trait vest-esdiko-trait .arkadiko-vest-esdiko-trait-v1.vest-esdiko-trait)
 
 ;; ---------------------------------------------------------
 ;; Constants
@@ -183,14 +185,15 @@
 )
 
 ;; @desc stake all pending rewards
+;; @param diko-pool; pool to stake rewards in
+;; @param vesting; vesting contract
 ;; @param token; stake token
 ;; @post uint; returns claimed rewards
-(define-public (stake-pending-rewards (token principal))
+(define-public (stake-pending-rewards (diko-pool <stake-pool-diko-trait>) (vesting <vest-esdiko-trait>) (token principal))
   (let (
     (claimed-amount (try! (claim-pending-rewards token)))
   )
-    ;; TODO: make contract dynamic
-    (contract-call? .arkadiko-stake-pool-diko-v2-1 stake .escrowed-diko-token claimed-amount)
+    (contract-call? diko-pool stake .escrowed-diko-token claimed-amount vesting)
   )
 )
 

@@ -124,6 +124,9 @@ path = "contracts/stdiko-token.clar"
 [contracts.arkadiko-stake-pool-diko-trait-v1]
 path = "contracts/arkadiko-stake-pool-diko-trait-v1.clar"
 
+[contracts.arkadiko-stake-pool-diko-trait-v2]
+path = "contracts/arkadiko-stake-pool-diko-trait-v2.clar"
+
 [contracts.arkadiko-stake-pool-diko-v1-1]
 path = "contracts/arkadiko-stake-pool-diko-v1-1.clar"
 
@@ -135,6 +138,9 @@ path = "contracts/arkadiko-stake-pool-diko-v2-1.clar"
 
 [contracts.arkadiko-stake-pool-lp-v2-1]
 path = "contracts/arkadiko-stake-pool-lp-v2-1.clar"
+
+[contracts.arkadiko-vest-esdiko-trait-v1]
+path = "contracts/arkadiko-vest-esdiko-trait-v1.clar"
 
 [contracts.arkadiko-vest-esdiko-v1-1]
 path = "contracts/arkadiko-vest-esdiko-v1-1.clar"

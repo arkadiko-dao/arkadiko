@@ -1,6 +1,8 @@
 ;; @contract esDIKO vesting
 ;; @version 1.0
 
+(impl-trait .arkadiko-vest-esdiko-trait-v1.vest-esdiko-trait)
+
 ;; ---------------------------------------------------------
 ;; Constants
 ;; ---------------------------------------------------------

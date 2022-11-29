@@ -311,6 +311,7 @@ class StakePoolDikoV2 {
       Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "stake", [
         types.principal(Utils.qualifiedName(token)),
         types.uint(amount * 1000000),
+        types.principal(Utils.qualifiedName("arkadiko-vest-esdiko-v1-1"))
       ], user.address)
     ]);
     return block.receipts[0].result;
@@ -321,6 +322,7 @@ class StakePoolDikoV2 {
       Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "unstake", [
         types.principal(Utils.qualifiedName(token)),
         types.uint(amount * 1000000),
+        types.principal(Utils.qualifiedName("arkadiko-vest-esdiko-v1-1"))
       ], user.address)
     ]);
     return block.receipts[0].result;
@@ -636,7 +638,7 @@ class StakePoolLp {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-stake-pool-lp-v2-1", "stake", [
         types.principal(Utils.qualifiedName(token)),
-        types.uint(amount * 1000000)
+        types.uint(amount * 1000000),
       ], staker.address)
     ]);
     return block.receipts[0].result;
@@ -646,7 +648,7 @@ class StakePoolLp {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-stake-pool-lp-v2-1", "unstake", [
         types.principal(Utils.qualifiedName(token)),
-        types.uint(amount * 1000000)
+        types.uint(amount * 1000000),
       ], staker.address)
     ]);
     return block.receipts[0].result;
@@ -664,6 +666,8 @@ class StakePoolLp {
   stakePendingRewards(staker: Account, token: string) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-stake-pool-lp-v2-1", "stake-pending-rewards", [
+        types.principal(Utils.qualifiedName("arkadiko-stake-pool-diko-v2-1")),
+        types.principal(Utils.qualifiedName("arkadiko-vest-esdiko-v1-1")),
         types.principal(Utils.qualifiedName(token)),
       ], staker.address)
     ]);

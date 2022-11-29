@@ -2,10 +2,10 @@
 ;; @version 2.0
 
 ;; Traits
+(impl-trait .arkadiko-stake-pool-diko-trait-v2.stake-pool-diko-trait)
 ;; TODO: update address
 (use-trait ft-trait 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sip-010-trait-ft-standard.sip-010-trait)
-;; Old trait, needed to not break governance contract
-(impl-trait .arkadiko-stake-pool-diko-trait-v1.stake-pool-diko-trait)
+(use-trait vest-esdiko-trait .arkadiko-vest-esdiko-trait-v1.vest-esdiko-trait)
 
 ;; ---------------------------------------------------------
 ;; Constants
@@ -124,8 +124,9 @@
 ;; @desc stake tokens in the pool
 ;; @param token; token to stake
 ;; @param amount; amount to stake
+;; @param vesting; vesting contract to update with new stake amount
 ;; @post uint; returns amount of tokens staked
-(define-public (stake (token <ft-trait>) (amount uint))
+(define-public (stake (token <ft-trait>) (amount uint) (vesting <vest-esdiko-trait>))
   (let (
     (staker tx-sender)
   )
@@ -157,8 +158,7 @@
       )
 
       ;; Notify vesting
-      ;; TODO: make contract dynamic
-      (try! (contract-call? .arkadiko-vest-esdiko-v1-1 update-staking staker (get amount (get-stake-of staker))))
+      (try! (contract-call? vesting update-staking staker (get amount (get-stake-of staker))))
 
       (ok amount)
     )
@@ -168,8 +168,9 @@
 ;; @desc unstake tokens in the pool
 ;; @param token; token to unstake
 ;; @param amount; amount to unstake
+;; @param vesting; vesting contract to update with new stake amount
 ;; @post uint; returns amount of tokens unstaked
-(define-public (unstake (token <ft-trait>) (amount uint))
+(define-public (unstake (token <ft-trait>) (amount uint) (vesting <vest-esdiko-trait>))
   (let (
     (staker tx-sender)
   )
@@ -209,8 +210,7 @@
       )
 
       ;; Notify vesting
-      ;; TODO: make contract dynamic
-      (try! (contract-call? .arkadiko-vest-esdiko-v1-1 update-staking staker (get amount (get-stake-of staker))))
+      (try! (contract-call? vesting update-staking staker (get amount (get-stake-of staker))))
 
       (ok amount)
     )    
