@@ -299,4 +299,4 @@
 ;; contract initialisation
 (set-contract-owner .executor-dao)
 
-(try! (ft-mint? auto-alex u10000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
+(try! (ft-mint? auto-alex u100000000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))

@@ -9,7 +9,7 @@ console.log('Trying to burn USDA for auction', auctionId);
 
 const txOptions = {
   contractAddress: CONTRACT_ADDRESS,
-  contractName: 'arkadiko-auction-engine-v4-2',
+  contractName: 'arkadiko-auction-engine-v4-3',
   functionName: 'burn-usda',
   functionArgs: [
     tx.uintCV(auctionId),

@@ -1,8 +1,8 @@
 ;; @contract Auction Engine - Sells off vault collateral to raise USDA
-;; @version 4.1
+;; @version 4.3
 
 (use-trait vault-trait .arkadiko-vault-trait-v1.vault-trait)
-(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
+(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait) ;; TODO: update mainnet address
 (use-trait vault-manager-trait .arkadiko-vault-manager-trait-v1.vault-manager-trait)
 (use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
 (use-trait collateral-types-trait .arkadiko-collateral-types-trait-v1.collateral-types-trait)

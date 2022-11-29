@@ -21,8 +21,8 @@ export const Balances = () => {
         'Vault Manager. Freddie is an abstraction layer that interacts with collateral type reserves.',
     },
     {
-      address: `${contractAddress}.arkadiko-auction-engine-v4-2`,
-      name: 'Auction Engine v4-2',
+      address: `${contractAddress}.arkadiko-auction-engine-v4-3`,
+      name: 'Auction Engine v4.3',
       description: 'Sells off vault collateral to raise USDA.',
     },
     {

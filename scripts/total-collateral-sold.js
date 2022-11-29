@@ -21,7 +21,7 @@ async function getVaultById(vaultId) {
 async function getAuctionById(auctionId) {
   const vaultTx = await tx.callReadOnlyFunction({
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-auction-engine-v4-2",
+    contractName: "arkadiko-auction-engine-v4-3",
     functionName: "get-auction-by-id",
     functionArgs: [tx.uintCV(auctionId)],
     senderAddress: CONTRACT_ADDRESS,
