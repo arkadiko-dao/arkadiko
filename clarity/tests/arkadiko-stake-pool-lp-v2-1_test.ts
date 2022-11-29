@@ -7,7 +7,8 @@ import {
 } from "https://deno.land/x/clarinet/index.ts";
 
 import { 
-  StakePoolLp
+  StakePoolLp,
+  StakePoolDikoV2
 } from './models/arkadiko-tests-stake.ts';
 
 import { 
@@ -119,6 +120,32 @@ Clarinet.test({
 
     call = esDikoToken.balanceOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(10022); 
+  }
+});
+
+Clarinet.test({
+  name: "stake-pool-lp: can immediately stake esDIKO rewards",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let stakePool = new StakePoolLp(chain, deployer);
+    let stakePoolDiko = new StakePoolDikoV2(chain, deployer);
+
+    let result = stakePool.stake(wallet_1, wstxUsdaPoolAddress, 10);
+    result.expectOk().expectUintWithDecimals(10);
+
+    chain.mineEmptyBlock(10);  
+
+    let call = stakePool.getPendingRewards(wallet_1, wstxUsdaPoolAddress);
+    call.result.expectOk().expectUintWithDecimals(22);
+
+    result = stakePool.stakePendingRewards(wallet_1, wstxUsdaPoolAddress);
+    result.expectOk().expectUintWithDecimals(22);
+
+    call = stakePoolDiko.getStakeOf(wallet_1);
+    call.result.expectTuple()["amount"].expectUintWithDecimals(22);    
+    call.result.expectTuple()["esdiko"].expectUintWithDecimals(22);    
   }
 });
 

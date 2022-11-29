@@ -88,11 +88,11 @@
     
     ;; Update staker info
     (let (
-      (staker-info (get-staker-info-of staker (contract-of token)))
+      (new-staker-info (get-staker-info-of staker (contract-of token)))
       (new-token-info (get-token-info-of (contract-of token)))
     )
-      (map-set stakers { staker: staker, token: (contract-of token) } (merge staker-info { 
-        total-staked: (+ (get total-staked staker-info) amount),
+      (map-set stakers { staker: staker, token: (contract-of token) } (merge new-staker-info { 
+        total-staked: (+ (get total-staked new-staker-info) amount),
         cumm-reward-per-stake: (get cumm-reward-per-stake new-token-info)
       }))
       (ok amount)
@@ -124,11 +124,11 @@
 
     ;; Update staker info
     (let (
-      (staker-info (get-staker-info-of staker (contract-of token)))
+      (new-staker-info (get-staker-info-of staker (contract-of token)))
       (new-token-info (get-token-info-of (contract-of token)))
     )
-      (map-set stakers { staker: staker, token: (contract-of token) } (merge staker-info { 
-        total-staked: (- (get total-staked staker-info) amount),
+      (map-set stakers { staker: staker, token: (contract-of token) } (merge new-staker-info { 
+        total-staked: (- (get total-staked new-staker-info) amount),
         cumm-reward-per-stake: (get cumm-reward-per-stake new-token-info)
       }))
       (ok amount)
@@ -179,6 +179,18 @@
     (map-set stakers { staker: staker, token: token } (merge staker-info { cumm-reward-per-stake: (get cumm-reward-per-stake token-info) }))
 
     (ok pending-rewards)
+  )
+)
+
+;; @desc stake all pending rewards
+;; @param token; stake token
+;; @post uint; returns claimed rewards
+(define-public (stake-pending-rewards (token principal))
+  (let (
+    (claimed-amount (try! (claim-pending-rewards token)))
+  )
+    ;; TODO: make contract dynamic
+    (contract-call? .arkadiko-stake-pool-diko-v2-1 stake .escrowed-diko-token claimed-amount)
   )
 )
 

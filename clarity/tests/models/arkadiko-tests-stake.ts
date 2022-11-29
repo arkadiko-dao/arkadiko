@@ -661,6 +661,15 @@ class StakePoolLp {
     return block.receipts[0].result;
   }
 
+  stakePendingRewards(staker: Account, token: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-lp-v2-1", "stake-pending-rewards", [
+        types.principal(Utils.qualifiedName(token)),
+      ], staker.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
   increaseCummRewardPerStake(token: string) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-stake-pool-lp-v2-1", "increase-cumm-reward-per-stake", [
