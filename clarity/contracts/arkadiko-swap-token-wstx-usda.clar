@@ -87,7 +87,6 @@
   )
 )
 
-
 ;; Test environments
 (begin
   ;; TODO: do not do this on testnet or mainnet

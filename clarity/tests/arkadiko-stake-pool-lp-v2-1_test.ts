@@ -50,9 +50,19 @@ Clarinet.test({
     call = stakePool.getTokenInfoOf("usda-token");
     call.result.expectTuple()["enabled"].expectBool(false);
 
+    call = stakePool.getTokenInfoManyOf([dikoUsdaPoolAddress, wstxUsdaPoolAddress, xbtcUsdaPoolAddress]);
+    call.result.expectList()[0].expectTuple()["rewards-rate"].expectUintWithDecimals(0.25);
+    call.result.expectList()[1].expectTuple()["rewards-rate"].expectUintWithDecimals(0.35);
+    call.result.expectList()[2].expectTuple()["rewards-rate"].expectUintWithDecimals(0.1);
+
     call = stakePool.getStakerInfoOf(deployer, dikoUsdaPoolAddress);
     call.result.expectTuple()["total-staked"].expectUintWithDecimals(0);
     call.result.expectTuple()["cumm-reward-per-stake"].expectUintWithDecimals(0);
+
+    call = stakePool.getStakerInfoManyOf(deployer, [dikoUsdaPoolAddress, wstxUsdaPoolAddress, xbtcUsdaPoolAddress]);
+    call.result.expectList()[0].expectTuple()["total-staked"].expectUintWithDecimals(0);
+    call.result.expectList()[1].expectTuple()["total-staked"].expectUintWithDecimals(0);
+    call.result.expectList()[2].expectTuple()["total-staked"].expectUintWithDecimals(0);
   }
 });
 
@@ -149,6 +159,30 @@ Clarinet.test({
     call = stakePoolDiko.getStakeOf(wallet_3);
     call.result.expectTuple()["amount"].expectUintWithDecimals(2411.63638);    
     call.result.expectTuple()["esdiko"].expectUintWithDecimals(2411.63638);    
+  }
+});
+
+Clarinet.test({
+  name: "stake-pool-lp: get all staker info at once",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_3 = accounts.get("wallet_3")!;
+
+    let stakePool = new StakePoolLp(chain, deployer);
+
+    let result = stakePool.stake(wallet_3, dikoUsdaPoolAddress, 10);
+    result.expectOk().expectUintWithDecimals(10);
+
+    result = stakePool.stake(wallet_3, wstxUsdaPoolAddress, 20);
+    result.expectOk().expectUintWithDecimals(20);
+
+    result = stakePool.stake(wallet_3, xbtcUsdaPoolAddress, 30);
+    result.expectOk().expectUintWithDecimals(30);
+
+    let call:any = stakePool.getStakerInfoManyOf(wallet_3, [dikoUsdaPoolAddress, wstxUsdaPoolAddress, xbtcUsdaPoolAddress]);
+    call.result.expectList()[0].expectTuple()["total-staked"].expectUintWithDecimals(10);
+    call.result.expectList()[1].expectTuple()["total-staked"].expectUintWithDecimals(20);
+    call.result.expectList()[2].expectTuple()["total-staked"].expectUintWithDecimals(30);
   }
 });
 

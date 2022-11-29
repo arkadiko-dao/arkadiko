@@ -152,11 +152,26 @@ class StakePoolLp {
     ], this.deployer.address);
   }
 
+  getTokenInfoManyOf(tokens: string[]) {
+    const tokenContracts = tokens.map(token => types.principal(Utils.qualifiedName(token)));
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-lp-v2-1", "get-token-info-many-of", [
+      types.list(tokenContracts)
+    ], this.deployer.address);
+  }
+
   getStakerInfoOf(staker: Account, token: string) {
     return this.chain.callReadOnlyFn("arkadiko-stake-pool-lp-v2-1", "get-staker-info-of", [
       types.principal(staker.address),
       types.principal(Utils.qualifiedName(token))
     ], staker.address);
+  }
+
+  getStakerInfoManyOf(staker: Account, tokens: string[]) {
+    const tokenContracts = tokens.map(token => types.principal(Utils.qualifiedName(token)));
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-lp-v2-1", "get-staker-info-many-of", [
+      types.principal(staker.address),
+      types.list(tokenContracts)
+    ], this.deployer.address);
   }
 
   getPendingRewards(staker: Account, token: string) {

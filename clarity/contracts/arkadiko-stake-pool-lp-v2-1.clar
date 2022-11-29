@@ -54,11 +54,25 @@
   )
 )
 
+;; @desc get info for multiple tokens
+(define-read-only (get-token-info-many-of (token-list (list 10 principal)))
+  (map get-token-info-of token-list)
+)
+
 ;; @desc get staker info
 (define-read-only (get-staker-info-of (staker principal) (token principal))
   (default-to
     { total-staked: u0, cumm-reward-per-stake: u0 }
     (map-get? stakers { staker: staker, token: token })
+  )
+)
+
+;; @desc get staker info of multiple tokens
+(define-read-only (get-staker-info-many-of (staker principal) (token-list (list 10 principal)))
+  (let (
+    (staker-list (list staker staker staker staker staker staker staker staker staker staker))
+  )
+    (map get-staker-info-of staker-list token-list)
   )
 )
 
