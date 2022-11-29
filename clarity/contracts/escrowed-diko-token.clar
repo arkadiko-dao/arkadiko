@@ -122,6 +122,7 @@
 
 (begin
   (map-set whitelist .arkadiko-vest-esdiko-v1-1 true)
+  (map-set whitelist .arkadiko-stake-pool-diko-v2-1 true)
 
   ;; TODO: do not do this on testnet or mainnet
   (try! (ft-mint? esdiko u10000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))

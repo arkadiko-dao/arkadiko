@@ -592,3 +592,94 @@ class StakeUI {
   
 }
 export { StakeUI };
+
+// ---------------------------------------------------------
+// Stake pool LP
+// ---------------------------------------------------------
+
+class StakePoolLp {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  getTokenInfoOf(token: string) {
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-lp-v2-1", "get-token-info-of", [
+      types.principal(Utils.qualifiedName(token))
+    ], this.deployer.address);
+  }
+
+  getStakerInfoOf(staker: Account, token: string) {
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-lp-v2-1", "get-staker-info-of", [
+      types.principal(staker.address),
+      types.principal(Utils.qualifiedName(token))
+    ], staker.address);
+  }
+
+  getPendingRewards(staker: Account, token: string) {
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-lp-v2-1", "get-pending-rewards", [
+      types.principal(staker.address),
+      types.principal(Utils.qualifiedName(token))
+    ], staker.address);
+  }
+
+  calculateCummRewardPerStake(token: string) {
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-lp-v2-1", "calculate-cumm-reward-per-stake", [
+      types.principal(Utils.qualifiedName(token))
+    ], this.deployer.address);
+  }
+
+  stake(staker: Account, token: string, amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-lp-v2-1", "stake", [
+        types.principal(Utils.qualifiedName(token)),
+        types.uint(amount * 1000000)
+      ], staker.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  unstake(staker: Account, token: string, amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-lp-v2-1", "unstake", [
+        types.principal(Utils.qualifiedName(token)),
+        types.uint(amount * 1000000)
+      ], staker.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  claimPendingRewards(staker: Account, token: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-lp-v2-1", "claim-pending-rewards", [
+        types.principal(Utils.qualifiedName(token)),
+      ], staker.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  increaseCummRewardPerStake(token: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-lp-v2-1", "increase-cumm-reward-per-stake", [
+        types.principal(Utils.qualifiedName(token)),
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  setTokenInfo(user: Account, token: string, enabled: boolean, blockRewards: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-lp-v2-1", "set-token-info", [
+        types.principal(Utils.qualifiedName(token)),
+        types.bool(enabled),
+        types.uint(blockRewards * 1000000)
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+   
+}
+export { StakePoolLp };

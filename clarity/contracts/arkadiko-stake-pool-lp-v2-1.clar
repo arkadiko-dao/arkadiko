@@ -73,25 +73,30 @@
   (let (
     (staker tx-sender)
     (token-info (get-token-info-of (contract-of token)))
-    (staker-info (get-staker-info-of staker (contract-of token)))
   )
     (asserts! (get enabled token-info) ERR-WRONG-TOKEN)
 
     ;; This method will increase the cumm-rewards-per-stake, and set it for the staker
-    ;; It also makes sure the multiplier points are credited to the staker
     (try! (claim-pending-rewards (contract-of token)))
 
-    ;; Update total stake, increase cummulative rewards and update revenue
+    ;; Update total stake, increase cummulative rewards
     (map-set tokens { token: (contract-of token) } (merge token-info { total-staked: (+ (get total-staked token-info) amount) }))
-    (try! (increase-cumm-reward-per-stake (contract-of token)))
+    (unwrap-panic (increase-cumm-reward-per-stake (contract-of token)))
 
     ;; Transfer tokens
     (try! (contract-call? token transfer amount staker (as-contract tx-sender) none))
     
     ;; Update staker info
-    (map-set stakers { staker: staker, token: (contract-of token) } (merge staker-info { total-staked: (+ (get total-staked staker-info) amount) }))
-
-    (ok amount)
+    (let (
+      (staker-info (get-staker-info-of staker (contract-of token)))
+      (new-token-info (get-token-info-of (contract-of token)))
+    )
+      (map-set stakers { staker: staker, token: (contract-of token) } (merge staker-info { 
+        total-staked: (+ (get total-staked staker-info) amount),
+        cumm-reward-per-stake: (get cumm-reward-per-stake new-token-info)
+      }))
+      (ok amount)
+    )
   )
 )
 
@@ -103,26 +108,31 @@
   (let (
     (staker tx-sender)
     (token-info (get-token-info-of (contract-of token)))
-    (staker-info (get-staker-info-of staker (contract-of token)))
   )
     (asserts! (get enabled (get-token-info-of (contract-of token))) ERR-WRONG-TOKEN)
-    (asserts! (<= amount (get total-staked staker-info)) ERR-INSUFFICIENT-STAKE)
+    (asserts! (<= amount (get total-staked (get-staker-info-of staker (contract-of token)))) ERR-INSUFFICIENT-STAKE)
 
     ;; This method will increase the cumm-rewards-per-stake, and set it for the staker
-    ;; It also makes sure the multiplier points are credited to the staker
     (try! (claim-pending-rewards (contract-of token)))
 
-    ;; Update total stake, increase cummulative rewards and update revenue
+    ;; Update total stake, increase cummulative rewards
     (map-set tokens { token: (contract-of token) } (merge token-info { total-staked: (- (get total-staked token-info) amount) }))
-    (try! (increase-cumm-reward-per-stake (contract-of token)))
+    (unwrap-panic (increase-cumm-reward-per-stake (contract-of token)))
 
     ;; Transfer tokens and update map
     (try! (as-contract (contract-call? token transfer amount tx-sender staker none)))
 
     ;; Update staker info
-    (map-set stakers { staker: staker, token: (contract-of token) } (merge staker-info { total-staked: (+ (get total-staked staker-info) amount) }))
-
-    (ok amount)   
+    (let (
+      (staker-info (get-staker-info-of staker (contract-of token)))
+      (new-token-info (get-token-info-of (contract-of token)))
+    )
+      (map-set stakers { staker: staker, token: (contract-of token) } (merge staker-info { 
+        total-staked: (- (get total-staked staker-info) amount),
+        cumm-reward-per-stake: (get cumm-reward-per-stake new-token-info)
+      }))
+      (ok amount)
+    )
   )
 )
 
@@ -139,7 +149,7 @@
     (token-info (get-token-info-of token))
     (staker-info (get-staker-info-of staker token))
 
-    (amount-owed-per-token (- (get cumm-reward-per-stake token-info) (get cumm-reward-per-stake staker-info)))
+    (amount-owed-per-token (- (calculate-cumm-reward-per-stake token) (get cumm-reward-per-stake staker-info)))
     (rewards-decimals (* (get total-staked staker-info) amount-owed-per-token))
     (rewards-result (/ rewards-decimals u1000000))
   )
@@ -150,8 +160,11 @@
 ;; @desc claim all pending rewards
 ;; @param token; stake token
 ;; @post uint; returns claimed rewards
-(define-private (claim-pending-rewards (token principal))
+(define-public (claim-pending-rewards (token principal))
   (let (
+    ;; Increase first
+    (increase-result (increase-cumm-reward-per-stake token))
+
     (staker tx-sender)
     (token-info (get-token-info-of token))
     (staker-info (get-staker-info-of staker token))
@@ -159,10 +172,10 @@
   )
     (asserts! (> pending-rewards u0) (ok u0))
 
-    ;; Transfer esDIKO
-    (try! (as-contract (contract-call? .escrowed-diko-token transfer pending-rewards tx-sender staker none)))
+    ;; Mint esDIKO
+    (try! (contract-call? .arkadiko-dao mint-token .escrowed-diko-token pending-rewards staker))
 
-    ;; update staker cumm reward per stake
+    ;; Update staker cumm reward per stake
     (map-set stakers { staker: staker, token: token } (merge staker-info { cumm-reward-per-stake: (get cumm-reward-per-stake token-info) }))
 
     (ok pending-rewards)
@@ -178,27 +191,32 @@
 ;; @post uint; the cummulative rewards per stake
 (define-public (increase-cumm-reward-per-stake (token principal))
   (let (
+    (new-cumm-reward-per-stake (calculate-cumm-reward-per-stake token))
     (token-info (get-token-info-of token))
   )
-    (asserts! (> block-height (get last-reward-increase-block token-info)) (ok (get cumm-reward-per-stake token-info)))
+    (map-set tokens { token: token } (merge token-info { cumm-reward-per-stake: new-cumm-reward-per-stake, last-reward-increase-block: block-height }))
+    (ok new-cumm-reward-per-stake)
+  )
+)
+
+;; @desc calculate the new cummulative rewards per stake for given token
+;; @param token; stake token
+;; @post uint; the cummulative rewards per stake
+(define-read-only (calculate-cumm-reward-per-stake (token principal))
+  (let (
+    (token-info (get-token-info-of token))
+  )
+    (asserts! (> block-height (get last-reward-increase-block token-info)) (get cumm-reward-per-stake token-info))
 
     (if (is-eq (get total-staked token-info) u0)
-      (begin
-        (map-set tokens { token: token } (merge token-info { cumm-reward-per-stake: u0, last-reward-increase-block: block-height }))
-        (ok u0)
-      )
+      u0
       (let (
         (block-diff (- block-height (get last-reward-increase-block token-info)))
         (total-rewards-to-distribute (* (get block-rewards token-info) block-diff))
         (reward-added-per-token (/ (* total-rewards-to-distribute u1000000) (get total-staked token-info)))
         (new-cumm-reward-per-stake (+ (get cumm-reward-per-stake token-info) reward-added-per-token))
       )
-        ;; Mint esDIKO for this contract
-        (try! (as-contract (contract-call? .arkadiko-dao mint-token .escrowed-diko-token total-rewards-to-distribute tx-sender)))
-
-        ;; Update token map
-        (map-set tokens { token: token } (merge token-info { cumm-reward-per-stake: new-cumm-reward-per-stake, last-reward-increase-block: block-height }))
-        (ok new-cumm-reward-per-stake)
+        new-cumm-reward-per-stake
       )
     )
   )
@@ -228,26 +246,26 @@
 ;; ---------------------------------------------------------
 
 (begin
-  ;; TODO: update for mainnet
-  (map-set tokens { token: .arkadiko-swap-token-wstx-diko } {
+  ;; TODO: update block-rewards for mainnet
+  (map-set tokens { token: .arkadiko-swap-token-diko-usda } {
     enabled: true,
     total-staked: u0,
     block-rewards: u1000000,
-    last-reward-increase-block: block-height,
-    cumm-reward-per-stake: u0
+    last-reward-increase-block: u0,
+    cumm-reward-per-stake: u0 
   })
   (map-set tokens { token: .arkadiko-swap-token-wstx-usda } {
     enabled: true,
     total-staked: u0,
     block-rewards: u2000000,
-    last-reward-increase-block: block-height,
+    last-reward-increase-block: u0,
     cumm-reward-per-stake: u0
   })
   (map-set tokens { token: .arkadiko-swap-token-xbtc-usda } {
     enabled: true,
     total-staked: u0,
     block-rewards: u3000000,
-    last-reward-increase-block: block-height,
+    last-reward-increase-block: u0,
     cumm-reward-per-stake: u0
   })
 )
