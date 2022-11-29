@@ -13,7 +13,7 @@ import {
 } from './models/arkadiko-tests-tokens.ts';
 
 import { 
-  StakePoolDikoV2
+  StakePoolDiko
 } from './models/arkadiko-tests-stake.ts';
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
@@ -28,7 +28,7 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
   
-    let stakePool = new StakePoolDikoV2(chain, deployer);
+    let stakePool = new StakePoolDiko(chain, deployer);
   
     let result = stakePool.stake(wallet_1, "arkadiko-token", 100);
     result.expectOk().expectUintWithDecimals(100);
@@ -73,7 +73,7 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
   
-    let stakePool = new StakePoolDikoV2(chain, deployer);
+    let stakePool = new StakePoolDiko(chain, deployer);
   
     let result = stakePool.stake(wallet_1, "arkadiko-token", 100);
     result.expectOk().expectUintWithDecimals(100);
@@ -132,7 +132,7 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
   
-    let stakePool = new StakePoolDikoV2(chain, deployer);
+    let stakePool = new StakePoolDiko(chain, deployer);
   
     let result = stakePool.stake(wallet_1, "arkadiko-token", 100);
     result.expectOk().expectUintWithDecimals(100);
@@ -169,7 +169,7 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
   
-    let stakePool = new StakePoolDikoV2(chain, deployer);
+    let stakePool = new StakePoolDiko(chain, deployer);
 
     let block = chain.mineBlock([
       Tx.contractCall("usda-token", "transfer", [
@@ -231,7 +231,7 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
 
-    let stakePool = new StakePoolDikoV2(chain, deployer);
+    let stakePool = new StakePoolDiko(chain, deployer);
     let dikoToken = new DikoToken(chain, deployer);
     let esDikoToken = new EsDikoToken(chain, deployer);
     let usdaToken = new UsdaToken(chain, deployer);
@@ -294,7 +294,7 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
   
-    let stakePool = new StakePoolDikoV2(chain, deployer);
+    let stakePool = new StakePoolDiko(chain, deployer);
 
     let result = stakePool.stake(wallet_1, "arkadiko-token", 100);
     result.expectOk().expectUintWithDecimals(100);
@@ -333,7 +333,7 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
   
-    let stakePool = new StakePoolDikoV2(chain, deployer);
+    let stakePool = new StakePoolDiko(chain, deployer);
 
     let block = chain.mineBlock([
       Tx.contractCall("usda-token", "transfer", [
@@ -397,7 +397,7 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
   
-    let stakePool = new StakePoolDikoV2(chain, deployer);
+    let stakePool = new StakePoolDiko(chain, deployer);
 
     let result = stakePool.stake(wallet_1, "arkadiko-token", 100);
     result.expectOk().expectUintWithDecimals(100);
@@ -439,7 +439,7 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
   
-    let stakePool = new StakePoolDikoV2(chain, deployer);
+    let stakePool = new StakePoolDiko(chain, deployer);
 
     let result = stakePool.setRevenueEpochLength(wallet_1, 144);
     result.expectErr().expectUint(110001);
@@ -452,7 +452,7 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
   
-    let stakePool = new StakePoolDikoV2(chain, deployer);
+    let stakePool = new StakePoolDiko(chain, deployer);
 
     let result = stakePool.setEsDikoRewardsRate(wallet_1, 0.2);
     result.expectErr().expectUint(110001);
@@ -465,7 +465,7 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
   
-    let stakePool = new StakePoolDikoV2(chain, deployer);
+    let stakePool = new StakePoolDiko(chain, deployer);
 
     let result = stakePool.stake(wallet_1, "usda-token", 100);
     result.expectErr().expectUint(110002);
@@ -481,7 +481,7 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
   
-    let stakePool = new StakePoolDikoV2(chain, deployer);
+    let stakePool = new StakePoolDiko(chain, deployer);
 
     let result = stakePool.stake(wallet_1, "arkadiko-token", 100);
     result.expectOk().expectUintWithDecimals(100);

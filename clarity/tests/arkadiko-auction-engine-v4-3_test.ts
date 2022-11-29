@@ -15,7 +15,7 @@ import {
 
 import { 
   VaultManager,
-  VaultAuctionV4 
+  VaultAuction 
 } from './models/arkadiko-tests-vaults.ts';
 
 import { 
@@ -36,7 +36,7 @@ Clarinet.test({ name: "auction engine: STX collateral",
 
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
 
     // Initialize price of STX
@@ -77,7 +77,7 @@ Clarinet.test({ name: "auction engine: xBTC collateral",
 
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
 
     // Initialize price of xBTC
@@ -122,7 +122,7 @@ Clarinet.test({ name: "auction engine: atALEX collateral",
 
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
 
     // Initialize price of atALEX
@@ -168,7 +168,7 @@ Clarinet.test({ name: "auction engine: liquidate stacking STX vault without enou
 
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
     let swap = new Swap(chain, deployer);
 
@@ -221,7 +221,7 @@ Clarinet.test({ name: "auction engine: add fee and withdraw fees",
 
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
     let swap = new Swap(chain, deployer);
     let xstxManager = new XstxManager(chain, deployer);
@@ -296,7 +296,7 @@ Clarinet.test({ name: "auction engine: liquidate non-stacking STX vault, 1 walle
     let usdaToken = new UsdaToken(chain, deployer);
     let xstxManager = new XstxManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
     let liquidationRewards = new LiquidationRewards(chain, deployer);
 
@@ -378,7 +378,7 @@ Clarinet.test({ name: "auction engine: liquidate stacking STX vault, 1 wallet",
     let usdaToken = new UsdaToken(chain, deployer);
     let xstxManager = new XstxManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
     let liquidationRewards = new LiquidationRewards(chain, deployer);
 
@@ -483,7 +483,7 @@ Clarinet.test({ name: "auction engine: liquidate STX vault, multiple wallets",
     let usdaToken = new UsdaToken(chain, deployer);
     let xstxManager = new XstxManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
     let liquidationRewards = new LiquidationRewards(chain, deployer);
 
@@ -546,7 +546,7 @@ Clarinet.test({ name: "auction engine: liquidate STX vault without enough USDA t
     let oracleManager = new OracleManager(chain, deployer);
     let usdaToken = new UsdaToken(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
     let liquidationRewards = new LiquidationRewards(chain, deployer);
 
@@ -639,7 +639,7 @@ Clarinet.test({ name: "auction engine: liquidate xBTC vault, multiple wallets",
     let usdaToken = new UsdaToken(chain, deployer);
     let xstxManager = new XstxManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
     let liquidationRewards = new LiquidationRewards(chain, deployer);
     let xbtcToken = new XbtcToken(chain, deployer);
@@ -711,7 +711,7 @@ Clarinet.test({ name: "auction engine: toggle shutdown",
 
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
 
     // Initialize price of STX to $2 in the oracle
@@ -755,7 +755,7 @@ Clarinet.test({ name: "auction engine: can not burn-usda on auction which has en
 
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
     let swap = new Swap(chain, deployer);
 
@@ -807,7 +807,7 @@ Clarinet.test({ name: "auction engine: can not start auction with wrong token or
 
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
     let swap = new Swap(chain, deployer);
 
@@ -856,7 +856,7 @@ Clarinet.test({ name: "auction engine: can not burn USDA with wrong token or res
 
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
     let swap = new Swap(chain, deployer);
 

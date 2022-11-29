@@ -11,7 +11,7 @@ import {
 } from './models/arkadiko-tests-vesting.ts';
 
 import { 
-  StakePoolDikoV2
+  StakePoolDiko
 } from './models/arkadiko-tests-stake.ts';
 
 import { 
@@ -31,7 +31,7 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let vesting = new Vesting(chain, deployer);
-    let stakePool = new StakePoolDikoV2(chain, deployer);
+    let stakePool = new StakePoolDiko(chain, deployer);
 
     let result = vesting.startVesting(wallet_1, 100);
     result.expectOk().expectUintWithDecimals(100);
@@ -57,7 +57,7 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let vesting = new Vesting(chain, deployer);
-    let stakePool = new StakePoolDikoV2(chain, deployer);
+    let stakePool = new StakePoolDiko(chain, deployer);
 
     let result = vesting.startVesting(wallet_1, 100);
     result.expectOk().expectUintWithDecimals(100);
@@ -91,7 +91,7 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let vesting = new Vesting(chain, deployer);
-    let stakePool = new StakePoolDikoV2(chain, deployer);
+    let stakePool = new StakePoolDiko(chain, deployer);
 
     let result = vesting.startVesting(wallet_1, 100);
     result.expectOk().expectUintWithDecimals(100);
@@ -130,7 +130,7 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let vesting = new Vesting(chain, deployer);
-    let stakePool = new StakePoolDikoV2(chain, deployer);
+    let stakePool = new StakePoolDiko(chain, deployer);
     let dikoToken = new DikoToken(chain, deployer);
 
     let result = vesting.startVesting(wallet_1, 100);
@@ -174,7 +174,7 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let vesting = new Vesting(chain, deployer);
-    let stakePool = new StakePoolDikoV2(chain, deployer);
+    let stakePool = new StakePoolDiko(chain, deployer);
     let dikoToken = new DikoToken(chain, deployer);
 
     let result = vesting.startVesting(wallet_1, 100);
@@ -214,7 +214,7 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let vesting = new Vesting(chain, deployer);
-    let stakePool = new StakePoolDikoV2(chain, deployer);
+    let stakePool = new StakePoolDiko(chain, deployer);
 
     let call:any = vesting.getVestingOf(wallet_1);
     call.result.expectTuple()["stake-amount"].expectUintWithDecimals(0);
@@ -238,7 +238,7 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let vesting = new Vesting(chain, deployer);
-    let stakePool = new StakePoolDikoV2(chain, deployer);
+    let stakePool = new StakePoolDiko(chain, deployer);
 
     let result = vesting.startVesting(wallet_1, 100);
     result.expectOk().expectUintWithDecimals(100);
@@ -272,7 +272,7 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let vesting = new Vesting(chain, deployer);
-    let stakePool = new StakePoolDikoV2(chain, deployer);
+    let stakePool = new StakePoolDiko(chain, deployer);
     
     let result = vesting.setStakePoolDiko(deployer, "arkadiko-stake-pool-diko-v1-1");
     result.expectOk().expectPrincipal(Utils.qualifiedName("arkadiko-stake-pool-diko-v1-1"));

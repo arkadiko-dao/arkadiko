@@ -8,7 +8,7 @@ import {
 
 import { 
   StakePoolLp,
-  StakePoolDikoV2
+  StakePoolDiko
 } from './models/arkadiko-tests-stake.ts';
 
 import { 
@@ -133,7 +133,7 @@ Clarinet.test({
     let wallet_3 = accounts.get("wallet_3")!;
 
     let stakePool = new StakePoolLp(chain, deployer);
-    let stakePoolDiko = new StakePoolDikoV2(chain, deployer);
+    let stakePoolDiko = new StakePoolDiko(chain, deployer);
 
     let result = stakePool.stake(wallet_3, wstxUsdaPoolAddress, 10);
     result.expectOk().expectUintWithDecimals(10);

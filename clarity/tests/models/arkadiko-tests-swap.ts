@@ -201,6 +201,10 @@ class Swap {
 
 export { Swap };
 
+// ---------------------------------------------------------
+// Multihop Swap
+// ---------------------------------------------------------
+
 class MultiHopSwap {
   chain: Chain;
   deployer: Account;

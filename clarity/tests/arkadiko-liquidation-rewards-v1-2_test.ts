@@ -21,7 +21,7 @@ import {
 
 import { 
   VaultManager,
-  VaultAuctionV4 
+  VaultAuction 
 } from './models/arkadiko-tests-vaults.ts';
 
 import { 
@@ -198,7 +198,7 @@ Clarinet.test({
 
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
     let liquidationRewards = new LiquidationRewards(chain, deployer);
     let stxReserve = new StxReserve(chain, deployer);
@@ -684,7 +684,7 @@ Clarinet.test({
 
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
     let liquidationRewards = new LiquidationRewards(chain, deployer);
     let liquidationUI = new LiquidationUI(chain, deployer);
@@ -741,7 +741,7 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let xstxManager = new XstxManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
     let liquidationRewards = new LiquidationRewards(chain, deployer);
     let liquidationUI = new LiquidationUI(chain, deployer);

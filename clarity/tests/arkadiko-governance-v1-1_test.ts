@@ -12,7 +12,7 @@ import {
 } from "./models/arkadiko-tests-governance.ts";
 
 import { 
-  StakePoolDikoV2
+  StakePoolDiko
 } from './models/arkadiko-tests-stake.ts';
 
 import { 
@@ -459,7 +459,7 @@ Clarinet.test({
 
     let governance = new Governance(chain, deployer);
     let dikoToken = new DikoToken(chain, deployer);
-    let dikoPool = new StakePoolDikoV2(chain, deployer);
+    let dikoPool = new StakePoolDiko(chain, deployer);
 
     // Stake DIKO
     let result = dikoPool.stake(wallet_1, 'arkadiko-token', 100);
