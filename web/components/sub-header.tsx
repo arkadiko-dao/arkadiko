@@ -59,12 +59,12 @@ export const SubHeader: React.FC = () => {
               </span>
               <span className="block text-sm sm:mt-0 sm:inline-block">
                 <span className="font-semibold">
-                  {microToReadable(state.balance['stdiko']).toLocaleString(undefined, {
+                  {microToReadable(state.balance['esdiko']).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 6,
                   })}
                 </span>{' '}
-                <span className="opacity-75">stDIKO</span>
+                <span className="opacity-75">esDIKO</span>
               </span>
             </span>
           </p>
