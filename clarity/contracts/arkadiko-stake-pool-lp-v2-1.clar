@@ -2,8 +2,7 @@
 ;; @version 2.0
 
 ;; Traits
-;; TODO: update address
-(use-trait ft-trait 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sip-010-trait-ft-standard.sip-010-trait)
+(use-trait ft-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 (use-trait stake-pool-diko-trait .arkadiko-stake-pool-diko-trait-v2.stake-pool-diko-trait)
 (use-trait vest-esdiko-trait .arkadiko-vest-esdiko-trait-v1.vest-esdiko-trait)
 

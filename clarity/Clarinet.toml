@@ -10,6 +10,9 @@ boot_contracts = ["pox", "costs-v2"]
 # passes = ["check_checker"]
 # check_checker = { trusted_sender = false, trusted_caller = false, callee_filter = false }
 
+[[project.requirements]]
+contract_id = "SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard"
+
 [contracts.arkadiko-dao-token-trait-v1]
 path = "contracts/arkadiko-dao-token-trait-v1.clar"
 
