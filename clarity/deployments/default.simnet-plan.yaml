@@ -52,9 +52,34 @@ plan:
             path: "./.requirements/requirements/SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.clar"
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-stake-pool-diko-trait-v1
+            contract-name: sip-010-trait-ft-standard
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-stake-pool-diko-trait-v1.clar
+            path: contracts/sip-010-trait-ft-standard.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-stake-registry-trait-v1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-stake-registry-trait-v1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-stake-pool-trait-v1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-stake-pool-trait-v1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-diko-guardian-v1-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-diko-guardian-v1-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-stake-registry-tv1-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/tests/arkadiko-stake-registry-tv1-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-collateral-types-trait-v1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-collateral-types-trait-v1.clar
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: arkadiko-oracle-trait-v1
@@ -62,19 +87,9 @@ plan:
             path: contracts/arkadiko-oracle-trait-v1.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: sip-010-trait-ft-standard
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/sip-010-trait-ft-standard.clar
-            clarity-version: 1
-        - emulated-contract-publish:
             contract-name: arkadiko-vault-trait-v1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/arkadiko-vault-trait-v1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-collateral-types-trait-v1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-collateral-types-trait-v1.clar
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: arkadiko-vault-manager-trait-v1
@@ -107,29 +122,14 @@ plan:
             path: contracts/arkadiko-liquidator-v2-1.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: xstx-token
+            contract-name: restricted-token-trait
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/xstx-token.clar
+            path: contracts/xbtc/restricted-token-trait.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: usda-token
+            contract-name: arkadiko-auction-engine-trait-v1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/usda-token.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-sip10-reserve-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-sip10-reserve-v1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-stx-reserve-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-stx-reserve-v1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-diko-guardian-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-diko-guardian-v1-1.clar
+            path: contracts/arkadiko-auction-engine-trait-v1.clar
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: arkadiko-vault-rewards-v1-1
@@ -137,9 +137,29 @@ plan:
             path: contracts/arkadiko-vault-rewards-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
+            contract-name: usda-token
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/usda-token.clar
+            clarity-version: 1
+        - emulated-contract-publish:
             contract-name: arkadiko-vault-data-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/arkadiko-vault-data-v1-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-stx-reserve-v1-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-stx-reserve-v1-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: xstx-token
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/xstx-token.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-sip10-reserve-v1-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-sip10-reserve-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: arkadiko-freddie-v1-1
@@ -150,121 +170,6 @@ plan:
             contract-name: arkadiko-claim-usda-yield-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/arkadiko-claim-usda-yield-v1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-swap-trait-v1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-swap-trait-v1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-swap-token-wstx-diko
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-swap-token-wstx-diko.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: wrapped-lydian-token
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/wrapped-lydian-token.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: stdiko-token
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/stdiko-token.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-governance-v2-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-governance-v2-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-swap-token-diko-usda
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-swap-token-diko-usda.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-stake-registry-trait-v1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-stake-registry-trait-v1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-stake-pool-trait-v1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-stake-pool-trait-v1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-stake-pool-diko-usda-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-stake-pool-diko-usda-v1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-stake-pool-wstx-diko-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-stake-pool-wstx-diko-v1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: lydian-airdrop-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/lydian-airdrop-v1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-collateral-types-v3-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-collateral-types-v3-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-xstx-migrate
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-xstx-migrate.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: escrowed-diko-token
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/escrowed-diko-token.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-vest-esdiko-trait-v1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-vest-esdiko-trait-v1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-vest-esdiko-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-vest-esdiko-v1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-liquidation-rewards-trait-v1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-liquidation-rewards-trait-v1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: malicious-ft
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/tests/malicious-ft.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: wrapped-stx-token
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/wrapped-stx-token.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-swap-v2-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-swap-v2-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-multi-hop-swap-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-multi-hop-swap-v1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-swap-token-wstx-usda
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-swap-token-wstx-usda.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: restricted-token-trait
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/xbtc/restricted-token-trait.clar
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: Wrapped-Bitcoin
@@ -282,34 +187,34 @@ plan:
             path: contracts/arkadiko-liquidation-pool-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
+            contract-name: arkadiko-liquidation-rewards-trait-v1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-liquidation-rewards-trait-v1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
             contract-name: arkadiko-liquidation-rewards-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/arkadiko-liquidation-rewards-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-liquidation-rewards-ui-v2-1
+            contract-name: arkadiko-liquidation-ui-v1-2
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-liquidation-rewards-ui-v2-1.clar
+            path: contracts/arkadiko-liquidation-ui-v1-2.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-auction-engine-trait-v1
+            contract-name: arkadiko-swap-trait-v1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-auction-engine-trait-v1.clar
+            path: contracts/arkadiko-swap-trait-v1.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-liquidator-v1-1
+            contract-name: wrapped-stx-token
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-liquidator-v1-1.clar
+            path: contracts/wrapped-stx-token.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-sip10-reserve-v2-1
+            contract-name: arkadiko-swap-v2-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-sip10-reserve-v2-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-stake-pool-diko-trait-v2
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-stake-pool-diko-trait-v2.clar
+            path: contracts/arkadiko-swap-v2-1.clar
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: arkadiko-stacker-payer-v1-1
@@ -317,49 +222,64 @@ plan:
             path: contracts/arkadiko-stacker-payer-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-stacker-3-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-stacker-3-v1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-mock-stacker-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-mock-stacker-v1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-stacker-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-stacker-v1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-stacker-2-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-stacker-2-v1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
             contract-name: arkadiko-stacker-4-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/arkadiko-stacker-4-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-claim-yield-v2-1
+            contract-name: arkadiko-liquidation-rewards-diko-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-claim-yield-v2-1.clar
+            path: contracts/arkadiko-liquidation-rewards-diko-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-stake-pool-diko-v2-1
+            contract-name: arkadiko-swap-token-wstx-diko
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-stake-pool-diko-v2-1.clar
+            path: contracts/arkadiko-swap-token-wstx-diko.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-alex-dual-yield-v1-1
+            contract-name: arkadiko-stake-pool-wstx-diko-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-alex-dual-yield-v1-1.clar
+            path: contracts/arkadiko-stake-pool-wstx-diko-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: welshcorgicoin-token
+            contract-name: arkadiko-swap-token-wstx-xbtc
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/welsh/welshcorgicoin-token.clar
+            path: contracts/arkadiko-swap-token-wstx-xbtc.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-vest-esdiko-trait-v1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-vest-esdiko-trait-v1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-stake-pool-diko-trait-v2
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-stake-pool-diko-trait-v2.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: stdiko-token
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/stdiko-token.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-sip10-reserve-v2-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-sip10-reserve-v2-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-swap-token-diko-usda
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-swap-token-diko-usda.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-stake-pool-diko-usda-v1-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-stake-pool-diko-usda-v1-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-swap-token-wstx-usda
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-swap-token-wstx-usda.clar
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: arkadiko-stake-pool-wstx-usda-v1-1
@@ -367,19 +287,39 @@ plan:
             path: contracts/arkadiko-stake-pool-wstx-usda-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
+            contract-name: escrowed-diko-token
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/escrowed-diko-token.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-stake-pool-diko-v2-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-stake-pool-diko-v2-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
             contract-name: arkadiko-swap-token-xbtc-usda
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/arkadiko-swap-token-xbtc-usda.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-collateral-types-tv1-1
+            contract-name: arkadiko-stake-pool-xbtc-usda-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/tests/arkadiko-collateral-types-tv1-1.clar
+            path: contracts/arkadiko-stake-pool-xbtc-usda-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-auction-engine-v2-1
+            contract-name: arkadiko-stake-pool-diko-trait-v1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-auction-engine-v2-1.clar
+            path: contracts/arkadiko-stake-pool-diko-trait-v1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-stake-pool-diko-v1-2
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-stake-pool-diko-v1-2.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-vest-esdiko-v1-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-vest-esdiko-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: arkadiko-stake-pool-lp-v2-1
@@ -387,14 +327,19 @@ plan:
             path: contracts/arkadiko-stake-pool-lp-v2-1.clar
             clarity-version: 1
         - emulated-contract-publish:
+            contract-name: arkadiko-stake-registry-v1-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-stake-registry-v1-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-stake-pool-migrate-v1-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-stake-pool-migrate-v1-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
             contract-name: arkadiko-auction-engine-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/arkadiko-auction-engine-v1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-governance-tv1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/tests/arkadiko-governance-tv1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: arkadiko-liquidation-rewards-trait-v2
@@ -407,79 +352,14 @@ plan:
             path: contracts/arkadiko-liquidation-rewards-v1-2.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-auction-engine-v4-3
+            contract-name: arkadiko-liquidation-rewards-ui-v2-3
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-auction-engine-v4-3.clar
+            path: contracts/arkadiko-liquidation-rewards-ui-v2-3.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-stacker-payer-v3-3
+            contract-name: arkadiko-alex-dual-yield-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-stacker-payer-v3-3.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-oracle-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-oracle-v1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-governance-v3-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-governance-v3-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-stake-pool-diko-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-stake-pool-diko-v1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-stake-registry-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-stake-registry-v1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: trait-ownable
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/atalex/trait-ownable.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-stake-pool-diko-v1-2
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-stake-pool-diko-v1-2.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-stake-pool-diko-slash-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-stake-pool-diko-slash-v1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-stake-registry-tv1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/tests/arkadiko-stake-registry-tv1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-liquidation-rewards-ui-v2-2
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-liquidation-rewards-ui-v2-2.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-liquidation-rewards-diko-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-liquidation-rewards-diko-v1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-diko-init
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-diko-init.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: auto-alex
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/atalex/auto-alex.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-governance-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-governance-v1-1.clar
+            path: contracts/arkadiko-alex-dual-yield-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: lydian-airdrop-snapshot-v1-1
@@ -487,29 +367,24 @@ plan:
             path: contracts/lydian-airdrop-snapshot-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-liquidation-rewards-esdiko-v2-1
+            contract-name: arkadiko-stacker-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-liquidation-rewards-esdiko-v2-1.clar
+            path: contracts/arkadiko-stacker-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-liquidation-ui-v1-2
+            contract-name: arkadiko-stacker-3-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-liquidation-ui-v1-2.clar
+            path: contracts/arkadiko-stacker-3-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-governance-v4-1
+            contract-name: arkadiko-stacker-2-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-governance-v4-1.clar
+            path: contracts/arkadiko-stacker-2-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-swap-token-wstx-xbtc
+            contract-name: arkadiko-claim-yield-v2-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-swap-token-wstx-xbtc.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-liquidation-rewards-ui-v2-3
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-liquidation-rewards-ui-v2-3.clar
+            path: contracts/arkadiko-claim-yield-v2-1.clar
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: arkadiko-pox-unstack-unlock-v1-1
@@ -517,12 +392,147 @@ plan:
             path: contracts/arkadiko-pox-unstack-unlock-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-ui-stake-v1-3
+            contract-name: arkadiko-governance-v3-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-ui-stake-v1-3.clar
+            path: contracts/arkadiko-governance-v3-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-liquidator-v1-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-liquidator-v1-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-collateral-types-v3-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-collateral-types-v3-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-governance-v2-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-governance-v2-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: wrapped-lydian-token
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/wrapped-lydian-token.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: lydian-airdrop-v1-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/lydian-airdrop-v1-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-collateral-types-tv1-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/tests/arkadiko-collateral-types-tv1-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-liquidation-rewards-ui-v2-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-liquidation-rewards-ui-v2-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-auction-engine-v4-3
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-auction-engine-v4-3.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-auction-engine-v2-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-auction-engine-v2-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-stake-pool-diko-slash-v1-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-stake-pool-diko-slash-v1-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-governance-v4-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-governance-v4-1.clar
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: arkadiko-collateral-types-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/arkadiko-collateral-types-v1-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-governance-tv1-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/tests/arkadiko-governance-tv1-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-stake-pool-diko-v1-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-stake-pool-diko-v1-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-diko-init
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-diko-init.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-ui-stake-v1-3
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-ui-stake-v1-3.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-liquidation-rewards-ui-v2-2
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-liquidation-rewards-ui-v2-2.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-stacker-payer-v3-3
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-stacker-payer-v3-3.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: trait-ownable
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/atalex/trait-ownable.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: auto-alex
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/atalex/auto-alex.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-oracle-v1-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-oracle-v1-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-multi-hop-swap-v1-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-multi-hop-swap-v1-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: malicious-ft
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/tests/malicious-ft.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: welshcorgicoin-token
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/welsh/welshcorgicoin-token.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-liquidation-rewards-esdiko-v2-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-liquidation-rewards-esdiko-v2-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-mock-stacker-v1-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-mock-stacker-v1-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-xstx-migrate
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-xstx-migrate.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-governance-v1-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-governance-v1-1.clar
             clarity-version: 1

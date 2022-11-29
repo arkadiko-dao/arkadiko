@@ -232,4 +232,15 @@
       rewards-percentage: u150000 ;; 15% 
     }
   )
+  ;; xBTC-USDA LP
+  (map-set pools-data-map
+    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-xbtc-usda-v1-1 }
+    {
+      name: "xBTC-USDA LP",
+      deactivated-block: u0,
+      deactivated-rewards-per-block: u0,
+      rewards-percentage: u150000 ;; 15% 
+    }
+  )
+  
 )

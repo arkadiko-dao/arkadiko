@@ -267,3 +267,52 @@ class StakePoolLp {
    
 }
 export { StakePoolLp };
+
+
+// ---------------------------------------------------------
+// Stake pool migrate
+// ---------------------------------------------------------
+
+class StakePoolMigrate {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  migrateStDiko(user: Account) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-migrate-v1-1", "migrate-stdiko", [
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  migrateDikoUsda(user: Account) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-migrate-v1-1", "migrate-diko-usda", [
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  migrateWstxUsda(user: Account) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-migrate-v1-1", "migrate-wstx-usda", [
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  migrateXbtcUsda(user: Account) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-pool-migrate-v1-1", "migrate-xbtc-usda", [
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+   
+}
+export { StakePoolMigrate };

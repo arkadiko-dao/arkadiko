@@ -142,6 +142,9 @@ path = "contracts/arkadiko-stake-pool-diko-v2-1.clar"
 [contracts.arkadiko-stake-pool-lp-v2-1]
 path = "contracts/arkadiko-stake-pool-lp-v2-1.clar"
 
+[contracts.arkadiko-stake-pool-migrate-v1-1]
+path = "contracts/arkadiko-stake-pool-migrate-v1-1.clar"
+
 [contracts.arkadiko-vest-esdiko-trait-v1]
 path = "contracts/arkadiko-vest-esdiko-trait-v1.clar"
 
@@ -156,6 +159,9 @@ path = "contracts/arkadiko-stake-pool-diko-usda-v1-1.clar"
 
 [contracts.arkadiko-stake-pool-wstx-usda-v1-1]
 path = "contracts/arkadiko-stake-pool-wstx-usda-v1-1.clar"
+
+[contracts.arkadiko-stake-pool-xbtc-usda-v1-1]
+path = "contracts/arkadiko-stake-pool-xbtc-usda-v1-1.clar"
 
 [contracts.arkadiko-stake-pool-wstx-diko-v1-1]
 path = "contracts/arkadiko-stake-pool-wstx-diko-v1-1.clar"
