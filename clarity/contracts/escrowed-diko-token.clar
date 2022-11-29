@@ -4,10 +4,9 @@
 
 (define-fungible-token esdiko)
 
-(define-constant ERR-NOT-AUTHORIZED u1401)
+(define-constant ERR-NOT-AUTHORIZED u140001)
 
 (define-data-var token-uri (string-utf8 256) u"")
-(define-data-var req-staked-diko uint u250000) ;; 25% = 250000
 
 ;; ---------------------------------------------------------
 ;; Maps
@@ -123,6 +122,7 @@
 (begin
   (map-set whitelist .arkadiko-vest-esdiko-v1-1 true)
   (map-set whitelist .arkadiko-stake-pool-diko-v2-1 true)
+  (map-set whitelist .arkadiko-liquidation-rewards-v1-2 true)
 
   ;; TODO: do not do this on testnet or mainnet
   (try! (ft-mint? esdiko u10000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))

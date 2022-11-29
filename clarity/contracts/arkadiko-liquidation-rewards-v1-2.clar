@@ -226,6 +226,7 @@
 (begin
   (map-set reward-tokens  { token: .arkadiko-token } { whitelisted: true })
   (map-set reward-tokens  { token: .xstx-token } { whitelisted: true })
+  (map-set reward-tokens  { token: .escrowed-diko-token } { whitelisted: true })
 
   ;; TODO - UPDATE ADDRESS FOR MAINNET
   (map-set reward-tokens  { token: .Wrapped-Bitcoin } { whitelisted: true })
