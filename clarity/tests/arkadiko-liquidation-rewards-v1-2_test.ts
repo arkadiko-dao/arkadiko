@@ -294,14 +294,13 @@ Clarinet.test({
     call.result.expectUintWithDecimals(626.399062)
 
     // Add rewards - epoch ended
-    // 626.399 DIKO * 720 blocks * 10% = 45.100
-    // 626399062 * 720 * 1000000 / 100000
+    // 626.399 DIKO * 720 blocks * 8.2% = 36.982
     result = liquidationRewardsEsDiko.addRewards();
-    result.expectOk().expectUintWithDecimals(45100.732464);
+    result.expectOk().expectUintWithDecimals(36982.60062);
     // Reward data
     call = await liquidationRewards.getRewardData(0);
     call.result.expectTuple()["share-block"].expectUint(720);
-    call.result.expectTuple()["total-amount"].expectUintWithDecimals(45100.732464);
+    call.result.expectTuple()["total-amount"].expectUintWithDecimals(36982.60062);
 
     // No rewards yet as nothing staked when epoch started
     call = await liquidationRewards.getRewardsOf(deployer.address, 0);
@@ -314,19 +313,19 @@ Clarinet.test({
 
     // Add rewards - epoch ended
     result = liquidationRewardsEsDiko.addRewards();
-    result.expectOk().expectUintWithDecimals(44233.410744);
+    result.expectOk().expectUintWithDecimals(36271.39681);
 
     // Rewards 1
     call = await liquidationRewards.getRewardsOf(deployer.address, 1);
-    call.result.expectOk().expectUintWithDecimals(14744.468773);
+    call.result.expectOk().expectUintWithDecimals(12090.464394);
     call = await liquidationRewards.getRewardsOf(wallet_1.address, 1);
-    call.result.expectOk().expectUintWithDecimals(29488.937547);
+    call.result.expectOk().expectUintWithDecimals(24180.928788);
 
     // Claim reward
     result = liquidationRewards.claimRewards(deployer, 1, "escrowed-diko-token");
-    result.expectOk().expectUintWithDecimals(14744.468773);
+    result.expectOk().expectUintWithDecimals(12090.464394);
     result = liquidationRewards.claimRewards(wallet_1, 1, "escrowed-diko-token");
-    result.expectOk().expectUintWithDecimals(29488.937547);
+    result.expectOk().expectUintWithDecimals(24180.928788);
 
     // No rewards left
     call = await liquidationRewards.getRewardsOf(deployer.address, 1);
@@ -339,13 +338,13 @@ Clarinet.test({
 
     // Add rewards - epoch ended
     result = liquidationRewardsEsDiko.addRewards();
-    result.expectOk().expectUintWithDecimals(44233.410744);
+    result.expectOk().expectUintWithDecimals(36271.39681);
 
     // Rewards 1
     call = await liquidationRewards.getRewardsOf(deployer.address, 2);
-    call.result.expectOk().expectUintWithDecimals(14744.468773);
+    call.result.expectOk().expectUintWithDecimals(12090.464394);
     call = await liquidationRewards.getRewardsOf(wallet_1.address, 2);
-    call.result.expectOk().expectUintWithDecimals(29488.937547);
+    call.result.expectOk().expectUintWithDecimals(24180.928788);
     
   }
 });
@@ -370,14 +369,14 @@ Clarinet.test({
     // Reward data
     let call:any = await liquidationRewardsEsDiko.getEpochInfo();
     call.result.expectOk().expectTuple()["blocks"].expectUint(720);
-    call.result.expectOk().expectTuple()["rate"].expectUintWithDecimals(0.1);
+    call.result.expectOk().expectTuple()["rate"].expectUintWithDecimals(0.082);
     call.result.expectOk().expectTuple()["end-block"].expectUint(1440);
 
     // Epoch info
     call = await liquidationRewardsEsDiko.getBlocksPerEpoch();
     call.result.expectOk().expectUint(720);
     call = await liquidationRewardsEsDiko.getEpochRate();
-    call.result.expectOk().expectUintWithDecimals(0.1);
+    call.result.expectOk().expectUintWithDecimals(0.082);
     call = await liquidationRewardsEsDiko.getEndEpochBlock();
     call.result.expectOk().expectUint(1440);
 
@@ -560,12 +559,12 @@ Clarinet.test({
 
     // Add rewards
     result = liquidationRewardsEsDiko.addRewards();
-    result.expectOk().expectUintWithDecimals(44233.410744);
+    result.expectOk().expectUintWithDecimals(36271.39681);
 
     // Reward data
     let call:any = await liquidationRewards.getRewardData(0);
     call.result.expectTuple()["share-block"].expectUint(720);
-    call.result.expectTuple()["total-amount"].expectUintWithDecimals(44233.410744);
+    call.result.expectTuple()["total-amount"].expectUintWithDecimals(36271.39681);
   }
 });
 
