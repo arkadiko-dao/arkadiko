@@ -8,7 +8,7 @@ import { AppContext } from '@common/context';
 import { blocksToTime, getRPCClient, stacksNetwork as network } from '@common/utils';
 import { AnchorMode, callReadOnlyFunction, contractPrincipalCV, cvToJSON, standardPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { StakeModal } from './stake-modal';
+import { InputModal } from './input-modal';
 import { useConnect } from '@stacks/connect-react';
 
 export const StakeSectionDiko = ({ showLoadingState, apiData }) => {
@@ -280,52 +280,56 @@ export const StakeSectionDiko = ({ showLoadingState, apiData }) => {
 
   return (
     <>
-      <StakeModal
+      <InputModal
         key={"stake-diko"}
-        type={'Stake'}
         showModal={showStakeDikoModal}
         setShowModal={setShowStakeDikoModal}
-        tokenName={"DIKO"}
         logoX={tokenList[1].logo}
         logoY={tokenList[1].logo}
-        apr={0}
-        max={walletDiko}
+        tokenName={"DIKO"}
+        title={"Stake DIKO"}
+        subtitle={`Stake your DIKO tokens to earn rewards, including protocol revenue.`}
+        buttonText={"Stake"}
+        maxAmount={walletDiko}
         callback={stakeDiko}
       />
-      <StakeModal
+      <InputModal
         key={"stake-esdiko"}
-        type={'Stake'}
         showModal={showStakeEsDikoModal}
         setShowModal={setShowStakeEsDikoModal}
-        tokenName={"esDIKO"}
         logoX={tokenList[1].logo}
         logoY={tokenList[1].logo}
-        apr={0}
-        max={walletEsDiko}
+        tokenName={"esDIKO"}
+        title={"Stake esDIKO"}
+        subtitle={`Stake your esDIKO tokens to earn rewards, including protocol revenue.`}
+        buttonText={"Stake"}
+        maxAmount={walletEsDiko}
         callback={stakeEsDiko}
       />
-      <StakeModal
+      <InputModal
         key={"unstake-diko"}
-        type={'Unstake'}
         showModal={showUnstakeDikoModal}
         setShowModal={setShowUnstakeDikoModal}
-        tokenName={"DIKO"}
         logoX={tokenList[1].logo}
         logoY={tokenList[1].logo}
-        apr={0}
-        max={stakedDiko}
+        tokenName={"DIKO"}
+        title={"Unstake DIKO"}
+        subtitle={`Unstake your DIKO tokens to get them back in your wallet.`}
+        buttonText={"Unstake"}
+        maxAmount={stakedDiko}
         callback={unstakeDiko}
       />
-      <StakeModal
+      <InputModal
         key={"unstake-esdiko"}
-        type={'Unstake'}
         showModal={showUnstakeEsDikoModal}
         setShowModal={setShowUnstakeEsDikoModal}
-        tokenName={"esDIKO"}
         logoX={tokenList[1].logo}
         logoY={tokenList[1].logo}
-        apr={0}
-        max={stakedEsDiko}
+        tokenName={"esDIKO"}
+        title={"Unstake esDIKO"}
+        subtitle={`Unstake your DIKO tokens to get them back in your wallet.`}
+        buttonText={"Unstake"}
+        maxAmount={stakedEsDiko}
         callback={unstakeEsDiko}
       />
 

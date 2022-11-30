@@ -3,15 +3,16 @@ import { Modal } from '@components/ui/modal';
 import { InputAmount } from './input-amount';
 import { Alert } from './ui/alert';
 
-export const StakeModal = ({
-  type,
+export const InputModal = ({
   showModal,
   setShowModal,
-  tokenName,
   logoX,
   logoY,
-  apr,
-  max,
+  tokenName,
+  title,
+  subtitle,
+  buttonText,
+  maxAmount,
   callback
 }) => {
   const [errors, setErrors] = useState<string[]>([]);
@@ -19,15 +20,15 @@ export const StakeModal = ({
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const maxAmount = () => {
-    setAmount(max);
+  const setMaxAmount = () => {
+    setAmount(maxAmount);
   };
 
   const onInputChange = (event: any) => {
     const value = event.target.value;
-    if (value > max) {
+    if (value > maxAmount) {
       if (errors.length < 1) {
-        setErrors(errors.concat([`You cannot ${type.toLowerCase()} more than ${max} ${tokenName}`]));
+        setErrors(errors.concat([`Your input exceeds the maximum amount (${maxAmount})`]));
       }
       setIsButtonDisabled(true);
     } else {
@@ -40,7 +41,7 @@ export const StakeModal = ({
   return (
     <Modal
       open={showModal}
-      title={`${type} ${tokenName} Tokens`}
+      title={title}
       icon={
         <div className="flex -space-x-2">
           <img
@@ -58,7 +59,7 @@ export const StakeModal = ({
         </div>
       }
       closeModal={() => setShowModal(false)}
-      buttonText={type}
+      buttonText={buttonText}
       buttonAction={() => callback(amount)}
       buttonDisabled={isButtonDisabled || errors.length > 0}
       initialFocus={inputRef}
@@ -71,27 +72,13 @@ export const StakeModal = ({
         </div>
       ) : null}
 
-      {type == "Stake" && apr == "0" ? (
-        <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">
-          Stake your {tokenName} tokens and start earning rewards now.
-        </p>
-      ): type == "Stake" && apr != "0" ? (
-        <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">
-          Stake your {tokenName} tokens at {apr}% (estimated APR) and start earning rewards now.
-        </p>
-      ): type == "Unstake" && apr == "0" ? (
-        <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">
-          Unstake your {tokenName} tokens and start earning rewards now.
-        </p>
-      ):(
-        <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">
-          Unstake your {tokenName} tokens at {apr}% (estimated APR) and start earning rewards now.
-        </p>
-      )}
+      <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">
+        {subtitle}
+      </p>
 
       <div className="mt-6">
         <InputAmount
-          balance={max.toLocaleString(undefined, {
+          balance={maxAmount.toLocaleString(undefined, {
             minimumFractionDigits: 2,
             maximumFractionDigits: 6,
           })}
@@ -99,9 +86,9 @@ export const StakeModal = ({
           inputName={`name-${tokenName}`}
           inputId={`id-${tokenName}`}
           inputValue={amount}
-          inputLabel={`${type} ${tokenName}`}
+          inputLabel={`${tokenName}`}
           onInputChange={onInputChange}
-          onClickMax={maxAmount}
+          onClickMax={setMaxAmount}
           ref={inputRef}
         />
       </div>

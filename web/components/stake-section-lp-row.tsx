@@ -9,7 +9,7 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
 import { AppContext } from '@common/context';
 import { stacksNetwork as network } from '@common/utils';
-import { StakeModal } from './stake-modal';
+import { InputModal } from './input-modal';
 import { AnchorMode, callReadOnlyFunction, contractPrincipalCV, createAssetInfo, cvToJSON, FungibleConditionCode, makeStandardFungiblePostCondition, standardPrincipalCV, uintCV } from '@stacks/transactions';
 
 export interface StakeSectionLpRowProps {
@@ -257,29 +257,30 @@ export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({ showLoadin
 
   return (
     <>
-      <StakeModal
+      <InputModal
         key={"stake" + lpToken}
-        type={'Stake'}
         showModal={showStakeModal}
         setShowModal={setShowStakeModal}
-        tokenName={tokenList[tokenListX].name + "/" + tokenList[tokenListY].name + " LP"}
         logoX={tokenList[tokenListX].logo}
         logoY={tokenList[tokenListY].logo}
-        apr={apr}
-        max={state.balance[stateLpKey] / 1000000}
+        tokenName={tokenList[tokenListX].name + "/" + tokenList[tokenListY].name + " LP"}
+        title={"Stake " + tokenList[tokenListX].name + "/" + tokenList[tokenListY].name + " LP"}
+        subtitle={`Stake your tokens at ${apr}% (estimated APR) and start earning rewards now.`}
+        buttonText={"Stake"}
+        maxAmount={state.balance[stateLpKey] / 1000000}
         callback={stake}
       />
-
-      <StakeModal
+      <InputModal
         key={"unstake" + lpToken}
-        type={'Unstake'}
         showModal={showUnstakeModal}
         setShowModal={setShowUnstakeModal}
-        tokenName={tokenList[tokenListX].name + "/" + tokenList[tokenListY].name + " LP"}
         logoX={tokenList[tokenListX].logo}
         logoY={tokenList[tokenListY].logo}
-        apr={apr}
-        max={stakedAmount}
+        tokenName={tokenList[tokenListX].name + "/" + tokenList[tokenListY].name + " LP"}
+        title={"Unstake " + tokenList[tokenListX].name + "/" + tokenList[tokenListY].name + " LP"}
+        subtitle={`Unstake your tokens and get them back in your wallet.`}
+        buttonText={"Unstake"}
+        maxAmount={stakedAmount}
         callback={unstake}
       />
 

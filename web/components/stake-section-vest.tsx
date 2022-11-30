@@ -8,7 +8,7 @@ import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { Tooltip } from '@blockstack/ui';
 import { useConnect } from '@stacks/connect-react';
-import { StakeModal } from './stake-modal';
+import { InputModal } from './input-modal';
 import { AppContext } from '@common/context';
 
 export const StakeSectionVest = ({ showLoadingState }) => {
@@ -138,29 +138,31 @@ export const StakeSectionVest = ({ showLoadingState }) => {
 
   return (
     <>
-    <StakeModal
+      <InputModal
         key={"stake-esdiko"}
-        type={'Stake'}
         showModal={showStakeModal}
         setShowModal={setShowStakeModal}
-        tokenName={"esDIKO"}
         logoX={tokenList[1].logo}
         logoY={tokenList[1].logo}
-        apr={0}
-        max={walletAmount}
+        tokenName={"esDIKO"}
+        title={"Vest esDIKO"}
+        subtitle={"Start vesting esDIKO to get DIKO."}
+        buttonText={"Start vesting"}
+        maxAmount={walletAmount}
         callback={startVesting}
       />
-      <StakeModal
+      <InputModal
         key={"unstake-esdiko"}
-        type={'Unstake'}
         showModal={showUnstakeModal}
         setShowModal={setShowUnstakeModal}
-        tokenName={"esDIKO"}
         logoX={tokenList[1].logo}
         logoY={tokenList[1].logo}
-        apr={0}
-        max={vestingAmout}
-        callback={stopVesting}
+        tokenName={"esDIKO"}
+        title={"Stop vesting esDIKO"}
+        subtitle={"Stop vesting esDIKO to get back your tokens."}
+        buttonText={"Start vesting"}
+        maxAmount={vestingAmout}
+        callback={startVesting}
       />
       <section className="relative mt-8">
         <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
