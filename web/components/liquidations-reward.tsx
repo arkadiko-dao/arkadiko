@@ -186,6 +186,8 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
           <span className="font-medium text-gray-900 dark:text-zinc-100">xSTX</span>
         ) : token.split('.')[1] == "arkadiko-token" ? (
           <span className="font-medium text-gray-900 dark:text-zinc-100">DIKO</span>
+        ) : token.split('.')[1] == "escrowed-diko-token" ? (
+          <span className="font-medium text-gray-900 dark:text-zinc-100">esDIKO</span>
         ) : token.split('.')[1] == "Wrapped-Bitcoin" ? (
           <span className="font-medium text-gray-900 dark:text-zinc-100">xBTC</span>
         ) : (
