@@ -6,15 +6,19 @@ import { Tooltip } from '@blockstack/ui';
 import { StyledIcon } from './ui/styled-icon';
 import { AppContext } from '@common/context';
 import { blocksToTime, getRPCClient, stacksNetwork as network } from '@common/utils';
-import { callReadOnlyFunction, cvToJSON, standardPrincipalCV } from '@stacks/transactions';
+import { AnchorMode, callReadOnlyFunction, contractPrincipalCV, cvToJSON, standardPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
+import { StakeModal } from './stake-modal';
+import { useConnect } from '@stacks/connect-react';
 
 export const StakeSectionDiko = ({ showLoadingState, apiData }) => {
-  const [state] = useContext(AppContext);
+  const [state, setState] = useContext(AppContext);
 
   const [loadingData, setLoadingData] = useState(true);
-  const [showStakeModal, setShowStakeModal] = useState(false);
-  const [showUnstakeModal, setShowUnstakeModal] = useState(false);
+  const [showStakeDikoModal, setShowStakeDikoModal] = useState(false);
+  const [showStakeEsDikoModal, setShowStakeEsDikoModal] = useState(false);
+  const [showUnstakeDikoModal, setShowUnstakeDikoModal] = useState(false);
+  const [showUnstakeEsDikoModal, setShowUnstakeEsDikoModal] = useState(false);
 
   const [walletDiko, setWalletDiko] = useState(0.0);
   const [walletEsDiko, setWalletEsDiko] = useState(0.0);
@@ -29,8 +33,9 @@ export const StakeSectionDiko = ({ showLoadingState, apiData }) => {
   const [nextEpochUsda, setNextEpochUsda] = useState(0.0);
   const [epochBlocksLeft, setEpochBlocksLeft] = useState(0);
 
-  const stxAddress = useSTXAddress();
+  const stxAddress = useSTXAddress() || '';
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const { doContractCall } = useConnect();
 
   const loadUserStaked = async () => {
     const call = await callReadOnlyFunction({
@@ -140,16 +145,16 @@ export const StakeSectionDiko = ({ showLoadingState, apiData }) => {
       loadTotalStaked()
     ]);
 
-    setWalletDiko(state.balance.diko)
-    setWalletEsDiko(state.balance.esdiko)
+    setWalletDiko(state.balance.diko / 1000000)
+    setWalletEsDiko(state.balance.esdiko / 1000000)
 
-    setStakedDiko(dataUserStaked.diko.value);
-    setStakedEsDiko(dataUserStaked.esdiko.value);
-    setStakedPoints(dataUserStaked.points.value);
+    setStakedDiko(Number(dataUserStaked.diko.value) / 1000000);
+    setStakedEsDiko(Number(dataUserStaked.esdiko.value) / 1000000);
+    setStakedPoints(Number(dataUserStaked.points.value) / 1000000);
 
-    setPendingRewardsUsda(dataUserPendingRewards.usda.value);
-    setPendingRewardsEsDiko(dataUserPendingRewards.esdiko.value);
-    setPendingRewardsPoints(dataUserPendingRewards.point.value);
+    setPendingRewardsUsda(Number(dataUserPendingRewards.usda.value) / 1000000);
+    setPendingRewardsEsDiko(Number(dataUserPendingRewards.esdiko.value) / 1000000);
+    setPendingRewardsPoints(Number(dataUserPendingRewards.point.value) / 1000000);
 
     setEpochUsda(dataRevenueInfo["revenue-epoch-length"].value * dataRevenueInfo["revenue-block-rewards"].value / 1000000)
     setNextEpochUsda(dataRevenueInfo["revenue-next-total"].value / 1000000)
@@ -172,8 +177,158 @@ export const StakeSectionDiko = ({ showLoadingState, apiData }) => {
     }
   }, [showLoadingState]);
 
+  async function stakeDiko(amount: number) {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-pool-diko-v2-1',
+      functionName: 'stake',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, "arkadiko-token"),
+        uintCV(Number((amount * 1000000).toFixed(0))),
+        contractPrincipalCV(contractAddress, "arkadiko-vest-esdiko-v1-1"),
+      ],
+      postConditionMode: 0x01,
+      onFinish: data => {
+        console.log('Broadcasted TX:', data);
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  }
+
+  async function stakeEsDiko(amount: number) {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-pool-diko-v2-1',
+      functionName: 'stake',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, "escrowed-diko-token"),
+        uintCV(Number((amount * 1000000).toFixed(0))),
+        contractPrincipalCV(contractAddress, "arkadiko-vest-esdiko-v1-1"),
+      ],
+      postConditionMode: 0x01,
+      onFinish: data => {
+        console.log('Broadcasted TX:', data);
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  }
+
+  async function unstakeDiko(amount: number) {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-pool-diko-v2-1',
+      functionName: 'unstake',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, "arkadiko-token"),
+        uintCV(Number((amount * 1000000).toFixed(0))),
+        contractPrincipalCV(contractAddress, "arkadiko-vest-esdiko-v1-1"),
+      ],
+      postConditionMode: 0x01,
+      onFinish: data => {
+        console.log('Broadcasted TX:', data);
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  }
+
+  async function unstakeEsDiko(amount: number) {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-pool-diko-v2-1',
+      functionName: 'unstake',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, "escrowed-diko-token"),
+        uintCV(Number((amount * 1000000).toFixed(0))),
+        contractPrincipalCV(contractAddress, "arkadiko-vest-esdiko-v1-1"),
+      ],
+      postConditionMode: 0x01,
+      onFinish: data => {
+        console.log('Broadcasted TX:', data);
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  }
+
+  async function claimPendingRewards() {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-pool-diko-v2-1',
+      functionName: 'claim-pending-rewards',
+      functionArgs: [],
+      postConditionMode: 0x01,
+      onFinish: data => {
+        console.log('Broadcasted TX:', data);
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  }
+
   return (
     <>
+      <StakeModal
+        key={"stake-diko"}
+        type={'Stake'}
+        showModal={showStakeDikoModal}
+        setShowModal={setShowStakeDikoModal}
+        tokenName={"DIKO"}
+        logoX={tokenList[1].logo}
+        logoY={tokenList[1].logo}
+        apr={0}
+        max={walletDiko}
+        callback={stakeDiko}
+      />
+      <StakeModal
+        key={"stake-esdiko"}
+        type={'Stake'}
+        showModal={showStakeEsDikoModal}
+        setShowModal={setShowStakeEsDikoModal}
+        tokenName={"esDIKO"}
+        logoX={tokenList[1].logo}
+        logoY={tokenList[1].logo}
+        apr={0}
+        max={walletEsDiko}
+        callback={stakeEsDiko}
+      />
+      <StakeModal
+        key={"unstake-diko"}
+        type={'Unstake'}
+        showModal={showUnstakeDikoModal}
+        setShowModal={setShowUnstakeDikoModal}
+        tokenName={"DIKO"}
+        logoX={tokenList[1].logo}
+        logoY={tokenList[1].logo}
+        apr={0}
+        max={stakedDiko}
+        callback={unstakeDiko}
+      />
+      <StakeModal
+        key={"unstake-esdiko"}
+        type={'Unstake'}
+        showModal={showUnstakeEsDikoModal}
+        setShowModal={setShowUnstakeEsDikoModal}
+        tokenName={"esDIKO"}
+        logoX={tokenList[1].logo}
+        logoY={tokenList[1].logo}
+        apr={0}
+        max={stakedEsDiko}
+        callback={unstakeEsDiko}
+      />
+
       <section>
         <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
           <div>
@@ -393,7 +548,7 @@ export const StakeSectionDiko = ({ showLoadingState, apiData }) => {
                                       : 'text-gray-900'
                                   } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
                                   disabled={!(walletDiko > 0)}
-                                  onClick={() => setShowStakeModal(true)}
+                                  onClick={() => setShowStakeDikoModal(true)}
                                 >
                                   {!(walletDiko > 0) ? (
                                     <Tooltip
@@ -434,7 +589,7 @@ export const StakeSectionDiko = ({ showLoadingState, apiData }) => {
                                       : 'text-gray-900'
                                   } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
                                   disabled={!(walletEsDiko > 0)}
-                                  onClick={() => setShowStakeModal(true)}
+                                  onClick={() => setShowStakeEsDikoModal(true)}
                                 >
                                   {!(walletEsDiko > 0) ? (
                                     <Tooltip
@@ -474,7 +629,7 @@ export const StakeSectionDiko = ({ showLoadingState, apiData }) => {
                                       ? 'bg-indigo-500 text-white disabled:bg-gray-400 disabled:cursor-not-allowed'
                                       : 'text-gray-900'
                                   } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                  onClick={() => setShowUnstakeModal(true)}
+                                  onClick={() => setShowUnstakeDikoModal(true)}
                                   disabled={!(stakedDiko > 0)}
                                 >
                                   {!(stakedDiko > 0) ? (
@@ -515,7 +670,7 @@ export const StakeSectionDiko = ({ showLoadingState, apiData }) => {
                                       ? 'bg-indigo-500 text-white disabled:bg-gray-400 disabled:cursor-not-allowed'
                                       : 'text-gray-900'
                                   } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                  onClick={() => setShowUnstakeModal(true)}
+                                  onClick={() => setShowUnstakeEsDikoModal(true)}
                                   disabled={!(stakedEsDiko > 0)}
                                 >
                                   {!(stakedEsDiko > 0) ? (
@@ -541,6 +696,47 @@ export const StakeSectionDiko = ({ showLoadingState, apiData }) => {
                                         className="mr-3 text-gray-400 group-hover:text-white"
                                       />
                                       Unstake esDIKO
+                                    </>
+                                  )}
+                                </button>
+                              )}
+                            </Menu.Item>
+
+                            {/* CLAIM REWARDS */}
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  className={`${
+                                    active
+                                      ? 'bg-indigo-500 text-white disabled:bg-gray-400 disabled:cursor-not-allowed'
+                                      : 'text-gray-900'
+                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                  onClick={() => claimPendingRewards()}
+                                  disabled={!(pendingRewardsUsda > 0 || pendingRewardsEsDiko > 0 || pendingRewardsPoints > 0)}
+                                >
+                                  {!(pendingRewardsUsda > 0 || pendingRewardsEsDiko > 0 || pendingRewardsPoints > 0) ? (
+                                    <Tooltip
+                                      placement="left"
+                                      className="mr-2"
+                                      label={`You don't have any rewards to claim.`}
+                                    >
+                                      <div className="flex items-center w-full">
+                                        <StyledIcon
+                                          as="ArrowCircleRightIcon"
+                                          size={5}
+                                          className="mr-3 text-gray-400 group-hover:text-white"
+                                        />
+                                        Claim rewards
+                                      </div>
+                                    </Tooltip>
+                                  ) : (
+                                    <>
+                                      <StyledIcon
+                                        as="ArrowCircleRightIcon"
+                                        size={5}
+                                        className="mr-3 text-gray-400 group-hover:text-white"
+                                      />
+                                        Claim rewards
                                     </>
                                   )}
                                 </button>

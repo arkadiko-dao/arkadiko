@@ -40,7 +40,7 @@ export const StakeModal = ({
   return (
     <Modal
       open={showModal}
-      title={`${type} ${tokenName} LP Tokens`}
+      title={`${type} ${tokenName} Tokens`}
       icon={
         <div className="flex -space-x-2">
           <img
@@ -48,11 +48,13 @@ export const StakeModal = ({
             src={logoX}
             alt=""
           />
-          <img
-            className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
-            src={logoY}
-            alt=""
-          />
+          {logoX != logoY ? (
+            <img
+              className="inline-block w-8 h-8 rounded-full ring-2 ring-white"
+              src={logoY}
+              alt=""
+            />
+          ): null}
         </div>
       }
       closeModal={() => setShowModal(false)}
@@ -69,13 +71,21 @@ export const StakeModal = ({
         </div>
       ) : null}
 
-      {type == "Stake" ? (
+      {type == "Stake" && apr == "0" ? (
         <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">
-          Stake your {tokenName} LP tokens at {apr}% (estimated APR) and start earning rewards now.
+          Stake your {tokenName} tokens and start earning rewards now.
+        </p>
+      ): type == "Stake" && apr != "0" ? (
+        <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">
+          Stake your {tokenName} tokens at {apr}% (estimated APR) and start earning rewards now.
+        </p>
+      ): type == "Unstake" && apr == "0" ? (
+        <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">
+          Unstake your {tokenName} tokens and start earning rewards now.
         </p>
       ):(
         <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">
-          Unstake your {tokenName} LP tokens at {apr}% (estimated APR) and start earning rewards now.
+          Unstake your {tokenName} tokens at {apr}% (estimated APR) and start earning rewards now.
         </p>
       )}
 

@@ -33,7 +33,6 @@ export const StakeSectionMigrate = () => {
       getStakingAmounts(),
     ]);
 
-    console.log("got staking amounts:", dataStakingAmounts);
     const dikoUsda = dataStakingAmounts["stake-amount-diko-usda"].value
     const wstxDiko = dataStakingAmounts["stake-amount-wstx-diko"].value
     const xbtcUsda = 0 

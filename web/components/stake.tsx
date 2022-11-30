@@ -8,6 +8,7 @@ import { StakeSectionUsda } from './stake-section-usda';
 import { StakeSectionLp } from './stake-section-lp';
 import { StakeSectionMigrate } from './stake-section-migrate';
 import axios from 'axios';
+import { StakeSectionVest } from './stake-section-vest';
 
 const apiUrl = 'https://arkadiko-api.herokuapp.com';
 
@@ -58,6 +59,9 @@ export const Stake = () => {
             {/* LP */}
             <StakeSectionLp showLoadingState={loadingData} apiData={apiData}/>
 
+            {/* VESTING */}
+            <StakeSectionVest showLoadingState={loadingData}/>
+            
           </main>
         </Container>
       ) : (

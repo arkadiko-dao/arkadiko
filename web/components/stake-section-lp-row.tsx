@@ -257,13 +257,12 @@ export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({ showLoadin
 
   return (
     <>
-
       <StakeModal
         key={"stake" + lpToken}
         type={'Stake'}
         showModal={showStakeModal}
         setShowModal={setShowStakeModal}
-        tokenName={tokenList[tokenListX].name + "/" + tokenList[tokenListY].name}
+        tokenName={tokenList[tokenListX].name + "/" + tokenList[tokenListY].name + " LP"}
         logoX={tokenList[tokenListX].logo}
         logoY={tokenList[tokenListY].logo}
         apr={apr}
@@ -276,7 +275,7 @@ export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({ showLoadin
         type={'Unstake'}
         showModal={showUnstakeModal}
         setShowModal={setShowUnstakeModal}
-        tokenName={tokenList[tokenListX].name + "/" + tokenList[tokenListY].name}
+        tokenName={tokenList[tokenListX].name + "/" + tokenList[tokenListY].name + " LP"}
         logoX={tokenList[tokenListX].logo}
         logoY={tokenList[tokenListY].logo}
         apr={apr}
