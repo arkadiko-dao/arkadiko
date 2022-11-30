@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StakeSectionMigrateRow, StakeSectionMigrateRowProps } from './stake-section-migrate-row';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { callReadOnlyFunction, cvToJSON, standardPrincipalCV } from '@stacks/transactions';
+import { AppContext } from '@common/context';
 
 export const StakeSectionMigrate = () => {
+  const [state, setState] = useContext(AppContext);
   const [rows, setRows] = useState<StakeSectionMigrateRowProps[]>([]);
 
   const stxAddress = useSTXAddress() || '';
@@ -38,21 +40,24 @@ export const StakeSectionMigrate = () => {
     // TODO: use migration contract to get the 3 values
 
     var newRows: StakeSectionMigrateRowProps[] = [];
+    if (state.balance["stdiko"] > 0) {
+      newRows.push({ tokenName: "stDIKO", tokenX: 1, tokenY: 1, amount: state.balance["stdiko"] / 1000000, functionName: "migrate-stdiko" })
+    }
     if (dikoUsda > 0) {
-      newRows.push({ tokenX: 1, tokenY: 0, amount: dikoUsda / 1000000, functionName: "migrate-diko-usda" })
+      newRows.push({ tokenName: "DIKO/USDA", tokenX: 1, tokenY: 0, amount: dikoUsda / 1000000, functionName: "migrate-diko-usda" })
     }
     if (wstxDiko > 0) {
-      newRows.push({ tokenX: 2, tokenY: 1, amount: wstxDiko / 1000000, functionName: "migrate-wstx-diko" })
+      newRows.push({ tokenName: "STX/USDA", tokenX: 2, tokenY: 1, amount: wstxDiko / 1000000, functionName: "migrate-wstx-diko" })
     }
     if (xbtcUsda > 0) {
-      newRows.push({ tokenX: 3, tokenY: 0, amount: xbtcUsda / 1000000, functionName: "migrate-xbtc-usda" })
+      newRows.push({ tokenName: "xBTC/USDA", tokenX: 3, tokenY: 0, amount: xbtcUsda / 1000000, functionName: "migrate-xbtc-usda" })
     }
     setRows(newRows);
   }
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [state.balance]);
 
   return (
     <>

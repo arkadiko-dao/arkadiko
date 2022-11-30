@@ -193,7 +193,7 @@ export const StakeSectionUsda = ({ showLoadingState, apiData }) => {
 
               {/* ACTION */}
               <div className="self-center text-right">
-                <RouterLink className="" to={`/auctions`} exact>
+                <RouterLink className="" to={`/liquidations`} exact>
                   <span className="text-sm p-1.5 rounded-md inline-flex items-center text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700">
                     <span>
                       Add USDA to pool

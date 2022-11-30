@@ -8,6 +8,7 @@ import { stacksNetwork as network } from '@common/utils';
 import { AppContext } from '@common/context';
 
 export interface StakeSectionMigrateRowProps {
+  tokenName: string,
   tokenX: number,
   tokenY: number,
   amount: number,
@@ -15,6 +16,7 @@ export interface StakeSectionMigrateRowProps {
 }
 
 export const StakeSectionMigrateRow: React.FC<StakeSectionMigrateRowProps> = ({ 
+  tokenName,
   tokenX,
   tokenY,
   amount,
@@ -59,15 +61,17 @@ export const StakeSectionMigrateRow: React.FC<StakeSectionMigrateRowProps> = ({
                 src={tokenList[tokenX].logo}
                 alt=""
               />
-              <img
-                className="inline-block w-8 h-8 rounded-full shrink-0 ring-2 ring-white dark:ring-zinc-800"
-                src={tokenList[tokenY].logo}
-                alt=""
-              />
+              {tokenX != tokenY ? (
+                <img
+                  className="inline-block w-8 h-8 rounded-full shrink-0 ring-2 ring-white dark:ring-zinc-800"
+                  src={tokenList[tokenY].logo}
+                  alt=""
+                />
+              ):null}
             </div>
             <p className="mt-2 sm:mt-0 sm:ml-4">
               <span className="block text-gray-500 dark:text-zinc-400">
-                {tokenList[tokenX].name}/{tokenList[tokenY].name}
+                {tokenName}
               </span>
             </p>
           </div>
@@ -80,7 +84,7 @@ export const StakeSectionMigrateRow: React.FC<StakeSectionMigrateRowProps> = ({
               minimumFractionDigits: 2,
               maximumFractionDigits: 6,
             })}{' '}
-            <span className="text-sm font-normal">LP</span>
+            <span className="text-sm font-normal">{tokenName}</span>
           </p>
         </td>
 
