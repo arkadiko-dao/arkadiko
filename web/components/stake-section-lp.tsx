@@ -1,24 +1,112 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { AppContext } from '@common/context';
+import { useSTXAddress } from '@common/use-stx-address';
+import { callReadOnlyFunction, contractPrincipalCV, cvToJSON, listCV, standardPrincipalCV } from '@stacks/transactions';
 import { StakeSectionLpRow, StakeSectionLpRowProps } from './stake-section-lp-row';
 import { Alert } from './ui/alert';
+import { stacksNetwork as network } from '@common/utils';
 
-export const StakeSectionLp = () => {
+export const StakeSectionLp = ({ showLoadingState, apiData }) => {
+  const [state] = useContext(AppContext);
   const [rows, setRows] = useState<StakeSectionLpRowProps[]>([]);
+  const [showUnstakedTokensAlert, setShowUnstakedTokensAlert] = useState(false);
+
+  const stxAddress = useSTXAddress();
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  
+  async function loadStakedAmounts() {
+    const call = await callReadOnlyFunction({
+      contractAddress,
+      contractName: 'arkadiko-stake-pool-lp-v2-1',
+      functionName: 'get-staker-info-many-of',
+      functionArgs: [
+        standardPrincipalCV(stxAddress || ''),
+        listCV([
+          contractPrincipalCV(contractAddress, 'arkadiko-swap-token-diko-usda'),
+          contractPrincipalCV(contractAddress, 'arkadiko-swap-token-wstx-usda'),
+          contractPrincipalCV(contractAddress, 'arkadiko-swap-token-xbtc-usda'),
+        ])
+      ],
+      senderAddress: stxAddress || '',
+      network: network,
+    });
+    const result = cvToJSON(call).value;
+    return result;
+  }
+
+  async function loadTokenInfo() {
+    const call = await callReadOnlyFunction({
+      contractAddress,
+      contractName: 'arkadiko-stake-pool-lp-v2-1',
+      functionName: 'get-token-info-many-of',
+      functionArgs: [
+        listCV([
+          contractPrincipalCV(contractAddress, 'arkadiko-swap-token-diko-usda'),
+          contractPrincipalCV(contractAddress, 'arkadiko-swap-token-wstx-usda'),
+          contractPrincipalCV(contractAddress, 'arkadiko-swap-token-xbtc-usda'),
+        ])
+      ],
+      senderAddress: stxAddress || '',
+      network: network,
+    });
+    const result = cvToJSON(call).value;
+    return result;
+  }
+
+  async function loadStakingRewardsPerBlock() {
+    const call = await callReadOnlyFunction({
+      contractAddress,
+      contractName: 'arkadiko-diko-guardian-v1-1',
+      functionName: 'get-staking-rewards-per-block',
+      functionArgs: [],
+      senderAddress: stxAddress || '',
+      network: network,
+    });
+    const result = cvToJSON(call).value / 1000000;
+    return result;
+  }
 
   async function loadData() {
+    const [
+      stakedAmounts,
+      tokenInfo,
+      stakingRewardsPerBlock
+    ] = await Promise.all([
+      loadStakedAmounts(),
+      loadTokenInfo(),
+      loadStakingRewardsPerBlock()
+    ]);
    
-    // TODO: load general info
-
     var newRows: StakeSectionLpRowProps[] = [];
-    newRows.push({ tokenListX: 1, tokenListY: 0 })
-    newRows.push({ tokenListX: 2, tokenListY: 0 })
-    newRows.push({ tokenListX: 3, tokenListY: 0 })
+    newRows.push({ 
+      showLoadingState: showLoadingState, 
+      lpToken: "arkadiko-swap-token-diko-usda", 
+      apiData: apiData,
+      stakedAmount: stakedAmounts[0].value["total-staked"].value / 1000000,
+      rewardsPerBlock: (tokenInfo[0].value["rewards-rate"].value / 1000000) * stakingRewardsPerBlock
+    })
+    newRows.push({ 
+      showLoadingState: showLoadingState, 
+      lpToken: "arkadiko-swap-token-wstx-usda", 
+      apiData: apiData,
+      stakedAmount: stakedAmounts[1].value["total-staked"].value / 1000000,
+      rewardsPerBlock: (tokenInfo[1].value["rewards-rate"].value / 1000000) * stakingRewardsPerBlock
+    })
+    newRows.push({ 
+      showLoadingState: showLoadingState, 
+      lpToken: "arkadiko-swap-token-xbtc-usda", 
+      apiData: apiData,
+      stakedAmount: stakedAmounts[2].value["total-staked"].value / 1000000,
+      rewardsPerBlock: (tokenInfo[2].value["rewards-rate"].value / 1000000) * stakingRewardsPerBlock
+    })
     setRows(newRows);
+
+    setShowUnstakedTokensAlert(state.balance['dikousda'] > 0 || state.balance['wstxusda'] > 0 || state.balance['xbtcusda'] > 0)
   }
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [showLoadingState]);
 
   return (
     <>
@@ -36,15 +124,17 @@ export const StakeSectionLp = () => {
         </header>
 
         {/* ALERT */}
-        <div className="mb-4">
-          <Alert title="Unstaked LP tokens">
-            <p>👀 We noticed that your wallet contains LP Tokens that are not staked yet.</p>
-            <p className="mt-1">
-              If you want to stake them, pick the appropriate token in the table below, hit
-              the Actions dropdown button and choose Stake LP to initiate staking.
-            </p>
-          </Alert>
-        </div>
+        {showUnstakedTokensAlert ? (
+          <div className="mb-4">
+            <Alert title="Unstaked LP tokens">
+              <p>👀 We noticed that your wallet contains LP Tokens that are not staked yet.</p>
+              <p className="mt-1">
+                If you want to stake them, pick the appropriate token in the table below, hit
+                the Actions dropdown button and choose Stake LP to initiate staking.
+              </p>
+            </Alert>
+          </div>
+        ): null}
 
         {/* TABLE */}
         <div className="flex flex-col mt-4">
@@ -94,7 +184,7 @@ export const StakeSectionLp = () => {
                   </thead>
 
                   {rows.map((row: StakeSectionLpRowProps) => (
-                    <StakeSectionLpRow key={row.tokenListX + "-" + row.tokenListY} {...row} />
+                    <StakeSectionLpRow key={row.lpToken} {...row} />
                   ))}
 
                 </table>

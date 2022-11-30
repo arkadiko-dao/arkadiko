@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Helmet } from 'react-helmet';
 import { Redirect } from 'react-router-dom';
@@ -7,14 +7,33 @@ import { StakeSectionDiko } from './stake-section-diko';
 import { StakeSectionUsda } from './stake-section-usda';
 import { StakeSectionLp } from './stake-section-lp';
 import { StakeSectionMigrate } from './stake-section-migrate';
+import axios from 'axios';
+
+const apiUrl = 'https://arkadiko-api.herokuapp.com';
 
 export const Stake = () => {
   const [state] = useContext(AppContext);
+  const [loadingData, setLoadingData] = useState(true);
+  const [apiData, setApiData] = useState({});
+
+  async function fetchApiData() {
+    const response = await axios.get(`${apiUrl}/api/v1/pages/stake`);
+    const data = response.data;
+    return data;
+  }
+
+  async function fetchData() {
+    const newApiData = await fetchApiData();
+    setApiData(newApiData);
+
+    setLoadingData(false);
+  }
 
   useEffect(() => {
     if (state.currentTxStatus === 'success') {
       window.location.reload();
     }
+    fetchData();
   }, [state.currentTxStatus]);
 
   return (
@@ -34,10 +53,10 @@ export const Stake = () => {
             <StakeSectionDiko/>
 
             {/* USDA */}
-            <StakeSectionUsda/>
+            <StakeSectionUsda showLoadingState={loadingData} apiData={apiData}/>
 
             {/* LP */}
-            <StakeSectionLp/>
+            <StakeSectionLp showLoadingState={loadingData} apiData={apiData}/>
 
           </main>
         </Container>

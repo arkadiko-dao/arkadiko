@@ -5,11 +5,12 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { callReadOnlyFunction, cvToJSON, standardPrincipalCV } from '@stacks/transactions';
 
 export const StakeSectionMigrate = () => {
+  const [rows, setRows] = useState<StakeSectionMigrateRowProps[]>([]);
+
   const stxAddress = useSTXAddress() || '';
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
-  const [rows, setRows] = useState<StakeSectionMigrateRowProps[]>([]);
-
+  // TODO: get from migration contract
   const getStakingAmounts = async () => {
     const userStakedCall = await callReadOnlyFunction({
       contractAddress,

@@ -8,7 +8,7 @@ import { callReadOnlyFunction, contractPrincipalCV, cvToJSON, standardPrincipalC
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 
-export const StakeSectionUsda = () => {
+export const StakeSectionUsda = ({ showLoadingState, apiData }) => {
   const [loadingData, setLoadingData] = useState(true);
   const [totalUsda, setTotalUsda] = useState(0.0);
   const [userUsda, setUserUsda] = useState(0.0);
@@ -73,47 +73,33 @@ export const StakeSectionUsda = () => {
     return result;
   };
 
-  const getDikoPrice = async () => {
-    const call = await callReadOnlyFunction({
-      contractAddress,
-      contractName: 'arkadiko-oracle-v1-1',
-      functionName: 'get-price',
-      functionArgs: [
-        stringAsciiCV('DIKO'),
-      ],
-      senderAddress: stxAddress || '',
-      network: network,
-    });
-    const result = cvToJSON(call).value['last-price'].value;
-    return result;
-  };
-
   async function loadData() {
     const [
       dataTotalPooled,
       dataUserPooled,
       dataEpochInfo,
       dataDikoRewardsToAdd,
-      dataDikoPrice
     ] = await Promise.all([
       getTotalPooled(),
       getUserPooled(),
       getEpochInfo(),
       getDikoEpochRewardsToAdd(),
-      getDikoPrice()
     ]);
     setUserUsda(dataUserPooled);
     setTotalUsda(dataTotalPooled);
 
+    const dikoPrice = apiData.diko.last_price / 1000000;
     const dikoPerYear = (52560 / dataEpochInfo["blocks"].value) * dataDikoRewardsToAdd;
-    setApr((dikoPerYear * Number(dataDikoPrice / 1000000)) / dataTotalPooled * 100.0);
+    setApr((dikoPerYear * Number(dikoPrice)) / dataTotalPooled * 100.0);
 
     setLoadingData(false);
   }
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (!showLoadingState) {
+      loadData();
+    }
+  }, [showLoadingState]);
 
   return (
     <>

@@ -1,5 +1,4 @@
-import React, { useContext, useState } from 'react';
-import { microToReadable } from '@common/vault-utils';
+import React, { useContext, useEffect, useState } from 'react';
 import { tokenList } from '@components/token-swap-list';
 import { Disclosure } from '@headlessui/react';
 import { Tooltip } from '@blockstack/ui';
@@ -10,24 +9,25 @@ import { StakeLpModal } from './stake-lp-modal';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
 import { AppContext } from '@common/context';
+import { stacksNetwork as network } from '@common/utils';
+import { callReadOnlyFunction, contractPrincipalCV, cvToJSON, standardPrincipalCV } from '@stacks/transactions';
 
 export interface StakeSectionLpRowProps {
-  tokenListX: number,
-  tokenListY: number,
+  showLoadingState: boolean,
+  lpToken: string,
+  apiData: any,
+  stakedAmount: number,
+  rewardsPerBlock: number
 }
 
-export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({
-  tokenListX,
-  tokenListY
-}) => {
-  
-  const stxAddress = useSTXAddress() || '';
-  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const { doContractCall } = useConnect();
-
+export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({ showLoadingState, lpToken, apiData, stakedAmount, rewardsPerBlock }) => {
   const [state, setState] = useContext(AppContext);
-  const [loadingData, setLoadingData] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
+  const [showStakeModal, setShowStakeModal] = useState(false);
+  const [showUnstakeModal, setShowUnstakeModal] = useState(false);
 
+  const [tokenListX, setTokenListX] = useState(0);
+  const [tokenListY, setTokenListY] = useState(0);
   const [lpRoute, setLpRoute] = useState("");
 
   const [walletLpAmount, setWalletLpAmount] = useState(0.0);
@@ -35,7 +35,6 @@ export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({
   const [walletTokenYAmount, setWalletTokenYAmount] = useState(0.0);
   const [walletValue, setWalletValue] = useState(0.0);
 
-  const [stakedLpAmount, setStakedLpAmount] = useState(0.0);
   const [stakedTokenXAmount, setStakedTokenXAmount] = useState(0.0);
   const [stakedTokenYAmount, setStakedTokenYAmount] = useState(0.0);
   const [stakedValue, setStakedValue] = useState(0.0);
@@ -43,18 +42,113 @@ export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({
   const [pendingRewards, setPendingRewards] = useState(0.0);
   const [apr, setApr] = useState(0.0);
 
+  const stxAddress = useSTXAddress() || '';
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const { doContractCall } = useConnect();
+
+  const getPendingRewards = async (token: string) => {
+    const result = await callReadOnlyFunction({
+      contractAddress,
+      contractName: 'arkadiko-stake-pool-lp-v2-1',
+      functionName: 'get-pending-rewards',
+      functionArgs: [
+        standardPrincipalCV(stxAddress || ''),
+        contractPrincipalCV(contractAddress, token),
+      ],
+      senderAddress: stxAddress || '',
+      network: network,
+    });
+    return cvToJSON(result).value.value / 1000000;
+  };
+
+  async function loadData() {
+
+    // Get keys
+    var apiLpKey = "arkadiko-token/usda-token";
+    var apiStakeKey = "arkv1dikousda";
+    var stateLpKey = "dikousda";
+    var decimalsTokenX = 1000000;
+    if (lpToken == "arkadiko-swap-token-wstx-usda") {
+      apiLpKey = "wrapped-stx-token/usda-token";
+      apiStakeKey = "arkv1wstxusda";
+      stateLpKey = "wstxusda";
+      decimalsTokenX = 1000000;
+    } else if (lpToken == "arkadiko-swap-token-xbtc-usda") {
+      apiLpKey = "Wrapped-Bitcoin/usda-token";
+      apiStakeKey = "arkv1xbtcusda";
+      stateLpKey = "xbtcusda";
+      decimalsTokenX = 100000000;
+    }
+
+    // Calculate amounts and values
+    const usdaPrice = Number(apiData.usda.last_price / 1000000);
+    const dikoPrice = Number(apiData.diko.last_price / 1000000);
+
+    const totalX = Number(apiData[apiLpKey]["balance_x"] / decimalsTokenX);
+    const totalY = Number(apiData[apiLpKey]["balance_y"] / 1000000);
+    const totalShares = Number(apiData[apiLpKey]["shares_total"] / 1000000);
+    const totalStaked = Number(apiData[apiStakeKey]["total_staked"] / 1000000);
+    const userBalance = Number(state.balance[stateLpKey] / 1000000);
+
+    const userWalletShare = userBalance / totalShares;
+    const userStakedShare = stakedAmount / totalShares;
+
+    setWalletTokenXAmount(totalX * userWalletShare);
+    setWalletTokenYAmount(totalY * userWalletShare);
+    setWalletValue(totalY * userWalletShare * 2.0 * usdaPrice);
+
+    setStakedTokenXAmount(totalX * userStakedShare);
+    setStakedTokenYAmount(totalY * userStakedShare);
+    setStakedValue(totalY * userStakedShare * 2.0 * usdaPrice);
+
+    setPendingRewards(await getPendingRewards(lpToken));
+    
+    const totalStakedValue = totalY * (totalStaked / totalShares) * 2.0 * usdaPrice;
+    const totalRewardValue = rewardsPerBlock * 144 * 365 * dikoPrice;
+    setApr(Number((100 * (totalRewardValue / totalStakedValue)).toFixed(2)));
+
+    setLoadingData(false);
+  }
+
+  function setup() {
+    if (lpToken == "arkadiko-swap-token-diko-usda") {
+      setTokenListX(1);
+      setTokenListY(0);
+      setLpRoute("/swap/add/DIKO/USDA");
+      setWalletLpAmount(state.balance['dikousda'] / 1000000);
+
+    } else if (lpToken == "arkadiko-swap-token-wstx-usda") {
+      setTokenListX(2);
+      setTokenListY(0);
+      setLpRoute("/swap/add/STX/USDA");
+      setWalletLpAmount(state.balance['wstxusda'] / 1000000);
+
+    } else if (lpToken == "arkadiko-swap-token-xbtc-usda") {
+      setTokenListX(3);
+      setTokenListY(0);
+      setLpRoute("/swap/add/xBTC/USDA");
+      setWalletLpAmount(state.balance['xbtcusda'] / 1000000);
+    }
+  }
+
+  useEffect(() => {
+    setup();
+    if (!showLoadingState) {
+      loadData();
+    }
+  }, [state.balance, showLoadingState]);
 
   return (
     <>
       {/* <StakeLpModal
-        key={"key"}
-        showStakeModal={true}
-        setShowStakeModal={getTotalPooled}
+        key={lpToken}
+        showStakeModal={showStakeModal}
+        setShowStakeModal={setShowStakeModal}
         apy={100}
-        balanceName={123}
-        tokenName={"tokenname"}
+        balanceName={"dikousda"}
+        tokenName={'DIKO/USDA'}
       /> */}
-      <Disclosure key={tokenListX + "-" + tokenListY} as="tbody" className="bg-white dark:bg-zinc-800">
+      <Disclosure as="tbody" className="bg-white dark:bg-zinc-800">
         {({ open }) => (
           <>
             <tr className="bg-white dark:bg-zinc-800">
@@ -95,12 +189,12 @@ export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({
                     <Tooltip
                       shouldWrapChildren={true}
                       label={`
-                      ${microToReadable(walletTokenXAmount).toLocaleString(undefined, {
+                      ${walletTokenXAmount.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 6,
                       })} ${tokenList[tokenListX].name}
                       /
-                      ${microToReadable(walletTokenYAmount).toLocaleString(undefined, {
+                      ${walletTokenYAmount.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 6,
                       })} ${tokenList[tokenListY].name}
@@ -108,7 +202,7 @@ export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({
                     >
                       <div className="flex items-center">
                         <p className="font-semibold">
-                          {microToReadable(walletLpAmount).toLocaleString(undefined, {
+                          {walletLpAmount.toLocaleString(undefined, {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 6,
                           })}{' '}
@@ -123,7 +217,7 @@ export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({
                     </Tooltip>
                     <p className="mt-1 text-sm">
                       ≈$
-                      {microToReadable(walletValue).toLocaleString(undefined, {
+                      {walletValue.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 6,
                       })}
@@ -140,12 +234,12 @@ export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({
                     <Tooltip
                       shouldWrapChildren={true}
                       label={`
-                      ${microToReadable(stakedTokenXAmount).toLocaleString(undefined, {
+                      ${stakedTokenXAmount.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 6,
                       })} ${tokenList[tokenListX].name}
                       /
-                      ${microToReadable(stakedTokenYAmount).toLocaleString(undefined, {
+                      ${stakedTokenYAmount.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 6,
                       })} ${tokenList[tokenListY].name}
@@ -153,7 +247,7 @@ export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({
                     >
                       <div className="flex items-center">
                         <p className="font-semibold">
-                          {microToReadable(stakedLpAmount).toLocaleString(undefined, {
+                          {stakedAmount.toLocaleString(undefined, {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 6,
                           })}{' '}
@@ -168,7 +262,7 @@ export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({
                     </Tooltip>
                     <p className="mt-1 text-sm">
                       ≈$
-                      {microToReadable(stakedValue).toLocaleString(undefined, {
+                      {stakedValue.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 6,
                       })}
@@ -181,7 +275,7 @@ export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({
                   <Placeholder className="py-2" width={Placeholder.width.HALF} />
                 ) : (
                   <>
-                    {microToReadable(pendingRewards).toLocaleString(undefined, {
+                    {pendingRewards.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 6,
                     })}{' '}
@@ -224,7 +318,7 @@ export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({
                     type="button"
                     className="inline-flex items-center px-4 py-2 text-sm leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
                     disabled={walletLpAmount == 0}
-                    onClick={() => setShowStakeLpModal(true)}
+                    onClick={() => setShowStakeModal(true)}
                   >
                     Stake LP
                   </button>
@@ -237,8 +331,8 @@ export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({
                   <button
                     type="button"
                     className="inline-flex items-center px-4 py-2 text-sm leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
-                    disabled={stakedLpAmount == 0}
-                    onClick={() => setShowUnstakeLpModal(true)}
+                    disabled={stakedAmount == 0}
+                    onClick={() => setShowUnstakeModal(true)}
                   >
                     Unstake LP
                   </button>

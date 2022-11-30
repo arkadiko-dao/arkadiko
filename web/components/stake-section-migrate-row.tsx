@@ -20,13 +20,12 @@ export const StakeSectionMigrateRow: React.FC<StakeSectionMigrateRowProps> = ({
   amount,
   functionName
 }) => {
+  const [, setState] = useContext(AppContext);
 
   const stxAddress = useSTXAddress() || '';
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
   
-  const [, setState] = useContext(AppContext);
-
   async function migrate() {
     await doContractCall({
       network,
