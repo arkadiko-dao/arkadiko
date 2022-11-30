@@ -50,7 +50,7 @@ export const Stake = () => {
             <StakeSectionMigrate/>
             
             {/* DIKO */}
-            <StakeSectionDiko/>
+            <StakeSectionDiko showLoadingState={loadingData} apiData={apiData}/>
 
             {/* USDA */}
             <StakeSectionUsda showLoadingState={loadingData} apiData={apiData}/>

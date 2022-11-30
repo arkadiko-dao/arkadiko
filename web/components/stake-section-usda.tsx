@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { microToReadable } from '@common/vault-utils';
 import { tokenList } from '@components/token-swap-list';
 import { Placeholder } from './ui/placeholder';
 import { StyledIcon } from './ui/styled-icon';
@@ -28,7 +27,7 @@ export const StakeSectionUsda = ({ showLoadingState, apiData }) => {
       senderAddress: stxAddress || '',
       network: network,
     });
-    const result = cvToJSON(call).value.value;
+    const result = cvToJSON(call).value.value / 1000000;
     return result;
   };
 
@@ -43,7 +42,7 @@ export const StakeSectionUsda = ({ showLoadingState, apiData }) => {
       senderAddress: stxAddress || '',
       network: network,
     });
-    const result = cvToJSON(call).value.value;
+    const result = cvToJSON(call).value.value / 1000000;
     return result;
   };
 
@@ -146,7 +145,7 @@ export const StakeSectionUsda = ({ showLoadingState, apiData }) => {
                 ) : (
                   <div>
                     <p className="text-lg font-semibold dark:text-white">
-                      {microToReadable(userUsda).toLocaleString(undefined, {
+                      {userUsda.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 6,
                       })}
@@ -165,7 +164,7 @@ export const StakeSectionUsda = ({ showLoadingState, apiData }) => {
                 ) : (
                   <div>
                     <p className="text-lg font-semibold dark:text-white">
-                      {microToReadable(totalUsda).toLocaleString(undefined, {
+                      {totalUsda.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 6,
                       })}
