@@ -5,12 +5,12 @@ import { Tooltip } from '@blockstack/ui';
 import { Placeholder } from './ui/placeholder';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { StyledIcon } from './ui/styled-icon';
-import { StakeLpModal } from './stake-lp-modal';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
 import { AppContext } from '@common/context';
 import { stacksNetwork as network } from '@common/utils';
-import { callReadOnlyFunction, contractPrincipalCV, cvToJSON, standardPrincipalCV } from '@stacks/transactions';
+import { StakeModal } from './stake-modal';
+import { AnchorMode, callReadOnlyFunction, contractPrincipalCV, createAssetInfo, cvToJSON, FungibleConditionCode, makeStandardFungiblePostCondition, standardPrincipalCV, uintCV } from '@stacks/transactions';
 
 export interface StakeSectionLpRowProps {
   showLoadingState: boolean,
@@ -21,6 +21,31 @@ export interface StakeSectionLpRowProps {
 }
 
 export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({ showLoadingState, lpToken, apiData, stakedAmount, rewardsPerBlock }) => {
+  
+  // Get info based on lpToken name
+  let apiLpKey = "arkadiko-token/usda-token";
+  let apiStakeKey = "arkv1dikousda";
+  let stateLpKey = "dikousda";
+  let ftContract = 'diko-usda'
+  let decimalsTokenX = 1000000;
+  if (lpToken == "arkadiko-swap-token-wstx-usda") {
+    apiLpKey = "wrapped-stx-token/usda-token";
+    apiStakeKey = "arkv1wstxusda";
+    stateLpKey = "wstxusda";
+    ftContract = 'wstx-usda'
+    decimalsTokenX = 1000000;
+  } else if (lpToken == "arkadiko-swap-token-xbtc-usda") {
+    apiLpKey = "Wrapped-Bitcoin/usda-token";
+    apiStakeKey = "arkv1xbtcusda";
+    stateLpKey = "xbtcusda";
+    ftContract = 'xbtc-usda'
+    decimalsTokenX = 100000000;
+  }
+
+  // ---------------------------------------------------------
+  // State
+  // ---------------------------------------------------------
+
   const [state, setState] = useContext(AppContext);
   const [loadingData, setLoadingData] = useState(true);
   const [showStakeModal, setShowStakeModal] = useState(false);
@@ -46,6 +71,11 @@ export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({ showLoadin
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall } = useConnect();
 
+  // ---------------------------------------------------------
+  // Get data
+  // ---------------------------------------------------------
+
+
   const getPendingRewards = async (token: string) => {
     const result = await callReadOnlyFunction({
       contractAddress,
@@ -62,23 +92,6 @@ export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({ showLoadin
   };
 
   async function loadData() {
-
-    // Get keys
-    var apiLpKey = "arkadiko-token/usda-token";
-    var apiStakeKey = "arkv1dikousda";
-    var stateLpKey = "dikousda";
-    var decimalsTokenX = 1000000;
-    if (lpToken == "arkadiko-swap-token-wstx-usda") {
-      apiLpKey = "wrapped-stx-token/usda-token";
-      apiStakeKey = "arkv1wstxusda";
-      stateLpKey = "wstxusda";
-      decimalsTokenX = 1000000;
-    } else if (lpToken == "arkadiko-swap-token-xbtc-usda") {
-      apiLpKey = "Wrapped-Bitcoin/usda-token";
-      apiStakeKey = "arkv1xbtcusda";
-      stateLpKey = "xbtcusda";
-      decimalsTokenX = 100000000;
-    }
 
     // Calculate amounts and values
     const usdaPrice = Number(apiData.usda.last_price / 1000000);
@@ -138,16 +151,139 @@ export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({ showLoadin
     }
   }, [state.balance, showLoadingState]);
 
+
+  // ---------------------------------------------------------
+  // Contract calls
+  // ---------------------------------------------------------
+
+  async function stake(amount: number) {
+    const amountParam = uintCV(Number((amount * 1000000).toFixed(0)));
+    const postConditions = [
+      makeStandardFungiblePostCondition(
+        stxAddress || '',
+        FungibleConditionCode.Equal,
+        amountParam.value,
+        createAssetInfo(contractAddress, lpToken, ftContract)
+      ),
+    ];
+
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-pool-lp-v2-1',
+      functionName: 'stake',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, lpToken),
+        amountParam
+      ],
+      postConditions,
+      onFinish: data => {
+        console.log('Broadcasted TX:', data);
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setShowStakeModal(false);
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  }
+
+  async function unstake(amount: number) {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-pool-lp-v2-1',
+      functionName: 'unstake',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, lpToken),
+        uintCV(Number((amount * 1000000).toFixed(0)))
+      ],
+      postConditionMode: 0x01,
+      onFinish: data => {
+        console.log('Broadcasted TX:', data);
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setShowUnstakeModal(false);
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  }
+
+  async function claimRewards() {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-pool-lp-v2-1',
+      functionName: 'claim-pending-rewards',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, lpToken),
+      ],
+      postConditionMode: 0x02,
+      onFinish: data => {
+        console.log('Broadcasted TX:', data);
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setShowUnstakeModal(false);
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  }
+
+  async function stakeRewards() {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-pool-lp-v2-1',
+      functionName: 'stake-pending-rewards',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, "arkadiko-stake-pool-diko-v2-1"),
+        contractPrincipalCV(contractAddress, "arkadiko-vest-esdiko-v1-1"),
+        contractPrincipalCV(contractAddress, lpToken),
+      ],
+      postConditionMode: 0x01,
+      onFinish: data => {
+        console.log('Broadcasted TX:', data);
+        setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setShowStakeModal(false);
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  }
+
+
+  // ---------------------------------------------------------
+  // HTML
+  // ---------------------------------------------------------
+
   return (
     <>
-      {/* <StakeLpModal
-        key={lpToken}
-        showStakeModal={showStakeModal}
-        setShowStakeModal={setShowStakeModal}
-        apy={100}
-        balanceName={"dikousda"}
-        tokenName={'DIKO/USDA'}
-      /> */}
+
+      <StakeModal
+        key={"stake" + lpToken}
+        type={'Stake'}
+        showModal={showStakeModal}
+        setShowModal={setShowStakeModal}
+        tokenName={tokenList[tokenListX].name + "/" + tokenList[tokenListY].name}
+        logoX={tokenList[tokenListX].logo}
+        logoY={tokenList[tokenListY].logo}
+        apr={apr}
+        max={state.balance[stateLpKey] / 1000000}
+        callback={stake}
+      />
+
+      <StakeModal
+        key={"unstake" + lpToken}
+        type={'Unstake'}
+        showModal={showUnstakeModal}
+        setShowModal={setShowUnstakeModal}
+        tokenName={tokenList[tokenListX].name + "/" + tokenList[tokenListY].name}
+        logoX={tokenList[tokenListX].logo}
+        logoY={tokenList[tokenListY].logo}
+        apr={apr}
+        max={stakedAmount}
+        callback={unstake}
+      />
+
       <Disclosure as="tbody" className="bg-white dark:bg-zinc-800">
         {({ open }) => (
           <>
@@ -348,7 +484,7 @@ export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({ showLoadin
                         type="button"
                         className="inline-flex items-center px-3 py-2 text-sm leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
                         disabled={pendingRewards == 0}
-                        onClick={() => claimLpPendingRewards()}
+                        onClick={() => claimRewards()}
                       >
                         Claim
                       </button>
@@ -356,7 +492,7 @@ export const StakeSectionLpRow: React.FC<StakeSectionLpRowProps> = ({ showLoadin
                         type="button"
                         className="inline-flex items-center px-3 py-2 text-sm leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
                         disabled={pendingRewards == 0}
-                        onClick={() => stakeLpPendingRewards()}
+                        onClick={() => stakeRewards()}
                       >
                         Stake
                       </button>
