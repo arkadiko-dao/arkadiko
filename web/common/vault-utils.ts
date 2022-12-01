@@ -75,6 +75,13 @@ export const tokenTraits: TokenTraits = {
     multihop: [],
     ft: 'diko',
   },
+  esdiko: {
+    address: contractAddress,
+    name: 'escrowed-diko-token',
+    swap: 'escrowed-diko-token',
+    multihop: [],
+    ft: 'esdiko',
+  },
   stx: {
     address: contractAddress,
     name: 'xstx-token',
