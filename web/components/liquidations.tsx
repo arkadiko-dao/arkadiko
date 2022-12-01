@@ -458,7 +458,7 @@ export const Liquidations: React.FC = () => {
     const getEpochInfo = async () => {
       const call = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-liquidation-rewards-diko-v1-1',
+        contractName: 'arkadiko-liquidation-rewards-esdiko-v2-1',
         functionName: 'get-epoch-info',
         functionArgs: [],
         senderAddress: stxAddress || '',
@@ -471,7 +471,7 @@ export const Liquidations: React.FC = () => {
     const getDikoEpochRewardsToAdd = async () => {
       const call = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-liquidation-rewards-diko-v1-1',
+        contractName: 'arkadiko-liquidation-rewards-esdiko-v2-1',
         functionName: 'get-rewards-to-add',
         functionArgs: [],
         senderAddress: stxAddress || '',
