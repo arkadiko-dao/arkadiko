@@ -180,16 +180,39 @@ Clarinet.test({
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk();
-  
+
+    // Advance 50 blocks
+    chain.mineEmptyBlock(50);
+
+    // Stake
     let result = stakePool.stake(wallet_1, "arkadiko-token", 100);
     result.expectOk().expectUintWithDecimals(100);
 
     // First epoch initialised
     let call:any = stakePool.getRevenueInfo();
     call.result.expectTuple()["revenue-block-rewards"].expectUintWithDecimals(0.099206); // 100 / 1008
-    call.result.expectTuple()["revenue-epoch-end"].expectUint(1010);
+    call.result.expectTuple()["revenue-epoch-end"].expectUint(1060);
     call.result.expectTuple()["revenue-epoch-length"].expectUint(1008);
     call.result.expectTuple()["revenue-next-total"].expectUintWithDecimals(0);
+
+    // Cumm-reward-per stake is same for token and user
+    call = stakePool.getRewardOf("usda-token");
+    call.result.expectTuple()["cumm-reward-per-stake"].expectUintWithDecimals(0.051587);
+    call = stakePool.getStakeRewardsOf(wallet_1, "usda-token");
+    call.result.expectTuple()["cumm-reward-per-stake"].expectUintWithDecimals(0.051587);
+
+    // No rewards yet
+    call = stakePool.getPendingRewards(wallet_1); 
+    call.result.expectOk().expectTuple()["usda"].expectUintWithDecimals(0);
+
+    // Advance to end of epoch
+    chain.mineEmptyBlock(1005);
+    result = stakePool.increaseCummRewardPerStake();
+    result.expectOk().expectBool(true);
+
+    // Received almost all rewards (100 USDA)
+    call = stakePool.getPendingRewards(wallet_1); 
+    call.result.expectOk().expectTuple()["usda"].expectUintWithDecimals(99.8012);
 
     // New revenues
     block = chain.mineBlock([
@@ -208,7 +231,7 @@ Clarinet.test({
 
     call = stakePool.getRevenueInfo();
     call.result.expectTuple()["revenue-block-rewards"].expectUintWithDecimals(0.099206);
-    call.result.expectTuple()["revenue-epoch-end"].expectUint(1010);
+    call.result.expectTuple()["revenue-epoch-end"].expectUint(1060);
     call.result.expectTuple()["revenue-epoch-length"].expectUint(1008);
     call.result.expectTuple()["revenue-next-total"].expectUintWithDecimals(200);
 
@@ -219,7 +242,7 @@ Clarinet.test({
     
     call = stakePool.getRevenueInfo();
     call.result.expectTuple()["revenue-block-rewards"].expectUintWithDecimals(0.198412); // 200 / 1008
-    call.result.expectTuple()["revenue-epoch-end"].expectUint(2018);
+    call.result.expectTuple()["revenue-epoch-end"].expectUint(2068);
     call.result.expectTuple()["revenue-epoch-length"].expectUint(1008);
     call.result.expectTuple()["revenue-next-total"].expectUintWithDecimals(0);
   }
@@ -269,7 +292,7 @@ Clarinet.test({
     call = stakePool.getPendingRewards(wallet_1);
     call.result.expectOk().expectTuple()["esdiko"].expectUintWithDecimals(1315.438);    
     call.result.expectOk().expectTuple()["point"].expectUintWithDecimals(0.041856);    
-    call.result.expectOk().expectTuple()["usda"].expectUintWithDecimals(2.2817);  
+    call.result.expectOk().expectTuple()["usda"].expectUintWithDecimals(2.0833);  
 
     result = stakePool.claimPendingRewards(wallet_1);
     result.expectOk().expectBool(true);
@@ -281,7 +304,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(10000 + 1378.0779); 
 
     call = usdaToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(1000000 + 2.3809); 
+    call.result.expectOk().expectUintWithDecimals(1000000 + 2.1825); 
 
     call = stakePool.getStakeOf(wallet_1);   
     call.result.expectTuple()["points"].expectUintWithDecimals(0.041856);    

@@ -164,6 +164,10 @@
         }))
       )
 
+      ;; Update user cumm-reward-per-stake
+      (map-set stake-rewards { staker: staker, token: .usda-token } { cumm-reward-per-stake: (get cumm-reward-per-stake (get-reward-of .usda-token)) })
+      (map-set stake-rewards { staker: staker, token: .escrowed-diko-token } { cumm-reward-per-stake: (get cumm-reward-per-stake (get-reward-of .escrowed-diko-token)) })
+
       ;; Notify vesting
       (try! (contract-call? vesting update-staking staker (get amount (get-stake-of staker))))
 
@@ -216,6 +220,10 @@
           points: (- (get points updated-stakes) points-to-burn)
         }))
       )
+
+      ;; Update user cumm-reward-per-stake
+      (map-set stake-rewards { staker: staker, token: .usda-token } { cumm-reward-per-stake: (get cumm-reward-per-stake (get-reward-of .usda-token)) })
+      (map-set stake-rewards { staker: staker, token: .escrowed-diko-token } { cumm-reward-per-stake: (get cumm-reward-per-stake (get-reward-of .escrowed-diko-token)) })
 
       ;; Notify vesting
       (try! (contract-call? vesting update-staking staker (get amount (get-stake-of staker))))
