@@ -109,3 +109,4 @@ typings/
 # Clarinet generated
 /clarity/contracts/external/deps
 /clarity/contracts/external/gen
+/clarity/contracts/external/stacks*
