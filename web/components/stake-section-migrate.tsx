@@ -12,13 +12,14 @@ export const StakeSectionMigrate = () => {
   const stxAddress = useSTXAddress() || '';
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
-  // TODO: get from migration contract
   const getStakingAmounts = async () => {
     const userStakedCall = await callReadOnlyFunction({
       contractAddress,
-      contractName: 'arkadiko-ui-stake-v1-3',
-      functionName: 'get-stake-amounts',
-      functionArgs: [standardPrincipalCV(stxAddress || '')],
+      contractName: 'arkadiko-stake-pool-migrate-v1-1',
+      functionName: 'get-old-stake-amounts',
+      functionArgs: [
+        standardPrincipalCV(stxAddress || '')
+      ],
       senderAddress: stxAddress || '',
       network: network,
     });
@@ -33,10 +34,9 @@ export const StakeSectionMigrate = () => {
       getStakingAmounts(),
     ]);
 
-    const dikoUsda = dataStakingAmounts["stake-amount-diko-usda"].value
-    const wstxDiko = dataStakingAmounts["stake-amount-wstx-diko"].value
-    const xbtcUsda = 0 
-    // TODO: use migration contract to get the 3 values
+    const dikoUsda = dataStakingAmounts["diko-usda"].value;
+    const wstxUsda = dataStakingAmounts["wstx-usda"].value;
+    const xbtcUsda = dataStakingAmounts["xbtc-usda"].value
 
     var newRows: StakeSectionMigrateRowProps[] = [];
     if (state.balance["stdiko"] > 0) {
@@ -45,8 +45,8 @@ export const StakeSectionMigrate = () => {
     if (dikoUsda > 0) {
       newRows.push({ tokenName: "DIKO/USDA", tokenX: 1, tokenY: 0, amount: dikoUsda / 1000000, functionName: "migrate-diko-usda" })
     }
-    if (wstxDiko > 0) {
-      newRows.push({ tokenName: "STX/USDA", tokenX: 2, tokenY: 1, amount: wstxDiko / 1000000, functionName: "migrate-wstx-diko" })
+    if (wstxUsda > 0) {
+      newRows.push({ tokenName: "STX/USDA", tokenX: 2, tokenY: 1, amount: wstxUsda / 1000000, functionName: "migrate-wstx-usda" })
     }
     if (xbtcUsda > 0) {
       newRows.push({ tokenName: "xBTC/USDA", tokenX: 3, tokenY: 0, amount: xbtcUsda / 1000000, functionName: "migrate-xbtc-usda" })

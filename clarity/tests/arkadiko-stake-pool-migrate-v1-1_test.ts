@@ -19,6 +19,55 @@ import {
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 // ---------------------------------------------------------
+// Old positions
+// ---------------------------------------------------------
+
+Clarinet.test({
+  name: "stake-pool-migrate: can get old stake positions",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_3 = accounts.get("wallet_3")!;
+  
+    let migrate = new StakePoolMigrate(chain, deployer);
+    
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
+        types.principal(Utils.qualifiedName("arkadiko-stake-registry-v1-1")),
+        types.principal(Utils.qualifiedName("arkadiko-stake-pool-diko-usda-v1-1")),
+        types.principal(Utils.qualifiedName("arkadiko-swap-token-diko-usda")),
+        types.uint(100 * 1000000),
+      ], wallet_3.address)
+    ]);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(100);
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
+        types.principal(Utils.qualifiedName("arkadiko-stake-registry-v1-1")),
+        types.principal(Utils.qualifiedName("arkadiko-stake-pool-wstx-usda-v1-1")),
+        types.principal(Utils.qualifiedName("arkadiko-swap-token-wstx-usda")),
+        types.uint(50 * 1000000),
+      ], wallet_3.address)
+    ]);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(50);
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-stake-registry-v1-1", "stake", [
+        types.principal(Utils.qualifiedName("arkadiko-stake-registry-v1-1")),
+        types.principal(Utils.qualifiedName("arkadiko-stake-pool-xbtc-usda-v1-1")),
+        types.principal(Utils.qualifiedName("arkadiko-swap-token-xbtc-usda")),
+        types.uint(10 * 1000000),
+      ], wallet_3.address)
+    ]);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(10);
+
+    let call = migrate.getOldStakeAmounts(wallet_3);
+    call.result.expectOk().expectTuple()["diko-usda"].expectUintWithDecimals(100);
+    call.result.expectOk().expectTuple()["wstx-usda"].expectUintWithDecimals(50);
+    call.result.expectOk().expectTuple()["xbtc-usda"].expectUintWithDecimals(10);
+  }
+});
+
+// ---------------------------------------------------------
 // Migrate
 // ---------------------------------------------------------
 
@@ -79,7 +128,6 @@ Clarinet.test({
     call.result.expectTuple()["diko"].expectUintWithDecimals(115142.05917);
   }
 });
-
 
 Clarinet.test({
   name: "stake-pool-migrate: can migrate DIKO/USDA LP token",

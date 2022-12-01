@@ -1,6 +1,22 @@
 ;; @contract Migrate stake positions
 ;; @version 1.0
 
+;; Get old stake positions
+(define-read-only (get-old-stake-amounts (user principal))
+  (let (
+    (stake-amount-diko-usda (contract-call? .arkadiko-stake-pool-diko-usda-v1-1 get-stake-amount-of user))
+    (stake-amount-wstx-usda (contract-call? .arkadiko-stake-pool-wstx-usda-v1-1 get-stake-amount-of user))
+    (stake-amount-xbtc-usda (contract-call? .arkadiko-stake-pool-xbtc-usda-v1-1 get-stake-amount-of user))
+  )
+    (ok {
+      diko-usda: stake-amount-diko-usda,
+      wstx-usda: stake-amount-wstx-usda,
+      xbtc-usda: stake-amount-xbtc-usda,
+
+    })
+  )
+)
+
 ;; Migrate DIKO pool staking
 ;; Burn and mint to ignore cooldown
 (define-public (migrate-stdiko)

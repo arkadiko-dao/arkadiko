@@ -282,6 +282,12 @@ class StakePoolMigrate {
     this.deployer = deployer;
   }
 
+  getOldStakeAmounts(staker: Account, token: string) {
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-migrate-v1-1", "get-old-stake-amounts", [
+      types.principal(staker.address)
+    ], staker.address);
+  }
+
   migrateStDiko(user: Account) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-stake-pool-migrate-v1-1", "migrate-stdiko", [
