@@ -172,7 +172,7 @@ export const StakeSectionVest = ({ showLoadingState }) => {
             </h3>
             <p className="max-w-3xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
               If you do not wish to stake esDIKO to receive rewards, you can linearly vest your esDIKO here over a period of 1 year.
-              You need x% of DIKO/esDIKO staked in order to vest all esDIKO.
+              You need {reqStaked * 100}% of DIKO/esDIKO staked in order to vest all esDIKO.
             </p>
           </div>
           <div className="flex items-center mt-2 sm:mt-0">
