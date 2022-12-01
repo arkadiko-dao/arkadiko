@@ -1,7 +1,7 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-const CONTRACT_NAME = 'arkadiko-vault-rewards-v1-1';
-const FUNCTION_NAME = 'increase-cumm-reward-per-collateral';
+const CONTRACT_NAME = 'arkadiko-stake-pool-diko-v2-1';
+const FUNCTION_NAME = 'increase-cumm-reward-per-stake';
 const tx = require('@stacks/transactions');
 const BN = require('bn.js');
 const utils = require('./utils');
