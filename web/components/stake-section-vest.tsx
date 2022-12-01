@@ -195,7 +195,7 @@ export const StakeSectionVest = ({ showLoadingState }) => {
           <div className="px-4 py-5 space-y-6 divide-y divide-gray-200 dark:divide-zinc-600 sm:p-6">
             <div className="md:grid md:grid-flow-col gap-4 sm:grid-cols-[min-content,auto]">
               <div className="self-center w-14">
-                <img className="w-12 h-12 rounded-full" src={tokenList[0].logo} alt="" />
+                <img className="w-12 h-12 rounded-full" src={tokenList[1].logo} alt="" />
               </div>
 
               {/* VESTING */}
