@@ -68,7 +68,7 @@ export const StakeSectionUsda = ({ showLoadingState, apiData }) => {
       senderAddress: stxAddress || '',
       network: network,
     });
-    const result = cvToJSON(call).value;
+    const result = cvToJSON(call).value / 1000000;
     return result;
   };
 
