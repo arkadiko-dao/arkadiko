@@ -248,13 +248,19 @@ export const StakeSectionVest = ({ showLoadingState }) => {
                     <p className="text-lg font-semibold dark:text-white">
                       {stakeAmount.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
-                        maximumFractionDigits: 6,
+                        maximumFractionDigits: 2,
                       })}
                       /
                       {(vestingAmout * reqStaked).toLocaleString(undefined, {
                         minimumFractionDigits: 2,
-                        maximumFractionDigits: 6,
+                        maximumFractionDigits: 2,
                       })}
+                      {' '}(
+                      {(stakeAmount / (vestingAmout * reqStaked) * 100).toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                      %)
                     </p>
                   </div>
                 )}

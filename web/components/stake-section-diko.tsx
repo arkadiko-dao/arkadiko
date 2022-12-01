@@ -193,6 +193,7 @@ export const StakeSectionDiko = ({ showLoadingState, apiData }) => {
       onFinish: data => {
         console.log('Broadcasted TX:', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setShowStakeDikoModal(false);
       },
       anchorMode: AnchorMode.Any,
     });
@@ -214,6 +215,7 @@ export const StakeSectionDiko = ({ showLoadingState, apiData }) => {
       onFinish: data => {
         console.log('Broadcasted TX:', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setShowStakeEsDikoModal(false);
       },
       anchorMode: AnchorMode.Any,
     });
@@ -235,6 +237,7 @@ export const StakeSectionDiko = ({ showLoadingState, apiData }) => {
       onFinish: data => {
         console.log('Broadcasted TX:', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setShowUnstakeDikoModal(false);
       },
       anchorMode: AnchorMode.Any,
     });
@@ -256,6 +259,7 @@ export const StakeSectionDiko = ({ showLoadingState, apiData }) => {
       onFinish: data => {
         console.log('Broadcasted TX:', data);
         setState(prevState => ({ ...prevState, currentTxId: data.txId, currentTxStatus: 'pending' }));
+        setShowUnstakeEsDikoModal(false);
       },
       anchorMode: AnchorMode.Any,
     });
