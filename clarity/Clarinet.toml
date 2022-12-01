@@ -3,7 +3,7 @@ name = "arkadiko"
 authors = ["Arkadiko Team"]
 description = "Arkadiko implements a stablecoin (USDA) and governance token (DIKO) on Stacks"
 telemetry = false
-cache_dir = "./.requirements"
+cache_dir = "contracts/external"
 boot_contracts = ["pox", "costs-v2"]
 
 # [repl.analysis]

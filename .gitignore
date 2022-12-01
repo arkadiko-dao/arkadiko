@@ -105,3 +105,7 @@ typings/
 
 # Clarinet requirements
 .requirements
+
+# Clarinet generated
+/clarity/contracts/external/deps
+/clarity/contracts/external/gen
