@@ -148,8 +148,8 @@
     )
       ;; Update total stake, increase cummulative rewards and update revenue
       (var-set total-staked (+ (var-get total-staked) amount))
-      (try! (increase-cumm-reward-per-stake))
       (try! (update-revenue))
+      (try! (increase-cumm-reward-per-stake))
 
       ;; Transfer tokens and update map
       (try! (contract-call? token transfer amount staker (as-contract tx-sender) none))
@@ -203,8 +203,8 @@
     )
       ;; Update total stake, increase cummulative rewards and update revenue
       (var-set total-staked (- (var-get total-staked) amount points-to-burn))
-      (try! (increase-cumm-reward-per-stake))
       (try! (update-revenue))
+      (try! (increase-cumm-reward-per-stake))
 
       ;; Transfer tokens and update map
       (try! (as-contract (contract-call? token transfer amount tx-sender staker none)))
@@ -281,8 +281,8 @@
     (new-points (+ added-points (get points current-stakes)))
   )
     (asserts! (get-contract-active) ERR-INACTIVE)
-    (try! (increase-cumm-reward-per-stake))
     (try! (update-revenue))
+    (try! (increase-cumm-reward-per-stake))
     (try! (claim-pending-rewards-helper .escrowed-diko-token))
     (try! (claim-pending-rewards-helper .usda-token))
 
