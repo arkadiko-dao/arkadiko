@@ -37,6 +37,9 @@
   )
 )
 
+;; this should be called only once in Stacks 2.1
+;; additional calls should be made with `stack-extend` and `stack-increase` in this contract
+;; lock-period should be u3 and when it runs out, `stack-extend` should be called to extend with 1 period
 (define-public (initiate-stacking (pox-addr (tuple (version (buff 1)) (hashbytes (buff 32))))
                                   (start-burn-ht uint)
                                   (lock-period uint))
@@ -57,7 +60,7 @@
     )
 
     ;; check if we can stack - if not, then probably cause we have not reached the minimum with tokens-to-stack
-    ;; TODO: update for mainnet
+    ;; TODO: update contract address for mainnet
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 can-stack-stx pox-addr tokens-to-stack start-burn-ht lock-period))
       success (begin
         (if (> tokens-to-stack stx-balance)
@@ -82,6 +85,7 @@
   )
 )
 
+;; should be called to add additional STX tokens stacking
 (define-public (stack-increase)
   (let (
     (tokens-to-stack (unwrap! (contract-call? .arkadiko-stx-reserve-v1-1 get-tokens-to-stack (var-get stacker-name)) (ok u0)))
@@ -104,18 +108,18 @@
   )
 )
 
-(define-public (stack-extend (extend-count uint) (pox-addr { version: (buff 1), hashbytes: (buff 32) }))
+;; this should be called just before a new cycle starts to extend with another cycle
+(define-public (stack-extend (pox-addr { version: (buff 1), hashbytes: (buff 32) }))
   (let (
     (tokens-to-stack (unwrap! (contract-call? .arkadiko-stx-reserve-v1-1 get-tokens-to-stack (var-get stacker-name)) (ok u0)))
     (stx-balance (get-stx-balance))
+    (extend-count u1)
   )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
-    (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-stack (var-get stacker-name) (- tokens-to-stack stx-balance)))
-    (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-increase tokens-to-stack pox-addr start-burn-ht lock-period))
+    (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-extend extend-count pox-addr))
       result (begin
         (print result)
         (var-set stacking-unlock-burn-height (get unlock-burn-height result))
-        (var-set stacking-stx-stacked (get lock-amount result))
         (try! (contract-call? .arkadiko-freddie-v1-1 set-stacking-unlock-burn-height (var-get stacker-name) (get unlock-burn-height result)))
         (ok (get lock-amount result))
       )
