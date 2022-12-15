@@ -96,10 +96,8 @@
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-increase tokens-to-stack pox-addr start-burn-ht lock-period))
       result (begin
         (print result)
-        (var-set stacking-unlock-burn-height (get unlock-burn-height result))
-        (var-set stacking-stx-stacked (get lock-amount result))
-        (try! (contract-call? .arkadiko-freddie-v1-1 set-stacking-unlock-burn-height (var-get stacker-name) (get unlock-burn-height result)))
-        (ok (get lock-amount result))
+        (var-set stacking-stx-stacked (get total-locked result))
+        (ok (get total-locked result))
       )
       error (begin
         (print (err (to-uint error)))
@@ -109,13 +107,13 @@
 )
 
 ;; this should be called just before a new cycle starts to extend with another cycle
-(define-public (stack-extend (pox-addr { version: (buff 1), hashbytes: (buff 32) }))
+(define-public (stack-extend (extend-count uint) (pox-addr { version: (buff 1), hashbytes: (buff 32) }))
   (let (
     (tokens-to-stack (unwrap! (contract-call? .arkadiko-stx-reserve-v1-1 get-tokens-to-stack (var-get stacker-name)) (ok u0)))
     (stx-balance (get-stx-balance))
-    (extend-count u1)
   )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-extend extend-count pox-addr))
       result (begin
         (print result)
@@ -169,7 +167,6 @@
       )
       (err ERR-BURN-HEIGHT-NOT-REACHED)
     )
-    (asserts! (is-eq (var-get stacker-name) (get stacker-name vault)) (err ERR-WRONG-STACKER))
 
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
         stacked-tokens: u0,
