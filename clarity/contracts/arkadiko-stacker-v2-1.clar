@@ -73,6 +73,7 @@
             (var-set stacking-unlock-burn-height (get unlock-burn-height result))
             (var-set stacking-stx-stacked (get lock-amount result))
             (try! (contract-call? .arkadiko-freddie-v1-1 set-stacking-unlock-burn-height (var-get stacker-name) (get unlock-burn-height result)))
+            (var-set stacker-name "stacker-2") ;; next stacker to use to know the amount of tokens to stack
             (ok (get lock-amount result))
           )
           error (begin
@@ -82,6 +83,27 @@
       )
       failure (print (err (to-uint failure)))
     )
+  )
+)
+
+(define-private (update-stacker-variables)
+  (let (
+    (name (var-get stacker-name))
+  )
+    (if (is-eq name "stacker")
+      (var-set stacker-name "stacker-2")
+      (if (is-eq name "stacker-2")
+        (var-set stacker-name "stacker-3")
+        (if (is-eq name "stacker-3")
+          (var-set stacker-name "stacker-4")
+          (if (is-eq name "stacker-4")
+            (var-set stacker-name "stacker")
+            true
+          )
+        )
+      )
+    )
+    (ok true)
   )
 )
 
@@ -97,6 +119,7 @@
       result (begin
         (print result)
         (var-set stacking-stx-stacked (get total-locked result))
+        (asserts! (is-ok (update-stacker-variables)) (err u0))
         (ok (get total-locked result))
       )
       error (begin
@@ -119,6 +142,7 @@
         (print result)
         (var-set stacking-unlock-burn-height (get unlock-burn-height result))
         (try! (contract-call? .arkadiko-freddie-v1-1 set-stacking-unlock-burn-height (var-get stacker-name) (get unlock-burn-height result)))
+        (asserts! (is-ok (update-stacker-variables)) (err u0))
         (ok (get unlock-burn-height result))
       )
       error (begin
