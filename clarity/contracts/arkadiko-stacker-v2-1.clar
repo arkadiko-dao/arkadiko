@@ -108,6 +108,8 @@
 )
 
 ;; should be called to add additional STX tokens stacking
+;; call this first, before a new cycle starts (every 2100 blocks)
+;; after calling this, call `stack-extend`
 (define-public (stack-increase)
   (let (
     (tokens-to-stack (unwrap! (contract-call? .arkadiko-stx-reserve-v1-1 get-tokens-to-stack (var-get stacker-name)) (ok u0)))
