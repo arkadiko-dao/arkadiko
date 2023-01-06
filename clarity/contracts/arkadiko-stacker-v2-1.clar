@@ -132,6 +132,8 @@
 )
 
 ;; this should be called just before a new cycle starts to extend with another cycle
+;; `extend-count` should always be 1 (if all is well)
+;; we can extend by 1 cycle each 2100 blocks, that way everyone can always unstack if they want (after a cycle ends)
 (define-public (stack-extend (extend-count uint) (pox-addr { version: (buff 1), hashbytes: (buff 32) }))
   (let (
     (tokens-to-stack (unwrap! (contract-call? .arkadiko-stx-reserve-v1-1 get-tokens-to-stack (var-get stacker-name)) (ok u0)))
