@@ -177,7 +177,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(21000000);
 
     result = stacker.initiateStacking(1, 1);
-    result.expectErr().expectUint(194);
+    result.expectErr().expectUint(11);
   }
 });
 
