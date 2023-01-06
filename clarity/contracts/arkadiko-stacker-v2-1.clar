@@ -170,10 +170,10 @@
   )
 )
 
-;; This method should be ran by anyone
+;; This method can be executed by anyone
 ;; after a stacking cycle ends to allow withdrawal of STX collateral
 ;; Only mark vaults that have revoked stacking and not been liquidated
-;; must be called before a new initiate-stacking method call (stacking cycle)
+;; must be called before a new `stack-extend` method call (stacking cycle)
 (define-public (enable-vault-withdrawals (vault-id uint))
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
