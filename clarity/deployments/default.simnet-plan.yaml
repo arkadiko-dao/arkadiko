@@ -274,9 +274,9 @@ plan:
             path: contracts/arkadiko-liquidation-rewards-trait-v2.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-auction-engine-v4-3
+            contract-name: arkadiko-auction-engine-v4-4
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-auction-engine-v4-3.clar
+            path: contracts/arkadiko-auction-engine-v4-4.clar
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: arkadiko-stake-pool-wstx-diko-v1-1

@@ -397,7 +397,7 @@ export const ManageVault = ({ match }) => {
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-pox-unstack-unlock-v1-1',
+      contractName: 'arkadiko-pox-unstack-unlock-v2-1',
       functionName: 'unstack-and-unlock',
       functionArgs: [uintCV(match.params.id), uintCV(stackerId)],
       onFinish: data => {
