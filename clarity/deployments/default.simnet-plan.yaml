@@ -40,11 +40,13 @@ genesis:
     - pox-2
     - lockup
     - costs-2
+    - costs-3
     - cost-voting
     - bns
 plan:
   batches:
     - id: 0
+      epoch: "2.1"
       transactions:
         - emulated-contract-publish:
             contract-name: arkadiko-dao-token-trait-v1
