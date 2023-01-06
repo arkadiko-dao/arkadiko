@@ -245,6 +245,16 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "stacker: test whole flow with initiate, increase stacking and extend stacking",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    console.log('TODO');
+  }
+});
+
+Clarinet.test({
   name: "stacker: add extra deposit to stacking amount",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;

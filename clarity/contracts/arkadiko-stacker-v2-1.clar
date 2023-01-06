@@ -11,7 +11,6 @@
 (define-constant ERR-BURN-HEIGHT-NOT-REACHED u191)
 (define-constant ERR-WRONG-STACKER u192)
 (define-constant ERR-WRONG-COLLATERAL-TOKEN u193)
-(define-constant ERR-ALREADY-STACKING u194)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u195)
 (define-constant ERR-VAULT-LIQUIDATED u196)
 (define-constant ERR-STILL-STACKING u197)
@@ -55,7 +54,6 @@
     (stx-balance (get-stx-balance))
   )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
-    ;; no longer need this? (asserts! (>= burn-block-height (var-get stacking-unlock-burn-height)) (err ERR-ALREADY-STACKING))
     (asserts!
       (and
         (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
@@ -75,6 +73,7 @@
         (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-stx tokens-to-stack pox-addr start-burn-ht lock-period))
           result (begin
             (print result)
+            (var-set previous-stacking-unlock-burn-height (var-get stacking-unlock-burn-height))
             (var-set stacking-unlock-burn-height (get unlock-burn-height result))
             (var-set stacking-stx-stacked (get lock-amount result))
             (try! (contract-call? .arkadiko-freddie-v1-1 set-stacking-unlock-burn-height (var-get stacker-name) (get unlock-burn-height result)))
