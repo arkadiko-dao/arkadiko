@@ -264,10 +264,16 @@ Clarinet.test({
     let result = stacker.initiateStacking(10, 3);
     result.expectOk().expectUintWithDecimals(21001000);
 
+    let call = stacker.getStackerInfo();
+    console.log(call);
+
     vaultManager.createVault(wallet_1, "STX-A", 21000000, 1000, true, true);
 
     // Advance until end of stacking
     chain.mineEmptyBlock(2100);
+
+    call = stacker.getStackerInfo();
+    console.log(call);
 
     result = stacker.stackIncrease();
     console.log(result);

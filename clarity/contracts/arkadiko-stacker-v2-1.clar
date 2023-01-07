@@ -33,6 +33,10 @@
   (ok (var-get stacking-stx-stacked))
 )
 
+(define-read-only (get-stacker-info)
+  (stx-account (as-contract tx-sender))
+)
+
 (define-public (toggle-stacker-shutdown)
   (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
@@ -73,7 +77,7 @@
         (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-stx tokens-to-stack pox-addr start-burn-ht lock-period))
           result (begin
             (print result)
-            ;; (print (stx-account tx-sender))
+            (print (stx-account (as-contract tx-sender)))
             (var-set previous-stacking-unlock-burn-height (var-get stacking-unlock-burn-height))
             (var-set stacking-unlock-burn-height (get unlock-burn-height result))
             (var-set stacking-stx-stacked (get lock-amount result))

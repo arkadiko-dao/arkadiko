@@ -92,6 +92,10 @@ class Stacker2 {
     return this.chain.callReadOnlyFn("arkadiko-stacker-v2-1", "get-stacking-unlock-burn-height", [], this.deployer.address);
   }
 
+  getStackerInfo() {
+    return this.chain.callReadOnlyFn("arkadiko-stacker-v2-1", "get-stacker-info", [], this.deployer.address);
+  }
+
   initiateStacking(startBlock: number, lockPeriod: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-stacker-v2-1", "initiate-stacking", [
