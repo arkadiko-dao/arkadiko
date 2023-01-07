@@ -73,11 +73,12 @@
         (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-stx tokens-to-stack pox-addr start-burn-ht lock-period))
           result (begin
             (print result)
+            ;; (print (stx-account tx-sender))
             (var-set previous-stacking-unlock-burn-height (var-get stacking-unlock-burn-height))
             (var-set stacking-unlock-burn-height (get unlock-burn-height result))
             (var-set stacking-stx-stacked (get lock-amount result))
             (try! (contract-call? .arkadiko-freddie-v1-1 set-stacking-unlock-burn-height (var-get stacker-name) (get unlock-burn-height result)))
-            (var-set stacker-name "stacker-2") ;; next stacker to use to know the amount of tokens to stack
+            (asserts! (is-ok (update-stacker-variables)) (err u0))
             (ok (get lock-amount result))
           )
           error (begin
@@ -95,13 +96,25 @@
     (name (var-get stacker-name))
   )
     (if (is-eq name "stacker")
-      (var-set stacker-name "stacker-2")
+      (begin
+        (var-set stacker-name "stacker-2")
+        (try! (contract-call? .arkadiko-stx-reserve-v1-1 set-next-stacker-name "stacker-2"))
+      )
       (if (is-eq name "stacker-2")
-        (var-set stacker-name "stacker-3")
+        (begin
+          (var-set stacker-name "stacker-3")
+          (try! (contract-call? .arkadiko-stx-reserve-v1-1 set-next-stacker-name "stacker-3"))
+        )
         (if (is-eq name "stacker-3")
-          (var-set stacker-name "stacker-4")
+          (begin
+            (var-set stacker-name "stacker-4")
+            (try! (contract-call? .arkadiko-stx-reserve-v1-1 set-next-stacker-name "stacker-4"))
+          )
           (if (is-eq name "stacker-4")
-            (var-set stacker-name "stacker")
+            (begin
+              (var-set stacker-name "stacker")
+              (try! (contract-call? .arkadiko-stx-reserve-v1-1 set-next-stacker-name "stacker"))
+            )
             true
           )
         )
@@ -111,12 +124,23 @@
   )
 )
 
+(define-read-only (total-tokens-to-stack)
+  (let (
+    (tokens-to-stack (unwrap! (contract-call? .arkadiko-stx-reserve-v1-1 get-tokens-to-stack "stacker") (ok u0)))
+    (tokens-to-stack-2 (unwrap! (contract-call? .arkadiko-stx-reserve-v1-1 get-tokens-to-stack "stacker-2") (ok u0)))
+    (tokens-to-stack-3 (unwrap! (contract-call? .arkadiko-stx-reserve-v1-1 get-tokens-to-stack "stacker-3") (ok u0)))
+    (tokens-to-stack-4 (unwrap! (contract-call? .arkadiko-stx-reserve-v1-1 get-tokens-to-stack "stacker-4") (ok u0)))
+  )
+    (ok (+ tokens-to-stack tokens-to-stack-2 tokens-to-stack-3 tokens-to-stack-4))
+  )
+)
+
 ;; should be called to add additional STX tokens stacking
 ;; call this first, before a new cycle starts (every 2100 blocks)
 ;; after calling this, call `stack-extend`
 (define-public (stack-increase)
   (let (
-    (tokens-to-stack (unwrap! (contract-call? .arkadiko-stx-reserve-v1-1 get-tokens-to-stack (var-get stacker-name)) (ok u0)))
+    (tokens-to-stack (unwrap! (total-tokens-to-stack) (ok u0)))
     (stx-balance (get-stx-balance))
   )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
@@ -127,7 +151,6 @@
       result (begin
         (print result)
         (var-set stacking-stx-stacked (get total-locked result))
-        (asserts! (is-ok (update-stacker-variables)) (err u0))
         (ok (get total-locked result))
       )
       error (begin

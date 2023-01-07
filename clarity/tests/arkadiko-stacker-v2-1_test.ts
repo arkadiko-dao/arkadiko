@@ -251,6 +251,26 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     console.log('TODO');
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker2(chain, deployer);
+
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 2);
+    vaultManager.createVault(deployer, "STX-A", 1000, 100, true, true);
+    vaultManager.createVault(wallet_1, "STX-A", 21000000, 1000, true, true);
+
+    // Initiate stacking
+    let result = stacker.initiateStacking(10, 3);
+    result.expectOk().expectUintWithDecimals(21001000);
+
+    vaultManager.createVault(wallet_1, "STX-A", 21000000, 1000, true, true);
+
+    // Advance until end of stacking
+    chain.mineEmptyBlock(2100);
+
+    result = stacker.stackIncrease();
+    console.log(result);
   }
 });
 
