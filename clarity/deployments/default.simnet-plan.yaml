@@ -222,7 +222,7 @@ plan:
             contract-name: arkadiko-stacker-v2-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/arkadiko-stacker-v2-1.clar
-            clarity-version: 1
+            clarity-version: 2
         - emulated-contract-publish:
             contract-name: arkadiko-stacker-4-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
