@@ -10,11 +10,10 @@
     "strict": true,
     "strictNullChecks": true,
     "sourceMap": true,
-    "noEmit": true
+    "noEmit": true,
+    "types": ["vitest/globals"]
   },
-  "include": [
-    "./test"
-  ],
+  "include": ["tests"],
   "exclude": [
     "node_modules"
   ]
