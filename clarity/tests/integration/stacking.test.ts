@@ -24,6 +24,7 @@ describe("testing stacking under epoch 2.1", () => {
   };
 
   beforeAll(() => {
+    console.log('network ID:', getNetworkIdFromEnv());
     orchestrator = buildDevnetNetworkOrchestrator(getNetworkIdFromEnv());
     orchestrator.start();
   });

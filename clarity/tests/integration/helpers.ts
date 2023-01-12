@@ -97,6 +97,7 @@ export const waitForStacksTransaction = async (
 };
 
 export const getNetworkIdFromEnv = (): number => {
+  console.log(process.env);
   let networkId = process.env.JEST_WORKER_ID
     ? parseInt(process.env.JEST_WORKER_ID!)
     : process.env.VITEST_WORKER_ID
