@@ -189,28 +189,28 @@ plan:
         - contract-publish:
             contract-name: arkadiko-stacker-2-v1-1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 67750
+            cost: 65310
             path: contracts/arkadiko-stacker-2-v1-1.clar
             anchor-block-only: true
             clarity-version: 1
         - contract-publish:
             contract-name: arkadiko-stacker-3-v1-1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 67750
+            cost: 65310
             path: contracts/arkadiko-stacker-3-v1-1.clar
             anchor-block-only: true
             clarity-version: 1
         - contract-publish:
             contract-name: arkadiko-stacker-4-v1-1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 67730
+            cost: 65290
             path: contracts/arkadiko-stacker-4-v1-1.clar
             anchor-block-only: true
             clarity-version: 1
         - contract-publish:
             contract-name: arkadiko-stacker-v1-1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 67730
+            cost: 65290
             path: contracts/arkadiko-stacker-v1-1.clar
             anchor-block-only: true
             clarity-version: 1
