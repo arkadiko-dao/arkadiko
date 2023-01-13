@@ -22,7 +22,6 @@ import { Constants } from "./constants";
 
 import { decodeBtcAddress } from "@stacks/stacking";
 import { toBytes } from "@stacks/common";
-import { expect } from "vitest";
 const fetch = require("node-fetch");
 
 interface Account {
@@ -50,7 +49,7 @@ const delay = () => new Promise((resolve) => setTimeout(resolve, 3000));
 export function buildDevnetNetworkOrchestrator(
   networkId: number,
   timeline: EpochTimeline = DEFAULT_EPOCH_TIMELINE,
-  logs = false
+  logs = true
 ) {
   let uuid = Date.now();
   let working_dir = `/tmp/stacks-test-${uuid}-${networkId}`;
@@ -59,10 +58,6 @@ export function buildDevnetNetworkOrchestrator(
     devnet: {
       name: `ephemeral-devnet-${uuid}`,
       bitcoin_controller_block_time: Constants.BITCOIN_BLOCK_TIME,
-      epoch_2_0: timeline.epoch_2_0,
-      epoch_2_05: timeline.epoch_2_05,
-      epoch_2_1: timeline.epoch_2_1,
-      pox_2_activation: timeline.pox_2_activation,
       bitcoin_controller_automining_disabled: false,
       working_dir,
       use_docker_gateway_routing: process.env.GITHUB_ACTIONS ? true : false,

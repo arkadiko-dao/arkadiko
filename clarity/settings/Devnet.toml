@@ -119,5 +119,5 @@ stacks_node_image_url = "quay.io/hirosystems/stacks-node:devnet-v3-beta4"
 # subnet_node_events_observers = ["host.docker.internal:8002"]
 epoch_2_00 = 100
 epoch_2_05 = 102
-epoch_2_1 = 150
+epoch_2_1 = 152
 pox_2_activation = 160

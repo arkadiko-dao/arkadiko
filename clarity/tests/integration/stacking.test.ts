@@ -24,9 +24,8 @@ describe("testing stacking under epoch 2.1", () => {
   };
 
   beforeAll(() => {
-    console.log('network ID:', getNetworkIdFromEnv());
     orchestrator = buildDevnetNetworkOrchestrator(getNetworkIdFromEnv());
-    orchestrator.start();
+    orchestrator.start(120000);
   });
 
   afterAll(() => {
@@ -45,6 +44,7 @@ describe("testing stacking under epoch 2.1", () => {
       await orchestrator.waitForStacksBlockAnchoredOnBitcoinBlockOfHeight(
         blockHeight
       );
+    console.log('1');
 
     // Broadcast some STX stacking orders
     let fee = 1000;
@@ -60,6 +60,7 @@ describe("testing stacking under epoch 2.1", () => {
       0
     );
     // @ts-ignore
+    console.log('2');
     expect(response.error).toBeUndefined();
 
     response = await broadcastStackSTX(
@@ -74,6 +75,7 @@ describe("testing stacking under epoch 2.1", () => {
     );
     // @ts-ignore
     expect(response.error).toBeUndefined();
+    console.log('3');
 
     response = await broadcastStackSTX(
       2,
@@ -87,10 +89,12 @@ describe("testing stacking under epoch 2.1", () => {
     );
     // @ts-ignore
     expect(response.error).toBeUndefined();
+    console.log('4');
 
     // Wait for block N+1 where N is the height of the next reward phase
     chainUpdate = await waitForNextRewardPhase(network, orchestrator, 1);
     let poxInfo = await getPoxInfo(network);
+    console.log('5');
 
     // Assert
     expect(poxInfo.contract_id).toBe("ST000000000000000000002AMW42H.pox-2");
