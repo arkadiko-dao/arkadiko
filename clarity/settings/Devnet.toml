@@ -74,7 +74,7 @@ balance = 100_000_000_000_000
 [devnet]
 # disable_stacks_explorer = true
 # disable_stacks_api = true
-# enable_next_features = true
+enable_next_features = true
 # bind_containers_volumes = true
 # disable_bitcoin_explorer = true
 # working_dir = "tmp/devnet"
@@ -102,6 +102,7 @@ bitcoin_controller_automining_disabled = true
 # postgres_database = "postgres"
 # bitcoin_node_image_url = "quay.io/hirosystems/bitcoind:devnet-v2"
 # stacks_node_image_url = "quay.io/hirosystems/stacks-node:v3-beta2"
+stacks_node_image_url = "quay.io/hirosystems/stacks-node:devnet-v3-beta4"
 # stacks_node_env_vars = ["STACKS_LOG_DEBUG=1"]
 # stacks_api_image_url = "hirosystems/stacks-blockchain-api:latest"
 # stacks_explorer_image_url = "hirosystems/explorer:latest"
@@ -118,5 +119,5 @@ bitcoin_controller_automining_disabled = true
 # subnet_node_events_observers = ["host.docker.internal:8002"]
 epoch_2_00 = 100
 epoch_2_05 = 102
-epoch_2_1 = 130
-pox_2_activation = 140
+epoch_2_1 = 150
+pox_2_activation = 160
