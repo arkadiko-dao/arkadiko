@@ -78,7 +78,7 @@
           result (begin
             (print result)
             (print (stx-account (as-contract tx-sender)))
-            (var-set previous-stacking-unlock-burn-height (var-get stacking-unlock-burn-height))
+            (var-set previous-stacking-unlock-burn-height (get unlock-burn-height result))
             (var-set stacking-unlock-burn-height (get unlock-burn-height result))
             (var-set stacking-stx-stacked (get lock-amount result))
             (try! (contract-call? .arkadiko-freddie-v1-1 set-stacking-unlock-burn-height (var-get stacker-name) (get unlock-burn-height result)))
@@ -142,15 +142,15 @@
 ;; should be called to add additional STX tokens stacking
 ;; call this first, before a new cycle starts (every 2100 blocks)
 ;; after calling this, call `stack-extend`
-(define-public (stack-increase)
+(define-public (stack-increase (for-stacker (string-ascii 256)))
   (let (
-    (tokens-to-stack (unwrap! (total-tokens-to-stack) (ok u0)))
+    (tokens-to-stack (unwrap! (total-tokens-to-stack) (ok u0))) ;; TODO: use add-tokens-to-stack and subtract on stx-reserve to fix this
     (stx-balance (get-stx-balance))
   )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
     (asserts! (> tokens-to-stack stx-balance) (ok u0))
 
-    (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-stack (var-get stacker-name) (- tokens-to-stack stx-balance)))
+    (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-stack for-stacker (- tokens-to-stack stx-balance)))
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-increase tokens-to-stack))
       result (begin
         (print result)
@@ -168,10 +168,7 @@
 ;; `extend-count` should always be 1 (if all is well)
 ;; we can extend by 1 cycle each 2100 blocks, that way everyone can always unstack if they want (after a cycle ends)
 (define-public (stack-extend (extend-count uint) (pox-addr { version: (buff 1), hashbytes: (buff 32) }))
-  (let (
-    (tokens-to-stack (unwrap! (contract-call? .arkadiko-stx-reserve-v1-1 get-tokens-to-stack (var-get stacker-name)) (ok u0)))
-    (stx-balance (get-stx-balance))
-  )
+  (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-extend extend-count pox-addr))
