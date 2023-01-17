@@ -201,13 +201,13 @@ Clarinet.test({
     let result = stakePool.stake(wallet_3, wstxUsdaPoolAddress, 10);
     result.expectOk().expectUintWithDecimals(10);
 
-    result = stakePool.setTokenInfo(deployer, wstxUsdaPoolAddress, false, 2);
+    result = stakePool.updateTokenInfo(deployer, wstxUsdaPoolAddress, false, 2);
     result.expectOk().expectBool(true);
 
     result = stakePool.stake(wallet_3, wstxUsdaPoolAddress, 10);
     result.expectErr().expectUint(110002);
 
-    result = stakePool.setTokenInfo(deployer, wstxUsdaPoolAddress, true, 2);
+    result = stakePool.updateTokenInfo(deployer, wstxUsdaPoolAddress, true, 2);
     result.expectOk().expectBool(true);
 
     result = stakePool.stake(wallet_3, wstxUsdaPoolAddress, 10);
@@ -231,7 +231,7 @@ Clarinet.test({
     let call = stakePool.getPendingRewards(wallet_3, wstxUsdaPoolAddress);
     call.result.expectOk().expectUintWithDecimals(2411.63638);
 
-    result = stakePool.setTokenInfo(deployer, wstxUsdaPoolAddress, true, 0.35/2);
+    result = stakePool.updateTokenInfo(deployer, wstxUsdaPoolAddress, true, 0.35/2);
     result.expectOk().expectBool(true);
 
     call = stakePool.getPendingRewards(wallet_3, wstxUsdaPoolAddress);
@@ -279,7 +279,7 @@ Clarinet.test({
 
     let stakePool = new StakePoolLp(chain, deployer);
 
-    let result = stakePool.setTokenInfo(wallet_3, wstxUsdaPoolAddress, true, 1);
+    let result = stakePool.updateTokenInfo(wallet_3, wstxUsdaPoolAddress, true, 1);
     result.expectErr().expectUint(110001);
   }
 });

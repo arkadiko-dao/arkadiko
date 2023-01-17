@@ -245,9 +245,9 @@ class StakePoolLp {
     return block.receipts[0].result;
   }
 
-  setTokenInfo(user: Account, token: string, enabled: boolean, blockRewards: number) {
+  updateTokenInfo(user: Account, token: string, enabled: boolean, blockRewards: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-lp-v2-1", "set-token-info", [
+      Tx.contractCall("arkadiko-stake-pool-lp-v2-1", "update-token-info", [
         types.principal(Utils.qualifiedName(token)),
         types.bool(enabled),
         types.uint(blockRewards * 1000000)

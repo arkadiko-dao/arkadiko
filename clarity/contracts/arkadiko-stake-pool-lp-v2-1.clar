@@ -271,12 +271,31 @@
 ;; Admin
 ;; ---------------------------------------------------------
 
+;; @desc add token info
+;; @param token; token to update
+;; @param enabled; if token is enabled
+;; @param rewards-rate; rewards rate for staking token
+;; @post bool; always true
+(define-public (add-token-info (token principal) (enabled bool) (rewards-rate uint))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) ERR-NOT-AUTHORIZED)
+    (map-set tokens { token: token } {
+      enabled: true,
+      total-staked: u0,
+      rewards-rate: rewards-rate,
+      last-reward-increase-block: block-height,
+      cumm-reward-per-stake: u0 
+    })
+    (ok true)
+  )
+)
+
 ;; @desc set token info
 ;; @param token; token to update
 ;; @param enabled; if token is enabled
 ;; @param rewards-rate; rewards rate for staking token
 ;; @post bool; always true
-(define-public (set-token-info (token principal) (enabled bool) (rewards-rate uint))
+(define-public (update-token-info (token principal) (enabled bool) (rewards-rate uint))
   (let (
     (token-info (get-token-info-of token))
   ) 
