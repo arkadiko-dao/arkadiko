@@ -8,6 +8,7 @@ export const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
 export const welshContractAddress = process.env.WELSH_CONTRACT_ADDRESS || '';
 export const ldnContractAddress = process.env.LDN_CONTRACT_ADDRESS || '';
 export const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS
+export const xusdContractAddress = process.env.XUSD_CONTRACT_ADDRESS || '';
 
 export const tokenList = [
   {
@@ -89,6 +90,16 @@ export const tokenList = [
     address: atAlexContractAddress,
     fullName: 'auto-alex',
     decimals: 8
+  },
+  {
+    id: 9,
+    name: 'xUSD',
+    nameInPair: 'xUSD',
+    logo: '/assets/tokens/xusd.svg',
+    listed: true,
+    address: xusdContractAddress,
+    fullName: 'Wrapped-USD',
+    decimals: 8,
   },
 ];
 

@@ -9,7 +9,7 @@ import { SubHeader } from '@components/sub-header';
 import { Routes } from '@components/routes';
 import { getRPCClient } from '@common/utils';
 import { stacksNetwork as network } from '@common/utils';
-import { callReadOnlyFunction, cvToJSON, stringAsciiCV } from '@stacks/transactions';
+import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, stringAsciiCV, uintCV } from '@stacks/transactions';
 import { resolveSTXAddress } from '@common/use-stx-address';
 import { TxStatus } from '@components/tx-status';
 import { TxSidebar } from '@components/tx-sidebar';
@@ -30,6 +30,22 @@ export const getBalance = async (address: string) => {
   const welshContractAddress = process.env.WELSH_CONTRACT_ADDRESS || '';
   const ldnContractAddress = process.env.LDN_CONTRACT_ADDRESS || '';
   const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
+
+  // xUSD/USDA
+  // Need to fetch it via contract as extra token-id param needed
+  const call = await callReadOnlyFunction({
+    contractAddress: process.env.ATALEX_CONTRACT_ADDRESS!,
+    contractName: 'token-amm-swap-pool',
+    functionName: 'get-balance',
+    functionArgs: [
+      // TODO: set correct token-id
+      uintCV(0),
+      standardPrincipalCV(address),
+    ],
+    senderAddress: address || '',
+    network: network,
+  });
+  const lpXusdUsdaBalance = cvToJSON(call).value.value;
 
   const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
   const usdaBalance = data.fungible_tokens[`${contractAddress}.usda-token::usda`];
@@ -79,6 +95,7 @@ export const getBalance = async (address: string) => {
     wstxdiko: lpStxDikoBalance ? lpStxDikoBalance.balance : 0,
     wstxxbtc: lpStxXbtcBalance ? lpStxXbtcBalance.balance : 0,
     xbtcusda: lpXbtcUsdaBalance ? lpXbtcUsdaBalance.balance : 0,
+    xusdusda: lpXusdUsdaBalance ? lpXusdUsdaBalance.balance : 0,
     wldnusda: lpWldnUsdaBalance ? lpWldnUsdaBalance.balance : 0,
     ldnusda: lpLdnUsdaBalance ? lpLdnUsdaBalance.balance : 0,
     wstxwelsh: lpStxWelshBalance ? lpStxWelshBalance.balance : 0,
@@ -125,6 +142,7 @@ export const App: React.FC = () => {
         wstxdiko: account.wstxdiko.toString(),
         wstxxbtc: account.wstxxbtc.toString(),
         xbtcusda: account.xbtcusda.toString(),
+        xusdusda: account.xusdusda.toString(),
         wldnusda: account.wldnusda.toString(),
         ldnusda: account.ldnusda.toString(),
         wstxwelsh: account.wstxwelsh.toString(),
