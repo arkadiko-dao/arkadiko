@@ -3,12 +3,15 @@ name = "arkadiko"
 authors = ["Arkadiko Team"]
 description = "Arkadiko implements a stablecoin (USDA) and governance token (DIKO) on Stacks"
 telemetry = false
-cache_dir = "./.requirements"
+cache_dir = "contracts/external"
 boot_contracts = ["pox", "costs-v2"]
 
 # [repl.analysis]
 # passes = ["check_checker"]
 # check_checker = { trusted_sender = false, trusted_caller = false, callee_filter = false }
+
+[[project.requirements]]
+contract_id = "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-amm-swap-pool"
 
 [contracts.arkadiko-dao-token-trait-v1]
 path = "contracts/arkadiko-dao-token-trait-v1.clar"
