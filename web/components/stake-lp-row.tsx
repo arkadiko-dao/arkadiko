@@ -10,6 +10,7 @@ import { StyledIcon } from './ui/styled-icon';
 interface StakeLpRowProps {}
 
 export const StakeLpRow: React.FC<StakeLpRowProps> = ({
+  foreign,
   loadingApy,
   loadingData,
   canStake,
@@ -46,16 +47,29 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                   />
                 </div>
                 <p className="mt-2 sm:mt-0 sm:ml-4">
-                  <span className="block text-gray-500 dark:text-zinc-400">
+                  {foreign ? (
+                    <span className="block text-gray-500 dark:text-zinc-400">
                     <Tooltip
                       shouldWrapChildren={true}
-                      label={`ARKV1${tokenList[tokenListItemX].name}${tokenList[tokenListItemY].name}`}
+                      label={`xUSD/USDA AMM Pool Token`}
                     >
-                      Arkadiko V1
+                      ALEX AMM
                       <br />
                       {tokenList[tokenListItemX].name}/{tokenList[tokenListItemY].name}
                     </Tooltip>
                   </span>
+                  ) : (
+                    <span className="block text-gray-500 dark:text-zinc-400">
+                      <Tooltip
+                        shouldWrapChildren={true}
+                        label={`ARKV1${tokenList[tokenListItemX].name}${tokenList[tokenListItemY].name}`}
+                      >
+                        Arkadiko V1
+                        <br />
+                        {tokenList[tokenListItemX].name}/{tokenList[tokenListItemY].name}
+                      </Tooltip>
+                    </span>
+                  )}
                 </p>
               </div>
             </td>

@@ -1168,10 +1168,11 @@ export const Stake = () => {
 
                         {/* ALEX xUSD USDA LP Token */}
                         <StakeLpRow
+                          foreign={true}
                           loadingApy={loadingApy}
                           loadingData={loadingData}
                           canStake={true}
-                          tokenListItemX={3}
+                          tokenListItemX={8}
                           tokenListItemY={0}
                           balance={state.balance['xusdusda']}
                           pendingRewards={lpXusdUsdaPendingRewards}
@@ -1182,11 +1183,12 @@ export const Stake = () => {
                           setShowUnstakeLpModal={setShowUnstakeLp6Modal}
                           claimLpPendingRewards={claimXusdUsdaLpPendingRewards}
                           stakeLpPendingRewards={stakeXusdUsdaLpPendingRewards}
-                          getLpRoute={'/swap/add/xUSD/USDA'}
+                          getLpRoute={'/stake'}
                         />
 
                         {/* Arkadiko V1 DIKO USDA LP Token */}
                         <StakeLpRow
+                          foreign={false}
                           loadingApy={loadingApy}
                           loadingData={loadingData}
                           canStake={true}
@@ -1206,6 +1208,7 @@ export const Stake = () => {
 
                         {/* Arkadiko V1 STX USDA LP Token */}
                         <StakeLpRow
+                          foreign={false}
                           loadingApy={loadingApy}
                           loadingData={loadingData}
                           canStake={true}
@@ -1225,6 +1228,7 @@ export const Stake = () => {
 
                         {/* Arkadiko V1 STX DIKO LP Token */}
                         <StakeLpRow
+                          foreign={false}
                           loadingApy={loadingApy}
                           loadingData={loadingData}
                           canStake={false}
@@ -1244,6 +1248,7 @@ export const Stake = () => {
 
                         {/* Arkadiko V1 STX xBTC LP Token */}
                         <StakeLpRow
+                          foreign={false}
                           loadingApy={loadingApy}
                           loadingData={loadingData}
                           canStake={false}
@@ -1263,6 +1268,7 @@ export const Stake = () => {
 
                         {/* Arkadiko V1 xBTC USDA LP Token */}
                         <StakeLpRow
+                          foreign={false}
                           loadingApy={loadingApy}
                           loadingData={loadingData}
                           canStake={true}
