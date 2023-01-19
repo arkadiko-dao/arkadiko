@@ -96,7 +96,7 @@ export const tokenList = [
     name: 'xUSD',
     nameInPair: 'xUSD',
     logo: '/assets/tokens/xusd.svg',
-    listed: true,
+    listed: false,
     address: xusdContractAddress,
     fullName: 'Wrapped-USD',
     decimals: 8,

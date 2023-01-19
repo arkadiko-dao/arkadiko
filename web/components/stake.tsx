@@ -128,9 +128,7 @@ export const Stake = () => {
       setTotalStxXbtcStaked(data.arkv1wstxxbtc.total_staked / 1000000);
       setTotalXbtcUsdaStaked(data.arkv1xbtcusda.total_staked / 1000000);
 
-      // TODO: check key xusdusda
-      console.log('DATA:', data);
-      setTotalXusdUsdaStaked(data.xusdusda.total_staked / 1000000);
+      setTotalXusdUsdaStaked(data['amm-swap-pool'].total_staked / 1000000);
       setCurrentBlock(data.block_height);
 
       // prices
@@ -446,7 +444,7 @@ export const Stake = () => {
         0,
         totalXusdUsdaStaked
       );
-      const xusdUsdaPoolRewards = totalStakingRewardsYear1 * 0.1;
+      const xusdUsdaPoolRewards = totalStakingRewardsYear1 * 0.118;
       const xusdUsdaApr =
         xusdUsdaPoolRewards / (dikoXusdUsda['walletValue'] / Number(dikoPrice / 1000000));
       setXusdUsdaLpApy(Number((100 * xusdUsdaApr).toFixed(2)));
