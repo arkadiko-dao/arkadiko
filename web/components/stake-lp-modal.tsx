@@ -59,6 +59,7 @@ export const StakeLpModal = ({
     let contractName = 'arkadiko-stake-pool-diko-usda-v1-1';
     let tokenContract = 'arkadiko-swap-token-diko-usda';
     let ftContract = 'diko-usda';
+    let assetContractAddress = contractAddress;
     if (balanceName === 'wstxusda') {
       contractName = 'arkadiko-stake-pool-wstx-usda-v1-1';
       tokenContract = 'arkadiko-swap-token-wstx-usda';
@@ -75,13 +76,18 @@ export const StakeLpModal = ({
       contractName = 'arkadiko-stake-pool-xbtc-usda-v1-1';
       tokenContract = 'arkadiko-swap-token-xbtc-usda';
       ftContract = 'xbtc-usda';
+    } else if (balanceName === 'xusdusda') {
+      contractName = 'arkadiko-stake-pool-xusd-usda-v1-1';
+      tokenContract = 'arkadiko-swap-token-xusd-usda';
+      assetContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
+      ftContract = 'token-amm-swap-pool';
     }
     const postConditions = [
       makeStandardFungiblePostCondition(
         stxAddress || '',
         FungibleConditionCode.Equal,
         amount.value,
-        createAssetInfo(contractAddress, tokenContract, ftContract)
+        createAssetInfo(assetContractAddress, tokenContract, ftContract)
       ),
     ];
 
