@@ -38,8 +38,7 @@ export const getBalance = async (address: string) => {
     contractName: 'token-amm-swap-pool',
     functionName: 'get-balance',
     functionArgs: [
-      // TODO: set correct token-id
-      uintCV(0),
+      uintCV(1),
       standardPrincipalCV(address),
     ],
     senderAddress: address || '',
@@ -95,7 +94,7 @@ export const getBalance = async (address: string) => {
     wstxdiko: lpStxDikoBalance ? lpStxDikoBalance.balance : 0,
     wstxxbtc: lpStxXbtcBalance ? lpStxXbtcBalance.balance : 0,
     xbtcusda: lpXbtcUsdaBalance ? lpXbtcUsdaBalance.balance : 0,
-    xusdusda: lpXusdUsdaBalance ? lpXusdUsdaBalance.balance : 0,
+    xusdusda: lpXusdUsdaBalance ? lpXusdUsdaBalance : 0,
     wldnusda: lpWldnUsdaBalance ? lpWldnUsdaBalance.balance : 0,
     ldnusda: lpLdnUsdaBalance ? lpLdnUsdaBalance.balance : 0,
     wstxwelsh: lpStxWelshBalance ? lpStxWelshBalance.balance : 0,

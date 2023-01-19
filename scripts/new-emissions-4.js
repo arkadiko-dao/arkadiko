@@ -9,8 +9,8 @@ const BN = require('bn.js');
 async function transact() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: 'arkadiko-dao',
-    functionName: 'set-contract-address',
+    contractName: 'arkadiko-governance-v4-1',
+    functionName: 'add-contract-address',
     functionArgs: [
       tx.stringAsciiCV('stake-pool-xusd-usda'),
       tx.standardPrincipalCV(CONTRACT_ADDRESS),
