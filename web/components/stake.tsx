@@ -129,6 +129,7 @@ export const Stake = () => {
       setTotalXbtcUsdaStaked(data.arkv1xbtcusda.total_staked / 1000000);
 
       // TODO: check key xusdusda
+      console.log('DATA:', data);
       setTotalXusdUsdaStaked(data.xusdusda.total_staked / 1000000);
       setCurrentBlock(data.block_height);
 
