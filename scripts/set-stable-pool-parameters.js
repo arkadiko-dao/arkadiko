@@ -6,26 +6,22 @@ const BN = require('bn.js');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
 
-const createPair = async () => {
+const setParams = async () => {
   let nonce = await utils.getNonce(CONTRACT_ADDRESS);
 
   const txOptions = {
     contractAddress: "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9",
     contractName: "amm-swap-pool",
-    functionName: "create-pool",
+    functionName: "set-fee-rate-y",
     functionArgs: [
       tx.contractPrincipalCV("SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9", 'token-wxusd'),
       tx.contractPrincipalCV("SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9", "token-wusda"),
-      tx.uintCV(new BN(10000)),
-      tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-      tx.uintCV(new BN(100000000000)),
-      tx.uintCV(new BN(100000000000))
-
+      tx.uintCV(new BN(10000, 10)),
+      tx.uintCV(new BN(50000))
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
-    nonce: new BN(2629, 10),
-    fee: new BN(10000, 10),
     postConditionMode: 1,
+    nonce: new BN(2632, 10),
     network
   };
   const transaction = await tx.makeContractCall(txOptions);
@@ -33,4 +29,4 @@ const createPair = async () => {
   await utils.processing(result, transaction.txid(), 0);
 };
 
-createPair();
+setParams();
