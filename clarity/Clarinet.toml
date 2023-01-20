@@ -145,8 +145,8 @@ path = "contracts/arkadiko-stake-pool-wstx-usda-v1-1.clar"
 [contracts.arkadiko-stake-pool-wstx-diko-v1-1]
 path = "contracts/arkadiko-stake-pool-wstx-diko-v1-1.clar"
 
-[contracts.arkadiko-stake-pool-xusd-usda-v1-2]
-path = "contracts/arkadiko-stake-pool-xusd-usda-v1-2.clar"
+[contracts.arkadiko-stake-pool-xusd-usda-v1-3]
+path = "contracts/arkadiko-stake-pool-xusd-usda-v1-3.clar"
 
 [contracts.arkadiko-swap-v2-1]
 path = "contracts/arkadiko-swap-v2-1.clar"
