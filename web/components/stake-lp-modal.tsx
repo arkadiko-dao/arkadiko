@@ -105,7 +105,6 @@ export const StakeLpModal = ({
         functionArgs: [
           contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
           contractPrincipalCV(assetContractAddress, tokenContract),
-          standardPrincipalCV(stxAddress!),
           amount,
         ],
         postConditions,

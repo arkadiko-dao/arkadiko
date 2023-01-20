@@ -842,11 +842,10 @@ export const Stake = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-stake-registry-v1-1',
+      contractName: 'arkadiko-stake-pool-xusd-usda-v1-3',
       functionName: 'stake-pending-rewards',
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-xusd-usda-v1-3'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
