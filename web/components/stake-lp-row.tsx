@@ -4,7 +4,6 @@ import { tokenList } from '@components/token-swap-list';
 import { Disclosure } from '@headlessui/react';
 import { Tooltip } from '@blockstack/ui';
 import { Placeholder } from './ui/placeholder';
-import { NavLink as RouterLink } from 'react-router-dom';
 import { StyledIcon } from './ui/styled-icon';
 
 interface StakeLpRowProps {}
@@ -199,8 +198,9 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
           </tr>
           <Disclosure.Panel as="tr" className="bg-gray-50 dark:bg-zinc-700">
             <td className="px-6 py-4 text-sm whitespace-nowrap">
-              <RouterLink
-                to={getLpRoute}
+              <a
+                href={getLpRoute}
+                target={foreign ? "_blank" : ""}
                 className={`inline-flex items-center px-4 py-2 text-sm leading-4 border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
                   balance > 0
                     ? 'text-indigo-700 bg-indigo-100 hover:bg-indigo-200'
