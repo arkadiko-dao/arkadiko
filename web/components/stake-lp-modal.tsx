@@ -11,6 +11,7 @@ import {
   createAssetInfo,
   FungibleConditionCode,
   makeStandardFungiblePostCondition,
+  standardPrincipalCV,
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
@@ -78,11 +79,12 @@ export const StakeLpModal = ({
       tokenContract = 'arkadiko-swap-token-xbtc-usda';
       ftContract = 'xbtc-usda';
     } else if (balanceName === 'xusdusda') {
-      contractName = 'arkadiko-stake-pool-xusd-usda-v1-1';
+      contractName = 'arkadiko-stake-pool-xusd-usda-v1-3';
       tokenContract = 'token-amm-swap-pool';
       assetContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
       ftContract = 'amm-swap-pool';
     }
+    
     console.log(assetContractAddress, tokenContract, ftContract);
     const postConditions = [
       makeStandardFungiblePostCondition(
@@ -93,30 +95,58 @@ export const StakeLpModal = ({
       ),
     ];
 
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-registry-v1-1',
-      functionName: 'stake',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-        contractPrincipalCV(contractAddress, contractName),
-        contractPrincipalCV(assetContractAddress, tokenContract),
-        amount,
-      ],
-      postConditions,
-      onFinish: data => {
-        console.log('finished broadcasting staking tx!', data);
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-        setShowStakeModal(false);
-      },
-      anchorMode: AnchorMode.Any,
-    });
+    if (balanceName === 'xusdusda') {
+      await doContractCall({
+        network,
+        contractAddress,
+        stxAddress,
+        contractName: 'arkadiko-stake-pool-xusd-usda-v1-3',
+        functionName: 'stake',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          contractPrincipalCV(assetContractAddress, tokenContract),
+          standardPrincipalCV(stxAddress!),
+          amount,
+        ],
+        postConditions,
+        onFinish: data => {
+          console.log('finished broadcasting staking tx!', data);
+          setState(prevState => ({
+            ...prevState,
+            currentTxId: data.txId,
+            currentTxStatus: 'pending',
+          }));
+          setShowStakeModal(false);
+        },
+        anchorMode: AnchorMode.Any,
+      });
+
+    } else {
+      await doContractCall({
+        network,
+        contractAddress,
+        stxAddress,
+        contractName: 'arkadiko-stake-registry-v1-1',
+        functionName: 'stake',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          contractPrincipalCV(contractAddress, contractName),
+          contractPrincipalCV(assetContractAddress, tokenContract),
+          amount,
+        ],
+        postConditions,
+        onFinish: data => {
+          console.log('finished broadcasting staking tx!', data);
+          setState(prevState => ({
+            ...prevState,
+            currentTxId: data.txId,
+            currentTxStatus: 'pending',
+          }));
+          setShowStakeModal(false);
+        },
+        anchorMode: AnchorMode.Any,
+      });
+    }
   };
 
   const lpPairTokenX = tokenList.findIndex(obj => obj.name == tokenName.split('/').slice(0, 1));
