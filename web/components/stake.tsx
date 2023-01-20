@@ -434,7 +434,7 @@ export const Stake = () => {
         0,
         totalXbtcUsdaStaked
       );
-      const xbtcUsdaPoolRewards = totalStakingRewardsYear1 * 0.1;
+      const xbtcUsdaPoolRewards = totalStakingRewardsYear1 * 0.05;
       const xbtcUsdaApr =
         xbtcUsdaPoolRewards / (dikoXbtcUsda['walletValue'] / Number(dikoPrice / 1000000));
       setXbtcUsdaLpApy(Number((100 * xbtcUsdaApr).toFixed(2)));
