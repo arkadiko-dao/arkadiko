@@ -12,9 +12,9 @@ async function transact() {
     contractName: 'arkadiko-governance-v4-1',
     functionName: 'add-contract-address',
     functionArgs: [
-      tx.stringAsciiCV('stake-pool-xusd-usda'),
+      tx.stringAsciiCV('stake-pool-xusd-usda-3'),
       tx.standardPrincipalCV(CONTRACT_ADDRESS),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-xusd-usda-v1-1'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-xusd-usda-v1-3'),
       tx.trueCV(),
       tx.trueCV(),
     ],
