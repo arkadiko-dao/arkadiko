@@ -978,6 +978,7 @@ export const Stake = () => {
       setShowUnstakeModal: setShowUnstakeLp6Modal,
       stakedAmount: lpXusdUsdaStakedAmount,
       apy: xusdUsdaLpApy,
+      decimals: 8
     },
     {
       name: 'dikousda',
@@ -988,6 +989,7 @@ export const Stake = () => {
       setShowUnstakeModal: setShowUnstakeLp1Modal,
       stakedAmount: lpDikoUsdaStakedAmount,
       apy: dikoUsdaLpApy,
+      decimals: 6
     },
     {
       name: 'wstxusda',
@@ -998,6 +1000,7 @@ export const Stake = () => {
       setShowUnstakeModal: setShowUnstakeLp2Modal,
       stakedAmount: lpStxUsdaStakedAmount,
       apy: stxUsdaLpApy,
+      decimals: 6
     },
     {
       name: 'wstxdiko',
@@ -1008,6 +1011,7 @@ export const Stake = () => {
       setShowUnstakeModal: setShowUnstakeLp3Modal,
       stakedAmount: lpStxDikoStakedAmount,
       apy: stxDikoLpApy,
+      decimals: 6
     },
     {
       name: 'wstxxbtc',
@@ -1018,6 +1022,7 @@ export const Stake = () => {
       setShowUnstakeModal: setShowUnstakeLp4Modal,
       stakedAmount: lpStxXbtcStakedAmount,
       apy: stxXbtcLpApy,
+      decimals: 6
     },
     {
       name: 'xbtcusda',
@@ -1028,6 +1033,7 @@ export const Stake = () => {
       setShowUnstakeModal: setShowUnstakeLp5Modal,
       stakedAmount: lpXbtcUsdaStakedAmount,
       apy: xbtcUsdaLpApy,
+      decimals: 6
     },
   ];
 
@@ -1057,6 +1063,7 @@ export const Stake = () => {
           apy={lp.apy}
           balanceName={lp.name}
           tokenName={lp.tokenName}
+          decimals={lp.decimals}
         />
       ))}
 
@@ -1068,6 +1075,7 @@ export const Stake = () => {
           stakedAmount={lp.stakedAmount}
           balanceName={lp.name}
           tokenName={lp.tokenName}
+          decimals={lp.decimals}
         />
       ))}
 
@@ -1183,7 +1191,8 @@ export const Stake = () => {
                           setShowUnstakeLpModal={setShowUnstakeLp6Modal}
                           claimLpPendingRewards={claimXusdUsdaLpPendingRewards}
                           stakeLpPendingRewards={stakeXusdUsdaLpPendingRewards}
-                          getLpRoute={'/stake'}
+                          getLpRoute={'https://app.alexlab.co/pool/token-amm-swap-pool:token-wxusd,token-wusda,0.0001e8'}
+                          decimals={8}
                         />
 
                         {/* Arkadiko V1 DIKO USDA LP Token */}
@@ -1204,6 +1213,7 @@ export const Stake = () => {
                           claimLpPendingRewards={claimDikoUsdaLpPendingRewards}
                           stakeLpPendingRewards={stakeDikoUsdaLpPendingRewards}
                           getLpRoute={'/swap/add/DIKO/USDA'}
+                          decimals={6}
                         />
 
                         {/* Arkadiko V1 STX USDA LP Token */}
@@ -1224,6 +1234,7 @@ export const Stake = () => {
                           claimLpPendingRewards={claimStxUsdaLpPendingRewards}
                           stakeLpPendingRewards={stakeStxUsdaLpPendingRewards}
                           getLpRoute={'/swap/add/STX/USDA'}
+                          decimals={6}
                         />
 
                         {/* Arkadiko V1 STX DIKO LP Token */}
@@ -1244,6 +1255,7 @@ export const Stake = () => {
                           claimLpPendingRewards={claimStxDikoLpPendingRewards}
                           stakeLpPendingRewards={stakeStxDikoLpPendingRewards}
                           getLpRoute={'/swap/add/STX/DIKO'}
+                          decimals={6}
                         />
 
                         {/* Arkadiko V1 STX xBTC LP Token */}
@@ -1264,6 +1276,7 @@ export const Stake = () => {
                           claimLpPendingRewards={claimStxXbtcLpPendingRewards}
                           stakeLpPendingRewards={stakeStxXbtcLpPendingRewards}
                           getLpRoute={'/swap/add/STX/xBTC'}
+                          decimals={6}
                         />
 
                         {/* Arkadiko V1 xBTC USDA LP Token */}
@@ -1284,6 +1297,7 @@ export const Stake = () => {
                           claimLpPendingRewards={claimXbtcUsdaLpPendingRewards}
                           stakeLpPendingRewards={stakeXbtcUsdaLpPendingRewards}
                           getLpRoute={'/swap/add/xBTC/USDA'}
+                          decimals={6}
                         />
                       </table>
                     </div>
