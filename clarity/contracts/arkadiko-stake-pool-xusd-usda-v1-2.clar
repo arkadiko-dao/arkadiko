@@ -5,8 +5,8 @@
 ;; When total stake changes, the cumm reward per stake is increased accordingly.
 ;; @version 1.1
 
-(impl-trait .arkadiko-stake-pool-trait-v1.stake-pool-trait)
-(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
+;; (impl-trait .arkadiko-stake-pool-trait-v1.stake-pool-trait)
+(use-trait ft-trait 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.trait-semi-fungible.semi-fungible-trait)
 (use-trait stake-registry-trait .arkadiko-stake-registry-trait-v1.stake-registry-trait)
 
 ;; Errors
@@ -76,7 +76,9 @@
 ;; @post uint; returns amount of tokens staked
 (define-public (stake (registry-trait <stake-registry-trait>) (token <ft-trait>) (staker principal) (amount uint))
   (begin
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-NOT-AUTHORIZED)
+    ;; Check given registry
+    (asserts! (is-eq (contract-of registry-trait) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-WRONG-REGISTRY)
+
     (asserts! (is-eq 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-amm-swap-pool (contract-of token)) ERR-WRONG-TOKEN)
 
     ;; Save currrent cumm reward per stake
@@ -118,7 +120,9 @@
     ;; Staked amount of staker
     (stake-amount (get-stake-amount-of staker))
   )
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-NOT-AUTHORIZED)
+    ;; Check given registry
+    (asserts! (is-eq (contract-of registry-trait) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-WRONG-REGISTRY)
+
     (asserts! (is-eq 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-amm-swap-pool (contract-of token)) ERR-WRONG-TOKEN)
     (asserts! (>= stake-amount amount) ERR-INSUFFICIENT-STAKE)
 
@@ -203,7 +207,9 @@
 ;; @post uint; returns claimed rewards
 (define-public (claim-pending-rewards (registry-trait <stake-registry-trait>) (staker principal))
   (begin
-    (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-NOT-AUTHORIZED)
+    ;; Check given registry
+    (asserts! (is-eq (contract-of registry-trait) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-WRONG-REGISTRY)
+
     (unwrap-panic (increase-cumm-reward-per-stake registry-trait))
 
     (let (
