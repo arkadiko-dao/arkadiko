@@ -438,19 +438,19 @@ plan:
             path: contracts/arkadiko-stake-pool-wstx-usda-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-stake-pool-xusd-usda-v1-3
+            contract-name: arkadiko-stake-registry-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-stake-pool-xusd-usda-v1-3.clar
+            path: contracts/arkadiko-stake-registry-v1-1.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-stake-pool-xusd-usda-v1-4
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-stake-pool-xusd-usda-v1-4.clar
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: arkadiko-stake-registry-tv1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/tests/arkadiko-stake-registry-tv1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-stake-registry-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-stake-registry-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: arkadiko-swap-token-wstx-xbtc

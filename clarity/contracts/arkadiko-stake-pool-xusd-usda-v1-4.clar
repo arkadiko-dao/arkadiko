@@ -3,12 +3,11 @@
 ;; Rewards will be automatically staked before staking or unstaking. 
 ;; The cumm reward per stake represents the rewards over time, taking into account total staking volume over time
 ;; When total stake changes, the cumm reward per stake is increased accordingly.
-;; @version 1.1
+;; @version 1.4
 
 (use-trait stake-pool-trait .arkadiko-stake-pool-trait-v1.stake-pool-trait)
 (use-trait sft-trait 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.trait-semi-fungible.semi-fungible-trait)
 (use-trait stake-registry-trait .arkadiko-stake-registry-trait-v1.stake-registry-trait)
-;; (use-trait ft-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 (use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
 
 ;; Errors
@@ -253,7 +252,7 @@
     (asserts! (is-eq (contract-of registry-trait) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-WRONG-REGISTRY)
 
     ;; Stake
-    (contract-call? diko-pool-trait stake registry-trait diko-token-trait tx-sender claimed-rewards)
+    (contract-call? .arkadiko-stake-registry-v1-1 stake registry-trait diko-pool-trait diko-token-trait claimed-rewards)
   )
 )
 
