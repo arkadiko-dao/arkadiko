@@ -829,11 +829,10 @@ export const Stake = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-stake-registry-v1-1',
+      contractName: 'arkadiko-stake-pool-xusd-usda-v1-4',
       functionName: 'claim-pending-rewards',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-xusd-usda-v1-4'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1')
       ],
       onFinish: data => {
         setState(prevState => ({
