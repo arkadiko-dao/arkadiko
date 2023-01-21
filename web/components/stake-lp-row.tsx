@@ -89,12 +89,12 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                   <Tooltip
                     shouldWrapChildren={true}
                     label={`
-                    ${microToReadable(poolInfo.walletTokenXAmount, tokenList[tokenListItemX].decimals).toLocaleString(undefined, {
+                    ${microToReadable(poolInfo.walletTokenXAmount).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 6,
                     })} ${poolInfo.tokenX}
                     /
-                    ${microToReadable(poolInfo.walletTokenYAmount, tokenList[tokenListItemY].decimals).toLocaleString(undefined, {
+                    ${microToReadable(poolInfo.walletTokenYAmount).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 6,
                     })} ${poolInfo.tokenY}
@@ -134,12 +134,12 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                   <Tooltip
                     shouldWrapChildren={true}
                     label={`
-                    ${microToReadable(poolInfo.stakedTokenXAmount, tokenList[tokenListItemX].decimals).toLocaleString(undefined, {
+                    ${microToReadable(poolInfo.stakedTokenXAmount).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 6,
                     })} ${poolInfo.tokenX}
                     /
-                    ${microToReadable(poolInfo.stakedTokenYAmount, tokenList[tokenListItemY].decimals).toLocaleString(undefined, {
+                    ${microToReadable(poolInfo.stakedTokenYAmount).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 6,
                     })} ${poolInfo.tokenY}
@@ -162,7 +162,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                   </Tooltip>
                   <p className="mt-1 text-sm">
                     ≈$
-                    {microToReadable(poolInfo.stakedValue, decimals).toLocaleString(undefined, {
+                    {microToReadable(poolInfo.stakedValue).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 6,
                     })}

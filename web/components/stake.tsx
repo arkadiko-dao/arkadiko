@@ -117,8 +117,6 @@ export const Stake = () => {
 
       // TODO: Update API 
       // poolInfo['Wrapped-USD/usda-token'] = data['Wrapped-USD/usda-token'];
-
-      // TODO: remove code below
       const callPoolInfo = await callReadOnlyFunction({
         contractAddress: 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9',
         contractName: 'amm-swap-pool',
@@ -149,7 +147,18 @@ export const Stake = () => {
       setTotalStxXbtcStaked(data.arkv1wstxxbtc.total_staked / 1000000);
       setTotalXbtcUsdaStaked(data.arkv1xbtcusda.total_staked / 1000000);
 
-      setTotalXusdUsdaStaked(data['amm-swap-pool'].total_staked / 1000000);
+      // TODO: move this to API
+      const callStakedInfo = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-stake-pool-xusd-usda-v1-4',
+        functionName: 'get-total-staked',
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const callStakedInfoResult = cvToJSON(callStakedInfo).value;
+      setTotalXusdUsdaStaked(callStakedInfoResult / 100000000);
+
       setCurrentBlock(data.block_height);
 
       // prices
@@ -266,8 +275,8 @@ export const Stake = () => {
       let estimatedValueStaked = 0;
       let estimatedValueWallet = 0;
       if (tokenXName == 'xUSD' && tokenYName == 'USDA') {
-        estimatedValueStaked = stakedBalanceX / 100 + stakedBalanceY;
-        estimatedValueWallet = walletBalanceX / 100 + walletBalanceY;
+        estimatedValueStaked = stakedBalanceX + stakedBalanceY;
+        estimatedValueWallet = walletBalanceX + walletBalanceY;
       } else if (tokenXName == 'STX') {
         estimatedValueStaked = (stakedBalanceX / 1000000) * stxPrice * 2;
         estimatedValueWallet = (walletBalanceX / 1000000) * stxPrice * 2;
@@ -467,7 +476,7 @@ export const Stake = () => {
       const dikoXusdUsda = await lpTokenValue(
         'arkadiko-stake-pool-xusd-usda-v1-4',
         0,
-        totalXusdUsdaStaked
+        totalXusdUsdaStaked * 100
       );
       const xusdUsdaPoolRewards = totalStakingRewardsYear1 * 0.118;
       const xusdUsdaApr =
