@@ -12,7 +12,7 @@ async function transact() {
     contractName: 'arkadiko-stake-registry-v1-1',
     functionName: 'set-pool-data',
     functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-xusd-usda-v1-3'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-xusd-usda-v1-4'),
       tx.stringAsciiCV('xUSD-USDA LP'),
       tx.uintCV(0),
       tx.uintCV(0),
