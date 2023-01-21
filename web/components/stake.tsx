@@ -115,8 +115,29 @@ export const Stake = () => {
       poolInfo['wrapped-stx-token/Wrapped-Bitcoin'] = data['wrapped-stx-token/Wrapped-Bitcoin'];
       poolInfo['Wrapped-Bitcoin/usda-token'] = data['Wrapped-Bitcoin/usda-token'];
 
-      // TODO: need to update API
-      poolInfo['Wrapped-USD/usda-token'] = data['Wrapped-USD/usda-token'];
+      // TODO: Update API 
+      // poolInfo['Wrapped-USD/usda-token'] = data['Wrapped-USD/usda-token'];
+
+      // TODO: remove code below
+      const callPoolInfo = await callReadOnlyFunction({
+        contractAddress: 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9',
+        contractName: 'amm-swap-pool',
+        functionName: 'get-pool-details',
+        functionArgs: [
+          contractPrincipalCV("SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9", 'token-wxusd'),
+          contractPrincipalCV("SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9", 'token-wusda'),
+          uintCV(10000),
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const callPoolInfoResult = cvToJSON(callPoolInfo).value.value;
+      poolInfo['Wrapped-USD/usda-token'] = {
+        "balance_x": callPoolInfoResult["balance-x"].value,
+        "balance_y": callPoolInfoResult["balance-y"].value,
+        "shares_total": callPoolInfoResult["total-supply"].value,
+      }
+
       setPoolInfo(poolInfo);
 
       // stake data
@@ -206,6 +227,7 @@ export const Stake = () => {
         tokenXContract = 'Wrapped-USD';
         tokenXDecimals = 8;
         tokenYContract = 'usda-token';
+        tokenYDecimals = 8;
         tokenXName = 'xUSD';
         tokenYName = 'USDA';
       }
@@ -243,7 +265,10 @@ export const Stake = () => {
       // Estimate value
       let estimatedValueStaked = 0;
       let estimatedValueWallet = 0;
-      if (tokenXName == 'STX') {
+      if (tokenXName == 'xUSD' && tokenYName == 'USDA') {
+        estimatedValueStaked = stakedBalanceX / 100 + stakedBalanceY;
+        estimatedValueWallet = walletBalanceX / 100 + walletBalanceY;
+      } else if (tokenXName == 'STX') {
         estimatedValueStaked = (stakedBalanceX / 1000000) * stxPrice * 2;
         estimatedValueWallet = (walletBalanceX / 1000000) * stxPrice * 2;
       } else if (tokenYName == 'STX') {
