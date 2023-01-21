@@ -79,7 +79,7 @@ export const StakeLpModal = ({
       tokenContract = 'arkadiko-swap-token-xbtc-usda';
       ftContract = 'xbtc-usda';
     } else if (balanceName === 'xusdusda') {
-      contractName = 'arkadiko-stake-pool-xusd-usda-v1-3';
+      contractName = 'arkadiko-stake-pool-xusd-usda-v1-4';
       tokenContract = 'token-amm-swap-pool';
       assetContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
       ftContract = 'amm-swap-pool';
@@ -100,7 +100,7 @@ export const StakeLpModal = ({
         network,
         contractAddress,
         stxAddress,
-        contractName: 'arkadiko-stake-pool-xusd-usda-v1-3',
+        contractName: 'arkadiko-stake-pool-xusd-usda-v1-4',
         functionName: 'stake',
         functionArgs: [
           contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
