@@ -37,7 +37,7 @@ interface EpochTimeline {
   pox_2_activation: number;
 }
 
-const DEFAULT_EPOCH_TIMELINE = {
+export const DEFAULT_EPOCH_TIMELINE = {
   epoch_2_0: Constants.DEVNET_DEFAULT_EPOCH_2_0,
   epoch_2_05: Constants.DEVNET_DEFAULT_EPOCH_2_05,
   epoch_2_1: Constants.DEVNET_DEFAULT_EPOCH_2_1,
