@@ -1,5 +1,6 @@
 import {
   buildDevnetNetworkOrchestrator,
+  DEFAULT_EPOCH_TIMELINE,
   getBitcoinBlockHeight,
   getNetworkIdFromEnv,
 } from "./helpers";
@@ -10,18 +11,13 @@ import {
   getPoxInfo,
   waitForRewardCycleId,
 } from "./helpers";
-import { Accounts } from "./constants";
+import { Accounts, Constants } from "./constants";
 import { StacksTestnet } from "@stacks/network";
 import { DevnetNetworkOrchestrator } from "@hirosystems/stacks-devnet-js";
 
 describe("testing stacking under epoch 2.1", () => {
   let orchestrator: DevnetNetworkOrchestrator;
-  let timeline = {
-    epoch_2_0: 100,
-    epoch_2_05: 101,
-    epoch_2_1: 103,
-    pox_2_activation: 110,
-  };
+  let timeline = DEFAULT_EPOCH_TIMELINE;
 
   beforeAll(() => {
     orchestrator = buildDevnetNetworkOrchestrator(getNetworkIdFromEnv());
@@ -32,19 +28,13 @@ describe("testing stacking under epoch 2.1", () => {
     orchestrator.terminate();
   });
 
-  it("submitting stacks-stx through pox-1 contract during epoch 2.0 should succeed", async () => {
+  it("submitting stacks-stx through pox-2 contract during epoch 2.0 should succeed", async () => {
     const network = new StacksTestnet({ url: orchestrator.getStacksNodeUrl() });
 
-    // Wait for Stacks genesis block
-    await orchestrator.waitForNextStacksBlock();
+    let poxInfo = await getPoxInfo(network);
 
-    // Wait for block N-2 where N is the height of the next prepare phase
-    let blockHeight = timeline.pox_2_activation + 1;
-    let chainUpdate =
-      await orchestrator.waitForStacksBlockAnchoredOnBitcoinBlockOfHeight(
-        blockHeight
-      );
-    console.log('1');
+    await orchestrator.waitForStacksBlockAnchoredOnBitcoinBlockOfHeight(timeline.pox_2_activation + 1, 5, true);
+    poxInfo = await getPoxInfo(network);
 
     // Broadcast some STX stacking orders
     let fee = 1000;
@@ -52,49 +42,46 @@ describe("testing stacking under epoch 2.1", () => {
     let response = await broadcastStackSTX(
       2,
       network,
-      25_000_000_000_000,
+      95_000_000_000_000,
       Accounts.WALLET_1,
-      blockHeight,
+      poxInfo.current_burnchain_block_height,
       cycles,
       fee,
       0
     );
     // @ts-ignore
-    console.log('2');
     expect(response.error).toBeUndefined();
 
     response = await broadcastStackSTX(
       2,
       network,
-      50_000_000_000_000,
+      95_000_000_000_000,
       Accounts.WALLET_2,
-      blockHeight,
+      poxInfo.current_burnchain_block_height,
       cycles,
       fee,
       0
     );
     // @ts-ignore
     expect(response.error).toBeUndefined();
-    console.log('3');
 
     response = await broadcastStackSTX(
       2,
       network,
-      75_000_000_000_000,
+      95_000_000_000_000,
       Accounts.WALLET_3,
-      blockHeight,
+      poxInfo.current_burnchain_block_height,
       cycles,
       fee,
       0
     );
     // @ts-ignore
     expect(response.error).toBeUndefined();
-    console.log('4');
 
     // Wait for block N+1 where N is the height of the next reward phase
-    chainUpdate = await waitForNextRewardPhase(network, orchestrator, 1);
-    let poxInfo = await getPoxInfo(network);
-    console.log('5');
+    let chainUpdate = await waitForNextRewardPhase(network, orchestrator, 1);
+    poxInfo = await getPoxInfo(network);
+    console.log(poxInfo);
 
     // Assert
     expect(poxInfo.contract_id).toBe("ST000000000000000000002AMW42H.pox-2");
