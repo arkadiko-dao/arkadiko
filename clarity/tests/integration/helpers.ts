@@ -1,4 +1,4 @@
-import { Contracts } from "./constants";
+import { Accounts, Contracts } from "./constants";
 import {
   StacksBlockMetadata,
   StacksChainUpdate,
@@ -11,12 +11,18 @@ import {
   AnchorMode,
   broadcastTransaction,
   bufferCV,
+  contractPrincipalCV,
+  falseCV,
   getNonce,
   makeContractCall,
   PostConditionMode,
+  stringAsciiCV,
+  trueCV,
   tupleCV,
   TxBroadcastResult,
   uintCV,
+  callReadOnlyFunction,
+  cvToJSON
 } from "@stacks/transactions";
 import { Constants } from "./constants";
 
@@ -92,7 +98,6 @@ export const waitForStacksTransaction = async (
 };
 
 export const getNetworkIdFromEnv = (): number => {
-  console.log(process.env);
   let networkId = process.env.JEST_WORKER_ID
     ? parseInt(process.env.JEST_WORKER_ID!)
     : process.env.VITEST_WORKER_ID
@@ -264,3 +269,122 @@ export const broadcastStackSTX = async (
   const result = await broadcastTransaction(tx, network);
   return result;
 };
+
+export const createVault = async(
+  collateralAmount: number,
+  usda: number,
+  network: StacksNetwork,
+  account: Account,
+  fee: number,
+  nonce: number
+): Promise<TxBroadcastResult> => {
+  const txOptions = {
+    contractAddress: Accounts.DEPLOYER.stxAddress,
+    contractName: 'arkadiko-freddie-v1-1',
+    functionName: "collateralize-and-mint",
+    functionArgs: [
+      uintCV(collateralAmount * 1000000), 
+      uintCV(usda * 1000000),
+      tupleCV({
+        'stack-pox': trueCV(),
+        'auto-payoff': falseCV()
+      }),
+      stringAsciiCV('STX-A'),
+      contractPrincipalCV(Accounts.DEPLOYER.stxAddress, 'arkadiko-stx-reserve-v1-1'),
+      contractPrincipalCV(Accounts.DEPLOYER.stxAddress, 'arkadiko-token'),
+      contractPrincipalCV(Accounts.DEPLOYER.stxAddress, 'arkadiko-collateral-types-v3-1'),
+      contractPrincipalCV(Accounts.DEPLOYER.stxAddress, 'arkadiko-oracle-v1-1')
+    ],
+    fee,
+    nonce,
+    network,
+    anchorMode: AnchorMode.OnChainOnly,
+    postConditionMode: PostConditionMode.Allow,
+    senderKey: account.secretKey,
+  };
+  // @ts-ignore
+  const tx = await makeContractCall(txOptions);
+  // Broadcast transaction to our Devnet stacks node
+  const result = await broadcastTransaction(tx, network);
+  return result;
+}
+
+export const initiateStacking = async (
+  network: StacksNetwork,
+  account: Account,
+  blockHeight: number,
+  cycles: number,
+  fee: number,
+  nonce: number
+): Promise<TxBroadcastResult> => {
+  const { version, data } = decodeBtcAddress(account.btcAddress);
+  // @ts-ignore
+  const address = { version: bufferCV(toBytes(new Uint8Array([version.valueOf()]))), hashbytes: bufferCV(data) };
+
+  const txOptions = {
+    contractAddress: Accounts.DEPLOYER.stxAddress,
+    contractName: 'arkadiko-stacker-v2-1',
+    functionName: "initiate-stacking",
+    functionArgs: [
+      tupleCV(address),
+      uintCV(blockHeight),
+      uintCV(cycles),
+    ],
+    fee,
+    nonce,
+    network,
+    anchorMode: AnchorMode.OnChainOnly,
+    postConditionMode: PostConditionMode.Allow,
+    senderKey: account.secretKey,
+  };
+  // @ts-ignore
+  const tx = await makeContractCall(txOptions);
+  // Broadcast transaction to our Devnet stacks node
+  const result = await broadcastTransaction(tx, network);
+  return result;
+};
+
+export const stackIncrease = async (
+  network: StacksNetwork,
+  account: Account,
+  stackerName: string,
+  fee: number,
+  nonce: number
+): Promise<TxBroadcastResult> => {
+  const txOptions = {
+    contractAddress: Accounts.DEPLOYER.stxAddress,
+    contractName: 'arkadiko-stacker-v2-1',
+    functionName: "stack-increase",
+    functionArgs: [
+      stringAsciiCV(stackerName)
+    ],
+    fee,
+    nonce,
+    network,
+    anchorMode: AnchorMode.OnChainOnly,
+    postConditionMode: PostConditionMode.Allow,
+    senderKey: account.secretKey,
+  };
+  // @ts-ignore
+  const tx = await makeContractCall(txOptions);
+  // Broadcast transaction to our Devnet stacks node
+  const result = await broadcastTransaction(tx, network);
+  return result;
+};
+
+export const getStackerInfo = async (
+  network: StacksNetwork
+) => {
+  const supplyCall = await callReadOnlyFunction({
+    contractAddress: Accounts.DEPLOYER.stxAddress,
+    contractName: "arkadiko-stacker-v2-1",
+    functionName: "get-stacker-info",
+    functionArgs: [],
+    senderAddress: Accounts.DEPLOYER.stxAddress,
+    network: network,
+  });
+  const json = cvToJSON(supplyCall);
+  console.log(json);
+
+  return json;
+}

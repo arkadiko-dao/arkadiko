@@ -10,6 +10,10 @@ import {
   waitForNextRewardPhase,
   getPoxInfo,
   waitForRewardCycleId,
+  initiateStacking,
+  createVault,
+  getStackerInfo,
+  stackIncrease
 } from "./helpers";
 import { Accounts, Constants } from "./constants";
 import { StacksTestnet } from "@stacks/network";
@@ -28,11 +32,75 @@ describe("testing stacking under epoch 2.1", () => {
     orchestrator.terminate();
   });
 
+  it("test whole flow with initiate, increase stacking and extend stacking", async () => {
+    const network = new StacksTestnet({ url: orchestrator.getStacksNodeUrl() });
+    let poxInfo = await getPoxInfo(network);
+    const fee = 1000;
+    await orchestrator.waitForStacksBlockAnchoredOnBitcoinBlockOfHeight(timeline.pox_2_activation + 1, 5, true);
+    poxInfo = await getPoxInfo(network);
+
+    let response = await createVault(
+      200000, // 200k stx
+      10000,
+      network,
+      Accounts.WALLET_1,
+      fee,
+      0
+    );
+    console.log(response);
+    // @ts-ignore
+    expect(response.error).toBeUndefined();
+
+    let cycles = 1;
+    response = await initiateStacking(
+      network,
+      Accounts.WALLET_1,
+      poxInfo.current_burnchain_block_height,
+      cycles,
+      fee,
+      1
+    );
+    console.log(response);
+    // @ts-ignore
+    expect(response.error).toBeUndefined();
+
+    poxInfo = await getPoxInfo(network);
+    console.log(poxInfo);
+
+    response = await createVault(
+      200000, // 200k stx
+      10000,
+      network,
+      Accounts.WALLET_2,
+      fee,
+      2
+    );
+    console.log(response);
+    // @ts-ignore
+    expect(response.error).toBeUndefined();
+
+    poxInfo = await getPoxInfo(network);
+    console.log(poxInfo);
+
+    // Advance until end of stacking
+    await orchestrator.waitForStacksBlockAnchoredOnBitcoinBlockOfHeight(timeline.pox_2_activation + 1, 5, true);
+
+    const info = getStackerInfo(network);
+    console.log(info);
+
+    let response2 = stackIncrease(
+      network,
+      Accounts.DEPLOYER,
+      'stacker-2',
+      fee,
+      3
+    );
+    console.log(response2);
+  });
+
   it("submitting stacks-stx through pox-2 contract during epoch 2.0 should succeed", async () => {
     const network = new StacksTestnet({ url: orchestrator.getStacksNodeUrl() });
-
     let poxInfo = await getPoxInfo(network);
-
     await orchestrator.waitForStacksBlockAnchoredOnBitcoinBlockOfHeight(timeline.pox_2_activation + 1, 5, true);
     poxInfo = await getPoxInfo(network);
 
