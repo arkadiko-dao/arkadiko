@@ -98,7 +98,7 @@ class PoxCalculator
     end
   end
 
-  def self.build_clarity_list_tuples(names:, file: 'vaults-pox-48.json', yield_type: 'usda', ustx_stacked: 5014212742382, yield_earned: 5_512_311_265)
+  def self.build_clarity_list_tuples(names:, file: 'vaults-pox-49.json', yield_type: 'usda', ustx_stacked: 3_121_150_676_963, yield_earned: 4_085_312_442)
     if yield_type == 'usda'
       vaults = calculate_usda_yields(names: names, file: file, ustx_stacked: ustx_stacked, usda_yield: yield_earned)
     else

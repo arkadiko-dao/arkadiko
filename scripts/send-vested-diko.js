@@ -27,7 +27,7 @@ async function sendDiko(address, amount, nonce) {
   return utils.processing(result, transaction.txid(), 0);
 }
 
-let nonce = 2385;
+let nonce = 2678;
 const tokens = {
   'SP3C1KZN3WZD7HS5S2VKCD3GHBWXBSRPK6NAGGMQJ': 44270833333,
   'SPF6GBC7XRM16XE7GSNF87GSYS703XZHFHRM1XYR': 3750000000,
