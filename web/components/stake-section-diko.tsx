@@ -341,10 +341,10 @@ export const StakeSectionDiko = ({ showLoadingState, apiData }) => {
         <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
           <div>
             <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">
-              DIKO & esDIKO
+              DIKO, esDIKO and loDIKO
             </h3>
             <p className="max-w-3xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
-              Stake DIKO or esDIKO to get your share of the protocol revenue.
+              Stake DIKO or esDIKO to get your share of the protocol revenue. Earn loDIKO points.
             </p>
           </div>
           <div className="flex items-center mt-2 sm:mt-0">
@@ -363,162 +363,84 @@ export const StakeSectionDiko = ({ showLoadingState, apiData }) => {
           </div>
         </header>
 
-        <div className="mt-4 bg-white divide-y divide-gray-200 rounded-md shadow dark:divide-gray-600 dark:bg-zinc-800">
-          <div className="px-4 py-5 space-y-6 divide-y divide-gray-200 dark:divide-zinc-600 sm:p-6">
-            <div className="md:grid md:grid-flow-col gap-4 sm:grid-cols-[min-content,auto]">
-              <div className="self-center w-14">
-                <img className="w-12 h-12 rounded-full" src={tokenList[1].logo} alt="" />
-              </div>
-              <div className="mt-3 md:mt-0">
-                <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">
-                  Staked
+        <div className="mt-4">
+          <div className="gap-4 md:grid md:grid-flow-col md:grid-col-3">
+            <div className="mt-3 bg-white divide-y divide-gray-200 rounded-md shadow dark:divide-zinc-600 dark:bg-zinc-800 md:mt-0">
+              <div className="flex items-center p-4 sm:px-6">
+                <img className="w-6 h-6 mr-2 rounded-full shrink-0" src={tokenList[1].logo} alt="" />
+                <p className="text-sm font-semibold leading-6 text-gray-500 dark:text-zinc-400">
+                  DIKO
                 </p>
-                {loadingData ? (
-                  <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                ) : (
-                  <div>
-                    <p className="text-base dark:text-white">
+              </div>
+              {/* {loadingData ? (
+                <Placeholder className="py-2" width={Placeholder.width.HALF} />
+              ) : ( */}
+              <div className="px-4 sm:py-3 sm:px-6">
+                <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
+                  <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                    <p className="leading-6 text-gray-500 dark:text-zinc-400">
+                      Staked
+                    </p>
+                  </dt>
+                  <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
+                    <p className="text-base font-semibold leading-none">
                       {stakedDiko.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 6,
-                      })} DIKO
+                      })} <span className="text-sm font-normal">DIKO</span>
                     </p>
-                    <p className="text-base dark:text-white">
-                      {stakedEsDiko.toLocaleString(undefined, {
+                  </dd>
+                </div>
+                <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
+                  <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                    <p className="leading-6 text-gray-500 dark:text-zinc-400">
+                      Total staked in pool
+                    </p>
+                  </dt>
+                  <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
+                    <p className="text-base font-semibold leading-none">
+                      0.00 <span className="text-sm font-normal">DIKO</span>
+                    </p>
+                  </dd>
+                </div>
+              </div>
+              <div className="px-4 sm:py-3 sm:px-6">
+                <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
+                  <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                    <p className="leading-6 text-gray-500 dark:text-zinc-400">
+                      APR
+                    </p>
+                  </dt>
+                  <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
+                    <p className="text-base font-semibold leading-none">
+                      {aprEsDiko.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 6,
-                      })} esDIKO
+                      })}{' '}<span className="text-sm font-normal">%</span>
                     </p>
-                    <div className="flex items-center">
-                      <p className="text-base dark:text-white">
-                        {stakedPoints.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 6,
-                        })} Multiplier Points
-                      </p>
-                      <Tooltip
-                        className="ml-2"
-                        shouldWrapChildren={true}
-                        label={`Multiplier points are earned at 100% APR and receive rewards just like DIKO and esDIKO. Points are lost when unstaking.`}
-                      >
-                        <StyledIcon
-                          as="InformationCircleIcon"
-                          size={4}
-                          className="block ml-2 text-gray-400"
-                        />
-                      </Tooltip>
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div className="mt-3 md:mt-0">
-                <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">
-                  Pending rewards
-                </p>
-                {loadingData ? (
-                  <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                ) : (
-                  <div>
-                    <p className="text-base dark:text-white">
+                  </dd>
+                </div>
+                <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
+                  <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                    <p className="leading-6 text-gray-500 dark:text-zinc-400">
+                      Rewards
+                    </p>
+                  </dt>
+                  <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
+                    <p className="text-base font-semibold leading-none">
                       {pendingRewardsUsda.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 6,
-                      })} USDA
+                      })} <span className="text-sm font-normal">USDA</span>
                     </p>
-                    <p className="text-base dark:text-white">
-                      {pendingRewardsEsDiko.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 6,
-                      })} esDIKO
-                    </p>
-                    <p className="text-base dark:text-white">
-                      {pendingRewardsPoints.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 6,
-                      })} Multiplier Points
-                    </p>
-                  </div>
-                )}
+                  </dd>
+                </div>
               </div>
-              <div className="mt-3 md:mt-0">
-                <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">
-                  Reward info
-                </p>
-                {loadingData ? (
-                  <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                ) : (
-                  <div>
-                    <div className="flex items-center">
-                      <p className="text-base dark:text-white">
-                        {aprEsDiko.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 6,
-                        })}% APR esDIKO
-                      </p>
-                      <Tooltip
-                        className="ml-2"
-                        shouldWrapChildren={true}
-                        label={`When staking DIKO and/or esDIKO you will also earn esDIKO rewards.`}
-                      >
-                        <StyledIcon
-                          as="InformationCircleIcon"
-                          size={4}
-                          className="block ml-2 text-gray-400"
-                        />
-                      </Tooltip>
-                    </div>
-
-                    <div className="flex items-center">
-                      <p className="text-base dark:text-white">
-                        {epochUsda.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 6,
-                        })} USDA this epoch
-                      </p>
-                      <Tooltip
-                        className="ml-2"
-                        shouldWrapChildren={true}
-                        label={`The USDA revenue that is being distributed this epoch (= 7 day period).`}
-                      >
-                        <StyledIcon
-                          as="InformationCircleIcon"
-                          size={4}
-                          className="block ml-2 text-gray-400"
-                        />
-                      </Tooltip>
-                    </div>
-
-                    <div className="flex items-center">
-                      <p className="text-base dark:text-white">
-                        {nextEpochUsda.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 6,
-                        })} USDA next epoch
-                      </p>
-                      <Tooltip
-                        className="ml-2"
-                        shouldWrapChildren={true}
-                        label={`The USDA revenue that has been gathered during this epoch, which will be distributed next epoch.`}
-                      >
-                        <StyledIcon
-                          as="InformationCircleIcon"
-                          size={4}
-                          className="block ml-2 text-gray-400"
-                        />
-                      </Tooltip>
-                    </div>
-                    <p className="text-base dark:text-white">
-                      {blocksToTime(epochBlocksLeft)} left this epoch
-                    </p>
-                  </div>
-                )}
-              </div>
-              
-              <div className="self-center">
+              <div className="px-1 sm:py-3">
                 <Menu as="div" className="relative flex items-center justify-end">
                   {({ open }) => (
                     <>
-                      <Menu.Button className="inline-flex items-center justify-center px-2 py-1 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-800 dark:text-indigo-400">
+                      <Menu.Button className="inline-flex items-center justify-center px-4 py-2 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-800 dark:text-indigo-400">
                         <span>Actions</span>
                         <StyledIcon
                           as="ChevronUpIcon"
@@ -709,8 +631,121 @@ export const StakeSectionDiko = ({ showLoadingState, apiData }) => {
                                 </button>
                               )}
                             </Menu.Item>
+                          </div>
+                        </Menu.Items>
+                      </Transition>
+                    </>
+                  )}
+                </Menu>
+              </div>
 
-                            {/* CLAIM REWARDS */}
+              {/* )} */}
+            </div>
+            <div className="mt-3 bg-white divide-y divide-gray-200 rounded-md shadow dark:divide-zinc-600 dark:bg-zinc-800 md:mt-0">
+              <div className="flex items-center p-4 sm:px-6">
+                <img className="w-6 h-6 mr-2 rounded-full shrink-0" src={tokenList[1].logo} alt="" />
+                <p className="text-sm font-semibold leading-6 text-gray-500 dark:text-zinc-400">
+                  esDIKO
+                </p>
+              </div>
+              {/* {loadingData ? (
+                <Placeholder className="py-2" width={Placeholder.width.HALF} />
+              ) : ( */}
+              <div className="px-4 sm:py-3 sm:px-6">
+                <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
+                  <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                    <p className="leading-6 text-gray-500 dark:text-zinc-400">
+                      Staked
+                    </p>
+                  </dt>
+                  <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
+                    <p className="text-base font-semibold leading-none">
+                      {stakedEsDiko.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 6,
+                      })} <span className="text-sm font-normal">esDIKO</span>
+                    </p>
+                  </dd>
+                </div>
+                <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
+                  <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                    <p className="leading-6 text-gray-500 dark:text-zinc-400">
+                      Total staked in pool
+                    </p>
+                  </dt>
+                  <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
+                    <p className="text-base font-semibold leading-none">
+                      0.00 <span className="text-sm font-normal">DIKO</span>
+                    </p>
+                  </dd>
+                </div>
+              </div>
+              <div className="px-4 sm:py-3 sm:px-6">
+                <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
+                  <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                    <p className="leading-6 text-gray-500 dark:text-zinc-400">
+                      APR
+                    </p>
+                  </dt>
+                  <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
+                    <p className="text-base font-semibold leading-none">
+                      {aprEsDiko.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 6,
+                      })}{' '}<span className="text-sm font-normal">%</span>
+                    </p>
+                  </dd>
+                </div>
+                <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
+                  <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
+                    <p className="leading-6 text-gray-500 dark:text-zinc-400">
+                      Rewards
+                    </p>
+                  </dt>
+                  <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
+                    <p className="text-base font-semibold leading-none">
+                      {pendingRewardsEsDiko.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 6,
+                      })} <span className="text-sm font-normal">esDIKO</span>
+                    </p>
+                  </dd>
+                </div>
+              </div>
+
+              <div className="px-1 sm:py-3">
+                <Menu as="div" className="relative flex items-center justify-end">
+                  {({ open }) => (
+                    <>
+                      <Menu.Button className="inline-flex items-center justify-center px-4 py-2 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-800 dark:text-indigo-400">
+                        <span>Actions</span>
+                        <StyledIcon
+                          as="ChevronUpIcon"
+                          size={4}
+                          className={`${
+                            open
+                              ? ''
+                              : 'transform rotate-180 transition ease-in-out duration-300'
+                          } ml-2`}
+                        />
+                      </Menu.Button>
+                      <Transition
+                        show={open}
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
+                      >
+                        <Menu.Items
+                          static
+                          className="absolute top-0 z-10 w-48 mx-3 mt-6 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg dark:divide-gray-600 right-3 ring-1 ring-black ring-opacity-5 focus:outline-none"
+                        >
+                          <div className="px-1 py-1">
+
+                            {/* STAKE DIKO */}
                             <Menu.Item>
                               {({ active }) => (
                                 <button
@@ -719,38 +754,160 @@ export const StakeSectionDiko = ({ showLoadingState, apiData }) => {
                                       ? 'bg-indigo-500 text-white disabled:bg-gray-400 disabled:cursor-not-allowed'
                                       : 'text-gray-900'
                                   } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                  onClick={() => claimPendingRewards()}
-                                  disabled={!(pendingRewardsUsda > 0 || pendingRewardsEsDiko > 0 || pendingRewardsPoints > 0)}
+                                  disabled={!(walletDiko > 0)}
+                                  onClick={() => setShowStakeDikoModal(true)}
                                 >
-                                  {!(pendingRewardsUsda > 0 || pendingRewardsEsDiko > 0 || pendingRewardsPoints > 0) ? (
+                                  {!(walletDiko > 0) ? (
                                     <Tooltip
                                       placement="left"
                                       className="mr-2"
-                                      label={`You don't have any rewards to claim.`}
+                                      label={`You don't have any available DIKO to stake in your wallet.`}
                                     >
                                       <div className="flex items-center w-full">
                                         <StyledIcon
-                                          as="ArrowCircleRightIcon"
+                                          as="ArrowCircleDownIcon"
                                           size={5}
-                                          className="mr-3 text-gray-400 group-hover:text-white"
+                                          className="block mr-3 text-gray-400 group-hover:text-white"
                                         />
-                                        Claim rewards
+                                        Stake DIKO
                                       </div>
                                     </Tooltip>
                                   ) : (
                                     <>
                                       <StyledIcon
-                                        as="ArrowCircleRightIcon"
+                                        as="ArrowCircleDownIcon"
                                         size={5}
-                                        className="mr-3 text-gray-400 group-hover:text-white"
+                                        className="block mr-3 text-gray-400 group-hover:text-white"
                                       />
-                                        Claim rewards
+                                      Stake DIKO
                                     </>
                                   )}
                                 </button>
                               )}
                             </Menu.Item>
 
+                            {/* STAKE esDIKO */}
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  className={`${
+                                    active
+                                      ? 'bg-indigo-500 text-white disabled:bg-gray-400 disabled:cursor-not-allowed'
+                                      : 'text-gray-900'
+                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                  disabled={!(walletEsDiko > 0)}
+                                  onClick={() => setShowStakeEsDikoModal(true)}
+                                >
+                                  {!(walletEsDiko > 0) ? (
+                                    <Tooltip
+                                      placement="left"
+                                      className="mr-2"
+                                      label={`You don't have any available esDIKO to stake in your wallet.`}
+                                    >
+                                      <div className="flex items-center w-full">
+                                        <StyledIcon
+                                          as="ArrowCircleDownIcon"
+                                          size={5}
+                                          className="block mr-3 text-gray-400 group-hover:text-white"
+                                        />
+                                        Stake esDIKO
+                                      </div>
+                                    </Tooltip>
+                                  ) : (
+                                    <>
+                                      <StyledIcon
+                                        as="ArrowCircleDownIcon"
+                                        size={5}
+                                        className="block mr-3 text-gray-400 group-hover:text-white"
+                                      />
+                                      Stake esDIKO
+                                    </>
+                                  )}
+                                </button>
+                              )}
+                            </Menu.Item>
+
+                            {/* UNSTAKE DIKO */}
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  className={`${
+                                    active
+                                      ? 'bg-indigo-500 text-white disabled:bg-gray-400 disabled:cursor-not-allowed'
+                                      : 'text-gray-900'
+                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                  onClick={() => setShowUnstakeDikoModal(true)}
+                                  disabled={!(stakedDiko > 0)}
+                                >
+                                  {!(stakedDiko > 0) ? (
+                                    <Tooltip
+                                      placement="left"
+                                      className="mr-2"
+                                      label={`You don't have any staked DIKO.`}
+                                    >
+                                      <div className="flex items-center w-full">
+                                        <StyledIcon
+                                          as="ArrowCircleUpIcon"
+                                          size={5}
+                                          className="mr-3 text-gray-400 group-hover:text-white"
+                                        />
+                                        Unstake DIKO
+                                      </div>
+                                    </Tooltip>
+                                  ) : (
+                                    <>
+                                      <StyledIcon
+                                        as="ArrowCircleUpIcon"
+                                        size={5}
+                                        className="mr-3 text-gray-400 group-hover:text-white"
+                                      />
+                                      Unstake DIKO
+                                    </>
+                                  )}
+                                </button>
+                              )}
+                            </Menu.Item>
+
+                            {/* UNSTAKE esDIKO */}
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  className={`${
+                                    active
+                                      ? 'bg-indigo-500 text-white disabled:bg-gray-400 disabled:cursor-not-allowed'
+                                      : 'text-gray-900'
+                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                  onClick={() => setShowUnstakeEsDikoModal(true)}
+                                  disabled={!(stakedEsDiko > 0)}
+                                >
+                                  {!(stakedEsDiko > 0) ? (
+                                    <Tooltip
+                                      placement="left"
+                                      className="mr-2"
+                                      label={`You don't have any staked esDIKO.`}
+                                    >
+                                      <div className="flex items-center w-full">
+                                        <StyledIcon
+                                          as="ArrowCircleUpIcon"
+                                          size={5}
+                                          className="mr-3 text-gray-400 group-hover:text-white"
+                                        />
+                                        Unstake esDIKO
+                                      </div>
+                                    </Tooltip>
+                                  ) : (
+                                    <>
+                                      <StyledIcon
+                                        as="ArrowCircleUpIcon"
+                                        size={5}
+                                        className="mr-3 text-gray-400 group-hover:text-white"
+                                      />
+                                      Unstake esDIKO
+                                    </>
+                                  )}
+                                </button>
+                              )}
+                            </Menu.Item>
                           </div>
                         </Menu.Items>
                       </Transition>
@@ -758,6 +915,111 @@ export const StakeSectionDiko = ({ showLoadingState, apiData }) => {
                   )}
                 </Menu>
               </div>
+
+              {/* )} */}
+            </div>
+
+            <div className="px-4 py-5 mt-3 space-y-3 text-white rounded-md shadow bg-gradient-to-b from-indigo-900 to-zinc-900 dark:bg-zinc-800 sm:p-6 md:mt-0">
+              <p className="text-xs font-bold leading-6 uppercase text-indigo-50 dark:text-zinc-400 md:mb-1">
+                Rewards info
+              </p>
+              {/* {loadingData ? (
+                <Placeholder className="py-2" width={Placeholder.width.HALF} />
+              ) : ( */}
+                <div>
+
+                  <div className="flex items-center">
+                    <p className="text-3xl font-semibold dark:text-white">
+                      {stakedPoints.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 6,
+                      })} <span className="text-sm font-normal">loDIKO</span>
+                    </p>
+                    <div className="mt-3">
+                      <Tooltip
+                        className="ml-2"
+                        shouldWrapChildren={true}
+                        label={`loDIKO are earned at 100% APR and receive rewards just like DIKO and esDIKO. Points are lost when unstaking.`}
+                      >
+                        <StyledIcon
+                          as="InformationCircleIcon"
+                          size={4}
+                          className="block ml-2 text-indigo-200"
+                        />
+                      </Tooltip>
+                    </div>
+                  </div>
+                  <div className="flex items-center">
+                    <p className="text-3xl font-semibold dark:text-white">
+                      {epochUsda.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 6,
+                      })} <span className="text-sm font-normal">USDA</span>
+                    </p>
+                    <div className="mt-3">
+                      <Tooltip
+                        className="ml-2"
+                        shouldWrapChildren={true}
+                        label={`The USDA revenue that is being distributed this epoch (= 7-day period).`}
+                      >
+                        <StyledIcon
+                          as="InformationCircleIcon"
+                          size={4}
+                          className="block ml-2 text-indigo-200"
+                        />
+                      </Tooltip>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center mt-2">
+                    <p className="text-sm font-semibold dark:text-white">
+                      <span className="font-normal text-indigo-100">Next epoch:</span>{' '}
+                      {nextEpochUsda.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 6,
+                      })} USDA
+                    </p>
+                    <Tooltip
+                      className="ml-2"
+                      shouldWrapChildren={true}
+                      label={`The USDA revenue that has been gathered during this epoch, which will be distributed next epoch.`}
+                    >
+                      <StyledIcon
+                        as="InformationCircleIcon"
+                        size={4}
+                        className="block ml-2 text-indigo-200"
+                      />
+                    </Tooltip>
+                  </div>
+
+                  <div className="flex items-center mt-2">
+                    <p className="text-sm font-semibold dark:text-white">
+                      <span className="font-normal text-indigo-100">Epoch time remaining:</span>{' '}
+                      {blocksToTime(epochBlocksLeft)}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-end mt-4">
+                    <button
+                      className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
+                      onClick={() => claimPendingRewards()}
+                      disabled={!(pendingRewardsUsda > 0 || pendingRewardsEsDiko > 0 || pendingRewardsPoints > 0)}
+                    >
+                      {!(pendingRewardsUsda > 0 || pendingRewardsEsDiko > 0 || pendingRewardsPoints > 0) ? (
+                        <Tooltip
+                          placement="left"
+                          className="mr-2"
+                          label={`You don't have any rewards to claim.`}
+                        >
+                          Claim rewards
+                        </Tooltip>
+                      ) : (
+                        `Claim rewards`
+                      )}
+                    </button>
+                  </div>
+                </div>
+              {/* )} */}
             </div>
           </div>
         </div>
