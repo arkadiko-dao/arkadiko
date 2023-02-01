@@ -160,6 +160,7 @@
         (ok (get total-locked result))
       )
       error (begin
+        (print (get-stx-balance))
         (print (err (to-uint error)))
       )
     )
