@@ -140,6 +140,7 @@
 )
 
 ;; should be called to add additional STX tokens stacking
+;; if there is net outflow of STX between two cycles, does not need to be called
 ;; before calling this, consolidate the new amount of tokens to stack in PoX in stx-reserve `set-tokens-to-stack`
 ;; then call this first, before a new cycle starts (every 2100 blocks)
 ;; after calling this, call `stack-extend`
