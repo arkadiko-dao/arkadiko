@@ -124,9 +124,12 @@ class Stacker2 {
     return block.receipts[0].result;
   }
 
-  stackIncrease() {
+  stackIncrease(stackerName: string, additionalTokens: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v2-1", "stack-increase", [], this.deployer.address)
+      Tx.contractCall("arkadiko-stacker-v2-1", "stack-increase", [
+        types.ascii(stackerName),
+        types.uint(additionalTokens)
+      ], this.deployer.address)
     ]);
     return block.receipts[0].result;
   }

@@ -245,42 +245,6 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "stacker: test whole flow with initiate, increase stacking and extend stacking",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
-
-    console.log('TODO');
-    let oracleManager = new OracleManager(chain, deployer);
-    let vaultManager = new VaultManager(chain, deployer);
-    let stacker = new Stacker2(chain, deployer);
-
-    // Set price, create vault
-    oracleManager.updatePrice("STX", 2);
-    vaultManager.createVault(deployer, "STX-A", 1000, 100, true, true);
-    vaultManager.createVault(wallet_1, "STX-A", 21000000, 1000, true, true);
-
-    // Initiate stacking
-    let result = stacker.initiateStacking(10, 3);
-    result.expectOk().expectUintWithDecimals(21001000);
-
-    let call = stacker.getStackerInfo();
-    console.log(call);
-
-    vaultManager.createVault(wallet_1, "STX-A", 21000000, 1000, true, true);
-
-    // Advance until end of stacking
-    chain.mineEmptyBlock(2100);
-
-    call = stacker.getStackerInfo();
-    console.log(call);
-
-    result = stacker.stackIncrease();
-    console.log(result);
-  }
-});
-
-Clarinet.test({
   name: "stacker: add extra deposit to stacking amount",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -328,5 +292,38 @@ Clarinet.test({
     call = vaultManager.getVaultById(1);
     vault = call.result.expectTuple();
     vault['stacked-tokens'].expectUintWithDecimals(1500);
+  }
+});
+
+Clarinet.test({
+  name: "stacker: test whole flow with initiate, increase stacking and extend stacking",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker2(chain, deployer);
+
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 2);
+    vaultManager.createVault(deployer, "STX-A", 1000, 100, true, true);
+    vaultManager.createVault(wallet_1, "STX-A", 21000000, 1000, true, true);
+
+    // Initiate stacking
+    let result = stacker.initiateStacking(10, 3);
+    result.expectOk().expectUintWithDecimals(21001000);
+
+    let call = stacker.getStackerInfo();
+    console.log(call);
+
+    // another vault
+    vaultManager.createVault(wallet_1, "STX-A", 21000000, 1000, true, true);
+
+    // Advance until end of stacking
+    chain.mineEmptyBlock(2050);
+
+    result = stacker.stackIncrease("stacker-2", 21000000);
+    console.log(result);
   }
 });

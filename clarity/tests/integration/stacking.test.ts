@@ -47,7 +47,7 @@ describe("testing stacking under epoch 2.1", () => {
       fee,
       0
     );
-    console.log(response);
+    console.log('1', response);
     // @ts-ignore
     expect(response.error).toBeUndefined();
 
@@ -60,12 +60,12 @@ describe("testing stacking under epoch 2.1", () => {
       fee,
       1
     );
-    console.log(response);
+    console.log('2', response);
     // @ts-ignore
     expect(response.error).toBeUndefined();
 
     poxInfo = await getPoxInfo(network);
-    console.log(poxInfo);
+    console.log('3', poxInfo);
 
     response = await createVault(
       200000, // 200k stx
@@ -75,7 +75,7 @@ describe("testing stacking under epoch 2.1", () => {
       fee,
       2
     );
-    console.log(response);
+    console.log('4', response);
     // @ts-ignore
     expect(response.error).toBeUndefined();
 
@@ -86,7 +86,7 @@ describe("testing stacking under epoch 2.1", () => {
     await orchestrator.waitForStacksBlockAnchoredOnBitcoinBlockOfHeight(timeline.pox_2_activation + 1, 5, true);
 
     const info = getStackerInfo(network);
-    console.log(info);
+    console.log('info:', info);
 
     let response2 = stackIncrease(
       network,
@@ -95,7 +95,12 @@ describe("testing stacking under epoch 2.1", () => {
       fee,
       3
     );
-    console.log(response2);
+    console.log('5', response2);
+
+    let chainUpdate = await waitForNextRewardPhase(network, orchestrator, 1);
+    poxInfo = await getPoxInfo(network);
+    console.log(poxInfo);
+    console.log(chainUpdate);
   });
 
 //   it("submitting stacks-stx through pox-2 contract during epoch 2.0 should succeed", async () => {
@@ -147,9 +152,9 @@ describe("testing stacking under epoch 2.1", () => {
 //     expect(response.error).toBeUndefined();
 
 //     // Wait for block N+1 where N is the height of the next reward phase
-//     let chainUpdate = await waitForNextRewardPhase(network, orchestrator, 1);
-//     poxInfo = await getPoxInfo(network);
-//     console.log(poxInfo);
+    // let chainUpdate = await waitForNextRewardPhase(network, orchestrator, 1);
+    // poxInfo = await getPoxInfo(network);
+    // console.log(poxInfo);
 
 //     // Assert
 //     expect(poxInfo.contract_id).toBe("ST000000000000000000002AMW42H.pox-2");

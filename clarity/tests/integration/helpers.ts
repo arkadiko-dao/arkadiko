@@ -384,7 +384,7 @@ export const getStackerInfo = async (
     network: network,
   });
   const json = cvToJSON(supplyCall);
-  console.log(json);
+  console.log('STACKER INFO JSON:', json);
 
   return json;
 }

@@ -149,7 +149,7 @@
   )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
-    (if (< additional-tokens-to-stack stx-balance)
+    (if (> additional-tokens-to-stack stx-balance)
       (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-stack for-stacker (- additional-tokens-to-stack stx-balance)))
       true
     )
