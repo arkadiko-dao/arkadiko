@@ -15,7 +15,7 @@ import {
   getStackerInfo,
   stackIncrease
 } from "./helpers";
-import { Accounts, Constants } from "./constants";
+import { Accounts } from "./constants";
 import { StacksTestnet } from "@stacks/network";
 import { DevnetNetworkOrchestrator } from "@hirosystems/stacks-devnet-js";
 
