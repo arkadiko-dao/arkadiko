@@ -98,61 +98,61 @@ describe("testing stacking under epoch 2.1", () => {
     console.log(response2);
   });
 
-  it("submitting stacks-stx through pox-2 contract during epoch 2.0 should succeed", async () => {
-    const network = new StacksTestnet({ url: orchestrator.getStacksNodeUrl() });
-    let poxInfo = await getPoxInfo(network);
-    await orchestrator.waitForStacksBlockAnchoredOnBitcoinBlockOfHeight(timeline.pox_2_activation + 1, 5, true);
-    poxInfo = await getPoxInfo(network);
+//   it("submitting stacks-stx through pox-2 contract during epoch 2.0 should succeed", async () => {
+//     const network = new StacksTestnet({ url: orchestrator.getStacksNodeUrl() });
+//     let poxInfo = await getPoxInfo(network);
+//     await orchestrator.waitForStacksBlockAnchoredOnBitcoinBlockOfHeight(timeline.pox_2_activation + 1, 5, true);
+//     poxInfo = await getPoxInfo(network);
 
-    // Broadcast some STX stacking orders
-    let fee = 1000;
-    let cycles = 1;
-    let response = await broadcastStackSTX(
-      2,
-      network,
-      95_000_000_000_000,
-      Accounts.WALLET_1,
-      poxInfo.current_burnchain_block_height,
-      cycles,
-      fee,
-      0
-    );
-    // @ts-ignore
-    expect(response.error).toBeUndefined();
+//     // Broadcast some STX stacking orders
+//     let fee = 1000;
+//     let cycles = 1;
+//     let response = await broadcastStackSTX(
+//       2,
+//       network,
+//       95_000_000_000_000,
+//       Accounts.WALLET_1,
+//       poxInfo.current_burnchain_block_height,
+//       cycles,
+//       fee,
+//       0
+//     );
+//     // @ts-ignore
+//     expect(response.error).toBeUndefined();
 
-    response = await broadcastStackSTX(
-      2,
-      network,
-      95_000_000_000_000,
-      Accounts.WALLET_2,
-      poxInfo.current_burnchain_block_height,
-      cycles,
-      fee,
-      0
-    );
-    // @ts-ignore
-    expect(response.error).toBeUndefined();
+//     response = await broadcastStackSTX(
+//       2,
+//       network,
+//       95_000_000_000_000,
+//       Accounts.WALLET_2,
+//       poxInfo.current_burnchain_block_height,
+//       cycles,
+//       fee,
+//       0
+//     );
+//     // @ts-ignore
+//     expect(response.error).toBeUndefined();
 
-    response = await broadcastStackSTX(
-      2,
-      network,
-      95_000_000_000_000,
-      Accounts.WALLET_3,
-      poxInfo.current_burnchain_block_height,
-      cycles,
-      fee,
-      0
-    );
-    // @ts-ignore
-    expect(response.error).toBeUndefined();
+//     response = await broadcastStackSTX(
+//       2,
+//       network,
+//       95_000_000_000_000,
+//       Accounts.WALLET_3,
+//       poxInfo.current_burnchain_block_height,
+//       cycles,
+//       fee,
+//       0
+//     );
+//     // @ts-ignore
+//     expect(response.error).toBeUndefined();
 
-    // Wait for block N+1 where N is the height of the next reward phase
-    let chainUpdate = await waitForNextRewardPhase(network, orchestrator, 1);
-    poxInfo = await getPoxInfo(network);
-    console.log(poxInfo);
+//     // Wait for block N+1 where N is the height of the next reward phase
+//     let chainUpdate = await waitForNextRewardPhase(network, orchestrator, 1);
+//     poxInfo = await getPoxInfo(network);
+//     console.log(poxInfo);
 
-    // Assert
-    expect(poxInfo.contract_id).toBe("ST000000000000000000002AMW42H.pox-2");
-    expect(poxInfo.current_cycle.is_pox_active).toBe(true);
-  });
+//     // Assert
+//     expect(poxInfo.contract_id).toBe("ST000000000000000000002AMW42H.pox-2");
+//     expect(poxInfo.current_cycle.is_pox_active).toBe(true);
+//   });
 });

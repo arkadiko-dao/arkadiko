@@ -140,18 +140,20 @@
 )
 
 ;; should be called to add additional STX tokens stacking
-;; call this first, before a new cycle starts (every 2100 blocks)
+;; before calling this, consolidate the new amount of tokens to stack in PoX in stx-reserve `set-tokens-to-stack`
+;; then call this first, before a new cycle starts (every 2100 blocks)
 ;; after calling this, call `stack-extend`
-(define-public (stack-increase (for-stacker (string-ascii 256)))
+(define-public (stack-increase (for-stacker (string-ascii 256)) (additional-tokens-to-stack uint))
   (let (
-    (tokens-to-stack (unwrap! (total-tokens-to-stack) (ok u0))) ;; TODO: use add-tokens-to-stack and subtract on stx-reserve to fix this
     (stx-balance (get-stx-balance))
   )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (> tokens-to-stack stx-balance) (ok u0))
 
-    (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-stack for-stacker (- tokens-to-stack stx-balance)))
-    (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-increase tokens-to-stack))
+    (if (< additional-tokens-to-stack stx-balance)
+      (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-stack for-stacker (- additional-tokens-to-stack stx-balance)))
+      true
+    )
+    (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-increase additional-tokens-to-stack))
       result (begin
         (print result)
         (var-set stacking-stx-stacked (get total-locked result))
