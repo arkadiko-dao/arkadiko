@@ -73,7 +73,7 @@ describe("testing stacking under epoch 2.1", () => {
       network,
       Accounts.WALLET_2,
       fee,
-      2
+      0
     );
     console.log('4', response);
     // @ts-ignore
@@ -85,15 +85,15 @@ describe("testing stacking under epoch 2.1", () => {
     // Advance until end of stacking
     await orchestrator.waitForStacksBlockAnchoredOnBitcoinBlockOfHeight(timeline.pox_2_activation + 1, 5, true);
 
-    const info = getStackerInfo(network);
+    const info = await getStackerInfo(network);
     console.log('info:', info);
 
-    let response2 = stackIncrease(
+    let response2 = await stackIncrease(
       network,
       Accounts.DEPLOYER,
       'stacker-2',
       fee,
-      3
+      0
     );
     console.log('5', response2);
 
