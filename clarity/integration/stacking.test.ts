@@ -86,7 +86,7 @@ describe("testing stacking under epoch 2.1", () => {
     await orchestrator.waitForStacksBlockAnchoredOnBitcoinBlockOfHeight(timeline.pox_2_activation + 1, 5, true);
 
     const info = await getStackerInfo(network);
-    console.log('info:', info);
+    console.log('info: ', info);
 
     let response2 = await stackIncrease(
       network,
