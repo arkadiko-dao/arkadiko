@@ -1146,7 +1146,7 @@ Clarinet.test({
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     let result = governance.createProposal(
       wallet_1,
-      5,
+      1,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
