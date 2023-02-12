@@ -172,9 +172,6 @@ plan:
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/arkadiko-freddie-v1-1.clar
             clarity-version: 1
-      epoch: "2.0"
-    - id: 1
-      transactions:
         - emulated-contract-publish:
             contract-name: arkadiko-stacker-2-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
@@ -300,9 +297,6 @@ plan:
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/arkadiko-liquidation-rewards-v1-1.clar
             clarity-version: 1
-      epoch: "2.0"
-    - id: 2
-      transactions:
         - emulated-contract-publish:
             contract-name: arkadiko-liquidation-rewards-ui-v2-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
@@ -428,9 +422,6 @@ plan:
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/tests/arkadiko-stake-registry-tv1-1.clar
             clarity-version: 1
-      epoch: "2.0"
-    - id: 3
-      transactions:
         - emulated-contract-publish:
             contract-name: arkadiko-stake-registry-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
@@ -491,9 +482,6 @@ plan:
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/welsh/welshcorgicoin-token.clar
             clarity-version: 1
-      epoch: "2.0"
-    - id: 4
-      transactions:
         - emulated-contract-publish:
             contract-name: arkadiko-stacker-v2-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
