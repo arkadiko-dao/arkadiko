@@ -25,7 +25,7 @@ import {
 } from './models/arkadiko-tests-vaults.ts';
 
 import { 
-  Stacker,
+  Stacker2,
   StxReserve
 } from './models/arkadiko-tests-stacker.ts';
 
@@ -202,7 +202,7 @@ Clarinet.test({
     let liquidationPool = new LiquidationPool(chain, deployer);
     let liquidationRewards = new LiquidationRewards(chain, deployer);
     let stxReserve = new StxReserve(chain, deployer);
-    let stacker = new Stacker(chain, deployer);
+    let stacker = new Stacker2(chain, deployer);
 
     // Initialize price of STX to $2 in the oracle
     let result = oracleManager.updatePrice("STX", 3);
