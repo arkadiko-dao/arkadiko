@@ -204,7 +204,7 @@ Clarinet.test({
     let stxReserve = new StxReserve(chain, deployer);
     let stacker = new Stacker2(chain, deployer);
 
-    // Initialize price of STX to $2 in the oracle
+    // Initialize price of STX to $3 in the oracle
     let result = oracleManager.updatePrice("STX", 3);
     result = oracleManager.updatePrice("xSTX", 3);
 
