@@ -266,7 +266,7 @@ Clarinet.test({ name: "auction engine: add fee and withdraw fees",
     call.result.expectBool(false);
 
     // 1% of 1500 STX
-    call = await xstxManager.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v4-3'));
+    call = await xstxManager.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v4-4'));
     call.result.expectOk().expectUintWithDecimals(15);
 
     // Deployer no xSTX yet
@@ -278,7 +278,7 @@ Clarinet.test({ name: "auction engine: add fee and withdraw fees",
     result.expectOk().expectBool(true);
 
     // 15 xSTX transferred
-    call = await xstxManager.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v4-3'));
+    call = await xstxManager.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v4-4'));
     call.result.expectOk().expectUintWithDecimals(0);
     call = await xstxManager.balanceOf(deployer.address);
     call.result.expectOk().expectUintWithDecimals(15);

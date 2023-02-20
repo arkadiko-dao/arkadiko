@@ -29,36 +29,36 @@ Clarinet.test({
     let wallet_2 = accounts.get("wallet_2")!;
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v3-3", "set-stx-redeemable", [
+      Tx.contractCall("arkadiko-stacker-payer-v3-4", "set-stx-redeemable", [
         types.uint(1000000000), // 1000 STX
       ], wallet_2.address)
     ]);
     block.receipts[0].result.expectErr().expectUint(22401);
 
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v3-3", "set-stx-redeemable", [
+      Tx.contractCall("arkadiko-stacker-payer-v3-4", "set-stx-redeemable", [
         types.uint(1000000000), // 1000 STX
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    let call = chain.callReadOnlyFn("arkadiko-stacker-payer-v3-3", "get-stx-redeemable", [], wallet_2.address);
+    let call = chain.callReadOnlyFn("arkadiko-stacker-payer-v3-4", "get-stx-redeemable", [], wallet_2.address);
     call.result.expectUintWithDecimals(1000);
 
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v3-3", "toggle-stacker-payer-shutdown", [], deployer.address)
+      Tx.contractCall("arkadiko-stacker-payer-v3-4", "toggle-stacker-payer-shutdown", [], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v3-3", "redeem-stx", [
+      Tx.contractCall("arkadiko-stacker-payer-v3-4", "redeem-stx", [
         types.uint(1000000000), // 1000 STX
       ], wallet_2.address)
     ]);
     block.receipts[0].result.expectErr().expectUint(221);
 
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v3-3", "toggle-stacker-payer-shutdown", [], deployer.address)
+      Tx.contractCall("arkadiko-stacker-payer-v3-4", "toggle-stacker-payer-shutdown", [], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
   }
@@ -78,14 +78,14 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(1);
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v3-3", "set-stx-redeemable", [
+      Tx.contractCall("arkadiko-stacker-payer-v3-4", "set-stx-redeemable", [
         types.uint(1000000000), // 1000 STX
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v3-3", "redeem-stx", [
+      Tx.contractCall("arkadiko-stacker-payer-v3-4", "redeem-stx", [
         types.uint(1000000000), // 1000 STX
       ], wallet_2.address)
     ]);
@@ -111,14 +111,14 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(1);
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v3-3", "set-stx-redeemable", [
+      Tx.contractCall("arkadiko-stacker-payer-v3-4", "set-stx-redeemable", [
         types.uint(100000000), // 100 STX
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v3-3", "redeem-stx", [
+      Tx.contractCall("arkadiko-stacker-payer-v3-4", "redeem-stx", [
         types.uint(1000000000), // try redeeming 1000 STX, max will be 100 STX
       ], wallet_2.address)
     ]);
@@ -143,14 +143,14 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(1);
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v3-3", "set-stx-redeemable", [
+      Tx.contractCall("arkadiko-stacker-payer-v3-4", "set-stx-redeemable", [
         types.uint(1000000000), // 1000 STX
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v3-3", "redeem-stx-helper", [
+      Tx.contractCall("arkadiko-stacker-payer-v3-4", "redeem-stx-helper", [
         types.uint(1000000000), // 1000 STX
       ], wallet_2.address)
     ]);
@@ -194,7 +194,7 @@ Clarinet.test({
 
     // Make 100 STX redeemable in stacker payer
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v3-3", "set-stx-redeemable", [
+      Tx.contractCall("arkadiko-stacker-payer-v3-4", "set-stx-redeemable", [
         types.uint(100 * 1000000), // 100 STX
       ], deployer.address)
     ]);
@@ -206,11 +206,11 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(750);
 
     // 100 STX redeemable in stacker payer
-    call = await chain.callReadOnlyFn("arkadiko-stacker-payer-v3-3", "get-stx-redeemable", [], deployer.address);
+    call = await chain.callReadOnlyFn("arkadiko-stacker-payer-v3-4", "get-stx-redeemable", [], deployer.address);
     call.result.expectUintWithDecimals(100);
 
     // Total of 850 STX redeemable
-    call = await chain.callReadOnlyFn("arkadiko-stacker-payer-v3-3", "get-stx-redeemable-helper", [], deployer.address);
+    call = await chain.callReadOnlyFn("arkadiko-stacker-payer-v3-4", "get-stx-redeemable-helper", [], deployer.address);
     call.result.expectUintWithDecimals(850);
     
 
@@ -220,7 +220,7 @@ Clarinet.test({
 
     // Redeem STX - all
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v3-3", "redeem-stx-helper", [
+      Tx.contractCall("arkadiko-stacker-payer-v3-4", "redeem-stx-helper", [
         types.uint(1000 * 1000000), // 1000 STX
       ], wallet_2.address)
     ]);
