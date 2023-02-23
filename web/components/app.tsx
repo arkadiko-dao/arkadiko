@@ -31,6 +31,33 @@ export const getBalance = async (address: string) => {
   const ldnContractAddress = process.env.LDN_CONTRACT_ADDRESS || '';
   const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
 
+  // xUSD/USDA
+  // Need to fetch it via contract as extra token-id param needed
+  const call = await callReadOnlyFunction({
+    contractAddress: process.env.ATALEX_CONTRACT_ADDRESS!,
+    contractName: 'token-amm-swap-pool',
+    functionName: 'get-balance',
+    functionArgs: [
+      uintCV(1),
+      standardPrincipalCV(address),
+    ],
+    senderAddress: address || '',
+    network: network,
+  });
+  const lpXusdUsdaBalance = cvToJSON(call).value.value;
+  const call2 = await callReadOnlyFunction({
+    contractAddress: process.env.ATALEX_CONTRACT_ADDRESS!,
+    contractName: 'token-amm-swap-pool',
+    functionName: 'get-balance',
+    functionArgs: [
+      uintCV(2),
+      standardPrincipalCV(address),
+    ],
+    senderAddress: address || '',
+    network: network,
+  });
+  const lpXusdUsdaBalance2 = cvToJSON(call2).value.value;
+
   const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
   const usdaBalance = data.fungible_tokens[`${contractAddress}.usda-token::usda`];
   const xStxBalance = data.fungible_tokens[`${contractAddress}.xstx-token::xstx`];
@@ -79,6 +106,8 @@ export const getBalance = async (address: string) => {
     wstxdiko: lpStxDikoBalance ? lpStxDikoBalance.balance : 0,
     wstxxbtc: lpStxXbtcBalance ? lpStxXbtcBalance.balance : 0,
     xbtcusda: lpXbtcUsdaBalance ? lpXbtcUsdaBalance.balance : 0,
+    xusdusda: lpXusdUsdaBalance ? lpXusdUsdaBalance : 0,
+    xusdusda2: lpXusdUsdaBalance2 ? lpXusdUsdaBalance2 : 0,
     wldnusda: lpWldnUsdaBalance ? lpWldnUsdaBalance.balance : 0,
     ldnusda: lpLdnUsdaBalance ? lpLdnUsdaBalance.balance : 0,
     wstxwelsh: lpStxWelshBalance ? lpStxWelshBalance.balance : 0,
@@ -125,6 +154,8 @@ export const App: React.FC = () => {
         wstxdiko: account.wstxdiko.toString(),
         wstxxbtc: account.wstxxbtc.toString(),
         xbtcusda: account.xbtcusda.toString(),
+        xusdusda: account.xusdusda.toString(),
+        xusdusda2: account.xusdusda2.toString(),
         wldnusda: account.wldnusda.toString(),
         ldnusda: account.ldnusda.toString(),
         wstxwelsh: account.wstxwelsh.toString(),

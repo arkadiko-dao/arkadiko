@@ -18,6 +18,8 @@ interface UserBalance {
   wstxdiko: number;
   wstxxbtc: number;
   xbtcusda: number;
+  xusdusda: number;
+  xusdusda2: number;
   wldnusda: number;
   ldnusda: number;
   wstxwelsh: number;

@@ -35,11 +35,15 @@ export const Stake = () => {
   const [showStakeLp3Modal, setShowStakeLp3Modal] = useState(false);
   const [showStakeLp4Modal, setShowStakeLp4Modal] = useState(false);
   const [showStakeLp5Modal, setShowStakeLp5Modal] = useState(false);
+  const [showStakeLp6Modal, setShowStakeLp6Modal] = useState(false);
+  const [showStakeLp7Modal, setShowStakeLp7Modal] = useState(false);
   const [showUnstakeLp1Modal, setShowUnstakeLp1Modal] = useState(false);
   const [showUnstakeLp2Modal, setShowUnstakeLp2Modal] = useState(false);
   const [showUnstakeLp3Modal, setShowUnstakeLp3Modal] = useState(false);
   const [showUnstakeLp4Modal, setShowUnstakeLp4Modal] = useState(false);
   const [showUnstakeLp5Modal, setShowUnstakeLp5Modal] = useState(false);
+  const [showUnstakeLp6Modal, setShowUnstakeLp6Modal] = useState(false);
+  const [showUnstakeLp7Modal, setShowUnstakeLp7Modal] = useState(false);
   const [loadingApy, setLoadingApy] = useState(true);
   const [apy, setApy] = useState(0);
   const [dikoUsdaLpApy, setDikoUsdaLpApy] = useState(0);
@@ -47,17 +51,23 @@ export const Stake = () => {
   const [stxDikoLpApy, setStxDikoLpApy] = useState(0);
   const [stxXbtcLpApy, setStxXbtcLpApy] = useState(0);
   const [xbtcUsdaLpApy, setXbtcUsdaLpApy] = useState(0);
+  const [xusdUsdaLpApy, setXusdUsdaLpApy] = useState(0);
+  const [xusdUsda2LpApy, setXusdUsda2LpApy] = useState(0);
   const [stakedAmount, setStakedAmount] = useState(0);
   const [lpDikoUsdaStakedAmount, setLpDikoUsdaStakedAmount] = useState(0);
   const [lpStxUsdaStakedAmount, setLpStxUsdaStakedAmount] = useState(0);
   const [lpStxDikoStakedAmount, setLpStxDikoStakedAmount] = useState(0);
   const [lpStxXbtcStakedAmount, setLpStxXbtcStakedAmount] = useState(0);
   const [lpXbtcUsdaStakedAmount, setLpXbtcUsdaStakedAmount] = useState(0);
+  const [lpXusdUsdaStakedAmount, setLpXusdUsdaStakedAmount] = useState(0);
+  const [lpXusdUsda2StakedAmount, setLpXusdUsda2StakedAmount] = useState(0);
   const [lpDikoUsdaPendingRewards, setLpDikoUsdaPendingRewards] = useState(0);
   const [lpStxUsdaPendingRewards, setLpStxUsdaPendingRewards] = useState(0);
   const [lpStxDikoPendingRewards, setLpStxDikoPendingRewards] = useState(0);
   const [lpStxXbtcPendingRewards, setLpStxXbtcPendingRewards] = useState(0);
   const [lpXbtcUsdaPendingRewards, setLpXbtcUsdaPendingRewards] = useState(0);
+  const [lpXusdUsdaPendingRewards, setLpXusdUsdaPendingRewards] = useState(0);
+  const [lpXusdUsda2PendingRewards, setLpXusdUsda2PendingRewards] = useState(0);
   const [dikoCooldown, setDikoCooldown] = useState('');
   const [canUnstake, setCanUnstake] = useState(false);
   const [cooldownRunning, setCooldownRunning] = useState(false);
@@ -69,6 +79,8 @@ export const Stake = () => {
   const [dikoUsdaPoolInfo, setDikoUsdaPoolInfo] = useState(0);
   const [stxXbtcPoolInfo, setStxXbtcPoolInfo] = useState(0);
   const [xbtcUsdaPoolInfo, setXbtcUsdaPoolInfo] = useState(0);
+  const [xusdUsdaPoolInfo, setXusdUsdaPoolInfo] = useState(0);
+  const [xusdUsda2PoolInfo, setXusdUsda2PoolInfo] = useState(0);
   const [loadingDikoToStDiko, setLoadingDikoToStDiko] = useState(true);
   const [stDikoToDiko, setStDikoToDiko] = useState(0);
   const [dikoPrice, setDikoPrice] = useState(0);
@@ -82,6 +94,7 @@ export const Stake = () => {
   const [totalStxDikoStaked, setTotalStxDikoStaked] = useState(10);
   const [totalStxXbtcStaked, setTotalStxXbtcStaked] = useState(10);
   const [totalXbtcUsdaStaked, setTotalXbtcUsdaStaked] = useState(10);
+  const [totalXusdUsda2Staked, setTotalXusdUsda2Staked] = useState(10);
   const [userPooledUsda, setUserPooledUsda] = useState(0);
   const [totalPooledUsda, setTotalPooledUsda] = useState(0);
   const [pooledUsdaDikoApr, setPooledUsdaDikoApr] = useState(0);
@@ -117,6 +130,19 @@ export const Stake = () => {
       setTotalStxDikoStaked(data.arkv1wstxdiko.total_staked / 1000000);
       setTotalStxXbtcStaked(data.arkv1wstxxbtc.total_staked / 1000000);
       setTotalXbtcUsdaStaked(data.arkv1xbtcusda.total_staked / 1000000);
+
+      // TODO: move this to API
+      const callStakedInfo = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-stake-pool-xusd-usda-v1-5',
+        functionName: 'get-total-staked',
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const callStakedInfoResult = cvToJSON(callStakedInfo).value;
+      setTotalXusdUsda2Staked(callStakedInfoResult / 100000000);
+
       setCurrentBlock(data.block_height);
 
       // prices
@@ -188,6 +214,13 @@ export const Stake = () => {
         tokenXDecimals = 8;
         tokenYContract = 'usda-token';
         tokenXName = 'xBTC';
+        tokenYName = 'USDA';
+      } else if (poolContract == 'arkadiko-stake-pool-xusd-usda-v1-4' || poolContract === 'arkadiko-stake-pool-xusd-usda-v1-5') {
+        tokenXContract = 'Wrapped-USD';
+        tokenXDecimals = 8;
+        tokenYContract = 'usda-token';
+        tokenYDecimals = 8;
+        tokenXName = 'xUSD';
         tokenYName = 'USDA';
       }
 
@@ -297,6 +330,36 @@ export const Stake = () => {
       return userXbtcUsdaStakedData;
     };
 
+    const getXusdUsdaStakingData = async () => {
+      const xbtcUsdaStakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-stake-pool-xusd-usda-v1-4',
+        functionName: 'get-stake-amount-of',
+        functionArgs: [standardPrincipalCV(stxAddress || '')],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const userXusdUsdaStakedData = cvToJSON(xbtcUsdaStakedCall).value;
+      setLpXusdUsdaStakedAmount(userXusdUsdaStakedData);
+
+      return userXusdUsdaStakedData;
+    };
+
+    const getXusdUsda2StakingData = async () => {
+      const xbtcUsdaStakedCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-stake-pool-xusd-usda-v1-5',
+        functionName: 'get-stake-amount-of',
+        functionArgs: [standardPrincipalCV(stxAddress || '')],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const userXusdUsdaStakedData = cvToJSON(xbtcUsdaStakedCall).value;
+      setLpXusdUsda2StakedAmount(userXusdUsdaStakedData);
+
+      return userXusdUsdaStakedData;
+    };
+
     const getStakedDiko = async () => {
       const userStakedDikoCall = await callReadOnlyFunction({
         contractAddress,
@@ -404,6 +467,18 @@ export const Stake = () => {
       const xbtcUsdaApr =
         xbtcUsdaPoolRewards / (dikoXbtcUsda['walletValue'] / Number(dikoPrice / 1000000));
       setXbtcUsdaLpApy(Number((100 * xbtcUsdaApr).toFixed(2)));
+
+      const dikoXusdUsda = await lpTokenValue(
+        'arkadiko-stake-pool-xusd-usda-v1-5',
+        0,
+        totalXusdUsda2Staked * 100
+      );
+      const xusdUsdaPoolRewards = totalStakingRewardsYear1 * 0.118;
+      const xusdUsdaApr =
+        xusdUsdaPoolRewards / (dikoXusdUsda['walletValue'] / Number(dikoPrice / 1000000));
+      setXusdUsdaLpApy(0);
+      setXusdUsda2LpApy(Number((100 * xusdUsdaApr).toFixed(2)));
+
       setLoadingApy(false);
 
       // User staked amounts
@@ -412,6 +487,8 @@ export const Stake = () => {
         userStakedData,
         userXbtcStakedData,
         userXbtcUsdaStakedData,
+        userXusdUsdaStakedData,
+        userXusdUsda2StakedData,
         stDiko,
         totalPooledUsda,
         userPooledUsda,
@@ -422,6 +499,8 @@ export const Stake = () => {
           getStakingData(),
           getXbtcStakingData(),
           getXbtcUsdaStakingData(),
+          getXusdUsdaStakingData(),
+          getXusdUsda2StakingData(),
           getDikoToStDiko(),
           getTotalPooled(),
           getUserPooled(),
@@ -430,7 +509,7 @@ export const Stake = () => {
         ]);
 
       // LP value
-      const [dikoUsdaLpValue, stxUsdaLpValue, stxDikoLpValue, stxXbtcLpValue, xbtcUsdaLpValue] =
+      const [dikoUsdaLpValue, stxUsdaLpValue, stxDikoLpValue, stxXbtcLpValue, xbtcUsdaLpValue, xusdUsdaLpValue, xusdUsda2LpValue] =
         await Promise.all([
           lpTokenValue(
             'arkadiko-stake-pool-diko-usda-v1-1',
@@ -457,6 +536,16 @@ export const Stake = () => {
             userXbtcUsdaStakedData,
             state.balance['xbtcusda']
           ),
+          lpTokenValue(
+            'arkadiko-stake-pool-xusd-usda-v1-4',
+            userXusdUsdaStakedData,
+            state.balance['xusdusda']
+          ),
+          lpTokenValue(
+            'arkadiko-stake-pool-xusd-usda-v1-5',
+            userXusdUsda2StakedData,
+            state.balance['xusdusda2']
+          ),
         ]);
 
       setDikoUsdaPoolInfo(dikoUsdaLpValue);
@@ -464,6 +553,8 @@ export const Stake = () => {
       setStxDikoPoolInfo(stxDikoLpValue);
       setStxXbtcPoolInfo(stxXbtcLpValue);
       setXbtcUsdaPoolInfo(xbtcUsdaLpValue);
+      setXusdUsdaPoolInfo(xusdUsdaLpValue);
+      setXusdUsda2PoolInfo(xusdUsda2LpValue);
 
       // Pending rewards
       const [
@@ -472,12 +563,16 @@ export const Stake = () => {
         stxDikoLpPendingRewards,
         stxXbtcLpPendingRewards,
         xbtcUsdaLpPendingRewards,
+        xusdUsdaLpPendingRewards,
+        xusdUsda2LpPendingRewards
       ] = await Promise.all([
         fetchLpPendingRewards('arkadiko-stake-pool-diko-usda-v1-1'),
         fetchLpPendingRewards('arkadiko-stake-pool-wstx-usda-v1-1'),
         fetchLpPendingRewards('arkadiko-stake-pool-wstx-diko-v1-1'),
         fetchLpPendingRewards('arkadiko-stake-pool-wstx-xbtc-v1-1'),
         fetchLpPendingRewards('arkadiko-stake-pool-xbtc-usda-v1-1'),
+        fetchLpPendingRewards('arkadiko-stake-pool-xusd-usda-v1-4'),
+        fetchLpPendingRewards('arkadiko-stake-pool-xusd-usda-v1-5'),
       ]);
 
       setLpDikoUsdaPendingRewards(dikoUsdaLpPendingRewards);
@@ -485,6 +580,8 @@ export const Stake = () => {
       setLpStxDikoPendingRewards(stxDikoLpPendingRewards);
       setLpStxXbtcPendingRewards(stxXbtcLpPendingRewards);
       setLpXbtcUsdaPendingRewards(xbtcUsdaLpPendingRewards);
+      setLpXusdUsdaPendingRewards(xusdUsdaLpPendingRewards);
+      setLpXusdUsda2PendingRewards(xusdUsda2LpPendingRewards);
 
       // USDA Staking in Liquidation Pool
       setTotalPooledUsda(totalPooledUsda);
@@ -734,6 +831,48 @@ export const Stake = () => {
     });
   };
 
+  const claimXusdUsdaLpPendingRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-pool-xusd-usda-v1-4',
+      functionName: 'claim-pending-rewards',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1')
+      ],
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
+  const claimXusdUsda2LpPendingRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-pool-xusd-usda-v1-5',
+      functionName: 'claim-pending-rewards',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1')
+      ],
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
   const stakeXbtcUsdaLpPendingRewards = async () => {
     await doContractCall({
       network,
@@ -744,6 +883,54 @@ export const Stake = () => {
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-xbtc-usda-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
+        contractPrincipalCV(contractAddress, 'arkadiko-token'),
+      ],
+      postConditionMode: 0x01,
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
+  const stakeXusdUsdaLpPendingRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-pool-xusd-usda-v1-4',
+      functionName: 'stake-pending-rewards',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
+        contractPrincipalCV(contractAddress, 'arkadiko-token'),
+      ],
+      postConditionMode: 0x01,
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
+  const stakeXusdUsda2LpPendingRewards = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-stake-pool-xusd-usda-v1-5',
+      functionName: 'stake-pending-rewards',
+      functionArgs: [
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
@@ -866,6 +1053,28 @@ export const Stake = () => {
   };
 
   const LP_DATA = [
+    {
+      name: 'xusdusda',
+      tokenName: 'xUSD/USDA',
+      showStakeModal: showStakeLp6Modal,
+      setShowStakeModal: setShowStakeLp6Modal,
+      showUnstakeModal: showUnstakeLp6Modal,
+      setShowUnstakeModal: setShowUnstakeLp6Modal,
+      stakedAmount: lpXusdUsdaStakedAmount,
+      apy: xusdUsdaLpApy,
+      decimals: 8
+    },
+    {
+      name: 'xusdusda2',
+      tokenName: 'xUSD/USDA',
+      showStakeModal: showStakeLp7Modal,
+      setShowStakeModal: setShowStakeLp7Modal,
+      showUnstakeModal: showUnstakeLp7Modal,
+      setShowUnstakeModal: setShowUnstakeLp7Modal,
+      stakedAmount: lpXusdUsda2StakedAmount,
+      apy: xusdUsda2LpApy,
+      decimals: 8
+    },
     {
       name: 'dikousda',
       tokenName: 'DIKO/USDA',
@@ -1052,6 +1261,48 @@ export const Stake = () => {
                             </th>
                           </tr>
                         </thead>
+
+                        {/* ALEX xUSD USDA LP Token */}
+                        <StakeLpRow
+                          foreign={true}
+                          loadingApy={loadingApy}
+                          loadingData={loadingData}
+                          canStake={true}
+                          tokenListItemX={8}
+                          tokenListItemY={0}
+                          balance={state.balance['xusdusda']}
+                          pendingRewards={lpXusdUsdaPendingRewards}
+                          stakedAmount={lpXusdUsdaStakedAmount}
+                          apy={xusdUsdaLpApy}
+                          poolInfo={xusdUsdaPoolInfo}
+                          setShowStakeLpModal={setShowStakeLp6Modal}
+                          setShowUnstakeLpModal={setShowUnstakeLp6Modal}
+                          claimLpPendingRewards={claimXusdUsdaLpPendingRewards}
+                          stakeLpPendingRewards={stakeXusdUsdaLpPendingRewards}
+                          getLpRoute={'https://app.alexlab.co/pool/token-amm-swap-pool:token-wxusd,token-wusda,0.0001e8'}
+                          decimals={8}
+                        />
+
+                        {/* ALEX xUSD USDA 2 LP Token */}
+                        <StakeLpRow
+                          foreign={true}
+                          loadingApy={loadingApy}
+                          loadingData={loadingData}
+                          canStake={true}
+                          tokenListItemX={8}
+                          tokenListItemY={0}
+                          balance={state.balance['xusdusda2']}
+                          pendingRewards={lpXusdUsda2PendingRewards}
+                          stakedAmount={lpXusdUsda2StakedAmount}
+                          apy={xusdUsda2LpApy}
+                          poolInfo={xusdUsda2PoolInfo}
+                          setShowStakeLpModal={setShowStakeLp7Modal}
+                          setShowUnstakeLpModal={setShowUnstakeLp7Modal}
+                          claimLpPendingRewards={claimXusdUsda2LpPendingRewards}
+                          stakeLpPendingRewards={stakeXusdUsda2LpPendingRewards}
+                          getLpRoute={'https://app.alexlab.co/pool/token-amm-swap-pool:token-wxusd,token-wusda,0.0001e8'}
+                          decimals={8}
+                        />
 
                         {/* Arkadiko V1 DIKO USDA LP Token */}
                         <StakeLpRow

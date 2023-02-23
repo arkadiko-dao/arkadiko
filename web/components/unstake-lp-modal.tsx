@@ -47,33 +47,71 @@ export const UnstakeLpModal = ({
       contractName = 'arkadiko-stake-pool-xbtc-usda-v1-1';
       tokenContract = 'arkadiko-swap-token-xbtc-usda';
       ftContract = 'xbtc-usda';
+    } else if (balanceName === 'xusdusda') {
+      contractName = 'arkadiko-stake-pool-xusd-usda-v1-4';
+      assetContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
+      tokenContract = 'token-amm-swap-pool';
+      ftContract = 'amm-swap-pool';
+    } else if (balanceName === 'xusdusda2') {
+      contractName = 'arkadiko-stake-pool-xusd-usda-v1-5';
+      assetContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
+      tokenContract = 'token-amm-swap-pool';
+      ftContract = 'amm-swap-pool';
     }
 
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-registry-v1-1',
-      functionName: 'unstake',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-        contractPrincipalCV(contractAddress, contractName),
-        contractPrincipalCV(contractAddress, tokenContract),
-        amount,
-      ],
-      postConditionMode: 0x01,
-      onFinish: data => {
-        console.log('finished broadcasting unstaking tx!', data);
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-        setShowUnstakeModal(false);
-      },
-      postConditionMode: 0x01,
-      anchorMode: AnchorMode.Any,
-    });
+    if (balanceName === 'xusdusda' || balanceName === 'xusdusda2') {
+      await doContractCall({
+        network,
+        contractAddress,
+        stxAddress,
+        contractName: contractName,
+        functionName: 'unstake',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          contractPrincipalCV(assetContractAddress, tokenContract),
+          amount,
+        ],
+        postConditionMode: 0x01,
+        onFinish: data => {
+          console.log('finished broadcasting unstaking tx!', data);
+          setState(prevState => ({
+            ...prevState,
+            currentTxId: data.txId,
+            currentTxStatus: 'pending',
+          }));
+          setShowUnstakeModal(false);
+        },
+        postConditionMode: 0x01,
+        anchorMode: AnchorMode.Any,
+      });
+
+    } else {
+      await doContractCall({
+        network,
+        contractAddress,
+        stxAddress,
+        contractName: 'arkadiko-stake-registry-v1-1',
+        functionName: 'unstake',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          contractPrincipalCV(contractAddress, contractName),
+          contractPrincipalCV(contractAddress, tokenContract),
+          amount,
+        ],
+        postConditionMode: 0x01,
+        onFinish: data => {
+          console.log('finished broadcasting unstaking tx!', data);
+          setState(prevState => ({
+            ...prevState,
+            currentTxId: data.txId,
+            currentTxStatus: 'pending',
+          }));
+          setShowUnstakeModal(false);
+        },
+        postConditionMode: 0x01,
+        anchorMode: AnchorMode.Any,
+      });
+    }
   };
 
   const unstakeMaxAmount = () => {
