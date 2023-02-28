@@ -48,6 +48,17 @@ class Pool < ApplicationRecord
 
   def high_low
     events = swap_events.where("function_name IN (?)", ['swap-x-for-y', 'swap-y-for-x']).where(event_at: (Time.now - 7 * 24.hours)..Time.now)
+    prices = events.map do |event|
+      if token_x_name.include?('Wrapped-Bitcoin')
+        (event['token_y_amount'].to_f / (event['token_x_amount'] / 100).to_f)
+      elsif token_y_name.include?('Wrapped-Bitcoin')
+        (event['token_y_amount'].to_f / (event['token_x_amount'] * 100).to_f)
+      else
+        (event['token_y_amount'].to_f / event['token_x_amount'].to_f)
+      end
+    end
+
+    [prices.max, prices.min]
   end
 
   def last_price
