@@ -46,6 +46,20 @@ class Pool < ApplicationRecord
     [sum_x.to_i, sum_y.to_i]
   end
 
+  def high_low
+    events = swap_events.where("function_name IN (?)", ['swap-x-for-y', 'swap-y-for-x']).where(event_at: (Time.now - 7 * 24.hours)..Time.now)
+  end
+
+  def last_price
+    event = swap_events.order('event_at DESC').where("function_name IN (?)", ['swap-x-for-y', 'swap-y-for-x']).first
+
+    if token_x_name.include?('Wrapped-Bitcoin') || token_y_name.include?('Wrapped-Bitcoin')
+      (event['token_y_amount'].to_f / (event['token_x_amount'] / 100).to_f)
+    else
+      (event['token_y_amount'].to_f / event['token_x_amount'].to_f)
+    end
+  end
+
   def fetch_prices
     events = swap_events.order('event_at ASC').where("function_name IN (?)", ['swap-x-for-y', 'swap-y-for-x'])
     # TODO: fix performance
@@ -58,6 +72,15 @@ class Pool < ApplicationRecord
         [event['event_at'].to_i * 1000, (event['token_y_amount'].to_f / event['token_x_amount'].to_f)]
       end
     end
+  end
+
+  def tvl_in_usd
+    if token_x_name == 'usda-token'
+      return 2 * tvl_token_x
+    elsif token_y_name == 'usda-token'
+      return 2 * tvl_token_y
+    end
+    0 # TODO: calculate TVL for non-USDA pools
   end
 
   def tvl
