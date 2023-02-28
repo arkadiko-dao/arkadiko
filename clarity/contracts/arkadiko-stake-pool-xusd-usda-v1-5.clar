@@ -17,8 +17,7 @@
 (define-constant ERR-INSUFFICIENT-STAKE (err u18003))
 (define-constant ERR-WRONG-REGISTRY (err u18004))
 
-;; TODO - verify that token ID is u2
-(define-constant TOKEN-ID u2)
+(define-constant TOKEN-ID u4)
 
 ;; Variables
 (define-data-var total-staked uint u0)
