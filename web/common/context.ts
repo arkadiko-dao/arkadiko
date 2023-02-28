@@ -18,6 +18,7 @@ interface UserBalance {
   wstxdiko: number;
   wstxxbtc: number;
   xbtcusda: number;
+  xusdusda: number;
   wldnusda: number;
   ldnusda: number;
   wstxwelsh: number;
@@ -69,6 +70,7 @@ export const defaultBalance = () => {
     wstxdiko: undefined,
     wstxxbtc: undefined,
     xbtcusda: undefined,
+    xusdusda: undefined,
     wldnusda: undefined,
     ldnusda: undefined,
     wstxwelsh: undefined,
