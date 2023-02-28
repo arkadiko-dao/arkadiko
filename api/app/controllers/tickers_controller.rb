@@ -16,10 +16,10 @@ class TickersController < ApplicationController
         base_currency: "#{pool.token_x_address}.#{pool.token_x_name}",
         target_currency: "#{pool.token_y_address}.#{pool.token_y_name}",
         last_price: pool.last_price,
-        base_volume: volumes[0],
-        target_volume: volumes[1],
+        base_volume: volumes[0] / 1_000_000.0,
+        target_volume: volumes[1] / 1_000_000.0,
         pool_id: "#{pool.swap_token_address}.#{pool.swap_token_name}",
-        liquidity_in_usd: pool.tvl_in_usd,
+        liquidity_in_usd: pool.tvl_in_usd / 1_000_000.0,
         high: high,
         low: low
       }
