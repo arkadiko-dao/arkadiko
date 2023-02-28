@@ -13,14 +13,15 @@ async function transact() {
     functionName: 'propose',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
-      tx.uintCV(83895),
-      tx.stringUtf8CV('Upgrade Governance to v4'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/523'),
+      tx.uintCV(91120),
+      tx.uintCV(720),
+      tx.stringUtf8CV('AIP 14 - Stableswap Emissions'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/533'),
       tx.listCV([
         tx.tupleCV({
-          'name': tx.stringAsciiCV("governance"),
+          'name': tx.stringAsciiCV("arkadiko-governance-stable-swap-yield"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-governance-v4-1"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-governance-stable-swap-yield"),
           'can-mint': tx.falseCV(),
           'can-burn': tx.falseCV()
         }),
