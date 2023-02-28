@@ -16,7 +16,7 @@ const createPair = async () => {
     functionArgs: [
       tx.contractPrincipalCV("SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9", 'token-wxusd'),
       tx.contractPrincipalCV("SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9", "token-wusda"),
-      tx.uintCV(new BN(100)), // TODO: verify factor with Chan
+      tx.uintCV(new BN(500000)),
       tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
       tx.uintCV(new BN(100000000000)), // 1000 xUSD with 8 decimals
       tx.uintCV(new BN(100000000000)) // 1000 USDA with 8 decimals
