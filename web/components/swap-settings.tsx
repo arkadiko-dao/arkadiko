@@ -45,7 +45,7 @@ export const SwapSettings: React.FC<Props> = ({
             leaveTo="opacity-0 translate-y-1"
           >
             <Popover.Panel className="absolute right-0 z-20 w-screen max-w-sm px-4 mt-3 sm:px-0">
-              <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+              <div className="overflow-hidden border border-gray-200 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 dark:border-zinc-700">
                 <div className="relative p-4 bg-white dark:bg-zinc-800">
                   <div className="inline-flex items-center">
                     <h4 className="text-base font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">

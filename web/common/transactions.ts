@@ -32,7 +32,7 @@ export const getPendingTransactions = async (address: string, contractAddress: s
   const swapTransactions = [];
   for (let i = 0; i < pages; i++) {
     const offset = i * 200;
-    const txs = await api.getMempoolTransactionList({ offset: offset, limit: 200 });
+    const txs = await api.getMempoolTransactionList({ offset: offset, limit: 50 });
 
     // Find relevant transactions
     for (const tx of txs.results) {
