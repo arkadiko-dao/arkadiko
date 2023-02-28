@@ -10,6 +10,7 @@ class TickersController < ApplicationController
 
     pairs = @pools.map do |pool|
       volumes = pool.volume_24h
+      high, low = pool.high_low
       {
         ticker_id: "#{pool.token_x.symbol.gsub("wSTX", "STX")}_#{pool.token_y.symbol.gsub("wSTX", "STX")}",
         base_currency: "#{pool.token_x_address}.#{pool.token_x_name}",
@@ -18,7 +19,9 @@ class TickersController < ApplicationController
         base_volume: volumes[0],
         target_volume: volumes[1],
         pool_id: "#{pool.swap_token_address}.#{pool.swap_token_name}",
-        liquidity_in_usd: pool.tvl_in_usd
+        liquidity_in_usd: pool.tvl_in_usd,
+        high: high,
+        low: low
       }
     end
 
