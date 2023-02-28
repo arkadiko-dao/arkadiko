@@ -56,7 +56,6 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                       ALEX AMM
                       <br />
                       {tokenList[tokenListItemX].name}/{tokenList[tokenListItemY].name}
-                      {parseInt(apy, 10) === 0 ? `(DEPRECATED)` : ``}
                     </Tooltip>
                   </span>
                   ) : (
