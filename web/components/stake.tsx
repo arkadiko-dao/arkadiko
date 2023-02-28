@@ -120,6 +120,28 @@ export const Stake = () => {
       poolInfo['wrapped-stx-token/arkadiko-token'] = data['wrapped-stx-token/arkadiko-token'];
       poolInfo['wrapped-stx-token/Wrapped-Bitcoin'] = data['wrapped-stx-token/Wrapped-Bitcoin'];
       poolInfo['Wrapped-Bitcoin/usda-token'] = data['Wrapped-Bitcoin/usda-token'];
+
+      // TODO: Update API 
+      // poolInfo['Wrapped-USD/usda-token'] = data['Wrapped-USD/usda-token'];
+      const callPoolInfo = await callReadOnlyFunction({
+        contractAddress: 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9',
+        contractName: 'amm-swap-pool',
+        functionName: 'get-pool-details',
+        functionArgs: [
+          contractPrincipalCV("SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9", 'token-wxusd'),
+          contractPrincipalCV("SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9", 'token-wusda'),
+          uintCV(10000),
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const callPoolInfoResult = cvToJSON(callPoolInfo).value.value;
+      poolInfo['Wrapped-USD/usda-token'] = {
+        "balance_x": callPoolInfoResult["balance-x"].value,
+        "balance_y": callPoolInfoResult["balance-y"].value,
+        "shares_total": callPoolInfoResult["total-supply"].value,
+      }
+
       setPoolInfo(poolInfo);
 
       // stake data
@@ -161,7 +183,8 @@ export const Stake = () => {
       if (
         state.balance['dikousda'] > 0 ||
         state.balance['wstxusda'] > 0 ||
-        state.balance['wstxdiko'] > 0
+        state.balance['wstxdiko'] > 0 ||
+        state.balance['xusdusda'] > 0
       ) {
         setHasUnstakedTokens(true);
       }
@@ -257,7 +280,10 @@ export const Stake = () => {
       // Estimate value
       let estimatedValueStaked = 0;
       let estimatedValueWallet = 0;
-      if (tokenXName == 'STX') {
+      if (tokenXName == 'xUSD' && tokenYName == 'USDA') {
+        estimatedValueStaked = stakedBalanceX + stakedBalanceY;
+        estimatedValueWallet = walletBalanceX + walletBalanceY;
+      } else if (tokenXName == 'STX') {
         estimatedValueStaked = (stakedBalanceX / 1000000) * stxPrice * 2;
         estimatedValueWallet = (walletBalanceX / 1000000) * stxPrice * 2;
       } else if (tokenYName == 'STX') {
@@ -296,7 +322,6 @@ export const Stake = () => {
       setLpDikoUsdaStakedAmount(userStakedData['stake-amount-diko-usda'].value);
       setLpStxUsdaStakedAmount(userStakedData['stake-amount-wstx-usda'].value);
       setLpStxDikoStakedAmount(userStakedData['stake-amount-wstx-diko'].value);
-
       return userStakedData;
     };
 
@@ -406,6 +431,7 @@ export const Stake = () => {
         state.balance['wstxdiko'] == undefined ||
         state.balance['wstxxbtc'] == undefined ||
         state.balance['xbtcusda'] == undefined ||
+        state.balance['xusdusda'] == undefined ||
         stxPrice === 0 ||
         dikoPrice === 0 ||
         usdaPrice === 0 ||
@@ -463,7 +489,7 @@ export const Stake = () => {
         0,
         totalXbtcUsdaStaked
       );
-      const xbtcUsdaPoolRewards = totalStakingRewardsYear1 * 0.1;
+      const xbtcUsdaPoolRewards = totalStakingRewardsYear1 * 0.05;
       const xbtcUsdaApr =
         xbtcUsdaPoolRewards / (dikoXbtcUsda['walletValue'] / Number(dikoPrice / 1000000));
       setXbtcUsdaLpApy(Number((100 * xbtcUsdaApr).toFixed(2)));
@@ -1084,6 +1110,7 @@ export const Stake = () => {
       setShowUnstakeModal: setShowUnstakeLp1Modal,
       stakedAmount: lpDikoUsdaStakedAmount,
       apy: dikoUsdaLpApy,
+      decimals: 6
     },
     {
       name: 'wstxusda',
@@ -1094,6 +1121,7 @@ export const Stake = () => {
       setShowUnstakeModal: setShowUnstakeLp2Modal,
       stakedAmount: lpStxUsdaStakedAmount,
       apy: stxUsdaLpApy,
+      decimals: 6
     },
     {
       name: 'wstxdiko',
@@ -1104,6 +1132,7 @@ export const Stake = () => {
       setShowUnstakeModal: setShowUnstakeLp3Modal,
       stakedAmount: lpStxDikoStakedAmount,
       apy: stxDikoLpApy,
+      decimals: 6
     },
     {
       name: 'wstxxbtc',
@@ -1114,6 +1143,7 @@ export const Stake = () => {
       setShowUnstakeModal: setShowUnstakeLp4Modal,
       stakedAmount: lpStxXbtcStakedAmount,
       apy: stxXbtcLpApy,
+      decimals: 6
     },
     {
       name: 'xbtcusda',
@@ -1124,6 +1154,7 @@ export const Stake = () => {
       setShowUnstakeModal: setShowUnstakeLp5Modal,
       stakedAmount: lpXbtcUsdaStakedAmount,
       apy: xbtcUsdaLpApy,
+      decimals: 6
     },
   ];
 
@@ -1153,6 +1184,7 @@ export const Stake = () => {
           apy={lp.apy}
           balanceName={lp.name}
           tokenName={lp.tokenName}
+          decimals={lp.decimals}
         />
       ))}
 
@@ -1164,6 +1196,7 @@ export const Stake = () => {
           stakedAmount={lp.stakedAmount}
           balanceName={lp.name}
           tokenName={lp.tokenName}
+          decimals={lp.decimals}
         />
       ))}
 
@@ -1306,6 +1339,7 @@ export const Stake = () => {
 
                         {/* Arkadiko V1 DIKO USDA LP Token */}
                         <StakeLpRow
+                          foreign={false}
                           loadingApy={loadingApy}
                           loadingData={loadingData}
                           canStake={true}
@@ -1321,10 +1355,12 @@ export const Stake = () => {
                           claimLpPendingRewards={claimDikoUsdaLpPendingRewards}
                           stakeLpPendingRewards={stakeDikoUsdaLpPendingRewards}
                           getLpRoute={'/swap/add/DIKO/USDA'}
+                          decimals={6}
                         />
 
                         {/* Arkadiko V1 STX USDA LP Token */}
                         <StakeLpRow
+                          foreign={false}
                           loadingApy={loadingApy}
                           loadingData={loadingData}
                           canStake={true}
@@ -1340,10 +1376,12 @@ export const Stake = () => {
                           claimLpPendingRewards={claimStxUsdaLpPendingRewards}
                           stakeLpPendingRewards={stakeStxUsdaLpPendingRewards}
                           getLpRoute={'/swap/add/STX/USDA'}
+                          decimals={6}
                         />
 
                         {/* Arkadiko V1 STX DIKO LP Token */}
                         <StakeLpRow
+                          foreign={false}
                           loadingApy={loadingApy}
                           loadingData={loadingData}
                           canStake={false}
@@ -1359,10 +1397,12 @@ export const Stake = () => {
                           claimLpPendingRewards={claimStxDikoLpPendingRewards}
                           stakeLpPendingRewards={stakeStxDikoLpPendingRewards}
                           getLpRoute={'/swap/add/STX/DIKO'}
+                          decimals={6}
                         />
 
                         {/* Arkadiko V1 STX xBTC LP Token */}
                         <StakeLpRow
+                          foreign={false}
                           loadingApy={loadingApy}
                           loadingData={loadingData}
                           canStake={false}
@@ -1378,10 +1418,12 @@ export const Stake = () => {
                           claimLpPendingRewards={claimStxXbtcLpPendingRewards}
                           stakeLpPendingRewards={stakeStxXbtcLpPendingRewards}
                           getLpRoute={'/swap/add/STX/xBTC'}
+                          decimals={6}
                         />
 
                         {/* Arkadiko V1 xBTC USDA LP Token */}
                         <StakeLpRow
+                          foreign={false}
                           loadingApy={loadingApy}
                           loadingData={loadingData}
                           canStake={true}
@@ -1397,6 +1439,7 @@ export const Stake = () => {
                           claimLpPendingRewards={claimXbtcUsdaLpPendingRewards}
                           stakeLpPendingRewards={stakeXbtcUsdaLpPendingRewards}
                           getLpRoute={'/swap/add/xBTC/USDA'}
+                          decimals={6}
                         />
                       </table>
                     </div>

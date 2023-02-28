@@ -71,6 +71,7 @@ export const defaultBalance = () => {
     wstxdiko: undefined,
     wstxxbtc: undefined,
     xbtcusda: undefined,
+    xusdusda: undefined,
     wldnusda: undefined,
     ldnusda: undefined,
     wstxwelsh: undefined,
