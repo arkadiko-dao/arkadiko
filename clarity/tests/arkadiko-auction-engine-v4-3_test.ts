@@ -29,6 +29,138 @@ import {
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
+Clarinet.test({ name: "auction engine: STX collateral",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let liquidationPool = new LiquidationPool(chain, deployer);
+
+    // Initialize price of STX
+    let result = oracleManager.updatePrice("STX", 3);
+
+    // Create vault
+    result = vaultManager.createVault(deployer, "STX-A", 2000, 1500, false, false);
+    result.expectOk().expectUintWithDecimals(1500);
+
+    // Upate price
+    result = oracleManager.updatePrice("STX", 1);
+
+    // Start auction
+    result = vaultAuction.startAuction(deployer, 1);
+    result.expectOk().expectBool(true);
+
+    // Deposit USDA
+    result = liquidationPool.stake(wallet_1, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Discounted price
+    result = vaultAuction.getCollateralDiscountedPrice(1);
+    result.expectOk().expectTuple()["discounted-price"].expectUintWithDecimals(0.9);
+    result.expectOk().expectTuple()["decimals"].expectUint(1000000);
+
+    // Get collateral to sell
+    result = vaultAuction.burnUsdaAmount(1);
+    result.expectOk().expectTuple()['usda-to-use'].expectUintWithDecimals(1500);
+    result.expectOk().expectTuple()['collateral-to-sell'].expectUintWithDecimals(1666.666666);
+    result.expectOk().expectTuple()['usda-for-collateral'].expectUintWithDecimals(1800);
+  }
+});
+
+Clarinet.test({ name: "auction engine: xBTC collateral",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let liquidationPool = new LiquidationPool(chain, deployer);
+
+    // Initialize price of xBTC
+    let result = oracleManager.updatePrice("xBTC", 40000, 100000000);
+
+    // Create vault
+    result = vaultManager.createVault(deployer, "XBTC-A", (0.1 * 100), 1500, false, false, "arkadiko-sip10-reserve-v2-1", "Wrapped-Bitcoin");
+    result.expectOk().expectUintWithDecimals(1500);
+
+    // Upate price
+    result = oracleManager.updatePrice("xBTC", 20000, 100000000);
+
+    // Start auction
+    result = vaultAuction.startAuction(deployer, 1, "Wrapped-Bitcoin", "arkadiko-sip10-reserve-v2-1");
+    result.expectOk().expectBool(true);
+
+    // Deposit USDA
+    result = liquidationPool.stake(wallet_1, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Discounted price
+    // Price is in 6 decimals, but token has 8 decimals
+    result = vaultAuction.getCollateralDiscountedPrice(1);
+    result.expectOk().expectTuple()["discounted-price"].expectUintWithDecimals(18000);
+    result.expectOk().expectTuple()["decimals"].expectUint(100000000);
+
+    // Get collateral to sell
+    result = vaultAuction.burnUsdaAmount(1);
+    result.expectOk().expectTuple()['usda-to-use'].expectUintWithDecimals(1500);
+
+    // 0.08333333 btc = 1666 USDA
+    result.expectOk().expectTuple()['usda-to-use'].expectUintWithDecimals(1500);
+    result.expectOk().expectTuple()['collateral-to-sell'].expectUint(0.08333333 * 100000000);
+    result.expectOk().expectTuple()['usda-for-collateral'].expectUintWithDecimals(1800);
+  }
+});
+
+Clarinet.test({ name: "auction engine: atALEX collateral",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let liquidationPool = new LiquidationPool(chain, deployer);
+
+    // Initialize price of atALEX
+    // Push price with 8 decimals, set decimals to 10
+    let result = oracleManager.updatePrice("auto-alex", (0.02 * 100), 10000000000);
+
+    // Create vault
+    // 300k alex = 6000 usda
+    result = vaultManager.createVault(deployer, "ATALEX-A", (300000 * 100), 1500, false, false, "arkadiko-sip10-reserve-v2-1", "auto-alex");
+    result.expectOk().expectUintWithDecimals(1500);
+
+    // Upate price
+    result = oracleManager.updatePrice("auto-alex", (0.005 * 100), 10000000000);
+
+    // Start auction
+    result = vaultAuction.startAuction(deployer, 1, "auto-alex", "arkadiko-sip10-reserve-v2-1");
+    result.expectOk().expectBool(true);
+
+    // Deposit USDA
+    result = liquidationPool.stake(wallet_1, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Discounted price (20% for atALEX)
+    result = vaultAuction.getCollateralDiscountedPrice(1);
+    result.expectOk().expectTuple()["discounted-price"].expectUintWithDecimals(0.004 * 100);
+    result.expectOk().expectTuple()["decimals"].expectUint(10000000000);
+
+    // Get collateral to sell
+    result = vaultAuction.burnUsdaAmount(1);
+    result.expectOk().expectTuple()['usda-to-use'].expectUint(12 * 100000000);
+
+    // 300000 alex = 1200 USDA
+    result.expectOk().expectTuple()['usda-to-use'].expectUintWithDecimals(1200);
+    result.expectOk().expectTuple()['collateral-to-sell'].expectUint(300000 * 100000000);
+    result.expectOk().expectTuple()['usda-for-collateral'].expectUintWithDecimals(1200);
+  }
+});
+
 Clarinet.test({ name: "auction engine: liquidate stacking STX vault without enough collateral to cover debt",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -134,7 +266,7 @@ Clarinet.test({ name: "auction engine: add fee and withdraw fees",
     call.result.expectBool(false);
 
     // 1% of 1500 STX
-    call = await xstxManager.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v4-2'));
+    call = await xstxManager.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v4-3'));
     call.result.expectOk().expectUintWithDecimals(15);
 
     // Deployer no xSTX yet
@@ -146,7 +278,7 @@ Clarinet.test({ name: "auction engine: add fee and withdraw fees",
     result.expectOk().expectBool(true);
 
     // 15 xSTX transferred
-    call = await xstxManager.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v4-2'));
+    call = await xstxManager.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v4-3'));
     call.result.expectOk().expectUintWithDecimals(0);
     call = await xstxManager.balanceOf(deployer.address);
     call.result.expectOk().expectUintWithDecimals(15);
@@ -434,7 +566,7 @@ Clarinet.test({ name: "auction engine: liquidate STX vault without enough USDA t
     result = vaultAuction.startAuction(deployer, 1);
     result.expectOk().expectBool(true);
 
-    let call:any = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v4-2'));
+    let call:any = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-auction-engine-v4-3'));
     call.result.expectOk().expectUintWithDecimals(0);
 
     // Check auction parameters

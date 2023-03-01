@@ -248,24 +248,17 @@ class LiquidationUI {
   }
 
   getUserTracking(user: string) {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-ui-v2-2", "get-user-tracking", [
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-ui-v2-3", "get-user-tracking", [
       types.principal(user)
     ], this.deployer.address);
   }
 
-  claimDikoRewards(user: string, rewardIds: any) {
+  claimRewards(user: string, rewardIds: any, token: string, increaseRewardId: boolean) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-rewards-ui-v2-2", "claim-50-diko-rewards-of", [
+      Tx.contractCall("arkadiko-liquidation-rewards-ui-v2-3", "claim-50-rewards-of", [
         types.list(rewardIds),
-      ], user)
-    ]);
-    return block.receipts[0].result;
-  }
-
-  claimStxRewards(user: string, rewardIds: any) {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-rewards-ui-v2-2", "claim-50-stx-rewards-of", [
-        types.list(rewardIds),
+        types.principal(Utils.qualifiedName(token)),
+        types.bool(increaseRewardId)
       ], user)
     ]);
     return block.receipts[0].result;

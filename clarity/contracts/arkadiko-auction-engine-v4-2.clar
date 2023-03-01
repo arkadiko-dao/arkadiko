@@ -408,13 +408,12 @@
     (debt-left (- (get debt-to-raise auction) (get total-debt-burned auction)))
     (collateral-left (- (get collateral-amount auction) (get total-collateral-sold auction)))
     (collateral-price (unwrap! (get-collateral-discounted-price oracle auction-id) (err ERR-DISCOUNTED-PRICE)))
-
-    (usda-for-collateral (/ (* collateral-left collateral-price) u1000000))
+    (usda-for-collateral (/ (* collateral-left (get discounted-price collateral-price)) (get decimals collateral-price)))
     (usda-withdrawable (unwrap-panic (contract-call? liquidation-pool max-withdrawable-usda)))
     (usda-to-use (min-of (min-of debt-left usda-for-collateral) usda-withdrawable))
-    (collateral-to-sell (/ (* usda-to-use u1000000) collateral-price))
+    (collateral-to-sell (/ (* usda-to-use (get decimals collateral-price)) (get discounted-price collateral-price)))
   )
-    (ok { usda-to-use: usda-to-use, collateral-to-sell: collateral-to-sell })
+    (ok { usda-to-use: usda-to-use, collateral-to-sell: collateral-to-sell, usda-for-collateral: usda-for-collateral })
   )
 )
 
@@ -425,16 +424,16 @@
   (let (
     (auction (get-auction-by-id auction-id))
     (collateral-price (unwrap-panic (contract-call? oracle fetch-price (get collateral-token auction))))
+    (discount (get discount auction))
+    (price (get last-price collateral-price))
+    (discounted-price (- price (/ (* price discount) u10000)))
     (decimals (if (> (get decimals collateral-price) u0)
       (get decimals collateral-price)
       u1000000
     ))
-    (discount (get discount auction))
-    (price (get last-price collateral-price))
-    (discounted-price (- price (/ (* price discount) (/ decimals u100))))
   )
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR-NOT-AUTHORIZED))
-    (ok (/ (* discounted-price u1000000) decimals))
+    (ok { discounted-price: discounted-price, decimals: decimals })
   )
 )
 

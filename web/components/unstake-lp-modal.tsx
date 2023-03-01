@@ -4,7 +4,7 @@ import { tokenList } from '@components/token-swap-list';
 import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { microToReadable } from '@common/vault-utils';
-import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
+import { AnchorMode, contractPrincipalCV, standardPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
@@ -16,6 +16,7 @@ export const UnstakeLpModal = ({
   stakedAmount,
   balanceName,
   tokenName,
+  decimals
 }) => {
   const [_, setState] = useContext(AppContext);
   const [errors, setErrors] = useState<string[]>([]);
@@ -27,10 +28,11 @@ export const UnstakeLpModal = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const unstake = async () => {
-    const amount = uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0)));
+    const amount = uintCV(Number((parseFloat(stakeAmount) * Math.pow(10, decimals)).toFixed(0)));
     let contractName = 'arkadiko-stake-pool-diko-usda-v1-1';
     let tokenContract = 'arkadiko-swap-token-diko-usda';
     let ftContract = 'diko-usda';
+    let assetContractAddress = contractAddress;
     if (balanceName === 'wstxusda') {
       contractName = 'arkadiko-stake-pool-wstx-usda-v1-1';
       tokenContract = 'arkadiko-swap-token-wstx-usda';
@@ -47,43 +49,76 @@ export const UnstakeLpModal = ({
       contractName = 'arkadiko-stake-pool-xbtc-usda-v1-1';
       tokenContract = 'arkadiko-swap-token-xbtc-usda';
       ftContract = 'xbtc-usda';
+    } else if (balanceName === 'xusdusda') {
+      contractName = 'arkadiko-stake-pool-xusd-usda-v1-4';
+      assetContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
+      tokenContract = 'token-amm-swap-pool';
+      ftContract = 'amm-swap-pool';
     }
 
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-registry-v1-1',
-      functionName: 'unstake',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-        contractPrincipalCV(contractAddress, contractName),
-        contractPrincipalCV(contractAddress, tokenContract),
-        amount,
-      ],
-      postConditionMode: 0x01,
-      onFinish: data => {
-        console.log('finished broadcasting unstaking tx!', data);
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-        setShowUnstakeModal(false);
-      },
-      postConditionMode: 0x01,
-      anchorMode: AnchorMode.Any,
-    });
+    if (balanceName === 'xusdusda') {
+      await doContractCall({
+        network,
+        contractAddress,
+        stxAddress,
+        contractName: 'arkadiko-stake-pool-xusd-usda-v1-4',
+        functionName: 'unstake',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          contractPrincipalCV(assetContractAddress, tokenContract),
+          amount,
+        ],
+        postConditionMode: 0x01,
+        onFinish: data => {
+          console.log('finished broadcasting unstaking tx!', data);
+          setState(prevState => ({
+            ...prevState,
+            currentTxId: data.txId,
+            currentTxStatus: 'pending',
+          }));
+          setShowUnstakeModal(false);
+        },
+        postConditionMode: 0x01,
+        anchorMode: AnchorMode.Any,
+      });
+
+    } else {
+      await doContractCall({
+        network,
+        contractAddress,
+        stxAddress,
+        contractName: 'arkadiko-stake-registry-v1-1',
+        functionName: 'unstake',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          contractPrincipalCV(contractAddress, contractName),
+          contractPrincipalCV(contractAddress, tokenContract),
+          amount,
+        ],
+        postConditionMode: 0x01,
+        onFinish: data => {
+          console.log('finished broadcasting unstaking tx!', data);
+          setState(prevState => ({
+            ...prevState,
+            currentTxId: data.txId,
+            currentTxStatus: 'pending',
+          }));
+          setShowUnstakeModal(false);
+        },
+        postConditionMode: 0x01,
+        anchorMode: AnchorMode.Any,
+      });
+    }
   };
 
   const unstakeMaxAmount = () => {
-    setStakeAmount(stakedAmount / 1000000);
+    setStakeAmount(stakedAmount / Math.pow(10, decimals));
   };
 
   const onInputStakeChange = (event: any) => {
     const value = event.target.value;
     // trying to unstake
-    if (value > stakedAmount / 1000000) {
+    if (value > stakedAmount / Math.pow(10, decimals)) {
       if (errors.length < 1) {
         setErrors(errors.concat(['You cannot unstake more than currently staking']));
       }
@@ -142,7 +177,7 @@ export const UnstakeLpModal = ({
       </p>
       <div className="mt-6">
         <InputAmount
-          balance={microToReadable(stakedAmount).toLocaleString()}
+          balance={microToReadable(stakedAmount, decimals).toLocaleString()}
           token={tokenName}
           inputName={`unstakeLp-${tokenName}`}
           inputId={`unstakeAmount-${tokenName}`}

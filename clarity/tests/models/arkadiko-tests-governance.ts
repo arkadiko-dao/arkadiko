@@ -22,26 +22,26 @@ class Governance {
   }
 
   getAllProposals() {
-    return this.chain.callReadOnlyFn("arkadiko-governance-v2-1", "get-proposals", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-governance-v4-1", "get-proposals", [], this.deployer.address);
   }
 
   getAllProposalIDs() {
-    return this.chain.callReadOnlyFn("arkadiko-governance-v2-1", "get-proposal-ids", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-governance-v4-1", "get-proposal-ids", [], this.deployer.address);
   }
 
   getProposalByID(id: number) {
-    return this.chain.callReadOnlyFn("arkadiko-governance-v2-1", "get-proposal-by-id", [types.uint(id)], this.deployer.address)
+    return this.chain.callReadOnlyFn("arkadiko-governance-v4-1", "get-proposal-by-id", [types.uint(id)], this.deployer.address)
   }
 
   getMemberVotes(id: number, member: Account) {
-    return this.chain.callReadOnlyFn("arkadiko-governance-v2-1", "get-votes-by-member-by-id", [
+    return this.chain.callReadOnlyFn("arkadiko-governance-v4-1", "get-votes-by-member-by-id", [
       types.uint(id), 
       types.principal(member.address)
     ], this.deployer.address);
   }
 
   getMemberVoteTokens(id: number, member: Account, token: string = "arkadiko-token") {
-    return this.chain.callReadOnlyFn("arkadiko-governance-v2-1", "get-tokens-by-member-by-id", [
+    return this.chain.callReadOnlyFn("arkadiko-governance-v4-1", "get-tokens-by-member-by-id", [
       types.uint(id), 
       types.principal(member.address),
       types.principal(Utils.qualifiedName(token)),
@@ -61,7 +61,7 @@ class Governance {
 
   createProposal(user: Account, startBlock: number, title: string, url: string, contractChanges: string[], voteLength: number = 250) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v2-1", "propose", [
+      Tx.contractCall("arkadiko-governance-v4-1", "propose", [
         types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2')),
         types.uint(startBlock),
         types.uint(voteLength),
@@ -75,7 +75,7 @@ class Governance {
 
   createProposalDao(user: Account, startBlock: number, title: string, url: string, contractChanges: string[]) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v2-1", "propose-dao", [
+      Tx.contractCall("arkadiko-governance-v4-1", "propose-dao", [
         types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2')),
         types.uint(startBlock),
         types.utf8(title),
@@ -88,7 +88,7 @@ class Governance {
 
   voteForProposal(user: Account, proposal: number, amount: number, token: string = "arkadiko-token") {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v2-1", "vote-for", [
+      Tx.contractCall("arkadiko-governance-v4-1", "vote-for", [
         types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2')),
         types.principal(Utils.qualifiedName(token)),
         types.uint(proposal),
@@ -100,7 +100,7 @@ class Governance {
 
   voteAgainstProposal(user: Account, proposal: number, amount: number, token: string = "arkadiko-token") {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v2-1", "vote-against", [
+      Tx.contractCall("arkadiko-governance-v4-1", "vote-against", [
         types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2')),
         types.principal(Utils.qualifiedName(token)),
         types.uint(proposal),
@@ -112,7 +112,7 @@ class Governance {
 
   endProposal(proposal: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v2-1", "end-proposal", [
+      Tx.contractCall("arkadiko-governance-v4-1", "end-proposal", [
         types.uint(proposal)
       ], this.deployer.address)
     ]);
@@ -121,7 +121,7 @@ class Governance {
 
   returnVotes(proposal: number, user: Account, token: string = "arkadiko-token") {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v2-1", "return-votes-to-member", [
+      Tx.contractCall("arkadiko-governance-v4-1", "return-votes-to-member", [
         types.principal(Utils.qualifiedName(token)),
         types.uint(proposal),
         types.principal(user.address)
@@ -132,14 +132,14 @@ class Governance {
 
   toggleShutdown() {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v2-1", "toggle-governance-shutdown", [], this.deployer.address)
+      Tx.contractCall("arkadiko-governance-v4-1", "toggle-governance-shutdown", [], this.deployer.address)
     ]);
     return block.receipts[0].result;
   }
 
   addNewContract(name: string, canMint: boolean = true, canBurn: boolean = true) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v2-1", "add-contract-address", [
+      Tx.contractCall("arkadiko-governance-v4-1", "add-contract-address", [
         types.ascii(name),
         types.principal(this.deployer.address),
         types.principal(Utils.qualifiedName(name)),

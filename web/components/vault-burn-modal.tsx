@@ -59,6 +59,12 @@ export const VaultBurnModal: React.FC<Props> = ({
       ),
     ];
 
+    let burnAmount = 0;
+    if (usdToBurn * 1000000 < 1.5 * stabilityFee) {
+      burnAmount = parseInt(1.3 * stabilityFee, 10);
+    } else {
+      burnAmount = parseInt(parseFloat(usdToBurn) * 1000000 - 1.5 * stabilityFee, 10);
+    }
     await doContractCall({
       network,
       contractAddress,
@@ -67,7 +73,7 @@ export const VaultBurnModal: React.FC<Props> = ({
       functionName: 'burn',
       functionArgs: [
         uintCV(match.params.id),
-        uintCV(parseInt(parseFloat(usdToBurn) * 1000000 - 1.5 * stabilityFee, 10)),
+        uintCV(burnAmount),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
         contractPrincipalCV(tokenAddress, token),
         contractPrincipalCV(
