@@ -12,7 +12,7 @@ class PagesController < ApplicationController
       'wSTX', 'DIKO', 'USDA', 'stDIKO',
       'ARKV1WSTXXBTC', 'ARKV1XBTCUSDA',
       'ARKV1WSTXDIKO', 'ARKV1WSTXUSDA',
-      'ARKV1DIKOUSDA'
+      'ARKV1DIKOUSDA', 'amm-swap-pool'
     ])
     tokens.find_each do |token|
       hsh[token.symbol.downcase] = token

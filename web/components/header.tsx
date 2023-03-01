@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Disclosure } from '@headlessui/react';
+import React, { Fragment, useContext, useEffect, useState } from 'react';
+import { Menu, Transition, Disclosure } from '@headlessui/react';
 import { AppContext } from '@common/context';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { useConnect } from '@stacks/connect-react';
@@ -157,50 +157,87 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                       Governance
                     </RouterLink>
 
-                    <button
-                      type="button"
-                      className="flex items-center px-1 text-sm font-medium text-gray-500 dark:text-white hover:text-gray-700 "
-                      onClick={() => {
-                        setShowSidebar(true);
-                      }}
+                    <a
+                      href="https://info.arkadiko.finance/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
                     >
-                      {pendingTransactions.length > 0 ?
-                        <Tooltip
-                          label={`You have pending transactions. Be sure to take them into account before making new ones.`}
-                          className="z-50"
-                        >
-                          <span className="inline-block w-4 h-4 mr-2">
-                            <StyledIcon
-                              as="ClockIcon"
-                              size={4}
-                              className="text-yellow-400"
-                            />
-                          </span>
-                        </Tooltip>
-                      :
-                        <span className="inline-block w-3 h-3 mr-2 bg-green-400 rounded-full"></span>
-                      }
-                      {shortAddress(name)}
-                    </button>
+                      <StyledIcon as="TrendingUpIcon" size={5} className="mr-2 text-indigo-600 dark:text-indigo-300" />
+                      Analytics
+                    </a>
 
-                    <button
-                      type="button"
-                      className="block px-1 text-sm font-medium text-indigo-500 hover:text-indigo-800 dark:text-indigo-300 dark:hover:text-indigo-200"
-                      onClick={() => {
-                        signOut();
-                      }}
-                    >
-                      Sign out
-                    </button>
+                    <Menu as="div" className="relative flex items-center text-left">
+                      <div>
+                        <Menu.Button className="flex items-center px-1 text-sm font-medium text-gray-500 dark:text-white hover:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-opacity-75">
+                          {pendingTransactions.length > 0 ?
+                            <Tooltip
+                              label={`You have pending transactions. Be sure to take them into account before making new ones.`}
+                              className="z-50"
+                            >
+                              <span className="inline-block w-4 h-4 mr-2">
+                                <StyledIcon
+                                  as="ClockIcon"
+                                  size={4}
+                                  className="text-yellow-400"
+                                />
+                              </span>
+                            </Tooltip>
+                          :
+                            <span className="inline-block w-3 h-3 mr-2 bg-green-400 rounded-full"></span>
+                          }
+                          {shortAddress(name)}
+                        </Menu.Button>
+                      </div>
+                      <Transition
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
+                      >
+                        <Menu.Items className="absolute right-0 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md dark:bg-zinc-900 dark:divide-gray-800 w-80 top-12 ring-1 ring-black ring-opacity-5 focus:outline-none dark:border-zinc-700">
+                          <div className="px-1 py-1 ">
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  onClick={() => { setShowSidebar(true); }}
+                                  className={`${
+                                    active ? 'bg-indigo-500 text-white dark:text-zinc-100' : 'text-gray-900 dark:text-zinc-100'
+                                  } group flex w-full items-center text-left rounded-md px-2 py-2 text-sm`}
+                                >
+                                  Settings &amp; transaction history
+                                </button>
+                              )}
+                            </Menu.Item>
+                          </div>
+                          <div className="px-1 py-1">
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                onClick={() => { signOut(); }}
+                                  className={`${
+                                    active ? 'bg-indigo-500 text-white dark:text-zinc-100' : 'text-gray-900 dark:text-zinc-100'
+                                  } group flex w-full items-center text-left rounded-md px-2 py-2 text-sm`}
+                                >
+                                  Sign out
+                                </button>
+                              )}
+                            </Menu.Item>
+                          </div>
+                        </Menu.Items>
+                      </Transition>
+                    </Menu>
 
                     <ColorThemeToggle />
                   </div>
                 ) : (
                   <div className="hidden lg:ml-6 lg:flex lg:space-x-6 lg:items-center">
-
                     <RouterLink
                       to="/swap"
-                      className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
+                      className="inline-flex items-center h-full px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
                       activeClassName="border-indigo-500 text-gray-900"
                     >
                       Swap
@@ -208,11 +245,21 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
 
                     <RouterLink
                       to="/vaults"
-                      className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
+                      className="inline-flex items-center h-full px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
                       activeClassName="border-indigo-500 text-gray-900"
                     >
                       Borrow
                     </RouterLink>
+
+                    <a
+                      href="https://info.arkadiko.finance/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center h-full px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
+                    >
+                      <StyledIcon as="TrendingUpIcon" size={5} className="mr-2 text-indigo-600 dark:text-indigo-300" />
+                      Analytics
+                    </a>
 
                     {showWallet ? (
                       <div>
@@ -303,6 +350,16 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                     ) : null}
                     Governance
                   </Disclosure.Button>
+
+                  <a
+                    href="https://info.arkadiko.finance/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center flex-1 py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
+                  >
+                    <StyledIcon as="TrendingUpIcon" size={5} className="mr-2 text-indigo-600 dark:text-indigo-300" />
+                    Analytics
+                  </a>
                 </div>
                 <div className="pt-4 pb-3 border-t border-gray-300 dark:border-zinc-600">
                   <div className="space-y-1">
@@ -332,6 +389,8 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                       {shortAddress(name)}
                     </button>
 
+                    <ColorThemeToggle classes="inline-flex w-full px-4 py-2 sm:px-6" />
+
                     <button
                       type="button"
                       className="block w-full px-4 py-2 text-base font-medium text-left text-indigo-500 hover:text-indigo-800 hover:bg-indigo-100 sm:px-6"
@@ -341,14 +400,41 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                     >
                       Sign out
                     </button>
-
-                    <ColorThemeToggle classes="block w-full px-4 py-2 sm:px-6" />
                   </div>
                 </div>
               </div>
             ) : (
               <div>
-                <div className="p-3 border-t border-gray-200">
+                <div className="pt-2 pb-3 space-y-1">
+                  <Disclosure.Button
+                    as={RouterLink}
+                    to="/swap"
+                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
+                    activeClassName="border-indigo-500 text-gray-900"
+                  >
+                    Swap
+                  </Disclosure.Button>
+
+                  <Disclosure.Button
+                    as={RouterLink}
+                    to="/vaults"
+                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
+                    activeClassName="border-indigo-500 text-gray-900"
+                  >
+                    Borrow
+                  </Disclosure.Button>
+
+                  <a
+                    href="https://info.arkadiko.finance/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center flex-1 py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
+                  >
+                    <StyledIcon as="TrendingUpIcon" size={5} className="mr-2 text-indigo-600 dark:text-indigo-300" />
+                    Analytics
+                  </a>
+                </div>
+                <div className="p-3 border-t border-gray-200 dark:border-zinc-600">
                   {showWallet ? (
                     <button
                       type="button"
@@ -360,7 +446,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   ) : null}
                 </div>
 
-                <ColorThemeToggle classes="block w-full px-4 py-2 sm:px-6" />
+                <ColorThemeToggle classes="inline-flex w-full px-4 py-2 sm:px-6" />
               </div>
             )}
           </Disclosure.Panel>

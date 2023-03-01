@@ -13,6 +13,12 @@ boot_contracts = ["pox", "costs-v2"]
 [[project.requirements]]
 contract_id = "SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard"
 
+[[project.requirements]]
+contract_id = "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-amm-swap-pool"
+
+[[project.requirements]]
+contract_id = "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.trait-semi-fungible"
+
 [contracts.arkadiko-dao-token-trait-v1]
 path = "contracts/arkadiko-dao-token-trait-v1.clar"
 
@@ -165,6 +171,9 @@ path = "contracts/arkadiko-stake-pool-xbtc-usda-v1-1.clar"
 
 [contracts.arkadiko-stake-pool-wstx-diko-v1-1]
 path = "contracts/arkadiko-stake-pool-wstx-diko-v1-1.clar"
+
+[contracts.arkadiko-stake-pool-xusd-usda-v1-4]
+path = "contracts/arkadiko-stake-pool-xusd-usda-v1-4.clar"
 
 [contracts.arkadiko-swap-v2-1]
 path = "contracts/arkadiko-swap-v2-1.clar"
