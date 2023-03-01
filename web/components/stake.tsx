@@ -156,7 +156,7 @@ export const Stake = () => {
       // TODO: move this to API
       const callStakedInfo = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-stake-pool-xusd-usda-v1-4',
+        contractName: 'arkadiko-stake-pool-xusd-usda-v1-5',
         functionName: 'get-total-staked',
         functionArgs: [],
         senderAddress: stxAddress || '',
@@ -495,15 +495,15 @@ export const Stake = () => {
       setXbtcUsdaLpApy(Number((100 * xbtcUsdaApr).toFixed(2)));
 
       const dikoXusdUsda = await lpTokenValue(
-        'arkadiko-stake-pool-xusd-usda-v1-4',
+        'arkadiko-stake-pool-xusd-usda-v1-5',
         0,
         totalXusdUsda2Staked * 100
       );
       const xusdUsdaPoolRewards = totalStakingRewardsYear1 * 0.118;
       const xusdUsdaApr =
         xusdUsdaPoolRewards / (dikoXusdUsda['walletValue'] / Number(dikoPrice / 1000000));
-      setXusdUsda2LpApy(0);
-      setXusdUsdaLpApy(Number((100 * xusdUsdaApr).toFixed(2)));
+      setXusdUsdaLpApy(0);
+      setXusdUsda2LpApy(Number((100 * xusdUsdaApr).toFixed(2)));
 
       setLoadingApy(false);
 
