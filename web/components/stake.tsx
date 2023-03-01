@@ -1333,7 +1333,7 @@ export const Stake = () => {
                           setShowUnstakeLpModal={setShowUnstakeLp7Modal}
                           claimLpPendingRewards={claimXusdUsda2LpPendingRewards}
                           stakeLpPendingRewards={stakeXusdUsda2LpPendingRewards}
-                          getLpRoute={'https://app.alexlab.co/pool/token-amm-swap-pool:token-wxusd,token-wusda,0.0001e8'}
+                          getLpRoute={'https://app.alexlab.co/pool/token-amm-swap-pool:token-wxusd,token-wusda,0.005e8'}
                           decimals={8}
                         />
 
