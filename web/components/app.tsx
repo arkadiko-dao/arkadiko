@@ -50,7 +50,7 @@ export const getBalance = async (address: string) => {
     contractName: 'token-amm-swap-pool',
     functionName: 'get-balance',
     functionArgs: [
-      uintCV(2),
+      uintCV(4),
       standardPrincipalCV(address),
     ],
     senderAddress: address || '',

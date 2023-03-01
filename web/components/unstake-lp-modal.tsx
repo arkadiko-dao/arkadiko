@@ -83,7 +83,6 @@ export const UnstakeLpModal = ({
           }));
           setShowUnstakeModal(false);
         },
-        postConditionMode: 0x01,
         anchorMode: AnchorMode.Any,
       });
 
@@ -110,7 +109,6 @@ export const UnstakeLpModal = ({
           }));
           setShowUnstakeModal(false);
         },
-        postConditionMode: 0x01,
         anchorMode: AnchorMode.Any,
       });
     }
@@ -174,7 +172,7 @@ export const UnstakeLpModal = ({
 
       <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">
         You are currently staking{' '}
-        {microToReadable(stakedAmount).toLocaleString(undefined, {
+        {microToReadable(stakedAmount, decimals).toLocaleString(undefined, {
           minimumFractionDigits: 2,
           maximumFractionDigits: 6,
         })}{' '}
