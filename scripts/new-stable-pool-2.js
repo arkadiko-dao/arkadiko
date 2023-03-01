@@ -1,22 +1,18 @@
-// node proposal-change-stacker.js
 require('dotenv').config();
-const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
-const BN = require('bn.js');
 
 async function transact() {
   const txOptions = {
-    contractAddress: CONTRACT_ADDRESS,
-    contractName: 'arkadiko-stake-registry-v1-1',
-    functionName: 'set-pool-data',
+    contractAddress: 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9',
+    contractName: 'amm-swap-pool',
+    functionName: 'set-fee-rate-y',
     functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-xusd-usda-v1-4'),
-      tx.stringAsciiCV('xUSD-USDA LP'),
-      tx.uintCV(0),
-      tx.uintCV(0),
-      tx.uintCV(118000)
+      tx.contractPrincipalCV('SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9', 'token-wxusd'),
+      tx.contractPrincipalCV('SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9', 'token-wusda'),
+      tx.uintCV(500000),
+      tx.uintCV(50000),
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
