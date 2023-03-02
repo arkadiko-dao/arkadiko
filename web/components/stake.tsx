@@ -170,7 +170,7 @@ export const Stake = () => {
       // prices
       setDikoPrice(data.diko.last_price);
       setStxPrice(data.wstx.last_price);
-      setUsdaPrice(data.usda.last_price);
+      setUsdaPrice(data.usda.last_price / 100);
     };
 
     fetchStakeData();
