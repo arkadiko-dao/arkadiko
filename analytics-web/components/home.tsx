@@ -31,13 +31,15 @@ export const Home: React.FC = () => {
       const response = await axios.get(`${apiUrl}/api/v1/pools`);
       const array:any = [];
       response.data.pools.forEach((pool:any) => {
-        array.push(
-          <PoolRow
-            key={pool.id}
-            id={pool.id}
-            pool={pool}
-          />
-        )
+        if (pool['token_x_name'] !== 'wxusd') {
+          array.push(
+            <PoolRow
+              key={pool.id}
+              id={pool.id}
+              pool={pool}
+            />
+          );
+        }
       })
       setPools(array);
     };

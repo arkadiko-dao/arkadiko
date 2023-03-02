@@ -127,7 +127,7 @@ export const MarketCap: React.FC = ({ lastDikoPrice, lastUsdaPrice }) => {
                           className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
                           scope="row"
                         >
-                          <div className="flex items-center">Float</div>
+                          <div className="flex items-center">Circulating Supply</div>
                         </th>
                         <td className="pt-3 pb-2 pr-4">
                           {isLoading ? (
@@ -185,7 +185,7 @@ export const MarketCap: React.FC = ({ lastDikoPrice, lastUsdaPrice }) => {
                       Total Supply
                     </th>
                     <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                      Float
+                      Circulating Supply
                     </th>
                     <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                       Market Cap
