@@ -4,7 +4,7 @@ import { tokenList } from '@components/token-swap-list';
 import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { microToReadable } from '@common/vault-utils';
-import { AnchorMode, contractPrincipalCV, standardPrincipalCV, uintCV } from '@stacks/transactions';
+import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
@@ -54,14 +54,19 @@ export const UnstakeLpModal = ({
       assetContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
       tokenContract = 'token-amm-swap-pool';
       ftContract = 'amm-swap-pool';
+    } else if (balanceName === 'xusdusda2') {
+      contractName = 'arkadiko-stake-pool-xusd-usda-v1-5';
+      assetContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
+      tokenContract = 'token-amm-swap-pool';
+      ftContract = 'amm-swap-pool';
     }
 
-    if (balanceName === 'xusdusda') {
+    if (balanceName === 'xusdusda' || balanceName === 'xusdusda2') {
       await doContractCall({
         network,
         contractAddress,
         stxAddress,
-        contractName: 'arkadiko-stake-pool-xusd-usda-v1-4',
+        contractName: contractName,
         functionName: 'unstake',
         functionArgs: [
           contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
@@ -78,7 +83,6 @@ export const UnstakeLpModal = ({
           }));
           setShowUnstakeModal(false);
         },
-        postConditionMode: 0x01,
         anchorMode: AnchorMode.Any,
       });
 
@@ -105,7 +109,6 @@ export const UnstakeLpModal = ({
           }));
           setShowUnstakeModal(false);
         },
-        postConditionMode: 0x01,
         anchorMode: AnchorMode.Any,
       });
     }
@@ -169,7 +172,7 @@ export const UnstakeLpModal = ({
 
       <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">
         You are currently staking{' '}
-        {microToReadable(stakedAmount).toLocaleString(undefined, {
+        {microToReadable(stakedAmount, decimals).toLocaleString(undefined, {
           minimumFractionDigits: 2,
           maximumFractionDigits: 6,
         })}{' '}

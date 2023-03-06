@@ -10,8 +10,7 @@ import {
   uintCV,
   createAssetInfo,
   FungibleConditionCode,
-  makeStandardFungiblePostCondition,
-  standardPrincipalCV,
+  makeStandardFungiblePostCondition
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
@@ -83,6 +82,11 @@ export const StakeLpModal = ({
       tokenContract = 'token-amm-swap-pool';
       assetContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
       ftContract = 'amm-swap-pool';
+    } else if (balanceName === 'xusdusda2') {
+      contractName = 'arkadiko-stake-pool-xusd-usda-v1-5';
+      tokenContract = 'token-amm-swap-pool';
+      assetContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
+      ftContract = 'amm-swap-pool';
     }
     
     console.log(assetContractAddress, tokenContract, ftContract);
@@ -95,12 +99,12 @@ export const StakeLpModal = ({
       ),
     ];
 
-    if (balanceName === 'xusdusda') {
+    if (balanceName === 'xusdusda' || balanceName === 'xusdusda2') {
       await doContractCall({
         network,
         contractAddress,
         stxAddress,
-        contractName: 'arkadiko-stake-pool-xusd-usda-v1-4',
+        contractName: contractName,
         functionName: 'stake',
         functionArgs: [
           contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
