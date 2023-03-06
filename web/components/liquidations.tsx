@@ -52,7 +52,6 @@ export const Liquidations: React.FC = () => {
   const [dikoApr, setDikoApr] = useState(0);
   const [buttonUnstakeDisabled, setButtonUnstakeDisabled] = useState(true);
   const [buttonStakeDisabled, setButtonStakeDisabled] = useState(true);
-  const [redeemableStx, setRedeemableStx] = useState(0);
   const [lockupBlocks, setLockupBlocks] = useState(0);
   const [stakerLockupBlocks, setStakerLockupBlocks] = useState(0);
   const [rewardLoadingPercentage, setRewardLoadingPercentage] = useState(0);
@@ -81,8 +80,8 @@ export const Liquidations: React.FC = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-stacker-payer-v3-3',
-      functionName: 'redeem-stx-helper',
+      contractName: 'arkadiko-stacker-payer-v3-4',
+      functionName: 'redeem-stx',
       functionArgs: [uintCV(state.balance['xstx'])],
       postConditionMode: 0x01,
       onFinish: data => {
@@ -481,19 +480,6 @@ export const Liquidations: React.FC = () => {
       return result;
     };
 
-    const getStxRedeemable = async () => {
-      const stxRedeemable = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-stacker-payer-v3-3',
-        functionName: 'get-stx-redeemable-helper',
-        functionArgs: [],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const result = cvToJSON(stxRedeemable).value;
-      return result;
-    };
-
     const getLockup = async () => {
       const stxRedeemable = await callReadOnlyFunction({
         contractAddress,
@@ -537,7 +523,6 @@ export const Liquidations: React.FC = () => {
         epochInfo,
         dikoEpochRewardsToAdd,
         currentBlockHeight,
-        stxRedeemable,
         stakerLockup,
         lockupBlocks,
         dikoPrice,
@@ -548,7 +533,6 @@ export const Liquidations: React.FC = () => {
         getEpochInfo(),
         getDikoEpochRewardsToAdd(),
         getCurrentBlockHeight(),
-        getStxRedeemable(),
         getStakerLockup(),
         getLockup(),
         getDikoPrice(),
@@ -571,7 +555,6 @@ export const Liquidations: React.FC = () => {
         setStakerLockupBlocks(parseInt(stakerLockup) + parseInt(lockupBlocks));
       }
       setLockupBlocks(lockupBlocks);
-      setRedeemableStx(stxRedeemable);
 
       const dikoPerYear = (52560 / epochInfo["blocks"].value) * dikoEpochRewardsToAdd;
       setDikoApr((dikoPerYear * dikoPrice) / totalPooled * 100.0);
@@ -615,22 +598,12 @@ export const Liquidations: React.FC = () => {
                         <>
                           <p>
                             You have <span className="text-lg font-semibold">{state.balance['xstx'] / 1000000}</span> xSTX. {' '}
-                            {redeemableStx == 0 ? (
-                              <>
-                                There are <span className="font-semibold">no redeemable STX</span> in the Arkadiko pool.
-                                Be sure to check again later.
-                              </>
-                            ) : (
-                              <>
-                                There are <span className="text-lg font-semibold">{redeemableStx / 1000000}</span> STX redeemable in the Arkadiko pool.
-                              </>
-                            )}
                           </p>
 
                           <button
                             type="button"
                             onClick={() => redeemStx()}
-                            disabled={redeemableStx == 0 || state.balance['xstx'] == 0}
+                            disabled={state.balance['xstx'] == 0}
                             className="inline-flex justify-center px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
                           >
                             Redeem
