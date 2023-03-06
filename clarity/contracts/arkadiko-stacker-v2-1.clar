@@ -47,7 +47,7 @@
 
 ;; this should be called only once in Stacks 2.1
 ;; additional calls should be made with `stack-extend` and `stack-increase` in this contract
-;; lock-period should be u3 and when it runs out, `stack-extend` should be called to extend with 1 period
+;; lock-period should be u1 and when it runs out, `stack-extend` should be called to extend with 1 period
 (define-public (initiate-stacking (pox-addr (tuple (version (buff 1)) (hashbytes (buff 32))))
                                   (start-burn-ht uint)
                                   (lock-period uint))
