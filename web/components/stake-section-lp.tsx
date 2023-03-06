@@ -25,6 +25,7 @@ export const StakeSectionLp = ({ showLoadingState, apiData }) => {
           contractPrincipalCV(contractAddress, 'arkadiko-swap-token-diko-usda'),
           contractPrincipalCV(contractAddress, 'arkadiko-swap-token-wstx-usda'),
           contractPrincipalCV(contractAddress, 'arkadiko-swap-token-xbtc-usda'),
+          contractPrincipalCV(contractAddress, 'arkadiko-helper-token-xusd-usda'),
         ])
       ],
       senderAddress: stxAddress || '',
@@ -44,6 +45,7 @@ export const StakeSectionLp = ({ showLoadingState, apiData }) => {
           contractPrincipalCV(contractAddress, 'arkadiko-swap-token-diko-usda'),
           contractPrincipalCV(contractAddress, 'arkadiko-swap-token-wstx-usda'),
           contractPrincipalCV(contractAddress, 'arkadiko-swap-token-xbtc-usda'),
+          contractPrincipalCV(contractAddress, 'arkadiko-helper-token-xusd-usda'),
         ])
       ],
       senderAddress: stxAddress || '',
@@ -99,9 +101,16 @@ export const StakeSectionLp = ({ showLoadingState, apiData }) => {
       stakedAmount: stakedAmounts[2].value["total-staked"].value / 1000000,
       rewardsPerBlock: (tokenInfo[2].value["rewards-rate"].value / 1000000) * stakingRewardsPerBlock
     })
+    newRows.push({ 
+      showLoadingState: showLoadingState, 
+      lpToken: "arkadiko-helper-token-xusd-usda", 
+      apiData: apiData,
+      stakedAmount: stakedAmounts[3].value["total-staked"].value / 1000000,
+      rewardsPerBlock: (tokenInfo[3].value["rewards-rate"].value / 1000000) * stakingRewardsPerBlock
+    })
     setRows(newRows);
 
-    setShowUnstakedTokensAlert(state.balance['dikousda'] > 0 || state.balance['wstxusda'] > 0 || state.balance['xbtcusda'] > 0)
+    setShowUnstakedTokensAlert(state.balance['dikousda'] > 0 || state.balance['wstxusda'] > 0 || state.balance['xbtcusda'] > 0 || state.balance['xusdusda2'] > 0)
   }
 
   useEffect(() => {

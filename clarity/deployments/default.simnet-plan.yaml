@@ -303,6 +303,11 @@ plan:
             path: contracts/arkadiko-governance-v4-1.clar
             clarity-version: 1
         - emulated-contract-publish:
+            contract-name: arkadiko-helper-token-xusd-usda
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-helper-token-xusd-usda.clar
+            clarity-version: 1
+        - emulated-contract-publish:
             contract-name: arkadiko-liquidation-pool-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/arkadiko-liquidation-pool-v1-1.clar

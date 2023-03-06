@@ -343,4 +343,11 @@
     last-reward-increase-block: u0,
     cumm-reward-per-stake: u0
   })
+  (map-set tokens { token: .arkadiko-helper-token-xusd-usda } {
+    enabled: true,
+    total-staked: u0,
+    rewards-rate: u150000, ;; 15%
+    last-reward-increase-block: u0,
+    cumm-reward-per-stake: u0
+  })
 )

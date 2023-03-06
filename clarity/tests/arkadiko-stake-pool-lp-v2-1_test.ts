@@ -12,7 +12,7 @@ import {
 } from './models/arkadiko-tests-stake.ts';
 
 import { 
-  EsDikoToken,
+  EsDikoToken
 } from './models/arkadiko-tests-tokens.ts';
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
@@ -20,6 +20,7 @@ import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 const dikoUsdaPoolAddress = 'arkadiko-swap-token-diko-usda'
 const wstxUsdaPoolAddress = 'arkadiko-swap-token-wstx-usda'
 const xbtcUsdaPoolAddress = 'arkadiko-swap-token-xbtc-usda'
+const xusdUsdaPoolAddress = 'arkadiko-helper-token-xusd-usda'
 
 // ---------------------------------------------------------
 // Initial values
@@ -50,19 +51,21 @@ Clarinet.test({
     call = stakePool.getTokenInfoOf("usda-token");
     call.result.expectTuple()["enabled"].expectBool(false);
 
-    call = stakePool.getTokenInfoManyOf([dikoUsdaPoolAddress, wstxUsdaPoolAddress, xbtcUsdaPoolAddress]);
+    call = stakePool.getTokenInfoManyOf([dikoUsdaPoolAddress, wstxUsdaPoolAddress, xbtcUsdaPoolAddress, xusdUsdaPoolAddress]);
     call.result.expectList()[0].expectTuple()["rewards-rate"].expectUintWithDecimals(0.25);
     call.result.expectList()[1].expectTuple()["rewards-rate"].expectUintWithDecimals(0.35);
     call.result.expectList()[2].expectTuple()["rewards-rate"].expectUintWithDecimals(0.1);
+    call.result.expectList()[3].expectTuple()["rewards-rate"].expectUintWithDecimals(0.15);
 
     call = stakePool.getStakerInfoOf(deployer, dikoUsdaPoolAddress);
     call.result.expectTuple()["total-staked"].expectUintWithDecimals(0);
     call.result.expectTuple()["cumm-reward-per-stake"].expectUintWithDecimals(0);
 
-    call = stakePool.getStakerInfoManyOf(deployer, [dikoUsdaPoolAddress, wstxUsdaPoolAddress, xbtcUsdaPoolAddress]);
+    call = stakePool.getStakerInfoManyOf(deployer, [dikoUsdaPoolAddress, wstxUsdaPoolAddress, xbtcUsdaPoolAddress, xusdUsdaPoolAddress]);
     call.result.expectList()[0].expectTuple()["total-staked"].expectUintWithDecimals(0);
     call.result.expectList()[1].expectTuple()["total-staked"].expectUintWithDecimals(0);
     call.result.expectList()[2].expectTuple()["total-staked"].expectUintWithDecimals(0);
+    call.result.expectList()[3].expectTuple()["total-staked"].expectUintWithDecimals(0);
   }
 });
 
@@ -310,5 +313,83 @@ Clarinet.test({
 
     result = stakePool.unstake(wallet_3, wstxUsdaPoolAddress, 11);
     result.expectErr().expectUint(110003);
+  }
+});
+
+// ---------------------------------------------------------
+// xUSD/USDA
+// ---------------------------------------------------------
+
+Clarinet.test({
+  name: "stake-pool-lp: stake and unstake xUSD/USDA",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let stakePool = new StakePoolLp(chain, deployer);
+    let esDikoToken = new EsDikoToken(chain, deployer);
+
+    let call:any = await chain.callReadOnlyFn("SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-amm-swap-pool", "get-balance", [
+      types.uint(4),
+      types.principal(wallet_2.address),
+    ], wallet_2.address);
+    call.result.expectOk().expectUint(10000 * 100000000);
+
+    let result = stakePool.stake(wallet_2, xusdUsdaPoolAddress, 10);
+    result.expectOk().expectUintWithDecimals(10);
+
+    call = await chain.callReadOnlyFn("SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-amm-swap-pool", "get-balance", [
+      types.uint(4),
+      types.principal(wallet_2.address),
+    ], wallet_2.address);
+    call.result.expectOk().expectUint(9990 * 100000000);
+
+    call = await chain.callReadOnlyFn("SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-amm-swap-pool", "get-balance", [
+      types.uint(4),
+      types.principal(Utils.qualifiedName("arkadiko-stake-pool-lp-v2-1")),
+    ], wallet_2.address);
+    call.result.expectOk().expectUint(10 * 100000000);
+
+    // At the start there are 626 esDIKO rewards per block, 15% for this pool = 93.9
+    // 93.9 / 10 = 9.39
+    call = stakePool.getStakerInfoOf(wallet_2, xusdUsdaPoolAddress);
+    call.result.expectTuple()["total-staked"].expectUintWithDecimals(10);
+    call.result.expectTuple()["cumm-reward-per-stake"].expectUintWithDecimals(9.395985);
+
+    call = stakePool.getTokenInfoOf(xusdUsdaPoolAddress);
+    call.result.expectTuple()["total-staked"].expectUintWithDecimals(10);
+    call.result.expectTuple()["rewards-rate"].expectUintWithDecimals(0.15);
+    call.result.expectTuple()["last-reward-increase-block"].expectUint(1);
+    call.result.expectTuple()["cumm-reward-per-stake"].expectUintWithDecimals(9.395985);
+
+    chain.mineEmptyBlock(10);  
+
+    // 93.9 * 11 blocks = ~1033
+    call = stakePool.getPendingRewards(wallet_2, xusdUsdaPoolAddress);
+    call.result.expectOk().expectUintWithDecimals(1033.558450);
+
+    call = stakePool.getStakerInfoManyOf(wallet_2, [xusdUsdaPoolAddress]);
+    call.result.expectList()[0].expectTuple()["total-staked"].expectUintWithDecimals(10);
+
+    result = stakePool.unstake(wallet_2, xusdUsdaPoolAddress, 10);
+    result.expectOk().expectUintWithDecimals(10);
+
+    call = esDikoToken.balanceOf(wallet_2.address);
+    call.result.expectOk().expectUintWithDecimals(11033.558450); 
+
+    call = stakePool.getStakerInfoManyOf(wallet_2, [xusdUsdaPoolAddress]);
+    call.result.expectList()[0].expectTuple()["total-staked"].expectUintWithDecimals(0);
+
+    call = await chain.callReadOnlyFn("SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-amm-swap-pool", "get-balance", [
+      types.uint(4),
+      types.principal(wallet_2.address),
+    ], wallet_2.address);
+    call.result.expectOk().expectUint(10000 * 100000000);
+
+    call = await chain.callReadOnlyFn("SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-amm-swap-pool", "get-balance", [
+      types.uint(4),
+      types.principal(Utils.qualifiedName("arkadiko-stake-pool-lp-v2-1")),
+    ], wallet_2.address);
+    call.result.expectOk().expectUint(0);
   }
 });

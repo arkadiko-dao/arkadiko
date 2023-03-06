@@ -196,6 +196,9 @@ path = "contracts/arkadiko-swap-token-wstx-xbtc.clar"
 [contracts.arkadiko-swap-token-xbtc-usda]
 path = "contracts/arkadiko-swap-token-xbtc-usda.clar"
 
+[contracts.arkadiko-helper-token-xusd-usda]
+path = "contracts/arkadiko-helper-token-xusd-usda.clar"
+
 [contracts.wrapped-stx-token]
 path = "contracts/wrapped-stx-token.clar"
 
