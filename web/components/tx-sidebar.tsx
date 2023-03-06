@@ -12,7 +12,7 @@ import { StyledIcon } from './ui/styled-icon';
 
 const DEFAULT_NETWORKS = [
   { name: 'Stacks', key: 'stacks', url: 'https://stacks-node-api.mainnet.stacks.co' },
-  { name: 'Syvita', key: 'syvita', url: 'https://mainnet.syvita.org' },
+  { name: 'ALEX', key: 'alex', url: 'https://stacks-node-api.alexlab.co/' },
 ];
 
 const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS || '';

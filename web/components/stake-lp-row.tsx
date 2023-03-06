@@ -4,12 +4,12 @@ import { tokenList } from '@components/token-swap-list';
 import { Disclosure } from '@headlessui/react';
 import { Tooltip } from '@blockstack/ui';
 import { Placeholder } from './ui/placeholder';
-import { NavLink as RouterLink } from 'react-router-dom';
 import { StyledIcon } from './ui/styled-icon';
 
 interface StakeLpRowProps {}
 
 export const StakeLpRow: React.FC<StakeLpRowProps> = ({
+  foreign,
   loadingApy,
   loadingData,
   canStake,
@@ -25,6 +25,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
   claimLpPendingRewards,
   stakeLpPendingRewards,
   getLpRoute,
+  decimals
 }) => {
   return (
     <Disclosure as="tbody" className="bg-white dark:bg-zinc-800">
@@ -46,16 +47,30 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                   />
                 </div>
                 <p className="mt-2 sm:mt-0 sm:ml-4">
-                  <span className="block text-gray-500 dark:text-zinc-400">
+                  {foreign ? (
+                    <span className="block text-gray-500 dark:text-zinc-400">
                     <Tooltip
                       shouldWrapChildren={true}
-                      label={`ARKV1${tokenList[tokenListItemX].name}${tokenList[tokenListItemY].name}`}
+                      label={`xUSD/USDA AMM Pool Token`}
                     >
-                      Arkadiko V1
+                      ALEX AMM
                       <br />
                       {tokenList[tokenListItemX].name}/{tokenList[tokenListItemY].name}
+                      {parseInt(apy, 10) === 0 ? `(DEPRECATED)` : ``}
                     </Tooltip>
                   </span>
+                  ) : (
+                    <span className="block text-gray-500 dark:text-zinc-400">
+                      <Tooltip
+                        shouldWrapChildren={true}
+                        label={`ARKV1${tokenList[tokenListItemX].name}${tokenList[tokenListItemY].name}`}
+                      >
+                        Arkadiko V1
+                        <br />
+                        {tokenList[tokenListItemX].name}/{tokenList[tokenListItemY].name}
+                      </Tooltip>
+                    </span>
+                  )}
                 </p>
               </div>
             </td>
@@ -88,7 +103,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                   >
                     <div className="flex items-center">
                       <p className="font-semibold">
-                        {microToReadable(balance).toLocaleString(undefined, {
+                        {microToReadable(balance, decimals).toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 6,
                         })}{' '}
@@ -133,7 +148,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                   >
                     <div className="flex items-center">
                       <p className="font-semibold">
-                        {microToReadable(stakedAmount).toLocaleString(undefined, {
+                        {microToReadable(stakedAmount, decimals).toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 6,
                         })}{' '}
@@ -184,8 +199,9 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
           </tr>
           <Disclosure.Panel as="tr" className="bg-gray-50 dark:bg-zinc-700">
             <td className="px-6 py-4 text-sm whitespace-nowrap">
-              <RouterLink
-                to={getLpRoute}
+              <a
+                href={getLpRoute}
+                target={foreign ? "_blank" : ""}
                 className={`inline-flex items-center px-4 py-2 text-sm leading-4 border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
                   balance > 0
                     ? 'text-indigo-700 bg-indigo-100 hover:bg-indigo-200'
@@ -193,7 +209,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                 }`}
               >
                 {balance > 0 ? `Add LP` : `Get LP`}
-              </RouterLink>
+              </a>
             </td>
             <td className="px-6 py-4 text-sm whitespace-nowrap" />
             <td className="px-6 py-4 text-sm whitespace-nowrap">

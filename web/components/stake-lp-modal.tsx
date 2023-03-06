@@ -10,7 +10,7 @@ import {
   uintCV,
   createAssetInfo,
   FungibleConditionCode,
-  makeStandardFungiblePostCondition,
+  makeStandardFungiblePostCondition
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
@@ -23,6 +23,7 @@ export const StakeLpModal = ({
   apy,
   balanceName,
   tokenName,
+  decimals
 }) => {
   const [state, setState] = useContext(AppContext);
   const [errors, setErrors] = useState<string[]>([]);
@@ -34,16 +35,16 @@ export const StakeLpModal = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const stakeMaxAmount = () => {
-    setStakeAmount(state.balance[balanceName] / 1000000);
+    setStakeAmount(state.balance[balanceName] / Math.pow(10, decimals));
   };
 
   const onInputStakeChange = (event: any) => {
     const value = event.target.value;
     // trying to stake
-    if (value > state.balance[balanceName] / 1000000) {
+    if (value > state.balance[balanceName] / Math.pow(10, decimals)) {
       if (errors.length < 1) {
         setErrors(
-          errors.concat([`You cannot stake more than ${state.balance[balanceName] / 1000000} DIKO`])
+          errors.concat([`You cannot stake more than ${state.balance[balanceName] / Math.pow(10, decimals)} LP tokens`])
         );
       }
       setIsStakeButtonDisabled(true);
@@ -55,10 +56,11 @@ export const StakeLpModal = ({
   };
 
   const stake = async () => {
-    const amount = uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0)));
+    const amount = uintCV(Number((parseFloat(stakeAmount) * Math.pow(10, decimals)).toFixed(0)));
     let contractName = 'arkadiko-stake-pool-diko-usda-v1-1';
     let tokenContract = 'arkadiko-swap-token-diko-usda';
     let ftContract = 'diko-usda';
+    let assetContractAddress = contractAddress;
     if (balanceName === 'wstxusda') {
       contractName = 'arkadiko-stake-pool-wstx-usda-v1-1';
       tokenContract = 'arkadiko-swap-token-wstx-usda';
@@ -75,40 +77,79 @@ export const StakeLpModal = ({
       contractName = 'arkadiko-stake-pool-xbtc-usda-v1-1';
       tokenContract = 'arkadiko-swap-token-xbtc-usda';
       ftContract = 'xbtc-usda';
+    } else if (balanceName === 'xusdusda') {
+      contractName = 'arkadiko-stake-pool-xusd-usda-v1-4';
+      tokenContract = 'token-amm-swap-pool';
+      assetContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
+      ftContract = 'amm-swap-pool';
+    } else if (balanceName === 'xusdusda2') {
+      contractName = 'arkadiko-stake-pool-xusd-usda-v1-5';
+      tokenContract = 'token-amm-swap-pool';
+      assetContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
+      ftContract = 'amm-swap-pool';
     }
+    
+    console.log(assetContractAddress, tokenContract, ftContract);
     const postConditions = [
       makeStandardFungiblePostCondition(
         stxAddress || '',
         FungibleConditionCode.Equal,
         amount.value,
-        createAssetInfo(contractAddress, tokenContract, ftContract)
+        createAssetInfo(assetContractAddress, tokenContract, ftContract)
       ),
     ];
 
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-registry-v1-1',
-      functionName: 'stake',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-        contractPrincipalCV(contractAddress, contractName),
-        contractPrincipalCV(contractAddress, tokenContract),
-        amount,
-      ],
-      postConditions,
-      onFinish: data => {
-        console.log('finished broadcasting staking tx!', data);
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-        setShowStakeModal(false);
-      },
-      anchorMode: AnchorMode.Any,
-    });
+    if (balanceName === 'xusdusda' || balanceName === 'xusdusda2') {
+      await doContractCall({
+        network,
+        contractAddress,
+        stxAddress,
+        contractName: contractName,
+        functionName: 'stake',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          contractPrincipalCV(assetContractAddress, tokenContract),
+          amount,
+        ],
+        postConditions,
+        onFinish: data => {
+          console.log('finished broadcasting staking tx!', data);
+          setState(prevState => ({
+            ...prevState,
+            currentTxId: data.txId,
+            currentTxStatus: 'pending',
+          }));
+          setShowStakeModal(false);
+        },
+        anchorMode: AnchorMode.Any,
+      });
+
+    } else {
+      await doContractCall({
+        network,
+        contractAddress,
+        stxAddress,
+        contractName: 'arkadiko-stake-registry-v1-1',
+        functionName: 'stake',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          contractPrincipalCV(contractAddress, contractName),
+          contractPrincipalCV(assetContractAddress, tokenContract),
+          amount,
+        ],
+        postConditions,
+        onFinish: data => {
+          console.log('finished broadcasting staking tx!', data);
+          setState(prevState => ({
+            ...prevState,
+            currentTxId: data.txId,
+            currentTxStatus: 'pending',
+          }));
+          setShowStakeModal(false);
+        },
+        anchorMode: AnchorMode.Any,
+      });
+    }
   };
 
   const lpPairTokenX = tokenList.findIndex(obj => obj.name == tokenName.split('/').slice(0, 1));
@@ -151,7 +192,7 @@ export const StakeLpModal = ({
       </p>
       <div className="mt-6">
         <InputAmount
-          balance={microToReadable(state.balance[balanceName]).toLocaleString(undefined, {
+          balance={microToReadable(state.balance[balanceName], decimals).toLocaleString(undefined, {
             minimumFractionDigits: 2,
             maximumFractionDigits: 6,
           })}

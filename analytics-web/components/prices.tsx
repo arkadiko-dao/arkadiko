@@ -103,7 +103,7 @@ export const Prices: React.FC = () => {
     {
       token: 'USDA',
       logo: tokenList[0].logo,
-      price: usdaPrice / 1000000,
+      price: usdaPrice / 100000000,
       unit: '$',
       block: usdaBlockUpdate,
       blockAgo: usdaBlockAgoUpdate,
