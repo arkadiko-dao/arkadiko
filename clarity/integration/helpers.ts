@@ -388,3 +388,23 @@ export const getStackerInfo = async (
 
   return json;
 }
+
+export const getTokensToStack = async (
+  network: StacksNetwork,
+  stackerName: string
+) => {
+  const supplyCall = await callReadOnlyFunction({
+    contractAddress: Accounts.DEPLOYER.stxAddress,
+    contractName: "arkadiko-stx-reserve-v1-1",
+    functionName: "get-tokens-to-stack",
+    functionArgs: [
+      stringAsciiCV(stackerName),
+    ],
+    senderAddress: Accounts.DEPLOYER.stxAddress,
+    network: network,
+  });
+  const json = cvToJSON(supplyCall);
+  console.log('STACKER INFO JSON:', json);
+
+  return json;
+}

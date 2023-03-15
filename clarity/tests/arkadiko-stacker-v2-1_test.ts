@@ -311,7 +311,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(21001000);
 
     let call = stacker.getStackerInfo();
-    console.log(call);
+    console.log("stacker info", call);
 
     // another vault
     vaultManager.createVault(wallet_1, "STX-A", 21000000, 1000, true, true);
@@ -320,9 +320,9 @@ Clarinet.test({
     chain.mineEmptyBlock(2050);
 
     result = stacker.stackIncrease("stacker-2", 21000000);
-    console.log(result);
+    console.log("stack increase:", result);
 
     result = stacker.stackExtend(3);
-    console.log(result);
+    console.log("stack extend:", result);
   }
 });

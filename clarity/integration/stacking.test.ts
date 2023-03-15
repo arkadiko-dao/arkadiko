@@ -3,6 +3,7 @@ import {
   DEFAULT_EPOCH_TIMELINE,
   getBitcoinBlockHeight,
   getNetworkIdFromEnv,
+  getTokensToStack,
 } from "./helpers";
 import {
   broadcastStackSTX,
@@ -41,9 +42,8 @@ describe("testing stacking under epoch 2.1", () => {
 
     console.log("poxInfo", poxInfo);
 
-
     let response = await createVault(
-      200000, // 200k stx
+      21000000, // 21M stx
       10000,
       network,
       Accounts.WALLET_1,
@@ -55,6 +55,9 @@ describe("testing stacking under epoch 2.1", () => {
     // @ts-ignore
     expect(response.error).toBeUndefined();
 
+    const tokensToStack = await getTokensToStack(network, "stacker");
+    console.log('Tokens To Stack: ', tokensToStack);
+
     let cycles = 1;
     response = await initiateStacking(
       network,
@@ -62,7 +65,7 @@ describe("testing stacking under epoch 2.1", () => {
       poxInfo.current_burnchain_block_height,
       cycles,
       fee,
-      0
+      88
     );
     var blockResult = await orchestrator.waitForNextStacksBlock();
     console.log('Initiate stacking:', response);
