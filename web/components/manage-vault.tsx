@@ -284,11 +284,12 @@ export const ManageVault = ({ match }) => {
     };
 
     if (vault?.id) {
-      if (vault['collateralType'].toLowerCase().includes('stx')) {
+      const collateralType = vault['collateralType'].toLowerCase();
+      if (collateralType.includes('stx')) {
         setCanStackCollateral(true);
         fetchYield();
       }
-      setDecimals(vault['collateralType'].toLowerCase().includes('stx') ? 1000000 : 100000000);
+      setDecimals(['stx-a', 'stx-b', 'xbtc-a', 'btc'].includes(collateralType) ? 1000000 : 100000000);
       fetchFees();
       fetchStackerHeight();
       fetchCollateralToDebtRatio();
