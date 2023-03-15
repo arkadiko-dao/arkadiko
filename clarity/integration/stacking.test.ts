@@ -39,6 +39,9 @@ describe("testing stacking under epoch 2.1", () => {
     await orchestrator.waitForStacksBlockAnchoredOnBitcoinBlockOfHeight(timeline.pox_2_activation + 1, 5, true);
     poxInfo = await getPoxInfo(network);
 
+    console.log("poxInfo", poxInfo);
+
+
     let response = await createVault(
       200000, // 200k stx
       10000,
@@ -47,25 +50,30 @@ describe("testing stacking under epoch 2.1", () => {
       fee,
       0
     );
-    console.log('1', response);
+    await orchestrator.waitForNextStacksBlock();
+    console.log('Create vault 1:', response);
     // @ts-ignore
     expect(response.error).toBeUndefined();
 
     let cycles = 1;
     response = await initiateStacking(
       network,
-      Accounts.WALLET_1,
+      Accounts.DEPLOYER,
       poxInfo.current_burnchain_block_height,
       cycles,
       fee,
-      1
+      0
     );
-    console.log('2', response);
+    var blockResult = await orchestrator.waitForNextStacksBlock();
+    console.log('Initiate stacking:', response);
+    console.log('Initiate stacking:', JSON.stringify(blockResult, null, 2));
+
     // @ts-ignore
     expect(response.error).toBeUndefined();
 
+
     poxInfo = await getPoxInfo(network);
-    console.log('3', poxInfo);
+    console.log('PoX info', poxInfo);
 
     response = await createVault(
       200000, // 200k stx
@@ -75,7 +83,9 @@ describe("testing stacking under epoch 2.1", () => {
       fee,
       0
     );
-    console.log('4', response);
+    var blockResult = await orchestrator.waitForNextStacksBlock();
+    console.log('Create vault 2', response);
+    console.log('Create vault 2', JSON.stringify(blockResult, null, 2));
     // @ts-ignore
     expect(response.error).toBeUndefined();
 
@@ -86,21 +96,23 @@ describe("testing stacking under epoch 2.1", () => {
     await orchestrator.waitForStacksBlockAnchoredOnBitcoinBlockOfHeight(timeline.pox_2_activation + 1, 5, true);
 
     const info = await getStackerInfo(network);
-    console.log('info: ', info);
+    console.log('Stacker info: ', info);
 
     let response2 = await stackIncrease(
       network,
       Accounts.DEPLOYER,
       'stacker-2',
       fee,
-      0
+      1
     );
-    console.log('5', response2);
+    var blockResult = await orchestrator.waitForNextStacksBlock();
+    console.log('Stack increase', response2);
+    console.log('Stack increase', JSON.stringify(blockResult, null, 2));
 
     let chainUpdate = await waitForNextRewardPhase(network, orchestrator, 1);
     poxInfo = await getPoxInfo(network);
-    console.log(poxInfo);
-    console.log(chainUpdate);
+    console.log("PoX info", poxInfo);
+    console.log("Chain update:", chainUpdate);
   });
 
 //   it("submitting stacks-stx through pox-2 contract during epoch 2.0 should succeed", async () => {
