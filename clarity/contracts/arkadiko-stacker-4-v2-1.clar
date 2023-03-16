@@ -19,7 +19,7 @@
 (define-data-var previous-stacking-unlock-burn-height uint u0) ;; when was previous cycle over (for unlocks)
 (define-data-var stacking-stx-stacked uint u0) ;; how many stx did we stack in this cycle
 (define-data-var stacker-shutdown-activated bool false)
-(define-data-var stacker-name (string-ascii 256) "stacker")
+(define-data-var stacker-name (string-ascii 256) "stacker-4")
 
 (define-read-only (get-stacking-unlock-burn-height)
   (ok (var-get stacking-unlock-burn-height))
@@ -82,7 +82,7 @@
             (var-set stacking-unlock-burn-height (get unlock-burn-height result))
             (var-set stacking-stx-stacked (get lock-amount result))
             (try! (contract-call? .arkadiko-freddie-v1-1 set-stacking-unlock-burn-height (var-get stacker-name) (get unlock-burn-height result)))
-            (try! (contract-call? .arkadiko-stx-reserve-v1-1 set-next-stacker-name "stacker-2"))
+            (try! (contract-call? .arkadiko-stx-reserve-v1-1 set-next-stacker-name "stacker"))
             (ok (get lock-amount result))
           )
           error (begin
