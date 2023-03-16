@@ -73,7 +73,6 @@
           result (begin
             (print result)
             (print (stx-account (as-contract tx-sender)))
-            (var-set previous-stacking-unlock-burn-height (get unlock-burn-height result))
             (var-set stacking-unlock-burn-height (get unlock-burn-height result))
             (var-set stacking-stx-stacked (get lock-amount result))
             (try! (contract-call? .arkadiko-freddie-v1-1 set-stacking-unlock-burn-height (var-get stacker-name) (get unlock-burn-height result)))
@@ -129,7 +128,6 @@
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-extend extend-count pox-addr))
       result (begin
         (print result)
-        (var-set previous-stacking-unlock-burn-height (var-get stacking-unlock-burn-height))
         (var-set stacking-unlock-burn-height (get unlock-burn-height result))
         (try! (contract-call? .arkadiko-freddie-v1-1 set-stacking-unlock-burn-height (var-get stacker-name) (get unlock-burn-height result)))
         (ok (get unlock-burn-height result))
@@ -174,8 +172,7 @@
     (asserts! (is-eq false (get is-liquidated vault)) (err ERR-VAULT-LIQUIDATED))
     (asserts! (is-eq true (get revoked-stacking vault)) (err ERR-STILL-STACKING))
     ;; A user indicates to unstack through the `toggle-stacking` method on freddie (revoked-stacking === true)
-    ;; but then he should only be able to unstack if the (previous!) burn height passed
-    ;; that's why we keep an additional previous burn height variable
+    ;; but then he should only be able to unstack if the burn height passed
     (asserts!
       (or
         (is-eq u0 (var-get stacking-stx-stacked))
