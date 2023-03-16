@@ -16,17 +16,12 @@
 (define-constant ERR-STILL-STACKING u197)
 
 (define-data-var stacking-unlock-burn-height uint u0) ;; when is this cycle over
-(define-data-var previous-stacking-unlock-burn-height uint u0) ;; when was previous cycle over (for unlocks)
 (define-data-var stacking-stx-stacked uint u0) ;; how many stx did we stack in this cycle
 (define-data-var stacker-shutdown-activated bool false)
 (define-data-var stacker-name (string-ascii 256) "stacker-3")
 
 (define-read-only (get-stacking-unlock-burn-height)
   (ok (var-get stacking-unlock-burn-height))
-)
-
-(define-read-only (get-previous-stacking-unlock-burn-height)
-  (ok (var-get previous-stacking-unlock-burn-height))
 )
 
 (define-read-only (get-stacking-stx-stacked)
@@ -78,7 +73,6 @@
           result (begin
             (print result)
             (print (stx-account (as-contract tx-sender)))
-            (var-set previous-stacking-unlock-burn-height (get unlock-burn-height result))
             (var-set stacking-unlock-burn-height (get unlock-burn-height result))
             (var-set stacking-stx-stacked (get lock-amount result))
             (try! (contract-call? .arkadiko-freddie-v1-1 set-stacking-unlock-burn-height (var-get stacker-name) (get unlock-burn-height result)))
@@ -134,7 +128,6 @@
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-extend extend-count pox-addr))
       result (begin
         (print result)
-        (var-set previous-stacking-unlock-burn-height (var-get stacking-unlock-burn-height))
         (var-set stacking-unlock-burn-height (get unlock-burn-height result))
         (try! (contract-call? .arkadiko-freddie-v1-1 set-stacking-unlock-burn-height (var-get stacker-name) (get unlock-burn-height result)))
         (ok (get unlock-burn-height result))
@@ -157,43 +150,5 @@
     (as-contract
       (stx-transfer? ustx-amount tx-sender (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
     )
-  )
-)
-
-;; This method can be executed by anyone
-;; after a stacking cycle ends to allow withdrawal of STX collateral
-;; Only mark vaults that have revoked stacking and not been liquidated
-;; must be called before a new `stack-extend` method call (stacking cycle)
-(define-public (enable-vault-withdrawals (vault-id uint))
-  (let (
-    (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
-  )
-    (asserts!
-      (and
-        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
-        (is-eq (var-get stacker-shutdown-activated) false)
-      )
-      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
-    )
-    (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-WRONG-COLLATERAL-TOKEN))
-    (asserts! (is-eq false (get is-liquidated vault)) (err ERR-VAULT-LIQUIDATED))
-    (asserts! (is-eq true (get revoked-stacking vault)) (err ERR-STILL-STACKING))
-    ;; A user indicates to unstack through the `toggle-stacking` method on freddie (revoked-stacking === true)
-    ;; but then he should only be able to unstack if the (previous!) burn height passed
-    ;; that's why we keep an additional previous burn height variable
-    (asserts!
-      (or
-        (is-eq u0 (var-get stacking-stx-stacked))
-        (>= burn-block-height (var-get previous-stacking-unlock-burn-height))
-      )
-      (err ERR-BURN-HEIGHT-NOT-REACHED)
-    )
-
-    (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
-        stacked-tokens: u0,
-        updated-at-block-height: block-height
-      }))
-    )
-    (ok true)
   )
 )

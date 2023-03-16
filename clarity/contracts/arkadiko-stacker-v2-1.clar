@@ -16,17 +16,12 @@
 (define-constant ERR-STILL-STACKING u197)
 
 (define-data-var stacking-unlock-burn-height uint u0) ;; when is this cycle over
-(define-data-var previous-stacking-unlock-burn-height uint u0) ;; when was previous cycle over (for unlocks)
 (define-data-var stacking-stx-stacked uint u0) ;; how many stx did we stack in this cycle
 (define-data-var stacker-shutdown-activated bool false)
 (define-data-var stacker-name (string-ascii 256) "stacker")
 
 (define-read-only (get-stacking-unlock-burn-height)
   (ok (var-get stacking-unlock-burn-height))
-)
-
-(define-read-only (get-previous-stacking-unlock-burn-height)
-  (ok (var-get previous-stacking-unlock-burn-height))
 )
 
 (define-read-only (get-stacking-stx-stacked)
@@ -184,7 +179,7 @@
     (asserts!
       (or
         (is-eq u0 (var-get stacking-stx-stacked))
-        (>= burn-block-height (var-get previous-stacking-unlock-burn-height))
+        (>= burn-block-height (var-get stacking-unlock-burn-height))
       )
       (err ERR-BURN-HEIGHT-NOT-REACHED)
     )
