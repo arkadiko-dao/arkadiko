@@ -25,7 +25,7 @@ export const MarketCap: React.FC = ({ lastDikoPrice, lastUsdaPrice }) => {
       const json = cvToJSON(supplyCall);
 
       const totalSupply = Number(json.value.value) / 1000000;
-      const investorTokens = 1104000 + 2363221;
+      const investorTokens = 1104000 + 3330518;
       const mmTokens = 0;
       const foundationTokens = 29000000 - 5800000;
       const teamTokens = 21000000;
@@ -34,7 +34,7 @@ export const MarketCap: React.FC = ({ lastDikoPrice, lastUsdaPrice }) => {
       const burnedTokens = 58000;
 
       setIsLoading(false);
-      setDikoTotalSupply(totalSupply);
+      setDikoTotalSupply(100000000);
       const float = (investorTokens + emissionTokens + mmTokens - burnedTokens);
       setDikoFloat(float);
       setDikoMarketCap(lastDikoPrice * float);
