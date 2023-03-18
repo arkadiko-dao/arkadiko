@@ -270,6 +270,36 @@ export const broadcastStackSTX = async (
   return result;
 };
 
+export const updatePrice = async(
+  price: number,
+  network: StacksNetwork,
+  account: Account,
+  fee: number,
+  nonce: number
+): Promise<TxBroadcastResult> => {
+  const txOptions = {
+    contractAddress: Accounts.DEPLOYER.stxAddress,
+    contractName: 'arkadiko-oracle-v1-1',
+    functionName: "update-price",
+    functionArgs: [
+      stringAsciiCV('STX'),
+      uintCV(price * 1000000), 
+      uintCV(1000000),
+    ],
+    fee,
+    nonce,
+    network,
+    anchorMode: AnchorMode.OnChainOnly,
+    postConditionMode: PostConditionMode.Allow,
+    senderKey: account.secretKey,
+  };
+  // @ts-ignore
+  const tx = await makeContractCall(txOptions);
+  // Broadcast transaction to our Devnet stacks node
+  const result = await broadcastTransaction(tx, network);
+  return result;
+}
+
 export const createVault = async(
   collateralAmount: number,
   usda: number,
@@ -348,6 +378,7 @@ export const stackIncrease = async (
   network: StacksNetwork,
   account: Account,
   stackerName: string,
+  additionalTokens: number,
   fee: number,
   nonce: number
 ): Promise<TxBroadcastResult> => {
@@ -356,7 +387,8 @@ export const stackIncrease = async (
     contractName: 'arkadiko-stacker-v2-1',
     functionName: "stack-increase",
     functionArgs: [
-      stringAsciiCV(stackerName)
+      stringAsciiCV(stackerName),
+      uintCV(additionalTokens * 1000000)
     ],
     fee,
     nonce,

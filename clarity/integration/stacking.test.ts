@@ -4,6 +4,7 @@ import {
   getBitcoinBlockHeight,
   getNetworkIdFromEnv,
   getTokensToStack,
+  updatePrice,
 } from "./helpers";
 import {
   broadcastStackSTX,
@@ -35,29 +36,48 @@ describe("testing stacking under epoch 2.1", () => {
 
   it("test whole flow with initiate, increase stacking and extend stacking", async () => {
     const network = new StacksTestnet({ url: orchestrator.getStacksNodeUrl() });
-    let poxInfo = await getPoxInfo(network);
     const fee = 1000;
+
+    // Advance to make sure PoX-2 is activated
     await orchestrator.waitForStacksBlockAnchoredOnBitcoinBlockOfHeight(timeline.pox_2_activation + 1, 5, true);
-    poxInfo = await getPoxInfo(network);
 
-    console.log("poxInfo", poxInfo);
+    // PoX info
+    let poxInfo = await getPoxInfo(network);
+    console.log("POX - 1", poxInfo);
+    expect(poxInfo.next_cycle.id).toBe(3);
+    expect(poxInfo.next_cycle.stacked_ustx).toBe(0);
 
-    let response = await createVault(
+    // Set STX price to $2
+    let response = await updatePrice(
+      2,
+      network,
+      Accounts.DEPLOYER,
+      fee,
+      88
+    );
+    let blockResult = await orchestrator.waitForNextStacksBlock();
+    let metadata = blockResult.new_blocks[0].block.transactions[1].metadata;
+    expect(response.error).toBeUndefined();
+    expect((metadata as any)["success"]).toBe(true);
+    expect((metadata as any)["result"]).toBe("(ok u2000000)");
+    // console.log('Update price:', JSON.stringify(metadata, null, 2));
+
+    // Create vault with 21M STX
+    response = await createVault(
       21000000, // 21M stx
-      10000,
+      10,
       network,
       Accounts.WALLET_1,
       fee,
       0
     );
-    await orchestrator.waitForNextStacksBlock();
-    console.log('Create vault 1:', response);
-    // @ts-ignore
+    blockResult = await orchestrator.waitForNextStacksBlock();
+    metadata = blockResult.new_blocks[0].block.transactions[1].metadata;
     expect(response.error).toBeUndefined();
+    expect((metadata as any)["success"]).toBe(true);
+    expect((metadata as any)["result"]).toBe("(ok u10000000)");
 
-    const tokensToStack = await getTokensToStack(network, "stacker");
-    console.log('Tokens To Stack: ', tokensToStack);
-
+    // Initiate stacking
     let cycles = 1;
     response = await initiateStacking(
       network,
@@ -65,18 +85,18 @@ describe("testing stacking under epoch 2.1", () => {
       poxInfo.current_burnchain_block_height,
       cycles,
       fee,
-      88
+      89
     );
-    var blockResult = await orchestrator.waitForNextStacksBlock();
-    console.log('Initiate stacking:', response);
-    console.log('Initiate stacking:', JSON.stringify(blockResult, null, 2));
-
-    // @ts-ignore
+    blockResult = await orchestrator.waitForNextStacksBlock();
+    metadata = blockResult.new_blocks[0].block.transactions[1].metadata;
     expect(response.error).toBeUndefined();
+    expect((metadata as any)["success"]).toBe(true);
+    expect((metadata as any)["result"]).toBe("(ok u21000000000000)");
 
-
+    // PoX info is now updated
     poxInfo = await getPoxInfo(network);
-    console.log('PoX info', poxInfo);
+    expect(poxInfo.next_cycle.id).toBe(3);
+    expect(poxInfo.next_cycle.stacked_ustx).toBe(21000000000000);
 
     response = await createVault(
       200000, // 200k stx
@@ -86,36 +106,55 @@ describe("testing stacking under epoch 2.1", () => {
       fee,
       0
     );
-    var blockResult = await orchestrator.waitForNextStacksBlock();
-    console.log('Create vault 2', response);
-    console.log('Create vault 2', JSON.stringify(blockResult, null, 2));
-    // @ts-ignore
+    blockResult = await orchestrator.waitForNextStacksBlock();
+    metadata = blockResult.new_blocks[0].block.transactions[1].metadata;
     expect(response.error).toBeUndefined();
+    expect((metadata as any)["success"]).toBe(true);
+    expect((metadata as any)["result"]).toBe("(ok u10000000000)");
+    console.log('vault 2:', JSON.stringify(metadata, null, 2));
 
+    // PoX still the same
     poxInfo = await getPoxInfo(network);
-    console.log(poxInfo);
+    expect(poxInfo.next_cycle.id).toBe(3);
+    expect(poxInfo.next_cycle.stacked_ustx).toBe(21000000000000);
+
+    // poxInfo = await getPoxInfo(network);
+    // console.log(poxInfo);
 
     // Advance until end of stacking
-    await orchestrator.waitForStacksBlockAnchoredOnBitcoinBlockOfHeight(timeline.pox_2_activation + 1, 5, true);
+    // await orchestrator.waitForStacksBlockAnchoredOnBitcoinBlockOfHeight(timeline.pox_2_activation + 1, 5, true);
+    // let chainUpdate = await waitForNextRewardPhase(network, orchestrator, 1);
+    // console.log('next phase:', JSON.stringify(chainUpdate, null, 2));
+
+
+    poxInfo = await getPoxInfo(network);
+    console.log('PoX 3', poxInfo);
 
     const info = await getStackerInfo(network);
     console.log('Stacker info: ', info);
+    expect(info.value.locked.value).toBe("21000000000000");
 
-    let response2 = await stackIncrease(
+    response = await stackIncrease(
       network,
       Accounts.DEPLOYER,
-      'stacker-2',
+      'stacker',
+      200000,
       fee,
-      1
+      90
     );
-    var blockResult = await orchestrator.waitForNextStacksBlock();
-    console.log('Stack increase', response2);
-    console.log('Stack increase', JSON.stringify(blockResult, null, 2));
+    blockResult = await orchestrator.waitForNextStacksBlock();
+    metadata = blockResult.new_blocks[0].block.transactions[0].metadata;
+    console.log('stack increase:', JSON.stringify(response, null, 2));
+    expect(response.error).toBeUndefined();
+
+
+    // console.log('Stack increase', response2);
+    // console.log('Stack increase', JSON.stringify(blockResult, null, 2));
 
     let chainUpdate = await waitForNextRewardPhase(network, orchestrator, 1);
     poxInfo = await getPoxInfo(network);
-    console.log("PoX info", poxInfo);
-    console.log("Chain update:", chainUpdate);
+    console.log("PoX info 4", poxInfo);
+    // console.log("Chain update:", chainUpdate);
   });
 
 //   it("submitting stacks-stx through pox-2 contract during epoch 2.0 should succeed", async () => {
