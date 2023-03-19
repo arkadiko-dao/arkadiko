@@ -10,6 +10,8 @@ export const MarketCap: React.FC = ({ lastDikoPrice, lastUsdaPrice }) => {
   const [dikoMarketCap, setDikoMarketCap] = useState(0);
   const [dikoTotalSupply, setDikoTotalSupply] = useState(0);
   const [dikoFloat, setDikoFloat] = useState(0);
+  const [usdaFloat, setUsdaFloat] = useState(0);
+  const [usdaMarketCap, setUsdaMarketCap] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,6 +40,19 @@ export const MarketCap: React.FC = ({ lastDikoPrice, lastUsdaPrice }) => {
       const float = (investorTokens + emissionTokens + mmTokens - burnedTokens);
       setDikoFloat(float);
       setDikoMarketCap(lastDikoPrice * float);
+
+      const usdaSupplyCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: "usda-token",
+        functionName: "get-total-supply",
+        functionArgs: [],
+        senderAddress: contractAddress,
+        network: network,
+      });
+      const usdaJson = cvToJSON(usdaSupplyCall);
+      const calculatedUsda = Number(usdaJson.value.value) / 1000000;
+      setUsdaFloat(calculatedUsda);
+      setUsdaMarketCap(lastUsdaPrice * calculatedUsda);
     };
 
     if (lastDikoPrice > 0) {
@@ -57,8 +72,8 @@ export const MarketCap: React.FC = ({ lastDikoPrice, lastUsdaPrice }) => {
       name: 'USDA',
       logo: tokenList[0].logo,
       totalSupply: '—',
-      float: '—',
-      marketCap: '—',
+      float: usdaFloat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 }),
+      marketCap: usdaMarketCap.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
     },
   ];
 
