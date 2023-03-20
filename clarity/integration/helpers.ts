@@ -404,6 +404,37 @@ export const stackIncrease = async (
   return result;
 };
 
+export const stackExtend = async (
+  network: StacksNetwork,
+  account: Account,
+  fee: number,
+  nonce: number
+): Promise<TxBroadcastResult> => {
+  const { version, data } = decodeBtcAddress(account.btcAddress);
+  const address = { version: bufferCV(toBytes(new Uint8Array([version.valueOf()]))), hashbytes: bufferCV(data) };
+
+  const txOptions = {
+    contractAddress: Accounts.DEPLOYER.stxAddress,
+    contractName: 'arkadiko-stacker-v2-1',
+    functionName: "stack-extend",
+    functionArgs: [
+      uintCV(1),
+      tupleCV(address)
+    ],
+    fee,
+    nonce,
+    network,
+    anchorMode: AnchorMode.OnChainOnly,
+    postConditionMode: PostConditionMode.Allow,
+    senderKey: account.secretKey,
+  };
+  // @ts-ignore
+  const tx = await makeContractCall(txOptions);
+  // Broadcast transaction to our Devnet stacks node
+  const result = await broadcastTransaction(tx, network);
+  return result;
+};
+
 export const getStackerInfo = async (
   network: StacksNetwork
 ) => {
@@ -416,8 +447,6 @@ export const getStackerInfo = async (
     network: network,
   });
   const json = cvToJSON(supplyCall);
-  console.log('STACKER INFO JSON:', json);
-
   return json;
 }
 
@@ -436,7 +465,5 @@ export const getTokensToStack = async (
     network: network,
   });
   const json = cvToJSON(supplyCall);
-  console.log('STACKER INFO JSON:', json);
-
   return json;
 }
