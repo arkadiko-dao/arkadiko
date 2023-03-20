@@ -11,7 +11,9 @@ import {
   initiateStacking,
   createVault,
   getStackerInfo,
-  stackIncrease
+  stackIncrease,
+  getTokensToStack,
+  getNextStackerName
 } from "./helpers";
 import { Accounts } from "./constants";
 import { StacksTestnet } from "@stacks/network";
@@ -94,6 +96,8 @@ describe("testing stacking under epoch 2.1", () => {
     expect(poxInfo.next_cycle.stacked_ustx).toBe(21000000000000);
 
     // Create another vault
+    // This vault is actually assigned to `stacker-2`
+    // But it does not matter, as it's still possible to withraw this STX as `stacker`
     response = await createVault(
       200000, // 200k stx
       10000,
@@ -108,6 +112,16 @@ describe("testing stacking under epoch 2.1", () => {
     expect((metadata as any)["success"]).toBe(true);
     expect((metadata as any)["result"]).toBe("(ok u10000000000)");
 
+    // Next stacker name is updated
+    let nextStackerName = await getNextStackerName(network);
+    expect(nextStackerName.value).toBe("stacker-2");
+
+    // Tokens to stack updated
+    let tokensToStack = await getTokensToStack(network, "stacker");
+    expect(tokensToStack.value.value).toBe("21000000000000");
+    tokensToStack = await getTokensToStack(network, "stacker-2");
+    expect(tokensToStack.value.value).toBe("200000000000");
+
     // PoX still the same
     poxInfo = await getPoxInfo(network);
     expect(poxInfo.next_cycle.id).toBe(3);
@@ -115,7 +129,6 @@ describe("testing stacking under epoch 2.1", () => {
 
     // Advance until end of stacking
     let chainUpdate = await waitForNextRewardPhase(network, orchestrator, 1);
-    console.log('next phase:', JSON.stringify(chainUpdate, null, 2));
     
     // Get stacker info
     let info = await getStackerInfo(network);

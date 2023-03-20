@@ -467,3 +467,18 @@ export const getTokensToStack = async (
   const json = cvToJSON(supplyCall);
   return json;
 }
+
+export const getNextStackerName = async (
+  network: StacksNetwork,
+) => {
+  const supplyCall = await callReadOnlyFunction({
+    contractAddress: Accounts.DEPLOYER.stxAddress,
+    contractName: "arkadiko-stx-reserve-v1-1",
+    functionName: "get-next-stacker-name",
+    functionArgs: [],
+    senderAddress: Accounts.DEPLOYER.stxAddress,
+    network: network,
+  });
+  const json = cvToJSON(supplyCall);
+  return json;
+}
