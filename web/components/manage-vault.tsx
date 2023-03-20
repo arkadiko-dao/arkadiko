@@ -506,7 +506,7 @@ export const ManageVault = ({ match }) => {
         match={match}
         vault={vault}
         reserveName={reserveName}
-        decimals={decimals}
+        decimals={['xbtc-a'].includes(vault?.collateralType?.toLowerCase()) ? decimals * 100 : decimals}
       />
 
       <VaultWithdrawModal
