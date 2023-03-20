@@ -579,6 +579,17 @@ class VaultAuctionV4 {
     this.deployer = deployer;
   }
 
+  getStxUnlocks(height: number) {
+    return this.chain.callReadOnlyFn(
+      "arkadiko-auction-engine-v4-4",
+      "get-stx-unlocks",
+      [
+        types.uint(height)
+      ],
+      this.deployer.address,
+    );
+  }
+
   getLastAuctionId() {
     return this.chain.callReadOnlyFn(
       "arkadiko-auction-engine-v4-4",

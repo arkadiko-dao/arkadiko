@@ -188,7 +188,6 @@ Clarinet.test({
   }
 });
 
-
 Clarinet.test({
   name: "liquidation-rewards: claim xSTX from stacking vault",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -255,7 +254,7 @@ Clarinet.test({
     result = liquidationRewards.claimRewards(wallet_1, 0, "xstx-token");
     result.expectOk().expectUintWithDecimals(1111.111111);
 
-            // No rewards claimed yet
+    // No rewards claimed yet
     call = await liquidationRewards.getRewardsClaimed(wallet_1.address, 0);
     call.result.expectTuple()['claimed'].expectBool(true);
   }

@@ -27,6 +27,11 @@ import {
   LiquidationRewards
 } from './models/arkadiko-tests-liquidation-pool.ts';
 
+import { 
+  Stacker2,
+  StxReserve
+} from './models/arkadiko-tests-stacker.ts';
+
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 Clarinet.test({ name: "auction engine: STX collateral",
@@ -213,7 +218,6 @@ Clarinet.test({ name: "auction engine: liquidate stacking STX vault without enou
   }
 });
 
-
 Clarinet.test({ name: "auction engine: add fee and withdraw fees",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -285,7 +289,6 @@ Clarinet.test({ name: "auction engine: add fee and withdraw fees",
 
   }
 });
-
 
 Clarinet.test({ name: "auction engine: liquidate non-stacking STX vault, 1 wallet",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -848,7 +851,6 @@ Clarinet.test({ name: "auction engine: can not start auction with wrong token or
   }
 });
 
-
 Clarinet.test({ name: "auction engine: can not burn USDA with wrong token or reserve",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -908,5 +910,62 @@ Clarinet.test({ name: "auction engine: can not burn USDA with wrong token or res
     // Wrong reserve (vault not stacking so should be stx-reserve)
     result = vaultAuction.burnUsda(deployer, 2, "xstx-token", "arkadiko-sip10-reserve-v2-1");
     result.expectErr().expectUint(98);
+  }
+});
+
+Clarinet.test({
+  name: "auction engine: track unlocked STX",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let liquidationPool = new LiquidationPool(chain, deployer);
+    let liquidationRewards = new LiquidationRewards(chain, deployer);
+    let stxReserve = new StxReserve(chain, deployer);
+    let stacker = new Stacker2(chain, deployer);
+
+    // Initialize price of STX to $3 in the oracle
+    let result = oracleManager.updatePrice("STX", 3);
+    result = oracleManager.updatePrice("xSTX", 3);
+
+    // Create vaults
+    result = vaultManager.createVault(deployer, "STX-A", 21000000, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+    result = vaultManager.createVault(deployer, "STX-A", 1500, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    // Stack STX
+    let call:any = stxReserve.getTokensToStack("stacker");
+    call.result.expectOk().expectUintWithDecimals(21001500); 
+    result = stacker.initiateStacking(10, 1);
+    result.expectOk().expectUintWithDecimals(21001500);
+
+    // Deposit 1000 STX extra. This will not be stacked yet.
+    result =  vaultManager.deposit(deployer, 1, 1000);
+    result.expectOk().expectBool(true);
+
+    // Get unlock height
+    call = stacker.getStackingUnlockHeight();
+    call.result.expectOk().expectUint(2100);
+
+    // Upate price to $1.0
+    result = oracleManager.updatePrice("STX", 1);
+    result = oracleManager.updatePrice("xSTX", 1);
+
+    // Deposit 10K USDA in liquidation pool
+    result = liquidationPool.stake(wallet_1, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Start auction
+    result = vaultAuction.startAuction(deployer, 2, "xstx-token", "arkadiko-sip10-reserve-v2-1");
+    result.expectOk().expectBool(true);
+
+    // STX to unlock (1500 initial STX, the extra 1000 STX was not stacked)
+    call = vaultAuction.getStxUnlocks(2100);
+    call.result.expectTuple()['amount'].expectUintWithDecimals(1500);
   }
 });

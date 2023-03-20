@@ -23,6 +23,11 @@
 (define-data-var auction-fee uint u0)
 (define-data-var unlock-height-extra uint u0)
 
+(define-map stx-unlocks
+  { unlock-height: uint }
+  { amount: uint }
+)
+
 (define-map auctions
   { id: uint }
   {
@@ -38,6 +43,13 @@
     total-debt-burned: uint,
     ended-at: uint,
   }
+)
+
+(define-read-only (get-stx-unlocks (unlock-height uint))
+  (default-to
+    { amount: u0 }
+    (map-get? stx-unlocks { unlock-height: unlock-height })
+  )
 )
 
 (define-read-only (get-auction-by-id (id uint))
@@ -121,6 +133,8 @@
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
     (token-string (get collateral-token vault))
     (coll-token-address (unwrap-panic (contract-call? coll-type get-token-address (get collateral-type vault))))
+    (token-unlock-height (+ (get-unlock-height vault-id) (var-get unlock-height-extra)))
+    (tokens-unlocked (get amount (get-stx-unlocks token-unlock-height)))
   )
     (asserts! (not (shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
     (asserts! (is-eq (contract-of vault-manager) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "freddie"))) (err ERR-NOT-AUTHORIZED))
@@ -180,6 +194,14 @@
       ;; Add auction
       (map-set auctions { id: auction-id } auction)
       (var-set last-auction-id auction-id)
+
+      ;; Locked STX tracking
+      (if (is-eq token-unlock-height u0)
+        true
+        (begin
+          (map-set stx-unlocks { unlock-height: token-unlock-height } { amount: (+ tokens-unlocked (get stacked-tokens vault))})
+        )
+      )
 
       ;; Try to burn
       (try! (burn-usda auction-id oracle coll-type vault-manager ft reserve liquidation-pool liquidation-rewards))
