@@ -19,9 +19,9 @@ const mocknet = (env === 'mocknet');
 
 const STACKS_CORE_API_URL =
   (env === 'mocknet') ? "http://localhost:3999" :
-  (env === 'testnet') ? "https://stacks-node-api.testnet.stacks.co" :
+  (env === 'testnet') ? "https://api.testnet.hiro.so" :
   (env === 'regtest') ? "https://stacks-node-api.regtest.stacks.co" :
-  "https://stacks-node-api.mainnet.stacks.co";
+  "https://api.hiro.so";
 export const network = (env === 'mainnet') ? new StacksMainnet() : new StacksTestnet();
 network.coreApiUrl = STACKS_CORE_API_URL;
 

@@ -47,11 +47,11 @@ function resolveUrl() {
   if (env === 'mocknet') {
     return `http://localhost:${process.env.LOCAL_STACKS_API_PORT}`;
   } else if (env === 'testnet') {
-    return 'https://stacks-node-api.testnet.stacks.co';
+    return 'https://api.testnet.hiro.so';
   } else if (env === 'regtest') {
     return 'https://stacks-node-api.regtest.stacks.co';
   } else {
-    return 'https://stacks-node-api.mainnet.stacks.co';
+    return 'https://api.hiro.so';
   }
 }
 

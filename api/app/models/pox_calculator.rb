@@ -54,12 +54,12 @@ class PoxCalculator
     stacked_amount = 0
     total_sold = 0
     offset = 0
-    data = HTTParty.get("https://stacks-node-api.stacks.co/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-auction-engine-v4-1/transactions?limit=50&offset=#{offset}&unanchored=true")
+    data = HTTParty.get("https://api.hiro.so/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-auction-engine-v4-1/transactions?limit=50&offset=#{offset}&unanchored=true")
     results = data.parsed_response['results']
     while results.length > 0
       results.each do |d|
         txid = d['tx_id']
-        tx = HTTParty.get("https://stacks-node-api.mainnet.stacks.co/extended/v1/tx/#{txid}")
+        tx = HTTParty.get("https://api.hiro.so/extended/v1/tx/#{txid}")
         next if tx.parsed_response.nil? || tx.parsed_response['events'].length.zero?
         begin
           collateral_amount = tx.parsed_response['events'][0]['contract_log']['value']['repr'].split("(collateral u")[1].split(") ")[0]
@@ -93,7 +93,7 @@ class PoxCalculator
       puts "Total Collateral Sold: #{total_sold}"
       offset += 50
 
-      data = HTTParty.get("https://stacks-node-api.stacks.co/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-auction-engine-v4-1/transactions?limit=50&offset=#{offset}&unanchored=true")
+      data = HTTParty.get("https://api.hiro.so/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-auction-engine-v4-1/transactions?limit=50&offset=#{offset}&unanchored=true")
       results = data.parsed_response['results']
     end
   end

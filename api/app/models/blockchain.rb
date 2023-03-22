@@ -14,7 +14,7 @@ class Blockchain < ApplicationRecord
     SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-swap-v1-1
     SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-swap-v2-1
   ].freeze
-  STACKS_MAINNET_NODE_URL = 'https://stacks-node-api.mainnet.stacks.co'.freeze
+  STACKS_MAINNET_NODE_URL = 'https://api.hiro.so'.freeze
 
   def scan_transaction(tx_id)
     result = HTTParty.get("#{STACKS_MAINNET_NODE_URL}/extended/v1/tx/#{tx_id}")&.parsed_response
@@ -59,7 +59,7 @@ class Blockchain < ApplicationRecord
         function_name = res['contract_call']['function_name']
         args = res['contract_call']['function_args']
         if function_name == 'collateralize-and-mint'
-          vault_created = HTTParty.get("https://stacks-node-api.mainnet.stacks.co/extended/v1/tx/#{res['tx_id']}").parsed_response
+          vault_created = HTTParty.get("https://api.hiro.so/extended/v1/tx/#{res['tx_id']}").parsed_response
           params = vault_created['events'][-1]['contract_log']['value']['repr']
           id = params.split("(id ")[1].split(")")[0].gsub('u', '')
           vault = Vault.find_or_initialize_by(vault_id: id)
