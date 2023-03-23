@@ -24,12 +24,9 @@ Clarinet.test({
   name: "freddie: basic flow",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
     
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultLiquidator = new VaultLiquidator(chain, deployer);
-    let vaultAuction = new VaultAuction(chain, deployer);
 
     // Initialize price of STX to $1 in the oracle
     let result = oracleManager.updatePrice("STX", 1);

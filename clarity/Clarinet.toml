@@ -11,6 +11,9 @@ boot_contracts = ["pox", "costs-v2"]
 # check_checker = { trusted_sender = false, trusted_caller = false, callee_filter = false }
 
 [[project.requirements]]
+contract_id = "SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard"
+
+[[project.requirements]]
 contract_id = "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-amm-swap-pool"
 
 [[project.requirements]]
@@ -48,6 +51,9 @@ path = "contracts/arkadiko-governance-v4-1.clar"
 
 [contracts.arkadiko-token]
 path = "contracts/arkadiko-token.clar"
+
+[contracts.escrowed-diko-token]
+path = "contracts/escrowed-diko-token.clar"
 
 [contracts.arkadiko-oracle-trait-v1]
 path = "contracts/arkadiko-oracle-trait-v1.clar"
@@ -127,11 +133,29 @@ path = "contracts/stdiko-token.clar"
 [contracts.arkadiko-stake-pool-diko-trait-v1]
 path = "contracts/arkadiko-stake-pool-diko-trait-v1.clar"
 
+[contracts.arkadiko-stake-pool-diko-trait-v2]
+path = "contracts/arkadiko-stake-pool-diko-trait-v2.clar"
+
 [contracts.arkadiko-stake-pool-diko-v1-1]
 path = "contracts/arkadiko-stake-pool-diko-v1-1.clar"
 
 [contracts.arkadiko-stake-pool-diko-v1-2]
 path = "contracts/arkadiko-stake-pool-diko-v1-2.clar"
+
+[contracts.arkadiko-stake-pool-diko-v2-1]
+path = "contracts/arkadiko-stake-pool-diko-v2-1.clar"
+
+[contracts.arkadiko-stake-pool-lp-v2-1]
+path = "contracts/arkadiko-stake-pool-lp-v2-1.clar"
+
+[contracts.arkadiko-stake-pool-migrate-v1-1]
+path = "contracts/arkadiko-stake-pool-migrate-v1-1.clar"
+
+[contracts.arkadiko-vest-esdiko-trait-v1]
+path = "contracts/arkadiko-vest-esdiko-trait-v1.clar"
+
+[contracts.arkadiko-vest-esdiko-v1-1]
+path = "contracts/arkadiko-vest-esdiko-v1-1.clar"
 
 [contracts.arkadiko-stake-pool-diko-slash-v1-1]
 path = "contracts/arkadiko-stake-pool-diko-slash-v1-1.clar"
@@ -141,6 +165,9 @@ path = "contracts/arkadiko-stake-pool-diko-usda-v1-1.clar"
 
 [contracts.arkadiko-stake-pool-wstx-usda-v1-1]
 path = "contracts/arkadiko-stake-pool-wstx-usda-v1-1.clar"
+
+[contracts.arkadiko-stake-pool-xbtc-usda-v1-1]
+path = "contracts/arkadiko-stake-pool-xbtc-usda-v1-1.clar"
 
 [contracts.arkadiko-stake-pool-wstx-diko-v1-1]
 path = "contracts/arkadiko-stake-pool-wstx-diko-v1-1.clar"
@@ -168,6 +195,9 @@ path = "contracts/arkadiko-swap-token-wstx-xbtc.clar"
 
 [contracts.arkadiko-swap-token-xbtc-usda]
 path = "contracts/arkadiko-swap-token-xbtc-usda.clar"
+
+[contracts.arkadiko-helper-token-xusd-usda]
+path = "contracts/arkadiko-helper-token-xusd-usda.clar"
 
 [contracts.wrapped-stx-token]
 path = "contracts/wrapped-stx-token.clar"
@@ -249,6 +279,9 @@ path = "contracts/arkadiko-auction-engine-v4-3.clar"
 
 [contracts.arkadiko-liquidation-rewards-diko-v1-1]
 path = "contracts/arkadiko-liquidation-rewards-diko-v1-1.clar"
+
+[contracts.arkadiko-liquidation-rewards-esdiko-v2-1]
+path = "contracts/arkadiko-liquidation-rewards-esdiko-v2-1.clar"
 
 [contracts.wrapped-lydian-token]
 path = "contracts/wrapped-lydian-token.clar"

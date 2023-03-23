@@ -17,6 +17,7 @@ import { NewVault } from './new-vault';
 import { ManageVault } from './manage-vault';
 import { ViewProposal } from './view-proposal';
 import { Stake } from './stake';
+import { StakeOld } from './stake-old';
 import { Liquidations } from './liquidations';
 import { LydianAirdrop } from './lydian-airdrop';
 
@@ -46,6 +47,7 @@ export function Routes() {
       <Route exact path="/auctions" component={Liquidations} />
       <Route exact path="/liquidations" component={Liquidations} />
       <Route exact path="/governance" component={Governance} />
+      <Route exact path="/stake-old" component={StakeOld} />
       <Route exact path="/stake" component={Stake} />
       <Route exact path="/vaults/new" component={NewVault} />
       <Route path="/vaults/:id" component={ManageVault} />

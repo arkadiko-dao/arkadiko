@@ -12,21 +12,16 @@ import {
 
 import { 
   OracleManager,
-  DikoToken,
   UsdaToken
 } from './models/arkadiko-tests-tokens.ts';
 
 import { 
   VaultManager,
-  VaultLiquidator,
-  VaultAuction,
-  VaultRewards,
-  VaultAuctionV4
+  VaultAuction
 } from './models/arkadiko-tests-vaults.ts';
 
 import { 
   Stacker,
-  StackerPayer,
   StxReserve
 } from './models/arkadiko-tests-stacker.ts';
 
@@ -104,7 +99,7 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
     let stacker = new Stacker(chain, deployer);
-    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
     let liquidationPool = new LiquidationPool(chain, deployer);
 
     // Set price, create vault, initiate stacking
@@ -222,7 +217,6 @@ Clarinet.test({
   name: "stacker: need minimum STX to stack",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
 
     let stxReserve = new StxReserve(chain, deployer);
     let stacker = new Stacker(chain, deployer);
@@ -440,6 +434,5 @@ Clarinet.test({
     call = vaultManager.getVaultById(1);
     vault = call.result.expectTuple();
     vault['stacked-tokens'].expectUintWithDecimals(1500);
-    
   }
 });

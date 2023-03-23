@@ -34,13 +34,13 @@ Clarinet.test({
     // Add 20 rewards
     var rewardIds = [];
     for (let index = 0; index < 20; index++) {
-      result = liquidationRewards.addReward(1, 0, "arkadiko-token", 10);
+      result = liquidationRewards.addReward(1, 0, "escrowed-diko-token", 10);
       result.expectOk().expectBool(true);
       rewardIds.push(types.uint(index));
     }
 
     // Claim 20 rewards
-    result = liquidationUI.claimRewards(deployer.address, rewardIds, "arkadiko-token", true);
+    result = liquidationUI.claimRewards(deployer.address, rewardIds, "escrowed-diko-token", true);
     result.expectOk().expectBool(true)
 
     // Get user last reward ID
@@ -50,7 +50,7 @@ Clarinet.test({
 
     // Add rewards
     for (let index = 0; index <= 80; index++) {
-      result = liquidationRewards.addReward(1, 0, "arkadiko-token", 10);
+      result = liquidationRewards.addReward(1, 0, "escrowed-diko-token", 10);
       result.expectOk().expectBool(true);
     }
 
@@ -59,7 +59,7 @@ Clarinet.test({
     for (let index = 20; index < 25; index++) {
       rewardIds.push(types.uint(index));
     }
-    result = liquidationUI.claimRewards(deployer.address, rewardIds, "arkadiko-token", true);
+    result = liquidationUI.claimRewards(deployer.address, rewardIds, "escrowed-diko-token", true);
     result.expectOk().expectBool(true)
 
     // User last reward ID is updated
@@ -71,7 +71,7 @@ Clarinet.test({
     for (let index = 25; index < 75; index++) {
       rewardIds.push(types.uint(index));
     }
-    result = liquidationUI.claimRewards(deployer.address, rewardIds, "arkadiko-token", true);
+    result = liquidationUI.claimRewards(deployer.address, rewardIds, "escrowed-diko-token", true);
     result.expectOk().expectBool(true)
 
     // User last reward ID is updated

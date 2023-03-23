@@ -266,3 +266,9 @@
 	)
 )
 (map-set approved-contracts .amm-swap-pool true)
+
+(begin
+  (try! (mint u4 (* u10000 u100000000) 'ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF)) ;; 10k 
+  (try! (mint u4 (* u10000 u100000000) 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG)) ;; 10k 
+  (try! (mint u4 (* u10000 u100000000) 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5)) ;; 10k 
+)

@@ -17,8 +17,8 @@ import {
 
 import { 
   VaultManager,
-  VaultAuctionV4 
-} from './models/arkadiko-tests-vaults.ts'; VaultAuctionV4;
+  VaultAuction 
+} from './models/arkadiko-tests-vaults.ts'; VaultAuction;
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
@@ -98,7 +98,7 @@ Clarinet.test({
     let liquidationPool = new LiquidationPool(chain, deployer);
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
 
     // Create vault and update STX price
     let result = oracleManager.updatePrice("STX", 3);
@@ -190,7 +190,7 @@ Clarinet.test({
     let liquidationPool = new LiquidationPool(chain, deployer);
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
-    let vaultAuction = new VaultAuctionV4(chain, deployer);
+    let vaultAuction = new VaultAuction(chain, deployer);
 
     // Create vault and update STX price
     let result = oracleManager.updatePrice("STX", 3);

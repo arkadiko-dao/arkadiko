@@ -231,9 +231,8 @@
       can-burn: true
     }
   )
-
   (map-set contracts
-    { name: "stake-pool-diko" }
+    { name: "stake-pool-diko-old" }
     {
       address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
       qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-2
@@ -241,6 +240,63 @@
   )
   (map-set contracts-data
     { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-2 }
+    {
+      can-mint: true,
+      can-burn: true
+    }
+  )
+
+  (map-set contracts
+    { name: "stake-pool-diko" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v2-1
+    }
+  )
+  (map-set contracts-data
+    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v2-1 }
+    {
+      can-mint: true,
+      can-burn: true
+    }
+  )
+  (map-set contracts
+    { name: "vest-esdiko" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-vest-esdiko-v1-1
+    }
+  )
+  (map-set contracts-data
+    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-vest-esdiko-v1-1 }
+    {
+      can-mint: true,
+      can-burn: true
+    }
+  )
+  (map-set contracts
+    { name: "stake-pool-lp" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-lp-v2-1
+    }
+  )
+  (map-set contracts-data
+    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-lp-v2-1 }
+    {
+      can-mint: true,
+      can-burn: true
+    }
+  )
+  (map-set contracts
+    { name: "stake-pool-migrate" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-migrate-v1-1
+    }
+  )
+  (map-set contracts-data
+    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-migrate-v1-1 }
     {
       can-mint: true,
       can-burn: true
@@ -286,6 +342,21 @@
   )
   (map-set contracts-data
     { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-diko-v1-1 }
+    {
+      can-mint: true,
+      can-burn: true
+    }
+  )
+
+  (map-set contracts
+    { name: "stake-pool-xbtc-usda" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-xbtc-usda-v1-1
+    }
+  )
+  (map-set contracts-data
+    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-xbtc-usda-v1-1 }
     {
       can-mint: true,
       can-burn: true
@@ -450,14 +521,14 @@
   )
 
   (map-set contracts
-    { name: "liquidation-rewards-diko" }
+    { name: "liquidation-rewards-esdiko" }
     {
       address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
-      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-liquidation-rewards-diko-v1-1
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-liquidation-rewards-esdiko-v2-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-liquidation-rewards-diko-v1-1 }
+    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-liquidation-rewards-esdiko-v2-1 }
     {
       can-mint: true,
       can-burn: true

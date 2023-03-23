@@ -9,6 +9,7 @@ interface UserBalance {
   xstx: number;
   diko: number;
   stdiko: number;
+  esdiko: number;
   wldn: number;
   ldn: number;
   welsh: number;
@@ -61,6 +62,7 @@ export const defaultBalance = () => {
     diko: 0,
     xstx: 0,
     stdiko: 0,
+    esdiko: 0,
     wldn: 0,
     ldn: 0,
     welsh: 0,

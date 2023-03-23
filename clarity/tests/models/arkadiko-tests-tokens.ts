@@ -6,6 +6,7 @@ import {
   types,
 } from "https://deno.land/x/clarinet/index.ts";
 
+import * as Utils from './arkadiko-tests-utils.ts';
 
 // ---------------------------------------------------------
 // Oracle
@@ -33,7 +34,6 @@ class OracleManager {
 }
 export { OracleManager };
 
-
 // ---------------------------------------------------------
 // DIKO
 // ---------------------------------------------------------
@@ -60,6 +60,85 @@ class DikoToken {
 export { DikoToken };
 
 // ---------------------------------------------------------
+// esDIKO
+// ---------------------------------------------------------
+
+class EsDikoToken {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  isWhitelisted(contract: string) {
+    return this.chain.callReadOnlyFn("escrowed-diko-token", "is-whitelisted", [
+      types.principal(Utils.qualifiedName(contract)),
+    ], this.deployer.address);
+  }
+
+  balanceOf(wallet: string) {
+    return this.chain.callReadOnlyFn("escrowed-diko-token", "get-balance", [
+      types.principal(wallet),
+    ], this.deployer.address);
+  }
+  
+  totalSupply() {
+    return this.chain.callReadOnlyFn("escrowed-diko-token", "get-total-supply", [], this.deployer.address);
+  }
+
+  getName() {
+    return this.chain.callReadOnlyFn("escrowed-diko-token", "get-name", [], this.deployer.address);
+  }
+
+  getSymbol() {
+    return this.chain.callReadOnlyFn("escrowed-diko-token", "get-symbol", [], this.deployer.address);
+  }
+
+  getDecimals() {
+    return this.chain.callReadOnlyFn("escrowed-diko-token", "get-decimals", [], this.deployer.address);
+  }
+
+  getTokenUri() {
+    return this.chain.callReadOnlyFn("escrowed-diko-token", "get-token-uri", [], this.deployer.address);
+  }
+
+  setTokenUri(user: Account, uri: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("escrowed-diko-token", "set-token-uri", [
+        types.utf8(uri)
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  transfer(amount: number, sender: string, recipient: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("escrowed-diko-token", "transfer", [
+        types.uint(amount * 1000000),
+        types.principal(sender),
+        types.principal(recipient),
+        types.none(),
+      ], sender)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  setWhitelist(user: Account, contract: string, enabled: boolean) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("escrowed-diko-token", "set-whitelist", [
+        types.principal(Utils.qualifiedName(contract)),
+        types.bool(enabled)
+      ], user.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+}
+export { EsDikoToken };
+
+// ---------------------------------------------------------
 // stDIKO
 // ---------------------------------------------------------
 
@@ -83,7 +162,6 @@ class StDikoToken {
   }
 }
 export { StDikoToken };
-
 
 // ---------------------------------------------------------
 // USDA

@@ -458,7 +458,7 @@ export const Liquidations: React.FC = () => {
     const getEpochInfo = async () => {
       const call = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-liquidation-rewards-diko-v1-1',
+        contractName: 'arkadiko-liquidation-rewards-esdiko-v2-1',
         functionName: 'get-epoch-info',
         functionArgs: [],
         senderAddress: stxAddress || '',
@@ -471,7 +471,7 @@ export const Liquidations: React.FC = () => {
     const getDikoEpochRewardsToAdd = async () => {
       const call = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-liquidation-rewards-diko-v1-1',
+        contractName: 'arkadiko-liquidation-rewards-esdiko-v2-1',
         functionName: 'get-rewards-to-add',
         functionArgs: [],
         senderAddress: stxAddress || '',
@@ -687,7 +687,7 @@ export const Liquidations: React.FC = () => {
                   <EmptyState
                     Icon={CashIcon}
                     title="You have no rewards to claim."
-                    description="DIKO and liquidation rewards will appear here."
+                    description="esDIKO and liquidation rewards will appear here."
                   />
                 ) : rewardData.length != 0 && startLoadingRewards ? (
                   <>
@@ -715,7 +715,7 @@ export const Liquidations: React.FC = () => {
             <section>
               <header className="pt-10 pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
                 <div>
-                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">DIKO emissions</h3>
+                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">esDIKO emissions</h3>
                 </div>
               </header>
               <div className="mt-4">
@@ -732,7 +732,7 @@ export const Liquidations: React.FC = () => {
                   </div>
 
                   <div className="p-4 overflow-hidden border border-gray-300 rounded-lg shadow-sm bg-zinc-200/30 dark:bg-gray-500 dark:border-gray-700">
-                    <p className="text-xs font-semibold text-gray-500 uppercase dark:text-gray-300">Next DIKO rewards at block</p>
+                    <p className="text-xs font-semibold text-gray-500 uppercase dark:text-gray-300">Next rewards at block</p>
                     {isLoading ? (
                       <Placeholder className="py-2" width={Placeholder.width.FULL} color={Placeholder.color.GRAY} />
                     ) : (
@@ -753,7 +753,7 @@ export const Liquidations: React.FC = () => {
                           {microToReadable(dikoRewardsToAdd).toLocaleString(undefined, {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 6,
-                          })} DIKO
+                          })} esDIKO
                         </p>
                       </>
                     )}

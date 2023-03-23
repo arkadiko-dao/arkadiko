@@ -170,10 +170,10 @@ export { LiquidationRewards };
 
 
 // ---------------------------------------------------------
-// Liquidation rewards Diko
+// Liquidation rewards esDiko
 // ---------------------------------------------------------
 
-class LiquidationRewardsDiko {
+class LiquidationRewardsEsDiko {
   chain: Chain;
   deployer: Account;
 
@@ -183,28 +183,28 @@ class LiquidationRewardsDiko {
   }
 
   getEndEpochBlock() {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-diko-v1-1", "get-end-epoch-block", [
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-esdiko-v2-1", "get-end-epoch-block", [
     ], this.deployer.address);
   }
 
   getEpochRate() {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-diko-v1-1", "get-epoch-rate", [
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-esdiko-v2-1", "get-epoch-rate", [
     ], this.deployer.address);
   }
 
   getBlocksPerEpoch() {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-diko-v1-1", "get-blocks-per-epoch", [
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-esdiko-v2-1", "get-blocks-per-epoch", [
     ], this.deployer.address);
   }
 
   getEpochInfo() {
-    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-diko-v1-1", "get-epoch-info", [
+    return this.chain.callReadOnlyFn("arkadiko-liquidation-rewards-esdiko-v2-1", "get-epoch-info", [
     ], this.deployer.address);
   }
 
   addRewards() {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-rewards-diko-v1-1", "add-rewards", [
+      Tx.contractCall("arkadiko-liquidation-rewards-esdiko-v2-1", "add-rewards", [
         types.principal(Utils.qualifiedName('arkadiko-liquidation-rewards-v1-2')),
       ], this.deployer.address)
     ]);
@@ -213,7 +213,7 @@ class LiquidationRewardsDiko {
 
   updateEpoch(rate: number, length: number, endBlock: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-rewards-diko-v1-1", "update-epoch-data", [
+      Tx.contractCall("arkadiko-liquidation-rewards-esdiko-v2-1", "update-epoch-data", [
         types.uint(rate * 1000000),
         types.uint(length),
         types.uint(endBlock),
@@ -224,14 +224,14 @@ class LiquidationRewardsDiko {
 
   toggleEmergencyShutdown() {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-liquidation-rewards-diko-v1-1", "toggle-shutdown", [
+      Tx.contractCall("arkadiko-liquidation-rewards-esdiko-v2-1", "toggle-shutdown", [
       ], this.deployer.address)
     ]);
     return block.receipts[0].result;
   }
 
 }
-export { LiquidationRewardsDiko };
+export { LiquidationRewardsEsDiko };
 
 
 // ---------------------------------------------------------

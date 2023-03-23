@@ -86,3 +86,9 @@
     (ft-burn? xbtc-usda amount recipient)
   )
 )
+
+;; Test environments
+(begin
+  ;; TODO: do not do this on testnet or mainnet
+  (try! (ft-mint? xbtc-usda u100000000 'ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC))
+)
