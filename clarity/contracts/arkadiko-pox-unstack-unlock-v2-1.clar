@@ -1,5 +1,6 @@
 (define-public (unstack (vault-id uint))
   (try! (contract-call? .arkadiko-freddie-v1-1 toggle-stacking vault-id))
+  (try! (contract-call? .arkadiko-stacker-v2-1 initiate-unlock vault-id))
   (ok true)
 )
 
@@ -9,6 +10,7 @@
       true ;; already revoked
       (try! (contract-call? .arkadiko-freddie-v1-1 toggle-stacking vault-id))
     )
+    (try! (contract-call? .arkadiko-stacker-v2-1 initiate-unlock vault-id))
     (try! (contract-call? .arkadiko-stacker-v2-1 enable-vault-withdrawals vault-id))
     (ok true)
   )

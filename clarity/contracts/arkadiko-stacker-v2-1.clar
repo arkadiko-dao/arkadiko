@@ -20,6 +20,8 @@
 (define-data-var stacker-shutdown-activated bool false)
 (define-data-var stacker-name (string-ascii 256) "stacker")
 
+(define-map unlocks { vault-id: uint } { unlocked-at-burn-height: uint })
+
 (define-read-only (get-stacking-unlock-burn-height)
   (ok (var-get stacking-unlock-burn-height))
 )
@@ -30,6 +32,15 @@
 
 (define-read-only (get-stacker-info)
   (stx-account (as-contract tx-sender))
+)
+
+(define-read-only (get-vault-unlock (vault-id uint))
+  (default-to
+    {
+      unlocked-at-burn-height: u999999999999999
+    }
+    (map-get? unlocks { vault-id: vault-id })
+  )
 )
 
 (define-public (toggle-stacker-shutdown)
@@ -156,6 +167,7 @@
 (define-public (enable-vault-withdrawals (vault-id uint))
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
+    (unlock (get-vault-unlock vault-id))
   )
     (asserts!
       (and
@@ -169,19 +181,24 @@
     (asserts! (is-eq true (get revoked-stacking vault)) (err ERR-STILL-STACKING))
     ;; A user indicates to unstack through the `toggle-stacking` method on freddie (revoked-stacking === true)
     ;; but then he should only be able to unstack if the burn height passed
-    (asserts!
-      (or
-        (is-eq u0 (var-get stacking-stx-stacked))
-        (>= burn-block-height (var-get stacking-unlock-burn-height))
-      )
-      (err ERR-BURN-HEIGHT-NOT-REACHED)
-    )
+    (asserts! (> burn-block-height (get unlocked-at-burn-height unlock)) (err ERR-BURN-HEIGHT-NOT-REACHED))
 
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
         stacked-tokens: u0,
         updated-at-block-height: block-height
       }))
     )
+    (ok true)
+  )
+)
+
+(define-public (initiate-unlock (vault-id uint))
+  (let (
+    (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
+  )
+    (asserts! (is-eq true (get revoked-stacking vault)) (err ERR-STILL-STACKING))
+
+    (map-set unlocks { vault-id: vault-id } { unlocked-at-burn-height: (var-get stacking-unlock-burn-height) })
     (ok true)
   )
 )
