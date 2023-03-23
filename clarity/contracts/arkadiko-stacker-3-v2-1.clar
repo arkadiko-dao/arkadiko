@@ -99,10 +99,7 @@
   )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
 
-    (if (> additional-tokens-to-stack stx-balance)
-      (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-stack for-stacker (- additional-tokens-to-stack stx-balance)))
-      true
-    )
+    (try! (contract-call? .arkadiko-stx-reserve-v1-1 request-stx-to-stack for-stacker additional-tokens-to-stack))
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-increase additional-tokens-to-stack))
       result (begin
         (print result)
