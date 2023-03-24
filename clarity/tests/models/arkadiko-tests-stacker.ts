@@ -104,7 +104,6 @@ class Stacker2 {
         types.uint(lockPeriod) // cycle lock period
       ], this.deployer.address)
     ]);
-    console.log(block.receipts[0].events);
     return block.receipts[0].result;
   }
 
