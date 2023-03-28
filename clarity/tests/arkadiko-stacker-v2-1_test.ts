@@ -7,22 +7,15 @@ import {
 } from "https://deno.land/x/clarinet/index.ts";
 
 import { 
-  Swap,
-} from './models/arkadiko-tests-swap.ts';
-
-import { 
   OracleManager,
-  UsdaToken
 } from './models/arkadiko-tests-tokens.ts';
 
 import { 
   VaultManager,
-  VaultAuctionV4
 } from './models/arkadiko-tests-vaults.ts';
 
 import { 
   Stacker2,
-  StxReserve
 } from './models/arkadiko-tests-stacker.ts';
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;

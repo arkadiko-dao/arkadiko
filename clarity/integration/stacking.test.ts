@@ -112,15 +112,13 @@ describe("testing stacking under epoch 2.1", () => {
     expect((metadata as any)["success"]).toBe(true);
     expect((metadata as any)["result"]).toBe("(ok u10000000000)");
 
-    // Next stacker name is updated
+    // Stacker name remains the same
     let nextStackerName = await getNextStackerName(network);
-    expect(nextStackerName.value).toBe("stacker-2");
+    expect(nextStackerName.value).toBe("stacker");
 
     // Tokens to stack updated
     let tokensToStack = await getTokensToStack(network, "stacker");
-    expect(tokensToStack.value.value).toBe("21000000000000");
-    tokensToStack = await getTokensToStack(network, "stacker-2");
-    expect(tokensToStack.value.value).toBe("200000000000");
+    expect(tokensToStack.value.value).toBe("21200000000000");
 
     // PoX still the same
     poxInfo = await getPoxInfo(network);

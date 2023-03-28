@@ -192,7 +192,7 @@ class VaultManager {
 
   toggleStacking(user: Account, vaultId: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "toggle-stacking", [
+      Tx.contractCall("arkadiko-pox-unstack-unlock-v2-1", "unstack", [
         types.uint(vaultId)
       ], user.address),
     ]);
