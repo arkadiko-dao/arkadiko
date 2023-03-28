@@ -173,17 +173,17 @@ export const StakeDikoSection = ({
                       >
                         <Menu.Items
                           static
-                          className="absolute top-0 z-10 w-48 mx-3 mt-6 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg dark:divide-gray-600 right-3 ring-1 ring-black ring-opacity-5 focus:outline-none"
+                          className="absolute right-0 z-10 w-48 mx-3 mt-6 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg top-2 dark:divide-gray-600 ring-1 ring-black ring-opacity-5 focus:outline-none"
                         >
-                          <div className="px-1 py-1">
+                          <div className="px-1 py-1 space-y-0.5">
                             <Menu.Item>
                               {({ active }) => (
                                 <button
                                   className={`${
                                     active
-                                      ? 'bg-indigo-500 text-white disabled:bg-gray-400 disabled:cursor-not-allowed'
+                                      ? 'bg-indigo-500 text-white'
                                       : 'text-gray-900'
-                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm disabled:text-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed`}
                                   disabled={!(dikoBalance > 0)}
                                   onClick={() => setShowStakeModal(true)}
                                 >
@@ -197,7 +197,7 @@ export const StakeDikoSection = ({
                                         <StyledIcon
                                           as="ArrowCircleDownIcon"
                                           size={5}
-                                          className="block mr-3 text-gray-400 group-hover:text-white"
+                                          className="block mr-3 text-gray-400"
                                         />
                                         Stake
                                       </div>
@@ -221,9 +221,9 @@ export const StakeDikoSection = ({
                                 <button
                                   className={`${
                                     active
-                                      ? 'bg-indigo-500 text-white disabled:bg-gray-400 disabled:cursor-not-allowed'
+                                      ? 'bg-indigo-500 text-white'
                                       : 'text-gray-900'
-                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm disabled:text-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed`}
                                   onClick={() => setShowUnstakeModal(true)}
                                   disabled={!(stakedAmount > 0 && canUnstake)}
                                 >
@@ -237,7 +237,7 @@ export const StakeDikoSection = ({
                                         <StyledIcon
                                           as="ArrowCircleUpIcon"
                                           size={5}
-                                          className="mr-3 text-gray-400 group-hover:text-white"
+                                          className="mr-3 text-gray-400"
                                         />
                                         Unstake
                                       </div>
@@ -276,9 +276,9 @@ export const StakeDikoSection = ({
                                 <button
                                   className={`${
                                     active
-                                      ? 'bg-indigo-500 text-white disabled:bg-gray-400 disabled:cursor-not-allowed'
+                                      ? 'bg-indigo-500 text-white'
                                       : 'text-gray-900'
-                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm disabled:text-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed`}
                                   onClick={() => startDikoCooldown()}
                                   disabled={cooldownRunning}
                                 >
@@ -292,7 +292,7 @@ export const StakeDikoSection = ({
                                         <StyledIcon
                                           as="ClockIcon"
                                           size={5}
-                                          className="mr-3 text-gray-400 group-hover:text-white"
+                                          className="mr-3 text-gray-400"
                                         />
                                         Start cooldown
                                       </div>

@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { microToReadable } from '@common/vault-utils';
 import { tokenList } from '@components/token-swap-list';
-import { Disclosure } from '@headlessui/react';
+import { Menu, Transition, Disclosure } from '@headlessui/react';
 import { Tooltip } from '@blockstack/ui';
 import { Placeholder } from './ui/placeholder';
 import { StyledIcon } from './ui/styled-icon';
@@ -46,7 +46,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                     alt=""
                   />
                 </div>
-                <p className="mt-2 sm:mt-0 sm:ml-4">
+                <p className="ml-4">
                   {foreign ? (
                     <span className="block text-gray-500 dark:text-zinc-400">
                     <Tooltip
@@ -56,7 +56,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                       ALEX AMM
                       <br />
                       {tokenList[tokenListItemX].name}/{tokenList[tokenListItemY].name}
-                      {parseInt(apy, 10) === 0 ? `(DEPRECATED)` : ``}
+                      {parseInt(apy, 10) === 0 ? ` (DEPRECATED)` : ``}
                     </Tooltip>
                   </span>
                   ) : (
@@ -73,8 +73,244 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                   )}
                 </p>
               </div>
+              <div className="mt-4 lg:hidden">
+                <dl>
+                  <dt className="text-xs">APR</dt>
+                  <dd className="mt-1 truncate">
+                    {loadingApy ? (
+                      <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                    ) : (
+                      `${apy}%`
+                    )}
+                  </dd>
+                  <dt className="text-xs">Available</dt>
+                  <dd className="mt-1 truncate">
+                    {loadingData ? (
+                      <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                    ) : (
+                      <>
+                        <Tooltip
+                          shouldWrapChildren={true}
+                          label={`
+                          ${microToReadable(poolInfo.walletTokenXAmount).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 6,
+                          })} ${poolInfo.tokenX}
+                          /
+                          ${microToReadable(poolInfo.walletTokenYAmount).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 6,
+                          })} ${poolInfo.tokenY}
+                        `}
+                        >
+                          <div className="flex items-center">
+                            <p className="font-semibold">
+                              {microToReadable(balance, decimals).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 6,
+                              })}{' '}
+                              <span className="text-sm font-normal">LP</span>
+                            </p>
+                            <StyledIcon
+                              as="InformationCircleIcon"
+                              size={5}
+                              className="inline ml-2 text-gray-400"
+                            />
+                          </div>
+                        </Tooltip>
+                        <p className="mt-1 text-sm">
+                          ≈$
+                          {microToReadable(poolInfo.walletValue).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 6,
+                          })}
+                        </p>
+                      </>
+                    )}
+                  </dd>
+                  <dt className="text-xs">Staked</dt>
+                  <dd className="mt-1 truncate">
+                    {loadingData ? (
+                      <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                    ) : (
+                      <>
+                        <Tooltip
+                          shouldWrapChildren={true}
+                          label={`
+                          ${microToReadable(poolInfo.stakedTokenXAmount).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 6,
+                          })} ${poolInfo.tokenX}
+                          /
+                          ${microToReadable(poolInfo.stakedTokenYAmount).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 6,
+                          })} ${poolInfo.tokenY}
+                        `}
+                        >
+                          <div className="flex items-center">
+                            <p className="font-semibold">
+                              {microToReadable(stakedAmount, decimals).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 6,
+                              })}{' '}
+                              <span className="text-sm font-normal">LP</span>
+                            </p>
+                            <StyledIcon
+                              as="InformationCircleIcon"
+                              size={5}
+                              className="inline ml-2 text-gray-400"
+                            />
+                          </div>
+                        </Tooltip>
+                        <p className="mt-1 text-sm">
+                          ≈$
+                          {microToReadable(poolInfo.stakedValue).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 6,
+                          })}
+                        </p>
+                      </>
+                    )}
+                  </dd>
+                  <dt className="text-xs">Rewards</dt>
+                  <dd className="mt-1 truncate">
+                    {loadingData ? (
+                      <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                    ) : (
+                      <>
+                        {microToReadable(pendingRewards).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 6,
+                        })}{' '}
+                        <span className="text-sm font-normal">DIKO</span>
+                      </>
+                    )}
+                  </dd>
+                </dl>
+                <Menu as="div" className="relative flex items-center justify-end">
+                  {({ open }) => (
+                    <>
+                      <Menu.Button className="inline-flex items-center justify-center px-2 py-1 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-800 dark:text-indigo-400">
+                        <span>Actions</span>
+                        <StyledIcon
+                          as="ChevronUpIcon"
+                          size={4}
+                          className={`${
+                            open
+                              ? ''
+                              : 'transform rotate-180 transition ease-in-out duration-300'
+                          } ml-2`}
+                        />
+                      </Menu.Button>
+                      <Transition
+                        show={open}
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
+                      >
+                        <Menu.Items
+                          static
+                          className="absolute right-0 z-10 w-48 mx-3 mt-6 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg top-2 dark:divide-gray-600 ring-1 ring-black ring-opacity-5 focus:outline-none"
+                        >
+                          <div className="px-1 py-1 space-y-0.5">
+                            <Menu.Item>
+                              {({ active }) => (
+                                <a
+                                  href={getLpRoute}
+                                  target={foreign ? "_blank" : ""}
+                                  className={`${
+                                    active
+                                      ? 'bg-indigo-500 text-white'
+                                      : 'text-gray-900'
+                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm disabled:text-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed`}
+                                >
+                                  {balance > 0 ? `Add LP` : `Get LP`}
+                                </a>
+                              )}
+                            </Menu.Item>
+                          </div>
+
+                          <div className="px-1 py-1 space-y-0.5">
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  className={`${
+                                    active
+                                      ? 'bg-indigo-500 text-white'
+                                      : 'text-gray-900'
+                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm disabled:text-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed`}
+                                  disabled={!canStake || balance == 0}
+                                  onClick={() => setShowStakeLpModal(true)}
+                                >
+                                  Stake LP
+                                </button>
+                              )}
+                            </Menu.Item>
+
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  className={`${
+                                    active
+                                      ? 'bg-indigo-500 text-white'
+                                      : 'text-gray-900'
+                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm disabled:text-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed`}
+                                  disabled={stakedAmount == 0}
+                                  onClick={() => setShowUnstakeLpModal(true)}
+                                >
+                                  Unstake LP
+                                </button>
+                              )}
+                            </Menu.Item>
+                          </div>
+
+                          <div className="px-1 py-1 space-y-0.5">
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  className={`${
+                                    active
+                                      ? 'bg-indigo-500 text-white'
+                                      : 'text-gray-900'
+                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm disabled:text-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed`}
+                                  disabled={pendingRewards == 0}
+                                  onClick={() => claimLpPendingRewards()}
+                                >
+                                  Claim rewards
+                                </button>
+                              )}
+                            </Menu.Item>
+
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  className={`${
+                                    active
+                                      ? 'bg-indigo-500 text-white'
+                                      : 'text-gray-900'
+                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm disabled:text-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed`}
+                                  disabled={pendingRewards == 0}
+                                  onClick={() => stakeLpPendingRewards()}
+                                 >
+                                  Stake rewards
+                                </button>
+                              )}
+                            </Menu.Item>
+                          </div>
+                        </Menu.Items>
+                      </Transition>
+                    </>
+                  )}
+                </Menu>
+              </div>
             </td>
-            <td className="px-6 py-4 text-sm text-indigo-600 dark:text-indigo-400 whitespace-nowrap">
+
+            <td className="hidden px-6 py-4 text-sm text-indigo-600 lg:table-cell dark:text-indigo-400 whitespace-nowrap">
               {loadingApy ? (
                 <Placeholder className="py-2" width={Placeholder.width.HALF} />
               ) : (
@@ -82,7 +318,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
               )}
             </td>
 
-            <td className="px-6 py-4 whitespace-nowrap dark:text-white">
+            <td className="hidden px-6 py-4 lg:table-cell whitespace-nowrap dark:text-white">
               {loadingData ? (
                 <Placeholder className="py-2" width={Placeholder.width.HALF} />
               ) : (
@@ -127,7 +363,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
               )}
             </td>
 
-            <td className="px-6 py-4 whitespace-nowrap dark:text-white">
+            <td className="hidden px-6 py-4 lg:table-cell whitespace-nowrap dark:text-white">
               {loadingData ? (
                 <Placeholder className="py-2" width={Placeholder.width.HALF} />
               ) : (
@@ -171,7 +407,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                 </>
               )}
             </td>
-            <td className="px-6 py-4 font-semibold whitespace-nowrap dark:text-white">
+            <td className="hidden px-6 py-4 font-semibold lg:table-cell whitespace-nowrap dark:text-white">
               {loadingData ? (
                 <Placeholder className="py-2" width={Placeholder.width.HALF} />
               ) : (
@@ -184,7 +420,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                 </>
               )}
             </td>
-            <td className="px-6 py-4 text-sm text-right whitespace-nowrap">
+            <td className="hidden px-6 py-4 text-sm text-right lg:table-cell whitespace-nowrap">
               <Disclosure.Button className="inline-flex items-center justify-center px-2 py-1 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-800 dark:text-indigo-400">
                 <span>Actions</span>
                 <StyledIcon
