@@ -192,7 +192,7 @@ class VaultManager {
 
   toggleStacking(user: Account, vaultId: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-freddie-v1-1", "toggle-stacking", [
+      Tx.contractCall("arkadiko-pox-unstack-unlock-v2-1", "unstack", [
         types.uint(vaultId)
       ], user.address),
     ]);
@@ -201,7 +201,7 @@ class VaultManager {
 
   enableVaultWithdrawals(vaultId: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v1-1", "enable-vault-withdrawals", [
+      Tx.contractCall("arkadiko-stacker-v2-1", "enable-vault-withdrawals", [
         types.uint(vaultId)
       ], this.deployer.address)
     ]);
@@ -579,9 +579,20 @@ class VaultAuctionV4 {
     this.deployer = deployer;
   }
 
+  getStxUnlocks(height: number) {
+    return this.chain.callReadOnlyFn(
+      "arkadiko-auction-engine-v4-4",
+      "get-stx-unlocks",
+      [
+        types.uint(height)
+      ],
+      this.deployer.address,
+    );
+  }
+
   getLastAuctionId() {
     return this.chain.callReadOnlyFn(
-      "arkadiko-auction-engine-v4-3",
+      "arkadiko-auction-engine-v4-4",
       "get-last-auction-id",
       [],
       this.deployer.address,
@@ -590,7 +601,7 @@ class VaultAuctionV4 {
 
   getAuctionById(auctionId: number) {
     return this.chain.callReadOnlyFn(
-      "arkadiko-auction-engine-v4-3",
+      "arkadiko-auction-engine-v4-4",
       "get-auction-by-id",
       [types.uint(auctionId)],
       this.deployer.address,
@@ -599,7 +610,7 @@ class VaultAuctionV4 {
 
   getAuctionOpen(auctionId: number) {
     return this.chain.callReadOnlyFn(
-      "arkadiko-auction-engine-v4-3",
+      "arkadiko-auction-engine-v4-4",
       "get-auction-open",
       [types.uint(auctionId)],
       this.deployer.address,
@@ -608,7 +619,7 @@ class VaultAuctionV4 {
 
   startAuction(user: Account, vaultId: number, token: string = 'xstx-token', reserve: string = 'arkadiko-sip10-reserve-v2-1') {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-auction-engine-v4-3", "start-auction", [
+      Tx.contractCall("arkadiko-auction-engine-v4-4", "start-auction", [
         types.uint(vaultId),
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
@@ -624,7 +635,7 @@ class VaultAuctionV4 {
 
   burnUsda(user: Account, auctionId: number, token: string = 'xstx-token', reserve: string = 'arkadiko-sip10-reserve-v2-1') {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-auction-engine-v4-3", "burn-usda", [
+      Tx.contractCall("arkadiko-auction-engine-v4-4", "burn-usda", [
         types.uint(auctionId),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
@@ -640,7 +651,7 @@ class VaultAuctionV4 {
 
   toggleEmergencyShutdown() {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-auction-engine-v4-3", "toggle-auction-engine-shutdown", [
+      Tx.contractCall("arkadiko-auction-engine-v4-4", "toggle-auction-engine-shutdown", [
       ], this.deployer.address)
     ]);
     return block.receipts[0].result;
@@ -648,7 +659,7 @@ class VaultAuctionV4 {
 
   updateFee(fee: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-auction-engine-v4-3", "update-fee", [
+      Tx.contractCall("arkadiko-auction-engine-v4-4", "update-fee", [
         types.uint(fee),
       ], this.deployer.address)
     ]);
@@ -657,7 +668,7 @@ class VaultAuctionV4 {
 
   withdrawFees(token: string) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-auction-engine-v4-3", "withdraw-fees", [
+      Tx.contractCall("arkadiko-auction-engine-v4-4", "withdraw-fees", [
         types.principal(Utils.qualifiedName(token)),
       ], this.deployer.address)
     ]);
@@ -666,7 +677,7 @@ class VaultAuctionV4 {
 
   getCollateralDiscountedPrice(auctionId: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-auction-engine-v4-3", "get-collateral-discounted-price", [
+      Tx.contractCall("arkadiko-auction-engine-v4-4", "get-collateral-discounted-price", [
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1')),
         types.uint(auctionId),
       ], this.deployer.address)
@@ -676,7 +687,7 @@ class VaultAuctionV4 {
 
   burnUsdaAmount(auctionId: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-auction-engine-v4-3", "burn-usda-amount", [
+      Tx.contractCall("arkadiko-auction-engine-v4-4", "burn-usda-amount", [
         types.uint(auctionId),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-liquidation-pool-v1-1')),

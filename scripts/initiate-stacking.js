@@ -21,6 +21,7 @@ async function initiateStacking() {
       tx.uintCV(781450), // prepare_phase_start_block_height
       tx.uintCV(1) // number of cycles
     ],
+    fee: new BN(1000000, 10),
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network

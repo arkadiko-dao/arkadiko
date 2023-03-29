@@ -1,40 +1,24 @@
-// import {
-//   Account,
-//   Chain,
-//   Clarinet,
-//   Tx,
-//   types,
-// } from "https://deno.land/x/clarinet/index.ts";
+import {
+  Account,
+  Chain,
+  Clarinet,
+  Tx,
+  types,
+} from "https://deno.land/x/clarinet/index.ts";
 
-// import { 
-//   Swap,
-// } from './models/arkadiko-tests-swap.ts';
+import { 
+  OracleManager,
+} from './models/arkadiko-tests-tokens.ts';
 
-// import { 
-//   OracleManager,
-//   DikoToken,
-//   UsdaToken
-// } from './models/arkadiko-tests-tokens.ts';
+import { 
+  VaultManager,
+} from './models/arkadiko-tests-vaults.ts';
 
-// import { 
-//   VaultManager,
-//   VaultLiquidator,
-//   VaultAuction,
-//   VaultRewards,
-//   VaultAuctionV4
-// } from './models/arkadiko-tests-vaults.ts';
+import { 
+  Stacker2,
+} from './models/arkadiko-tests-stacker.ts';
 
-// import { 
-//   Stacker,
-//   StackerPayer,
-//   StxReserve
-// } from './models/arkadiko-tests-stacker.ts';
-
-// import { 
-//   LiquidationPool
-// } from './models/arkadiko-tests-liquidation-pool.ts';
-
-// import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
+import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 // Clarinet.test({
 //   name: "stacker: initiate stacking in PoX contract with enough STX tokens",
@@ -45,7 +29,7 @@
 //     let oracleManager = new OracleManager(chain, deployer);
 //     let vaultManager = new VaultManager(chain, deployer);
 //     let stxReserve = new StxReserve(chain, deployer);
-//     let stacker = new Stacker(chain, deployer);
+//     let stacker = new Stacker2(chain, deployer);
 
 //     // Set price, create 2 vaults
 //     oracleManager.updatePrice("STX", 4);
@@ -82,9 +66,6 @@
 //     // now we wait until the burn-block-height (2100 blocks) is mined
 //     chain.mineEmptyBlock(2100);
 
-//     result = stacker.requestStxForPayout(1000);
-//     result.expectOk().expectBool(true);
-
 //     result = stacker.enableVaultWithdrawals(1);
 //     result.expectOk().expectBool(true);
 
@@ -97,72 +78,13 @@
 
 // Clarinet.test({
 //   name:
-//     "stacker: auction winners receive yield from PoX vault",
-//   async fn(chain: Chain, accounts: Map<string, Account>) {
-//     let deployer = accounts.get("deployer")!;
-
-//     let oracleManager = new OracleManager(chain, deployer);
-//     let vaultManager = new VaultManager(chain, deployer);
-//     let stacker = new Stacker(chain, deployer);
-//     let vaultAuction = new VaultAuctionV4(chain, deployer);
-//     let liquidationPool = new LiquidationPool(chain, deployer);
-
-//     // Set price, create vault, initiate stacking
-//     oracleManager.updatePrice("STX", 4);
-//     oracleManager.updatePrice("xSTX", 4);
-//     vaultManager.createVault(deployer, "STX-A", 1500, 1300, true, true);
-//     vaultManager.createVault(deployer, "STX-A", 21000000, 1300, true, true);
-//     stacker.initiateStacking(1, 1);
-
-//     // Update price
-//     oracleManager.updatePrice("STX", 1.5);
-//     oracleManager.updatePrice("xSTX", 1.5);
-
-//     // Deposit 10K USDA
-//     let result = liquidationPool.stake(deployer, 10000);
-//     result.expectOk().expectUintWithDecimals(10000);
-
-//     // Start auction
-//     result = vaultAuction.startAuction(deployer, 1);
-//     result.expectOk().expectBool(true);
-
-//     let call:any = vaultAuction.getAuctionOpen(1);
-//     call.result.expectBool(false);
-
-//     call = vaultManager.getVaultById(1);
-//     let vault = call.result.expectTuple();
-//     vault['leftover-collateral'].expectUintWithDecimals(537.037038);
-//     vault['is-liquidated'].expectBool(true);
-//     vault['auction-ended'].expectBool(true);
-
-//     chain.mineEmptyBlock(2100);
-
-//     result = stacker.requestStxForPayout(1000);
-//     result.expectOk().expectBool(true)
-
-//     let block = chain.mineBlock([
-//       Tx.contractCall("arkadiko-stacker-payer-v1-1", "payout", [
-//         types.uint(1),
-//         types.principal(Utils.qualifiedName('wrapped-stx-token')),
-//         types.principal(Utils.qualifiedName('usda-token')),
-//         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
-//         types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
-//         types.principal(Utils.qualifiedName('arkadiko-token'))
-//       ], deployer.address)
-//     ]);
-//     block.receipts[0].result.expectOk().expectBool(true);
-//   }
-// });
-
-// Clarinet.test({
-//   name:
 //     "stacker: cannot initiate stacking when emergency switch is on",
 //   async fn(chain: Chain, accounts: Map<string, Account>) {
 //     let deployer = accounts.get("deployer")!;
 
 //     let oracleManager = new OracleManager(chain, deployer);
 //     let vaultManager = new VaultManager(chain, deployer);
-//     let stacker = new Stacker(chain, deployer);
+//     let stacker = new Stacker2(chain, deployer);
     
 //     // Set price, create vault, initiate stacking
 //     oracleManager.updatePrice("STX", 4);
@@ -184,37 +106,18 @@
 //     let wallet_1 = accounts.get("wallet_1")!;
 
 //     let block = chain.mineBlock([
-//       Tx.contractCall("arkadiko-stacker-v1-1", "toggle-stacker-shutdown", [], wallet_1.address),
+//       Tx.contractCall("arkadiko-stacker-v2-1", "toggle-stacker-shutdown", [], wallet_1.address),
 //     ]);
 //     block.receipts[0].result.expectErr().expectUint(19401);
 
 //     block = chain.mineBlock([
-//       Tx.contractCall("arkadiko-stacker-payer-v1-1", "set-stacking-stx-received", [
-//         types.uint(1000000000),
-//       ], wallet_1.address),
-//     ]);
-//     block.receipts[0].result.expectErr().expectUint(22401);
-
-//     block = chain.mineBlock([
-//       Tx.contractCall("arkadiko-stacker-v1-1", "initiate-stacking", [
+//       Tx.contractCall("arkadiko-stacker-v2-1", "initiate-stacking", [
 //         types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
 //         types.uint(1), 
 //         types.uint(1) 
 //       ], wallet_1.address)
 //     ]);
 //     block.receipts[0].result.expectErr().expectUint(19401);
-
-//     block = chain.mineBlock([
-//       Tx.contractCall("arkadiko-stacker-payer-v1-1", "payout", [
-//         types.uint(1),
-//         types.principal(Utils.qualifiedName('wrapped-stx-token')),
-//         types.principal(Utils.qualifiedName('usda-token')),
-//         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
-//         types.principal(Utils.qualifiedName('arkadiko-stx-reserve-v1-1')),
-//         types.principal(Utils.qualifiedName('arkadiko-token'))
-//       ], wallet_1.address)
-//     ]);
-//     block.receipts[0].result.expectErr().expectUint(22401);
 //   }
 // });
 
@@ -225,7 +128,7 @@
 //     let wallet_1 = accounts.get("wallet_1")!;
 
 //     let stxReserve = new StxReserve(chain, deployer);
-//     let stacker = new Stacker(chain, deployer);
+//     let stacker = new Stacker2(chain, deployer);
 
 //     let call:any = stxReserve.getTokensToStack("stacker");
 //     call.result.expectOk().expectUint(0); 
@@ -247,7 +150,7 @@
 //     let oracleManager = new OracleManager(chain, deployer);
 //     let vaultManager = new VaultManager(chain, deployer);
 //     let stxReserve = new StxReserve(chain, deployer);
-//     let stacker = new Stacker(chain, deployer);
+//     let stacker = new Stacker2(chain, deployer);
     
 //     // Set price, create vaults
 //     oracleManager.updatePrice("STX", 4);
@@ -263,7 +166,7 @@
 //     result.expectOk().expectUintWithDecimals(21000000);
 
 //     result = stacker.initiateStacking(1, 1);
-//     result.expectErr().expectUint(194);
+//     result.expectErr().expectUint(11);
 //   }
 // });
 
@@ -287,68 +190,6 @@
 // });
 
 // Clarinet.test({
-//   name: "stacker: yield is not enough to pay off stability in USDA",
-//   async fn(chain: Chain, accounts: Map<string, Account>) {
-//     let deployer = accounts.get("deployer")!;
-//     let wallet_1 = accounts.get("wallet_1")!;
-
-//     let oracleManager = new OracleManager(chain, deployer);
-//     let vaultManager = new VaultManager(chain, deployer);
-//     let stacker = new Stacker(chain, deployer);
-//     let usdaToken = new UsdaToken(chain, deployer);
-
-//     // Need wSTX-USDA liquidity to swap STX yield to USDA to payoff debt
-//     // We set 1 STX = 1 USDA
-//     let swap = new Swap(chain, deployer);
-//     let result = swap.createPair(deployer,
-//       'wrapped-stx-token',
-//       'usda-token',
-//       'arkadiko-swap-token-wstx-usda',
-//       "wSTX-USDA", 
-//       10000, 
-//       10000);
-//     result.expectOk().expectBool(true);
-
-//     // Set price, create vault
-//     oracleManager.updatePrice("STX", 400);
-//     vaultManager.createVault(wallet_1, "STX-A", 12100000, 10000, true, true);
-
-//     // We need to make sure there is enough STX in the reserve to perform the auto payoff
-//     // On prod we will swap PoX yield to STX and transfer it to the reserve
-//     // Here we just create a second vault to ahve additional STX available in the reserve
-//     vaultManager.createVault(deployer, "STX-A", 1000, 1000, false, false);
-
-//     result = stacker.initiateStacking(1, 1);
-//     result.expectOk().expectUintWithDecimals(12100000);
-
-//     chain.mineEmptyBlock(300);
-
-//     // Initial + 1
-//     let call:any = usdaToken.balanceOf(wallet_1.address);
-//     call.result.expectOk().expectUintWithDecimals(1010000);
-
-//     // Check vault data
-//     call = vaultManager.getVaultById(1);
-//     let vault = call.result.expectTuple();
-//     vault['stacked-tokens'].expectUintWithDecimals(12100000);
-//     vault['collateral'].expectUintWithDecimals(12100000);
-//     vault['debt'].expectUint(10000000000); // 1000 USDA
-    
-//     // now imagine we receive 1 STX for stacking
-//     // and then payout vault 1 (which was the only stacker)
-//     result = stacker.requestStxForPayout(21000);
-//     result.expectOk().expectBool(true);
-
-//     // Check vault data
-//     call = vaultManager.getVaultById(1);
-//     vault = call.result.expectTuple();
-//     vault['stacked-tokens'].expectUintWithDecimals(12100000);
-//     vault['collateral'].expectUintWithDecimals(12100000);
-//     vault['debt'].expectUint(10000000000); // PoX yield has paid back nothing
-//   }
-// });
-
-// Clarinet.test({
 //   name: "stacker: return STX to the reserve when deprecating stacker contract",
 //   async fn(chain: Chain, accounts: Map<string, Account>) {
 //     let deployer = accounts.get("deployer")!;
@@ -356,7 +197,7 @@
 
 //     let oracleManager = new OracleManager(chain, deployer);
 //     let vaultManager = new VaultManager(chain, deployer);
-//     let stacker = new Stacker(chain, deployer);
+//     let stacker = new Stacker2(chain, deployer);
 
 //     // Need wSTX-USDA liquidity to swap STX yield to USDA to payoff debt
 //     // We set 1 STX = 1 USDA
@@ -400,7 +241,7 @@
 
 //     let oracleManager = new OracleManager(chain, deployer);
 //     let vaultManager = new VaultManager(chain, deployer);
-//     let stacker = new Stacker(chain, deployer);
+//     let stacker = new Stacker2(chain, deployer);
 
 //     // Set price, create vault
 //     oracleManager.updatePrice("STX", 2);
@@ -440,6 +281,41 @@
 //     call = vaultManager.getVaultById(1);
 //     vault = call.result.expectTuple();
 //     vault['stacked-tokens'].expectUintWithDecimals(1500);
-    
 //   }
 // });
+
+Clarinet.test({
+  name: "stacker: test whole flow with initiate, increase stacking and extend stacking",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker2(chain, deployer);
+
+    // Set price, create vault
+    oracleManager.updatePrice("STX", 2);
+    vaultManager.createVault(deployer, "STX-A", 1000, 100, true, true);
+    vaultManager.createVault(wallet_1, "STX-A", 21000000, 1000, true, true);
+
+    // Initiate stacking
+    let result = stacker.initiateStacking(10, 3);
+    result.expectOk().expectUintWithDecimals(21001000);
+
+    let call = stacker.getStackerInfo();
+    console.log("stacker info", call);
+
+    // another vault
+    vaultManager.createVault(wallet_1, "STX-A", 21000000, 1000, true, true);
+
+    // Advance until end of stacking
+    chain.mineEmptyBlock(2050);
+
+    result = stacker.stackIncrease("stacker-2", 21000000);
+    console.log("stack increase:", result);
+
+    result = stacker.stackExtend(3);
+    console.log("stack extend:", result);
+  }
+});

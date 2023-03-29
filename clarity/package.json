@@ -7,27 +7,41 @@
   "repository": "https://github.com/philipdesmedt/arkadiko-dao.git",
   "private": true,
   "engines": {
-    "node": ">=14"
+    "node": ">=16"
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha --timeout 1200000 --require ts-node/register",
-    "test:watch": "mocha --watch"
-  },
-  "type": "module",
-  "devDependencies": {
-    "@stacks/transactions": "^1.2.2",
-    "@types/chai": "^4.2.17",
-    "@types/mocha": "^5.2.7",
-    "@types/node": "^10.17.59",
-    "@types/webpack-env": "^1.16.0",
-    "chai": "^4.3.4",
-    "mocha": "^6.1.4",
-    "ts-node": "^9.1.1",
-    "typescript": "^3.5.2"
+    "build": "tsc --build",
+    "test:dev": "vitest",
+    "test:ci": "jest --bail=1 --silent=false",
+    "fmt:check": "./node_modules/.bin/prettier --check .",
+    "fmt": "./node_modules/.bin/prettier --write ."
   },
   "dependencies": {
-    "@blockstack/clarity": "^0.3.9",
-    "@blockstack/clarity-native-bin": "^0.3.9",
-    "mocha": "^8.3.1"
+    "@hirosystems/stacks-devnet-js": "1.5.0",
+    "@noble/hashes": "^1.1.5",
+    "@noble/secp256k1": "^1.7.0",
+    "@scure/base": "^1.1.1",
+    "@scure/bip32": "^1.1.1",
+    "@scure/bip39": "^1.1.0",
+    "@stacks/common": "^6.0.0",
+    "@stacks/network": "^6.0.0",
+    "@stacks/stacking": "^6.0.0",
+    "@stacks/transactions": "^6.0.0",
+    "@types/node": "^16.7.13",
+    "micro-btc-signer": "^0.2.0",
+    "node-fetch": "^2.6.7",
+    "typescript": "^4.9.0"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^27.0.3",
+    "@vitest/ui": "^0.25.8",
+    "jest": "^27.4.5",
+    "jest-github-actions-reporter": "^1.0.3",
+    "prettier": "2.8.1",
+    "ts-jest": "^27.1.2",
+    "vite": "^4.0.4",
+    "vitest": "^0.25.8",
+    "vitest-github-actions-reporter": "^0.9.0"
   }
 }
