@@ -26,12 +26,12 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
       ] = await Promise.all([
         getPrice("STX"),
         getPrice("xBTC"),
-        getPrice("atALEX")
+        getPrice("auto-alex")
       ]);
 
       setStxPrice(stxPrice / 1000000);
       setBtcPrice(btcPrice / 1000000);
-      setAtAlexPrice(atAlexPrice / 1000000);
+      setAtAlexPrice(atAlexPrice / 100000000);
     };
 
     fetchInfo();

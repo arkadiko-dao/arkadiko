@@ -30,7 +30,7 @@ export const MarketCap: React.FC = ({ lastDikoPrice, lastUsdaPrice }) => {
       const investorTokens = 1104000 + 3330518;
       const mmTokens = 0;
       const foundationTokens = 29000000 - 5800000;
-      const teamTokens = 21000000;
+      const teamTokens = 14437500;
       const lockedTokens = foundationTokens + teamTokens;
       const emissionTokens = totalSupply - lockedTokens;
       const burnedTokens = 58000;
