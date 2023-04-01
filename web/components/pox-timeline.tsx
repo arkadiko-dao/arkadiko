@@ -44,15 +44,14 @@ export const PoxTimeline = ({ unlockBurnHeight, vaultUnlockBurnHeight, currentBu
                 />
               </div>
             </div>
+            <div className="relative flex items-center justify-center w-1/2 h-full text-xs font-semibold text-white bg-indigo-600/80">
+              Next Cycle (#{firstCycle + 1})
+            </div>
             {vaultUnlockBurnHeight < 999999999999999 ? (
               <div className="relative flex text-white items-center font-semibold justify-center text-xs text-center w-[25%] bg-indigo-800 hover:cursor-help rounded-r-md">
                 <Tooltip label={`2-week period`}>You can withdraw STX here</Tooltip>
               </div>
-            ) : (
-              <div className="relative flex items-center justify-center w-1/2 h-full text-xs font-semibold text-white bg-indigo-600/80">
-                Next Cycle (#{firstCycle + 1})
-              </div>
-            )}
+            ) : null}
           </div>
 
           <PoxTimelineIndicator
