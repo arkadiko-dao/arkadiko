@@ -34,14 +34,25 @@ export const PoxTimeline = ({ unlockBurnHeight, vaultUnlockBurnHeight, currentBu
                   link={`https://mempool.space/`}
                   block={currentBurnHeight}
                 />
+
+                <PoxTimelineIndicator
+                  position="-right-2 top-11"
+                  arrow="order-1 w-4 h-4 mr-1 -scale-x-100"
+                  label="Finish"
+                  link={`https://mempool.space/`}
+                  block={endBurnHeight}
+                />
               </div>
             </div>
-            <div className="relative flex items-center justify-center w-1/2 h-full text-xs font-semibold text-white bg-indigo-600/80">
+            {vaultUnlockBurnHeight < 999999999999999 ? (
+              <div className="relative flex items-center justify-center w-1/2 h-full text-xs font-semibold text-white bg-indigo-600/80">
                 Next Cycle (#{firstCycle + 1})
               </div>
-            <div className="relative flex text-white items-center font-semibold justify-center text-xs text-center w-[25%] bg-indigo-800 hover:cursor-help rounded-r-md">
-              <Tooltip label={`2-week period`}>Unstacked</Tooltip>
-            </div>
+            ) : (
+              <div className="relative flex text-white items-center font-semibold justify-center text-xs text-center w-[25%] bg-indigo-800 hover:cursor-help rounded-r-md">
+                <Tooltip label={`2-week period`}>You can unstack here</Tooltip>
+              </div>
+            )}
           </div>
 
           <PoxTimelineIndicator
