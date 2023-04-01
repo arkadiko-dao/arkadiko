@@ -56,6 +56,7 @@ export const ManageVault = ({ match }) => {
   const [stabilityFee, setStabilityFee] = useState(0);
   const [totalDebt, setTotalDebt] = useState(0);
   const [unlockBurnHeight, setUnlockBurnHeight] = useState(0);
+  const [vaultUnlockBurnHeight, setVaultUnlockBurnHeight] = useState(999999999999999999);
   const [enabledStacking, setEnabledStacking] = useState(true);
   const [startedStacking, setStartedStacking] = useState(true);
   const [canWithdrawCollateral, setCanWithdrawCollateral] = useState(false);
@@ -256,6 +257,8 @@ export const ManageVault = ({ match }) => {
         network: network,
       });
       console.log(vaultUnlockCall);
+      const vaultUnlockBurnHeight = cvToJSON(call).value.value;
+      setVaultUnlockBurnHeight(vaultUnlockBurnHeight);
 
       const client = getRPCClient();
       const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
@@ -1111,6 +1114,7 @@ export const ManageVault = ({ match }) => {
                     {canStackCollateral ? (
                       <PoxTimeline
                         unlockBurnHeight={unlockBurnHeight}
+                        vaultUnlockBurnHeight={vaultUnlockBurnHeight}
                         currentBurnHeight={burnBlockHeight}
                         isLoading={loadingStackerData}
                       />

@@ -3,26 +3,11 @@ import { AppContext } from '@common/context';
 import { Tooltip } from '@blockstack/ui';
 import { PoxTimelineIndicator } from './pox-timeline-indicator';
 
-export const PoxTimeline = ({ unlockBurnHeight, currentBurnHeight, isLoading }) => {
+export const PoxTimeline = ({ unlockBurnHeight, vaultUnlockBurnHeight, currentBurnHeight, isLoading }) => {
   const [state, _] = useContext(AppContext);
-
-  let startBurnHeight = unlockBurnHeight - 2100;
-  let endBurnHeight = unlockBurnHeight;
-  let currentIndex = 3; // cooldown
-  if (unlockBurnHeight > currentBurnHeight) {
-    currentIndex = 2 - Math.floor((unlockBurnHeight - currentBurnHeight) / 2100);
-  }
-  let firstCycle = state.cycleNumber + 1;
-  if (currentIndex !== 3) {
-    firstCycle =
-      startBurnHeight - 100 === state.cycleStartHeight
-        ? state.cycleNumber
-        : state.cycleNumber - currentIndex;
-  } else {
-    // we are in a cooldown, adjust the block heights
-    startBurnHeight = state.cycleEndHeight;
-    endBurnHeight = startBurnHeight + 3 * 2100;
-  }
+  const startBurnHeight = unlockBurnHeight - 2100;
+  const endBurnHeight = unlockBurnHeight;
+  const firstCycle = state.cycleNumber + 1;
 
   return (
     <>
@@ -39,37 +24,15 @@ export const PoxTimeline = ({ unlockBurnHeight, currentBurnHeight, isLoading }) 
         <div className="relative">
           <div className="flex w-full h-10 my-12 rounded-md bg-zinc-100">
             <div className="flex items-center font-semibold justify-center text-xs text-center w-[75%]">
-              <div className="relative flex items-center justify-center w-1/3 h-full text-xs font-semibold text-white bg-indigo-600/70 rounded-l-md">
+              <div className="relative flex items-center justify-center w-3/3 h-full text-xs font-semibold text-white bg-indigo-600/70 rounded-l-md">
                 Current Cycle (#{firstCycle})
-                {currentIndex === 0 ? (
-                  <PoxTimelineIndicator
-                    position="transform -translate-x-1/2 left-3/4 -top-11"
-                    reversed={true}
-                    arrow="rotate-180 -scale-x-100"
-                    label="We are here"
-                    link={`https://mempool.space/`}
-                    block={currentBurnHeight}
-                  />
-                ) : null}
-              </div>
-              <div className="relative flex items-center justify-center w-1/3 h-full text-xs font-semibold text-white bg-indigo-600/90">
-                Cycle 3 (#{firstCycle + 2})
-                {currentIndex === 2 ? (
-                  <PoxTimelineIndicator
-                    position="transform -translate-x-1/2 left-3/4 -top-11"
-                    reversed={true}
-                    arrow="rotate-180 -scale-x-100"
-                    label="We are here"
-                    link={`https://mempool.space/`}
-                    block={currentBurnHeight}
-                  />
-                ) : null}
                 <PoxTimelineIndicator
-                  position="-right-2 top-11"
-                  arrow="order-1 w-4 h-4 mr-1 -scale-x-100"
-                  label="Finish"
+                  position="transform -translate-x-1/2 left-3/4 -top-11"
+                  reversed={true}
+                  arrow="rotate-180 -scale-x-100"
+                  label="We are here"
                   link={`https://mempool.space/`}
-                  block={endBurnHeight}
+                  block={currentBurnHeight}
                 />
               </div>
             </div>

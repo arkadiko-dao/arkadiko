@@ -60,7 +60,7 @@ const run = async () => {
 
     console.log(`Deploying ${contractId}`);
 
-    const source = await readFile(`../../clarity/contracts/${contract.file || contract.name}.clar`);
+    const source = await readFile(`../clarity/contracts/${contract.file || contract.name}.clar`);
     const tx = await makeContractDeploy({
       contractName: contract.name,
       codeBody: source.toString('utf8'),
