@@ -383,9 +383,9 @@ plan:
             path: contracts/arkadiko-stacker-payer-v3-6.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-pox-unstack-unlock-v2-1
+            contract-name: arkadiko-pox-unstack-unlock-v2-2
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-pox-unstack-unlock-v2-1.clar
+            path: contracts/arkadiko-pox-unstack-unlock-v2-2.clar
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: arkadiko-stake-registry-trait-v1
