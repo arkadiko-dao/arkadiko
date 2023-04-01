@@ -24,7 +24,7 @@ export const PoxTimeline = ({ unlockBurnHeight, vaultUnlockBurnHeight, currentBu
         <div className="relative">
           <div className="flex w-full h-10 my-12 rounded-md bg-zinc-100">
             <div className="flex items-center font-semibold justify-center text-xs text-center w-[75%]">
-              <div className="relative flex items-center justify-center w-3/3 h-full text-xs font-semibold text-white bg-indigo-600/70 rounded-l-md">
+              <div className="relative flex items-center justify-center w-full h-full text-xs font-semibold text-white bg-indigo-600/70 rounded-l-md">
                 Current Cycle (#{firstCycle})
                 <PoxTimelineIndicator
                   position="transform -translate-x-1/2 left-3/4 -top-11"
@@ -36,17 +36,10 @@ export const PoxTimeline = ({ unlockBurnHeight, vaultUnlockBurnHeight, currentBu
                 />
               </div>
             </div>
+            <div className="relative flex items-center justify-center w-1/2 h-full text-xs font-semibold text-white bg-indigo-600/80">
+                Next Cycle (#{firstCycle + 1})
+              </div>
             <div className="relative flex text-white items-center font-semibold justify-center text-xs text-center w-[25%] bg-indigo-800 hover:cursor-help rounded-r-md">
-              {currentIndex === 3 ? (
-                <PoxTimelineIndicator
-                  position="transform -translate-x-1/2 left-3/4 -top-11"
-                  reversed={true}
-                  arrow="rotate-180 -scale-x-100"
-                  label="We are here"
-                  link={`https://mempool.space/`}
-                  block={currentBurnHeight}
-                />
-              ) : null}
               <Tooltip label={`2-week period`}>Unstacked</Tooltip>
             </div>
           </div>
