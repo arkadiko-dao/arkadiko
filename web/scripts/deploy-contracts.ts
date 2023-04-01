@@ -6,7 +6,7 @@ import {
   getAddressFromPrivateKey,
   TransactionVersion,
   makeContractDeploy,
-  StacksTestnet,
+  StacksMainnet,
 } from '@blockstack/stacks-transactions';
 import BN from 'bn.js';
 require('dotenv').config();
@@ -21,87 +21,8 @@ interface Contract {
 const contracts: Contract[] = [
 
   // Traits
-  { name: 'sip-010-trait-ft-standard' },
-
-  { name: 'arkadiko-oracle-trait-v1' },
-  { name: 'arkadiko-vault-trait-v1' },
-  { name: 'arkadiko-collateral-types-trait-v1' },
-  { name: 'arkadiko-vault-manager-trait-v1' },
-  { name: 'arkadiko-auction-engine-trait-v1' },
-  { name: 'arkadiko-dao-token-trait-v1' },
-  { name: 'arkadiko-stake-pool-diko-trait-v1' },
-  { name: 'arkadiko-swap-trait-v1' },
-  { name: 'arkadiko-stake-registry-trait-v1' },
-  { name: 'arkadiko-stake-pool-trait-v1' },
-  { name: 'arkadiko-liquidation-pool-trait-v1' },
-  { name: 'arkadiko-liquidation-rewards-trait-v1' },
-  { name: 'arkadiko-liquidation-rewards-trait-v2' },
-
-  { name: 'restricted-token-trait', file: 'xbtc/restricted-token-trait' },
-
-  // Contracts
-  { name: 'arkadiko-oracle-v1-1' },
-  { name: 'arkadiko-token' },
-  { name: 'arkadiko-collateral-types-v3-1' },
-  { name: 'arkadiko-dao' },
-  { name: 'usda-token' },
-  { name: 'arkadiko-stx-reserve-v1-1' },
-  { name: 'xstx-token' },
-  { name: 'arkadiko-sip10-reserve-v1-1' },
-  { name: 'arkadiko-sip10-reserve-v2-1' },
-  { name: 'arkadiko-diko-guardian-v1-1' },
-  { name: 'arkadiko-vault-data-v1-1' },
-  { name: 'arkadiko-vault-rewards-v1-1' },
-  { name: 'arkadiko-freddie-v1-1' },
-  { name: 'arkadiko-auction-engine-v1-1' },
-  { name: 'arkadiko-diko-init' },
-  { name: 'stdiko-token' },
-  { name: 'arkadiko-governance-v2-1' },
-  { name: 'arkadiko-governance-v4-1' },
-  { name: 'arkadiko-liquidator-v1-1' },
-  { name: 'wrapped-stx-token' },
-  { name: 'arkadiko-swap-v2-1' },
-  { name: 'arkadiko-stacker-payer-v1-1' },
-  { name: 'arkadiko-stacker-2-v1-1' },
-  { name: 'arkadiko-stacker-3-v1-1' },
-  { name: 'arkadiko-stacker-4-v1-1' },
-  { name: 'arkadiko-stacker-v1-1' },
-  { name: 'arkadiko-stake-registry-v1-1' },
-  { name: 'arkadiko-stake-pool-diko-v1-1' },
-  { name: 'arkadiko-stake-pool-diko-v1-2' },
-  { name: 'arkadiko-swap-token-diko-usda' },
-  { name: 'arkadiko-stake-pool-diko-usda-v1-1' },
-  { name: 'arkadiko-swap-token-wstx-usda' },
-  { name: 'arkadiko-stake-pool-wstx-usda-v1-1' },
-  { name: 'arkadiko-swap-token-wstx-diko' },
-  { name: 'arkadiko-swap-token-wstx-xbtc' },
-  { name: 'arkadiko-swap-token-wstx-welsh' },
-  { name: 'arkadiko-swap-token-xbtc-usda' },
-  { name: 'arkadiko-stake-pool-wstx-diko-v1-1' },
-  { name: 'arkadiko-claim-yield-v1-1' },
-  { name: 'arkadiko-claim-yield-v2-1' },
-  { name: 'arkadiko-stake-lp-rewards' },
-  { name: 'arkadiko-liquidation-pool-v1-1' },
-  { name: 'arkadiko-liquidation-rewards-v1-1' },
-  { name: 'arkadiko-liquidation-rewards-diko-v1-1' },
-  { name: 'arkadiko-auction-engine-v4-1' },
-  { name: 'arkadiko-multi-hop-swap-v1-1' },
-  { name: 'arkadiko-liquidation-ui-v1-2' },
-  { name: 'arkadiko-liquidation-rewards-ui-v2-1' },
-  { name: 'arkadiko-liquidation-rewards-ui-v2-2' },
-  { name: 'arkadiko-stacker-payer-v2-1' },
-  { name: 'arkadiko-stacker-payer-v3-1' },
-  { name: 'arkadiko-stacker-payer-v3-2' },
-  { name: 'arkadiko-liquidation-rewards-v1-2' },
-  { name: 'arkadiko-auction-engine-v4-3' },
-
-  { name: 'wrapped-lydian-token' },
-  { name: 'lydian-airdrop-v1-1' },
-  { name: 'arkadiko-swap-token-ldn-usda' },
-
-  { name: 'Wrapped-Bitcoin', file: 'xbtc/Wrapped-Bitcoin' },
-  { name: 'welshcorgicoin-token', file: 'welsh/welshcorgicoin-token' },
-
+  { name: 'arkadiko-stacker-v2-2' },
+  { name: 'arkadiko-auction-engine-v4-5' }
 ];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');
@@ -110,9 +31,9 @@ if (!privateKey) {
   console.error('Provide a private key with `process.env.CONTRACT_PRIVATE_KEY`');
   process.exit(1);
 }
-const address = getAddressFromPrivateKey(privateKey, TransactionVersion.Testnet);
+const address = getAddressFromPrivateKey(privateKey, TransactionVersion.Mainnet);
 
-const network = new StacksTestnet();
+const network = new StacksMainnet();
 network.coreApiUrl = rpcClient.url;
 
 const run = async () => {

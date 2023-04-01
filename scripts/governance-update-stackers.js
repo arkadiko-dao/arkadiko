@@ -14,55 +14,27 @@ async function transact() {
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
       tx.uintCV(99565),
-      tx.stringUtf8CV('Stacks 2.1 Upgrade'),
+      tx.stringUtf8CV('Stacks 2.1 Upgrade v2'),
       tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/532'),
       tx.listCV([
         tx.tupleCV({
           'name': tx.stringAsciiCV("auction-engine"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-auction-engine-v4-4"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-auction-engine-v4-5"),
           'can-mint': tx.trueCV(),
           'can-burn': tx.trueCV()
         }),
         tx.tupleCV({
           'name': tx.stringAsciiCV("liquidator"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-auction-engine-v4-4"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-auction-engine-v4-5"),
           'can-mint': tx.trueCV(),
           'can-burn': tx.trueCV()
         }),
         tx.tupleCV({
-          'name': tx.stringAsciiCV("stacker-payer"),
-          'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-stacker-payer-v3-4"),
-          'can-mint': tx.falseCV(),
-          'can-burn': tx.trueCV()
-        }),
-        tx.tupleCV({
-          'name': tx.stringAsciiCV("stacker"),
-          'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-stacker-v2-1"),
-          'can-mint': tx.falseCV(),
-          'can-burn': tx.falseCV()
-        }),
-        tx.tupleCV({
-          'name': tx.stringAsciiCV("stacker-2"),
-          'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-stacker-2-v2-1"),
-          'can-mint': tx.falseCV(),
-          'can-burn': tx.falseCV()
-        }),
-        tx.tupleCV({
-          'name': tx.stringAsciiCV("stacker-3"),
-          'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-stacker-3-v2-1"),
-          'can-mint': tx.falseCV(),
-          'can-burn': tx.falseCV()
-        }),
-        tx.tupleCV({
           'name': tx.stringAsciiCV("stacker-4"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-stacker-4-v2-2"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-stacker-v2-2"),
           'can-mint': tx.falseCV(),
           'can-burn': tx.falseCV()
         })
