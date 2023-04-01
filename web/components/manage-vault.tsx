@@ -1109,6 +1109,13 @@ export const ManageVault = ({ match }) => {
                             <StyledIcon as="LockOpenIcon" size={4} className="-ml-0.5 mr-2" />
                             Unlock
                           </button>
+                        ) : isVaultOwner && vault?.stackedTokens > 0 && vaultUnlockBurnHeight > burnBlockHeight ? (
+                          <button
+                            type="button"
+                            className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          >
+                            Vault can be unlocked at Bitcoin height {vaultUnlockBurnHeight + 1}
+                          </button>
                         ) : null}
 
                         {isVaultOwner && !loadingVaultData ? (
