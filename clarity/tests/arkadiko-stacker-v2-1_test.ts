@@ -106,12 +106,12 @@ import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 //     let wallet_1 = accounts.get("wallet_1")!;
 
 //     let block = chain.mineBlock([
-//       Tx.contractCall("arkadiko-stacker-v2-2", "toggle-stacker-shutdown", [], wallet_1.address),
+//       Tx.contractCall("arkadiko-stacker-v2-1", "toggle-stacker-shutdown", [], wallet_1.address),
 //     ]);
 //     block.receipts[0].result.expectErr().expectUint(19401);
 
 //     block = chain.mineBlock([
-//       Tx.contractCall("arkadiko-stacker-v2-2", "initiate-stacking", [
+//       Tx.contractCall("arkadiko-stacker-v2-1", "initiate-stacking", [
 //         types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
 //         types.uint(1), 
 //         types.uint(1) 
