@@ -250,7 +250,7 @@ export const ManageVault = ({ match }) => {
 
       const vaultUnlockCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-stacker-payer-v3-5',
+        contractName: 'arkadiko-stacker-payer-v3-6',
         functionName: 'get-vault-unlock',
         functionArgs: [uintCV(vault?.id)],
         senderAddress: contractAddress || '',

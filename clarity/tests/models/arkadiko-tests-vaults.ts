@@ -201,7 +201,7 @@ class VaultManager {
 
   enableVaultWithdrawals(vaultId: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v3-5", "enable-vault-withdrawals", [
+      Tx.contractCall("arkadiko-stacker-payer-v3-6", "enable-vault-withdrawals", [
         types.uint(vaultId)
       ], this.deployer.address)
     ]);
