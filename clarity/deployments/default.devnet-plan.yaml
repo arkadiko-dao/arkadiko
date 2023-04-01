@@ -630,10 +630,10 @@ plan:
     - id: 4
       transactions:
         - contract-publish:
-            contract-name: arkadiko-stacker-v2-1
+            contract-name: arkadiko-stacker-v2-2
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 106830
-            path: contracts/arkadiko-stacker-v2-1.clar
+            path: contracts/arkadiko-stacker-v2-2.clar
             anchor-block-only: true
             clarity-version: 2
       epoch: "2.1"

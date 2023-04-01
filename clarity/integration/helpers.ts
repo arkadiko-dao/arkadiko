@@ -353,7 +353,7 @@ export const initiateStacking = async (
 
   const txOptions = {
     contractAddress: Accounts.DEPLOYER.stxAddress,
-    contractName: 'arkadiko-stacker-v2-1',
+    contractName: 'arkadiko-stacker-v2-2',
     functionName: "initiate-stacking",
     functionArgs: [
       tupleCV(address),
@@ -384,7 +384,7 @@ export const stackIncrease = async (
 ): Promise<TxBroadcastResult> => {
   const txOptions = {
     contractAddress: Accounts.DEPLOYER.stxAddress,
-    contractName: 'arkadiko-stacker-v2-1',
+    contractName: 'arkadiko-stacker-v2-2',
     functionName: "stack-increase",
     functionArgs: [
       stringAsciiCV(stackerName),
@@ -415,7 +415,7 @@ export const stackExtend = async (
 
   const txOptions = {
     contractAddress: Accounts.DEPLOYER.stxAddress,
-    contractName: 'arkadiko-stacker-v2-1',
+    contractName: 'arkadiko-stacker-v2-2',
     functionName: "stack-extend",
     functionArgs: [
       uintCV(1),
@@ -440,7 +440,7 @@ export const getStackerInfo = async (
 ) => {
   const supplyCall = await callReadOnlyFunction({
     contractAddress: Accounts.DEPLOYER.stxAddress,
-    contractName: "arkadiko-stacker-v2-1",
+    contractName: "arkadiko-stacker-v2-2",
     functionName: "get-stacker-info",
     functionArgs: [],
     senderAddress: Accounts.DEPLOYER.stxAddress,
