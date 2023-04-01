@@ -19,7 +19,7 @@ interface Contract {
 }
 
 const contracts: Contract[] = [
-  { name: 'arkadiko-stacker-payer-v3-5' }
+  { name: 'arkadiko-pox-unstack-unlock-v2-1' }
 ];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');

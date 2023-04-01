@@ -388,23 +388,13 @@ export const ManageVault = ({ match }) => {
   };
 
   const unlockCollateral = async () => {
-    const name = vault?.stackerName;
-    let stackerId = 1;
-    if (name === 'stacker-2') {
-      stackerId = 2;
-    } else if (name === 'stacker-3') {
-      stackerId = 3;
-    } else if (name === 'stacker-4') {
-      stackerId = 4;
-    }
-
     await doContractCall({
       network,
       contractAddress,
       stxAddress: senderAddress,
       contractName: 'arkadiko-pox-unstack-unlock-v2-1',
-      functionName: 'unstack-and-unlock',
-      functionArgs: [uintCV(match.params.id), uintCV(stackerId)],
+      functionName: 'unstack',
+      functionArgs: [uintCV(match.params.id)],
       onFinish: data => {
         setState(prevState => ({
           ...prevState,
@@ -1085,9 +1075,18 @@ export const ManageVault = ({ match }) => {
                       </div>
                       <div className="flex items-center">
                         {isVaultOwner &&
-                        canUnlockCollateral &&
                         vault?.stackedTokens > 0 &&
+                        vaultUnlockBurnHeight === 999999999999999 && 
                         !loadingVaultData ? (
+                          <button
+                            type="button"
+                            className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            onClick={() => unlockCollateral()}
+                          >
+                            <StyledIcon as="LockOpenIcon" size={4} className="-ml-0.5 mr-2" />
+                            Unstack for next cycle ({unlockBurnHeight})
+                          </button>
+                        ) : isVaultOwner && vault?.stackedTokens > 0 && vaultUnlockBurnHeight > burnBlockHeight ? (
                           <button
                             type="button"
                             className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
