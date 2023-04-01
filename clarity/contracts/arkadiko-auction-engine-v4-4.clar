@@ -304,7 +304,7 @@
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
   )
     (if (> (get stacked-tokens vault) u0)
-      (unwrap-panic (contract-call? .arkadiko-stacker-v2-1 get-stacking-unlock-burn-height))
+      (unwrap-panic (contract-call? .arkadiko-stacker-v2-2 get-stacking-unlock-burn-height))
       u0
     )
   )

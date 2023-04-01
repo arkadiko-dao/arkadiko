@@ -6,7 +6,7 @@ import { PoxTimelineIndicator } from './pox-timeline-indicator';
 export const PoxTimeline = ({ unlockBurnHeight, currentBurnHeight, isLoading }) => {
   const [state, _] = useContext(AppContext);
 
-  let startBurnHeight = unlockBurnHeight - 3 * 2100;
+  let startBurnHeight = unlockBurnHeight - 2100;
   let endBurnHeight = unlockBurnHeight;
   let currentIndex = 3; // cooldown
   if (unlockBurnHeight > currentBurnHeight) {
@@ -40,21 +40,8 @@ export const PoxTimeline = ({ unlockBurnHeight, currentBurnHeight, isLoading }) 
           <div className="flex w-full h-10 my-12 rounded-md bg-zinc-100">
             <div className="flex items-center font-semibold justify-center text-xs text-center w-[75%]">
               <div className="relative flex items-center justify-center w-1/3 h-full text-xs font-semibold text-white bg-indigo-600/70 rounded-l-md">
-                Cycle 1 (#{firstCycle})
+                Current Cycle (#{firstCycle})
                 {currentIndex === 0 ? (
-                  <PoxTimelineIndicator
-                    position="transform -translate-x-1/2 left-3/4 -top-11"
-                    reversed={true}
-                    arrow="rotate-180 -scale-x-100"
-                    label="We are here"
-                    link={`https://mempool.space/`}
-                    block={currentBurnHeight}
-                  />
-                ) : null}
-              </div>
-              <div className="relative flex items-center justify-center w-1/3 h-full text-xs font-semibold text-white bg-indigo-600/80">
-                Cycle 2 (#{firstCycle + 1})
-                {currentIndex === 1 ? (
                   <PoxTimelineIndicator
                     position="transform -translate-x-1/2 left-3/4 -top-11"
                     reversed={true}
@@ -97,7 +84,7 @@ export const PoxTimeline = ({ unlockBurnHeight, currentBurnHeight, isLoading }) 
                   block={currentBurnHeight}
                 />
               ) : null}
-              <Tooltip label={`2-week period`}>Cooldown</Tooltip>
+              <Tooltip label={`2-week period`}>Unstacked</Tooltip>
             </div>
           </div>
 

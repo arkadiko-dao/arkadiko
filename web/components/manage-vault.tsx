@@ -246,6 +246,17 @@ export const ManageVault = ({ match }) => {
       });
       const unlockBurnHeight = cvToJSON(call).value.value;
       setUnlockBurnHeight(unlockBurnHeight);
+
+      const vaultUnlockCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName,
+        functionName: 'get-vault-unlock',
+        functionArgs: [uintCV(vault?.id)],
+        senderAddress: contractAddress || '',
+        network: network,
+      });
+      console.log(vaultUnlockCall);
+
       const client = getRPCClient();
       const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
       const data = await response.json();
