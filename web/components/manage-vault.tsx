@@ -1406,8 +1406,7 @@ export const ManageVault = ({ match }) => {
                         <Alert>
                           <p>
                             You have unstacked your collateral. It is still stacking in PoX until
-                            Bitcoin block {unlockBurnHeight}. Once your cooldown cycle hits, you can
-                            unlock the collateral.
+                            Bitcoin block {unlockBurnHeight}. Once that block is mined, you can unlock your vault.
                           </p>
                         </Alert>
                       </div>

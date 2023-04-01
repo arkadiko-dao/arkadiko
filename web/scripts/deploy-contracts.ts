@@ -19,7 +19,7 @@ interface Contract {
 }
 
 const contracts: Contract[] = [
-  { name: 'arkadiko-pox-unstack-unlock-v2-1' }
+  { name: 'arkadiko-pox-unstack-unlock-v2-2' }
 ];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');
@@ -65,8 +65,8 @@ const run = async () => {
       contractName: contract.name,
       codeBody: source.toString('utf8'),
       senderKey: privateKey,
-      nonce: new BN(account.nonce + index, 10),
-      fee: new BN(100000, 10),
+      nonce: new BN(2936 + index, 10),
+      fee: new BN(100001, 10),
       network,
     });
 
