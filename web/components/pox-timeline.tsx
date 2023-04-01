@@ -5,9 +5,9 @@ import { PoxTimelineIndicator } from './pox-timeline-indicator';
 
 export const PoxTimeline = ({ unlockBurnHeight, vaultUnlockBurnHeight, currentBurnHeight, isLoading }) => {
   const [state, _] = useContext(AppContext);
-  const startBurnHeight = unlockBurnHeight - 2100;
-  const endBurnHeight = unlockBurnHeight;
-  const firstCycle = state.cycleNumber + 1;
+  const startBurnHeight = state.cycleStartHeight;
+  const endBurnHeight = state.cycleEndHeight;
+  const firstCycle = state.cycleNumber;
 
   return (
     <>
@@ -45,12 +45,12 @@ export const PoxTimeline = ({ unlockBurnHeight, vaultUnlockBurnHeight, currentBu
               </div>
             </div>
             {vaultUnlockBurnHeight < 999999999999999 ? (
-              <div className="relative flex items-center justify-center w-1/2 h-full text-xs font-semibold text-white bg-indigo-600/80">
-                Next Cycle (#{firstCycle + 1})
-              </div>
-            ) : (
               <div className="relative flex text-white items-center font-semibold justify-center text-xs text-center w-[25%] bg-indigo-800 hover:cursor-help rounded-r-md">
                 <Tooltip label={`2-week period`}>You can unstack here</Tooltip>
+              </div>
+            ) : (
+              <div className="relative flex items-center justify-center w-1/2 h-full text-xs font-semibold text-white bg-indigo-600/80">
+                Next Cycle (#{firstCycle + 1})
               </div>
             )}
           </div>

@@ -256,9 +256,8 @@ export const ManageVault = ({ match }) => {
         senderAddress: contractAddress || '',
         network: network,
       });
-      console.log(vaultUnlockCall);
-      const vaultUnlockBurnHeight = cvToJSON(call).value.value;
-      setVaultUnlockBurnHeight(vaultUnlockBurnHeight);
+      const vaultUnlockBurnHeight = cvToJSON(vaultUnlockCall).value['unlocked-at-burn-height'].value;
+      setVaultUnlockBurnHeight(parseInt(vaultUnlockBurnHeight, 10));
 
       const client = getRPCClient();
       const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
@@ -1388,8 +1387,8 @@ export const ManageVault = ({ match }) => {
                             <p>
                               You cannot withdraw your collateral since it is stacked until Bitcoin
                               block {unlockBurnHeight}. We are currently at Bitcoin block{' '}
-                              {burnBlockHeight}. After block {unlockBurnHeight} gets mined, you will
-                              need to manually unlock your vault to get access to your collateral.
+                              {burnBlockHeight}. You can unstack your vault right now, and after Bitcoin block {unlockBurnHeight} gets mined,
+                              you will get access to your collateral.
                             </p>
                           ) : (
                             <p>
