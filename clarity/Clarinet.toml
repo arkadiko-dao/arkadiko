@@ -90,8 +90,8 @@ epoch = "2.1"
 [contracts.arkadiko-stacker-v1-1]
 path = "contracts/arkadiko-stacker-v1-1.clar"
 
-[contracts.arkadiko-stacker-payer-v3-4]
-path = "contracts/arkadiko-stacker-payer-v3-4.clar"
+[contracts.arkadiko-stacker-payer-v3-5]
+path = "contracts/arkadiko-stacker-payer-v3-5.clar"
 
 [contracts.arkadiko-mock-stacker-v1-1]
 path = "contracts/arkadiko-mock-stacker-v1-1.clar"

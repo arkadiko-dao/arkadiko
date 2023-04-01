@@ -249,7 +249,7 @@ export const ManageVault = ({ match }) => {
 
       const vaultUnlockCall = await callReadOnlyFunction({
         contractAddress,
-        contractName,
+        contractName: 'arkadiko-stacker-payer-v3-5',
         functionName: 'get-vault-unlock',
         functionArgs: [uintCV(vault?.id)],
         senderAddress: contractAddress || '',
