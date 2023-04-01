@@ -13,9 +13,9 @@ async function transact() {
     functionName: 'propose-dao',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
-      tx.uintCV(99565),
+      tx.uintCV(100515),
       tx.stringUtf8CV('Stacks 2.1 Upgrade v2'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/532'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/544'),
       tx.listCV([
         tx.tupleCV({
           'name': tx.stringAsciiCV("auction-engine"),
@@ -32,7 +32,7 @@ async function transact() {
           'can-burn': tx.trueCV()
         }),
         tx.tupleCV({
-          'name': tx.stringAsciiCV("stacker-4"),
+          'name': tx.stringAsciiCV("stacker"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
           'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-stacker-v2-2"),
           'can-mint': tx.falseCV(),
