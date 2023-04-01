@@ -60,7 +60,6 @@ export const ManageVault = ({ match }) => {
   const [enabledStacking, setEnabledStacking] = useState(true);
   const [startedStacking, setStartedStacking] = useState(true);
   const [canWithdrawCollateral, setCanWithdrawCollateral] = useState(false);
-  const [canUnlockCollateral, setCanUnlockCollateral] = useState(false);
   const [canStackCollateral, setCanStackCollateral] = useState(false);
   const [decimals, setDecimals] = useState(1000000);
   const [stackingEndDate, setStackingEndDate] = useState('');
@@ -269,14 +268,10 @@ export const ManageVault = ({ match }) => {
         if (Number(vault?.stackedTokens) === 0) {
           setCanWithdrawCollateral(true);
         }
-        setCanUnlockCollateral(true);
         setLoadingStackerData(false);
         return;
       } else {
         setStartedStacking(true);
-        if (unlockBurnHeight < currentBurnHeight) {
-          setCanUnlockCollateral(true);
-        }
         if (Number(vault?.stackedTokens) === 0 || unlockBurnHeight < currentBurnHeight) {
           setCanWithdrawCollateral(true);
         } else {
@@ -377,6 +372,25 @@ export const ManageVault = ({ match }) => {
       functionArgs: [uintCV(match.params.id)],
       onFinish: data => {
         console.log('finished stacking!', data, data.txId);
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
+  const unlockVaultWithdrawals = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress: senderAddress,
+      contractName: 'arkadiko-stacker-payer-v3-6',
+      functionName: 'enable-vault-withdrawals',
+      functionArgs: [uintCV(match.params.id)],
+      onFinish: data => {
         setState(prevState => ({
           ...prevState,
           currentTxId: data.txId,
@@ -1090,7 +1104,7 @@ export const ManageVault = ({ match }) => {
                           <button
                             type="button"
                             className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            onClick={() => unlockCollateral()}
+                            onClick={() => unlockVaultWithdrawals()}
                           >
                             <StyledIcon as="LockOpenIcon" size={4} className="-ml-0.5 mr-2" />
                             Unlock
