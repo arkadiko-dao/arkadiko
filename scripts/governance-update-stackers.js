@@ -13,8 +13,8 @@ async function transact() {
     functionName: 'propose-dao',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
-      tx.uintCV(100520),
-      tx.stringUtf8CV('Stacks 2.1 Upgrade - v2'),
+      tx.uintCV(100835),
+      tx.stringUtf8CV('Stacks 2.1 Upgrade - Unlock vaults for PoX'),
       tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/544'),
       tx.listCV([
         tx.tupleCV({
@@ -26,6 +26,8 @@ async function transact() {
         }),
       ])
     ],
+    fee: new BN(10000, 10),
+    nonce: new BN(2939, 10),
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network
