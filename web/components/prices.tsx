@@ -14,6 +14,8 @@ import { AppContext } from '@common/context';
 import { tokenList } from '@components/token-swap-list';
 import { Placeholder } from './ui/placeholder';
 import axios from 'axios';
+import { Tooltip } from '@blockstack/ui';
+import { StyledIcon } from './ui/styled-icon';
 
 export const Prices = () => {
   const address = useSTXAddress();
@@ -182,6 +184,47 @@ export const Prices = () => {
                       </div>
                       {loadingPrices ? (
                         <Placeholder className="justify-end py-2" width={Placeholder.width.HALF} />
+                      ) : asset.token == 'USDA' ? (
+                        <div>
+                          <div className="flex items-center">
+                            <Tooltip
+                              className=""
+                              shouldWrapChildren={true}
+                              label={`Using ALEX oracle`}
+                            >
+                              <StyledIcon
+                                as="InformationCircleIcon"
+                                size={5}
+                                className="block mt-3 mr-2 text-gray-400"
+                              />
+                            </Tooltip>
+                            <p>
+                              <span className="text-base font-medium text-gray-500">{asset.unit}</span>{' '}
+                              <span className="text-4xl font-extrabold text-gray-700 dark:text-zinc-100">
+                                {asset.price}
+                              </span>
+                            </p>
+                          </div>
+                          <div className="flex items-center">
+                            <Tooltip
+                              className=""
+                              shouldWrapChildren={true}
+                              label={`Using pool`}
+                            >
+                              <StyledIcon
+                                as="InformationCircleIcon"
+                                size={5}
+                                className="block mt-3 mr-2 text-gray-400"
+                              />
+                            </Tooltip>
+                            <p>
+                              <span className="text-base font-medium text-gray-500">{asset.unit}</span>{' '}
+                              <span className="text-4xl font-extrabold text-gray-700 dark:text-zinc-100">
+                                {asset.price}
+                              </span>
+                            </p>
+                          </div>
+                        </div>
                       ) : (
                         <p>
                           <span className="text-base font-medium text-gray-500">{asset.unit}</span>{' '}
@@ -284,10 +327,45 @@ export const Prices = () => {
                       <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
                         {loadingPrices ? (
                           <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                        ) : asset.token == 'USDA' ? (
+                          <>
+                            <div className="flex items-center">
+                              <span className="text-gray-500 dark:text-zinc-300">{asset.unit}</span>
+                              {asset.price}
+
+                              <Tooltip
+                                className=""
+                                shouldWrapChildren={true}
+                                label={`Using ALEX oracle`}
+                              >
+                                <StyledIcon
+                                  as="InformationCircleIcon"
+                                  size={5}
+                                  className="block ml-2 text-gray-400"
+                                />
+                              </Tooltip>
+                            </div>
+                            <div className="flex items-center mt-2">
+                              <span className="text-gray-500 dark:text-zinc-300">{asset.unit}</span>
+                              {asset.price}
+
+                              <Tooltip
+                                className=""
+                                shouldWrapChildren={true}
+                                label={`Using pool`}
+                              >
+                                <StyledIcon
+                                  as="InformationCircleIcon"
+                                  size={5}
+                                  className="block ml-2 text-gray-400"
+                                />
+                              </Tooltip>
+                            </div>
+                          </>
                         ) : asset.unit == 'USDA' ? (
                           <span>
                             {asset.price}
-                            <span className="text-gray-500 dark:text-zinc-300">{asset.unit}</span>
+                            <span className="text-gray-500 dark:text-zinc-300">&nbsp;{asset.unit}</span>
                           </span>
                         ) : (
                           <span>
