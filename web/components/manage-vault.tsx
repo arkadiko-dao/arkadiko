@@ -56,10 +56,10 @@ export const ManageVault = ({ match }) => {
   const [stabilityFee, setStabilityFee] = useState(0);
   const [totalDebt, setTotalDebt] = useState(0);
   const [unlockBurnHeight, setUnlockBurnHeight] = useState(0);
+  const [vaultUnlockBurnHeight, setVaultUnlockBurnHeight] = useState(999999999999999);
   const [enabledStacking, setEnabledStacking] = useState(true);
   const [startedStacking, setStartedStacking] = useState(true);
   const [canWithdrawCollateral, setCanWithdrawCollateral] = useState(false);
-  const [canUnlockCollateral, setCanUnlockCollateral] = useState(false);
   const [canStackCollateral, setCanStackCollateral] = useState(false);
   const [decimals, setDecimals] = useState(1000000);
   const [stackingEndDate, setStackingEndDate] = useState('');
@@ -246,6 +246,18 @@ export const ManageVault = ({ match }) => {
       });
       const unlockBurnHeight = cvToJSON(call).value.value;
       setUnlockBurnHeight(unlockBurnHeight);
+
+      const vaultUnlockCall = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-stacker-payer-v3-6',
+        functionName: 'get-vault-unlock',
+        functionArgs: [uintCV(vault?.id)],
+        senderAddress: contractAddress || '',
+        network: network,
+      });
+      const vaultUnlockBurnHeight = cvToJSON(vaultUnlockCall).value['unlocked-at-burn-height'].value;
+      setVaultUnlockBurnHeight(parseInt(vaultUnlockBurnHeight, 10));
+
       const client = getRPCClient();
       const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
       const data = await response.json();
@@ -256,14 +268,10 @@ export const ManageVault = ({ match }) => {
         if (Number(vault?.stackedTokens) === 0) {
           setCanWithdrawCollateral(true);
         }
-        setCanUnlockCollateral(true);
         setLoadingStackerData(false);
         return;
       } else {
         setStartedStacking(true);
-        if (unlockBurnHeight < currentBurnHeight) {
-          setCanUnlockCollateral(true);
-        }
         if (Number(vault?.stackedTokens) === 0 || unlockBurnHeight < currentBurnHeight) {
           setCanWithdrawCollateral(true);
         } else {
@@ -374,24 +382,33 @@ export const ManageVault = ({ match }) => {
     });
   };
 
-  const unlockCollateral = async () => {
-    const name = vault?.stackerName;
-    let stackerId = 1;
-    if (name === 'stacker-2') {
-      stackerId = 2;
-    } else if (name === 'stacker-3') {
-      stackerId = 3;
-    } else if (name === 'stacker-4') {
-      stackerId = 4;
-    }
-
+  const unlockVaultWithdrawals = async () => {
     await doContractCall({
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-pox-unstack-unlock-v2-1',
-      functionName: 'unstack-and-unlock',
-      functionArgs: [uintCV(match.params.id), uintCV(stackerId)],
+      contractName: 'arkadiko-stacker-payer-v3-6',
+      functionName: 'enable-vault-withdrawals',
+      functionArgs: [uintCV(match.params.id)],
+      onFinish: data => {
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    });
+  };
+
+  const unlockCollateral = async () => {
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress: senderAddress,
+      contractName: 'arkadiko-pox-unstack-unlock-v2-2',
+      functionName: 'unstack',
+      functionArgs: [uintCV(match.params.id)],
       onFinish: data => {
         setState(prevState => ({
           ...prevState,
@@ -1072,8 +1089,8 @@ export const ManageVault = ({ match }) => {
                       </div>
                       <div className="flex items-center">
                         {isVaultOwner &&
-                        canUnlockCollateral &&
                         vault?.stackedTokens > 0 &&
+                        vaultUnlockBurnHeight === 999999999999999 && 
                         !loadingVaultData ? (
                           <button
                             type="button"
@@ -1081,7 +1098,23 @@ export const ManageVault = ({ match }) => {
                             onClick={() => unlockCollateral()}
                           >
                             <StyledIcon as="LockOpenIcon" size={4} className="-ml-0.5 mr-2" />
+                            Unstack for next cycle ({unlockBurnHeight})
+                          </button>
+                        ) : isVaultOwner && vault?.stackedTokens > 0 && vaultUnlockBurnHeight < burnBlockHeight ? (
+                          <button
+                            type="button"
+                            className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            onClick={() => unlockVaultWithdrawals()}
+                          >
+                            <StyledIcon as="LockOpenIcon" size={4} className="-ml-0.5 mr-2" />
                             Unlock
+                          </button>
+                        ) : isVaultOwner && vault?.stackedTokens > 0 && vaultUnlockBurnHeight > burnBlockHeight ? (
+                          <button
+                            type="button"
+                            className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          >
+                            Vault can be unlocked at Bitcoin height {vaultUnlockBurnHeight + 1}
                           </button>
                         ) : null}
 
@@ -1100,6 +1133,7 @@ export const ManageVault = ({ match }) => {
                     {canStackCollateral ? (
                       <PoxTimeline
                         unlockBurnHeight={unlockBurnHeight}
+                        vaultUnlockBurnHeight={vaultUnlockBurnHeight}
                         currentBurnHeight={burnBlockHeight}
                         isLoading={loadingStackerData}
                       />
@@ -1373,8 +1407,8 @@ export const ManageVault = ({ match }) => {
                             <p>
                               You cannot withdraw your collateral since it is stacked until Bitcoin
                               block {unlockBurnHeight}. We are currently at Bitcoin block{' '}
-                              {burnBlockHeight}. After block {unlockBurnHeight} gets mined, you will
-                              need to manually unlock your vault to get access to your collateral.
+                              {burnBlockHeight}. You can unstack your vault right now, and after Bitcoin block {unlockBurnHeight} gets mined,
+                              you will get access to your collateral.
                             </p>
                           ) : (
                             <p>
@@ -1393,8 +1427,7 @@ export const ManageVault = ({ match }) => {
                         <Alert>
                           <p>
                             You have unstacked your collateral. It is still stacking in PoX until
-                            Bitcoin block {unlockBurnHeight}. Once your cooldown cycle hits, you can
-                            unlock the collateral.
+                            Bitcoin block {unlockBurnHeight}. Once that block is mined, you can unlock your vault.
                           </p>
                         </Alert>
                       </div>

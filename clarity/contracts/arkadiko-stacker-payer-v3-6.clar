@@ -3,6 +3,10 @@
 
 (define-constant ERR-NOT-AUTHORIZED u22401)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u221)
+(define-constant ERR-BURN-HEIGHT-NOT-REACHED u222)
+(define-constant ERR-WRONG-COLLATERAL-TOKEN u223)
+(define-constant ERR-VAULT-LIQUIDATED u224)
+(define-constant ERR-STILL-STACKING u225)
 
 (define-data-var stacker-payer-shutdown-activated bool false)
 
@@ -59,7 +63,7 @@
     (asserts!
       (and
         (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
-        (is-eq (var-get stacker-shutdown-activated) false)
+        (is-eq (var-get stacker-payer-shutdown-activated) false)
       )
       (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
     )
@@ -75,6 +79,8 @@
         updated-at-block-height: block-height
       }))
     )
+    (map-set unlocks { vault-id: vault-id } { unlocked-at-burn-height: u999999999999999 })
+
     (ok true)
   )
 )
@@ -85,7 +91,7 @@
   )
     (asserts! (is-eq true (get revoked-stacking vault)) (err ERR-STILL-STACKING))
 
-    (map-set unlocks { vault-id: vault-id } { unlocked-at-burn-height: (var-get stacking-unlock-burn-height) })
+    (map-set unlocks { vault-id: vault-id } { unlocked-at-burn-height: (unwrap-panic (contract-call? .arkadiko-stacker-v2-1 get-stacking-unlock-burn-height)) })
     (ok true)
   )
 )
