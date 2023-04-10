@@ -121,7 +121,7 @@ export const Stake = () => {
       poolInfo['wrapped-stx-token/Wrapped-Bitcoin'] = data['wrapped-stx-token/Wrapped-Bitcoin'];
       poolInfo['Wrapped-Bitcoin/usda-token'] = data['Wrapped-Bitcoin/usda-token'];
 
-      // TODO: Update API 
+      // TODO: Update API
       // poolInfo['Wrapped-USD/usda-token'] = data['Wrapped-USD/usda-token'];
       const callPoolInfo = await callReadOnlyFunction({
         contractAddress: 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9',
@@ -1264,31 +1264,31 @@ export const Stake = () => {
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
+                              className="hidden px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase lg:table-cell dark:text-zinc-400"
                             >
                               Current APR
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
+                              className="hidden px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase lg:table-cell dark:text-zinc-400"
                             >
                               Available
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
+                              className="hidden px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase lg:table-cell dark:text-zinc-400"
                             >
                               Staked
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
+                              className="hidden px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase lg:table-cell dark:text-zinc-400"
                             >
                               Rewards
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
+                              className="hidden px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase lg:table-cell dark:text-zinc-400"
                             >
                               <span className="sr-only">Actions</span>
                             </th>
