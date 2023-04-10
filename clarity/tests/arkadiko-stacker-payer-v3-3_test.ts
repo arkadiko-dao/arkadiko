@@ -22,12 +22,12 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v3-4", "toggle-stacker-payer-shutdown", [], deployer.address)
+      Tx.contractCall("arkadiko-stacker-payer-v3-6", "toggle-stacker-payer-shutdown", [], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v3-4", "toggle-stacker-payer-shutdown", [], deployer.address)
+      Tx.contractCall("arkadiko-stacker-payer-v3-6", "toggle-stacker-payer-shutdown", [], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
   }
@@ -47,7 +47,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(1);
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v3-4", "redeem-stx", [
+      Tx.contractCall("arkadiko-stacker-payer-v3-6", "redeem-stx", [
         types.uint(1000000000), // 1000 STX
       ], wallet_2.address)
     ]);

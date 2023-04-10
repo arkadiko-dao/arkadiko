@@ -8,19 +8,13 @@
 ;; 0x00
 
 (define-constant ERR-NOT-AUTHORIZED u19401)
-(define-constant ERR-BURN-HEIGHT-NOT-REACHED u191)
 (define-constant ERR-WRONG-STACKER u192)
-(define-constant ERR-WRONG-COLLATERAL-TOKEN u193)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u195)
-(define-constant ERR-VAULT-LIQUIDATED u196)
-(define-constant ERR-STILL-STACKING u197)
 
 (define-data-var stacking-unlock-burn-height uint u0) ;; when is this cycle over
 (define-data-var stacking-stx-stacked uint u0) ;; how many stx did we stack in this cycle
 (define-data-var stacker-shutdown-activated bool false)
 (define-data-var stacker-name (string-ascii 256) "stacker")
-
-(define-map unlocks { vault-id: uint } { unlocked-at-burn-height: uint })
 
 (define-read-only (get-stacking-unlock-burn-height)
   (ok (var-get stacking-unlock-burn-height))
@@ -32,15 +26,6 @@
 
 (define-read-only (get-stacker-info)
   (stx-account (as-contract tx-sender))
-)
-
-(define-read-only (get-vault-unlock (vault-id uint))
-  (default-to
-    {
-      unlocked-at-burn-height: u999999999999999
-    }
-    (map-get? unlocks { vault-id: vault-id })
-  )
 )
 
 (define-public (toggle-stacker-shutdown)
@@ -154,48 +139,5 @@
     (as-contract
       (stx-transfer? ustx-amount tx-sender (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stx-reserve")))
     )
-  )
-)
-
-;; This method can be executed by anyone
-;; after a stacking cycle ends to allow withdrawal of STX collateral
-;; Only mark vaults that have revoked stacking and not been liquidated
-;; must be called before a new `stack-extend` method call (stacking cycle)
-(define-public (enable-vault-withdrawals (vault-id uint))
-  (let (
-    (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
-    (unlock (get-vault-unlock vault-id))
-  )
-    (asserts!
-      (and
-        (is-eq (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)) false)
-        (is-eq (var-get stacker-shutdown-activated) false)
-      )
-      (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED)
-    )
-    (asserts! (is-eq "STX" (get collateral-token vault)) (err ERR-WRONG-COLLATERAL-TOKEN))
-    (asserts! (is-eq false (get is-liquidated vault)) (err ERR-VAULT-LIQUIDATED))
-    (asserts! (is-eq true (get revoked-stacking vault)) (err ERR-STILL-STACKING))
-    ;; A user indicates to unstack through the `toggle-stacking` method on freddie (revoked-stacking === true)
-    ;; but then he should only be able to unstack if the burn height passed
-    (asserts! (> burn-block-height (get unlocked-at-burn-height unlock)) (err ERR-BURN-HEIGHT-NOT-REACHED))
-
-    (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
-        stacked-tokens: u0,
-        updated-at-block-height: block-height
-      }))
-    )
-    (ok true)
-  )
-)
-
-(define-public (initiate-unlock (vault-id uint))
-  (let (
-    (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
-  )
-    (asserts! (is-eq true (get revoked-stacking vault)) (err ERR-STILL-STACKING))
-
-    (map-set unlocks { vault-id: vault-id } { unlocked-at-burn-height: (var-get stacking-unlock-burn-height) })
-    (ok true)
   )
 )
