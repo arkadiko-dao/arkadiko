@@ -616,7 +616,7 @@ export const ViewProposal = ({ match }) => {
                         ) : (
                           <p className="truncate">
                             <a
-                              href={`https://explorer.stacks.co/address/${proposal.proposer}`}
+                              href={`https://explorer.hiro.so/address/${proposal.proposer}`}
                               target="_blank"
                               className="text-sm font-medium text-indigo-700 dark:text-indigo-200 dark:focus:ring-indigo-300rounded-sm hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >

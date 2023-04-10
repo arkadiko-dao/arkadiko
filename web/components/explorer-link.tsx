@@ -15,7 +15,7 @@ export const ExplorerLink: React.FC<ExplorerLinkProps> = ({ txId, text, classNam
     }
     url = location.origin.includes('localhost')
       ? `http://localhost:3999/extended/v1/tx/${id}`
-      : `https://explorer.stacks.co/txid/${id}`;
+      : `https://explorer.hiro.so/txid/${id}`;
   }
 
   return (

@@ -11,7 +11,7 @@ import { Placeholder } from './ui/placeholder';
 import { StyledIcon } from './ui/styled-icon';
 
 const DEFAULT_NETWORKS = [
-  { name: 'Stacks', key: 'stacks', url: 'https://stacks-node-api.mainnet.stacks.co' },
+  { name: 'Stacks', key: 'stacks', url: 'https://api.hiro.so' },
   { name: 'ALEX', key: 'alex', url: 'https://stacks-node-api.alexlab.co/' },
 ];
 
