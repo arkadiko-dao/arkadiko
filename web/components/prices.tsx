@@ -210,7 +210,7 @@ export const Prices = () => {
                               </span>
                             </p>
                           </div>
-                          {stxUsdaPrice != 0.0 ? (
+                          {stxUsdaPrice != 0 ? (
                             <div className="flex items-center">
                               <Tooltip
                                 className=""
