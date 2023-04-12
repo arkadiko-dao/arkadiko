@@ -213,8 +213,8 @@ path = "contracts/arkadiko-ui-stake-v1-3.clar"
 [contracts.arkadiko-pox-unstack-unlock-v1-1]
 path = "contracts/arkadiko-pox-unstack-unlock-v1-1.clar"
 
-[contracts.arkadiko-pox-unstack-unlock-v2-2]
-path = "contracts/arkadiko-pox-unstack-unlock-v2-2.clar"
+[contracts.arkadiko-pox-unstack-unlock-v2-3]
+path = "contracts/arkadiko-pox-unstack-unlock-v2-3.clar"
 
 [contracts.arkadiko-xstx-migrate]
 path = "contracts/arkadiko-xstx-migrate.clar"
