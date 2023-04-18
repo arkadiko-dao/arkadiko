@@ -83,7 +83,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                       `${apy}%`
                     )}
                   </dd>
-                  <dt className="text-xs">Available</dt>
+                  <dt className="text-xs mt-3">Available</dt>
                   <dd className="mt-1 truncate">
                     {loadingData ? (
                       <Placeholder className="py-2" width={Placeholder.width.HALF} />
@@ -128,7 +128,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                       </>
                     )}
                   </dd>
-                  <dt className="text-xs">Staked</dt>
+                  <dt className="text-xs mt-3">Staked</dt>
                   <dd className="mt-1 truncate">
                     {loadingData ? (
                       <Placeholder className="py-2" width={Placeholder.width.HALF} />
@@ -173,7 +173,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                       </>
                     )}
                   </dd>
-                  <dt className="text-xs">Rewards</dt>
+                  <dt className="text-xs mt-3">Rewards</dt>
                   <dd className="mt-1 truncate">
                     {loadingData ? (
                       <Placeholder className="py-2" width={Placeholder.width.HALF} />
@@ -215,7 +215,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                       >
                         <Menu.Items
                           static
-                          className="absolute right-0 z-10 w-48 mx-3 mt-6 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg top-2 dark:divide-gray-600 ring-1 ring-black ring-opacity-5 focus:outline-none"
+                          className="absolute right-0 z-10 w-48 mx-3 mt-6 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg top-2 ring-1 ring-black ring-opacity-5 focus:outline-none"
                         >
                           <div className="px-1 py-1 space-y-0.5">
                             <Menu.Item>
