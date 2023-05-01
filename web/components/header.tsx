@@ -81,6 +81,24 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
     <Disclosure as="nav" className="relative sticky top-0 z-50 bg-white shadow dark:bg-zinc-900">
       {({ open }) => (
         <>
+          <div className="relative hidden sm:block bg-yellow-50">
+            <div className="px-3 py-3 mx-auto max-w-7xl sm:px-6 lg:px-8">
+              <div className="flex items-center justify-center">
+                <div className="shrink-0">
+                  <StyledIcon as="ExclamationIcon" size={5} className="text-yellow-400" />
+                </div>
+                <div className="ml-3">
+                  <p className="text-yellow-700">
+                    <span className="font-semibold">
+                      Due to a bug in Stacks 2.2, Swap and Vaults are currently not working. {' '}
+                    </span>
+                    <a href="https://forum.stacks.org/t/issue-passing-trait-arguments-in-epoch-2-2/14938" target="_blank">Read more here.</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="px-4 px-6 mx-auto max-w-7xl lg:px-8">
             <div className="flex justify-between h-16">
               <div className="flex justify-between flex-1">
