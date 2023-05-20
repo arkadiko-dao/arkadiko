@@ -202,7 +202,8 @@ export const App: React.FC = () => {
       .then(response => {
         console.log(response);
         const cycleNumber = response['current_cycle']['id'];
-        const blocksUntilNextCycle = response['next_cycle']['blocks_until_prepare_phase']
+        const blocksUntilNextCycle = response['next_cycle']['blocks_until_prepare_phase'];
+        const currentBtcBlock = response['current_burnchain_block_height'];
         const blocksSinceStart = 2100 - blocksUntilNextCycle;  // 2100 blocks in a cycle
         const currentTimestamp = Date.now(); // in milliseconds
         const startTimestamp = currentTimestamp - blocksSinceStart*10*60000; // 10 minutes per block time 60,000 milliseconds per minute
@@ -217,6 +218,8 @@ export const App: React.FC = () => {
 
         const startDate = new Date(startTimestamp).toDateString();
         const endDate = new Date(endTimestamp).toDateString().split(' ').slice(1).join(' ');
+        const startHeight = currentBtcBlock - blocksSinceStart;
+        const endHeight = currentBtcBlock + blocksUntilNextCycle;
         setState(prevState => ({
           ...prevState,
           cycleNumber: cycleNumber,
@@ -224,8 +227,8 @@ export const App: React.FC = () => {
           endDate: endDate,
           daysPassed: daysPassed,
           daysLeft: daysLeft,
-          cycleStartHeight: response['cycleStartHeight'],
-          cycleEndHeight: response['cycleEndHeight'],
+          cycleStartHeight: startHeight,
+          cycleEndHeight: endHeight,
         }));
       });
   };
