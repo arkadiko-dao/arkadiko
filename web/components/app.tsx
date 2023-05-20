@@ -200,13 +200,13 @@ export const App: React.FC = () => {
     fetch(metaInfoUrl)
       .then(res => res.json())
       .then(response => {
-
+        console.log(response);
         const cycleNumber = response['current_cycle']['id'];
-        
-        const startTimestamp = response['startDate'];
-        const endTimestamp = response['endDate'];
-        const currentTimestamp = Date.now();
-
+        const blocksUntilNextCycle = response['next_cycle']['blocks_until_prepare_phase']
+        const blocksSinceStart = 2100 - blocksUntilNextCycle;  // 2100 blocks in a cycle
+        const currentTimestamp = Date.now(); // in milliseconds
+        const startTimestamp = currentTimestamp - blocksSinceStart*10*60000; // 10 minutes per block time 60,000 milliseconds per minute
+        const endTimestamp = currentTimestamp + blocksUntilNextCycle*10*60000;
         const daysPassed = Math.round(
           (currentTimestamp - startTimestamp) / (1000 * 60 * 60 * 24)
         );
