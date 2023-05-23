@@ -196,42 +196,40 @@ export const App: React.FC = () => {
   };
 
   const fetchStackingCycle = async () => {
-    const metaInfoUrl = `https://api.stacking.club/api/meta-info`;
+    const metaInfoUrl = `https://api.mainnet.hiro.so/v2/pox`; 
     fetch(metaInfoUrl)
       .then(res => res.json())
       .then(response => {
-        const cycleNumber = response[0]['pox']['current_cycle']['id'];
+        console.log(response);
+        const cycleNumber = response['current_cycle']['id'];
+        const blocksUntilNextCycle = response['next_cycle']['blocks_until_prepare_phase'];
+        const currentBtcBlock = response['current_burnchain_block_height'];
+        const blocksSinceStart = 2100 - blocksUntilNextCycle;  // 2100 blocks in a cycle
+        const currentTimestamp = Date.now(); // in milliseconds
+        const startTimestamp = currentTimestamp - blocksSinceStart*10*60000; // 10 minutes per block time 60,000 milliseconds per minute
+        const endTimestamp = currentTimestamp + blocksUntilNextCycle*10*60000;
+        const daysPassed = Math.round(
+          (currentTimestamp - startTimestamp) / (1000 * 60 * 60 * 24)
+        );
+        const daysLeft = Math.max(
+          0,
+          Math.round((endTimestamp - currentTimestamp) / (1000 * 60 * 60 * 24))
+        );
 
-        const cycleInfoUrl = `https://api.stacking.club/api/cycle-info?cycle=${cycleNumber}`;
-        fetch(cycleInfoUrl)
-          .then(res => res.json())
-          .then(response => {
-            const startTimestamp = response['startDate'];
-            const endTimestamp = response['endDate'];
-            const currentTimestamp = Date.now();
-
-            const daysPassed = Math.round(
-              (currentTimestamp - startTimestamp) / (1000 * 60 * 60 * 24)
-            );
-            const daysLeft = Math.max(
-              0,
-              Math.round((endTimestamp - currentTimestamp) / (1000 * 60 * 60 * 24))
-            );
-
-            const startDate = new Date(startTimestamp).toDateString();
-            const endDate = new Date(endTimestamp).toDateString().split(' ').slice(1).join(' ');
-
-            setState(prevState => ({
-              ...prevState,
-              cycleNumber: cycleNumber,
-              startDate: startDate,
-              endDate: endDate,
-              daysPassed: daysPassed,
-              daysLeft: daysLeft,
-              cycleStartHeight: response['cycleStartHeight'],
-              cycleEndHeight: response['cycleEndHeight'],
-            }));
-          });
+        const startDate = new Date(startTimestamp).toDateString();
+        const endDate = new Date(endTimestamp).toDateString().split(' ').slice(1).join(' ');
+        const startHeight = currentBtcBlock - blocksSinceStart;
+        const endHeight = currentBtcBlock + blocksUntilNextCycle;
+        setState(prevState => ({
+          ...prevState,
+          cycleNumber: cycleNumber,
+          startDate: startDate,
+          endDate: endDate,
+          daysPassed: daysPassed,
+          daysLeft: daysLeft,
+          cycleStartHeight: startHeight,
+          cycleEndHeight: endHeight,
+        }));
       });
   };
 
