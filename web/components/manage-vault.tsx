@@ -249,7 +249,7 @@ export const ManageVault = ({ match }) => {
 
       const vaultUnlockCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-stacker-payer-v3-6',
+        contractName: 'arkadiko-stacker-payer-v3-7',
         functionName: 'get-vault-unlock',
         functionArgs: [uintCV(vault?.id)],
         senderAddress: contractAddress || '',
@@ -387,7 +387,7 @@ export const ManageVault = ({ match }) => {
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-stacker-payer-v3-6',
+      contractName: 'arkadiko-stacker-payer-v3-7',
       functionName: 'enable-vault-withdrawals',
       functionArgs: [uintCV(match.params.id)],
       onFinish: data => {
