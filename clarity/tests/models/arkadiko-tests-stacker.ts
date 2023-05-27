@@ -85,20 +85,20 @@ class Stacker2 {
   }
 
   getStxBalance() {
-    return this.chain.callReadOnlyFn("arkadiko-stacker-v2-1", "get-stx-balance", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-stacker-v3-1", "get-stx-balance", [], this.deployer.address);
   }
 
   getStackingUnlockHeight() {
-    return this.chain.callReadOnlyFn("arkadiko-stacker-v2-1", "get-stacking-unlock-burn-height", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-stacker-v3-1", "get-stacking-unlock-burn-height", [], this.deployer.address);
   }
 
   getStackerInfo() {
-    return this.chain.callReadOnlyFn("arkadiko-stacker-v2-1", "get-stacker-info", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-stacker-v3-1", "get-stacker-info", [], this.deployer.address);
   }
 
   initiateStacking(startBlock: number, lockPeriod: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v2-1", "initiate-stacking", [
+      Tx.contractCall("arkadiko-stacker-v3-1", "initiate-stacking", [
         types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
         types.uint(startBlock), // start block height
         types.uint(lockPeriod) // cycle lock period
@@ -118,14 +118,14 @@ class Stacker2 {
 
   shutdown() {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v2-1", "toggle-stacker-shutdown", [], this.deployer.address)
+      Tx.contractCall("arkadiko-stacker-v3-1", "toggle-stacker-shutdown", [], this.deployer.address)
     ]);
     return block.receipts[0].result;
   }
 
   stackIncrease(stackerName: string, additionalTokens: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v2-1", "stack-increase", [
+      Tx.contractCall("arkadiko-stacker-v3-1", "stack-increase", [
         types.ascii(stackerName),
         types.uint(additionalTokens)
       ], this.deployer.address)
@@ -135,7 +135,7 @@ class Stacker2 {
 
   stackExtend(cycleCount: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v2-1", "stack-extend", [
+      Tx.contractCall("arkadiko-stacker-v3-1", "stack-extend", [
         types.uint(cycleCount),
         types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'})
       ], this.deployer.address)
@@ -145,7 +145,7 @@ class Stacker2 {
 
   returnStx(amount: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v2-1", "return-stx", [types.uint(amount * 1000000)], this.deployer.address),
+      Tx.contractCall("arkadiko-stacker-v3-1", "return-stx", [types.uint(amount * 1000000)], this.deployer.address),
     ]);
     return block.receipts[0].result;
   }

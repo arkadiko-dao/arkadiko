@@ -234,7 +234,7 @@ export const ManageVault = ({ match }) => {
       if (vault?.stackedTokens == 0 && vault?.revokedStacking) {
         setEnabledStacking(false);
       }
-      const contractName = 'arkadiko-stacker-v2-1';
+      const contractName = 'arkadiko-stacker-v3-1';
 
       const call = await callReadOnlyFunction({
         contractAddress,
