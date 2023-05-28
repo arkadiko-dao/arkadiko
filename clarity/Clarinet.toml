@@ -85,7 +85,7 @@ path = "contracts/arkadiko-sip10-reserve-v2-1.clar"
 [contracts.arkadiko-stacker-v3-1]
 path = "contracts/arkadiko-stacker-v3-1.clar"
 clarity_version = 2
-epoch = "2.1"
+epoch = "2.4"
 
 [contracts.arkadiko-stacker-v1-1]
 path = "contracts/arkadiko-stacker-v1-1.clar"
