@@ -140,7 +140,7 @@ This will also include a significant amount of front-end (and separate back-end)
 
 This is a feature that will require a lot of R&D, specifically on the feasability.
 
-Developing this features assumes that it is possible to link a Bitcoin PoX Reward address to some swap mechanism that automatically swaps any incoming BTC on the Bitcoin PoX address into sBTC on the Stacks chain. This assumes that it is technically possible, and that enough liquidity exists on the Stacks side to either swap or peg-in the sBTC. More research will have to be done on whether this is possible at all.
+Developing this feature assumes that it is possible to link a Bitcoin PoX Reward address to some swap mechanism that automatically swaps any incoming BTC on the Bitcoin PoX address into sBTC on the Stacks chain. This assumes that it is technically possible, and that enough liquidity exists on the Stacks side to either swap or peg-in the sBTC. More research will have to be done on whether this is possible at all.
 
 An intermediate solution will be the manual exchange of BTC rewards into STX or sBTC through a swap. This means that the Sticky team has custodial access to the BTC yield until an automated solution can be developed. It is likely that a mainnet v1 will be deployed without this User Story.
 
