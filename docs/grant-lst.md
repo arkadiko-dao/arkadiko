@@ -164,7 +164,7 @@ Development of this project will take hundreds of hours (thousands for a mainnet
 | 8   | As a stacker, I can look up the TVL, STX/stSTX exchange rate and PoX epoch progress    | 1 day | $1000    |
 | 9   | As a user or guest, I can view past, current and future PoX cycle information  | 15 days | $15000    |
 | 10   | As a protocol, I can automatically turn BTC into sBTC or STX  | 40 days | $40,000    |
-| | | 110 days | $ 110,000 |
+| | | 115 days | $ 115,000 |
 
 The above includes only core application functionality. I have not included work on setting up a reliable CI pipeline to have automated testing on each build, documentation writing, legal work, audtis etc, which will take the total estimate over $200K. The total time and cost of this project exceeds the scope of the grant, but the grant would deliver significant support to bootstrap the development.
 
