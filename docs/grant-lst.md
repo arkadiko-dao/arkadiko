@@ -154,13 +154,13 @@ Development of this project will take hundreds of hours (thousands for a mainnet
 | 2   | As a user or guest, I can view basic information on the landing page, such as APY, total stacking rewards and TVL   | 5 days | $5000    |
 | 3   | As a user, I can stack STX and receive stSTX   | 20 days | $20,000    |
 | 4   | As a user, I can stack STX and receive stbSTX   | 10 days | $10,000   |
-| 5   | As a user, I can unstack STX, burning the stSTX and receive all my STX after the current PoX cycle ends   | 10 days | $10,000    |
+| 5   | As a user, I can unstack STX, burning the stSTX and receive all my STX after the current PoX cycle ends   | 15 days | $15,000    |
 | 6   | As a user, I can transfer stbSTX   | 0.5 day | $500    |
 | 7   | As a user, I can transfer stSTX   | 0.5 day | $500    |
 | 8   | As a stacker, I can look up the TVL, STX/stSTX exchange rate and PoX epoch progress    | 1 day | $1000    |
 | 9   | As a user or guest, I can view past, current and future PoX cycle information  | 15 days | $15000    |
 | 10   | As a protocol, I can automatically turn BTC into sBTC or STX  | 40 days | $40,000    |
-| | | 89 days | $ 89,000 |
+| | | 110 days | $ 110,000 |
 
 The above includes only core application functionality. I have not included work on setting up a reliable CI pipeline to have automated testing on each build, documentation writing, legal work, audtis etc, which will take the total estimate over $200K. The total time and cost of this project exceeds the scope of the grant, but the grant would deliver significant support to bootstrap the development.
 
