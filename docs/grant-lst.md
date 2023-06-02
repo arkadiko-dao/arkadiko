@@ -137,8 +137,12 @@ This will also include a significant amount of front-end (and separate back-end)
 10. As a protocol, I can automatically turn BTC into sBTC or STX
 
 #### Acceptance Criteria
-the Clarity Contract must do the following, atomically:
-- dfasdf
+
+This is a feature that will require a lot of R&D, specifically on the feasability.
+
+Developing this features assumes that it is possible to link a Bitcoin PoX Reward address to some swap mechanism that automatically swaps any incoming BTC on the Bitcoin PoX address into sBTC on the Stacks chain. This assumes that it is technically possible, and that enough liquidity exists on the Stacks side to either swap or peg-in the sBTC. More research will have to be done on whether this is possible at all.
+
+An intermediate solution will be the manual exchange of BTC rewards into STX or sBTC through a swap. This means that the Sticky team has custodial access to the BTC yield until an automated solution can be developed. It is likely that a mainnet v1 will be deployed without this User Story.
 
 ---
 
@@ -153,7 +157,7 @@ Development of this project will take hundreds of hours (thousands for a mainnet
 | 1   | As a user, I can authenticate with the protocol through the Hiro/Xverse wallet | 3 days  | $3000    |
 | 2   | As a user or guest, I can view basic information on the landing page, such as APY, total stacking rewards and TVL   | 5 days | $5000    |
 | 3   | As a user, I can stack STX and receive stSTX   | 20 days | $20,000    |
-| 4   | As a user, I can stack STX and receive stbSTX   | 10 days | $10,000   |
+| 4   | As a user, I can stack STX and receive stbSTX   | 15 days | $15,000   |
 | 5   | As a user, I can unstack STX, burning the stSTX and receive all my STX after the current PoX cycle ends   | 15 days | $15,000    |
 | 6   | As a user, I can transfer stbSTX   | 0.5 day | $500    |
 | 7   | As a user, I can transfer stSTX   | 0.5 day | $500    |
