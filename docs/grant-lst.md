@@ -34,25 +34,29 @@ Similar benefits can be enjoyed with stbSTX, but less so since it doesn't increa
 
 A high-level architecture currently looks as follows:
 
-![Architecture](https://github.com/philipdesmedt/arkadiko-dao/blob/master/docs/architecture-high-level.png?raw=true)
+![Architecture](https://github.com/arkadiko-dao/arkadiko/blob/master/docs/sticky-architecture-high-level.png?raw=true)
 
 Components & Technical Specs
-- Clarity Contracts. Contains logic to stack, unstack, compound the STX and calculate the amount of STX per stSTX, mint stSTX, burn stSTX, ... is included.
+- Clarity Contracts. Contains logic to stack, unstack, compound the STX and calculate the amount of STX per stSTX, mint stSTX, burn stSTX, stake a revenue-earning token, refer someone to earn 1% of their yield, ... is included.
 - A react UI will be built on the stacks.js or micro-stacks library hooking into the smart contracts. The initial UI will consist of three big sections:
   - PoX: Overview of past, current and future PoX Stacking Cycle. It's unclear when or whether https://stacking.club/ will come back anytime soon, but I believe the ecosystem needs this app. This project could be a replacement for that (although out of scope for this grant except for some basic data)
   - Stack: choose how much STX you want to stack and how much stSTX you get in return for that (contains the bulk of the logic)
   - DeFi: an overview of all the places where you can leverage stSTX
-  - Earn: a page where you can see how much value was distributed to $STICKY token holders (no token in initial version, perhaps out of scope for this grant)
+  - Earn: a page where you can see how much value was distributed to $STICKY token holders
   - Documentation (link to Gitbook)
 - Landing Page + Documentation
   - Documentation will be written as a Gitbook page
   - A set of great DeFi landing pages will be used as inspiration, e.g. https://marinade.finance/. The landing page should be very succinct and simple, and acts as the product itself, with a clear call to action to connect your wallet.
 
+### Sticky Token
+
+TODO
+
 ### Success Metrics
 
 Success at this stage is measured by transparency of the process. The code and documentation are all open source. At the end of each sprint we hold a review for stakeholders - including an open invitation to community members. The reviews will present the work finished in the sprint and present an opportunity to discuss problems encountered and insights for future development. We will post invitations via direct messages to partners in the Foundation.
 
-Review meetings would likely start in the July/August timeframe as input & feedback becomes more valuable.
+Review meetings would likely start in August as input & feedback becomes more valuable.
 
 The final deliverable will be based on the following user stories. As described above, the final artifact will be a set of smart contracts with a front-end that has great UI/UX.
 
@@ -72,7 +76,7 @@ All information is accurate and visible to the user
 
 ---
 
-3. As a user, I can stack STX and receive stSTX
+3. As a user, I can stack STX and receive stSTX (plus STICKY rewards)
 
 #### Acceptance Criteria
 the Clarity Contract must do the following, atomically:
@@ -81,7 +85,7 @@ the Clarity Contract must do the following, atomically:
 
 ---
 
-4. As a user, I can stack STX and receive stbSTX
+4. As a user, I can stack STX and receive stbSTX (plus STICKY rewards)
 
 #### Acceptance Criteria
 the Clarity Contract must do the following, atomically:
@@ -116,7 +120,7 @@ the Clarity Contract must do the following, atomically:
 
 ---
 
-8. As a stacker, I can look up the TVL, STX/stSTX exchange rate and PoX epoch progress  
+8. As a guest, I can look up the TVL, STX/stSTX exchange rate and PoX epoch progress  
 
 #### Acceptance Criteria
 the Clarity Contract must do the following, atomically:
@@ -134,7 +138,30 @@ This will also include a significant amount of front-end (and separate back-end)
 
 ---
 
-10. As a protocol, I can automatically turn BTC into sBTC or STX
+10. As a user, I can bribe other users to stack on my address through a referral
+
+### Acceptance Criteria
+the Clarity Contract must do the following, atomically:
+- When a user stacks STX with another user's address as a referral address, it gets saved in the smart contract
+- The referrer gets 1% of the yield that the stacker earned. 4% goes to the protocol (in total 5%), and the remaining 95% goes to the stacker as earned yield.
+
+Note that the stacker earns 5% less than when stacking straight with PoX or through a pool, but the upside is having a liquid stacking token plus potentially earning a rev share token ($STICKY).
+
+$STICKY will also be used as a general bribing mechanism where individual parties can run a stacker and token holders can vote where their STX should go. This can create an interesting dynamic where game theory and bribing can define where STX tokens go. Generally this (and some other user stories) warrant a one-pager on their own and need some more work to spec out completely.
+
+---
+
+11. As a user, I can see my rewards from stacking
+
+### Acceptance Criteria
+
+The base case for Sticky is that 95% of all yield goes to the user, and 5% goes to the protocol, unless the stacker was referred (referrers get 1% of all yield they have referred)
+
+A Clarity Contract returns the stacker's rewards viewable per PoX cycle
+
+---
+
+12. As a protocol, I can automatically turn BTC into sBTC or STX
 
 #### Acceptance Criteria
 
@@ -143,6 +170,23 @@ This is a feature that will require a lot of R&D, specifically on the feasabilit
 Developing this feature assumes that it is possible to link a Bitcoin PoX Reward address to some swap mechanism that automatically swaps any incoming BTC on the Bitcoin PoX address into sBTC on the Stacks chain. This assumes that it is technically possible, and that enough liquidity exists on the Stacks side to either swap or peg-in the sBTC. More research will have to be done on whether this is possible at all.
 
 An intermediate solution will be the manual exchange of BTC rewards into STX or sBTC through a swap. This means that the Sticky team has custodial access to the BTC yield until an automated solution can be developed. It is likely that a mainnet v1 will be deployed without this User Story.
+
+---
+
+13. As a user, I can stake STICKY to get protocol revenue
+
+#### Acceptance Criteria
+
+A user earns STICKY tokens by using the protocol (only the first year). When a user stakes the STICKY token, they are eligible for protocol revenue earned through taken a small cut of the PoX yield.
+
+The revenue looks as follows:
+
+90% - for the PoX stacker
+1% (optional) - for referrer if stacker was referred
+1% (optional) - for stacker for accepting the referral
+8% (or 10% if no referral) - protocol revenue
+
+The 8 or 10% will be distributed pro-rata to all STICKY stakers, only eligible for stakers who have been staking at least 1 PoX cycle (i.e. before the Bitcoin burn height for a new PoX cycle was reached).
 
 ---
 
@@ -161,8 +205,10 @@ Development of this project will take hundreds of hours (thousands for a mainnet
 | 5   | As a user, I can unstack STX, burning the stSTX and receive all my STX after the current PoX cycle ends   | 15 days | $15,000    |
 | 6   | As a user, I can transfer stbSTX   | 0.5 day | $500    |
 | 7   | As a user, I can transfer stSTX   | 0.5 day | $500    |
-| 8   | As a stacker, I can look up the TVL, STX/stSTX exchange rate and PoX epoch progress    | 1 day | $1000    |
+| 8   | As a user or guest, I can look up the TVL, STX/stSTX exchange rate and PoX epoch progress    | 1 day | $1000    |
 | 9   | As a user or guest, I can view past, current and future PoX cycle information  | 15 days | $15000    |
+| 11   | As a protocol, I can automatically turn BTC into sBTC or STX  | 40 days | $40,000    |
+| 11   | As a protocol, I can automatically turn BTC into sBTC or STX  | 40 days | $40,000    |
 | 10   | As a protocol, I can automatically turn BTC into sBTC or STX  | 40 days | $40,000    |
 | | | 115 days | $ 115,000 |
 
