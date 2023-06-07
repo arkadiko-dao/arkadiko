@@ -57,7 +57,7 @@ As part of the protocol, there will be a token that early users of the protocol 
 3. 1% of the yield for accepting a referral (optional)
 4. 8 or 10% (depending on referred or not) will flow to users staking the STICKY token. Initially all yield would be distributed pro-rata among stakers but eventually a bonus stake can be acquired by using the protocol for longer periods of time (e.g. stacking for 12 PoX cycles at once).
 
-The token is not a governance token (nothing can be voted upon) as it serves purely as a revenue-share staking mechanism.
+The token is not a governance token (nothing can be voted on) as it serves purely as a revenue-share staking mechanism.
 
 ### Success Metrics
 
@@ -150,9 +150,9 @@ This will also include a significant amount of front-end (and separate back-end)
 ### Acceptance Criteria
 the Clarity Contract must do the following, atomically:
 - When a user stacks STX with another user's address as a referral address, it gets saved in the smart contract
-- The referrer gets 1% of the yield that the stacker earned. 4% goes to the protocol (in total 5%), and the remaining 95% goes to the stacker as earned yield.
+- The referrer and accepting user get 1% of the yield each. 8% goes to the protocol (in total 10%), and the remaining 90% goes to the stacker as earned yield.
 
-Note that the stacker earns 5% less than when stacking straight with PoX or through a pool, but the upside is having a liquid stacking token plus potentially earning a rev share token ($STICKY).
+Note that the stacker earns up to 9% less than when stacking straight with PoX or through a pool, but the upside is having a liquid stacking token plus potentially earning a rev share token ($STICKY).
 
 $STICKY will also be used as a general bribing mechanism where individual parties can run a stacker and token holders can vote where their STX should go. This can create an interesting dynamic where game theory and bribing can define where STX tokens go. Generally this (and some other user stories) warrant a one-pager on their own and need some more work to spec out completely.
 
@@ -162,7 +162,7 @@ $STICKY will also be used as a general bribing mechanism where individual partie
 
 ### Acceptance Criteria
 
-The base case for Sticky is that 95% of all yield goes to the user, and 5% goes to the protocol, unless the stacker was referred (referrers get 1% of all yield they have referred)
+The base case for Sticky is that 90% of all yield goes to the user, and up to 10% goes to the protocol, unless the stacker was referred (referrers get 1% of all yield they have referred).
 
 A Clarity Contract returns the stacker's rewards viewable per PoX cycle
 
@@ -214,12 +214,13 @@ Development of this project will take hundreds of hours (thousands for a mainnet
 | 7   | As a user, I can transfer stSTX   | 0.5 day | $500    |
 | 8   | As a user or guest, I can look up the TVL, STX/stSTX exchange rate and PoX epoch progress    | 1 day | $1000    |
 | 9   | As a user or guest, I can view past, current and future PoX cycle information  | 15 days | $15000    |
-| 11   | As a protocol, I can automatically turn BTC into sBTC or STX  | 40 days | $40,000    |
-| 11   | As a protocol, I can automatically turn BTC into sBTC or STX  | 40 days | $40,000    |
-| 10   | As a protocol, I can automatically turn BTC into sBTC or STX  | 40 days | $40,000    |
-| | | 115 days | $ 115,000 |
+| 10   | As a user, I can bribe other users to stack on my address through a referral  | 20 days | $20,000    |
+| 11   | As a user, I can see my rewards from stacking  | 2 days | $2,000    |
+| 12   | As a protocol, I can automatically turn BTC into sBTC or STX  | 40 days | $40,000    |
+| 13   | As a user, I can stake STICKY to get protocol revenue  | 20 days | $20,000    |
+| | | 160 days | $ 160,000 |
 
-The above includes only core application functionality. I have not included work on setting up a reliable CI pipeline to have automated testing on each build, documentation writing, legal work, audtis etc, which will take the total estimate over $200K. The total time and cost of this project exceeds the scope of the grant, but the grant would deliver significant support to bootstrap the development.
+The above includes only core application functionality, without including work on setting up a reliable CI pipeline to have automated testing on each build, documentation writing, legal work, audits etc, which will take the total estimate over $200K. The total time and cost of this project exceeds the scope of the grant, but the grant would deliver significant support to bootstrap the development.
 
 Splitting up the above user stories in a simple yet pragmatic overview, I would propose the following milestones:
 
@@ -229,26 +230,26 @@ Splitting up the above user stories in a simple yet pragmatic overview, I would 
 - Working user stories: 1, 2, 3, 4, 6, 7, 8
 - Mocknet & local repo cloning.
 
-2. Milestone 2. Delivery end of September (15,000 STX)
+2. Milestone 2. Delivery end of September (20,000 STX)
 
 - Set up CI pipeline
 - First deployment of Testnet version with usable React front-end
-- Working user stories: all of the above + 5
-- Research on US 10
+- Working user stories: all of the above + 5, 10, 11
+- Research on US 12
 
 3. Milestone 3. Delivery end of October (15,000 STX)
 
 - Further deployment of Testnet version
-- Working user stories: all of the above + 9
+- Working user stories: all of the above + 9, 13
 - First Draft of a plan to launch on mainnet
 - First documentation
 
-4. Milestone 4. Delivery TBD - dependent on sBTC release (20,000 STX)
+4. Milestone 4. Delivery TBD - dependent on sBTC release (15,000 STX)
 
 - Final version is ready for mainnet (except security audit and liquidity)
 - Documentation live
 - Security Audit is planned
-- US 10 has been researched, feasability has been calculated and technical + liquidity requirements are clear. There is a significant chance this user story will have to be rewritten or done in a different way as automatic conversion is dependent on liquidity and technical constraints that are not clear today. Still we are willing to allocate 20% of the budget here.
+- US 12 has been researched, feasability has been calculated and technical + liquidity requirements are clear. There is a significant chance this user story will have to be rewritten or done in a different way as automatic conversion is dependent on liquidity and technical constraints that are not clear today. Still we are willing to allocate a part of the budget here.
 
 Once milestone 4 is reached, all of the risks (see section on Risks) should be derisked. The above timing is an estimate but should be on the conservative side, and thus doable. This is open to feedback or a variation of above milestones if certain things could be delivered more efficiently or in a different manner.
 
@@ -271,12 +272,12 @@ All of us have 10+ years of experience in startups and tech in general.
 - Improving the functionality to further replace stacking.club (unless it comes back - no need to duplicate work or compete with a great app that is already out there)
 - Sourcing liquidity to make stSTX ubiquitous
 - Working with other DeFi protocols in the ecosystem to have stSTX and stbSTX accepted as collateral/tokens
-- Launch a token that is airdropped to the biggest DeFi protocols on Stacks (no private sale) which will earn a revenue share that is taken from the yield (~10%). This incentivises usage of the protocol and helps spread awareness.
+- Airdrop to the biggest DeFi protocols on Stacks (no private sale) which will earn a revenue share that is taken from the yield (~10%). This incentivises usage of the protocol and helps spread awareness.
 
 ## Community and Supporting Materials
 **Do you have previous projects, code commits, or experiences that are relevant to this application? What community feedback or input have you received? How do you plan to share your plan to the community over time and as the final deliverable?**
 
-We developed Arkadiko (USDA stablecoin + Swap) and arguably are among the top 10 people who know most about building on top of Proof of Transfer.
+We developed Arkadiko (USDA stablecoin + Swap) and arguably are among the top 10 people who know most about building on top of Proof of Transfer and Stacks in general.
 
 During the development of a testnet-ready version, we will provide updates every month or so, with builds that can be tested by the community.
 
