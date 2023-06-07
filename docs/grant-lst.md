@@ -200,7 +200,7 @@ The 8 or 10% will be distributed pro-rata to all STICKY stakers, only eligible f
 ## Budget & Milestones
 **What grant amount are you seeking? How long will the project take in hours? If more than 20, please break down the project into milestones, with a clear output (e.g., low-fi mockup, MVP with two features) and include the estimated work hours for each milestone.**
 
-Development of this project will take hundreds of hours (thousands for a mainnet-ready version). We are seeking a grant amount of 100,000 STX which would cover approximately 80% of our time & expenses made in the next 6 months.
+Development of this project will take hundreds of hours (thousands for a mainnet-ready version). We are seeking a grant amount of 100,000 STX which would cover a significant amount of our time & expenses made in the next 6 months.
 
 
 | ID  | User Story     | Days         | Cost         |
