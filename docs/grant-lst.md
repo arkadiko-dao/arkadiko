@@ -42,7 +42,7 @@ Components & Technical Specs
   - PoX: Overview of past, current and future PoX Stacking Cycle. It's unclear when or whether https://stacking.club/ will come back anytime soon, but I believe the ecosystem needs this app. This project could be a replacement for that (although out of scope for this grant except for some basic data)
   - Stack: choose how much STX you want to stack and how much stSTX you get in return for that (contains the bulk of the logic)
   - DeFi: an overview of all the places where you can leverage stSTX
-  - Earn: a page where you can see how much value was distributed to $STICKY token holders
+  - Earn: a page where you can see how much value was distributed to $STICKY token holders and (un)stake the token
   - Documentation (link to Gitbook)
 - Landing Page + Documentation
   - Documentation will be written as a Gitbook page
@@ -50,7 +50,14 @@ Components & Technical Specs
 
 ### Sticky Token
 
-TODO
+As part of the protocol, there will be a token that early users of the protocol can earn through stacking. The token will likely only be offered through airdrops and emissions initially and the PoX yield for the protocol looks as follows (subject to change):
+
+1. 90% of the PoX yield goes to the stacker (compounded in stSTX)
+2. 1% of the yield for referrers (optional)
+3. 1% of the yield for accepting a referral (optional)
+4. 8 or 10% (depending on referred or not) will flow to users staking the STICKY token. Initially all yield would be distributed pro-rata among stakers but eventually a bonus stake can be acquired by using the protocol for longer periods of time (e.g. stacking for 12 PoX cycles at once).
+
+The token is not a governance token (nothing can be voted upon) as it serves purely as a revenue-share staking mechanism.
 
 ### Success Metrics
 
@@ -89,7 +96,7 @@ the Clarity Contract must do the following, atomically:
 
 #### Acceptance Criteria
 the Clarity Contract must do the following, atomically:
-- Transfer (`stx-transfer`) the STX tokens into the Sticky reserve smart contract
+- Transfer (`stx-transfer`) the STX tokens into the Sticky reserve core smart contract
 - the TVL is updated with the new stx amount and stbSTX is minted accordingly
 
 ---
