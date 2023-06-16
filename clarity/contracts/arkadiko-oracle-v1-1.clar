@@ -247,10 +247,17 @@
   (map-set token-id-to-names u3 (list "USDA"))
   (map-set token-name-to-id "USDA" u3)
 
-  (map-set token-id-to-names u4 (list "DIKO"))
-  (map-set token-name-to-id "DIKO" u4)
+  (map-set token-id-to-names u4 (list "STX/USDA"))
+  (map-set token-name-to-id "STX/USDA" u4)
 
-  (map-set token-id-to-names u5 (list "atALEX" "auto-alex"))
-  (map-set token-name-to-id "atALEX" u5)
-  (map-set token-name-to-id "auto-alex" u5)
+  (map-set token-id-to-names u5 (list "DIKO"))
+  (map-set token-name-to-id "DIKO" u5)
+
+  (map-set token-id-to-names u6 (list "atALEX" "auto-alex"))
+  (map-set token-name-to-id "atALEX" u6)
+  (map-set token-name-to-id "auto-alex" u6)
+
+  (map-set token-id-to-names u7 (list "atALEXv2" "auto-alex-v2"))
+  (map-set token-name-to-id "atALEXv2" u7)
+  (map-set token-name-to-id "auto-alex-v2" u7)
 )
