@@ -78,10 +78,10 @@
 ;; @param price; price value
 ;; @param decimals; amount of decimals
 ;; @post bool; returns true
-(define-public (update-price-owner (token (string-ascii 12)) (price uint) (decimals uint))
+(define-public (update-price-owner (token-id uint) (price uint) (decimals uint))
   (begin
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
-    (map-set prices { token: token } { last-price: price, last-block: block-height, decimals: decimals })
+    (unwrap-panic (update-price-multi-helper token-id price decimals))
     (ok price)
   )
 )

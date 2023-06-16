@@ -280,7 +280,7 @@ Clarinet.test({
     // Update price
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-oracle-v1-1", "update-price-owner", [
-        types.ascii("usda-token"),
+        types.uint(3),
         types.uint(1000000),
         types.uint(1000000)
       ], deployer.address),
@@ -370,7 +370,7 @@ Clarinet.test({
     // Update price
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-oracle-v1-1", "update-price-owner", [
-        types.ascii("usda-token"),
+        types.uint(3),
         types.uint(1000000),
         types.uint(1000000)
       ], wallet_1.address),
