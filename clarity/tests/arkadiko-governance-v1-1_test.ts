@@ -145,7 +145,7 @@ Clarinet.test({
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('oracle'), true, true);
     let result = governance.createProposal(
       wallet_1, 
-      1, 
+      1,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -223,7 +223,7 @@ Clarinet.test({
     let contractChange2 = Governance.contractChange("freddie", Utils.qualifiedName('new-freddie'), true, true);
     let result = governance.createProposal(
       wallet_1, 
-      1, 
+      1,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange1, contractChange2]
@@ -278,7 +278,7 @@ Clarinet.test({
     let contractChange1 = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     let result = governance.createProposal(
       deployer, 
-      1, 
+      1,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange1],
@@ -340,7 +340,7 @@ Clarinet.test({
     let contractChange1 = Governance.contractChange("governance", Utils.qualifiedName('arkadiko-governance-tv1-1'), true, true);
     let result = governance.createProposal(
       wallet_1, 
-      1, 
+      1,
       "Replace governance",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange1]
@@ -461,7 +461,7 @@ Clarinet.test({
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     let result = governance.createProposal(
       wallet_1, 
-      1, 
+      1,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -512,7 +512,7 @@ Clarinet.test({
     let result = stakeRegistry.stake(wallet_1, 'arkadiko-stake-pool-diko-v1-2', 'arkadiko-token', 100);
     result.expectOk().expectUintWithDecimals(100);
 
-    // Advance 3 block, so that DIKO/stDIKO ratio is not 1 anymore
+    // Advance 3 blocks, so that DIKO/stDIKO ratio is not 1 anymore
     chain.mineEmptyBlock(3);
 
     // Stake DIKO to get stDIKO again, at different rate
@@ -624,7 +624,7 @@ Clarinet.test({
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     let result = governance.createProposal(
       wallet_1, 
-      1, 
+      1,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -684,7 +684,7 @@ Clarinet.test({
     let contractChange = Governance.contractChange("governance", Utils.qualifiedName('arkadiko-governance-tv1-1'), false, false);
     let result = governance.createProposal(
       wallet_1, 
-      1, 
+      1,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -763,7 +763,7 @@ Clarinet.test({
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('malicious-oracle'), false, false);
     let result = governance.createProposal(
       wallet_1, 
-      1, 
+      1,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -787,7 +787,7 @@ Clarinet.test({
     let contractChange = Governance.contractChange("governance", Utils.qualifiedName('arkadiko-governance-tv1-1'), false, false);
     let result = governance.createProposal(
       wallet_1, 
-      1, 
+      1,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -910,7 +910,7 @@ Clarinet.test({
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     result = governance.createProposal(
       wallet_1, 
-      1, 
+      1,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -930,7 +930,7 @@ Clarinet.test({
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     let result = governance.createProposal(
       wallet_1, 
-      1, 
+      1,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -964,7 +964,7 @@ Clarinet.test({
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     let result = governance.createProposal(
       wallet_1, 
-      1, 
+      1,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -1006,7 +1006,7 @@ Clarinet.test({
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     let result = governance.createProposal(
       wallet_1, 
-      1, 
+      1,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -1116,7 +1116,7 @@ Clarinet.test({
     let contractChange1 = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     let result = governance.createProposalDao(
       wallet_1, 
-      1, 
+      1,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange1]

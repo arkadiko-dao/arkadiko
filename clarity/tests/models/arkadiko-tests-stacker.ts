@@ -52,7 +52,7 @@ class Stacker {
 
   enableVaultWithdrawals(vaultId: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-v1-1", "enable-vault-withdrawals", [
+      Tx.contractCall("arkadiko-stacker-payer-v3-6", "enable-vault-withdrawals", [
         types.uint(vaultId)
       ], this.deployer.address)
     ]);
@@ -74,6 +74,83 @@ class Stacker {
   }
 }
 export { Stacker };
+
+class Stacker2 {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  getStxBalance() {
+    return this.chain.callReadOnlyFn("arkadiko-stacker-v2-1", "get-stx-balance", [], this.deployer.address);
+  }
+
+  getStackingUnlockHeight() {
+    return this.chain.callReadOnlyFn("arkadiko-stacker-v2-1", "get-stacking-unlock-burn-height", [], this.deployer.address);
+  }
+
+  getStackerInfo() {
+    return this.chain.callReadOnlyFn("arkadiko-stacker-v2-1", "get-stacker-info", [], this.deployer.address);
+  }
+
+  initiateStacking(startBlock: number, lockPeriod: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stacker-v2-1", "initiate-stacking", [
+        types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
+        types.uint(startBlock), // start block height
+        types.uint(lockPeriod) // cycle lock period
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  enableVaultWithdrawals(vaultId: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stacker-payer-v3-6", "enable-vault-withdrawals", [
+        types.uint(vaultId)
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  shutdown() {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stacker-v2-1", "toggle-stacker-shutdown", [], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  stackIncrease(stackerName: string, additionalTokens: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stacker-v2-1", "stack-increase", [
+        types.ascii(stackerName),
+        types.uint(additionalTokens)
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  stackExtend(cycleCount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stacker-v2-1", "stack-extend", [
+        types.uint(cycleCount),
+        types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'})
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  returnStx(amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-stacker-v2-1", "return-stx", [types.uint(amount * 1000000)], this.deployer.address),
+    ]);
+    return block.receipts[0].result;
+  }
+}
+export { Stacker2 };
 
 
 // ---------------------------------------------------------

@@ -55,23 +55,23 @@ export const Balances = () => {
         'Can see, vote and submit a new proposal. A proposal will just update the DAO with new contracts.',
     },
     {
-      address: `${contractAddress}.arkadiko-stacker-v1-1`,
-      name: 'Stacker v1',
+      address: `${contractAddress}.arkadiko-stacker-v2-1`,
+      name: 'Stacker v2',
       description: 'Stacker initiates stacking for the STX reserve. Stacks the STX tokens in PoX.',
     },
     {
-      address: `${contractAddress}.arkadiko-stacker-2-v1-1`,
-      name: 'Stacker 2 v1',
+      address: `${contractAddress}.arkadiko-stacker-2-v2-1`,
+      name: 'Stacker 2 v2',
       description: 'Stacker initiates stacking for the STX reserve. Stacks the STX tokens in PoX.',
     },
     {
-      address: `${contractAddress}.arkadiko-stacker-3-v1-1`,
-      name: 'Stacker 3 v1',
+      address: `${contractAddress}.arkadiko-stacker-3-v2-1`,
+      name: 'Stacker 3 v2',
       description: 'Stacker initiates stacking for the STX reserve. Stacks the STX tokens in PoX.',
     },
     {
-      address: `${contractAddress}.arkadiko-stacker-4-v1-1`,
-      name: 'Stacker 4 v1',
+      address: `${contractAddress}.arkadiko-stacker-4-v2-2`,
+      name: 'Stacker 4 v2',
       description: 'Stacker initiates stacking for the STX reserve. Stacks the STX tokens in PoX.',
     },
     {

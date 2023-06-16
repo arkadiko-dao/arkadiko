@@ -256,7 +256,7 @@ export const SmartContractBalance = ({ address, description, name }) => {
             <a 
               target="_blank"
               rel="noopener noreferrer"
-              href={`https://explorer.stacks.co/address/${address}`}
+              href={`https://explorer.hiro.so/address/${address}`}
               className="text-xs text-indigo-700">
                 {address}
             </a>

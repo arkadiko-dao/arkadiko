@@ -121,7 +121,7 @@ export const Stake = () => {
       poolInfo['wrapped-stx-token/Wrapped-Bitcoin'] = data['wrapped-stx-token/Wrapped-Bitcoin'];
       poolInfo['Wrapped-Bitcoin/usda-token'] = data['Wrapped-Bitcoin/usda-token'];
 
-      // TODO: Update API 
+      // TODO: Update API
       // poolInfo['Wrapped-USD/usda-token'] = data['Wrapped-USD/usda-token'];
       const callPoolInfo = await callReadOnlyFunction({
         contractAddress: 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9',
@@ -1238,7 +1238,7 @@ export const Stake = () => {
               pooledUsdaDikoApr={pooledUsdaDikoApr}
             />
 
-            <section className="relative mt-8 overflow-hidden">
+            <section className="relative mt-8">
               <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
                 <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">
                   Liquidity Provider Tokens
@@ -1250,45 +1250,45 @@ export const Stake = () => {
               </header>
 
               <div className="flex flex-col mt-4">
-                <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div className="-my-2 sm:-mx-6 lg:-mx-8">
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                    <div className="overflow-hidden border border-gray-200 rounded-lg dark:border-zinc-700">
+                    <div className="border border-gray-200 dark:border-zinc-700">
                       <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
                         <thead className="bg-gray-50 dark:bg-zinc-800 dark:bg-opacity-80">
                           <tr>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
+                              className="hidden px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase lg:table-cell dark:text-zinc-400"
                             >
                               LP Token
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
+                              className="hidden px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase lg:table-cell dark:text-zinc-400"
                             >
                               Current APR
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
+                              className="hidden px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase lg:table-cell dark:text-zinc-400"
                             >
                               Available
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
+                              className="hidden px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase lg:table-cell dark:text-zinc-400"
                             >
                               Staked
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
+                              className="hidden px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase lg:table-cell dark:text-zinc-400"
                             >
                               Rewards
                             </th>
                             <th
                               scope="col"
-                              className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
+                              className="hidden px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase lg:table-cell dark:text-zinc-400"
                             >
                               <span className="sr-only">Actions</span>
                             </th>

@@ -203,9 +203,19 @@ plan:
             path: contracts/arkadiko-swap-v2-1.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-stacker-payer-v1-1
+            contract-name: arkadiko-stacker-v2-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-stacker-payer-v1-1.clar
+            path: contracts/arkadiko-stacker-v2-1.clar
+            clarity-version: 2
+        - emulated-contract-publish:
+            contract-name: arkadiko-auction-engine-v4-4
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-auction-engine-v4-4.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-claim-usda-yield-v1-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-claim-usda-yield-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: arkadiko-stacker-2-v1-1
@@ -226,16 +236,6 @@ plan:
             contract-name: arkadiko-stacker-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/arkadiko-stacker-v1-1.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-auction-engine-v4-3
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-auction-engine-v4-3.clar
-            clarity-version: 1
-        - emulated-contract-publish:
-            contract-name: arkadiko-claim-usda-yield-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-claim-usda-yield-v1-1.clar
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: arkadiko-claim-yield-v2-1
@@ -378,9 +378,14 @@ plan:
             path: contracts/arkadiko-sip10-reserve-v2-1.clar
             clarity-version: 1
         - emulated-contract-publish:
-            contract-name: arkadiko-stacker-payer-v3-3
+            contract-name: arkadiko-stacker-payer-v3-6
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/arkadiko-stacker-payer-v3-3.clar
+            path: contracts/arkadiko-stacker-payer-v3-6.clar
+            clarity-version: 1
+        - emulated-contract-publish:
+            contract-name: arkadiko-pox-unstack-unlock-v2-3
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/arkadiko-pox-unstack-unlock-v2-3.clar
             clarity-version: 1
         - emulated-contract-publish:
             contract-name: arkadiko-stake-registry-trait-v1
@@ -507,4 +512,4 @@ plan:
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/welsh/welshcorgicoin-token.clar
             clarity-version: 1
-      epoch: "2.0"
+      epoch: "2.1"

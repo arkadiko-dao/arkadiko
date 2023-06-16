@@ -40,8 +40,8 @@ export const StakeUsdaSection = ({
           </div>
         </header>
 
-        <div className="mt-4 bg-white divide-y divide-gray-200 rounded-md shadow dark:divide-gray-600 dark:bg-zinc-800">
-          <div className="px-4 py-5 space-y-6 divide-y divide-gray-200 dark:divide-zinc-600 sm:p-6">
+        <div className="mt-4 bg-white rounded-md shadow dark:bg-zinc-800">
+          <div className="px-4 py-5 space-y-6 sm:p-6">
             <div className="md:grid md:grid-flow-col gap-4 sm:grid-cols-[min-content,auto]">
               <div className="self-center w-14">
                 <img className="w-12 h-12 rounded-full" src={tokenList[0].logo} alt="" />

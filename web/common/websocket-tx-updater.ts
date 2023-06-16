@@ -2,16 +2,16 @@ import { connectWebSocketClient } from '@stacks/blockchain-api-client';
 
 const env = process.env.REACT_APP_NETWORK_ENV || 'testnet';
 
-let websocketUrl = 'wss://stacks-node-api.mainnet.stacks.co';
-let coreApiUrl = 'https://stacks-node-api.mainnet.stacks.co';
+let websocketUrl = 'wss://api.hiro.so';
+let coreApiUrl = 'https://api.hiro.so';
 if (env.includes('mocknet')) {
   websocketUrl = `ws://localhost:${process.env.LOCAL_STACKS_API_PORT}`;
   coreApiUrl = `http://localhost:${process.env.LOCAL_STACKS_API_PORT}`;
   // coreApiUrl = 'https://dull-liger-41.loca.lt';
   // websocketUrl = 'wss://dull-liger-41.loca.lt';
 } else if (env.includes('testnet')) {
-  coreApiUrl = 'https://stacks-node-api.testnet.stacks.co';
-  websocketUrl = 'wss://stacks-node-api.testnet.stacks.co';
+  coreApiUrl = 'https://api.testnet.hiro.so';
+  websocketUrl = 'wss://api.hiro.so';
 } else if (env.includes('regtest')) {
   coreApiUrl = 'https://stacks-node-api.regtest.stacks.co';
   websocketUrl = 'wss://stacks-node-api.regtest.stacks.co';

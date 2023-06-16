@@ -8,7 +8,6 @@ import {
 
 import { 
   OracleManager,
-  DikoToken,
   UsdaToken
 } from './models/arkadiko-tests-tokens.ts';
 
@@ -17,6 +16,10 @@ import {
   VaultLiquidator,
   VaultAuction 
 } from './models/arkadiko-tests-vaults.ts';
+
+import { 
+  Stacker2,
+} from './models/arkadiko-tests-stacker.ts';
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
@@ -341,15 +344,7 @@ Clarinet.test({
     result = vaultManager.burn(deployer, 1, 300)
     result.expectOk().expectBool(true);
 
-    result = vaultManager.toggleStacking(deployer, 1);
-    result = vaultManager.enableVaultWithdrawals(1);
-
-    let call = await vaultManager.getVaultById(1, deployer);
-    let vault:any = call.result.expectTuple();
-    vault['revoked-stacking'].expectBool(true);
-    vault['stacked-tokens'].expectUint(0);
-
-    call = await chain.callReadOnlyFn(
+    let call = await chain.callReadOnlyFn(
       "arkadiko-stx-reserve-v1-1",
       "get-stx-balance",
       [],
@@ -374,7 +369,7 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 3);
     result.expectOk().expectUintWithDecimals(3);
 
-    result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
+    result = vaultManager.createVault(deployer, "STX-A", 1000, 300, false, false);
     result.expectOk().expectUintWithDecimals(300);
     
     // Deposit extra
@@ -384,9 +379,6 @@ Clarinet.test({
     // Mint extra
     result = vaultManager.mint(deployer, 1, 500);
     result.expectOk().expectBool(true);
-
-    result = vaultManager.toggleStacking(deployer, 1);
-    result = vaultManager.enableVaultWithdrawals(1);
 
     // Withdraw
     result = vaultManager.withdraw(deployer, 1, 100);
@@ -410,14 +402,11 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 2);
     result.expectOk().expectUintWithDecimals(2);
 
-    result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
+    result = vaultManager.createVault(deployer, "STX-A", 1000, 300, false, false);
     result.expectOk().expectUintWithDecimals(300);
 
     result = vaultManager.burn(deployer, 1, 300);
     result.expectOk().expectBool(true);
-  
-    result = vaultManager.toggleStacking(deployer, 1);
-    result = vaultManager.enableVaultWithdrawals(1);
 
     result = vaultManager.closeVault(deployer, 1);
     result.expectOk().expectBool(true);
@@ -435,11 +424,8 @@ Clarinet.test({
     let result = oracleManager.updatePrice("STX", 2);
     result.expectOk().expectUintWithDecimals(2);
 
-    result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
+    result = vaultManager.createVault(deployer, "STX-A", 1000, 300, false, false);
     result.expectOk().expectUintWithDecimals(300);
-
-    result = vaultManager.toggleStacking(deployer, 1);
-    result = vaultManager.enableVaultWithdrawals(1);
 
     result = vaultManager.closeVault(deployer, 1);
     result.expectOk().expectBool(true);
@@ -453,17 +439,28 @@ Clarinet.test({
 
     let oracleManager = new OracleManager(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
+    let stacker = new Stacker2(chain, deployer);
 
     let result = oracleManager.updatePrice("STX", 2);
     result.expectOk().expectUintWithDecimals(2);
 
-    result = vaultManager.createVault(deployer, "STX-A", 1000, 300);
-    result.expectOk().expectUintWithDecimals(300);
+    // Stacking enabled
+    result = vaultManager.createVault(deployer, "STX-A", 21000000, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
 
+    result = stacker.initiateStacking(10, 1);
+    result.expectOk().expectUintWithDecimals(21000000);
+
+    // Stacking disabled
     result = vaultManager.toggleStacking(deployer, 1);
     result.expectOk().expectBool(true);
 
+    // Advance until end of stacking
+    chain.mineEmptyBlock(2101);
+
+    // Can withdraw
     result = vaultManager.enableVaultWithdrawals(1);
+    result.expectOk().expectBool(true);
 
     let call = await vaultManager.getVaultById(1, deployer);
     let vault:any = call.result.expectTuple();
@@ -478,7 +475,9 @@ Clarinet.test({
     );
     call.result.expectOk().expectUint(0);
 
+    // Stack again
     result = vaultManager.stackCollateral(deployer, 1);
+    result.expectOk().expectBool(true);
 
     call = await chain.callReadOnlyFn(
       "arkadiko-stx-reserve-v1-1",
@@ -486,7 +485,12 @@ Clarinet.test({
       [types.ascii("stacker")],
       deployer.address
     );
-    call.result.expectOk().expectUintWithDecimals(1000);
+    call.result.expectOk().expectUintWithDecimals(21000000);
+
+    call = await vaultManager.getVaultById(1, deployer);
+    vault = call.result.expectTuple();
+    vault['revoked-stacking'].expectBool(false);
+    vault['stacked-tokens'].expectUintWithDecimals(21000000);
 
     result = vaultManager.stackCollateral(deployer, 1);
     result.expectErr().expectUint(414);

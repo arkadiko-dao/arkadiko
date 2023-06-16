@@ -39,7 +39,7 @@ class PagesController < ApplicationController
   def oracle
     block_height = Blockchain.first.last_block_height_imported
     hsh = { block_height: block_height }
-    tokens = Token.where(symbol: ['wSTX', 'DIKO', 'USDA', 'xBTC', 'auto-alex'])
+    tokens = Token.where(symbol: ['wSTX', 'DIKO', 'USDA', 'xBTC', 'auto-alex', 'STXUSDA'])
     tokens.find_each do |token|
       hsh[token.symbol.downcase] = token
     end

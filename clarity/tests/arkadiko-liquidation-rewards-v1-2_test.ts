@@ -25,7 +25,7 @@ import {
 } from './models/arkadiko-tests-vaults.ts';
 
 import { 
-  Stacker,
+  Stacker2,
   StxReserve
 } from './models/arkadiko-tests-stacker.ts';
 
@@ -188,7 +188,6 @@ Clarinet.test({
   }
 });
 
-
 Clarinet.test({
   name: "liquidation-rewards: claim xSTX from stacking vault",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -202,9 +201,9 @@ Clarinet.test({
     let liquidationPool = new LiquidationPool(chain, deployer);
     let liquidationRewards = new LiquidationRewards(chain, deployer);
     let stxReserve = new StxReserve(chain, deployer);
-    let stacker = new Stacker(chain, deployer);
+    let stacker = new Stacker2(chain, deployer);
 
-    // Initialize price of STX to $2 in the oracle
+    // Initialize price of STX to $3 in the oracle
     let result = oracleManager.updatePrice("STX", 3);
     result = oracleManager.updatePrice("xSTX", 3);
 
@@ -255,7 +254,7 @@ Clarinet.test({
     result = liquidationRewards.claimRewards(wallet_1, 0, "xstx-token");
     result.expectOk().expectUintWithDecimals(1111.111111);
 
-            // No rewards claimed yet
+    // No rewards claimed yet
     call = await liquidationRewards.getRewardsClaimed(wallet_1.address, 0);
     call.result.expectTuple()['claimed'].expectBool(true);
   }

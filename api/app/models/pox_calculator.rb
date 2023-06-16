@@ -54,12 +54,12 @@ class PoxCalculator
     stacked_amount = 0
     total_sold = 0
     offset = 0
-    data = HTTParty.get("https://stacks-node-api.stacks.co/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-auction-engine-v4-1/transactions?limit=50&offset=#{offset}&unanchored=true")
+    data = HTTParty.get("https://api.hiro.so/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-auction-engine-v4-1/transactions?limit=50&offset=#{offset}&unanchored=true")
     results = data.parsed_response['results']
     while results.length > 0
       results.each do |d|
         txid = d['tx_id']
-        tx = HTTParty.get("https://stacks-node-api.mainnet.stacks.co/extended/v1/tx/#{txid}")
+        tx = HTTParty.get("https://api.hiro.so/extended/v1/tx/#{txid}")
         next if tx.parsed_response.nil? || tx.parsed_response['events'].length.zero?
         begin
           collateral_amount = tx.parsed_response['events'][0]['contract_log']['value']['repr'].split("(collateral u")[1].split(") ")[0]
@@ -93,12 +93,12 @@ class PoxCalculator
       puts "Total Collateral Sold: #{total_sold}"
       offset += 50
 
-      data = HTTParty.get("https://stacks-node-api.stacks.co/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-auction-engine-v4-1/transactions?limit=50&offset=#{offset}&unanchored=true")
+      data = HTTParty.get("https://api.hiro.so/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-auction-engine-v4-1/transactions?limit=50&offset=#{offset}&unanchored=true")
       results = data.parsed_response['results']
     end
   end
 
-  def self.build_clarity_list_tuples(names:, file: 'vaults-pox-52.json', yield_type: 'ustx', ustx_stacked: 4_503_969_100_596, yield_earned: 10_200_000_000)
+  def self.build_clarity_list_tuples(names:, file: 'vaults-pox-55.json', yield_type: 'ustx', ustx_stacked: 6_165_000_000_000, yield_earned: 25_000_000_000)
     if yield_type == 'usda'
       vaults = calculate_usda_yields(names: names, file: file, ustx_stacked: ustx_stacked, usda_yield: yield_earned)
     else
