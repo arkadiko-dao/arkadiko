@@ -186,6 +186,9 @@ path = "contracts/arkadiko-stake-registry-v1-1.clar"
 [contracts.arkadiko-stake-registry-tv1-1]
 path = "contracts/tests/arkadiko-stake-registry-tv1-1.clar"
 
+[contracts.arkadiko-sorted-vaults-v1-1]
+path = "contracts/arkadiko-sorted-vaults-v1-1.clar"
+
 [contracts.arkadiko-vault-rewards-v1-1]
 path = "contracts/arkadiko-vault-rewards-v1-1.clar"
 
