@@ -22,8 +22,8 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectTuple()["success"].expectBool(true);
     block.receipts[0].result.expectOk().expectTuple()["total-vaults"].expectUint(1);
-    block.receipts[0].result.expectOk().expectTuple()["first-vault-id"].expectUint(1);
-    block.receipts[0].result.expectOk().expectTuple()["last-vault-id"].expectUint(1);
+    block.receipts[0].result.expectOk().expectTuple()["first-vault-id"].expectSome().expectUint(1);
+    block.receipts[0].result.expectOk().expectTuple()["last-vault-id"].expectSome().expectUint(1);
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-sorted-vaults-v1-1", "insert", [
@@ -35,8 +35,8 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectTuple()["success"].expectBool(false);
     block.receipts[0].result.expectOk().expectTuple()["total-vaults"].expectUint(1);
-    block.receipts[0].result.expectOk().expectTuple()["first-vault-id"].expectUint(1);
-    block.receipts[0].result.expectOk().expectTuple()["last-vault-id"].expectUint(1);
+    block.receipts[0].result.expectOk().expectTuple()["first-vault-id"].expectSome().expectUint(1);
+    block.receipts[0].result.expectOk().expectTuple()["last-vault-id"].expectSome().expectUint(1);
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-sorted-vaults-v1-1", "insert", [
@@ -48,8 +48,8 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectTuple()["success"].expectBool(true);
     block.receipts[0].result.expectOk().expectTuple()["total-vaults"].expectUint(2);
-    block.receipts[0].result.expectOk().expectTuple()["first-vault-id"].expectUint(1);
-    block.receipts[0].result.expectOk().expectTuple()["last-vault-id"].expectUint(3);
+    block.receipts[0].result.expectOk().expectTuple()["first-vault-id"].expectSome().expectUint(1);
+    block.receipts[0].result.expectOk().expectTuple()["last-vault-id"].expectSome().expectUint(3);
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-sorted-vaults-v1-1", "insert", [
@@ -61,28 +61,28 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectTuple()["success"].expectBool(true);
     block.receipts[0].result.expectOk().expectTuple()["total-vaults"].expectUint(3);
-    block.receipts[0].result.expectOk().expectTuple()["first-vault-id"].expectUint(1);
-    block.receipts[0].result.expectOk().expectTuple()["last-vault-id"].expectUint(3);
+    block.receipts[0].result.expectOk().expectTuple()["first-vault-id"].expectSome().expectUint(1);
+    block.receipts[0].result.expectOk().expectTuple()["last-vault-id"].expectSome().expectUint(3);
 
     let call = await chain.callReadOnlyFn("arkadiko-sorted-vaults-v1-1", "get-vault", [
       types.uint(1),
     ], deployer.address);
-    call.result.expectSome().expectTuple()["prev-id"].expectUint(0);
-    call.result.expectSome().expectTuple()["next-id"].expectUint(2);
+    call.result.expectSome().expectTuple()["prev-id"].expectNone();
+    call.result.expectSome().expectTuple()["next-id"].expectSome().expectUint(2);
     call.result.expectSome().expectTuple()["nicr"].expectUint(1);
 
     call = await chain.callReadOnlyFn("arkadiko-sorted-vaults-v1-1", "get-vault", [
       types.uint(2),
     ], deployer.address);
-    call.result.expectSome().expectTuple()["prev-id"].expectUint(1);
-    call.result.expectSome().expectTuple()["next-id"].expectUint(3);
+    call.result.expectSome().expectTuple()["prev-id"].expectSome().expectUint(1);
+    call.result.expectSome().expectTuple()["next-id"].expectSome().expectUint(3);
     call.result.expectSome().expectTuple()["nicr"].expectUint(2);
 
     call = await chain.callReadOnlyFn("arkadiko-sorted-vaults-v1-1", "get-vault", [
       types.uint(3),
     ], deployer.address);
-    call.result.expectSome().expectTuple()["prev-id"].expectUint(2);
-    call.result.expectSome().expectTuple()["next-id"].expectUint(0);
+    call.result.expectSome().expectTuple()["prev-id"].expectSome().expectUint(2);
+    call.result.expectSome().expectTuple()["next-id"].expectNone();
     call.result.expectSome().expectTuple()["nicr"].expectUint(3);
   },
 });
@@ -128,8 +128,8 @@ Clarinet.test({
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectTuple()["total-vaults"].expectUint(2);
-    block.receipts[0].result.expectOk().expectTuple()["first-vault-id"].expectUint(1);
-    block.receipts[0].result.expectOk().expectTuple()["last-vault-id"].expectUint(3);
+    block.receipts[0].result.expectOk().expectTuple()["first-vault-id"].expectSome().expectUint(1);
+    block.receipts[0].result.expectOk().expectTuple()["last-vault-id"].expectSome().expectUint(3);
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-sorted-vaults-v1-1", "remove", [
@@ -137,8 +137,8 @@ Clarinet.test({
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectTuple()["total-vaults"].expectUint(1);
-    block.receipts[0].result.expectOk().expectTuple()["first-vault-id"].expectUint(3);
-    block.receipts[0].result.expectOk().expectTuple()["last-vault-id"].expectUint(3);
+    block.receipts[0].result.expectOk().expectTuple()["first-vault-id"].expectSome().expectUint(3);
+    block.receipts[0].result.expectOk().expectTuple()["last-vault-id"].expectSome().expectUint(3);
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-sorted-vaults-v1-1", "remove", [
@@ -146,8 +146,8 @@ Clarinet.test({
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectTuple()["total-vaults"].expectUint(0);
-    block.receipts[0].result.expectOk().expectTuple()["first-vault-id"].expectUint(0);
-    block.receipts[0].result.expectOk().expectTuple()["last-vault-id"].expectUint(0);
+    block.receipts[0].result.expectOk().expectTuple()["first-vault-id"].expectNone();
+    block.receipts[0].result.expectOk().expectTuple()["last-vault-id"].expectNone();
   },
 });
 
@@ -196,8 +196,8 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectTuple()["success"].expectBool(true);
     block.receipts[0].result.expectOk().expectTuple()["total-vaults"].expectUint(3);
-    block.receipts[0].result.expectOk().expectTuple()["first-vault-id"].expectUint(1);
-    block.receipts[0].result.expectOk().expectTuple()["last-vault-id"].expectUint(2);
+    block.receipts[0].result.expectOk().expectTuple()["first-vault-id"].expectSome().expectUint(1);
+    block.receipts[0].result.expectOk().expectTuple()["last-vault-id"].expectSome().expectUint(2);
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-sorted-vaults-v1-1", "reinsert", [
@@ -209,8 +209,8 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectTuple()["success"].expectBool(true);
     block.receipts[0].result.expectOk().expectTuple()["total-vaults"].expectUint(3);
-    block.receipts[0].result.expectOk().expectTuple()["first-vault-id"].expectUint(2);
-    block.receipts[0].result.expectOk().expectTuple()["last-vault-id"].expectUint(3);
+    block.receipts[0].result.expectOk().expectTuple()["first-vault-id"].expectSome().expectUint(2);
+    block.receipts[0].result.expectOk().expectTuple()["last-vault-id"].expectSome().expectUint(3);
 
   },
 });

@@ -1,12 +1,11 @@
 
-(define-data-var first-vault-id uint u0)
-(define-data-var last-vault-id uint u0)
-
+(define-data-var first-vault-id (optional uint) none)
+(define-data-var last-vault-id (optional uint) none)
 (define-data-var total-vaults uint u0)
 
 (define-map vaults { id: uint } {
-  prev-id: uint,
-  next-id: uint,
+  prev-id: (optional uint),
+  next-id: (optional uint),
   nicr: uint
 })
 
@@ -21,18 +20,18 @@
   )
 
     ;; List is empty
-    (if (and (is-none prev-vault) (is-none next-vault) (is-eq (var-get first-vault-id) u0) (is-eq (var-get last-vault-id) u0))
+    (if (and (is-none prev-vault) (is-none next-vault) (is-none (var-get first-vault-id)) (is-none (var-get last-vault-id)))
       (begin
         (map-set vaults
           { id: vault-id }
           {
-            prev-id: prev-id,
-            next-id: next-id,
+            prev-id: none,
+            next-id: none,
             nicr: nicr
           }
         )
-        (var-set first-vault-id vault-id)
-        (var-set last-vault-id vault-id)
+        (var-set first-vault-id (some vault-id))
+        (var-set last-vault-id (some vault-id))
         (var-set total-vaults (+ (var-get total-vaults) u1))
       )
       false
@@ -44,13 +43,13 @@
         (map-set vaults
           { id: vault-id }
           {
-            prev-id: u0,
-            next-id: next-id,
+            prev-id: none,
+            next-id: (some next-id),
             nicr: nicr
           }
         )
-        (map-set vaults { id: next-id } (merge (unwrap-panic next-vault) { prev-id: vault-id }))
-        (var-set first-vault-id vault-id)
+        (map-set vaults { id: next-id } (merge (unwrap-panic next-vault) { prev-id: (some vault-id) }))
+        (var-set first-vault-id (some vault-id))
         (var-set total-vaults (+ (var-get total-vaults) u1))
       )
       false
@@ -62,13 +61,13 @@
         (map-set vaults
           { id: vault-id }
           {
-            prev-id: prev-id,
-            next-id: u0,
+            prev-id: (some prev-id),
+            next-id: none,
             nicr: nicr
           }
         )
-        (map-set vaults { id: prev-id } (merge (unwrap-panic prev-vault) { next-id: vault-id }))
-        (var-set last-vault-id vault-id)
+        (map-set vaults { id: prev-id } (merge (unwrap-panic prev-vault) { next-id: (some vault-id) }))
+        (var-set last-vault-id (some vault-id))
         (var-set total-vaults (+ (var-get total-vaults) u1))
       )
       false
@@ -80,13 +79,13 @@
         (map-set vaults
           { id: vault-id }
           {
-            prev-id: prev-id,
-            next-id: next-id,
+            prev-id: (some prev-id),
+            next-id: (some next-id),
             nicr: nicr
           }
         )
-        (map-set vaults { id: prev-id } (merge (unwrap-panic prev-vault) { next-id: vault-id }))
-        (map-set vaults { id: next-id } (merge (unwrap-panic next-vault) { prev-id: vault-id }))
+        (map-set vaults { id: prev-id } (merge (unwrap-panic prev-vault) { next-id: (some vault-id) }))
+        (map-set vaults { id: next-id } (merge (unwrap-panic next-vault) { prev-id: (some vault-id) }))
         (var-set total-vaults (+ (var-get total-vaults) u1))
       )
       false
@@ -112,18 +111,18 @@
 (define-public (remove (vault-id uint))
   (let (
     (vault (get-vault vault-id))
-    (prev-vault (get-vault (get prev-id (unwrap-panic vault))))
-    (next-vault (get-vault (get next-id (unwrap-panic vault))))
+    (prev-id (get prev-id (unwrap-panic vault)))
+    (next-id (get next-id (unwrap-panic vault)))
   )
     ;; Update prev vault
-    (if (is-some prev-vault)
-      (map-set vaults { id: (get prev-id (unwrap-panic vault)) } (merge (unwrap-panic prev-vault) { next-id: (get next-id (unwrap-panic vault)) }))
+    (if (is-some prev-id)
+      (map-set vaults { id: (unwrap-panic prev-id) } (merge (unwrap-panic (get-vault (unwrap-panic prev-id))) { next-id: next-id }))
       (var-set first-vault-id (get next-id (unwrap-panic vault)))
     )
 
     ;; Update next vault
-    (if (is-some next-vault)
-      (map-set vaults { id: (get next-id (unwrap-panic vault)) } (merge (unwrap-panic next-vault) { prev-id: (get prev-id (unwrap-panic vault)) }))
+    (if (is-some next-id)
+      (map-set vaults { id: (unwrap-panic next-id) } (merge (unwrap-panic (get-vault (unwrap-panic next-id))) { prev-id: prev-id }))
       (var-set last-vault-id (get prev-id (unwrap-panic vault)))
     )
 
