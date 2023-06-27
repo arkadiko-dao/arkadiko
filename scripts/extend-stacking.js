@@ -14,12 +14,13 @@ async function extendStacking() {
   const hashbytes = tx.bufferCV(data);
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-stacker-v3-1",
+    contractName: "arkadiko-stacker-4-v3-1",
     functionName: "stack-extend",
     functionArgs: [
       tx.uintCV(1), // number of cycles
       tx.tupleCV({ 'version': tx.bufferCV(new BN(hashMode, 10).toArrayLike(Buffer)), 'hashbytes': hashbytes }),
     ],
+    nonce: new BN(3155, 10),
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network
