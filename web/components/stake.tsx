@@ -654,7 +654,7 @@ export const Stake = () => {
       } else if (redeemStartBlock < currentBlock) {
         const blockDiff = redeemEndBlock - currentBlock;
         let text = blockDiffToTimeLeft(blockDiff);
-        text += ' left to withdraw';
+        text += ' left to unstake';
         setDikoCooldown(text);
         setCanUnstake(true);
       } else {
