@@ -234,7 +234,7 @@ export const ManageVault = ({ match }) => {
       if (vault?.stackedTokens == 0 && vault?.revokedStacking) {
         setEnabledStacking(false);
       }
-      const contractName = 'arkadiko-stacker-v2-1';
+      const contractName = 'arkadiko-stacker-v3-1';
 
       const call = await callReadOnlyFunction({
         contractAddress,
@@ -249,7 +249,7 @@ export const ManageVault = ({ match }) => {
 
       const vaultUnlockCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-stacker-payer-v3-6',
+        contractName: 'arkadiko-stacker-payer-v3-7',
         functionName: 'get-vault-unlock',
         functionArgs: [uintCV(vault?.id)],
         senderAddress: contractAddress || '',
@@ -387,7 +387,7 @@ export const ManageVault = ({ match }) => {
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-stacker-payer-v3-6',
+      contractName: 'arkadiko-stacker-payer-v3-7',
       functionName: 'enable-vault-withdrawals',
       functionArgs: [uintCV(match.params.id)],
       onFinish: data => {
@@ -406,7 +406,7 @@ export const ManageVault = ({ match }) => {
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-pox-unstack-unlock-v2-3',
+      contractName: 'arkadiko-pox-unstack-unlock-v2-4',
       functionName: 'unstack',
       functionArgs: [uintCV(match.params.id)],
       onFinish: data => {
