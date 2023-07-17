@@ -82,16 +82,16 @@ path = "contracts/arkadiko-sip10-reserve-v1-1.clar"
 [contracts.arkadiko-sip10-reserve-v2-1]
 path = "contracts/arkadiko-sip10-reserve-v2-1.clar"
 
-[contracts.arkadiko-stacker-v2-1]
-path = "contracts/arkadiko-stacker-v2-1.clar"
+[contracts.arkadiko-stacker-v3-1]
+path = "contracts/arkadiko-stacker-v3-1.clar"
 clarity_version = 2
-epoch = "2.1"
+epoch = "2.4"
 
 [contracts.arkadiko-stacker-v1-1]
 path = "contracts/arkadiko-stacker-v1-1.clar"
 
-[contracts.arkadiko-stacker-payer-v3-6]
-path = "contracts/arkadiko-stacker-payer-v3-6.clar"
+[contracts.arkadiko-stacker-payer-v3-7]
+path = "contracts/arkadiko-stacker-payer-v3-7.clar"
 
 [contracts.arkadiko-mock-stacker-v1-1]
 path = "contracts/arkadiko-mock-stacker-v1-1.clar"
@@ -213,8 +213,8 @@ path = "contracts/arkadiko-ui-stake-v1-3.clar"
 [contracts.arkadiko-pox-unstack-unlock-v1-1]
 path = "contracts/arkadiko-pox-unstack-unlock-v1-1.clar"
 
-[contracts.arkadiko-pox-unstack-unlock-v2-3]
-path = "contracts/arkadiko-pox-unstack-unlock-v2-3.clar"
+[contracts.arkadiko-pox-unstack-unlock-v2-4]
+path = "contracts/arkadiko-pox-unstack-unlock-v2-4.clar"
 
 [contracts.arkadiko-xstx-migrate]
 path = "contracts/arkadiko-xstx-migrate.clar"
@@ -249,8 +249,8 @@ path = "contracts/arkadiko-liquidation-rewards-ui-v2-3.clar"
 [contracts.arkadiko-liquidation-ui-v1-2]
 path = "contracts/arkadiko-liquidation-ui-v1-2.clar"
 
-[contracts.arkadiko-auction-engine-v4-4]
-path = "contracts/arkadiko-auction-engine-v4-4.clar"
+[contracts.arkadiko-auction-engine-v4-5]
+path = "contracts/arkadiko-auction-engine-v4-5.clar"
 
 [contracts.arkadiko-liquidation-rewards-diko-v1-1]
 path = "contracts/arkadiko-liquidation-rewards-diko-v1-1.clar"

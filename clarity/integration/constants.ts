@@ -15,6 +15,10 @@ export namespace Contracts {
     address: "ST000000000000000000002AMW42H",
     name: "pox-2",
   };
+  export const POX_3 = {
+    address: "ST000000000000000000002AMW42H",
+    name: "pox-3",
+  };
 }
 
 export namespace Accounts {

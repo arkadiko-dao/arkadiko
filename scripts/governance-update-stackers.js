@@ -1,3 +1,4 @@
+
 // node proposal-change-stacker.js
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
@@ -13,21 +14,62 @@ async function transact() {
     functionName: 'propose-dao',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
-      tx.uintCV(100835),
-      tx.stringUtf8CV('Stacks 2.1 Upgrade - Unlock vaults for PoX'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/544'),
+      tx.uintCV(106000),
+      tx.stringUtf8CV('PoX-3 Upgrade'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/549'),
       tx.listCV([
+        tx.tupleCV({
+          'name': tx.stringAsciiCV("auction-engine"),
+          'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-auction-engine-v4-5"),
+          'can-mint': tx.trueCV(),
+          'can-burn': tx.trueCV()
+        }),
+        tx.tupleCV({
+          'name': tx.stringAsciiCV("liquidator"),
+          'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-auction-engine-v4-5"),
+          'can-mint': tx.trueCV(),
+          'can-burn': tx.trueCV()
+        }),
         tx.tupleCV({
           'name': tx.stringAsciiCV("stacker-payer"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-stacker-payer-v3-6"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-stacker-payer-v3-7"),
           'can-mint': tx.falseCV(),
           'can-burn': tx.trueCV()
         }),
+        tx.tupleCV({
+          'name': tx.stringAsciiCV("stacker"),
+          'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-stacker-v3-1"),
+          'can-mint': tx.falseCV(),
+          'can-burn': tx.falseCV()
+        }),
+        tx.tupleCV({
+          'name': tx.stringAsciiCV("stacker-2"),
+          'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-stacker-2-v3-1"),
+          'can-mint': tx.falseCV(),
+          'can-burn': tx.falseCV()
+        }),
+        tx.tupleCV({
+          'name': tx.stringAsciiCV("stacker-3"),
+          'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-stacker-3-v3-1"),
+          'can-mint': tx.falseCV(),
+          'can-burn': tx.falseCV()
+        }),
+        tx.tupleCV({
+          'name': tx.stringAsciiCV("stacker-4"),
+          'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-stacker-4-v3-1"),
+          'can-mint': tx.falseCV(),
+          'can-burn': tx.falseCV()
+        }),
+
       ])
     ],
-    fee: new BN(10000, 10),
-    nonce: new BN(2939, 10),
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network
