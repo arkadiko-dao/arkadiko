@@ -58,7 +58,7 @@ export const VaultWithdrawModal: React.FC<Props> = ({
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
           'arkadiko-collateral-types-v3-1'
         ),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v1-1'),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v2-2'),
       ],
       postConditionMode: 0x01,
       onFinish: data => {
