@@ -7,7 +7,7 @@ const BN = require('bn.js');
 
 const txOptions = {
   contractAddress: CONTRACT_ADDRESS,
-  contractName: 'arkadiko-oracle-v1-1',
+  contractName: 'arkadiko-oracle-v2-2',
   functionName: 'set-oracle-owner',
   functionArgs: [tx.standardPrincipalCV('SP17BSF329AQEY7YA3CWQHN3KGQYTYYP7208CQH4G')],
   nonce: new BN(48, 10),
