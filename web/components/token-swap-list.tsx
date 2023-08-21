@@ -66,7 +66,7 @@ export const tokenList = [
     name: 'LDN',
     nameInPair: 'ldn',
     logo: '/assets/tokens/lydian.svg',
-    listed: true,
+    listed: false,
     address: ldnContractAddress,
     fullName: 'lydian-token',
     decimals: 6
