@@ -14,7 +14,7 @@ async function extendStacking() {
   const hashbytes = tx.bufferCV(data);
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-stacker-v3-1",
+    contractName: "arkadiko-stacker-2-v3-1",
     functionName: "stack-extend",
     functionArgs: [
       tx.uintCV(1), // number of cycles
