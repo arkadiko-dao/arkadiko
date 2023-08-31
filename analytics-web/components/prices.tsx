@@ -53,7 +53,7 @@ export const Prices: React.FC = () => {
       setDikoBlockAgoUpdate(1)
 
       const usdaPrice = await getPriceInfo('USDA');
-      setUsdaPrice(usdaPrice['last-price'].value);
+      setUsdaPrice(usdaPrice['last-price'].value * 100);
       setUsdaBlockUpdate(usdaPrice['last-block'].value);
       setUsdaBlockAgoUpdate(currentBlock - usdaPrice['last-block'].value)
 

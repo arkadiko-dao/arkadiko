@@ -58,7 +58,7 @@ export const Prices = () => {
       setDikoBlockUpdate(response['diko']['price_last_updated']);
       setDikoBlockAgoUpdate(currentBlock - response['diko']['price_last_updated']);
 
-      setUsdaPrice(response['usda']['last_price']);
+      setUsdaPrice(response['usda']['last_price'] * 100);
       setUsdaBlockUpdate(response['usda']['price_last_updated']);
       setUsdaBlockAgoUpdate(currentBlock - response['usda']['price_last_updated']);
 
