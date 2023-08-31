@@ -1,29 +1,30 @@
-;;;;;;;;;;;;;;;;;;;;; SIP 010 ;;;;;;;;;;;;;;;;;;;;;;
 (impl-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 (impl-trait .arkadiko-dao-token-trait-v1.dao-token-trait)
 
-;; Defines the wrapped STX token according to the SIP-010 Standard
-(define-fungible-token wstx)
+;; Defines an STX derivative according to the SIP010 Standard
+(define-fungible-token xstx)
 
 (define-data-var token-uri (string-utf8 256) u"")
 
 ;; errors
-(define-constant ERR-NOT-AUTHORIZED u14401)
+
+(define-constant ERR-BURN-FAILED u131)
+(define-constant ERR-NOT-AUTHORIZED u13401)
 
 ;; ---------------------------------------------------------
 ;; SIP-10 Functions
 ;; ---------------------------------------------------------
 
 (define-read-only (get-total-supply)
-  (ok (ft-get-supply wstx))
+  (ok (ft-get-supply xstx))
 )
 
 (define-read-only (get-name)
-  (ok "Wrapped STX Token")
+  (ok "xSTX Token")
 )
 
 (define-read-only (get-symbol)
-  (ok "wSTX")
+  (ok "xSTX")
 )
 
 (define-read-only (get-decimals)
@@ -31,7 +32,7 @@
 )
 
 (define-read-only (get-balance (account principal))
-  (ok (ft-get-balance wstx account))
+  (ok (ft-get-balance xstx account))
 )
 
 (define-public (set-token-uri (value (string-utf8 256)))
@@ -49,7 +50,7 @@
   (begin
     (asserts! (is-eq tx-sender sender) (err ERR-NOT-AUTHORIZED))
 
-    (match (ft-transfer? wstx amount sender recipient)
+    (match (ft-transfer? xstx amount sender recipient)
       response (begin
         (print memo)
         (ok response)
@@ -67,7 +68,7 @@
 (define-public (mint-for-dao (amount uint) (recipient principal))
   (begin
     (asserts! (is-eq contract-caller .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
-    (ft-mint? wstx amount recipient)
+    (ft-mint? xstx amount recipient)
   )
 )
 
@@ -75,11 +76,15 @@
 (define-public (burn-for-dao (amount uint) (sender principal))
   (begin
     (asserts! (is-eq contract-caller .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
-    (ft-burn? wstx amount sender)
+    (ft-burn? xstx amount sender)
   )
 )
 
 ;; Burn external - Should never happen
 (define-public (burn (amount uint) (sender principal))
   (err ERR-NOT-AUTHORIZED)
+)
+
+(begin
+  (try! (ft-mint? xstx u1000000000 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG))
 )

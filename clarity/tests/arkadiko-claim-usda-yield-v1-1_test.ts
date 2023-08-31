@@ -448,7 +448,7 @@ Clarinet.test({
 
     // Wrong reserve
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-claim-usda-yield-v1-1", "claim-and-burn", [
+      Tx.contractCall("arkadiko-claim-usda-yield-v2-1", "claim-and-burn", [
         types.uint(1),
         types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
