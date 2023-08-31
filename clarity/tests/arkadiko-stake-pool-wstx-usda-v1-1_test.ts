@@ -343,7 +343,7 @@ name: "stake-pool-wstx-usda - stake DIKO rewards",
 
     // Stake of user in DIKO pool
     result = stakePoolDiko.getStakeOf(deployer, 4134.2337);
-    result.expectOk().expectUintWithDecimals(14198.378799);
+    result.expectOk().expectUintWithDecimals(14615.978178);
 
   }
 });

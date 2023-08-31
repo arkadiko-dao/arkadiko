@@ -233,7 +233,7 @@ Clarinet.test({
     let contractChange1 = Governance.contractChange("collateral-types", Utils.qualifiedName('arkadiko-collateral-types-tv1-1'), false, false);
     result = governance.createProposal(
       wallet_1, 
-      4, 
+      8, 
       "New collateral types",
       "https://discuss.arkadiko.finance/new-collateral-types",
       [contractChange1]

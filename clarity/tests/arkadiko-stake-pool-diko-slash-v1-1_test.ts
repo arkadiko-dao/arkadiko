@@ -44,7 +44,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let contractChange = Governance.contractChange("diko-slash", Utils.qualifiedName('arkadiko-stake-pool-diko-slash-v1-1'), true, true);
   result = governance.createProposal(
     wallet_1, 
-    2, 
+    6, 
     "Black swan event slash",
     "ttps://discuss.arkadiko.finance/blackswan1",
     [contractChange]
@@ -71,23 +71,23 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Check total DIKO pool balance (as rewards have auto compounded)
   call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
-  call.result.expectOk().expectUintWithDecimals(162.639906);
+  call.result.expectOk().expectUintWithDecimals(413.199530);
 
   // Now that the contract is active in the DAO, we can execute it
-  // 30% of 162 DIKO = ~48
+  // 30% of 413 DIKO = ~123
   let block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-pool-diko-slash-v1-1", "execute", [], wallet_1.address)
   ]);
-  block.receipts[0].result.expectOk().expectUintWithDecimals(48.791971);
+  block.receipts[0].result.expectOk().expectUintWithDecimals(123.959859);
 
   // Foundation (still deployer in this case) should have received the funds
   call = dikoToken.balanceOf(deployer.address);
-  call.result.expectOk().expectUintWithDecimals(790048.791971);
+  call.result.expectOk().expectUintWithDecimals(790123.959859);
 
   // Check total DIKO pool balance
-  // 70% of 162 DIKO = ~113
+  // 70% of 413 DIKO = ~289
   call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
-  call.result.expectOk().expectUintWithDecimals(113.847935);
+  call.result.expectOk().expectUintWithDecimals(289.239671);
 
   // Can not execute slash again
   block = chain.mineBlock([

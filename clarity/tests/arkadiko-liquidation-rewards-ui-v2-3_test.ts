@@ -34,7 +34,7 @@ Clarinet.test({
     // Add 20 rewards
     var rewardIds = [];
     for (let index = 0; index < 20; index++) {
-      result = liquidationRewards.addReward(1, 0, "arkadiko-token", 10);
+      result = liquidationRewards.addReward(5, 0, "arkadiko-token", 10);
       result.expectOk().expectBool(true);
       rewardIds.push(types.uint(index));
     }
@@ -50,7 +50,7 @@ Clarinet.test({
 
     // Add rewards
     for (let index = 0; index <= 80; index++) {
-      result = liquidationRewards.addReward(1, 0, "arkadiko-token", 10);
+      result = liquidationRewards.addReward(5, 0, "arkadiko-token", 10);
       result.expectOk().expectBool(true);
     }
 

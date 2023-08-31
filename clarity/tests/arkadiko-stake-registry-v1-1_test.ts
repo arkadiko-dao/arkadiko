@@ -57,7 +57,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(454.139319);  
 
     call = poolStxUsda.getLastRewardIncreaseBlock();
-    call.result.expectUint(147);   
+    call.result.expectUint(151);   
 
     // Shut down rewards
     // Need to call "increaseCumulativeRewardPerStake" first so rewards are updated
@@ -86,7 +86,7 @@ Clarinet.test({
 
     // Last reward block
     call = poolStxUsda.getLastRewardIncreaseBlock();
-    call.result.expectUint(147);   
+    call.result.expectUint(151);   
 
     // RESTART STEP 2 - Increase cumm rewards per stake to increase last reward block
     result = poolStxUsda.increaseCumulativeRewardPerStake()
@@ -106,14 +106,14 @@ Clarinet.test({
 
     // Pending rewards still the same
     call = stakeRegistry.getPendingRewards(deployer, wstxUsdaPoolAddress);
-    call.result.expectOk().expectUintWithDecimals(45413.931900);  
+    call.result.expectOk().expectUintWithDecimals(46353.5304);  
 
     // Advance 144 block
     chain.mineEmptyBlock(144);
 
     // Rewards distributed again
     call = stakeRegistry.getPendingRewards(deployer, wstxUsdaPoolAddress);
-    call.result.expectOk().expectUintWithDecimals(90201.464800); 
+    call.result.expectOk().expectUintWithDecimals(91454.2629); 
   }
 });
 
@@ -148,7 +148,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(454.139319);  
 
     call = poolStxUsda.getLastRewardIncreaseBlock();
-    call.result.expectUint(147);   
+    call.result.expectUint(151);   
 
     // Shut down rewards
     // Need to call "increaseCumulativeRewardPerStake" first so rewards are updated
@@ -172,7 +172,7 @@ Clarinet.test({
 
     // Last reward block
     call = poolStxUsda.getLastRewardIncreaseBlock();
-    call.result.expectUint(147);   
+    call.result.expectUint(151);   
 
     // Pending rewards still the same
     call = stakeRegistry.getPendingRewards(deployer, wstxUsdaPoolAddress);

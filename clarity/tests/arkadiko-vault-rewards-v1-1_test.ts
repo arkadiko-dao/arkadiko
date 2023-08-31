@@ -49,17 +49,17 @@ Clarinet.test({
     call = vaultRewards.calculateCummulativeRewardPerCollateral();
     call.result.expectUintWithDecimals(128)
 
-    chain.mineEmptyBlock((6*7*144)-5);
+    chain.mineEmptyBlockUntil((6*7*144));
 
     // Need a write action to update the cumm reward 
     vaultManager.createVault(wallet_1, "STX-A", 5, 1);
 
     call = vaultRewards.calculateCummulativeRewardPerCollateral();
-    call.result.expectUintWithDecimals(240298.0593)
+    call.result.expectUintWithDecimals(240198.680450)
 
     // Almost all rewards - 1.2m
     call = vaultRewards.getPendingRewards(deployer);
-    call.result.expectOk().expectUintWithDecimals(1201490.2965)
+    call.result.expectOk().expectUintWithDecimals(1200993.402250)
   },
 });
 
