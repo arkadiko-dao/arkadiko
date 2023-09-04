@@ -1,0 +1,40 @@
+;; Vaults Manager 
+;; External operations on vaults
+;;
+
+;; ---------------------------------------------------------
+;; Constants
+;; ---------------------------------------------------------
+
+(define-constant ERR_NOT_AUTHORIZED u930401)
+(define-constant ERR_CAN_NOT_LIQUIDATE u930001)
+
+(define-constant STATUS_CLOSED_BY_LIQUIDATION u201)
+(define-constant STATUS_CLOSED_BY_REDEMPTION u202)
+
+;; ---------------------------------------------------------
+;; Actions
+;; ---------------------------------------------------------
+
+(define-public (liquidate-vault (owner principal) (token principal))
+  (let (
+    (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner token))
+    (coll-to-debt (try! (contract-call? .arkadiko-vaults-operations-v1-1 get-collateral-to-debt token (get collateral vault) (get debt vault))))
+  )
+    (asserts! (not (get valid coll-to-debt)) (err ERR_CAN_NOT_LIQUIDATE))
+
+    ;; TODO: dynamic contracts
+    (try! (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner token STATUS_CLOSED_BY_LIQUIDATION u0 u0))
+    (unwrap-panic (contract-call? .arkadiko-vaults-sorted-v1-1 remove owner token))
+
+
+    ;; TODO: liquidate
+
+
+    (ok true)
+  )
+)
+
+(define-public (redeem-vault)
+  (ok true)
+)
