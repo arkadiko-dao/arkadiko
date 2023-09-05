@@ -38,3 +38,19 @@
 ;; ---------------------------------------------------------
 
 ;; TODO: add collateral tokens on init
+
+(begin
+  (map-set tokens
+    { 
+      token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin ;; TODO: update for mainnet
+    }
+    {
+      name: "xBTC-A",
+      token-name: "xBTC",
+      max-debt: u1000000000000,       ;; 1M
+      liquidation-ratio: u130,        ;; 130%
+      liquidation-penalty: u1000,     ;; 10% in bps
+      stability-fee: u400             ;; 4% in bps
+    }
+  )
+)

@@ -29,7 +29,9 @@
 
 
     ;; TODO: liquidate
-
+    ;; Take USDA from pool
+    ;; Send leftover collateral back to owner
+    ;; 
 
     (ok true)
   )

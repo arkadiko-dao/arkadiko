@@ -6,7 +6,8 @@
 ;; Constants
 ;; ---------------------------------------------------------
 
-(define-constant ERR_NOT_INSERTED u920001)
+(define-constant ERR_WRONG_POSITION u920001)
+;; (define-constant ERR_NOT_INSERTED u920002)
 
 ;; ---------------------------------------------------------
 ;; Maps
@@ -55,127 +56,152 @@
 )
 
 ;; ---------------------------------------------------------
+;; Find position
+;; ---------------------------------------------------------
+
+;; TODO: check the cost
+;; Find the actual position given prev/next hints.
+;; Hints are kept off chain. But the list can change within the same block.
+;; So we use the prev/next hints to find the actual position. 
+(define-read-only (find-position (owner principal) (token principal) (nicr uint) (prev-owner-hint (optional principal)) (next-owner-hint (optional principal)))
+  (let (
+    (prev-owner-1 (if (is-some prev-owner-hint) (unwrap-panic (get prev-owner (get-vault (unwrap-panic prev-owner-hint) token))) none))
+    (prev-owner-2 (if (is-some prev-owner-1) (unwrap-panic (get prev-owner (get-vault (unwrap-panic prev-owner-1) token))) none))
+    (prev-owner-3 (if (is-some prev-owner-2) (unwrap-panic (get prev-owner (get-vault (unwrap-panic prev-owner-2) token))) none))
+    (prev-owner-4 (if (is-some prev-owner-3) (unwrap-panic (get prev-owner (get-vault (unwrap-panic prev-owner-3) token))) none))
+    (prev-owner-5 (if (is-some prev-owner-4) (unwrap-panic (get prev-owner (get-vault (unwrap-panic prev-owner-4) token))) none))
+
+    (next-owner-1 (if (is-some next-owner-hint) (unwrap-panic (get next-owner (get-vault (unwrap-panic next-owner-hint) token))) none))
+    (next-owner-2 (if (is-some next-owner-1) (unwrap-panic (get next-owner (get-vault (unwrap-panic next-owner-1) token))) none))
+    (next-owner-3 (if (is-some next-owner-2) (unwrap-panic (get next-owner (get-vault (unwrap-panic next-owner-2) token))) none))
+    (next-owner-4 (if (is-some next-owner-3) (unwrap-panic (get next-owner (get-vault (unwrap-panic next-owner-3) token))) none))
+    (next-owner-5 (if (is-some next-owner-4) (unwrap-panic (get next-owner (get-vault (unwrap-panic next-owner-4) token))) none))
+  )
+    ;; First check if given prev/next is correct
+    (if (get correct (check-position owner token nicr prev-owner-hint next-owner-hint)) { prev: prev-owner-hint, next: next-owner-hint }
+
+    (if (get correct (check-position owner token nicr prev-owner-1 prev-owner-hint)) { prev: prev-owner-1, next: prev-owner-hint }
+    (if (get correct (check-position owner token nicr next-owner-hint next-owner-1)) { prev: next-owner-hint, next: next-owner-1 }
+
+    (if (get correct (check-position owner token nicr prev-owner-2 prev-owner-1)) { prev: prev-owner-2, next: prev-owner-1 }
+    (if (get correct (check-position owner token nicr next-owner-1 next-owner-2)) { prev: next-owner-1, next: next-owner-2 }
+
+    (if (get correct (check-position owner token nicr prev-owner-3 prev-owner-2)) { prev: prev-owner-3, next: prev-owner-2 }
+    (if (get correct (check-position owner token nicr next-owner-2 next-owner-3)) { prev: next-owner-2, next: next-owner-3 }
+
+    (if (get correct (check-position owner token nicr prev-owner-4 prev-owner-3)) { prev: prev-owner-4, next: prev-owner-3 }
+    (if (get correct (check-position owner token nicr next-owner-3 next-owner-4)) { prev: next-owner-3, next: next-owner-4 }
+
+    (if (get correct (check-position owner token nicr prev-owner-5 prev-owner-4)) { prev: prev-owner-5, next: prev-owner-4 }
+    (if (get correct (check-position owner token nicr next-owner-4 next-owner-5)) { prev: next-owner-4, next: next-owner-5 }
+
+      ;; Didn't find a valid position
+      { prev: none, next: none }
+    )))))))))))    
+  )
+)
+
+;; Check if position is correct
+(define-read-only (check-position (owner principal) (token principal) (nicr uint) (prev-owner (optional principal)) (next-owner (optional principal)))
+  (let (
+    (token-info (get-token token))
+  )
+    ;; List empty - position always correct
+    (if (and (is-none (get first-owner token-info)) (is-none (get last-owner token-info)))
+      { correct: true, first: true, last: true }
+
+      (let (
+        (first-owner (unwrap-panic (get first-owner token-info)))
+        (last-owner (unwrap-panic (get last-owner token-info)))
+      )
+        ;; First element in list - check nicr first element
+        (if (<= nicr (get nicr (unwrap-panic (get-vault first-owner token))))
+          { correct: true, first: true, last: false }
+
+          ;; Last element in list - check nicr last element
+          (if (>= nicr (get nicr (unwrap-panic (get-vault last-owner token))))
+            { correct: true, first: false, last: true }
+
+            ;; Middle element in list - check given prev/next
+            (if (and 
+              (is-some prev-owner) 
+              (is-some next-owner) 
+              (<= (get nicr (unwrap-panic (get-vault (unwrap-panic prev-owner) token))) nicr) 
+              (>= (get nicr (unwrap-panic (get-vault (unwrap-panic next-owner) token))) nicr) 
+            )
+              { correct: true, first: false, last: false }
+
+              ;; None of the above - wrong position
+              { correct: false, first: false, last: false }
+            )
+          )
+        )
+      )
+    )
+  )
+)
+
+;; ---------------------------------------------------------
 ;; Update list
 ;; ---------------------------------------------------------
 
-(define-public (insert (owner principal) (token principal) (nicr uint) (prev-owner principal) (next-owner principal))
+(define-public (insert (owner principal) (token principal) (nicr uint) (prev-owner-hint (optional principal)) (next-owner-hint (optional principal)))
   (let (
     (token-info (get-token token))
-    (prev-vault (get-vault prev-owner token))
-    (next-vault (get-vault next-owner token))
+
+    (position-find (find-position owner token nicr prev-owner-hint next-owner-hint))
+    (prev-owner (get prev position-find))
+    (next-owner (get next position-find))
+
+    (position-check (check-position owner token nicr prev-owner next-owner))
   )
-    ;; TODO: access rights
+    (asserts! (get correct position-check) (err ERR_WRONG_POSITION))
 
-    ;; List is empty
-    (if (and (is-none prev-vault) (is-none next-vault) (is-none (get first-owner token-info)) (is-none (get last-owner token-info)))
-      (begin
-        (map-set vaults
-          { 
-            owner: owner,
-            token: token
-          }
-          {
-            prev-owner: none,
-            next-owner: none,
-            nicr: nicr
-          }
-        )
+    ;; Add new vault
+    (map-set vaults
+      { 
+        owner: owner,
+        token: token
+      }
+      {
+        prev-owner: prev-owner,
+        next-owner: next-owner,
+        nicr: nicr
+      }
+    )
 
-        (map-set tokens { token: token } (merge token-info { 
-          first-owner: (some owner), 
-          last-owner: (some owner), 
-          total-vaults: (+ (get total-vaults token-info) u1) 
-        }))
+    ;; Update prev/next vault
+    (if (is-some prev-owner)
+      (map-set vaults { owner: (unwrap-panic prev-owner), token: token } 
+        (merge (unwrap-panic (get-vault (unwrap-panic prev-owner) token)) { next-owner: (some owner) })
+      )
+      false
+    )
+    (if (is-some next-owner)
+      (map-set vaults { owner: (unwrap-panic next-owner), token: token } 
+        (merge (unwrap-panic (get-vault (unwrap-panic next-owner) token)) { prev-owner: (some owner) })
       )
       false
     )
 
-    ;; First vault
-    (if (and (is-none prev-vault) (is-some next-vault) (>= (get nicr (unwrap-panic next-vault)) nicr))
-      (begin
-        (map-set vaults
-          { 
-            owner: owner,
-            token: token
-          }
-          {
-            prev-owner: none,
-            next-owner: (some next-owner),
-            nicr: nicr
-          }
-        )
-        (map-set vaults { owner: next-owner, token: token } (merge (unwrap-panic next-vault) { prev-owner: (some owner) }))
-        
-        (map-set tokens { token: token } (merge token-info { 
-          first-owner: (some owner), 
-          total-vaults: (+ (get total-vaults token-info) u1) 
-        }))
-      )
-      false
-    )
+    ;; Update token info
+    (map-set tokens { token: token } { 
+      first-owner: (if (get first position-check) (some owner) (get first-owner token-info)), 
+      last-owner: (if (get last position-check) (some owner) (get last-owner token-info)), 
+      total-vaults: (+ (get total-vaults token-info) u1) 
+    })
 
-    ;; Last vault
-    (if (and (is-some prev-vault) (is-none next-vault) (<= (get nicr (unwrap-panic prev-vault)) nicr))
-      (begin
-        (map-set vaults
-          { 
-            owner: owner,
-            token: token
-          }
-          {
-            prev-owner: (some prev-owner),
-            next-owner: none,
-            nicr: nicr
-          }
-        )
-        (map-set vaults { owner: prev-owner, token: token } (merge (unwrap-panic prev-vault) { next-owner: (some owner) }))
-
-        (map-set tokens { token: token } (merge token-info { 
-          last-owner: (some owner), 
-          total-vaults: (+ (get total-vaults token-info) u1) 
-        }))
-      )
-      false
-    )
-
-    ;; Other
-    (if (and (is-some prev-vault) (is-some next-vault) (<= (get nicr (unwrap-panic prev-vault)) nicr) (>= (get nicr (unwrap-panic next-vault)) nicr))
-      (begin
-        (map-set vaults
-          { 
-            owner: owner,
-            token: token
-          }
-          {
-            prev-owner: (some prev-owner),
-            next-owner: (some next-owner),
-            nicr: nicr
-          }
-        )
-        (map-set vaults { owner: prev-owner, token: token } (merge (unwrap-panic prev-vault) { next-owner: (some owner) }))
-        (map-set vaults { owner: next-owner, token: token } (merge (unwrap-panic next-vault) { prev-owner: (some owner) }))
-
-        (map-set tokens { token: token } (merge token-info { 
-          total-vaults: (+ (get total-vaults token-info) u1) 
-        }))
-      )
-      false
-    )
-
-    ;; Check if vault has been added
-    (asserts! (is-some (get-vault owner token)) (err ERR_NOT_INSERTED))
-
-    ;; Result
+    ;; Return token info
     (ok (get-token token))
   )
 )
 
-(define-public (reinsert (owner principal) (token principal) (nicr uint) (prev-owner principal) (next-owner principal))
+(define-public (reinsert (owner principal) (token principal) (nicr uint) (prev-owner-hint (optional principal)) (next-owner-hint (optional principal)))
   (begin
     ;; TODO: access rights
 
     (unwrap-panic (remove owner token))
-    (insert owner token nicr prev-owner next-owner)
+    (insert owner token nicr prev-owner-hint next-owner-hint)
   )
 )
 
@@ -220,7 +246,7 @@
       total-vaults: (- (get total-vaults token-info) u1) 
     }))
 
-    ;; Result
+    ;; Return token info
     (ok (get-token token))
   )
 )

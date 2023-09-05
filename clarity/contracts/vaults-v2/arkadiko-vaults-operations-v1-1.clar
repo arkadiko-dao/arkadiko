@@ -24,7 +24,7 @@
 ;; TODO: stability fee
 ;; TODO: do not hardcode contracts
 
-(define-public (open-vault (token principal) (collateral uint) (debt uint) (prev-owner principal) (next-owner principal))
+(define-public (open-vault (token principal) (collateral uint) (debt uint) (prev-owner-hint (optional principal)) (next-owner-hint (optional principal)))
   (let (
     (owner tx-sender)
     (nicr (/ (* collateral u100000000) debt))
@@ -38,7 +38,7 @@
     (asserts! (< (+ total-debt debt) (get max-debt collateral-info)) (err ERR_MAX_DEBT_REACHED))
 
     (try! (as-contract (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner token STATUS_ACTIVE collateral debt)))
-    (try! (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 insert owner token nicr prev-owner next-owner)))
+    (try! (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 insert owner token nicr prev-owner-hint next-owner-hint)))
 
     (try! (as-contract (contract-call? .arkadiko-dao mint-token .usda-token debt owner)))
 
@@ -49,7 +49,7 @@
   )
 )
 
-(define-public (update-vault (token principal) (collateral uint) (debt uint) (prev-owner principal) (next-owner principal))
+(define-public (update-vault (token principal) (collateral uint) (debt uint) (prev-owner-hint (optional principal)) (next-owner-hint (optional principal)))
   (let (
     (owner tx-sender)
     (nicr (/ (* collateral u100000000) debt))
@@ -63,7 +63,7 @@
     (asserts! (< (+ (- total-debt (get debt vault)) debt) (get max-debt collateral-info)) (err ERR_MAX_DEBT_REACHED))
 
     (try! (as-contract (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner token STATUS_ACTIVE collateral debt)))
-    (try! (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 reinsert owner token nicr prev-owner next-owner)))
+    (try! (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 reinsert owner token nicr prev-owner-hint next-owner-hint)))
 
     (if (is-eq debt (get debt vault))
       false
@@ -86,7 +86,7 @@
   )
 )
 
-(define-public (close-vault (token principal) (prev-owner principal) (next-owner principal))
+(define-public (close-vault (token principal))
   (let (
     (owner tx-sender)
     (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner token))
