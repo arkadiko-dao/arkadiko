@@ -137,11 +137,7 @@
 
     (vault-blocks (- block-height (get last-block vault)))
   )
-
-    ;; TODO
-    ;; 4% fee, per (144*365) blocks
-
-    (ok u1)
+    (ok (/ (* (/ (* (get stability-fee collateral-info) (get debt vault)) u10000) vault-blocks) (* u144 u365)))
   )
 )
 
