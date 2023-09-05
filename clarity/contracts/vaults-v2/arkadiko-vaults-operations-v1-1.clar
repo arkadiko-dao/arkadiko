@@ -24,14 +24,21 @@
 
 ;; TODO: do not hardcode contracts
 
-(define-public (open-vault (token <ft-trait>) (collateral uint) (debt uint) (prev-owner-hint (optional principal)) (next-owner-hint (optional principal)))
+(define-public (open-vault 
+  (oracle <oracle-trait>) 
+  (token <ft-trait>) 
+  (collateral uint) 
+  (debt uint) 
+  (prev-owner-hint (optional principal)) 
+  (next-owner-hint (optional principal))
+)
   (let (
     (owner tx-sender)
     (nicr (/ (* collateral u100000000) debt))
     (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token (contract-of token)) (err ERR_UNKNOWN_TOKEN)))
     (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token)))
     (total-debt (get total (contract-call? .arkadiko-vaults-data-v1-1 get-total-debt (contract-of token))))
-    (coll-to-debt (try! (get-collateral-to-debt (contract-of token) collateral debt)))
+    (coll-to-debt (try! (get-collateral-to-debt oracle (contract-of token) collateral debt)))
   )
     (asserts! (not (is-eq (get status vault) STATUS_ACTIVE)) (err ERR_WRONG_STATUS))
     (asserts! (get valid coll-to-debt) (err ERR_INVALID_RATIO))
@@ -48,7 +55,14 @@
   )
 )
 
-(define-public (update-vault (token <ft-trait>) (collateral uint) (debt uint) (prev-owner-hint (optional principal)) (next-owner-hint (optional principal)))
+(define-public (update-vault 
+  (oracle <oracle-trait>) 
+  (token <ft-trait>) 
+  (collateral uint) 
+  (debt uint) 
+  (prev-owner-hint (optional principal)) 
+  (next-owner-hint (optional principal))
+)
   (let (
     (owner tx-sender)
 
@@ -60,7 +74,7 @@
     (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token (contract-of token)) (err ERR_UNKNOWN_TOKEN)))
     (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token)))
     (total-debt (get total (contract-call? .arkadiko-vaults-data-v1-1 get-total-debt (contract-of token))))
-    (coll-to-debt (try! (get-collateral-to-debt (contract-of token) collateral new-debt)))
+    (coll-to-debt (try! (get-collateral-to-debt oracle (contract-of token) collateral new-debt)))
   )
     (asserts! (is-eq (get status vault) STATUS_ACTIVE) (err ERR_WRONG_STATUS))
     (asserts! (get valid coll-to-debt) (err ERR_INVALID_RATIO))
@@ -117,10 +131,10 @@
 ;; Helpers
 ;; ---------------------------------------------------------
 
-(define-public (get-collateral-to-debt (token principal) (collateral uint) (debt uint))
+(define-public (get-collateral-to-debt (oracle <oracle-trait>) (token principal) (collateral uint) (debt uint))
   (let (
     (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token token) (err ERR_UNKNOWN_TOKEN)))
-    (price-info (contract-call? .arkadiko-oracle-v2-2 get-price (get token-name collateral-info)))
+    (price-info (unwrap-panic (contract-call? oracle fetch-price (get token-name collateral-info))))
     (ratio (/ (/ (* collateral (get last-price price-info)) debt) (/ (get decimals price-info) u100)))
   )
     (ok {

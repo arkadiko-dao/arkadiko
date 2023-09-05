@@ -2,6 +2,8 @@
 ;; External operations on vaults
 ;;
 
+(use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
+
 ;; ---------------------------------------------------------
 ;; Constants
 ;; ---------------------------------------------------------
@@ -16,10 +18,10 @@
 ;; Actions
 ;; ---------------------------------------------------------
 
-(define-public (liquidate-vault (owner principal) (token principal))
+(define-public (liquidate-vault (oracle <oracle-trait>) (owner principal) (token principal))
   (let (
     (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner token))
-    (coll-to-debt (try! (contract-call? .arkadiko-vaults-operations-v1-1 get-collateral-to-debt token (get collateral vault) (get debt vault))))
+    (coll-to-debt (try! (contract-call? .arkadiko-vaults-operations-v1-1 get-collateral-to-debt oracle token (get collateral vault) (get debt vault))))
   )
     (asserts! (not (get valid coll-to-debt)) (err ERR_CAN_NOT_LIQUIDATE))
 
