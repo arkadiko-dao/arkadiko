@@ -3,6 +3,7 @@
 ;;
 
 (use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
+(use-trait ft-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 
 ;; ---------------------------------------------------------
 ;; Constants
@@ -23,52 +24,50 @@
 
 ;; TODO: do not hardcode contracts
 
-
-(define-public (open-vault (token principal) (collateral uint) (debt uint) (prev-owner-hint (optional principal)) (next-owner-hint (optional principal)))
+(define-public (open-vault (token <ft-trait>) (collateral uint) (debt uint) (prev-owner-hint (optional principal)) (next-owner-hint (optional principal)))
   (let (
     (owner tx-sender)
     (nicr (/ (* collateral u100000000) debt))
-    (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token token) (err ERR_UNKNOWN_TOKEN)))
-    (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner token))
-    (total-debt (get total (contract-call? .arkadiko-vaults-data-v1-1 get-total-debt token)))
-    (coll-to-debt (try! (get-collateral-to-debt token collateral debt)))
+    (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token (contract-of token)) (err ERR_UNKNOWN_TOKEN)))
+    (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token)))
+    (total-debt (get total (contract-call? .arkadiko-vaults-data-v1-1 get-total-debt (contract-of token))))
+    (coll-to-debt (try! (get-collateral-to-debt (contract-of token) collateral debt)))
   )
     (asserts! (not (is-eq (get status vault) STATUS_ACTIVE)) (err ERR_WRONG_STATUS))
     (asserts! (get valid coll-to-debt) (err ERR_INVALID_RATIO))
     (asserts! (< (+ total-debt debt) (get max-debt collateral-info)) (err ERR_MAX_DEBT_REACHED))
 
-    (try! (as-contract (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner token STATUS_ACTIVE collateral debt)))
-    (try! (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 insert owner token nicr prev-owner-hint next-owner-hint)))
+    (try! (as-contract (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner (contract-of token) STATUS_ACTIVE collateral debt)))
+    (try! (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 insert owner (contract-of token) nicr prev-owner-hint next-owner-hint)))
 
     (try! (as-contract (contract-call? .arkadiko-dao mint-token .usda-token debt owner)))
 
-    ;; TODO: should be collateral token
-    (try! (as-contract (contract-call? .arkadiko-vaults-pool-active-v1-1 deposit .arkadiko-token owner collateral)))
+    (try! (as-contract (contract-call? .arkadiko-vaults-pool-active-v1-1 deposit token owner collateral)))
 
     (ok true)
   )
 )
 
-(define-public (update-vault (token principal) (collateral uint) (debt uint) (prev-owner-hint (optional principal)) (next-owner-hint (optional principal)))
+(define-public (update-vault (token <ft-trait>) (collateral uint) (debt uint) (prev-owner-hint (optional principal)) (next-owner-hint (optional principal)))
   (let (
     (owner tx-sender)
 
-    (stability-fee (unwrap-panic (get-stability-fee owner token)))
+    (stability-fee (unwrap-panic (get-stability-fee owner (contract-of token))))
     (new-debt (+ stability-fee debt))
 
     (nicr (/ (* collateral u100000000) new-debt))
 
-    (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token token) (err ERR_UNKNOWN_TOKEN)))
-    (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner token))
-    (total-debt (get total (contract-call? .arkadiko-vaults-data-v1-1 get-total-debt token)))
-    (coll-to-debt (try! (get-collateral-to-debt token collateral new-debt)))
+    (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token (contract-of token)) (err ERR_UNKNOWN_TOKEN)))
+    (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token)))
+    (total-debt (get total (contract-call? .arkadiko-vaults-data-v1-1 get-total-debt (contract-of token))))
+    (coll-to-debt (try! (get-collateral-to-debt (contract-of token) collateral new-debt)))
   )
     (asserts! (is-eq (get status vault) STATUS_ACTIVE) (err ERR_WRONG_STATUS))
     (asserts! (get valid coll-to-debt) (err ERR_INVALID_RATIO))
     (asserts! (< (+ (- total-debt (get debt vault)) new-debt) (get max-debt collateral-info)) (err ERR_MAX_DEBT_REACHED))
 
-    (try! (as-contract (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner token STATUS_ACTIVE collateral new-debt)))
-    (try! (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 reinsert owner token nicr prev-owner-hint next-owner-hint)))
+    (try! (as-contract (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner (contract-of token) STATUS_ACTIVE collateral new-debt)))
+    (try! (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 reinsert owner (contract-of token) nicr prev-owner-hint next-owner-hint)))
 
     (if (is-eq new-debt (get debt vault))
       false
@@ -81,9 +80,8 @@
     (if (is-eq collateral (get collateral vault))
       false
       (if (> collateral (get collateral vault))
-        ;; TODO: should be collateral token
-        (try! (as-contract (contract-call? .arkadiko-vaults-pool-active-v1-1 deposit .arkadiko-token owner (- collateral (get collateral vault)))))
-        (try! (as-contract (contract-call? .arkadiko-vaults-pool-active-v1-1 withdraw .arkadiko-token owner (- (get collateral vault) collateral))))
+        (try! (as-contract (contract-call? .arkadiko-vaults-pool-active-v1-1 deposit token owner (- collateral (get collateral vault)))))
+        (try! (as-contract (contract-call? .arkadiko-vaults-pool-active-v1-1 withdraw token owner (- (get collateral vault) collateral))))
       )
     )
 
@@ -94,23 +92,22 @@
   )
 )
 
-(define-public (close-vault (token principal))
+(define-public (close-vault (token <ft-trait>))
   (let (
     (owner tx-sender)
-    (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner token))
+    (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token)))
 
-    (stability-fee (unwrap-panic (get-stability-fee owner token)))
+    (stability-fee (unwrap-panic (get-stability-fee owner (contract-of token))))
     (new-debt (+ stability-fee (get debt vault)))
   )
     (asserts! (is-eq (get status vault) STATUS_ACTIVE) (err ERR_WRONG_STATUS))
 
-    (try! (as-contract (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner token STATUS_CLOSED_BY_OWNER u0 u0)))
-    (unwrap-panic (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 remove owner token)))
+    (try! (as-contract (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner (contract-of token) STATUS_CLOSED_BY_OWNER u0 u0)))
+    (unwrap-panic (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 remove owner (contract-of token))))
 
     (try! (as-contract (contract-call? .arkadiko-dao burn-token .usda-token new-debt owner)))
 
-    ;; TODO: should be collateral token
-    (try! (as-contract (contract-call? .arkadiko-vaults-pool-active-v1-1 withdraw .arkadiko-token owner (get collateral vault))))
+    (try! (as-contract (contract-call? .arkadiko-vaults-pool-active-v1-1 withdraw token owner (get collateral vault))))
 
     (ok true)
   )
@@ -140,6 +137,8 @@
 
     (vault-blocks (- block-height (get last-block vault)))
   )
+
+    ;; TODO
     ;; 4% fee, per (144*365) blocks
 
     (ok u1)
