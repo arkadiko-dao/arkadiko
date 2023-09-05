@@ -6,8 +6,8 @@
 ;; Constants
 ;; ---------------------------------------------------------
 
-(define-constant ERR_NOT_AUTHORIZED u930401)
-(define-constant ERR_CAN_NOT_LIQUIDATE u930001)
+(define-constant ERR_NOT_AUTHORIZED u920401)
+(define-constant ERR_CAN_NOT_LIQUIDATE u920001)
 
 (define-constant STATUS_CLOSED_BY_LIQUIDATION u201)
 (define-constant STATUS_CLOSED_BY_REDEMPTION u202)

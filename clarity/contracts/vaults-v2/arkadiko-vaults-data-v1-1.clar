@@ -22,7 +22,8 @@
   {
     status: uint,
     collateral: uint,
-    debt: uint
+    debt: uint,
+    last-block: uint,
   }
 )
 
@@ -44,7 +45,8 @@
     {
       status: STATUS_INACTIVE,
       collateral: u0,
-      debt: u0
+      debt: u0,
+      last-block: u0
     }
     (map-get? vaults { owner: owner, token: token })
   )
@@ -67,8 +69,11 @@
   (let (
     (current-vault (get-vault owner token))
   )
-    ;; TODO: update this access control
-    (asserts! (is-eq contract-caller contract-caller) (err ERR_NOT_AUTHORIZED))
+    (asserts! (or
+      (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-operations")))
+      (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-manager")))
+      (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner))
+    ) (err ERR_NOT_AUTHORIZED))
 
     (map-set vaults
       { 
@@ -78,7 +83,8 @@
       {
         status: status,
         collateral: collateral,
-        debt: debt
+        debt: debt,
+        last-block: block-height
       }
     )
 

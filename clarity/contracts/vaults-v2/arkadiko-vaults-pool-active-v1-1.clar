@@ -8,7 +8,19 @@
 ;; Constants
 ;; ---------------------------------------------------------
 
-(define-constant ERR_NOT_AUTHORIZED u960401)
+(define-constant ERR_NOT_AUTHORIZED u940401)
+
+;; ---------------------------------------------------------
+;; Getters
+;; ---------------------------------------------------------
+
+(define-read-only (has-access (caller principal))
+  (or
+    (is-eq caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-operations")))
+    (is-eq caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-manager")))
+    (is-eq caller (contract-call? .arkadiko-dao get-dao-owner))
+  )
+)
 
 ;; ---------------------------------------------------------
 ;; Methods
@@ -16,22 +28,18 @@
 
 (define-public (deposit (token <ft-trait>) (sender principal) (amount uint))
   (begin
-    ;; TODO: update this access control
-    (asserts! (is-eq contract-caller contract-caller) (err ERR_NOT_AUTHORIZED))
+    (asserts! (has-access contract-caller) (err ERR_NOT_AUTHORIZED))
 
     (try! (as-contract (contract-call? token transfer amount sender tx-sender none)))
-
     (ok true)
   )
 )
 
 (define-public (withdraw (token <ft-trait>) (receiver principal) (amount uint))
   (begin
-    ;; TODO: update this access control
-    (asserts! (is-eq contract-caller contract-caller) (err ERR_NOT_AUTHORIZED))
+    (asserts! (has-access contract-caller) (err ERR_NOT_AUTHORIZED))
 
     (try! (as-contract (contract-call? token transfer amount tx-sender receiver none)))
-
     (ok true)
   )
 )

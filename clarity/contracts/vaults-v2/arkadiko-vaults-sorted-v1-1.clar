@@ -6,8 +6,8 @@
 ;; Constants
 ;; ---------------------------------------------------------
 
-(define-constant ERR_WRONG_POSITION u920001)
-;; (define-constant ERR_NOT_INSERTED u920002)
+(define-constant ERR_NOT_AUTHORIZED u960401)
+(define-constant ERR_WRONG_POSITION u960001)
 
 ;; ---------------------------------------------------------
 ;; Maps
@@ -53,6 +53,14 @@
 
 (define-read-only (get-vault (owner principal) (token principal))
   (map-get? vaults { owner: owner, token: token })
+)
+
+(define-read-only (has-access (caller principal))
+  (or
+    (is-eq caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-operations")))
+    (is-eq caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-manager")))
+    (is-eq caller (contract-call? .arkadiko-dao get-dao-owner))
+  )
 )
 
 ;; ---------------------------------------------------------
@@ -155,6 +163,7 @@
 
     (position-check (check-position owner token nicr prev-owner next-owner))
   )
+    (asserts! (has-access contract-caller) (err ERR_NOT_AUTHORIZED))
     (asserts! (get correct position-check) (err ERR_WRONG_POSITION))
 
     ;; Add new vault
@@ -198,7 +207,7 @@
 
 (define-public (reinsert (owner principal) (token principal) (nicr uint) (prev-owner-hint (optional principal)) (next-owner-hint (optional principal)))
   (begin
-    ;; TODO: access rights
+    (asserts! (has-access contract-caller) (err ERR_NOT_AUTHORIZED))
 
     (unwrap-panic (remove owner token))
     (insert owner token nicr prev-owner-hint next-owner-hint)
@@ -212,7 +221,7 @@
     (prev-owner (get prev-owner (unwrap-panic vault)))
     (next-owner (get next-owner (unwrap-panic vault)))
   )
-    ;; TODO: access rights
+    (asserts! (has-access contract-caller) (err ERR_NOT_AUTHORIZED))
 
     ;; Update prev vault
     (if (is-some prev-owner)

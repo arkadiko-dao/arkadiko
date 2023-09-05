@@ -2,6 +2,12 @@
 ;;
 
 ;; ---------------------------------------------------------
+;; Constants
+;; ---------------------------------------------------------
+
+(define-constant ERR_NOT_AUTHORIZED u970401)
+
+;; ---------------------------------------------------------
 ;; Maps
 ;; ---------------------------------------------------------
 
@@ -28,17 +34,44 @@
 )
 
 ;; ---------------------------------------------------------
-;; Set
+;; Admin
 ;; ---------------------------------------------------------
 
-;; TODO: admin/governance should be able to add/update collateral token
+(define-public (set-token 
+  (token principal) 
+  (name (string-ascii 256)) 
+  (token-name (string-ascii 12)) 
+  (max-debt uint)
+  (liquidation-ratio uint)
+  (liquidation-penalty uint)
+  (stability-fee uint)
+)
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+
+    (map-set tokens
+      { 
+        token: token
+      }
+      {
+        name: name,
+        token-name: token-name,
+        max-debt: max-debt,
+        liquidation-ratio: liquidation-ratio, 
+        liquidation-penalty: liquidation-penalty,
+        stability-fee: stability-fee
+      }
+    )
+
+    (ok true)
+  )
+)
 
 ;; ---------------------------------------------------------
 ;; Init
 ;; ---------------------------------------------------------
 
-;; TODO: add collateral tokens on init
-
+;; TODO: add all collateral tokens on init
 (begin
   (map-set tokens
     { 
