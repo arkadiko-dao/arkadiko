@@ -57,16 +57,16 @@
     (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token)))
     (coll-to-debt (try! (contract-call? .arkadiko-vaults-operations-v1-1 get-collateral-to-debt oracle owner (contract-of token) (get collateral vault) (get debt vault))))
     
-    (stability-fee (unwrap-panic (contract-call? .arkadiko-vaults-operations-v1-1 get-stability-fee owner (contract-of token))))
+    (stability-fee (try! (contract-call? .arkadiko-vaults-operations-v1-1 get-stability-fee owner (contract-of token))))
     (new-debt (+ stability-fee (get debt vault)))
     
-    (collateral (unwrap-panic (get-collateral-for-liquidation oracle (contract-of token) (get collateral vault) new-debt)))
+    (collateral (try! (get-collateral-for-liquidation oracle (contract-of token) (get collateral vault) new-debt)))
   )
     (asserts! (not (get valid coll-to-debt)) (err ERR_CAN_NOT_LIQUIDATE))
 
     ;; Update vault data
     (try! (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner (contract-of token) STATUS_CLOSED_BY_LIQUIDATION u0 u0))
-    (unwrap-panic (contract-call? .arkadiko-vaults-sorted-v1-1 remove owner (contract-of token)))
+    (try! (contract-call? .arkadiko-vaults-sorted-v1-1 remove owner (contract-of token)))
 
     ;; Burn debt, mint stability fee
     (try! (as-contract (contract-call? .arkadiko-vaults-pool-liquidation-v1-1 burn-usda new-debt)))
@@ -96,7 +96,7 @@
 (define-public (get-collateral-for-liquidation (oracle <oracle-trait>) (token principal) (collateral uint) (debt uint))
   (let (
     (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token token) (err ERR_UNKNOWN_TOKEN)))
-    (collateral-price (unwrap-panic (contract-call? oracle fetch-price (get token-name collateral-info))))
+    (collateral-price (try! (contract-call? oracle fetch-price (get token-name collateral-info))))
     (collateral-value (/ (* collateral (get last-price collateral-price)) (get decimals collateral-price)))
     (collateral-needed (/ (* collateral debt) collateral-value))
     (collateral-penalty (/ (* collateral-needed (get liquidation-penalty collateral-info)) u10000))
@@ -126,12 +126,16 @@
     (try! (as-contract (contract-call? .arkadiko-dao burn-token .usda-token debt-left (as-contract tx-sender))))
 
     ;; Swap leftover USDA to DIKO
-    (let ((leftover-usda (unwrap-panic (contract-call? .usda-token get-balance (as-contract tx-sender)))))
+    (let (
+      (leftover-usda (unwrap-panic (contract-call? .usda-token get-balance (as-contract tx-sender))))
+    )
       (try! (as-contract (contract-call? .arkadiko-swap-v2-1 swap-y-for-x .arkadiko-token .usda-token leftover-usda u0)))
     )
 
     ;; Burn leftover DIKO
-    (let ((leftover-diko (unwrap-panic (contract-call? .arkadiko-token get-balance (as-contract tx-sender)))))
+    (let (
+      (leftover-diko (unwrap-panic (contract-call? .arkadiko-token get-balance (as-contract tx-sender))))
+    )
       (try! (as-contract (contract-call? .arkadiko-dao burn-token .arkadiko-token leftover-diko (as-contract tx-sender))))
     )
 
@@ -156,11 +160,11 @@
     (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token)))
     (token-list (contract-call? .arkadiko-vaults-sorted-v1-1 get-token (contract-of token)))
 
-    (stability-fee (unwrap-panic (contract-call? .arkadiko-vaults-operations-v1-1 get-stability-fee owner (contract-of token))))
+    (stability-fee (try! (contract-call? .arkadiko-vaults-operations-v1-1 get-stability-fee owner (contract-of token))))
     (debt-total (+ (get debt vault) stability-fee))
 
     (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token (contract-of token)) (err ERR_UNKNOWN_TOKEN)))
-    (collateral-price (unwrap-panic (contract-call? oracle fetch-price (get token-name collateral-info))))
+    (collateral-price (try! (contract-call? oracle fetch-price (get token-name collateral-info))))
     (collateral-value (/ (* (get collateral vault) (get last-price collateral-price)) (get decimals collateral-price)))
 
     (debt-payoff-used (if (>= debt-payoff debt-total)
@@ -189,7 +193,7 @@
       (begin
         (try! (as-contract (contract-call? .arkadiko-vaults-pool-active-v1-1 withdraw token owner collateral-left)))
         (try! (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner (contract-of token) STATUS_CLOSED_BY_REDEMPTION u0 u0))
-        (unwrap-panic (contract-call? .arkadiko-vaults-sorted-v1-1 remove owner (contract-of token)))
+        (try! (contract-call? .arkadiko-vaults-sorted-v1-1 remove owner (contract-of token)))
       )
 
       ;; Partial redemption
@@ -197,7 +201,7 @@
         (nicr (/ (* collateral-left u100000000) debt-left))
       )
         (try! (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner (contract-of token) STATUS_ACTIVE collateral-left (- debt-total debt-payoff)))
-        (unwrap-panic (contract-call? .arkadiko-vaults-sorted-v1-1 reinsert owner (contract-of token) nicr prev-owner-hint next-owner-hint))
+        (try! (contract-call? .arkadiko-vaults-sorted-v1-1 reinsert owner (contract-of token) nicr prev-owner-hint next-owner-hint))
       )
     )
 

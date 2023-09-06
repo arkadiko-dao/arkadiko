@@ -73,7 +73,7 @@
 )
   (let (
     (owner tx-sender)
-    (stability-fee (unwrap-panic (get-stability-fee owner (contract-of token))))
+    (stability-fee (try! (get-stability-fee owner (contract-of token))))
     (nicr (/ (* collateral u100000000) debt))
     (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token (contract-of token)) (err ERR_UNKNOWN_TOKEN)))
     (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token)))
@@ -117,13 +117,13 @@
   (let (
     (owner tx-sender)
     (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token)))
-    (stability-fee (unwrap-panic (get-stability-fee owner (contract-of token))))
+    (stability-fee (try! (get-stability-fee owner (contract-of token))))
   )
     (asserts! (is-eq (get status vault) STATUS_ACTIVE) (err ERR_WRONG_STATUS))
 
     ;; Update vault data
     (try! (as-contract (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner (contract-of token) STATUS_CLOSED_BY_OWNER u0 u0)))
-    (unwrap-panic (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 remove owner (contract-of token))))
+    (try! (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 remove owner (contract-of token))))
 
     ;; Burn all debt
     (try! (as-contract (contract-call? .arkadiko-dao burn-token .usda-token (get debt vault) owner)))
@@ -147,9 +147,9 @@
 (define-public (get-collateral-to-debt (oracle <oracle-trait>) (owner principal) (token principal) (collateral uint) (debt uint))
   (let (
     (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token token) (err ERR_UNKNOWN_TOKEN)))
-    (price-info (unwrap-panic (contract-call? oracle fetch-price (get token-name collateral-info))))
+    (price-info (try! (contract-call? oracle fetch-price (get token-name collateral-info))))
 
-    (stability-fee (unwrap-panic (get-stability-fee owner token)))
+    (stability-fee (try! (get-stability-fee owner token)))
     (ratio (/ (/ (* collateral (get last-price price-info) u100) (+ debt stability-fee)) (/ (get decimals price-info) u100)))
   )
     (ok {
