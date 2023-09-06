@@ -76,6 +76,9 @@ Clarinet.test({
     result = vaultsOperations.openVault(wallet_1, "wstx-token", 1000, 250, wallet_1.address, wallet_1.address)
     result.expectOk().expectBool(true);
 
+    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(1000);
+
     call = usdaToken.balanceOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(1000000 + 250);
 
@@ -94,6 +97,9 @@ Clarinet.test({
     //
     result = vaultsOperations.updateVault(wallet_1, "wstx-token", 2000, 500, wallet_1.address, wallet_1.address)
     result.expectOk().expectBool(true);
+
+    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(2000);
 
     // 0.000190 USDA stability fees
     // (250 debt * 4% fees) / (144 * 365)
@@ -119,6 +125,9 @@ Clarinet.test({
     result = vaultsOperations.updateVault(wallet_1, "wstx-token", 500, 100, wallet_1.address, wallet_1.address)
     result.expectOk().expectBool(true);
 
+    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(500);
+
     // 0.000380 USDA stability fees
     // (500 debt * 4% fees) / (144 * 365)
     call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1"));
@@ -142,6 +151,9 @@ Clarinet.test({
     //
     result = vaultsOperations.closeVault(wallet_1, "wstx-token")
     result.expectOk().expectBool(true);
+
+    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(0);
 
     // 0.000076 USDA stability fees
     // (100 debt * 4% fees) / (144 * 365)
