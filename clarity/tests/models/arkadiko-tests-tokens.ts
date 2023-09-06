@@ -247,3 +247,47 @@ class XbtcToken {
   }
 }
 export { XbtcToken };
+
+
+// ---------------------------------------------------------
+// wSTX
+// ---------------------------------------------------------
+
+class WstxToken {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  balanceOf(wallet: string) {
+    return this.chain.callReadOnlyFn("wstx-token", "get-balance", [
+      types.principal(wallet),
+    ], this.deployer.address);
+  }
+  
+  totalSupply() {
+    return this.chain.callReadOnlyFn("wstx-token", "get-total-supply", [], this.deployer.address);
+  }
+
+  wrap(caller: Account, amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("wstx-token", "wrap", [
+        types.uint(amount * 1000000),
+      ], caller.address),
+    ]);
+    return block.receipts[0].result;
+  }
+
+  unwrap(caller: Account, amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("wstx-token", "wrap", [
+        types.uint(amount * 1000000),
+      ], caller.address),
+    ]);
+    return block.receipts[0].result;
+  }
+}
+export { WstxToken };

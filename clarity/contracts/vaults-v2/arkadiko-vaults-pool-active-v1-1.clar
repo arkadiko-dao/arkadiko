@@ -31,7 +31,7 @@
   (begin
     (asserts! (has-access contract-caller) (err ERR_NOT_AUTHORIZED))
 
-    (try! (as-contract (contract-call? token transfer amount sender tx-sender none)))
+    (try! (contract-call? token transfer amount sender (as-contract tx-sender) none))
     (ok true)
   )
 )

@@ -84,6 +84,10 @@ path = "contracts/usda-token.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.wstx-token]
+path = "contracts/wstx-token.clar"
+clarity_version = 2
+epoch = 2.4
 
 # ----------------------------------------------------
 # Vaults V2
@@ -425,6 +429,12 @@ epoch = 2.4
 
 [contracts.arkadiko-governance-tv1-1]
 path = "contracts/tests/arkadiko-governance-tv1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+# stSTX
+[contracts.ststx-token]
+path = "contracts/tests/ststx/ststx-token.clar"
 clarity_version = 2
 epoch = 2.4
 

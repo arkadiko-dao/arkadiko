@@ -73,17 +73,27 @@
 ;; So we use the prev/next hints to find the actual position. 
 (define-read-only (find-position (owner principal) (token principal) (nicr uint) (prev-owner-hint (optional principal)) (next-owner-hint (optional principal)))
   (let (
-    (prev-owner-1 (if (is-some prev-owner-hint) (unwrap-panic (get prev-owner (get-vault (unwrap-panic prev-owner-hint) token))) none))
-    (prev-owner-2 (if (is-some prev-owner-1) (unwrap-panic (get prev-owner (get-vault (unwrap-panic prev-owner-1) token))) none))
-    (prev-owner-3 (if (is-some prev-owner-2) (unwrap-panic (get prev-owner (get-vault (unwrap-panic prev-owner-2) token))) none))
-    (prev-owner-4 (if (is-some prev-owner-3) (unwrap-panic (get prev-owner (get-vault (unwrap-panic prev-owner-3) token))) none))
-    (prev-owner-5 (if (is-some prev-owner-4) (unwrap-panic (get prev-owner (get-vault (unwrap-panic prev-owner-4) token))) none))
+    (prev-owner-1-temp (if (is-some prev-owner-hint) (get prev-owner (get-vault (unwrap-panic prev-owner-hint) token)) none))
+    (prev-owner-1 (if (is-some prev-owner-1-temp) (unwrap-panic prev-owner-1-temp) none))
+    (prev-owner-2-temp (if (is-some prev-owner-1) (get prev-owner (get-vault (unwrap-panic prev-owner-1) token)) none))
+    (prev-owner-2 (if (is-some prev-owner-2-temp) (unwrap-panic prev-owner-2-temp) none))
+    (prev-owner-3-temp (if (is-some prev-owner-2) (get prev-owner (get-vault (unwrap-panic prev-owner-2) token)) none))
+    (prev-owner-3 (if (is-some prev-owner-3-temp) (unwrap-panic prev-owner-3-temp) none))
+    (prev-owner-4-temp (if (is-some prev-owner-3) (get prev-owner (get-vault (unwrap-panic prev-owner-3) token)) none))
+    (prev-owner-4 (if (is-some prev-owner-4-temp) (unwrap-panic prev-owner-4-temp) none))
+    (prev-owner-5-temp (if (is-some prev-owner-4) (get prev-owner (get-vault (unwrap-panic prev-owner-4) token)) none))
+    (prev-owner-5 (if (is-some prev-owner-5-temp) (unwrap-panic prev-owner-5-temp) none))
 
-    (next-owner-1 (if (is-some next-owner-hint) (unwrap-panic (get next-owner (get-vault (unwrap-panic next-owner-hint) token))) none))
-    (next-owner-2 (if (is-some next-owner-1) (unwrap-panic (get next-owner (get-vault (unwrap-panic next-owner-1) token))) none))
-    (next-owner-3 (if (is-some next-owner-2) (unwrap-panic (get next-owner (get-vault (unwrap-panic next-owner-2) token))) none))
-    (next-owner-4 (if (is-some next-owner-3) (unwrap-panic (get next-owner (get-vault (unwrap-panic next-owner-3) token))) none))
-    (next-owner-5 (if (is-some next-owner-4) (unwrap-panic (get next-owner (get-vault (unwrap-panic next-owner-4) token))) none))
+    (next-owner-1-temp (if (is-some next-owner-hint) (get next-owner (get-vault (unwrap-panic next-owner-hint) token)) none))
+    (next-owner-1 (if (is-some next-owner-1-temp) (unwrap-panic next-owner-1-temp) none))
+    (next-owner-2-temp (if (is-some next-owner-1) (get next-owner (get-vault (unwrap-panic next-owner-1) token)) none))
+    (next-owner-2 (if (is-some next-owner-2-temp) (unwrap-panic next-owner-2-temp) none))
+    (next-owner-3-temp (if (is-some next-owner-1) (get next-owner (get-vault (unwrap-panic next-owner-2) token)) none))
+    (next-owner-3 (if (is-some next-owner-3-temp) (unwrap-panic next-owner-3-temp) none))
+    (next-owner-4-temp (if (is-some next-owner-1) (get next-owner (get-vault (unwrap-panic next-owner-3) token)) none))
+    (next-owner-4 (if (is-some next-owner-4-temp) (unwrap-panic next-owner-4-temp) none))
+    (next-owner-5-temp (if (is-some next-owner-1) (get next-owner (get-vault (unwrap-panic next-owner-4) token)) none))
+    (next-owner-5 (if (is-some next-owner-5-temp) (unwrap-panic next-owner-5-temp) none))
   )
     ;; First check if given prev/next is correct
     (if (get correct (check-position owner token nicr prev-owner-hint next-owner-hint)) { prev: prev-owner-hint, next: next-owner-hint }
@@ -251,8 +261,16 @@
 
     ;; Remove from map
     (map-delete vaults { owner: owner, token: token })
-    (map-set tokens { token: token } 
-      (merge token-info { total-vaults: (- (get total-vaults token-info) u1) })
+
+    (if (is-eq (get total-vaults (get-token token)) u1)
+      ;; Remove last vault
+      (map-set tokens { token: token } 
+        { total-vaults: u0, first-owner: none, last-owner: none }
+      )
+      ;; Remove vault
+      (map-set tokens { token: token } 
+        (merge token-info { total-vaults: (- (get total-vaults token-info) u1) })
+      )
     )
 
     ;; Return token info

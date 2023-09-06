@@ -115,6 +115,36 @@
   (map-set tokens
     { 
       ;; TODO: update for mainnet
+      token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wstx-token 
+    }
+    {
+      name: "STX-A",
+      token-name: "STX",
+      max-debt: u1000000000000,       ;; 1M
+      liquidation-ratio: u13000,      ;; 130% in bps
+      liquidation-penalty: u1000,     ;; 10% in bps
+      stability-fee: u400             ;; 4% in bps
+    }
+  )
+
+  (map-set tokens
+    { 
+      ;; TODO: update for mainnet
+      token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ststx-token 
+    }
+    {
+      name: "stSTX-A",
+      token-name: "stSTX",
+      max-debt: u1000000000000,       ;; 1M
+      liquidation-ratio: u13000,      ;; 130% in bps
+      liquidation-penalty: u1000,     ;; 10% in bps
+      stability-fee: u400             ;; 4% in bps
+    }
+  )
+
+  (map-set tokens
+    { 
+      ;; TODO: update for mainnet
       token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin 
     }
     {
