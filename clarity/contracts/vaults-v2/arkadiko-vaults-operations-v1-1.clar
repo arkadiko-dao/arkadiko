@@ -107,8 +107,7 @@
     )
 
     ;; Get stability fees
-    (try! (as-contract (contract-call? .arkadiko-dao burn-token .usda-token stability-fee owner)))
-    (try! (as-contract (contract-call? .arkadiko-dao mint-token .usda-token stability-fee .arkadiko-vaults-pool-fees-v1-1)))
+    (try! (contract-call? .usda-token transfer stability-fee tx-sender .arkadiko-vaults-pool-fees-v1-1 none))
 
     (ok true)
   )
@@ -127,10 +126,10 @@
     (unwrap-panic (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 remove owner (contract-of token))))
 
     ;; Burn all debt
-    (try! (as-contract (contract-call? .arkadiko-dao burn-token .usda-token (+ (get debt vault) stability-fee) owner)))
+    (try! (as-contract (contract-call? .arkadiko-dao burn-token .usda-token (get debt vault) owner)))
 
     ;; Get stability fees
-    (try! (as-contract (contract-call? .arkadiko-dao mint-token .usda-token stability-fee .arkadiko-vaults-pool-fees-v1-1)))
+    (try! (contract-call? .usda-token transfer stability-fee tx-sender .arkadiko-vaults-pool-fees-v1-1 none))
 
     ;; Withdraw collateral
     (try! (as-contract (contract-call? .arkadiko-vaults-pool-active-v1-1 withdraw token owner (get collateral vault))))
