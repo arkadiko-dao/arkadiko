@@ -6,6 +6,13 @@
 ;; ---------------------------------------------------------
 
 (define-constant ERR_NOT_AUTHORIZED u970401)
+(define-constant ERR_UNKNOWN_TOKEN u970001)
+
+;; ---------------------------------------------------------
+;; Variables
+;; ---------------------------------------------------------
+
+(define-data-var token-list (list 25 principal) (list))
 
 ;; ---------------------------------------------------------
 ;; Maps
@@ -29,6 +36,11 @@
 ;; Getters
 ;; ---------------------------------------------------------
 
+(define-read-only (get-token-list)
+  (var-get token-list)
+)
+
+
 (define-read-only (get-token (token principal))
   (map-get? tokens { token: token })
 )
@@ -49,6 +61,16 @@
   (begin
     (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
 
+    (if (is-some (index-of? (var-get token-list) token))
+      ;; Token already in list
+      false
+      ;; Add token to list
+      (begin
+        (as-max-len? (append (var-get token-list) token) u25)
+        true
+      )
+    )
+
     (map-set tokens
       { 
         token: token
@@ -63,6 +85,18 @@
       }
     )
 
+    (ok true)
+  )
+)
+
+(define-public (remove-token (token principal))
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (is-some (index-of? (var-get token-list) token)) (err ERR_UNKNOWN_TOKEN))
+
+    (map-delete tokens { token: token })
+    ;; TODO: remove token from list
+    ;; (filter is-eq (var-get token-list))
     (ok true)
   )
 )

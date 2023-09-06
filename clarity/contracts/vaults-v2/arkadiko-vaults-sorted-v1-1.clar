@@ -167,16 +167,8 @@
     (asserts! (get correct position-check) (err ERR_WRONG_POSITION))
 
     ;; Add new vault
-    (map-set vaults
-      { 
-        owner: owner,
-        token: token
-      }
-      {
-        prev-owner: prev-owner,
-        next-owner: next-owner,
-        nicr: nicr
-      }
+    (map-set vaults { owner: owner, token: token }
+      { prev-owner: prev-owner, next-owner: next-owner, nicr: nicr }
     )
 
     ;; Update prev/next vault
@@ -228,11 +220,13 @@
       (let (
         (prev-owner-addr (unwrap-panic prev-owner))
       )
-        (map-set vaults { owner: prev-owner-addr, token: token } (merge (unwrap-panic (get-vault prev-owner-addr token)) { next-owner: next-owner }))
+        (map-set vaults { owner: prev-owner-addr, token: token } 
+          (merge (unwrap-panic (get-vault prev-owner-addr token)) { next-owner: next-owner })
+        )
       )
 
-      (map-set tokens { token: token } (merge token-info { 
-        first-owner: next-owner 
+      (map-set tokens { token: token } 
+        (merge token-info { first-owner: next-owner 
       }))
     )
 
@@ -241,19 +235,21 @@
       (let (
         (next-owner-addr (unwrap-panic next-owner))
       )
-        (map-set vaults { owner: next-owner-addr, token: token } (merge (unwrap-panic (get-vault next-owner-addr token)) { prev-owner: prev-owner }))
+        (map-set vaults { owner: next-owner-addr, token: token } 
+          (merge (unwrap-panic (get-vault next-owner-addr token)) { prev-owner: prev-owner })
+        )
       )
 
-      (map-set tokens { token: token } (merge token-info { 
-        last-owner: prev-owner 
-      }))
+      (map-set tokens { token: token } 
+        (merge token-info { last-owner: prev-owner })
+      )
     )
 
     ;; Remove from map
     (map-delete vaults { owner: owner, token: token })
-    (map-set tokens { token: token } (merge token-info { 
-      total-vaults: (- (get total-vaults token-info) u1) 
-    }))
+    (map-set tokens { token: token } 
+      (merge token-info { total-vaults: (- (get total-vaults token-info) u1) })
+    )
 
     ;; Return token info
     (ok (get-token token))

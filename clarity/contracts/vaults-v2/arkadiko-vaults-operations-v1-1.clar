@@ -38,7 +38,7 @@
     (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token (contract-of token)) (err ERR_UNKNOWN_TOKEN)))
     (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token)))
     (total-debt (get total (contract-call? .arkadiko-vaults-data-v1-1 get-total-debt (contract-of token))))
-    (coll-to-debt (try! (get-collateral-to-debt oracle (contract-of token) collateral debt)))
+    (coll-to-debt (try! (get-collateral-to-debt oracle owner (contract-of token) collateral debt)))
   )
     (asserts! (not (is-eq (get status vault) STATUS_ACTIVE)) (err ERR_WRONG_STATUS))
     (asserts! (get valid coll-to-debt) (err ERR_INVALID_RATIO))
@@ -74,7 +74,7 @@
     (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token (contract-of token)) (err ERR_UNKNOWN_TOKEN)))
     (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token)))
     (total-debt (get total (contract-call? .arkadiko-vaults-data-v1-1 get-total-debt (contract-of token))))
-    (coll-to-debt (try! (get-collateral-to-debt oracle (contract-of token) collateral new-debt)))
+    (coll-to-debt (try! (get-collateral-to-debt oracle owner (contract-of token) collateral new-debt)))
   )
     (asserts! (is-eq (get status vault) STATUS_ACTIVE) (err ERR_WRONG_STATUS))
     (asserts! (get valid coll-to-debt) (err ERR_INVALID_RATIO))
@@ -100,7 +100,7 @@
     )
 
     ;; 
-    (try! (as-contract (contract-call? .arkadiko-dao mint-token .usda-token stability-fee tx-sender)))
+    (try! (as-contract (contract-call? .arkadiko-dao mint-token .usda-token stability-fee .arkadiko-vaults-pool-fees-v1-1)))
 
     (ok true)
   )
@@ -121,6 +121,8 @@
 
     (try! (as-contract (contract-call? .arkadiko-dao burn-token .usda-token new-debt owner)))
 
+    (try! (as-contract (contract-call? .arkadiko-dao mint-token .usda-token stability-fee .arkadiko-vaults-pool-fees-v1-1)))
+
     (try! (as-contract (contract-call? .arkadiko-vaults-pool-active-v1-1 withdraw token owner (get collateral vault))))
 
     (ok true)
@@ -131,11 +133,13 @@
 ;; Helpers
 ;; ---------------------------------------------------------
 
-(define-public (get-collateral-to-debt (oracle <oracle-trait>) (token principal) (collateral uint) (debt uint))
+(define-public (get-collateral-to-debt (oracle <oracle-trait>) (owner principal) (token principal) (collateral uint) (debt uint))
   (let (
     (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token token) (err ERR_UNKNOWN_TOKEN)))
     (price-info (unwrap-panic (contract-call? oracle fetch-price (get token-name collateral-info))))
-    (ratio (/ (/ (* collateral (get last-price price-info)) debt) (/ (get decimals price-info) u100)))
+
+    (stability-fee (unwrap-panic (get-stability-fee owner token)))
+    (ratio (/ (/ (* collateral (get last-price price-info)) (+ debt stability-fee)) (/ (get decimals price-info) u100)))
   )
     (ok {
       ratio: ratio,
@@ -152,20 +156,5 @@
     (vault-blocks (- block-height (get last-block vault)))
   )
     (ok (/ (* (/ (* (get stability-fee collateral-info) (get debt vault)) u10000) vault-blocks) (* u144 u365)))
-  )
-)
-
-;; ---------------------------------------------------------
-;; Admin
-;; ---------------------------------------------------------
-
-(define-public (withdraw-stability-fee)
-  (let (
-    (receiver tx-sender)
-    (balance (unwrap-panic (contract-call? .usda-token get-balance (as-contract tx-sender))))
-  )
-    ;; TODO: access control
-    (try! (as-contract (contract-call? .usda-token transfer balance tx-sender receiver none)))
-    (ok balance)
   )
 )
