@@ -118,6 +118,18 @@ class UsdaToken {
   totalSupply() {
     return this.chain.callReadOnlyFn("usda-token", "get-total-supply", [], this.deployer.address);
   }
+
+  transfer(caller: Account, amount: number, receiver: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("usda-token", "transfer", [
+        types.uint(amount * 1000000),
+        types.principal(caller.address),
+        types.principal(receiver),
+        types.none()
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
 }
 export { UsdaToken };
 

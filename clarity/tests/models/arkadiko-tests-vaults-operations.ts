@@ -96,8 +96,6 @@ class VaultsOperations {
   getStabilityFee(
     caller: Account, 
     token: string,
-    collateral: number,
-    debt: number,
   ) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vaults-operations-v1-1", "get-stability-fee", [

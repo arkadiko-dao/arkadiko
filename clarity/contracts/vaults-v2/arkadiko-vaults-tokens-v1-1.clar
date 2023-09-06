@@ -112,6 +112,12 @@
 
 ;; TODO: add all collateral tokens on init
 (begin
+  (var-set token-list (list 
+    'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wstx-token
+    'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ststx-token 
+    'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin
+  ))
+
   (map-set tokens
     { 
       ;; TODO: update for mainnet
