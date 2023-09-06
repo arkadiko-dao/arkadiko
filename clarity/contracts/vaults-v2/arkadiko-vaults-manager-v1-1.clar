@@ -62,6 +62,7 @@
     
     (collateral (try! (get-collateral-for-liquidation oracle (contract-of token) (get collateral vault) new-debt)))
   )
+    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR_NOT_AUTHORIZED))
     (asserts! (not (get valid coll-to-debt)) (err ERR_CAN_NOT_LIQUIDATE))
 
     ;; Update vault data
@@ -186,6 +187,7 @@
     
     (collateral-left (- (get collateral vault) collateral-needed))
   )
+    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR_NOT_AUTHORIZED))
     (asserts! (is-eq owner (unwrap-panic (get first-owner token-list))) (err ERR_NOT_FIRST_VAULT))
 
     (if (is-eq debt-left u0)

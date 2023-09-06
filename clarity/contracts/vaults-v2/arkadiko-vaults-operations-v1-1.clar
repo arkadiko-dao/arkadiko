@@ -42,6 +42,7 @@
     (total-debt (get total (contract-call? .arkadiko-vaults-data-v1-1 get-total-debt (contract-of token))))
     (coll-to-debt (try! (get-collateral-to-debt oracle owner (contract-of token) collateral debt)))
   )
+    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR_NOT_AUTHORIZED))
     (asserts! (not (is-eq (get status vault) STATUS_ACTIVE)) (err ERR_WRONG_STATUS))
     (asserts! (get valid coll-to-debt) (err ERR_INVALID_RATIO))
     (asserts! (< (+ total-debt debt) (get max-debt collateral-info)) (err ERR_MAX_DEBT_REACHED))
@@ -80,6 +81,7 @@
     (total-debt (get total (contract-call? .arkadiko-vaults-data-v1-1 get-total-debt (contract-of token))))
     (coll-to-debt (try! (get-collateral-to-debt oracle owner (contract-of token) collateral debt)))
   )
+    (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR_NOT_AUTHORIZED))
     (asserts! (is-eq (get status vault) STATUS_ACTIVE) (err ERR_WRONG_STATUS))
     (asserts! (get valid coll-to-debt) (err ERR_INVALID_RATIO))
     (asserts! (< (+ (- total-debt (get debt vault)) debt) (get max-debt collateral-info)) (err ERR_MAX_DEBT_REACHED))
@@ -154,7 +156,7 @@
   )
     (ok {
       ratio: ratio,
-      valid: (> ratio (get liquidation-ratio collateral-info))
+      valid: (>= ratio (get liquidation-ratio collateral-info))
     })
   )
 )
