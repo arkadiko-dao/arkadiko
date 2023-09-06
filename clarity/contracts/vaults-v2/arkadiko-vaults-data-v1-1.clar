@@ -75,10 +75,12 @@
       (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner))
     ) (err ERR_NOT_AUTHORIZED))
 
+    ;; Update vaults data
     (map-set vaults { owner: owner, token: token }
       { status: status, collateral: collateral, debt: debt, last-block: block-height }
     )
 
+    ;; Update total debt for token
     (map-set total-debt { token: token }
       { total: (+ (- (get total (get-total-debt token)) (get debt current-vault)) debt) }
     )

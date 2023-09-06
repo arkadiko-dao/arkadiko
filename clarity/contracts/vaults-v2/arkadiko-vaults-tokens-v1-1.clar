@@ -13,6 +13,7 @@
 ;; ---------------------------------------------------------
 
 (define-data-var token-list (list 25 principal) (list))
+(define-data-var token-to-remove principal tx-sender)
 
 ;; ---------------------------------------------------------
 ;; Maps
@@ -49,6 +50,7 @@
 ;; Admin
 ;; ---------------------------------------------------------
 
+;; Add or update token
 (define-public (set-token 
   (token principal) 
   (name (string-ascii 256)) 
@@ -71,10 +73,7 @@
       )
     )
 
-    (map-set tokens
-      { 
-        token: token
-      }
+    (map-set tokens { token: token }
       {
         name: name,
         token-name: token-name,
@@ -89,16 +88,22 @@
   )
 )
 
+;; Remove token
 (define-public (remove-token (token principal))
   (begin
     (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
     (asserts! (is-some (index-of? (var-get token-list) token)) (err ERR_UNKNOWN_TOKEN))
 
+    (var-set token-to-remove token)
+
     (map-delete tokens { token: token })
-    ;; TODO: remove token from list
-    ;; (filter is-eq (var-get token-list))
+    (var-set token-list (filter is-token-to-remove (var-get token-list)))
     (ok true)
   )
+)
+
+(define-read-only (is-token-to-remove (token principal))
+  (is-eq token (var-get token-to-remove))
 )
 
 ;; ---------------------------------------------------------
@@ -109,7 +114,8 @@
 (begin
   (map-set tokens
     { 
-      token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin ;; TODO: update for mainnet
+      ;; TODO: update for mainnet
+      token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin 
     }
     {
       name: "xBTC-A",

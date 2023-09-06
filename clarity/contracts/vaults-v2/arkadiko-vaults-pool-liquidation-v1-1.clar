@@ -112,12 +112,15 @@
 ;; Stake / Unstake
 ;; ---------------------------------------------------------
 
+;; Stake given USDA amount
+;; Need reward-tokens list to claim all rewards first
 (define-public (stake (amount uint) (reward-tokens (list 25 <ft-trait>)))
   (let (
     (staker tx-sender)
     (staker-info (get-staker staker))
     (fragments-added (* amount (var-get fragments-per-token)))
 
+    ;; Claim rewards first
     (claim-result (map claim-pending-rewards reward-tokens))
   )
     (asserts! (unwrap-panic (check-reward-tokens reward-tokens)) (err ERR_WRONG_TOKENS))
@@ -136,12 +139,15 @@
   )
 )
 
+;; Unstake given USDA amount
+;; Need reward-tokens list to claim all rewards first
 (define-public (unstake (amount uint) (reward-tokens (list 25 <ft-trait>)))
   (let (
     (staker tx-sender)
     (staker-info (get-staker staker))
     (fragments-removed (* amount (var-get fragments-per-token)))
 
+    ;; Claim rewards first
     (claim-result (map claim-pending-rewards reward-tokens))
   )
     (asserts! (unwrap-panic (check-reward-tokens reward-tokens)) (err ERR_WRONG_TOKENS))
@@ -164,6 +170,7 @@
 ;; User Rewards
 ;; ---------------------------------------------------------
 
+;; Get pending rewards for staker, for given token
 (define-public (get-pending-rewards (staker principal) (token principal))
   (let (
     (staker-info (get-staker staker))
@@ -177,6 +184,7 @@
   )
 )
 
+;; Claim pending rewards for staker, for given token
 (define-public (claim-pending-rewards (token <ft-trait>))
   (let (
     (staker tx-sender)
@@ -204,6 +212,7 @@
 ;; Add Rewards
 ;; ---------------------------------------------------------
 
+;; Add rewards to the pool
 (define-public (add-rewards (token <ft-trait>) (amount uint))
   (let (
     (new-cumm-rewards (calculate-cumm-reward-per-fragment (contract-of token) amount))
@@ -218,6 +227,7 @@
   )
 )
 
+;; Calculate cummulative rewards per fragments, after amount-added is added
 (define-read-only (calculate-cumm-reward-per-fragment (token principal) (amount-added uint))
   (let (
     (current-total-fragments (var-get fragments-total))
@@ -239,7 +249,7 @@
 ;; Burn
 ;; ---------------------------------------------------------
 
-;; For liquidations
+;; Burn USDA from pool, for liquidations
 (define-public (burn-usda (amount uint))
   (let (
     (receiver tx-sender)

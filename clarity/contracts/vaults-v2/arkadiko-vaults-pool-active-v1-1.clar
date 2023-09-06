@@ -26,6 +26,7 @@
 ;; Methods
 ;; ---------------------------------------------------------
 
+;; Deposit tokens to pool
 (define-public (deposit (token <ft-trait>) (sender principal) (amount uint))
   (begin
     (asserts! (has-access contract-caller) (err ERR_NOT_AUTHORIZED))
@@ -35,6 +36,7 @@
   )
 )
 
+;; Withdraw tokens from pool
 (define-public (withdraw (token <ft-trait>) (receiver principal) (amount uint))
   (begin
     (asserts! (has-access contract-caller) (err ERR_NOT_AUTHORIZED))

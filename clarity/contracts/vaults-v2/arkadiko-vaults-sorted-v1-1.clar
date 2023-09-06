@@ -109,7 +109,7 @@
   )
 )
 
-;; Check if position is correct
+;; Check if given position is correct
 (define-read-only (check-position (owner principal) (token principal) (nicr uint) (prev-owner (optional principal)) (next-owner (optional principal)))
   (let (
     (token-info (get-token token))
@@ -153,6 +153,8 @@
 ;; Update list
 ;; ---------------------------------------------------------
 
+;; Insert new vault in list
+;; Given prev/next hints
 (define-public (insert (owner principal) (token principal) (nicr uint) (prev-owner-hint (optional principal)) (next-owner-hint (optional principal)))
   (let (
     (token-info (get-token token))
@@ -197,6 +199,7 @@
   )
 )
 
+;; Reinsert vault in list
 (define-public (reinsert (owner principal) (token principal) (nicr uint) (prev-owner-hint (optional principal)) (next-owner-hint (optional principal)))
   (begin
     (asserts! (has-access contract-caller) (err ERR_NOT_AUTHORIZED))
@@ -206,6 +209,7 @@
   )
 )
 
+;; Remove vault from list
 (define-public (remove (owner principal) (token principal))
   (let (
     (token-info (get-token token))

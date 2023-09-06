@@ -2,6 +2,8 @@
 ;; User operations on vaults
 ;;
 
+;; TODO: do not hardcode contracts
+
 (use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
 (use-trait ft-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 
@@ -22,8 +24,8 @@
 ;; User actions
 ;; ---------------------------------------------------------
 
-;; TODO: do not hardcode contracts
-
+;; Open a new vault
+;; Need hints to know where to insert vault in sorted list
 (define-public (open-vault 
   (oracle <oracle-trait>) 
   (token <ft-trait>) 
@@ -44,17 +46,23 @@
     (asserts! (get valid coll-to-debt) (err ERR_INVALID_RATIO))
     (asserts! (< (+ total-debt debt) (get max-debt collateral-info)) (err ERR_MAX_DEBT_REACHED))
 
+    ;; Save vault data
     (try! (as-contract (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner (contract-of token) STATUS_ACTIVE collateral debt)))
     (try! (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 insert owner (contract-of token) nicr prev-owner-hint next-owner-hint)))
 
-    (try! (as-contract (contract-call? .arkadiko-dao mint-token .usda-token debt owner)))
+    ;; Deposit collateral
+    (try! (contract-call? .arkadiko-vaults-pool-active-v1-1 deposit token owner collateral))
 
-    (try! (as-contract (contract-call? .arkadiko-vaults-pool-active-v1-1 deposit token owner collateral)))
+    ;; Mint USDA
+    (try! (as-contract (contract-call? .arkadiko-dao mint-token .usda-token debt owner)))
 
     (ok true)
   )
 )
 
+;; Update vault
+;; Can change collateral and/or debt
+;; Need hints to know where to insert vault in sorted list
 (define-public (update-vault 
   (oracle <oracle-trait>) 
   (token <ft-trait>) 
@@ -65,12 +73,12 @@
 )
   (let (
     (owner tx-sender)
-
+    
+    ;; Owed stability fees is added as debt
     (stability-fee (unwrap-panic (get-stability-fee owner (contract-of token))))
     (new-debt (+ stability-fee debt))
 
     (nicr (/ (* collateral u100000000) new-debt))
-
     (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token (contract-of token)) (err ERR_UNKNOWN_TOKEN)))
     (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token)))
     (total-debt (get total (contract-call? .arkadiko-vaults-data-v1-1 get-total-debt (contract-of token))))
@@ -80,9 +88,11 @@
     (asserts! (get valid coll-to-debt) (err ERR_INVALID_RATIO))
     (asserts! (< (+ (- total-debt (get debt vault)) new-debt) (get max-debt collateral-info)) (err ERR_MAX_DEBT_REACHED))
 
+    ;; Update vault data
     (try! (as-contract (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner (contract-of token) STATUS_ACTIVE collateral new-debt)))
     (try! (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 reinsert owner (contract-of token) nicr prev-owner-hint next-owner-hint)))
 
+    ;; Mint or burn USDA
     (if (is-eq new-debt (get debt vault))
       false
       (if (> new-debt (get debt vault))
@@ -91,6 +101,7 @@
       )
     )
 
+    ;; Deposit or withdraw collateral
     (if (is-eq collateral (get collateral vault))
       false
       (if (> collateral (get collateral vault))
@@ -99,7 +110,7 @@
       )
     )
 
-    ;; 
+    ;; Get stability fees
     (try! (as-contract (contract-call? .arkadiko-dao mint-token .usda-token stability-fee .arkadiko-vaults-pool-fees-v1-1)))
 
     (ok true)
@@ -111,18 +122,23 @@
     (owner tx-sender)
     (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token)))
 
+    ;; Owed stability fees added as debt
     (stability-fee (unwrap-panic (get-stability-fee owner (contract-of token))))
     (new-debt (+ stability-fee (get debt vault)))
   )
     (asserts! (is-eq (get status vault) STATUS_ACTIVE) (err ERR_WRONG_STATUS))
 
+    ;; Update vault data
     (try! (as-contract (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner (contract-of token) STATUS_CLOSED_BY_OWNER u0 u0)))
     (unwrap-panic (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 remove owner (contract-of token))))
 
+    ;; Burn all debt
     (try! (as-contract (contract-call? .arkadiko-dao burn-token .usda-token new-debt owner)))
 
+    ;; Get stability fees
     (try! (as-contract (contract-call? .arkadiko-dao mint-token .usda-token stability-fee .arkadiko-vaults-pool-fees-v1-1)))
 
+    ;; Withdraw collateral
     (try! (as-contract (contract-call? .arkadiko-vaults-pool-active-v1-1 withdraw token owner (get collateral vault))))
 
     (ok true)
@@ -133,6 +149,8 @@
 ;; Helpers
 ;; ---------------------------------------------------------
 
+;; Get collateral to debt ratio
+;; Get if ratio is valid (ratio > liquidation ratio)
 (define-public (get-collateral-to-debt (oracle <oracle-trait>) (owner principal) (token principal) (collateral uint) (debt uint))
   (let (
     (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token token) (err ERR_UNKNOWN_TOKEN)))
@@ -148,6 +166,7 @@
   )
 )
 
+;; Get owed stability fees
 (define-public (get-stability-fee (owner principal) (token principal))
   (let (
     (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner token))

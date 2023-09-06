@@ -12,6 +12,7 @@
 ;; Admin
 ;; ---------------------------------------------------------
 
+;; Withdraw earned stability fees
 (define-public (withdraw-stability-fee)
   (let (
     (receiver tx-sender)
