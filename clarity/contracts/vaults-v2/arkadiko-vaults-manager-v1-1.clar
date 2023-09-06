@@ -14,9 +14,38 @@
 (define-constant ERR_NOT_AUTHORIZED u920401)
 (define-constant ERR_CAN_NOT_LIQUIDATE u920001)
 (define-constant ERR_UNKNOWN_TOKEN u920002)
+(define-constant ERR_NOT_FIRST_VAULT u920003)
+(define-constant ERR_SHOULD_LIQUIDATE u920004)
 
+(define-constant STATUS_ACTIVE u101)
 (define-constant STATUS_CLOSED_BY_LIQUIDATION u201)
 (define-constant STATUS_CLOSED_BY_REDEMPTION u202)
+
+;; ---------------------------------------------------------
+;; Maps
+;; ---------------------------------------------------------
+
+(define-map redemption-block-last
+  { 
+    token: principal
+  }
+  {
+    block-last: uint
+  }
+)
+
+;; ---------------------------------------------------------
+;; Getter
+;; ---------------------------------------------------------
+
+(define-read-only (get-redemption-block-last (token principal))
+  (default-to
+    {
+      block-last: u0,
+    }
+    (map-get? redemption-block-last { token: token })
+  )
+)
 
 ;; ---------------------------------------------------------
 ;; Liquidations
@@ -35,10 +64,11 @@
   )
     (asserts! (not (get valid coll-to-debt)) (err ERR_CAN_NOT_LIQUIDATE))
 
+    ;; Update vault data
     (try! (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner (contract-of token) STATUS_CLOSED_BY_LIQUIDATION u0 u0))
     (unwrap-panic (contract-call? .arkadiko-vaults-sorted-v1-1 remove owner (contract-of token)))
 
-    ;; Update vault data
+    ;; Burn debt, mint stability fee
     (try! (as-contract (contract-call? .arkadiko-vaults-pool-liquidation-v1-1 burn-usda new-debt)))
     (try! (as-contract (contract-call? .arkadiko-dao mint-token .usda-token stability-fee .arkadiko-vaults-pool-fees-v1-1)))
 
@@ -113,7 +143,99 @@
 ;; Redemption
 ;; ---------------------------------------------------------
 
-(define-public (redeem-vault)
-  ;; TODO
-  (ok true)
+(define-public (redeem-vault 
+  (oracle <oracle-trait>) 
+  (owner principal) 
+  (token <ft-trait>) 
+  (debt-payoff uint)
+  (prev-owner-hint (optional principal)) 
+  (next-owner-hint (optional principal))
+)
+  (let (
+    (redeemer tx-sender)
+    (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token)))
+    (token-list (contract-call? .arkadiko-vaults-sorted-v1-1 get-token (contract-of token)))
+
+    (stability-fee (unwrap-panic (contract-call? .arkadiko-vaults-operations-v1-1 get-stability-fee owner (contract-of token))))
+    (debt-total (+ (get debt vault) stability-fee))
+
+    (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token (contract-of token)) (err ERR_UNKNOWN_TOKEN)))
+    (collateral-price (unwrap-panic (contract-call? oracle fetch-price (get token-name collateral-info))))
+    (collateral-value (/ (* (get collateral vault) (get last-price collateral-price)) (get decimals collateral-price)))
+
+    (debt-payoff-used (if (>= debt-payoff debt-total)
+      debt-total
+      debt-payoff
+    ))
+    (debt-left (if (>= debt-payoff debt-total)
+      u0
+      (- debt-total debt-payoff)
+    ))
+
+    (fee-last (get-redemption-block-last (contract-of token)))
+    (fee (try! (get-redemption-fee (contract-of token))))
+    (new-redemption-last-block (- (get block-last fee-last) (/ debt-payoff-used (get block-rate fee))))
+
+    (collateral-needed (/ (* (get collateral vault) debt-payoff-used) collateral-value))
+    (collateral-fee (/ (* collateral-needed (get current-fee fee)) u10000))
+    (collateral-received (- collateral-needed collateral-fee))
+    
+    (collateral-left (- (get collateral vault) collateral-needed))
+  )
+    (asserts! (is-eq owner (unwrap-panic (get first-owner token-list))) (err ERR_NOT_FIRST_VAULT))
+
+    (if (is-eq debt-left u0)
+      ;; Vault closed
+      (begin
+        (try! (as-contract (contract-call? .arkadiko-vaults-pool-active-v1-1 withdraw token owner collateral-left)))
+        (try! (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner (contract-of token) STATUS_CLOSED_BY_REDEMPTION u0 u0))
+        (unwrap-panic (contract-call? .arkadiko-vaults-sorted-v1-1 remove owner (contract-of token)))
+      )
+
+      ;; Partial redemption
+      (let (
+        (nicr (/ (* collateral-left u100000000) debt-left))
+      )
+        (try! (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner (contract-of token) STATUS_ACTIVE collateral-left (- debt-total debt-payoff)))
+        (unwrap-panic (contract-call? .arkadiko-vaults-sorted-v1-1 reinsert owner (contract-of token) nicr prev-owner-hint next-owner-hint))
+      )
+    )
+
+    ;; Burn USDA
+    (try! (as-contract (contract-call? .arkadiko-dao burn-token .usda-token debt-payoff-used redeemer)))
+
+    ;; Send tokens to redeemer
+    (try! (as-contract (contract-call? .arkadiko-vaults-pool-active-v1-1 withdraw token redeemer collateral-received)))
+
+    ;; Get fee
+    (try! (as-contract (contract-call? .arkadiko-vaults-pool-active-v1-1 withdraw token .arkadiko-vaults-pool-fees-v1-1 collateral-fee)))
+
+    ;; Increase redemption fee by decreasing last block
+    (map-set redemption-block-last { token: (contract-of token) } 
+      { block-last: new-redemption-last-block }
+    )
+    
+    ;; Return 
+    (ok { debt-payoff-used: debt-payoff-used, collateral-received: collateral-received, collateral-fee: collateral-fee })
+  )
+)
+
+;; Get current redemption fee in bps
+;; Fee has a min/max and moves between these values
+;; Fee goes up on redemption, fee goes down over time
+(define-read-only (get-redemption-fee (token principal)) 
+  (let (
+    (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token token) (err ERR_UNKNOWN_TOKEN)))
+
+    (fee-info (get-redemption-block-last token))
+    (fee-diff (- (get redemption-fee-max collateral-info) (get redemption-fee-min collateral-info)))
+    (block-diff (- block-height (get block-last fee-info)))
+    (fee-change (/ (* fee-diff block-diff) (get redemption-fee-block-interval collateral-info)))
+    (current-fee (if (>= fee-change fee-diff)
+      (get redemption-fee-min collateral-info)
+      (- (get redemption-fee-max collateral-info) fee-change)
+    ))
+  )
+    (ok { current-fee: current-fee, block-rate: (get redemption-fee-block-rate collateral-info )})
+  )
 )

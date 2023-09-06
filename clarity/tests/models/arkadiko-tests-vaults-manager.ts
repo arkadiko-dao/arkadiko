@@ -51,6 +51,32 @@ class VaultsManager {
     return block.receipts[0].result;
   }
 
+  redeemVault(
+    caller: Account,
+    owner: string,
+    token: string,
+    debtPayoff: number,
+    prevHint: string,
+    nextHint: string
+  ) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-vaults-manager-v1-1", "redeem-vault", [
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2')),
+        types.principal(owner),
+        types.principal(Utils.qualifiedName(token)),
+        types.uint(debtPayoff * 1000000),
+        types.some(types.principal(prevHint)),
+        types.some(types.principal(nextHint)),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  getRedemptionFee(token: string) {
+    return this.chain.callReadOnlyFn("arkadiko-vaults-manager-v1-1", "get-redemption-fee", [
+      types.principal(Utils.qualifiedName(token)),
+    ], this.deployer.address);
+  }
 
 }
 export { VaultsManager };

@@ -27,9 +27,15 @@
     name: (string-ascii 256),
     token-name: (string-ascii 12),
     max-debt: uint,
+    stability-fee: uint,
+
     liquidation-ratio: uint,
     liquidation-penalty: uint,
-    stability-fee: uint
+
+    redemption-fee-min: uint,
+    redemption-fee-max: uint,
+    redemption-fee-block-interval: uint,
+    redemption-fee-block-rate: uint
   }
 )
 
@@ -56,9 +62,13 @@
   (name (string-ascii 256)) 
   (token-name (string-ascii 12)) 
   (max-debt uint)
+  (stability-fee uint)
   (liquidation-ratio uint)
   (liquidation-penalty uint)
-  (stability-fee uint)
+  (redemption-fee-min uint)
+  (redemption-fee-max uint)
+  (redemption-fee-block-interval uint)
+  (redemption-fee-block-rate uint)
 )
   (begin
     (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
@@ -78,9 +88,13 @@
         name: name,
         token-name: token-name,
         max-debt: max-debt,
+        stability-fee: stability-fee,
         liquidation-ratio: liquidation-ratio, 
         liquidation-penalty: liquidation-penalty,
-        stability-fee: stability-fee
+        redemption-fee-min: redemption-fee-min,
+        redemption-fee-max: redemption-fee-max,
+        redemption-fee-block-interval: redemption-fee-block-interval,
+        redemption-fee-block-rate: redemption-fee-block-rate
       }
     )
 
@@ -126,10 +140,14 @@
     {
       name: "STX-A",
       token-name: "STX",
-      max-debt: u1000000000000,       ;; 1M
-      liquidation-ratio: u13000,      ;; 130% in bps
-      liquidation-penalty: u1000,     ;; 10% in bps
-      stability-fee: u400             ;; 4% in bps
+      max-debt: u1000000000000,               ;; 1M
+      stability-fee: u400,                    ;; 4% in bps
+      liquidation-ratio: u13000,              ;; 130% in bps
+      liquidation-penalty: u1000,             ;; 10% in bps
+      redemption-fee-min: u50,                ;; 0.5% in bps
+      redemption-fee-max: u400,               ;; 4% in bps
+      redemption-fee-block-interval: u144,    ;; Fee decay 1 day
+      redemption-fee-block-rate: u500000000   ;; Decrease last block with 1, per 500 USDA redeemed
     }
   )
 
@@ -141,10 +159,14 @@
     {
       name: "stSTX-A",
       token-name: "stSTX",
-      max-debt: u1000000000000,       ;; 1M
-      liquidation-ratio: u13000,      ;; 130% in bps
-      liquidation-penalty: u1000,     ;; 10% in bps
-      stability-fee: u400             ;; 4% in bps
+      max-debt: u1000000000000,               ;; 1M
+      stability-fee: u400,                    ;; 4% in bps
+      liquidation-ratio: u13000,              ;; 130% in bps
+      liquidation-penalty: u1000,             ;; 10% in bps
+      redemption-fee-min: u50,                ;; 0.5% in bps
+      redemption-fee-max: u400,               ;; 4% in bps
+      redemption-fee-block-interval: u144,    ;; Fee decay 1 day
+      redemption-fee-block-rate: u500000000   ;; Decrease last block with 1, per 500 USDA redeemed
     }
   )
 
@@ -156,10 +178,14 @@
     {
       name: "xBTC-A",
       token-name: "xBTC",
-      max-debt: u1000000000000,       ;; 1M
-      liquidation-ratio: u130,        ;; 130%
-      liquidation-penalty: u1000,     ;; 10% in bps
-      stability-fee: u400             ;; 4% in bps
+      max-debt: u1000000000000,               ;; 1M
+      stability-fee: u400,                    ;; 4% in bps
+      liquidation-ratio: u13000,              ;; 130% in bps
+      liquidation-penalty: u1000,             ;; 10% in bps
+      redemption-fee-min: u50,                ;; 0.5% in bps
+      redemption-fee-max: u400,               ;; 4% in bps
+      redemption-fee-block-interval: u144,    ;; Fee decay 1 day
+      redemption-fee-block-rate: u500000000   ;; Decrease last block with 1, per 500 USDA redeemed
     }
   )
 )
