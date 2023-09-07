@@ -57,7 +57,6 @@ class VaultsManager {
     token: string,
     debtPayoff: number,
     prevHint: string,
-    nextHint: string
   ) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vaults-manager-v1-1", "redeem-vault", [
@@ -66,7 +65,6 @@ class VaultsManager {
         types.principal(Utils.qualifiedName(token)),
         types.uint(debtPayoff * 1000000),
         types.some(types.principal(prevHint)),
-        types.some(types.principal(nextHint)),
       ], caller.address)
     ]);
     return block.receipts[0].result;

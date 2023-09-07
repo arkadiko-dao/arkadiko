@@ -34,47 +34,43 @@ class VaultsSorted {
     ], this.deployer.address);
   }
 
-  findPosition(owner: string, token: string, nicr: number, prevHint: string, nextHint: string) {
+  findPosition(owner: string, token: string, nicr: number, prevHint: string) {
     return this.chain.callReadOnlyFn("arkadiko-vaults-sorted-v1-1", "find-position", [
       types.principal(owner),
       types.principal(Utils.qualifiedName(token)),
       types.uint(nicr),
       types.some(types.principal(prevHint)),
-      types.some(types.principal(nextHint)),
     ], this.deployer.address);
   }
 
-  checkPosition(owner: string, token: string, nicr: number, prevHint: string, nextHint: string) {
+  checkPosition(owner: string, token: string, nicr: number, prevHint: string) {
     return this.chain.callReadOnlyFn("arkadiko-vaults-sorted-v1-1", "check-position", [
       types.principal(owner),
       types.principal(Utils.qualifiedName(token)),
       types.uint(nicr),
       types.some(types.principal(prevHint)),
-      types.some(types.principal(nextHint)),
     ], this.deployer.address);
   }
 
-  insert(caller: Account, owner: string, token: string, nicr: number, prevHint: string, nextHint: string) {
+  insert(caller: Account, owner: string, token: string, nicr: number, prevHint: string) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vaults-sorted-v1-1", "insert", [
         types.principal(owner),
         types.principal(Utils.qualifiedName(token)),
         types.uint(nicr),
         types.some(types.principal(prevHint)),
-        types.some(types.principal(nextHint)),
       ], caller.address)
     ]);
     return block.receipts[0].result;
   }
 
-  reinsert(caller: Account, owner: string, token: string, nicr: number, prevHint: string, nextHint: string) {
+  reinsert(caller: Account, owner: string, token: string, nicr: number, prevHint: string) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vaults-sorted-v1-1", "reinsert", [
         types.principal(owner),
         types.principal(Utils.qualifiedName(token)),
         types.uint(nicr),
         types.some(types.principal(prevHint)),
-        types.some(types.principal(nextHint)),
       ], caller.address)
     ]);
     return block.receipts[0].result;

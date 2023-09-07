@@ -27,7 +27,6 @@ class VaultsOperations {
     collateral: number,
     debt: number,
     prevHint: string,
-    nextHint: string
   ) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vaults-operations-v1-1", "open-vault", [
@@ -36,7 +35,6 @@ class VaultsOperations {
         types.uint(collateral * 1000000), 
         types.uint(debt * 1000000),
         types.some(types.principal(prevHint)),
-        types.some(types.principal(nextHint)),
       ], caller.address)
     ]);
     return block.receipts[0].result;
@@ -48,7 +46,6 @@ class VaultsOperations {
     collateral: number,
     debt: number,
     prevHint: string,
-    nextHint: string
   ) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vaults-operations-v1-1", "update-vault", [
@@ -57,7 +54,6 @@ class VaultsOperations {
         types.uint(collateral * 1000000), 
         types.uint(debt * 1000000),
         types.some(types.principal(prevHint)),
-        types.some(types.principal(nextHint)),
       ], caller.address)
     ]);
     return block.receipts[0].result;

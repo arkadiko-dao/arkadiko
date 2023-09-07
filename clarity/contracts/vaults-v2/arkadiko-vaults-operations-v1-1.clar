@@ -32,7 +32,6 @@
   (collateral uint) 
   (debt uint) 
   (prev-owner-hint (optional principal)) 
-  (next-owner-hint (optional principal))
 )
   (let (
     (owner tx-sender)
@@ -49,7 +48,7 @@
 
     ;; Save vault data
     (try! (as-contract (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner (contract-of token) STATUS_ACTIVE collateral debt)))
-    (try! (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 insert owner (contract-of token) nicr prev-owner-hint next-owner-hint)))
+    (try! (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 insert owner (contract-of token) nicr prev-owner-hint)))
 
     ;; Deposit collateral
     (try! (contract-call? .arkadiko-vaults-pool-active-v1-1 deposit token owner collateral))
@@ -70,7 +69,6 @@
   (collateral uint) 
   (debt uint) 
   (prev-owner-hint (optional principal)) 
-  (next-owner-hint (optional principal))
 )
   (let (
     (owner tx-sender)
@@ -88,7 +86,7 @@
 
     ;; Update vault data
     (try! (as-contract (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner (contract-of token) STATUS_ACTIVE collateral debt)))
-    (try! (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 reinsert owner (contract-of token) nicr prev-owner-hint next-owner-hint)))
+    (try! (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 reinsert owner (contract-of token) nicr prev-owner-hint)))
 
     ;; Mint or burn USDA
     (if (is-eq debt (get debt vault))

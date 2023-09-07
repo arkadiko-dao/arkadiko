@@ -154,7 +154,6 @@
   (token <ft-trait>) 
   (debt-payoff uint)
   (prev-owner-hint (optional principal)) 
-  (next-owner-hint (optional principal))
 )
   (let (
     (redeemer tx-sender)
@@ -203,7 +202,7 @@
         (nicr (/ (* collateral-left u100000000) debt-left))
       )
         (try! (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner (contract-of token) STATUS_ACTIVE collateral-left (- debt-total debt-payoff)))
-        (try! (contract-call? .arkadiko-vaults-sorted-v1-1 reinsert owner (contract-of token) nicr prev-owner-hint next-owner-hint))
+        (try! (contract-call? .arkadiko-vaults-sorted-v1-1 reinsert owner (contract-of token) nicr prev-owner-hint))
       )
     )
 
