@@ -9,12 +9,16 @@
 ;; ---------------------------------------------------------
 
 (define-constant ERR_NOT_AUTHORIZED u950401)
+(define-constant ERR_SHUTDOWN u950501)
 (define-constant ERR_WRONG_TOKENS u950001)
 (define-constant ERR_CLAIM_FAILED u950002)
+(define-constant ERR_INVALID_REWARD_TOKEN u950003)
 
 ;; ---------------------------------------------------------
 ;; Variables
 ;; ---------------------------------------------------------
+
+(define-data-var shutdown-activated bool false)
 
 (define-data-var fragments-per-token uint u1000000000000)
 (define-data-var fragments-total uint u0)
@@ -130,6 +134,7 @@
     ;; Second, claim collateral rewards for use
     (claim-result (map claim-pending-rewards reward-tokens))
   )
+    (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
     (asserts! (unwrap-panic (check-reward-tokens reward-tokens)) (err ERR_WRONG_TOKENS))
     (asserts! (is-none (index-of? claim-result (ok false))) (err ERR_CLAIM_FAILED))
     (asserts! (unwrap-panic result-diko-claim) (err ERR_CLAIM_FAILED))
@@ -161,6 +166,7 @@
     ;; Second, claim collateral rewards for use
     (claim-result (map claim-pending-rewards reward-tokens))
   )
+    (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
     (asserts! (unwrap-panic (check-reward-tokens reward-tokens)) (err ERR_WRONG_TOKENS))
     (asserts! (is-none (index-of? claim-result (ok false))) (err ERR_CLAIM_FAILED))
     (asserts! (unwrap-panic result-diko-claim) (err ERR_CLAIM_FAILED))
@@ -208,6 +214,8 @@
 
     (pending-rewards (unwrap-panic (get-pending-rewards staker (contract-of token))))
   )
+    (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
+
     (if (>= pending-rewards u1)
       (begin
         (unwrap! (as-contract (contract-call? token transfer pending-rewards tx-sender staker none)) (ok false))
@@ -230,8 +238,11 @@
 ;; Add rewards to the pool
 (define-public (add-rewards (token <ft-trait>) (amount uint))
   (let (
+    (token-list (contract-call? .arkadiko-vaults-tokens-v1-1 get-token-list))
     (new-cumm-rewards (calculate-cumm-reward-per-fragment (contract-of token) amount))
   )
+    (asserts! (is-some (index-of? token-list (contract-of token))) (err ERR_INVALID_REWARD_TOKEN))
+
     (try! (contract-call? token transfer amount tx-sender (as-contract tx-sender) none))
 
     (map-set tokens { token: (contract-of token) }
@@ -313,6 +324,16 @@
     (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
 
     (var-set diko-rewards-percentage percentage)
+
+    (ok true)
+  )
+)
+
+(define-public (set-shutdown-activated (activated bool))
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+
+    (var-set shutdown-activated activated)
 
     (ok true)
   )

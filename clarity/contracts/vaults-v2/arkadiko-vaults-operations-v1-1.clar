@@ -12,6 +12,7 @@
 ;; ---------------------------------------------------------
 
 (define-constant ERR_NOT_AUTHORIZED u930401)
+(define-constant ERR_SHUTDOWN u930501)
 (define-constant ERR_WRONG_STATUS u930001)
 (define-constant ERR_UNKNOWN_TOKEN u930002)
 (define-constant ERR_INVALID_RATIO u930003)
@@ -19,6 +20,12 @@
 
 (define-constant STATUS_ACTIVE u101)
 (define-constant STATUS_CLOSED_BY_OWNER u102)
+
+;; ---------------------------------------------------------
+;; Variables
+;; ---------------------------------------------------------
+
+(define-data-var shutdown-activated bool false)
 
 ;; ---------------------------------------------------------
 ;; User actions
@@ -41,6 +48,7 @@
     (total-debt (get total (contract-call? .arkadiko-vaults-data-v1-1 get-total-debt (contract-of token))))
     (coll-to-debt (try! (get-collateral-to-debt oracle owner (contract-of token) collateral debt)))
   )
+    (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR_NOT_AUTHORIZED))
     (asserts! (not (is-eq (get status vault) STATUS_ACTIVE)) (err ERR_WRONG_STATUS))
     (asserts! (get valid coll-to-debt) (err ERR_INVALID_RATIO))
@@ -79,6 +87,7 @@
     (total-debt (get total (contract-call? .arkadiko-vaults-data-v1-1 get-total-debt (contract-of token))))
     (coll-to-debt (try! (get-collateral-to-debt oracle owner (contract-of token) collateral debt)))
   )
+    (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR_NOT_AUTHORIZED))
     (asserts! (is-eq (get status vault) STATUS_ACTIVE) (err ERR_WRONG_STATUS))
     (asserts! (get valid coll-to-debt) (err ERR_INVALID_RATIO))
@@ -119,6 +128,7 @@
     (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token)))
     (stability-fee (try! (get-stability-fee owner (contract-of token))))
   )
+    (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
     (asserts! (is-eq (get status vault) STATUS_ACTIVE) (err ERR_WRONG_STATUS))
 
     ;; Update vault data
@@ -168,5 +178,19 @@
     (vault-blocks (- block-height (get last-block vault)))
   )
     (ok (/ (* (/ (* (get stability-fee collateral-info) (get debt vault)) u10000) vault-blocks) (* u144 u365)))
+  )
+)
+
+;; ---------------------------------------------------------
+;; Admin
+;; ---------------------------------------------------------
+
+(define-public (set-shutdown-activated (activated bool))
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+
+    (var-set shutdown-activated activated)
+
+    (ok true)
   )
 )

@@ -12,6 +12,7 @@
 ;; ---------------------------------------------------------
 
 (define-constant ERR_NOT_AUTHORIZED u920401)
+(define-constant ERR_SHUTDOWN u920501)
 (define-constant ERR_CAN_NOT_LIQUIDATE u920001)
 (define-constant ERR_UNKNOWN_TOKEN u920002)
 (define-constant ERR_NOT_FIRST_VAULT u920003)
@@ -20,6 +21,12 @@
 (define-constant STATUS_ACTIVE u101)
 (define-constant STATUS_CLOSED_BY_LIQUIDATION u201)
 (define-constant STATUS_CLOSED_BY_REDEMPTION u202)
+
+;; ---------------------------------------------------------
+;; Variables
+;; ---------------------------------------------------------
+
+(define-data-var shutdown-activated bool false)
 
 ;; ---------------------------------------------------------
 ;; Maps
@@ -62,6 +69,7 @@
     
     (collateral (try! (get-collateral-for-liquidation oracle (contract-of token) (get collateral vault) new-debt)))
   )
+    (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR_NOT_AUTHORIZED))
     (asserts! (not (get valid coll-to-debt)) (err ERR_CAN_NOT_LIQUIDATE))
 
@@ -186,6 +194,7 @@
     
     (collateral-left (- (get collateral vault) collateral-needed))
   )
+    (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR_NOT_AUTHORIZED))
     (asserts! (is-eq owner (unwrap-panic (get first-owner token-list))) (err ERR_NOT_FIRST_VAULT))
 
@@ -242,5 +251,19 @@
     ))
   )
     (ok { current-fee: current-fee, block-rate: (get redemption-fee-block-rate collateral-info )})
+  )
+)
+
+;; ---------------------------------------------------------
+;; Admin
+;; ---------------------------------------------------------
+
+(define-public (set-shutdown-activated (activated bool))
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+
+    (var-set shutdown-activated activated)
+
+    (ok true)
   )
 )
