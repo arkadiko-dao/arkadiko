@@ -98,6 +98,21 @@
   )
 )
 
+(define-read-only (get-stake-of (staker principal))
+  (let (
+    (per-token (var-get fragments-per-token))
+  )
+    (if (is-eq per-token u0)
+      (ok u0)
+      (let (
+        (user-fragments (get fragments (get-staker staker)))
+      )
+        (ok (/ user-fragments per-token))
+      )
+    )
+  )
+)
+
 ;; ---------------------------------------------------------
 ;; Helpers - Reward Tokens
 ;; ---------------------------------------------------------
@@ -241,7 +256,7 @@
     (token-list (contract-call? .arkadiko-vaults-tokens-v1-1 get-token-list))
     (new-cumm-rewards (calculate-cumm-reward-per-fragment (contract-of token) amount))
   )
-    (asserts! (is-some (index-of? token-list (contract-of token))) (err ERR_INVALID_REWARD_TOKEN))
+    (asserts! (or (is-some (index-of? token-list (contract-of token))) (is-eq (contract-of token) .arkadiko-token)) (err ERR_INVALID_REWARD_TOKEN))
 
     (try! (contract-call? token transfer amount tx-sender (as-contract tx-sender) none))
 

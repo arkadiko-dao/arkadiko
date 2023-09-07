@@ -84,7 +84,7 @@ Clarinet.test({
     result = vaultsPoolLiquidation.stake(deployer, 1000);
 
     // Open vault
-    result = vaultsOperations.openVault(wallet_1, "wstx-token", 1000, 300, wallet_1.address, wallet_1.address)
+    result = vaultsOperations.openVault(wallet_1, "wstx-token", 1000, 300, wallet_1.address)
     result.expectOk().expectBool(true);
 
     // Set price
@@ -152,7 +152,7 @@ Clarinet.test({
     result = vaultsPoolLiquidation.stake(deployer, 1000);
 
     // Open vault
-    result = vaultsOperations.openVault(wallet_1, "wstx-token", 1000, 300, wallet_1.address, wallet_1.address)
+    result = vaultsOperations.openVault(wallet_1, "wstx-token", 1000, 300, wallet_1.address)
     result.expectOk().expectBool(true);
 
     let call: any = vaultsManager.getRedemptionFee("wstx-token");
@@ -179,7 +179,7 @@ Clarinet.test({
     //
     // Redeem - partial
     //
-    result = vaultsManager.redeemVault(wallet_2, wallet_1.address, "wstx-token", 200, wallet_1.address, wallet_1.address)
+    result = vaultsManager.redeemVault(wallet_2, wallet_1.address, "wstx-token", 200, wallet_1.address)
     result.expectOk().expectTuple()["debt-payoff-used"].expectUintWithDecimals(200);
     result.expectOk().expectTuple()["collateral-received"].expectUintWithDecimals(384.96);
     result.expectOk().expectTuple()["collateral-fee"].expectUintWithDecimals(15.04);
