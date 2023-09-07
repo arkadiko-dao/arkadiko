@@ -19,6 +19,10 @@
 (define-data-var fragments-per-token uint u1000000000000)
 (define-data-var fragments-total uint u0)
 
+;; TODO: is it 10% for this pool?
+(define-data-var diko-rewards-percentage uint u1000) ;; 10% in bps
+(define-data-var diko-rewards-last-block uint block-height)
+
 ;; ---------------------------------------------------------
 ;; Maps
 ;; ---------------------------------------------------------
@@ -55,12 +59,12 @@
 ;; Getters
 ;; ---------------------------------------------------------
 
-(define-read-only (get-fragments-per-token)
-  (var-get fragments-per-token)
+(define-read-only (get-fragments-info)
+  { per-token: (var-get fragments-per-token), total: (var-get fragments-total)}
 )
 
-(define-read-only (get-fragments-total)
-  (var-get fragments-total)
+(define-read-only (get-diko-rewards-info)
+  { percentage: (var-get diko-rewards-percentage), last-block: (var-get diko-rewards-last-block) }
 )
 
 (define-read-only (get-token (token principal))
@@ -120,11 +124,15 @@
     (staker-info (get-staker staker))
     (fragments-added (* amount (var-get fragments-per-token)))
 
-    ;; Claim rewards first
+    ;; First, add DIKO rewards to pool and claim for user
+    (result-diko-add (try! (add-diko-rewards)))
+    (result-diko-claim (claim-pending-rewards .arkadiko-token))
+    ;; Second, claim collateral rewards for use
     (claim-result (map claim-pending-rewards reward-tokens))
   )
     (asserts! (unwrap-panic (check-reward-tokens reward-tokens)) (err ERR_WRONG_TOKENS))
     (asserts! (is-none (index-of? claim-result (ok false))) (err ERR_CLAIM_FAILED))
+    (asserts! (unwrap-panic result-diko-claim) (err ERR_CLAIM_FAILED))
 
     ;; Transfer tokens
     (try! (contract-call? .usda-token transfer amount staker (as-contract tx-sender) none))
@@ -147,11 +155,15 @@
     (staker-info (get-staker staker))
     (fragments-removed (* amount (var-get fragments-per-token)))
 
-    ;; Claim rewards first
+    ;; First, add DIKO rewards to pool and claim for user
+    (result-diko-add (try! (add-diko-rewards)))
+    (result-diko-claim (claim-pending-rewards .arkadiko-token))
+    ;; Second, claim collateral rewards for use
     (claim-result (map claim-pending-rewards reward-tokens))
   )
     (asserts! (unwrap-panic (check-reward-tokens reward-tokens)) (err ERR_WRONG_TOKENS))
     (asserts! (is-none (index-of? claim-result (ok false))) (err ERR_CLAIM_FAILED))
+    (asserts! (unwrap-panic result-diko-claim) (err ERR_CLAIM_FAILED))
 
     ;; Transfer tokens
     (try! (as-contract (contract-call? .usda-token transfer amount tx-sender staker none)))
@@ -190,6 +202,9 @@
     (staker tx-sender)
     (staker-info (get-staker staker))
     (token-info (get-token (contract-of token)))
+
+    ;; Add DIKO rewards
+    (result-diko-add (try! (add-diko-rewards)))
 
     (pending-rewards (unwrap-panic (get-pending-rewards staker (contract-of token))))
   )
@@ -245,6 +260,26 @@
   )
 )
 
+;; DIKO rewards that should be added
+(define-read-only (get-diko-rewards-to-add)
+  (let (
+    (total-staking-rewards (contract-call? .arkadiko-diko-guardian-v1-1 get-staking-rewards-per-block))
+    (total-pool-rewards (/ (* total-staking-rewards (var-get diko-rewards-percentage)) u10000))
+    (block-diff (- block-height (var-get diko-rewards-last-block)))
+  )
+    (* total-pool-rewards block-diff)
+  )
+)
+
+;; Add DIKO rewards
+(define-private (add-diko-rewards)
+  (let (
+    (rewards-to-add (get-diko-rewards-to-add))
+  )
+    (add-rewards .arkadiko-token rewards-to-add)
+  )
+)
+
 ;; ---------------------------------------------------------
 ;; Burn
 ;; ---------------------------------------------------------
@@ -266,5 +301,19 @@
     (try! (as-contract (contract-call? .arkadiko-dao burn-token .usda-token amount tx-sender)))
 
     (ok amount)
+  )
+)
+
+;; ---------------------------------------------------------
+;; Admin
+;; ---------------------------------------------------------
+
+(define-public (set-diko-rewards-percentage (percentage uint))
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+
+    (var-set diko-rewards-percentage percentage)
+
+    (ok true)
   )
 )
