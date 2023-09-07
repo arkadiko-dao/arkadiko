@@ -143,16 +143,15 @@
     (staker-info (get-staker staker))
     (fragments-added (* amount (var-get fragments-per-token)))
 
-    ;; First, add DIKO rewards to pool and claim for user
-    (result-diko-add (try! (add-diko-rewards)))
+    ;; First, claim DIKO rewards for user
     (result-diko-claim (claim-pending-rewards .arkadiko-token))
-    ;; Second, claim collateral rewards for use
+    ;; Second, claim collateral rewards for user
     (claim-result (map claim-pending-rewards reward-tokens))
   )
     (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
     (asserts! (unwrap-panic (check-reward-tokens reward-tokens)) (err ERR_WRONG_TOKENS))
     (asserts! (is-none (index-of? claim-result (ok false))) (err ERR_CLAIM_FAILED))
-    (asserts! (unwrap-panic result-diko-claim) (err ERR_CLAIM_FAILED))
+    (asserts! (is-eq result-diko-claim (ok true)) (err ERR_CLAIM_FAILED))
 
     ;; Transfer tokens
     (try! (contract-call? .usda-token transfer amount staker (as-contract tx-sender) none))
@@ -163,7 +162,7 @@
 
     (var-set fragments-total (+ (var-get fragments-total) fragments-added))
 
-    (ok fragments-added)
+    (ok true)
   )
 )
 
@@ -175,16 +174,15 @@
     (staker-info (get-staker staker))
     (fragments-removed (* amount (var-get fragments-per-token)))
 
-    ;; First, add DIKO rewards to pool and claim for user
-    (result-diko-add (try! (add-diko-rewards)))
+    ;; First, claim DIKO rewards for user
     (result-diko-claim (claim-pending-rewards .arkadiko-token))
-    ;; Second, claim collateral rewards for use
+    ;; Second, claim collateral rewards for user
     (claim-result (map claim-pending-rewards reward-tokens))
   )
     (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
     (asserts! (unwrap-panic (check-reward-tokens reward-tokens)) (err ERR_WRONG_TOKENS))
     (asserts! (is-none (index-of? claim-result (ok false))) (err ERR_CLAIM_FAILED))
-    (asserts! (unwrap-panic result-diko-claim) (err ERR_CLAIM_FAILED))
+    (asserts! (is-eq result-diko-claim (ok true)) (err ERR_CLAIM_FAILED))
 
     ;; Transfer tokens
     (try! (as-contract (contract-call? .usda-token transfer amount tx-sender staker none)))
@@ -195,7 +193,7 @@
 
     (var-set fragments-total (- (var-get fragments-total) fragments-removed))
 
-    (ok fragments-removed)
+    (ok true)
   )
 )
 
@@ -204,14 +202,14 @@
 ;; ---------------------------------------------------------
 
 ;; Get pending rewards for staker, for given token
-(define-public (get-pending-rewards (staker principal) (token principal))
+(define-read-only (get-pending-rewards (staker principal) (token principal))
   (let (
     (staker-info (get-staker staker))
     (rewards-info (get-staker-rewards staker token))
     (token-info (get-token token))
 
     (amount-owed-per-fragment (- (get cumm-reward-per-fragment token-info) (get cumm-reward-per-fragment rewards-info)))
-    (rewards (/ (* (get fragments staker-info) amount-owed-per-fragment) u1000000))
+    (rewards (/ (* (get fragments staker-info) amount-owed-per-fragment) (* u1000000 (var-get fragments-per-token))))
   )
     (ok rewards)
   )
@@ -221,17 +219,18 @@
 (define-public (claim-pending-rewards (token <ft-trait>))
   (let (
     (staker tx-sender)
-    (staker-info (get-staker staker))
-    (token-info (get-token (contract-of token)))
 
     ;; Add DIKO rewards
     (result-diko-add (try! (add-diko-rewards)))
+
+    (staker-info (get-staker staker))
+    (token-info (get-token (contract-of token)))
 
     (pending-rewards (unwrap-panic (get-pending-rewards staker (contract-of token))))
   )
     (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
 
-    (if (>= pending-rewards u1)
+    (if (> pending-rewards u0)
       (begin
         (unwrap! (as-contract (contract-call? token transfer pending-rewards tx-sender staker none)) (ok false))
 
@@ -249,6 +248,44 @@
 ;; ---------------------------------------------------------
 ;; Add Rewards
 ;; ---------------------------------------------------------
+
+;; DIKO rewards that should be added
+(define-read-only (get-diko-rewards-to-add)
+  (let (
+    (total-staking-rewards (contract-call? .arkadiko-diko-guardian-v1-1 get-staking-rewards-per-block))
+    (total-pool-rewards (/ (* total-staking-rewards (var-get diko-rewards-percentage)) u10000))
+    (block-diff (- block-height (var-get diko-rewards-last-block)))
+  )
+    (* total-pool-rewards block-diff)
+  )
+)
+
+;; Add DIKO rewards
+(define-public (add-diko-rewards)
+  (let (
+    (amount (get-diko-rewards-to-add))
+    (new-cumm-rewards (calculate-cumm-reward-per-fragment .arkadiko-token amount))
+  )
+    ;; Update last block
+    (var-set diko-rewards-last-block block-height)
+
+    (if (> (var-get fragments-total) u0)
+      ;; Some USDA staked
+      (begin
+        (try! (as-contract (contract-call? .arkadiko-dao mint-token .arkadiko-token amount tx-sender)))
+
+        (map-set tokens { token: .arkadiko-token }
+          { cumm-reward-per-fragment: new-cumm-rewards }
+        )
+
+        (ok amount)
+      )
+
+      ;; No USDA staked
+      (ok u0)
+    )
+  )
+)
 
 ;; Add rewards to the pool
 (define-public (add-rewards (token <ft-trait>) (amount uint))
@@ -273,36 +310,17 @@
   (let (
     (current-total-fragments (var-get fragments-total))
     (current-cumm-reward-per-fragment (get cumm-reward-per-fragment (get-token token))) 
+    (fragments-added (* amount-added (var-get fragments-per-token)))
   )
     (if (> current-total-fragments u0)
       (let (
-        (reward-added-per-fragment (/ (* amount-added u1000000) current-total-fragments))
+        (reward-added-per-fragment (/ (* fragments-added u1000000) current-total-fragments))
         (new-cumm-reward-per-fragment (+ current-cumm-reward-per-fragment reward-added-per-fragment))
       )
         new-cumm-reward-per-fragment
       )
       current-cumm-reward-per-fragment
     )
-  )
-)
-
-;; DIKO rewards that should be added
-(define-read-only (get-diko-rewards-to-add)
-  (let (
-    (total-staking-rewards (contract-call? .arkadiko-diko-guardian-v1-1 get-staking-rewards-per-block))
-    (total-pool-rewards (/ (* total-staking-rewards (var-get diko-rewards-percentage)) u10000))
-    (block-diff (- block-height (var-get diko-rewards-last-block)))
-  )
-    (* total-pool-rewards block-diff)
-  )
-)
-
-;; Add DIKO rewards
-(define-private (add-diko-rewards)
-  (let (
-    (rewards-to-add (get-diko-rewards-to-add))
-  )
-    (add-rewards .arkadiko-token rewards-to-add)
   )
 )
 

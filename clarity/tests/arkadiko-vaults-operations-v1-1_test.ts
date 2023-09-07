@@ -73,7 +73,7 @@ Clarinet.test({
     //
     // Open vault
     //
-    result = vaultsOperations.openVault(wallet_1, "wstx-token", 1000, 250, wallet_1.address, wallet_1.address)
+    result = vaultsOperations.openVault(wallet_1, "wstx-token", 1000, 250, wallet_1.address)
     result.expectOk().expectBool(true);
 
     call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"));
@@ -95,7 +95,7 @@ Clarinet.test({
     //
     // Update vault (more collateral, more debt)
     //
-    result = vaultsOperations.updateVault(wallet_1, "wstx-token", 2000, 500, wallet_1.address, wallet_1.address)
+    result = vaultsOperations.updateVault(wallet_1, "wstx-token", 2000, 500, wallet_1.address)
     result.expectOk().expectBool(true);
 
     call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"));
@@ -122,7 +122,7 @@ Clarinet.test({
     //
     // Update vault (less collateral, less debt)
     //
-    result = vaultsOperations.updateVault(wallet_1, "wstx-token", 500, 100, wallet_1.address, wallet_1.address)
+    result = vaultsOperations.updateVault(wallet_1, "wstx-token", 500, 100, wallet_1.address)
     result.expectOk().expectBool(true);
 
     call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"));
