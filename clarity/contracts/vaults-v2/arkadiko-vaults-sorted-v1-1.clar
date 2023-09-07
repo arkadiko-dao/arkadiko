@@ -2,8 +2,6 @@
 ;; Keep vaults sorted based in NICR (nominal collateral ratio) 
 ;;
 
-;; TODO: refactor - no need for both prev/next, just prev is sufficient
-
 ;; ---------------------------------------------------------
 ;; Constants
 ;; ---------------------------------------------------------
@@ -91,43 +89,49 @@
 ;; Hints are kept off chain. But the list can change within the same block.
 ;; So we use the prev/next hints to find the actual position. 
 (define-read-only (find-position (owner principal) (token principal) (nicr uint) (prev-owner-hint (optional principal)))
-  (let (
-    (prev-owner-1 (get-prev-owner prev-owner-hint token))
-    (prev-owner-2 (get-prev-owner prev-owner-1 token))
-    (prev-owner-3 (get-prev-owner prev-owner-2 token))
-    (prev-owner-4 (get-prev-owner prev-owner-3 token))
-
-    (next-owner (get-next-owner prev-owner-hint token))
-    (next-owner-1 (get-next-owner next-owner token))
-    (next-owner-2 (get-next-owner next-owner-1 token))
-    (next-owner-3 (get-next-owner next-owner-2 token))
-    (next-owner-4 (get-next-owner next-owner-3 token))
-
-    ;; TODO: do not call check-position, unless needed in if
-    (check-pos-1 (check-position owner token nicr prev-owner-hint))
-    (check-pos-2 (check-position owner token nicr next-owner))
-    (check-pos-3 (check-position owner token nicr prev-owner-1))
-    (check-pos-4 (check-position owner token nicr next-owner-1))
-    (check-pos-5 (check-position owner token nicr prev-owner-2))
-    (check-pos-6 (check-position owner token nicr next-owner-2))
-    (check-pos-7 (check-position owner token nicr prev-owner-3))
-    (check-pos-8 (check-position owner token nicr next-owner-3))
-    (check-pos-9 (check-position owner token nicr prev-owner-4))
-    (check-pos-10 (check-position owner token nicr next-owner-4))
-  )
-    (if (get correct check-pos-1) check-pos-1
-    (if (get correct check-pos-2) check-pos-2
-    (if (get correct check-pos-3) check-pos-3
-    (if (get correct check-pos-4) check-pos-4
-    (if (get correct check-pos-5) check-pos-5
-    (if (get correct check-pos-6) check-pos-6
-    (if (get correct check-pos-7) check-pos-7
-    (if (get correct check-pos-8) check-pos-8
-    (if (get correct check-pos-9) check-pos-9
-    (if (get correct check-pos-10) check-pos-10
+  (begin
+    (let (
+      (check-pos-1 (check-position owner token nicr prev-owner-hint)) 
+      (next-owner (get-next-owner prev-owner-hint token))
+    ) (if (get correct check-pos-1) check-pos-1
+    (let (
+      (check-pos-2 (check-position owner token nicr next-owner)) 
+      (prev-owner-1 (get-prev-owner prev-owner-hint token))
+    ) (if (get correct check-pos-2) check-pos-2
+    (let (
+      (check-pos-3 (check-position owner token nicr prev-owner-1)) 
+      (next-owner-1 (get-next-owner next-owner token))
+    ) (if (get correct check-pos-3) check-pos-3
+    (let (
+      (check-pos-4 (check-position owner token nicr next-owner-1)) 
+      (prev-owner-2 (get-prev-owner prev-owner-1 token))
+    ) (if (get correct check-pos-4) check-pos-4
+    (let (
+      (check-pos-5 (check-position owner token nicr prev-owner-2)) 
+      (next-owner-2 (get-next-owner next-owner-1 token))
+    ) (if (get correct check-pos-5) check-pos-5
+    (let (
+      (check-pos-6 (check-position owner token nicr next-owner-2)) 
+      (prev-owner-3 (get-prev-owner prev-owner-2 token))
+    ) (if (get correct check-pos-6) check-pos-6
+    (let (
+      (check-pos-7 (check-position owner token nicr prev-owner-3)) 
+      (next-owner-3 (get-next-owner next-owner-2 token))
+    ) (if (get correct check-pos-7) check-pos-7
+    (let (
+      (check-pos-8 (check-position owner token nicr next-owner-3)) 
+      (prev-owner-4 (get-prev-owner prev-owner-3 token))
+    ) (if (get correct check-pos-8) check-pos-8
+    (let (
+      (check-pos-9 (check-position owner token nicr prev-owner-4)) 
+      (next-owner-4 (get-next-owner next-owner-3 token))
+    ) (if (get correct check-pos-9) check-pos-9
+    (let (
+      (check-pos-10 (check-position owner token nicr next-owner-4))
+    ) (if (get correct check-pos-10) check-pos-10
 
       { correct: false, first: false, last: false, prev: none, next: none }
-    ))))))))))
+    ))))))))))))))))))))
   )
 )
 
