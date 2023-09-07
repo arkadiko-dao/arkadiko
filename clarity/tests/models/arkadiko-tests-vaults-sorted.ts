@@ -29,7 +29,7 @@ class VaultsSorted {
 
   getVault(owner: string, token: string) {
     return this.chain.callReadOnlyFn("arkadiko-vaults-sorted-v1-1", "get-vault", [
-      types.principal(Utils.qualifiedName(owner)),
+      types.principal(owner),
       types.principal(Utils.qualifiedName(token)),
     ], this.deployer.address);
   }
