@@ -28,7 +28,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
   decimals
 }) => {
   return (
-    <Disclosure as="tbody" className="bg-white dark:bg-zinc-800">
+    <Disclosure as="tbody" className={`bg-white dark:bg-zinc-800 ${foreign ? (parseInt(apy, 10) === 0 ? `grayscale`:` `) : null}`}>
       {({ open }) => (
         <>
           <tr className="bg-white dark:bg-zinc-800">
@@ -56,7 +56,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                       ALEX AMM
                       <br />
                       {tokenList[tokenListItemX].name}/{tokenList[tokenListItemY].name}
-                      {parseInt(apy, 10) === 0 ? ` (DEPRECATED)` : ``}
+                      {parseInt(apy, 10) === 0 ? (<span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-gray-200 text-gray-800">Deprecated</span>) : ``}
                     </Tooltip>
                   </span>
                   ) : (
@@ -76,15 +76,15 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
               <div className="mt-4 lg:hidden">
                 <dl>
                   <dt className="text-xs">APR</dt>
-                  <dd className="mt-1 truncate">
+                  <dd className="mt-1 text-lg font-semibold text-indigo-600 truncate dark:text-indigo-400">
                     {loadingApy ? (
                       <Placeholder className="py-2" width={Placeholder.width.HALF} />
                     ) : (
                       `${apy}%`
                     )}
                   </dd>
-                  <dt className="text-xs mt-3">Available</dt>
-                  <dd className="mt-1 truncate">
+                  <dt className="mt-3 text-xs">Available</dt>
+                  <dd className="mt-1 text-lg font-semibold truncate dark:text-white">
                     {loadingData ? (
                       <Placeholder className="py-2" width={Placeholder.width.HALF} />
                     ) : (
@@ -128,8 +128,8 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                       </>
                     )}
                   </dd>
-                  <dt className="text-xs mt-3">Staked</dt>
-                  <dd className="mt-1 truncate">
+                  <dt className="mt-3 text-xs">Staked</dt>
+                  <dd className="mt-1 text-lg font-semibold truncate dark:text-white">
                     {loadingData ? (
                       <Placeholder className="py-2" width={Placeholder.width.HALF} />
                     ) : (
@@ -173,8 +173,8 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                       </>
                     )}
                   </dd>
-                  <dt className="text-xs mt-3">Rewards</dt>
-                  <dd className="mt-1 truncate">
+                  <dt className="mt-3 text-xs">Rewards</dt>
+                  <dd className="mt-1 text-lg font-semibold truncate dark:text-white">
                     {loadingData ? (
                       <Placeholder className="py-2" width={Placeholder.width.HALF} />
                     ) : (
@@ -188,7 +188,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                     )}
                   </dd>
                 </dl>
-                <Menu as="div" className="relative flex items-center justify-end">
+                <Menu as="div" className={`relative flex items-center justify-end ${foreign ? (parseInt(apy, 10) === 0 ? `pointer-events-none`:` `) : null}`}>
                   {({ open }) => (
                     <>
                       <Menu.Button className="inline-flex items-center justify-center px-2 py-1 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-800 dark:text-indigo-400">
@@ -420,7 +420,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                 </>
               )}
             </td>
-            <td className="hidden px-6 py-4 text-sm text-right lg:table-cell whitespace-nowrap">
+            <td className={`hidden px-6 py-4 text-sm text-right lg:table-cell whitespace-nowrap ${foreign ? (parseInt(apy, 10) === 0 ? `pointer-events-none`:` `) : null}`}>
               <Disclosure.Button className="inline-flex items-center justify-center px-2 py-1 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-800 dark:text-indigo-400">
                 <span>Actions</span>
                 <StyledIcon
