@@ -170,7 +170,7 @@ export const Stake = () => {
       // prices
       setDikoPrice(data.diko.last_price);
       setStxPrice(data.wstx.last_price);
-      setUsdaPrice(data.usda.last_price / 100);
+      setUsdaPrice(data.usda.last_price);
     };
 
     fetchStakeData();
@@ -654,7 +654,7 @@ export const Stake = () => {
       } else if (redeemStartBlock < currentBlock) {
         const blockDiff = redeemEndBlock - currentBlock;
         let text = blockDiffToTimeLeft(blockDiff);
-        text += ' left to withdraw';
+        text += ' left to unstake';
         setDikoCooldown(text);
         setCanUnstake(true);
       } else {

@@ -217,7 +217,7 @@ export const ManageVault = ({ match }) => {
           functionArgs: [
             uintCV(vault.id),
             contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v3-1'),
-            contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v1-1'),
+            contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v2-2'),
             falseCV(),
           ],
           senderAddress: senderAddress || contractAddress,
@@ -234,7 +234,7 @@ export const ManageVault = ({ match }) => {
       if (vault?.stackedTokens == 0 && vault?.revokedStacking) {
         setEnabledStacking(false);
       }
-      const contractName = 'arkadiko-stacker-v2-1';
+      const contractName = 'arkadiko-stacker-v3-1';
 
       const call = await callReadOnlyFunction({
         contractAddress,
@@ -249,7 +249,7 @@ export const ManageVault = ({ match }) => {
 
       const vaultUnlockCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-stacker-payer-v3-6',
+        contractName: 'arkadiko-stacker-payer-v3-7',
         functionName: 'get-vault-unlock',
         functionArgs: [uintCV(vault?.id)],
         senderAddress: contractAddress || '',
@@ -387,7 +387,7 @@ export const ManageVault = ({ match }) => {
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-stacker-payer-v3-6',
+      contractName: 'arkadiko-stacker-payer-v3-7',
       functionName: 'enable-vault-withdrawals',
       functionArgs: [uintCV(match.params.id)],
       onFinish: data => {
@@ -406,7 +406,7 @@ export const ManageVault = ({ match }) => {
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-pox-unstack-unlock-v2-3',
+      contractName: 'arkadiko-pox-unstack-unlock-v2-4',
       functionName: 'unstack',
       functionArgs: [uintCV(match.params.id)],
       onFinish: data => {
@@ -603,7 +603,7 @@ export const ManageVault = ({ match }) => {
           </header>
 
           <div className="mt-4" id="liquidation-status-alert">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-y-4 lg:gap-4 lg:grid-cols-3">
               <div className="flex flex-col bg-white divide-y divide-gray-200 rounded-md shadow dark:bg-zinc-800 dark:divide-zinc-600">
                 <div className="px-4 py-3">
                   <h3 className="text-base font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
@@ -611,7 +611,7 @@ export const ManageVault = ({ match }) => {
                   </h3>
                 </div>
                 <div className="flex flex-col h-full px-4 py-3 mb-4">
-                  <dl className="space-y-2">
+                  <dl className="mb-4 space-y-2">
                     {vaultDetails.map(detail => (
                       <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto" key={detail.label}>
                         <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
@@ -679,7 +679,7 @@ export const ManageVault = ({ match }) => {
                     <div>
                       <div className="flex items-start justify-between">
                         <div>
-                          <p className="flex items-center text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
+                          <p className="text-base font-normal leading-6 text-gray-500 sm:flex sm:items-center dark:text-zinc-400">
                             Available to mint
                             <Tooltip
                               className="ml-2"
@@ -737,7 +737,7 @@ export const ManageVault = ({ match }) => {
                       <div className="mt-4">
                         <div className="flex items-start justify-between">
                           <div>
-                            <p className="flex items-center text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
+                            <p className="text-base font-normal leading-6 text-gray-500 sm:flex sm:items-center dark:text-zinc-400">
                               Outstanding USDA debt
                               <Tooltip
                                 className="ml-2"
@@ -947,7 +947,7 @@ export const ManageVault = ({ match }) => {
           </header>
 
           <div className="mt-4">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-y-4 lg:gap-4 lg:grid-cols-3">
               <section>
                 {canStackCollateral ? (
                   <div className="relative">
@@ -1090,11 +1090,11 @@ export const ManageVault = ({ match }) => {
                       <div className="flex items-center">
                         {isVaultOwner &&
                         vault?.stackedTokens > 0 &&
-                        vaultUnlockBurnHeight === 999999999999999 && 
+                        vaultUnlockBurnHeight === 999999999999999 &&
                         !loadingVaultData ? (
                           <button
                             type="button"
-                            className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md dark:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             onClick={() => unlockCollateral()}
                           >
                             <StyledIcon as="LockOpenIcon" size={4} className="-ml-0.5 mr-2" />
@@ -1103,7 +1103,7 @@ export const ManageVault = ({ match }) => {
                         ) : isVaultOwner && vault?.stackedTokens > 0 && vaultUnlockBurnHeight < burnBlockHeight ? (
                           <button
                             type="button"
-                            className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md dark:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             onClick={() => unlockVaultWithdrawals()}
                           >
                             <StyledIcon as="LockOpenIcon" size={4} className="-ml-0.5 mr-2" />
@@ -1112,7 +1112,7 @@ export const ManageVault = ({ match }) => {
                         ) : isVaultOwner && vault?.stackedTokens > 0 && vaultUnlockBurnHeight > burnBlockHeight ? (
                           <button
                             type="button"
-                            className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md dark:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                           >
                             Vault can be unlocked at Bitcoin height {vaultUnlockBurnHeight + 1}
                           </button>
@@ -1261,7 +1261,7 @@ export const ManageVault = ({ match }) => {
                       <>
                         <div className="flex items-center justify-between mt-4">
                           <div>
-                            <p className="flex items-center text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
+                            <p className="text-base font-normal leading-6 text-gray-500 sm:flex sm:items-center dark:text-zinc-400">
                               Rewards
                               <Tooltip
                                 className="ml-2"
@@ -1332,7 +1332,7 @@ export const ManageVault = ({ match }) => {
                       }
                     >
                       <div>
-                        <p className="flex items-center text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
+                        <p className="text-base font-normal leading-6 text-gray-500 sm:flex sm:items-center dark:text-zinc-400">
                           Withdrawal
                           <Tooltip
                             className="ml-2"
