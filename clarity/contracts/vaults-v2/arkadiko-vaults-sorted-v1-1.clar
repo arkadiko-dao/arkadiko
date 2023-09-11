@@ -219,6 +219,8 @@
       total-vaults: (+ (get total-vaults token-info) u1) 
     })
 
+    (print { action: "vault-insert", owner: owner, token: token, nicr: nicr, prev-owner: prev-owner, next-owner: next-owner })
+
     ;; Return token info
     (ok (get-token token))
   )
@@ -287,6 +289,8 @@
         (merge token-info { total-vaults: (- (get total-vaults token-info) u1) })
       )
     )
+
+    (print { action: "vault-remove", owner: owner, token: token })
 
     ;; Return token info
     (ok (get-token token))
