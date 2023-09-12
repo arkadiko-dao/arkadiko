@@ -78,7 +78,7 @@
       false
       ;; Add token to list
       (begin
-        (as-max-len? (append (var-get token-list) token) u25)
+        (var-set token-list (unwrap-panic (as-max-len? (append (var-get token-list) token) u25)))
         true
       )
     )
@@ -117,7 +117,7 @@
 )
 
 (define-read-only (is-token-to-remove (token principal))
-  (is-eq token (var-get token-to-remove))
+  (not (is-eq token (var-get token-to-remove)))
 )
 
 ;; ---------------------------------------------------------
