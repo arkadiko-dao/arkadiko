@@ -460,6 +460,11 @@ path = "contracts/tests/atalex/auto-alex.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.auto-alex-v2]
+path = "contracts/tests/atalex/auto-alex-v2.clar"
+clarity_version = 2
+epoch = 2.4
+
 # Tests
 [contracts.malicious-ft]
 path = "contracts/tests/malicious-ft.clar"

@@ -24,7 +24,6 @@
     token: principal
   }
   {
-    name: (string-ascii 256),
     token-name: (string-ascii 12),
     max-debt: uint,
     stability-fee: uint,
@@ -59,7 +58,6 @@
 ;; Add or update token
 (define-public (set-token 
   (token principal) 
-  (name (string-ascii 256)) 
   (token-name (string-ascii 12)) 
   (max-debt uint)
   (stability-fee uint)
@@ -85,7 +83,6 @@
 
     (map-set tokens { token: token }
       {
-        name: name,
         token-name: token-name,
         max-debt: max-debt,
         stability-fee: stability-fee,
@@ -127,9 +124,11 @@
 ;; TODO: add all collateral tokens on init
 (begin
   (var-set token-list (list 
+    ;; TODO: update for mainnet
     'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wstx-token
     'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ststx-token 
     'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin
+    'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.auto-alex-v2
   ))
 
   (map-set tokens
@@ -138,11 +137,10 @@
       token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wstx-token 
     }
     {
-      name: "STX-A",
       token-name: "STX",
-      max-debt: u1000000000000,               ;; 1M
+      max-debt: u5000000000000,               ;; 5M
       stability-fee: u400,                    ;; 4% in bps
-      liquidation-ratio: u13000,              ;; 130% in bps
+      liquidation-ratio: u14000,              ;; 140% in bps
       liquidation-penalty: u1000,             ;; 10% in bps
       redemption-fee-min: u50,                ;; 0.5% in bps
       redemption-fee-max: u400,               ;; 4% in bps
@@ -157,11 +155,10 @@
       token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ststx-token 
     }
     {
-      name: "stSTX-A",
       token-name: "stSTX",
-      max-debt: u1000000000000,               ;; 1M
+      max-debt: u5000000000000,               ;; 5M
       stability-fee: u400,                    ;; 4% in bps
-      liquidation-ratio: u13000,              ;; 130% in bps
+      liquidation-ratio: u14000,              ;; 140% in bps
       liquidation-penalty: u1000,             ;; 10% in bps
       redemption-fee-min: u50,                ;; 0.5% in bps
       redemption-fee-max: u400,               ;; 4% in bps
@@ -176,12 +173,29 @@
       token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin 
     }
     {
-      name: "xBTC-A",
       token-name: "xBTC",
-      max-debt: u1000000000000,               ;; 1M
+      max-debt: u5000000000000,               ;; 5M
       stability-fee: u400,                    ;; 4% in bps
       liquidation-ratio: u13000,              ;; 130% in bps
       liquidation-penalty: u1000,             ;; 10% in bps
+      redemption-fee-min: u50,                ;; 0.5% in bps
+      redemption-fee-max: u400,               ;; 4% in bps
+      redemption-fee-block-interval: u144,    ;; Fee decay 1 day
+      redemption-fee-block-rate: u500000000   ;; Decrease last block with 1, per 500 USDA redeemed
+    }
+  )
+
+  (map-set tokens
+    { 
+      ;; TODO: update for mainnet
+      token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.auto-alex-v2
+    }
+    {
+      token-name: "atALEXv2",
+      max-debt: u500000000000,                ;; 500k
+      stability-fee: u400,                    ;; 4% in bps
+      liquidation-ratio: u18000,              ;; 180% in bps
+      liquidation-penalty: u2000,             ;; 20% in bps
       redemption-fee-min: u50,                ;; 0.5% in bps
       redemption-fee-max: u400,               ;; 4% in bps
       redemption-fee-block-interval: u144,    ;; Fee decay 1 day

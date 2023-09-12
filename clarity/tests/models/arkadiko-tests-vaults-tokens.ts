@@ -35,7 +35,6 @@ class VaultsTokens {
   setToken(
     caller: Account,
     token: string,
-    name: string,
     tokenName: string,
     maxDebt: number,
     stabilityFee: number,
@@ -49,7 +48,6 @@ class VaultsTokens {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vaults-tokens-v1-1", "set-token", [
         types.principal(Utils.qualifiedName(token)),
-        types.ascii(name),
         types.ascii(tokenName),
         types.uint(maxDebt * 1000000),
         types.uint(stabilityFee * 10000),
