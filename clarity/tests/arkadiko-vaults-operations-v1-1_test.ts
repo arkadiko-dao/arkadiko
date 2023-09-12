@@ -174,4 +174,114 @@ Clarinet.test({
   },
 });
 
+// ---------------------------------------------------------
+// Errors
+// ---------------------------------------------------------
+
+Clarinet.test({
+  name: "vaults-operations: activate shutdown",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultsOperations = new VaultsOperations(chain, deployer);
+    let wstxToken = new WstxToken(chain, deployer);
+
+    oracleManager.updatePrice("STX", 0.5);    
+
+    let result = wstxToken.wrap(deployer, 10000);
+    result.expectOk().expectBool(true);
+
+    result = wstxToken.wrap(wallet_1, 10000);
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.openVault(deployer, "wstx-token", 1000, 250, wallet_1.address)
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.setShutdownActivated(deployer, true);
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.openVault(wallet_1, "wstx-token", 1000, 250, wallet_1.address)
+    result.expectErr().expectUint(930501);
+
+    result = vaultsOperations.updateVault(wallet_1, "wstx-token", 2000, 500, wallet_1.address)
+    result.expectErr().expectUint(930501);
+
+    result = vaultsOperations.closeVault(wallet_1, "wstx-token")
+    result.expectErr().expectUint(930501);
+  },
+});
+
+Clarinet.test({
+  name: "vaults-operations: only dao owner can activate shutdown",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let vaultsOperations = new VaultsOperations(chain, deployer);
+
+    let result = vaultsOperations.setShutdownActivated(wallet_1, false);
+    result.expectErr().expectUint(930401);
+  },
+});
+
+Clarinet.test({
+  name: "vaults-operations: check status when opening, updating and closing vault",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultsOperations = new VaultsOperations(chain, deployer);
+    let wstxToken = new WstxToken(chain, deployer);
+
+    oracleManager.updatePrice("STX", 0.5);    
+
+    let result = wstxToken.wrap(deployer, 10000);
+    result.expectOk().expectBool(true);
+
+    result = wstxToken.wrap(wallet_1, 10000);
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.openVault(deployer, "wstx-token", 1000, 250, wallet_1.address)
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.openVault(deployer, "wstx-token", 1000, 250, wallet_1.address)
+    result.expectErr().expectUint(930001);
+
+    result = vaultsOperations.updateVault(wallet_1, "wstx-token", 2000, 500, wallet_1.address)
+    result.expectErr().expectUint(930001);
+
+    result = vaultsOperations.closeVault(wallet_1, "wstx-token")
+    result.expectErr().expectUint(930001);
+
+  },
+});
+
+Clarinet.test({
+  name: "vaults-operations: can not use token which is not a collateral token",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let vaultsOperations = new VaultsOperations(chain, deployer);
+
+    // let result = vaultsOperations.openVault(deployer, "arkadiko-token", 1000, 250, wallet_1.address)
+    // result.expectOk().expectBool(true);
+
+    // result = vaultsOperations.updateVault(wallet_1, "arkadiko-token", 2000, 500, wallet_1.address)
+    // result.expectOk().expectBool(true);
+
+    // TODO: get coll to debt
+    // TODO: get stability fee
+  },
+});
+
+// TODO: ERR_UNKNOWN_TOKEN
+// TODO: ERR_INVALID_RATIO
+// TODO: ERR_MAX_DEBT_REACHED
+// TODO: ERR_NOT_AUTHORIZED (wrong trait)
+
 // TODO: test all collateral types
+

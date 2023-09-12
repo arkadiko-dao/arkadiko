@@ -21,6 +21,11 @@ class VaultsOperations {
     this.deployer = deployer;
   }
 
+  getShutdownActivated() {
+    return this.chain.callReadOnlyFn("arkadiko-vaults-operations-v1-1", "get-shutdown-activated", [
+    ], this.deployer.address);
+  }
+
   openVault(
     caller: Account, 
     token: string,
@@ -97,6 +102,15 @@ class VaultsOperations {
       Tx.contractCall("arkadiko-vaults-operations-v1-1", "get-stability-fee", [
         types.principal(caller.address),
         types.principal(Utils.qualifiedName(token))
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  setShutdownActivated(caller: Account, activated: boolean) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-vaults-operations-v1-1", "set-shutdown-activated", [
+        types.bool(activated)
       ], caller.address)
     ]);
     return block.receipts[0].result;
