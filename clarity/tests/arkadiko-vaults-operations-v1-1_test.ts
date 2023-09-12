@@ -173,3 +173,5 @@ Clarinet.test({
     call.result.expectTuple()["status"].expectUint(102);
   },
 });
+
+// TODO: test all collateral types

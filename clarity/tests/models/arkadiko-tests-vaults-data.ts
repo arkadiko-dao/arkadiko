@@ -34,5 +34,18 @@ class VaultsData {
     ], this.deployer.address);
   }
 
+  setVault(caller: Account, owner: string, token: string, status: number, collateral: number, debt: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-vaults-data-v1-1", "set-vault", [
+        types.principal(owner),
+        types.principal(Utils.qualifiedName(token)),
+        types.uint(status),
+        types.uint(collateral * 1000000),
+        types.uint(debt * 1000000),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
 }
 export { VaultsData };

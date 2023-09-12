@@ -8,6 +8,8 @@
 
 (define-constant ERR_NOT_AUTHORIZED u960401)
 (define-constant ERR_WRONG_POSITION u960001)
+(define-constant ERR_VAULT_ALREADY_INSERTED u960002)
+(define-constant ERR_VAULT_UNKNOWN u960003)
 
 ;; ---------------------------------------------------------
 ;; Maps
@@ -192,6 +194,7 @@
   )
     (asserts! (has-access contract-caller) (err ERR_NOT_AUTHORIZED))
     (asserts! (get correct position-find) (err ERR_WRONG_POSITION))
+    (asserts! (is-none (get-vault owner token)) (err ERR_VAULT_ALREADY_INSERTED))
 
     ;; Add new vault
     (map-set vaults { owner: owner, token: token }
@@ -229,9 +232,7 @@
 ;; Reinsert vault in list
 (define-public (reinsert (owner principal) (token principal) (nicr uint) (prev-owner-hint (optional principal)))
   (begin
-    (asserts! (has-access contract-caller) (err ERR_NOT_AUTHORIZED))
-
-    (unwrap-panic (remove owner token))
+    (try! (remove owner token))
     (insert owner token nicr prev-owner-hint)
   )
 )
@@ -241,8 +242,8 @@
   (let (
     (token-info (get-token token))
     (vault (get-vault owner token))
-    (prev-owner (get prev-owner (unwrap-panic vault)))
-    (next-owner (get next-owner (unwrap-panic vault)))
+    (prev-owner (get prev-owner (unwrap! vault (err ERR_VAULT_UNKNOWN))))
+    (next-owner (get next-owner (unwrap! vault (err ERR_VAULT_UNKNOWN))))
   )
     (asserts! (has-access contract-caller) (err ERR_NOT_AUTHORIZED))
 
@@ -286,7 +287,7 @@
       )
       ;; Remove vault
       (map-set tokens { token: token } 
-        (merge token-info { total-vaults: (- (get total-vaults token-info) u1) })
+        (merge (get-token token) { total-vaults: (- (get total-vaults token-info) u1) })
       )
     )
 
