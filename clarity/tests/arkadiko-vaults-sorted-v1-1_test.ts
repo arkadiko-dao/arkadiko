@@ -171,3 +171,29 @@ Clarinet.test({
     result.expectOk().expectTuple()["total-vaults"].expectUint(8);  
   },
 });
+
+Clarinet.test({
+  name: "vaults-sorted: insert owners with same nicr",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let vaultsSorted = new VaultsSorted(chain, deployer);
+
+    let result = vaultsSorted.insert(deployer, deployer.address, "wstx-token", 1, deployer.address)
+    result.expectOk().expectTuple()["first-owner"].expectSome().expectPrincipal(deployer.address);
+    result.expectOk().expectTuple()["last-owner"].expectSome().expectPrincipal(deployer.address);
+    result.expectOk().expectTuple()["total-vaults"].expectUint(1);  
+
+    result = vaultsSorted.insert(deployer, wallet_1.address, "wstx-token", 1, wallet_1.address)
+    result.expectOk().expectTuple()["first-owner"].expectSome().expectPrincipal(wallet_1.address);
+    result.expectOk().expectTuple()["last-owner"].expectSome().expectPrincipal(deployer.address);
+    result.expectOk().expectTuple()["total-vaults"].expectUint(2);  
+
+    result = vaultsSorted.insert(deployer, wallet_2.address, "wstx-token", 1, wallet_2.address)
+    result.expectOk().expectTuple()["first-owner"].expectSome().expectPrincipal(wallet_2.address);
+    result.expectOk().expectTuple()["last-owner"].expectSome().expectPrincipal(deployer.address);
+    result.expectOk().expectTuple()["total-vaults"].expectUint(3);  
+  },
+});
