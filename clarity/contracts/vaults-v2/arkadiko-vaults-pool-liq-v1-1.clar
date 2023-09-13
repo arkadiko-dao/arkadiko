@@ -23,11 +23,10 @@
 
 (define-data-var shutdown-activated bool false)
 
-(define-data-var fragments-per-token uint u1000000000000)
+(define-data-var fragments-per-token uint u100000000000000)
 (define-data-var fragments-total uint u0)
 
-;; TODO: is it 10% for this pool?
-(define-data-var diko-rewards-percentage uint u1000) ;; 10% in bps
+(define-data-var diko-rewards-percentage uint u820) ;; 8.2% in bps
 (define-data-var diko-rewards-last-block uint block-height)
 
 ;; ---------------------------------------------------------
@@ -214,7 +213,7 @@
     (token-info (get-token token))
 
     (amount-owed-per-fragment (- (get cumm-reward-per-fragment token-info) (get cumm-reward-per-fragment rewards-info)))
-    (rewards (/ (* (get fragments staker-info) amount-owed-per-fragment) (* u1000000 (var-get fragments-per-token))))
+    (rewards (/ (* (get fragments staker-info) amount-owed-per-fragment) (* u10000000000 (var-get fragments-per-token))))
   )
     (ok rewards)
   )
@@ -320,7 +319,7 @@
   )
     (if (> current-total-fragments u0)
       (let (
-        (reward-added-per-fragment (/ (* fragments-added u1000000) current-total-fragments))
+        (reward-added-per-fragment (/ (* fragments-added u10000000000) current-total-fragments))
         (new-cumm-reward-per-fragment (+ current-cumm-reward-per-fragment reward-added-per-fragment))
       )
         new-cumm-reward-per-fragment

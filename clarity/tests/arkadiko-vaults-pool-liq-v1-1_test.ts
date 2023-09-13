@@ -93,16 +93,16 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(30);
 
     call = vaultsPoolLiquidation.getDikoRewardsToAdd();
-    call.result.expectUintWithDecimals(125.279812);
+    call.result.expectUintWithDecimals(102.729446);
 
     result = vaultsPoolLiquidation.addDikoRewards();
-    result.expectOk().expectUintWithDecimals(125.279812);
+    result.expectOk().expectUintWithDecimals(102.729446);
 
     call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
     call.result.expectOk().expectUintWithDecimals(30);
 
     call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
-    call.result.expectOk().expectUintWithDecimals(125.279812);
+    call.result.expectOk().expectUintWithDecimals(102.729446);
 
     //
     // Claim Rewards
@@ -112,7 +112,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(30);
 
     call = vaultsPoolLiquidation.getPendingRewards(wallet_1.address, "arkadiko-token");
-    call.result.expectOk().expectUintWithDecimals(125.279000);
+    call.result.expectOk().expectUintWithDecimals(102.729446);
 
     result = vaultsPoolLiquidation.claimPendingRewards(wallet_1, "wstx-token");
     result.expectOk().expectBool(true)
@@ -124,7 +124,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(30);
 
     call = dikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(150000 + 250.557000);
+    call.result.expectOk().expectUintWithDecimals(150000 + 102.729446 * 2);
 
     //
     // Unstake
