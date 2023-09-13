@@ -8,6 +8,7 @@
 (use-trait vaults-data-trait .arkadiko-vaults-data-trait-v1-1.vaults-data-trait)
 (use-trait vaults-sorted-trait .arkadiko-vaults-sorted-trait-v1-1.vaults-sorted-trait)
 (use-trait vaults-pool-active-trait .arkadiko-vaults-pool-active-trait-v1-1.vaults-pool-active-trait)
+(use-trait vaults-helpers-trait .arkadiko-vaults-helpers-trait-v1-1.vaults-helpers-trait)
 
 ;; ---------------------------------------------------------
 ;; Constants
@@ -50,6 +51,7 @@
   (vaults-data <vaults-data-trait>)
   (vaults-sorted <vaults-sorted-trait>)
   (vaults-pool-active <vaults-pool-active-trait>)
+  (vaults-helpers <vaults-helpers-trait>)
   (oracle <oracle-trait>) 
   (token <ft-trait>) 
   (collateral uint) 
@@ -62,12 +64,13 @@
     (collateral-info (unwrap! (contract-call? vaults-tokens get-token (contract-of token)) (err ERR_UNKNOWN_TOKEN)))
     (vault (unwrap-panic (contract-call? vaults-data get-vault owner (contract-of token))))
     (total-debt (unwrap-panic (contract-call? vaults-data get-total-debt (contract-of token))))
-    (coll-to-debt (try! (get-collateral-to-debt vaults-tokens vaults-data oracle owner (contract-of token) collateral debt)))
+    (coll-to-debt (try! (contract-call? vaults-helpers get-collateral-to-debt vaults-tokens vaults-data oracle owner (contract-of token) collateral debt)))
   )
     (asserts! (is-eq (contract-of vaults-tokens) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-tokens"))) (err ERR_WRONG_TRAIT))
     (asserts! (is-eq (contract-of vaults-data) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-data"))) (err ERR_WRONG_TRAIT))
     (asserts! (is-eq (contract-of vaults-sorted) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-sorted"))) (err ERR_WRONG_TRAIT))
     (asserts! (is-eq (contract-of vaults-pool-active) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-pool-active"))) (err ERR_WRONG_TRAIT))
+    (asserts! (is-eq (contract-of vaults-helpers) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-helpers"))) (err ERR_WRONG_TRAIT))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR_WRONG_TRAIT))
     (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
     (asserts! (not (is-eq (get status vault) STATUS_ACTIVE)) (err ERR_WRONG_STATUS))
@@ -97,6 +100,7 @@
   (vaults-data <vaults-data-trait>)
   (vaults-sorted <vaults-sorted-trait>)
   (vaults-pool-active <vaults-pool-active-trait>)
+  (vaults-helpers <vaults-helpers-trait>)
   (oracle <oracle-trait>) 
   (token <ft-trait>) 
   (collateral uint) 
@@ -105,17 +109,18 @@
 )
   (let (
     (owner tx-sender)
-    (stability-fee (try! (get-stability-fee vaults-tokens vaults-data owner (contract-of token))))
+    (stability-fee (try! (contract-call? vaults-helpers get-stability-fee vaults-tokens vaults-data owner (contract-of token))))
     (nicr (/ (* collateral u100000000) debt))
     (collateral-info (unwrap! (contract-call? vaults-tokens get-token (contract-of token)) (err ERR_UNKNOWN_TOKEN)))
     (vault (unwrap-panic (contract-call? vaults-data get-vault owner (contract-of token))))
     (total-debt (unwrap-panic (contract-call? vaults-data get-total-debt (contract-of token))))
-    (coll-to-debt (try! (get-collateral-to-debt vaults-tokens vaults-data oracle owner (contract-of token) collateral debt)))
+    (coll-to-debt (try! (contract-call? vaults-helpers get-collateral-to-debt vaults-tokens vaults-data oracle owner (contract-of token) collateral debt)))
   )
     (asserts! (is-eq (contract-of vaults-tokens) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-tokens"))) (err ERR_WRONG_TRAIT))
     (asserts! (is-eq (contract-of vaults-data) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-data"))) (err ERR_WRONG_TRAIT))
     (asserts! (is-eq (contract-of vaults-sorted) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-sorted"))) (err ERR_WRONG_TRAIT))
     (asserts! (is-eq (contract-of vaults-pool-active) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-pool-active"))) (err ERR_WRONG_TRAIT))
+    (asserts! (is-eq (contract-of vaults-helpers) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-helpers"))) (err ERR_WRONG_TRAIT))
     (asserts! (is-eq (contract-of oracle) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "oracle"))) (err ERR_WRONG_TRAIT))
     (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
     (asserts! (is-eq (get status vault) STATUS_ACTIVE) (err ERR_WRONG_STATUS))
@@ -157,17 +162,19 @@
   (vaults-data <vaults-data-trait>) 
   (vaults-sorted <vaults-sorted-trait>)
   (vaults-pool-active <vaults-pool-active-trait>)
+  (vaults-helpers <vaults-helpers-trait>)
   (token <ft-trait>)
 )
   (let (
     (owner tx-sender)
     (vault (unwrap-panic (contract-call? vaults-data get-vault owner (contract-of token))))
-    (stability-fee (try! (get-stability-fee vaults-tokens vaults-data owner (contract-of token))))
+    (stability-fee (try! (contract-call? vaults-helpers get-stability-fee vaults-tokens vaults-data owner (contract-of token))))
   )
     (asserts! (is-eq (contract-of vaults-tokens) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-tokens"))) (err ERR_WRONG_TRAIT))
     (asserts! (is-eq (contract-of vaults-data) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-data"))) (err ERR_WRONG_TRAIT))
     (asserts! (is-eq (contract-of vaults-sorted) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-sorted"))) (err ERR_WRONG_TRAIT))
     (asserts! (is-eq (contract-of vaults-pool-active) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-pool-active"))) (err ERR_WRONG_TRAIT))
+    (asserts! (is-eq (contract-of vaults-helpers) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-helpers"))) (err ERR_WRONG_TRAIT))
     (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
     (asserts! (is-eq (get status vault) STATUS_ACTIVE) (err ERR_WRONG_STATUS))
 
@@ -185,39 +192,6 @@
     (try! (as-contract (contract-call? vaults-pool-active withdraw token owner (get collateral vault))))
 
     (ok true)
-  )
-)
-
-;; ---------------------------------------------------------
-;; Helpers
-;; ---------------------------------------------------------
-
-;; Get collateral to debt ratio
-;; Get if ratio is valid (ratio > liquidation ratio)
-(define-public (get-collateral-to-debt (vaults-tokens <vaults-tokens-trait>) (vaults-data <vaults-data-trait>) (oracle <oracle-trait>) (owner principal) (token principal) (collateral uint) (debt uint))
-  (let (
-    (collateral-info (unwrap! (contract-call? vaults-tokens get-token token) (err ERR_UNKNOWN_TOKEN)))
-    (price-info (try! (contract-call? oracle fetch-price (get token-name collateral-info))))
-
-    (stability-fee (try! (get-stability-fee vaults-tokens vaults-data owner token)))
-    (ratio (/ (/ (* collateral (get last-price price-info) u100) (+ debt stability-fee)) (/ (get decimals price-info) u100)))
-  )
-    (ok {
-      ratio: ratio,
-      valid: (>= ratio (get liquidation-ratio collateral-info))
-    })
-  )
-)
-
-;; Get owed stability fees
-(define-public (get-stability-fee (vaults-tokens <vaults-tokens-trait>) (vaults-data <vaults-data-trait>) (owner principal) (token principal))
-  (let (
-    (vault (unwrap-panic (contract-call? vaults-data get-vault owner token)))
-    (collateral-info (unwrap! (contract-call? vaults-tokens get-token token) (err ERR_UNKNOWN_TOKEN)))
-
-    (vault-blocks (- block-height (get last-block vault)))
-  )
-    (ok (/ (* (/ (* (get stability-fee collateral-info) (get debt vault)) u10000) vault-blocks) (* u144 u365)))
   )
 )
 

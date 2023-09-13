@@ -598,4 +598,19 @@
       can-burn: true
     }
   )
+
+  (map-set contracts
+    { name: "vaults-helpers" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-vaults-helpers-v1-1
+    }
+  )
+  (map-set contracts-data
+    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-vaults-helpers-v1-1 }
+    {
+      can-mint: true,
+      can-burn: true
+    }
+  )
 )

@@ -23,33 +23,6 @@ import {
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 Clarinet.test({
-  name: "vaults-operations: collateral to debt ratio",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-
-    let oracleManager = new OracleManager(chain, deployer);
-    let vaultsOperations = new VaultsOperations(chain, deployer);
-
-    // Set price
-    oracleManager.updatePrice("STX", 0.5);    
-    oracleManager.updatePrice("BTC", 30000, 100000000);
-
-    let result = vaultsOperations.getCollateralToDebt(deployer, "wstx-token", 1000, 250);
-    result.expectOk().expectTuple()["ratio"].expectUint(2 * 10000);
-    result.expectOk().expectTuple()["valid"].expectBool(true);
-
-    result = vaultsOperations.getCollateralToDebt(deployer, "wstx-token", 1000, 400);
-    result.expectOk().expectTuple()["ratio"].expectUint(1.25 * 10000);
-    result.expectOk().expectTuple()["valid"].expectBool(false);
-
-    // 1 BTC (need to multiply by 100 as BTC has 8 decimals)
-    result = vaultsOperations.getCollateralToDebt(deployer, "Wrapped-Bitcoin", 1 * 100, 10000);
-    result.expectOk().expectTuple()["ratio"].expectUint(3 * 10000);
-    result.expectOk().expectTuple()["valid"].expectBool(true);
-  },
-});
-
-Clarinet.test({
   name: "vaults-operations: open, update and close vault",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -276,13 +249,7 @@ Clarinet.test({
     result.expectErr().expectUint(930002);
 
     result = vaultsOperations.updateVault(deployer, "arkadiko-token", 2000, 500, deployer.address)
-    result.expectErr().expectUint(930002);
-
-    result = vaultsOperations.getCollateralToDebt(deployer, "arkadiko-token", 1000, 250);
-    result.expectErr().expectUint(930002);
-
-    result = vaultsOperations.getStabilityFee(deployer, "arkadiko-token");
-    result.expectErr().expectUint(930002);
+    result.expectErr().expectUint(980001);
   },
 });
 
@@ -299,10 +266,6 @@ Clarinet.test({
 
     let result = wstxToken.wrap(deployer, 10000);
     result.expectOk().expectBool(true);
-
-    result = vaultsOperations.getCollateralToDebt(deployer, "wstx-token", 1000, 360);
-    result.expectOk().expectTuple()["ratio"].expectUint(13888);
-    result.expectOk().expectTuple()["valid"].expectBool(false);
 
     result = vaultsOperations.openVault(deployer, "wstx-token", 1000, 360, deployer.address)
     result.expectErr().expectUint(930003);

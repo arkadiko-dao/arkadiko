@@ -39,6 +39,7 @@ class VaultsOperations {
         types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-pool-active-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-helpers-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2')),
         types.principal(Utils.qualifiedName(token)),
         types.uint(collateral * 1000000), 
@@ -62,6 +63,7 @@ class VaultsOperations {
         types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-pool-active-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-helpers-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2')),
         types.principal(Utils.qualifiedName(token)),
         types.uint(collateral * 1000000), 
@@ -82,6 +84,7 @@ class VaultsOperations {
         types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-pool-active-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-helpers-v1-1')),
         types.principal(Utils.qualifiedName(token)),
       ], caller.address)
     ]);
