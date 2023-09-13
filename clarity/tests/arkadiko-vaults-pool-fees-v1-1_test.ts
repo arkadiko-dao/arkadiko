@@ -51,18 +51,18 @@ Clarinet.test({
     let call: any = wstxToken.balanceOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(10000);
 
-    result = vaultsOperations.openVault(wallet_1, "wstx-token", 1000, 250, wallet_1.address)
+    result = vaultsOperations.openVault(wallet_1, "wstx-token", 2000, 500, wallet_1.address)
     result.expectOk().expectBool(true);
 
     // Advance 1 year
     chain.mineEmptyBlock(144 * 365 - 1);
 
-    result = vaultsOperations.updateVault(wallet_1, "wstx-token", 1000, 250, wallet_1.address)
+    result = vaultsOperations.updateVault(wallet_1, "wstx-token", 2000, 500, wallet_1.address)
     result.expectOk().expectBool(true);
 
-    // Fees = 250 * 4% = 10
+    // Fees = 500 * 4% = 20
     call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1"));
-    call.result.expectOk().expectUintWithDecimals(10);
+    call.result.expectOk().expectUintWithDecimals(20);
 
     // 
     // Redeem
@@ -81,7 +81,7 @@ Clarinet.test({
     //
 
     result = vaultsPoolFees.withdraw(deployer, "usda-token");
-    result.expectOk().expectUintWithDecimals(10);
+    result.expectOk().expectUintWithDecimals(20);
 
     result = vaultsPoolFees.withdraw(deployer, "wstx-token");
     result.expectOk().expectUintWithDecimals(2);
