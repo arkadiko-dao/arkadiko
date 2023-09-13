@@ -24,10 +24,7 @@ Clarinet.test({
     let vaultsPoolActive = new VaultsPoolActive(chain, deployer);
     let wstxToken = new WstxToken(chain, deployer);
 
-    let result = wstxToken.wrap(deployer, 100);
-    result.expectOk().expectBool(true);
-
-    result = vaultsPoolActive.deposit(deployer, "wstx-token", deployer.address, 100);
+    let result = vaultsPoolActive.deposit(deployer, "wstx-token", deployer.address, 100);
     result.expectOk().expectBool(true);
 
     let call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"))

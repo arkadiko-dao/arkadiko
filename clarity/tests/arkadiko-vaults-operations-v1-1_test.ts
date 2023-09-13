@@ -37,19 +37,13 @@ Clarinet.test({
     // Set price
     oracleManager.updatePrice("STX", 0.5);    
 
-    let result = wstxToken.wrap(wallet_1, 10000);
-    result.expectOk().expectBool(true);
-
-    let call: any = wstxToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(10000);
-
     //
     // Open vault
     //
-    result = vaultsOperations.openVault(wallet_1, "wstx-token", 2000, 500, wallet_1.address)
+    let result = vaultsOperations.openVault(wallet_1, "wstx-token", 2000, 500, wallet_1.address)
     result.expectOk().expectBool(true);
 
-    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"));
+    let call:any = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"));
     call.result.expectOk().expectUintWithDecimals(2000);
 
     call = usdaToken.balanceOf(wallet_1.address);
@@ -61,7 +55,7 @@ Clarinet.test({
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(2000);
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(500);
-    call.result.expectOk().expectTuple()["last-block"].expectUint(8);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(7);
     call.result.expectOk().expectTuple()["status"].expectUint(101);
 
 
@@ -88,7 +82,7 @@ Clarinet.test({
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(3000);
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(1000);
-    call.result.expectOk().expectTuple()["last-block"].expectUint(9);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(8);
     call.result.expectOk().expectTuple()["status"].expectUint(101);
 
 
@@ -115,7 +109,7 @@ Clarinet.test({
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(1500);
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(500);
-    call.result.expectOk().expectTuple()["last-block"].expectUint(10);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(9);
     call.result.expectOk().expectTuple()["status"].expectUint(101);
 
 
@@ -142,7 +136,7 @@ Clarinet.test({
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(0);
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(0);
-    call.result.expectOk().expectTuple()["last-block"].expectUint(11);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(10);
     call.result.expectOk().expectTuple()["status"].expectUint(102);
   },
 });
@@ -151,11 +145,9 @@ Clarinet.test({
   name: "vaults-operations: open and close vault for each collateral token",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
 
     let oracleManager = new OracleManager(chain, deployer);
     let vaultsOperations = new VaultsOperations(chain, deployer);
-    let wstxToken = new WstxToken(chain, deployer);
 
     // Set price
     oracleManager.updatePrice("STX", 0.5);   
@@ -163,13 +155,10 @@ Clarinet.test({
     oracleManager.updatePrice("xBTC", 25000);    
     oracleManager.updatePrice("atALEXv2", 0.05);    
 
-    let result = wstxToken.wrap(deployer, 10000);
-    result.expectOk().expectBool(true);
-
     //
     // Open vault
     //
-    result = vaultsOperations.openVault(deployer, "wstx-token", 2000, 500, deployer.address)
+    let result = vaultsOperations.openVault(deployer, "wstx-token", 2000, 500, deployer.address)
     result.expectOk().expectBool(true);
 
     result = vaultsOperations.openVault(deployer, "ststx-token", 2000, 500, deployer.address)
@@ -211,17 +200,10 @@ Clarinet.test({
 
     let oracleManager = new OracleManager(chain, deployer);
     let vaultsOperations = new VaultsOperations(chain, deployer);
-    let wstxToken = new WstxToken(chain, deployer);
 
     oracleManager.updatePrice("STX", 0.5);    
 
-    let result = wstxToken.wrap(deployer, 10000);
-    result.expectOk().expectBool(true);
-
-    result = wstxToken.wrap(wallet_1, 10000);
-    result.expectOk().expectBool(true);
-
-    result = vaultsOperations.openVault(deployer, "wstx-token", 2000, 500, wallet_1.address)
+    let result = vaultsOperations.openVault(deployer, "wstx-token", 2000, 500, wallet_1.address)
     result.expectOk().expectBool(true);
 
     let call = vaultsOperations.getShutdownActivated();
@@ -265,17 +247,10 @@ Clarinet.test({
 
     let oracleManager = new OracleManager(chain, deployer);
     let vaultsOperations = new VaultsOperations(chain, deployer);
-    let wstxToken = new WstxToken(chain, deployer);
 
     oracleManager.updatePrice("STX", 0.5);    
 
-    let result = wstxToken.wrap(deployer, 10000);
-    result.expectOk().expectBool(true);
-
-    result = wstxToken.wrap(wallet_1, 10000);
-    result.expectOk().expectBool(true);
-
-    result = vaultsOperations.openVault(deployer, "wstx-token", 2000, 500, wallet_1.address)
+    let result = vaultsOperations.openVault(deployer, "wstx-token", 2000, 500, wallet_1.address)
     result.expectOk().expectBool(true);
 
     result = vaultsOperations.openVault(deployer, "wstx-token", 2000, 500, wallet_1.address)
@@ -312,14 +287,10 @@ Clarinet.test({
 
     let vaultsOperations = new VaultsOperations(chain, deployer);
     let oracleManager = new OracleManager(chain, deployer);
-    let wstxToken = new WstxToken(chain, deployer);
 
     oracleManager.updatePrice("STX", 0.5);    
 
-    let result = wstxToken.wrap(deployer, 10000);
-    result.expectOk().expectBool(true);
-
-    result = vaultsOperations.openVault(deployer, "wstx-token", 1000, 360, deployer.address)
+    let result = vaultsOperations.openVault(deployer, "wstx-token", 1000, 360, deployer.address)
     result.expectErr().expectUint(930003);
 
     result = vaultsOperations.openVault(deployer, "wstx-token", 2000, 500, deployer.address)
@@ -338,17 +309,10 @@ Clarinet.test({
 
     let vaultsOperations = new VaultsOperations(chain, deployer);
     let oracleManager = new OracleManager(chain, deployer);
-    let wstxToken = new WstxToken(chain, deployer);
 
     oracleManager.updatePrice("STX", 0.5);    
 
-    let result = wstxToken.wrap(deployer, 100000000);
-    result.expectOk().expectBool(true);
-
-    result = wstxToken.wrap(wallet_1, 100000000);
-    result.expectOk().expectBool(true);
-
-    result = vaultsOperations.openVault(deployer, "wstx-token", 100000000, 5000000, deployer.address)
+    let result = vaultsOperations.openVault(deployer, "wstx-token", 100000000, 5000000, deployer.address)
     result.expectErr().expectUint(930004);
 
     result = vaultsOperations.openVault(deployer, "wstx-token", 100000000, 5000000 - 500, deployer.address)
@@ -369,14 +333,10 @@ Clarinet.test({
 
     let vaultsOperations = new VaultsOperations(chain, deployer);
     let oracleManager = new OracleManager(chain, deployer);
-    let wstxToken = new WstxToken(chain, deployer);
 
     oracleManager.updatePrice("STX", 0.5);    
 
-    let result = wstxToken.wrap(deployer, 100000000);
-    result.expectOk().expectBool(true);
-
-    result = vaultsOperations.openVault(deployer, "wstx-token", 2000, 499, deployer.address)
+    let result = vaultsOperations.openVault(deployer, "wstx-token", 2000, 499, deployer.address)
     result.expectErr().expectUint(930005);
 
     result = vaultsOperations.openVault(deployer, "wstx-token", 2000, 500, deployer.address)

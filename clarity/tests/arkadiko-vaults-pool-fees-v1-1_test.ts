@@ -45,13 +45,7 @@ Clarinet.test({
     // Create vault and pay stability fees
     //
 
-    let result = wstxToken.wrap(wallet_1, 10000);
-    result.expectOk().expectBool(true);
-
-    let call: any = wstxToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(10000);
-
-    result = vaultsOperations.openVault(wallet_1, "wstx-token", 2000, 500, wallet_1.address)
+    let result = vaultsOperations.openVault(wallet_1, "wstx-token", 2000, 500, wallet_1.address)
     result.expectOk().expectBool(true);
 
     // Advance 1 year
@@ -61,7 +55,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Fees = 500 * 4% = 20
-    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1"));
+    let call:any = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1"));
     call.result.expectOk().expectUintWithDecimals(20);
 
     // 

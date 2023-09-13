@@ -276,16 +276,76 @@ class WstxToken {
     this.deployer = deployer;
   }
 
+  getTotalSupply() {
+    return this.chain.callReadOnlyFn("wstx-token", "get-total-supply", [
+    ], this.deployer.address);
+  }
+
+  getName() {
+    return this.chain.callReadOnlyFn("wstx-token", "get-name", [
+    ], this.deployer.address);
+  }
+
+  getSymbol() {
+    return this.chain.callReadOnlyFn("wstx-token", "get-symbol", [
+    ], this.deployer.address);
+  }
+
+  getDecimals() {
+    return this.chain.callReadOnlyFn("wstx-token", "get-decimals", [
+    ], this.deployer.address);
+  }
+
+  getProtocolAddresses() {
+    return this.chain.callReadOnlyFn("wstx-token", "get-protocol-addresses", [
+    ], this.deployer.address);
+  }
+
   balanceOf(wallet: string) {
     return this.chain.callReadOnlyFn("wstx-token", "get-balance", [
       types.principal(wallet),
     ], this.deployer.address);
   }
-  
-  totalSupply() {
-    return this.chain.callReadOnlyFn("wstx-token", "get-total-supply", [], this.deployer.address);
+
+  setTokenUri(caller: Account, uri: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("wstx-token", "set-token-uri", [
+        types.utf8(uri),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
   }
 
+
+  getTokenUri() {
+    return this.chain.callReadOnlyFn("wstx-token", "get-token-uri", [
+    ], this.deployer.address);
+  }
+
+  getStxBalance(wallet: string) {
+    return this.chain.callReadOnlyFn("wstx-token", "get-stx-balance", [
+      types.principal(wallet),
+    ], this.deployer.address);
+  }
+
+  isProtocolAddress(address: string) {
+    return this.chain.callReadOnlyFn("wstx-token", "is-protocol-address", [
+      types.principal(address),
+    ], this.deployer.address);
+  }
+
+  transfer(caller: Account, amount: number, recipient: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("wstx-token", "transfer", [
+        types.uint(amount * 1000000),
+        types.principal(caller.address),
+        types.principal(recipient),
+        types.none()
+      ], caller.address),
+    ]);
+    return block.receipts[0].result;
+  }
+  
   wrap(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("wstx-token", "wrap", [
@@ -297,9 +357,18 @@ class WstxToken {
 
   unwrap(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("wstx-token", "wrap", [
+      Tx.contractCall("wstx-token", "unwrap", [
         types.uint(amount * 1000000),
       ], caller.address),
+    ]);
+    return block.receipts[0].result;
+  }
+
+  setProtocolAddresses(caller: Account, addresses: string[]) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("wstx-token", "set-protocol-addresses", [
+        types.list(addresses.map(address => types.principal(address))),
+      ], caller.address)
     ]);
     return block.receipts[0].result;
   }

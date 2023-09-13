@@ -77,11 +77,8 @@ Clarinet.test({
     // Set price
     oracleManager.updatePrice("STX", 0.5);    
 
-    let result = wstxToken.wrap(wallet_1, 10000);
-    result.expectOk().expectBool(true);
-
     // Add USDA to liquidation pool
-    result = vaultsPoolLiq.stake(deployer, 1000);
+    let result = vaultsPoolLiq.stake(deployer, 1000);
 
     // Open vault
     result = vaultsOperations.openVault(wallet_1, "wstx-token", 2000, 600, wallet_1.address)
@@ -112,10 +109,10 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(399.998631);
 
     // Initial - collateral + collateral leftover
-    // 10000 - 2000 + 114.285715 = 8114.285715
+    // 100M - 2000 + 114.285715
     // Got back a little less because of the stability fees paid
-    call = wstxToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(8114.281413);
+    call = wstxToken.getStxBalance(wallet_1.address);
+    call.result.expectUintWithDecimals(100000000 - 1885.718587);
 
     call = vaultsData.getTotalDebt("wstx-token");
     call.result.expectOk().expectUintWithDecimals(0);
@@ -123,7 +120,7 @@ Clarinet.test({
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(0);
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(0);
-    call.result.expectOk().expectTuple()["last-block"].expectUint(12);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(11);
     call.result.expectOk().expectTuple()["status"].expectUint(201);
   },
 });
@@ -146,18 +143,15 @@ Clarinet.test({
     // Set price
     oracleManager.updatePrice("STX", 0.5);    
 
-    let result = wstxToken.wrap(wallet_1, 10000);
-    result.expectOk().expectBool(true);
-
     // Add USDA to liquidation pool
-    result = vaultsPoolLiq.stake(deployer, 1000);
+    let result = vaultsPoolLiq.stake(deployer, 1000);
 
     // Open vault
     result = vaultsOperations.openVault(wallet_1, "wstx-token", 2000, 500, wallet_1.address)
     result.expectOk().expectBool(true);
 
     let call: any = vaultsManager.getRedemptionFee("wstx-token");
-    call.result.expectOk().expectTuple()["current-fee"].expectUint(0.0376 * 10000);
+    call.result.expectOk().expectTuple()["current-fee"].expectUint(379);
     call.result.expectOk().expectTuple()["block-rate"].expectUintWithDecimals(500);
 
 
@@ -165,8 +159,8 @@ Clarinet.test({
     // Start values
     //
 
-    call = wstxToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(8000);
+    call = wstxToken.getStxBalance(wallet_1.address);
+    call.result.expectUintWithDecimals(100000000 - 2000);
 
     call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1"));
     call.result.expectOk().expectUintWithDecimals(0);
@@ -174,62 +168,61 @@ Clarinet.test({
     call = usdaToken.balanceOf(wallet_2.address);
     call.result.expectOk().expectUintWithDecimals(1000000);
 
-    call = wstxToken.balanceOf(wallet_2.address);
-    call.result.expectOk().expectUintWithDecimals(0);
+    call = wstxToken.getStxBalance(wallet_2.address);
+    call.result.expectUintWithDecimals(100000000);
     
     //
     // Redeem - partial
     //
     result = vaultsManager.redeemVault(wallet_2, wallet_1.address, "wstx-token", 200, wallet_1.address)
     result.expectOk().expectTuple()["debt-payoff-used"].expectUintWithDecimals(200);
-    result.expectOk().expectTuple()["collateral-received"].expectUintWithDecimals(384.96);
-    result.expectOk().expectTuple()["collateral-fee"].expectUintWithDecimals(15.04);
+    result.expectOk().expectTuple()["collateral-received"].expectUintWithDecimals(384.84);
+    result.expectOk().expectTuple()["collateral-fee"].expectUintWithDecimals(15.16);
 
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(1600);
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(300.000380);
-    call.result.expectOk().expectTuple()["last-block"].expectUint(10);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(9);
     call.result.expectOk().expectTuple()["status"].expectUint(101);
 
-    call = wstxToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(8000);
+    call = wstxToken.getStxBalance(wallet_1.address);
+    call.result.expectUintWithDecimals(100000000 - 2000);
 
     call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1"));
-    call.result.expectOk().expectUintWithDecimals(15.04);
+    call.result.expectOk().expectUintWithDecimals(15.16);
 
     call = usdaToken.balanceOf(wallet_2.address);
     call.result.expectOk().expectUintWithDecimals(1000000 - 200);
 
-    call = wstxToken.balanceOf(wallet_2.address);
-    call.result.expectOk().expectUintWithDecimals(384.96);
+    call = wstxToken.getStxBalance(wallet_2.address);
+    call.result.expectUintWithDecimals(100000000 + 384.84);
 
     //
     // Redeem - all
     //
     result = vaultsManager.redeemVault(wallet_2, wallet_1.address, "wstx-token", 301, wallet_1.address)
     result.expectOk().expectTuple()["debt-payoff-used"].expectUintWithDecimals(300.000608);
-    result.expectOk().expectTuple()["collateral-received"].expectUintWithDecimals(577.561171);
-    result.expectOk().expectTuple()["collateral-fee"].expectUintWithDecimals(22.440045);
+    result.expectOk().expectTuple()["collateral-received"].expectUintWithDecimals(577.441171);
+    result.expectOk().expectTuple()["collateral-fee"].expectUintWithDecimals(22.560045);
 
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(0);
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(0);
-    call.result.expectOk().expectTuple()["last-block"].expectUint(11);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(10);
     call.result.expectOk().expectTuple()["status"].expectUint(202);
 
     // Vault owner got back ~1000 STX, as ~1000 was used in redemptions
     // Little less than 1000 STX because of stability fees
-    call = wstxToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(8000 + 999.998784);
+    call = wstxToken.getStxBalance(wallet_1.address);
+    call.result.expectUintWithDecimals(100000000 - 2000 + 999.998784);
 
     call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1"));
-    call.result.expectOk().expectUintWithDecimals(15.04 + 22.440045);
+    call.result.expectOk().expectUintWithDecimals(15.16 + 22.560045);
 
     call = usdaToken.balanceOf(wallet_2.address);
     call.result.expectOk().expectUintWithDecimals(1000000 - 200 - 300.000608);
 
-    call = wstxToken.balanceOf(wallet_2.address);
-    call.result.expectOk().expectUintWithDecimals(384.96 + 577.561171);
-
+    call = wstxToken.getStxBalance(wallet_2.address);
+    call.result.expectUintWithDecimals(100000000 + 384.84 + 577.441171);
   },
 });

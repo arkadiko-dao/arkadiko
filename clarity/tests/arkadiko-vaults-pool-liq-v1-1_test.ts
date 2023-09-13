@@ -42,9 +42,6 @@ Clarinet.test({
     let usdaToken = new UsdaToken(chain, deployer);
     let dikoToken = new DikoToken(chain, deployer);
 
-    let result = wstxToken.wrap(deployer, 10000);
-    result.expectOk().expectBool(true);
-
     let call: any = usdaToken.balanceOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(1000000);
 
@@ -66,7 +63,7 @@ Clarinet.test({
     //
     // Stake
     //
-    result = vaultsPoolLiquidation.stake(wallet_1, 1000);    
+    let result = vaultsPoolLiquidation.stake(wallet_1, 1000);    
     result.expectOk().expectBool(true);
 
     call = usdaToken.balanceOf(wallet_1.address);
@@ -120,8 +117,8 @@ Clarinet.test({
     result = vaultsPoolLiquidation.claimPendingRewards(wallet_1, "arkadiko-token");
     result.expectOk().expectBool(true)
 
-    call = wstxToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(30);
+    call = wstxToken.getStxBalance(wallet_1.address);
+    call.result.expectUintWithDecimals(100000000 + 30);
 
     call = dikoToken.balanceOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(150000 + 102.729446 * 2);
@@ -135,6 +132,5 @@ Clarinet.test({
 
     call = usdaToken.balanceOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(1000000);
-
   },
 });
