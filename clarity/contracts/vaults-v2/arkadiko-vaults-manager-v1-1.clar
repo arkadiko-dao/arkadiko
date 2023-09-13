@@ -61,7 +61,7 @@
 ;; Liquidate vault
 (define-public (liquidate-vault (oracle <oracle-trait>) (owner principal) (token <ft-trait>))
   (let (
-    (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token)))
+    (vault (unwrap-panic (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token))))
     (coll-to-debt (try! (contract-call? .arkadiko-vaults-operations-v1-1 get-collateral-to-debt oracle owner (contract-of token) (get collateral vault) (get debt vault))))
     
     (stability-fee (try! (contract-call? .arkadiko-vaults-operations-v1-1 get-stability-fee owner (contract-of token))))
@@ -165,7 +165,7 @@
 )
   (let (
     (redeemer tx-sender)
-    (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token)))
+    (vault (unwrap-panic (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token))))
     (token-list (contract-call? .arkadiko-vaults-sorted-v1-1 get-token (contract-of token)))
 
     (stability-fee (try! (contract-call? .arkadiko-vaults-operations-v1-1 get-stability-fee owner (contract-of token))))

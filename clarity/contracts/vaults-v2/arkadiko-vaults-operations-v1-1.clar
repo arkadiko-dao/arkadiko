@@ -53,8 +53,8 @@
     (owner tx-sender)
     (nicr (/ (* collateral u100000000) debt))
     (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token (contract-of token)) (err ERR_UNKNOWN_TOKEN)))
-    (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token)))
-    (total-debt (get total (contract-call? .arkadiko-vaults-data-v1-1 get-total-debt (contract-of token))))
+    (vault (unwrap-panic (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token))))
+    (total-debt (unwrap-panic (contract-call? .arkadiko-vaults-data-v1-1 get-total-debt (contract-of token))))
     (coll-to-debt (try! (get-collateral-to-debt oracle owner (contract-of token) collateral debt)))
   )
     (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
@@ -93,8 +93,8 @@
     (stability-fee (try! (get-stability-fee owner (contract-of token))))
     (nicr (/ (* collateral u100000000) debt))
     (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token (contract-of token)) (err ERR_UNKNOWN_TOKEN)))
-    (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token)))
-    (total-debt (get total (contract-call? .arkadiko-vaults-data-v1-1 get-total-debt (contract-of token))))
+    (vault (unwrap-panic (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token))))
+    (total-debt (unwrap-panic (contract-call? .arkadiko-vaults-data-v1-1 get-total-debt (contract-of token))))
     (coll-to-debt (try! (get-collateral-to-debt oracle owner (contract-of token) collateral debt)))
   )
     (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
@@ -136,7 +136,7 @@
 (define-public (close-vault (token <ft-trait>))
   (let (
     (owner tx-sender)
-    (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token)))
+    (vault (unwrap-panic (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner (contract-of token))))
     (stability-fee (try! (get-stability-fee owner (contract-of token))))
   )
     (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
@@ -183,7 +183,7 @@
 ;; Get owed stability fees
 (define-public (get-stability-fee (owner principal) (token principal))
   (let (
-    (vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner token))
+    (vault (unwrap-panic (contract-call? .arkadiko-vaults-data-v1-1 get-vault owner token)))
     (collateral-info (unwrap! (contract-call? .arkadiko-vaults-tokens-v1-1 get-token token) (err ERR_UNKNOWN_TOKEN)))
 
     (vault-blocks (- block-height (get last-block vault)))

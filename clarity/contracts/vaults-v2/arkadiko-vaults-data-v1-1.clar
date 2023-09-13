@@ -2,6 +2,8 @@
 ;; Store vault data
 ;;
 
+(impl-trait .arkadiko-vaults-data-trait-v1-1.vaults-data-trait)
+
 ;; ---------------------------------------------------------
 ;; Constants
 ;; ---------------------------------------------------------
@@ -41,7 +43,7 @@
 ;; ---------------------------------------------------------
 
 (define-read-only (get-vault (owner principal) (token principal))
-  (default-to
+  (ok (default-to
     {
       status: STATUS_INACTIVE,
       collateral: u0,
@@ -49,16 +51,16 @@
       last-block: u0
     }
     (map-get? vaults { owner: owner, token: token })
-  )
+  ))
 )
 
 (define-read-only (get-total-debt (token principal))
-  (default-to
+  (ok (get total (default-to
     {
       total: u0
     }
     (map-get? total-debt { token: token })
-  )
+  )))
 )
 
 ;; ---------------------------------------------------------
@@ -67,7 +69,7 @@
 
 (define-public (set-vault (owner principal) (token principal) (status uint) (collateral uint) (debt uint))
   (let (
-    (current-vault (get-vault owner token))
+    (current-vault (unwrap-panic (get-vault owner token)))
   )
     (asserts! (or
       (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-operations")))
@@ -82,7 +84,7 @@
 
     ;; Update total debt for token
     (map-set total-debt { token: token }
-      { total: (+ (- (get total (get-total-debt token)) (get debt current-vault)) debt) }
+      { total: (+ (- (unwrap-panic (get-total-debt token)) (get debt current-vault)) debt) }
     )
 
     (ok true)

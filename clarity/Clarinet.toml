@@ -93,6 +93,11 @@ epoch = 2.4
 # Vaults V2
 # ----------------------------------------------------
 
+[contracts.arkadiko-vaults-data-trait-v1-1]
+path = "contracts/vaults-v2/arkadiko-vaults-data-trait-v1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.arkadiko-vaults-data-v1-1]
 path = "contracts/vaults-v2/arkadiko-vaults-data-v1-1.clar"
 clarity_version = 2
