@@ -45,14 +45,14 @@
 ;; ---------------------------------------------------------
 
 (define-read-only (get-token (token principal))
-  (default-to
+  (ok (default-to
     {
       first-owner: none,
       last-owner: none,
       total-vaults: u0
     }
     (map-get? tokens { token: token })
-  )
+  ))
 )
 
 (define-read-only (get-vault (owner principal) (token principal))
@@ -142,7 +142,7 @@
 ;; Check if given position is correct
 (define-read-only (check-position (owner principal) (token principal) (nicr uint) (prev-owner (optional principal)))
   (let (
-    (token-info (get-token token))
+    (token-info (unwrap-panic (get-token token)))
     (next-owner (get-next-owner prev-owner token))
   )
     ;; List empty - position always correct
@@ -188,7 +188,7 @@
 ;; Given prev/next hints
 (define-public (insert (owner principal) (token principal) (nicr uint) (prev-owner-hint (optional principal)))
   (let (
-    (token-info (get-token token))
+    (token-info (unwrap-panic (get-token token)))
 
     (position-find (find-position owner token nicr prev-owner-hint))
     (prev-owner (get prev position-find))
@@ -227,7 +227,7 @@
     (print { action: "vault-insert", owner: owner, token: token, nicr: nicr, prev-owner: prev-owner, next-owner: next-owner })
 
     ;; Return token info
-    (ok (get-token token))
+    (ok (unwrap-panic (get-token token)))
   )
 )
 
@@ -242,7 +242,7 @@
 ;; Remove vault from list
 (define-public (remove (owner principal) (token principal))
   (let (
-    (token-info (get-token token))
+    (token-info (unwrap-panic (get-token token)))
     (vault (get-vault owner token))
     (prev-owner (get prev-owner (unwrap! vault (err ERR_VAULT_UNKNOWN))))
     (next-owner (get next-owner (unwrap! vault (err ERR_VAULT_UNKNOWN))))
@@ -282,20 +282,20 @@
     ;; Remove from map
     (map-delete vaults { owner: owner, token: token })
 
-    (if (is-eq (get total-vaults (get-token token)) u1)
+    (if (is-eq (get total-vaults (unwrap-panic (get-token token))) u1)
       ;; Remove last vault
       (map-set tokens { token: token } 
         { total-vaults: u0, first-owner: none, last-owner: none }
       )
       ;; Remove vault
       (map-set tokens { token: token } 
-        (merge (get-token token) { total-vaults: (- (get total-vaults token-info) u1) })
+        (merge (unwrap-panic (get-token token)) { total-vaults: (- (get total-vaults token-info) u1) })
       )
     )
 
     (print { action: "vault-remove", owner: owner, token: token })
 
     ;; Return token info
-    (ok (get-token token))
+    (ok (unwrap-panic (get-token token)))
   )
 )

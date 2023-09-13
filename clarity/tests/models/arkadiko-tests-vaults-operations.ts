@@ -35,6 +35,10 @@ class VaultsOperations {
   ) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vaults-operations-v1-1", "open-vault", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-pool-active-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2')),
         types.principal(Utils.qualifiedName(token)),
         types.uint(collateral * 1000000), 
@@ -54,6 +58,10 @@ class VaultsOperations {
   ) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vaults-operations-v1-1", "update-vault", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-pool-active-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2')),
         types.principal(Utils.qualifiedName(token)),
         types.uint(collateral * 1000000), 
@@ -70,6 +78,10 @@ class VaultsOperations {
   ) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vaults-operations-v1-1", "close-vault", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-pool-active-v1-1')),
         types.principal(Utils.qualifiedName(token)),
       ], caller.address)
     ]);
@@ -84,6 +96,8 @@ class VaultsOperations {
   ) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vaults-operations-v1-1", "get-collateral-to-debt", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2')),
         types.principal(caller.address),
         types.principal(Utils.qualifiedName(token)),
@@ -100,6 +114,8 @@ class VaultsOperations {
   ) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vaults-operations-v1-1", "get-stability-fee", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
         types.principal(caller.address),
         types.principal(Utils.qualifiedName(token))
       ], caller.address)

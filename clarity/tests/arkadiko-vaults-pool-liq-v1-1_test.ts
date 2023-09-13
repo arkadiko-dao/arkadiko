@@ -26,18 +26,18 @@ import {
 } from './models/arkadiko-tests-vaults-data.ts';
 
 import { 
-  VaultsPoolLiquidation
-} from './models/arkadiko-tests-vaults-pool-liquidation.ts';
+  VaultsPoolLiq
+} from './models/arkadiko-tests-vaults-pool-liq.ts';
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 Clarinet.test({
-  name: "vaults-pool-liquidation: stake, claim rewards, unstake",
+  name: "vaults-pool-liq: stake, claim rewards, unstake",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
 
-    let vaultsPoolLiquidation = new VaultsPoolLiquidation(chain, deployer);
+    let vaultsPoolLiquidation = new VaultsPoolLiq(chain, deployer);
     let wstxToken = new WstxToken(chain, deployer);
     let usdaToken = new UsdaToken(chain, deployer);
     let dikoToken = new DikoToken(chain, deployer);
@@ -54,13 +54,13 @@ Clarinet.test({
     call = dikoToken.balanceOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(150000);
 
-    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liquidation-v1-1"));
+    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
     call.result.expectOk().expectUintWithDecimals(0);
 
-    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liquidation-v1-1"));
+    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
     call.result.expectOk().expectUintWithDecimals(0);
 
-    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liquidation-v1-1"));
+    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
     call.result.expectOk().expectUintWithDecimals(0);
 
     //
@@ -72,7 +72,7 @@ Clarinet.test({
     call = usdaToken.balanceOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(1000000 - 1000);
 
-    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liquidation-v1-1"));
+    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
     call.result.expectOk().expectUintWithDecimals(1000);
 
     call = vaultsPoolLiquidation.getStakeOf(wallet_1.address);
@@ -98,10 +98,10 @@ Clarinet.test({
     result = vaultsPoolLiquidation.addDikoRewards();
     result.expectOk().expectUintWithDecimals(125.279812);
 
-    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liquidation-v1-1"));
+    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
     call.result.expectOk().expectUintWithDecimals(30);
 
-    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liquidation-v1-1"));
+    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
     call.result.expectOk().expectUintWithDecimals(125.279812);
 
     //

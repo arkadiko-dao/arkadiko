@@ -2,13 +2,16 @@
 ;; USDA to use in liquidations, receive collateral rewards
 ;;
 
+(impl-trait .arkadiko-vaults-pool-liq-trait-v1-1.vaults-pool-liq-trait)
 (use-trait ft-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
+(use-trait vaults-tokens-trait .arkadiko-vaults-tokens-trait-v1-1.vaults-tokens-trait)
 
 ;; ---------------------------------------------------------
 ;; Constants
 ;; ---------------------------------------------------------
 
 (define-constant ERR_NOT_AUTHORIZED u950401)
+(define-constant ERR_WRONG_TRAIT u950402)
 (define-constant ERR_SHUTDOWN u950501)
 (define-constant ERR_WRONG_TOKENS u950001)
 (define-constant ERR_CLAIM_FAILED u950002)
@@ -118,9 +121,9 @@
 ;; ---------------------------------------------------------
 
 ;; Returns true if reward-tokens list is equal to collateral token list
-(define-public (check-reward-tokens (reward-tokens (list 25 <ft-trait>)))
+(define-public (check-reward-tokens (vaults-tokens <vaults-tokens-trait>) (reward-tokens (list 25 <ft-trait>)))
   (let (
-    (token-list (unwrap-panic (contract-call? .arkadiko-vaults-tokens-v1-1 get-token-list)))
+    (token-list (unwrap-panic (contract-call? vaults-tokens get-token-list)))
     (check-result (map is-same-token token-list reward-tokens))
   )
     (ok (is-none (index-of? check-result false)))
@@ -137,7 +140,7 @@
 
 ;; Stake given USDA amount
 ;; Need reward-tokens list to claim all rewards first
-(define-public (stake (amount uint) (reward-tokens (list 25 <ft-trait>)))
+(define-public (stake (vaults-tokens <vaults-tokens-trait>) (amount uint) (reward-tokens (list 25 <ft-trait>)))
   (let (
     (staker tx-sender)
     (staker-info (get-staker staker))
@@ -148,8 +151,9 @@
     ;; Second, claim collateral rewards for user
     (claim-result (map claim-pending-rewards reward-tokens))
   )
+    (asserts! (is-eq (contract-of vaults-tokens) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-tokens"))) (err ERR_WRONG_TRAIT))
     (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
-    (asserts! (unwrap-panic (check-reward-tokens reward-tokens)) (err ERR_WRONG_TOKENS))
+    (asserts! (unwrap-panic (check-reward-tokens vaults-tokens reward-tokens)) (err ERR_WRONG_TOKENS))
     (asserts! (is-none (index-of? claim-result (ok false))) (err ERR_CLAIM_FAILED))
     (asserts! (is-eq result-diko-claim (ok true)) (err ERR_CLAIM_FAILED))
 
@@ -168,7 +172,7 @@
 
 ;; Unstake given USDA amount
 ;; Need reward-tokens list to claim all rewards first
-(define-public (unstake (amount uint) (reward-tokens (list 25 <ft-trait>)))
+(define-public (unstake (vaults-tokens <vaults-tokens-trait>) (amount uint) (reward-tokens (list 25 <ft-trait>)))
   (let (
     (staker tx-sender)
     (staker-info (get-staker staker))
@@ -179,8 +183,9 @@
     ;; Second, claim collateral rewards for user
     (claim-result (map claim-pending-rewards reward-tokens))
   )
+    (asserts! (is-eq (contract-of vaults-tokens) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-tokens"))) (err ERR_WRONG_TRAIT))
     (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
-    (asserts! (unwrap-panic (check-reward-tokens reward-tokens)) (err ERR_WRONG_TOKENS))
+    (asserts! (unwrap-panic (check-reward-tokens vaults-tokens reward-tokens)) (err ERR_WRONG_TOKENS))
     (asserts! (is-none (index-of? claim-result (ok false))) (err ERR_CLAIM_FAILED))
     (asserts! (is-eq result-diko-claim (ok true)) (err ERR_CLAIM_FAILED))
 
@@ -288,11 +293,12 @@
 )
 
 ;; Add rewards to the pool
-(define-public (add-rewards (token <ft-trait>) (amount uint))
+(define-public (add-rewards (vaults-tokens <vaults-tokens-trait>) (token <ft-trait>) (amount uint))
   (let (
-    (token-list (unwrap-panic (contract-call? .arkadiko-vaults-tokens-v1-1 get-token-list)))
+    (token-list (unwrap-panic (contract-call? vaults-tokens get-token-list)))
     (new-cumm-rewards (calculate-cumm-reward-per-fragment (contract-of token) amount))
   )
+    (asserts! (is-eq (contract-of vaults-tokens) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-tokens"))) (err ERR_WRONG_TRAIT))
     (asserts! (or (is-some (index-of? token-list (contract-of token))) (is-eq (contract-of token) .arkadiko-token)) (err ERR_INVALID_REWARD_TOKEN))
 
     (try! (contract-call? token transfer amount tx-sender (as-contract tx-sender) none))

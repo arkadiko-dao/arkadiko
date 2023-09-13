@@ -27,6 +27,11 @@ class VaultsManager {
   ) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vaults-manager-v1-1", "liquidate-vault", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-pool-active-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-pool-liq-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2')),
         types.principal(owner),
         types.principal(Utils.qualifiedName(token)),
@@ -42,6 +47,7 @@ class VaultsManager {
   ) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vaults-manager-v1-1", "get-collateral-for-liquidation", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2')),
         types.principal(Utils.qualifiedName(token)),
         types.uint(collateral * 1000000),
@@ -60,6 +66,10 @@ class VaultsManager {
   ) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vaults-manager-v1-1", "redeem-vault", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-pool-active-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2')),
         types.principal(owner),
         types.principal(Utils.qualifiedName(token)),
@@ -72,6 +82,7 @@ class VaultsManager {
 
   getRedemptionFee(token: string) {
     return this.chain.callReadOnlyFn("arkadiko-vaults-manager-v1-1", "get-redemption-fee", [
+      types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
       types.principal(Utils.qualifiedName(token)),
     ], this.deployer.address);
   }

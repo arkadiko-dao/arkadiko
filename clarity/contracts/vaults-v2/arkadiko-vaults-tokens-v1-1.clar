@@ -132,7 +132,6 @@
 ;; Init
 ;; ---------------------------------------------------------
 
-;; TODO: add all collateral tokens on init
 (begin
   (var-set token-list (list 
     ;; TODO: update for mainnet

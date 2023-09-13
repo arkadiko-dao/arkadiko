@@ -29,9 +29,9 @@ Clarinet.test({
     let vaultsSorted = new VaultsSorted(chain, deployer);
 
     let call: any = vaultsSorted.getToken("wstx-token")
-    call.result.expectTuple()["first-owner"].expectNone();
-    call.result.expectTuple()["last-owner"].expectNone();
-    call.result.expectTuple()["total-vaults"].expectUint(0);
+    call.result.expectOk().expectTuple()["first-owner"].expectNone();
+    call.result.expectOk().expectTuple()["last-owner"].expectNone();
+    call.result.expectOk().expectTuple()["total-vaults"].expectUint(0);
 
 
     //

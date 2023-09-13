@@ -128,8 +128,13 @@ path = "contracts/vaults-v2/arkadiko-vaults-pool-fees-v1-1.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.arkadiko-vaults-pool-liquidation-v1-1]
-path = "contracts/vaults-v2/arkadiko-vaults-pool-liquidation-v1-1.clar"
+[contracts.arkadiko-vaults-pool-liq-trait-v1-1]
+path = "contracts/vaults-v2/arkadiko-vaults-pool-liq-trait-v1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.arkadiko-vaults-pool-liq-v1-1]
+path = "contracts/vaults-v2/arkadiko-vaults-pool-liq-v1-1.clar"
 clarity_version = 2
 epoch = 2.4
 

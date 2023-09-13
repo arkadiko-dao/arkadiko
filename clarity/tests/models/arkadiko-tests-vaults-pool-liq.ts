@@ -12,7 +12,7 @@ import * as Utils from './arkadiko-tests-utils.ts';
 // Vaults Pool Liquidation
 // ---------------------------------------------------------
 
-class VaultsPoolLiquidation {
+class VaultsPoolLiq {
   chain: Chain;
   deployer: Account;
 
@@ -22,36 +22,36 @@ class VaultsPoolLiquidation {
   }
 
   getFragmentsInfo() {
-    return this.chain.callReadOnlyFn("arkadiko-vaults-pool-liquidation-v1-1", "get-fragments-info", [
+    return this.chain.callReadOnlyFn("arkadiko-vaults-pool-liq-v1-1", "get-fragments-info", [
     ], this.deployer.address);
   }
 
   getDikoRewardsInfo() {
-    return this.chain.callReadOnlyFn("arkadiko-vaults-pool-liquidation-v1-1", "get-diko-rewards-info", [
+    return this.chain.callReadOnlyFn("arkadiko-vaults-pool-liq-v1-1", "get-diko-rewards-info", [
     ], this.deployer.address);
   }
 
   getToken(token: string) {
-    return this.chain.callReadOnlyFn("arkadiko-vaults-pool-liquidation-v1-1", "get-token", [
+    return this.chain.callReadOnlyFn("arkadiko-vaults-pool-liq-v1-1", "get-token", [
       types.principal(Utils.qualifiedName(token))
     ], this.deployer.address);
   }
 
   getStaker(staker: string) {
-    return this.chain.callReadOnlyFn("arkadiko-vaults-pool-liquidation-v1-1", "get-staker", [
+    return this.chain.callReadOnlyFn("arkadiko-vaults-pool-liq-v1-1", "get-staker", [
       types.principal(staker)
     ], this.deployer.address);
   }
 
   getStakerRewards(staker: string, token: string) {
-    return this.chain.callReadOnlyFn("arkadiko-vaults-pool-liquidation-v1-1", "get-staker-rewards", [
+    return this.chain.callReadOnlyFn("arkadiko-vaults-pool-liq-v1-1", "get-staker-rewards", [
       types.principal(staker),
       types.principal(Utils.qualifiedName(token))
     ], this.deployer.address);
   }
 
   getStakeOf(staker: string) {
-    return this.chain.callReadOnlyFn("arkadiko-vaults-pool-liquidation-v1-1", "get-stake-of", [
+    return this.chain.callReadOnlyFn("arkadiko-vaults-pool-liq-v1-1", "get-stake-of", [
       types.principal(staker)
     ], this.deployer.address);
   }
@@ -61,7 +61,8 @@ class VaultsPoolLiquidation {
     amount: number,
   ) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-pool-liquidation-v1-1", "stake", [
+      Tx.contractCall("arkadiko-vaults-pool-liq-v1-1", "stake", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
         types.uint(amount * 1000000), 
         types.list([
           types.principal(Utils.qualifiedName('wstx-token')),
@@ -78,7 +79,8 @@ class VaultsPoolLiquidation {
     amount: number,
   ) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-pool-liquidation-v1-1", "unstake", [
+      Tx.contractCall("arkadiko-vaults-pool-liq-v1-1", "unstake", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
         types.uint(amount * 1000000), 
         types.list([
           types.principal(Utils.qualifiedName('wstx-token')),
@@ -91,7 +93,7 @@ class VaultsPoolLiquidation {
   }
 
   getPendingRewards(staker: string, token: string) {
-    return this.chain.callReadOnlyFn("arkadiko-vaults-pool-liquidation-v1-1", "get-pending-rewards", [
+    return this.chain.callReadOnlyFn("arkadiko-vaults-pool-liq-v1-1", "get-pending-rewards", [
       types.principal(staker),
       types.principal(Utils.qualifiedName(token))
     ], this.deployer.address);
@@ -102,7 +104,7 @@ class VaultsPoolLiquidation {
     token: string,
   ) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-pool-liquidation-v1-1", "claim-pending-rewards", [
+      Tx.contractCall("arkadiko-vaults-pool-liq-v1-1", "claim-pending-rewards", [
         types.principal(Utils.qualifiedName(token))
       ], caller.address)
     ]);
@@ -115,7 +117,8 @@ class VaultsPoolLiquidation {
     amount: number
   ) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-pool-liquidation-v1-1", "add-rewards", [
+      Tx.contractCall("arkadiko-vaults-pool-liq-v1-1", "add-rewards", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
         types.principal(Utils.qualifiedName(token)),
         types.uint(amount * 1000000)
       ], caller.address)
@@ -125,22 +128,22 @@ class VaultsPoolLiquidation {
 
   addDikoRewards() {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-pool-liquidation-v1-1", "add-diko-rewards", [
+      Tx.contractCall("arkadiko-vaults-pool-liq-v1-1", "add-diko-rewards", [
       ], this.deployer.address)
     ]);
     return block.receipts[0].result;
   }
 
   getDikoRewardsToAdd() {
-    return this.chain.callReadOnlyFn("arkadiko-vaults-pool-liquidation-v1-1", "get-diko-rewards-to-add", [
+    return this.chain.callReadOnlyFn("arkadiko-vaults-pool-liq-v1-1", "get-diko-rewards-to-add", [
     ], this.deployer.address);
   }
 
   calculateCummRewardPerFragment(token: string, amount: number) {
-    return this.chain.callReadOnlyFn("arkadiko-vaults-pool-liquidation-v1-1", "calculate-cumm-reward-per-fragment", [
+    return this.chain.callReadOnlyFn("arkadiko-vaults-pool-liq-v1-1", "calculate-cumm-reward-per-fragment", [
       types.principal(Utils.qualifiedName(token)),
       types.uint(amount * 1000000)
     ], this.deployer.address);
   }
 }
-export { VaultsPoolLiquidation };
+export { VaultsPoolLiq };

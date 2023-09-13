@@ -525,14 +525,74 @@
   )
 
   (map-set contracts
-    { name: "vaults-pool-liquidation" }
+    { name: "vaults-pool-liq" }
     {
       address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
-      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-vaults-pool-liquidation-v1-1
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-vaults-pool-liq-v1-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-vaults-pool-liquidation-v1-1 }
+    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-vaults-pool-liq-v1-1 }
+    {
+      can-mint: true,
+      can-burn: true
+    }
+  )
+
+  (map-set contracts
+    { name: "vaults-pool-active" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-vaults-pool-active-v1-1
+    }
+  )
+  (map-set contracts-data
+    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-vaults-pool-active-v1-1 }
+    {
+      can-mint: true,
+      can-burn: true
+    }
+  )
+
+  (map-set contracts
+    { name: "vaults-tokens" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-vaults-tokens-v1-1
+    }
+  )
+  (map-set contracts-data
+    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-vaults-tokens-v1-1 }
+    {
+      can-mint: true,
+      can-burn: true
+    }
+  )
+
+  (map-set contracts
+    { name: "vaults-sorted" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-vaults-sorted-v1-1
+    }
+  )
+  (map-set contracts-data
+    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-vaults-sorted-v1-1 }
+    {
+      can-mint: true,
+      can-burn: true
+    }
+  )
+
+  (map-set contracts
+    { name: "vaults-data" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-vaults-data-v1-1
+    }
+  )
+  (map-set contracts-data
+    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-vaults-data-v1-1 }
     {
       can-mint: true,
       can-burn: true

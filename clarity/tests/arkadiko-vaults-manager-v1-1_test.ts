@@ -25,8 +25,8 @@ import {
 } from './models/arkadiko-tests-vaults-data.ts';
 
 import { 
-  VaultsPoolLiquidation
-} from './models/arkadiko-tests-vaults-pool-liquidation.ts';
+  VaultsPoolLiq
+} from './models/arkadiko-tests-vaults-pool-liq.ts';
 
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
@@ -70,7 +70,7 @@ Clarinet.test({
     let vaultsOperations = new VaultsOperations(chain, deployer);
     let vaultsManager = new VaultsManager(chain, deployer);
     let vaultsData = new VaultsData(chain, deployer);
-    let vaultsPoolLiquidation = new VaultsPoolLiquidation(chain, deployer);
+    let vaultsPoolLiq = new VaultsPoolLiq(chain, deployer);
     let wstxToken = new WstxToken(chain, deployer);
     let usdaToken = new UsdaToken(chain, deployer);
 
@@ -81,7 +81,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Add USDA to liquidation pool
-    result = vaultsPoolLiquidation.stake(deployer, 1000);
+    result = vaultsPoolLiq.stake(deployer, 1000);
 
     // Open vault
     result = vaultsOperations.openVault(wallet_1, "wstx-token", 2000, 600, wallet_1.address)
@@ -103,12 +103,12 @@ Clarinet.test({
     let call:any = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"));
     call.result.expectOk().expectUintWithDecimals(0);
 
-    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liquidation-v1-1"));
+    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
     call.result.expectOk().expectUintWithDecimals(1885.718587);
 
     // Used 600 USDA from pool + stability fees
     // So ~400 USDA left in pool
-    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liquidation-v1-1"));
+    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
     call.result.expectOk().expectUintWithDecimals(399.998631);
 
     // Initial - collateral + collateral leftover
@@ -139,7 +139,7 @@ Clarinet.test({
     let vaultsOperations = new VaultsOperations(chain, deployer);
     let vaultsManager = new VaultsManager(chain, deployer);
     let vaultsData = new VaultsData(chain, deployer);
-    let vaultsPoolLiquidation = new VaultsPoolLiquidation(chain, deployer);
+    let vaultsPoolLiq = new VaultsPoolLiq(chain, deployer);
     let wstxToken = new WstxToken(chain, deployer);
     let usdaToken = new UsdaToken(chain, deployer);
 
@@ -150,7 +150,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Add USDA to liquidation pool
-    result = vaultsPoolLiquidation.stake(deployer, 1000);
+    result = vaultsPoolLiq.stake(deployer, 1000);
 
     // Open vault
     result = vaultsOperations.openVault(wallet_1, "wstx-token", 2000, 500, wallet_1.address)
