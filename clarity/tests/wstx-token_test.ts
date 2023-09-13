@@ -149,6 +149,65 @@ Clarinet.test({
   },
 });
 
+Clarinet.test({
+  name: "wstx-token: wrap first, then transfer to protocol",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let wstxToken = new WstxToken(chain, deployer);
+    let vaultsPoolFees = new VaultsPoolFees(chain, deployer);
+
+    let call: any = wstxToken.getTotalSupply();
+    call.result.expectOk().expectUint(0);
+
+    call = wstxToken.getStxBalance(wallet_1.address);
+    call.result.expectUintWithDecimals(100000000);
+
+    call = wstxToken.getStxBalance(Utils.qualifiedName("wstx-token"));
+    call.result.expectUintWithDecimals(0);
+
+    //
+    // Wrap
+    //
+
+    let result = wstxToken.wrap(wallet_1, 200);
+    result.expectOk().expectBool(true);
+
+    call = wstxToken.getTotalSupply();
+    call.result.expectOk().expectUintWithDecimals(200);
+
+    call = wstxToken.getStxBalance(wallet_1.address);
+    call.result.expectUintWithDecimals(100000000 - 200);
+
+    call = wstxToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(200);
+
+    call = wstxToken.getStxBalance(Utils.qualifiedName("wstx-token"));
+    call.result.expectUintWithDecimals(200);
+
+    //
+    // Transfer to protocol
+    //
+
+    result = wstxToken.transfer(wallet_1, 500, Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1"))
+    result.expectOk().expectBool(true);
+
+    call = wstxToken.getTotalSupply();
+    call.result.expectOk().expectUintWithDecimals(200 + 500);
+
+    call = wstxToken.getStxBalance(wallet_1.address);
+    call.result.expectUintWithDecimals(100000000 - 200 - 500);
+
+    call = wstxToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(200);
+
+    call = wstxToken.getStxBalance(Utils.qualifiedName("wstx-token"));
+    call.result.expectUintWithDecimals(200 + 500);
+  },
+});
+
 // ---------------------------------------------------------
 // Wrap / Unwrap
 // ---------------------------------------------------------
