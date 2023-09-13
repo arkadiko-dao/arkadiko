@@ -2,6 +2,8 @@
 ;; Keep vaults sorted based in NICR (nominal collateral ratio) 
 ;;
 
+(impl-trait .arkadiko-vaults-sorted-trait-v1-1.vaults-sorted-trait)
+
 ;; ---------------------------------------------------------
 ;; Constants
 ;; ---------------------------------------------------------

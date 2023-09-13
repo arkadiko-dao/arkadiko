@@ -133,6 +133,11 @@ path = "contracts/vaults-v2/arkadiko-vaults-pool-liquidation-v1-1.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.arkadiko-vaults-sorted-trait-v1-1]
+path = "contracts/vaults-v2/arkadiko-vaults-sorted-trait-v1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.arkadiko-vaults-sorted-v1-1]
 path = "contracts/vaults-v2/arkadiko-vaults-sorted-v1-1.clar"
 clarity_version = 2

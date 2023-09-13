@@ -199,8 +199,14 @@ Clarinet.test({
     result = vaultsOperations.openVault(deployer, "wstx-token", 2000, 500, wallet_1.address)
     result.expectOk().expectBool(true);
 
+    let call = vaultsOperations.getShutdownActivated();
+    call.result.expectBool(false);
+
     result = vaultsOperations.setShutdownActivated(deployer, true);
     result.expectOk().expectBool(true);
+
+    call = vaultsOperations.getShutdownActivated();
+    call.result.expectBool(true);
 
     result = vaultsOperations.openVault(wallet_1, "wstx-token", 2000, 500, wallet_1.address)
     result.expectErr().expectUint(930501);
