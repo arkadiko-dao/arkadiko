@@ -362,3 +362,12 @@
     (/ (* a ONE_8) b)
   )
 )
+
+;; Initialize the contract
+(begin
+  ;; TODO: do not do this on testnet or mainnet
+  (try! (ft-mint? auto-alex-v2 u1000000000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)) ;; 10 million
+  (try! (ft-mint? auto-alex-v2 u1000000000000000 'ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF)) ;; 10 million
+  (try! (ft-mint? auto-alex-v2 u1000000000000000 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG)) ;; 10 million
+  (try! (ft-mint? auto-alex-v2 u1000000000000000 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5)) ;; 10 million
+)

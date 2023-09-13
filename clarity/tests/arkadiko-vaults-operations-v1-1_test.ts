@@ -147,6 +147,58 @@ Clarinet.test({
   },
 });
 
+Clarinet.test({
+  name: "vaults-operations: open and close vault for each collateral token",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultsOperations = new VaultsOperations(chain, deployer);
+    let wstxToken = new WstxToken(chain, deployer);
+
+    // Set price
+    oracleManager.updatePrice("STX", 0.5);   
+    oracleManager.updatePrice("stSTX", 0.6);     
+    oracleManager.updatePrice("xBTC", 25000);    
+    oracleManager.updatePrice("atALEXv2", 0.05);    
+
+    let result = wstxToken.wrap(deployer, 10000);
+    result.expectOk().expectBool(true);
+
+    //
+    // Open vault
+    //
+    result = vaultsOperations.openVault(deployer, "wstx-token", 2000, 500, deployer.address)
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.openVault(deployer, "ststx-token", 2000, 500, deployer.address)
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.openVault(deployer, "Wrapped-Bitcoin", 1 * 100, 10000, deployer.address)
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.openVault(deployer, "auto-alex-v2", 20000 * 100, 500, deployer.address)
+    result.expectOk().expectBool(true);
+
+    //
+    // Close vault
+    //
+
+    result = vaultsOperations.closeVault(deployer, "wstx-token")
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.closeVault(deployer, "ststx-token")
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.closeVault(deployer, "Wrapped-Bitcoin")
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.closeVault(deployer, "auto-alex-v2")
+    result.expectOk().expectBool(true);
+  },
+});
+
 // ---------------------------------------------------------
 // Errors
 // ---------------------------------------------------------

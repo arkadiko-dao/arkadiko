@@ -8,12 +8,7 @@ import {
 
 import { 
   OracleManager,
-  WstxToken
 } from './models/arkadiko-tests-tokens.ts';
-
-import { 
-  VaultsOperations
-} from './models/arkadiko-tests-vaults-operations.ts';
 
 import { 
   VaultsHelpers

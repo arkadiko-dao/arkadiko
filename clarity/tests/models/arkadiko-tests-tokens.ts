@@ -30,6 +30,8 @@ class OracleManager {
       tokenId = 6;
     } else if (token == "auto-alex-v2" || token == "atALEXv2") {
       tokenId = 7;
+    } else if (token == "stSTX" || token == "ststx-token") {
+      tokenId = 8;
     }
 
     let block = this.chain.mineBlock([

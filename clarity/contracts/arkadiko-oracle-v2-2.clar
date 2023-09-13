@@ -260,4 +260,8 @@
   (map-set token-id-to-names u7 (list "atALEXv2" "auto-alex-v2"))
   (map-set token-name-to-id "atALEXv2" u7)
   (map-set token-name-to-id "auto-alex-v2" u7)
+
+  (map-set token-id-to-names u8 (list "stSTX" "ststx-token"))
+  (map-set token-name-to-id "stSTX" u8)
+  (map-set token-name-to-id "ststx-token" u8)
 )
