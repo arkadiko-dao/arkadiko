@@ -17,6 +17,7 @@
 (define-constant ERR_UNKNOWN_TOKEN u930002)
 (define-constant ERR_INVALID_RATIO u930003)
 (define-constant ERR_MAX_DEBT_REACHED u930004)
+(define-constant ERR_MIN_DEBT u930005)
 
 (define-constant STATUS_ACTIVE u101)
 (define-constant STATUS_CLOSED_BY_OWNER u102)
@@ -61,6 +62,7 @@
     (asserts! (not (is-eq (get status vault) STATUS_ACTIVE)) (err ERR_WRONG_STATUS))
     (asserts! (get valid coll-to-debt) (err ERR_INVALID_RATIO))
     (asserts! (< (+ total-debt debt) (get max-debt collateral-info)) (err ERR_MAX_DEBT_REACHED))
+    (asserts! (>= debt (get vault-min-debt collateral-info)) (err ERR_MIN_DEBT))
 
     ;; Save vault data
     (try! (as-contract (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner (contract-of token) STATUS_ACTIVE collateral debt)))
@@ -100,6 +102,7 @@
     (asserts! (is-eq (get status vault) STATUS_ACTIVE) (err ERR_WRONG_STATUS))
     (asserts! (get valid coll-to-debt) (err ERR_INVALID_RATIO))
     (asserts! (< (+ (- total-debt (get debt vault)) debt) (get max-debt collateral-info)) (err ERR_MAX_DEBT_REACHED))
+    (asserts! (>= debt (get vault-min-debt collateral-info)) (err ERR_MIN_DEBT))
 
     ;; Update vault data
     (try! (as-contract (contract-call? .arkadiko-vaults-data-v1-1 set-vault owner (contract-of token) STATUS_ACTIVE collateral debt)))

@@ -1,6 +1,8 @@
 ;; Vaults Collateral Tokens 
 ;;
 
+(impl-trait .arkadiko-vaults-tokens-trait-v1-1.vaults-tokens-trait)
+
 ;; ---------------------------------------------------------
 ;; Constants
 ;; ---------------------------------------------------------
@@ -26,6 +28,7 @@
   {
     token-name: (string-ascii 12),
     max-debt: uint,
+    vault-min-debt: uint,
     stability-fee: uint,
 
     liquidation-ratio: uint,
@@ -43,12 +46,18 @@
 ;; ---------------------------------------------------------
 
 (define-read-only (get-token-list)
-  (var-get token-list)
+  (ok (var-get token-list))
 )
 
-
 (define-read-only (get-token (token principal))
-  (map-get? tokens { token: token })
+  (let (
+    (result (map-get? tokens { token: token }))
+  )
+    (if (is-none result)
+      (err ERR_UNKNOWN_TOKEN)
+      (ok (unwrap-panic result))
+    )
+  )
 )
 
 ;; ---------------------------------------------------------
@@ -60,6 +69,7 @@
   (token principal) 
   (token-name (string-ascii 12)) 
   (max-debt uint)
+  (vault-min-debt uint)
   (stability-fee uint)
   (liquidation-ratio uint)
   (liquidation-penalty uint)
@@ -85,6 +95,7 @@
       {
         token-name: token-name,
         max-debt: max-debt,
+        vault-min-debt: vault-min-debt,
         stability-fee: stability-fee,
         liquidation-ratio: liquidation-ratio, 
         liquidation-penalty: liquidation-penalty,
@@ -139,6 +150,7 @@
     {
       token-name: "STX",
       max-debt: u5000000000000,               ;; 5M
+      vault-min-debt: u500000000,             ;; 500 usda
       stability-fee: u400,                    ;; 4% in bps
       liquidation-ratio: u14000,              ;; 140% in bps
       liquidation-penalty: u1000,             ;; 10% in bps
@@ -157,6 +169,7 @@
     {
       token-name: "stSTX",
       max-debt: u5000000000000,               ;; 5M
+      vault-min-debt: u500000000,             ;; 500 usda
       stability-fee: u400,                    ;; 4% in bps
       liquidation-ratio: u14000,              ;; 140% in bps
       liquidation-penalty: u1000,             ;; 10% in bps
@@ -175,6 +188,7 @@
     {
       token-name: "xBTC",
       max-debt: u5000000000000,               ;; 5M
+      vault-min-debt: u500000000,             ;; 500 usda
       stability-fee: u400,                    ;; 4% in bps
       liquidation-ratio: u13000,              ;; 130% in bps
       liquidation-penalty: u1000,             ;; 10% in bps
@@ -193,6 +207,7 @@
     {
       token-name: "atALEXv2",
       max-debt: u500000000000,                ;; 500k
+      vault-min-debt: u500000000,             ;; 500 usda
       stability-fee: u400,                    ;; 4% in bps
       liquidation-ratio: u18000,              ;; 180% in bps
       liquidation-penalty: u2000,             ;; 20% in bps

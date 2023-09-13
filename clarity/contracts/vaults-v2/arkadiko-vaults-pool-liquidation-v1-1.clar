@@ -120,7 +120,7 @@
 ;; Returns true if reward-tokens list is equal to collateral token list
 (define-public (check-reward-tokens (reward-tokens (list 25 <ft-trait>)))
   (let (
-    (token-list (contract-call? .arkadiko-vaults-tokens-v1-1 get-token-list))
+    (token-list (unwrap-panic (contract-call? .arkadiko-vaults-tokens-v1-1 get-token-list)))
     (check-result (map is-same-token token-list reward-tokens))
   )
     (ok (is-none (index-of? check-result false)))
@@ -290,7 +290,7 @@
 ;; Add rewards to the pool
 (define-public (add-rewards (token <ft-trait>) (amount uint))
   (let (
-    (token-list (contract-call? .arkadiko-vaults-tokens-v1-1 get-token-list))
+    (token-list (unwrap-panic (contract-call? .arkadiko-vaults-tokens-v1-1 get-token-list)))
     (new-cumm-rewards (calculate-cumm-reward-per-fragment (contract-of token) amount))
   )
     (asserts! (or (is-some (index-of? token-list (contract-of token))) (is-eq (contract-of token) .arkadiko-token)) (err ERR_INVALID_REWARD_TOKEN))
