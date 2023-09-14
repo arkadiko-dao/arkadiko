@@ -107,15 +107,9 @@
     (try! (as-contract (contract-call? vaults-pool-liq add-rewards vaults-tokens token (get collateral-needed collateral))))
 
     ;; Send leftover back to owner
-    (if (> (get collateral-needed collateral) u0)
+    (if (> (get collateral-left collateral) u0)
       (try! (as-contract (contract-call? vaults-pool-active withdraw token owner (get collateral-left collateral))))
       false
-    )
-
-    ;; Handle bad debt
-    (if (> (get bad-debt collateral) u0)
-      (try! (sell-diko (get bad-debt collateral)))
-      u0
     )
 
     (ok true)
@@ -132,45 +126,10 @@
     (collateral-penalty (/ (* collateral-needed (get liquidation-penalty collateral-info)) u10000))
     (collateral-total (+ collateral-needed collateral-penalty))
   )
-    (if (< collateral-value debt)
-      (ok { collateral-needed: collateral, collateral-left: u0, bad-debt: (- debt collateral-value)})
-      (ok { collateral-needed: collateral-total, collateral-left: (- collateral collateral-total), bad-debt: u0})
+    (if (< collateral-total collateral)
+      (ok { collateral-needed: collateral, collateral-left: u0 })
+      (ok { collateral-needed: collateral-total, collateral-left: (- collateral collateral-total) })
     )
-  )
-)
-
-;; Mint and sell DIKO to cover bad debt
-;; TODO: just save bad debt in different contract? No need to hardcode swap?
-(define-private (sell-diko (debt-left uint))
-  (let (
-    (pair-details (unwrap-panic (unwrap-panic (contract-call? .arkadiko-swap-v2-1 get-pair-details .arkadiko-token .usda-token))))
-    (diko-price (/ (* (get balance-x pair-details) u1100000) (get balance-y pair-details))) ;; 10% extra 
-    (diko-to-mint (/ (* debt-left diko-price) u1000000))
-  )
-    ;; Mint DIKO
-    (try! (as-contract (contract-call? .arkadiko-dao mint-token .arkadiko-token diko-to-mint (as-contract tx-sender))))
-
-    ;; Swap DIKO to USDA
-    (try! (as-contract (contract-call? .arkadiko-swap-v2-1 swap-x-for-y .arkadiko-token .usda-token diko-to-mint u0)))
-
-    ;; Burn USDA
-    (try! (as-contract (contract-call? .arkadiko-dao burn-token .usda-token debt-left (as-contract tx-sender))))
-
-    ;; Swap leftover USDA to DIKO
-    (let (
-      (leftover-usda (unwrap-panic (contract-call? .usda-token get-balance (as-contract tx-sender))))
-    )
-      (try! (as-contract (contract-call? .arkadiko-swap-v2-1 swap-y-for-x .arkadiko-token .usda-token leftover-usda u0)))
-    )
-
-    ;; Burn leftover DIKO
-    (let (
-      (leftover-diko (unwrap-panic (contract-call? .arkadiko-token get-balance (as-contract tx-sender))))
-    )
-      (try! (as-contract (contract-call? .arkadiko-dao burn-token .arkadiko-token leftover-diko (as-contract tx-sender))))
-    )
-
-    (ok diko-to-mint)
   )
 )
 
