@@ -201,7 +201,7 @@
       (let (
         (nicr (/ (* collateral-left u100000000) debt-left))
       )
-        (try! (contract-call? vaults-data set-vault owner (contract-of token) STATUS_ACTIVE collateral-left (- debt-total debt-payoff)))
+        (try! (contract-call? vaults-data set-vault owner (contract-of token) STATUS_ACTIVE collateral-left debt-left))
         (try! (contract-call? vaults-sorted reinsert owner (contract-of token) nicr prev-owner-hint))
       )
     )
