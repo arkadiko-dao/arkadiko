@@ -28,7 +28,15 @@ import {
   VaultsPoolLiq
 } from './models/arkadiko-tests-vaults-pool-liq.ts';
 
+import { 
+  VaultsSorted
+} from './models/arkadiko-tests-vaults-sorted.ts';
+
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
+
+// ---------------------------------------------------------
+// Liquidations
+// ---------------------------------------------------------
 
 Clarinet.test({
   name: "vaults-manager: collateral for liquidation",
@@ -46,7 +54,6 @@ Clarinet.test({
     let result = vaultsManager.getCollateralForLiquidation("wstx-token", 1000, 400);
     result.expectOk().expectTuple()["collateral-needed"].expectUintWithDecimals(733.333332);
     result.expectOk().expectTuple()["collateral-left"].expectUintWithDecimals(266.666668);
-    result.expectOk().expectTuple()["bad-debt"].expectUintWithDecimals(0);
 
     // Update price
     oracleManager.updatePrice("STX", 0.1);   
@@ -56,7 +63,6 @@ Clarinet.test({
     result = vaultsManager.getCollateralForLiquidation("wstx-token", 1000, 400);
     result.expectOk().expectTuple()["collateral-needed"].expectUintWithDecimals(1000);
     result.expectOk().expectTuple()["collateral-left"].expectUintWithDecimals(0);
-    result.expectOk().expectTuple()["bad-debt"].expectUintWithDecimals(300);
   },
 });
 
@@ -71,6 +77,7 @@ Clarinet.test({
     let vaultsManager = new VaultsManager(chain, deployer);
     let vaultsData = new VaultsData(chain, deployer);
     let vaultsPoolLiq = new VaultsPoolLiq(chain, deployer);
+    let vaultsSorted = new VaultsSorted(chain, deployer);
     let wstxToken = new WstxToken(chain, deployer);
     let usdaToken = new UsdaToken(chain, deployer);
 
@@ -91,7 +98,6 @@ Clarinet.test({
     result = vaultsManager.getCollateralForLiquidation("wstx-token", 2000, 600);
     result.expectOk().expectTuple()["collateral-needed"].expectUintWithDecimals(1885.714285);
     result.expectOk().expectTuple()["collateral-left"].expectUintWithDecimals(114.285715);
-    result.expectOk().expectTuple()["bad-debt"].expectUintWithDecimals(0);
 
     // Liquidate vault
     result = vaultsManager.liquidateVault(wallet_1.address, "wstx-token");
@@ -108,6 +114,9 @@ Clarinet.test({
     call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
     call.result.expectOk().expectUintWithDecimals(399.998631);
 
+    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(0.001369);
+
     // Initial - collateral + collateral leftover
     // 100M - 2000 + 114.285715
     // Got back a little less because of the stability fees paid
@@ -122,8 +131,87 @@ Clarinet.test({
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(0);
     call.result.expectOk().expectTuple()["last-block"].expectUint(11);
     call.result.expectOk().expectTuple()["status"].expectUint(201);
+
+    call = vaultsSorted.getVault(wallet_1.address, "wstx-token");
+    call.result.expectNone();
   },
 });
+
+Clarinet.test({
+  name: "vaults-manager: liquidate vault with bad debt",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultsOperations = new VaultsOperations(chain, deployer);
+    let vaultsManager = new VaultsManager(chain, deployer);
+    let vaultsData = new VaultsData(chain, deployer);
+    let vaultsPoolLiq = new VaultsPoolLiq(chain, deployer);
+    let vaultsSorted = new VaultsSorted(chain, deployer);
+    let wstxToken = new WstxToken(chain, deployer);
+    let usdaToken = new UsdaToken(chain, deployer);
+
+    // Set price
+    oracleManager.updatePrice("STX", 0.5);    
+
+    // Add USDA to liquidation pool
+    let result = vaultsPoolLiq.stake(deployer, 1000);
+
+    // Open vault
+    result = vaultsOperations.openVault(wallet_1, "wstx-token", 2000, 600, wallet_1.address)
+    result.expectOk().expectBool(true);
+
+    // Set price
+    oracleManager.updatePrice("STX", 0.2);  
+
+    // $400 in collateral, $600 debt
+    // So no collateral left and $200 bad debt
+    result = vaultsManager.getCollateralForLiquidation("wstx-token", 2000, 600);
+    result.expectOk().expectTuple()["collateral-needed"].expectUintWithDecimals(2000);
+    result.expectOk().expectTuple()["collateral-left"].expectUintWithDecimals(0);
+
+    // Liquidate vault
+    result = vaultsManager.liquidateVault(wallet_1.address, "wstx-token");
+    result.expectOk().expectBool(true);
+
+    let call:any = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(2000);
+
+    // Used 600 USDA from pool + stability fees
+    // So ~400 USDA left in pool
+    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(399.998631);
+
+    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(0.001369);
+
+    // Initial - collateral + collateral leftover
+    // 100M - 2000
+    // Got nothing back as collateral was not enough to cover debt
+    call = wstxToken.getStxBalance(wallet_1.address);
+    call.result.expectUintWithDecimals(100000000 - 2000);
+
+    call = vaultsData.getTotalDebt("wstx-token");
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    call = vaultsData.getVault(wallet_1.address, "wstx-token");
+    call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(0);
+    call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(0);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(11);
+    call.result.expectOk().expectTuple()["status"].expectUint(201);
+
+    call = vaultsSorted.getVault(wallet_1.address, "wstx-token");
+    call.result.expectNone();
+  },
+});
+
+// ---------------------------------------------------------
+// Redemptions
+// ---------------------------------------------------------
 
 Clarinet.test({
   name: "vaults-manager: redeem vault",
@@ -226,3 +314,17 @@ Clarinet.test({
     call.result.expectUintWithDecimals(100000000 + 384.84 + 577.441171);
   },
 });
+
+// TODO: redemption fee
+
+// ---------------------------------------------------------
+// Admin
+// ---------------------------------------------------------
+
+// TODO: Shutdown
+
+// ---------------------------------------------------------
+// Errors
+// ---------------------------------------------------------
+
+// TODO

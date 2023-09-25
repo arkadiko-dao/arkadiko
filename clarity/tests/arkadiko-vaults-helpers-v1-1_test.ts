@@ -14,6 +14,10 @@ import {
   VaultsHelpers
 } from './models/arkadiko-tests-vaults-helpers.ts';
 
+import { 
+  VaultsOperations
+} from './models/arkadiko-tests-vaults-operations.ts';
+
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 Clarinet.test({
@@ -48,6 +52,41 @@ Clarinet.test({
   },
 });
 
+Clarinet.test({
+  name: "vaults-helpers: stability fees",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultsHelpers = new VaultsHelpers(chain, deployer);
+    let vaultsOperations = new VaultsOperations(chain, deployer);
+
+    // Set price
+    oracleManager.updatePrice("STX", 0.5);    
+    oracleManager.updatePrice("BTC", 30000, 100000000);
+
+    chain.mineEmptyBlock(144);
+
+    // No vault yet
+    let result = vaultsHelpers.getStabilityFee(deployer, "wstx-token");
+    result.expectOk().expectUint(0);
+
+    result = vaultsOperations.openVault(deployer, "wstx-token", 2000, 500, deployer.address)
+    result.expectOk().expectBool(true);
+
+    chain.mineEmptyBlock(144);
+
+    result = vaultsHelpers.getStabilityFee(deployer, "wstx-token");
+    result.expectOk().expectUintWithDecimals(0.055175);
+
+    chain.mineEmptyBlock(144 * 364);
+
+    // 500 * 4% = 20
+    result = vaultsHelpers.getStabilityFee(deployer, "wstx-token");
+    result.expectOk().expectUintWithDecimals(20.000761);
+  },
+});
+
 // ---------------------------------------------------------
 // Errors
 // ---------------------------------------------------------
@@ -66,5 +105,3 @@ Clarinet.test({
     result.expectErr().expectUint(980001);
   },
 });
-
-// TODO: stability fee calculation

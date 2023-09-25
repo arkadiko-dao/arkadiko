@@ -34,6 +34,36 @@ Clarinet.test({
   },
 });
 
+Clarinet.test({
+  name: "vaults-data: total debt",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let vaultsData = new VaultsData(chain, deployer);
+
+    let result = vaultsData.setVault(deployer, wallet_1.address, "wstx-token", 1, 100, 20);
+    result.expectOk().expectBool(true);
+
+    let call: any = vaultsData.getTotalDebt("wstx-token");
+    call.result.expectOk().expectUintWithDecimals(20);
+
+    result = vaultsData.setVault(deployer, wallet_2.address, "wstx-token", 1, 100, 30);
+    result.expectOk().expectBool(true);
+
+    call = vaultsData.getTotalDebt("wstx-token");
+    call.result.expectOk().expectUintWithDecimals(20 + 30);
+
+    result = vaultsData.setVault(deployer, wallet_2.address, "wstx-token", 1, 100, 10);
+    result.expectOk().expectBool(true);
+
+    call = vaultsData.getTotalDebt("wstx-token");
+    call.result.expectOk().expectUintWithDecimals(20 + 10);
+
+  },
+});
+
 // ---------------------------------------------------------
 // Errors
 // ---------------------------------------------------------

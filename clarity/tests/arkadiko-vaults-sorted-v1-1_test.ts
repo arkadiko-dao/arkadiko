@@ -225,7 +225,6 @@ Clarinet.test({
   },
 });
 
-
 Clarinet.test({
   name: "vaults-sorted: remove vaults",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -272,7 +271,7 @@ Clarinet.test({
 });
 
 // ---------------------------------------------------------
-// 
+// Same NICR
 // ---------------------------------------------------------
 
 Clarinet.test({
@@ -381,7 +380,6 @@ Clarinet.test({
     result.expectErr().expectUint(960001);  
   },
 });
-
 
 Clarinet.test({
   name: "vaults-sorted: insert same vault again",

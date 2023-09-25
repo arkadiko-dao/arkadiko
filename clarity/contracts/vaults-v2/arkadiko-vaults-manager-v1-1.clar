@@ -126,7 +126,7 @@
     (collateral-penalty (/ (* collateral-needed (get liquidation-penalty collateral-info)) u10000))
     (collateral-total (+ collateral-needed collateral-penalty))
   )
-    (if (< collateral-total collateral)
+    (if (>= collateral-total collateral)
       (ok { collateral-needed: collateral, collateral-left: u0 })
       (ok { collateral-needed: collateral-total, collateral-left: (- collateral collateral-total) })
     )
