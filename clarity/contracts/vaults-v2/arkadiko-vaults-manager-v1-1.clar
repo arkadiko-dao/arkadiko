@@ -170,9 +170,14 @@
       (- debt-total debt-payoff)
     ))
 
-    (fee-last (get-redemption-block-last (contract-of token)))
     (fee (try! (get-redemption-fee vaults-tokens (contract-of token))))
-    (new-redemption-last-block (- (get block-last fee-last) (/ debt-payoff-used (get block-rate fee))))
+    (fee-block-last (get block-last (get-redemption-block-last (contract-of token))))
+    (fee-block-last-cap (if (< fee-block-last (- block-height (get redemption-fee-block-interval collateral-info))) 
+      (- block-height (get redemption-fee-block-interval collateral-info)) 
+      fee-block-last
+    ))
+    (fee-block-change (/ debt-payoff-used (get redemption-fee-block-rate collateral-info)))
+    (new-redemption-last-block (+ fee-block-last-cap fee-block-change))
 
     (collateral-needed (/ (* (get collateral vault) debt-payoff-used) collateral-value))
     (collateral-fee (/ (* collateral-needed (get current-fee fee)) u10000))
@@ -240,7 +245,7 @@
       (- (get redemption-fee-max collateral-info) fee-change)
     ))
   )
-    (ok { current-fee: current-fee, block-rate: (get redemption-fee-block-rate collateral-info )})
+    (ok { current-fee: current-fee })
   )
 )
 
