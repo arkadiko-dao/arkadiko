@@ -50,6 +50,10 @@
 ;; Getter
 ;; ---------------------------------------------------------
 
+(define-read-only (get-shutdown-activated) 
+  (var-get shutdown-activated)
+)
+
 (define-read-only (get-redemption-block-last (token principal))
   (default-to
     {

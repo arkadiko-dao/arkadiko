@@ -325,7 +325,7 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultsOperations = new VaultsOperations(chain, deployer);
     let vaultsManager = new VaultsManager(chain, deployer);
-    
+
     // Set price
     oracleManager.updatePrice("STX", 0.5);    
 
@@ -339,6 +339,9 @@ Clarinet.test({
     let call: any = vaultsManager.getRedemptionFee("wstx-token");
     call.result.expectOk().expectTuple()["current-fee"].expectUint(0.005 * 10000);
 
+    call = vaultsManager.getRedemptionBlockLast("wstx-token");
+    call.result.expectTuple()["block-last"].expectUint(0);
+
     // 8000 collateral * 0.5% fee = 40
     result = vaultsManager.redeemVault(wallet_2, wallet_1.address, "wstx-token", 4000, wallet_1.address)
     result.expectOk().expectTuple()["debt-payoff-used"].expectUintWithDecimals(4000);
@@ -351,6 +354,9 @@ Clarinet.test({
     call = vaultsManager.getRedemptionFee("wstx-token");
     call.result.expectOk().expectTuple()["current-fee"].expectUint(0.0068 * 10000);
 
+    call = vaultsManager.getRedemptionBlockLast("wstx-token");
+    call.result.expectTuple()["block-last"].expectUint(16);
+
     // 8000 collateral * 0.68% fee = 81.6
     result = vaultsManager.redeemVault(wallet_2, wallet_1.address, "wstx-token", 6000, wallet_1.address)
     result.expectOk().expectTuple()["debt-payoff-used"].expectUintWithDecimals(6000);
@@ -362,6 +368,9 @@ Clarinet.test({
     // 12 * 0.024305555% = 0.29166666%
     call = vaultsManager.getRedemptionFee("wstx-token");
     call.result.expectOk().expectTuple()["current-fee"].expectUint(0.0094 * 10000);
+
+    call = vaultsManager.getRedemptionBlockLast("wstx-token");
+    call.result.expectTuple()["block-last"].expectUint(28);
   },
 });
 
@@ -369,10 +378,66 @@ Clarinet.test({
 // Admin
 // ---------------------------------------------------------
 
-// TODO: Shutdown
+Clarinet.test({
+  name: "vaults-manager: shutdown",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultsOperations = new VaultsOperations(chain, deployer);
+    let vaultsManager = new VaultsManager(chain, deployer);
+
+    // Set price
+    oracleManager.updatePrice("STX", 0.5);    
+
+    // Open vault
+    let result = vaultsOperations.openVault(wallet_1, "wstx-token", 40000, 10000, wallet_1.address)
+    result.expectOk().expectBool(true);
+
+    chain.mineEmptyBlock(144);
+
+    let call = vaultsManager.getShutdownActivated();
+    call.result.expectBool(false);
+
+    // Turn on shutdown
+    result = vaultsManager.setShutdownActivated(true);
+    result.expectOk().expectBool(true);
+
+    call = vaultsManager.getShutdownActivated();
+    call.result.expectBool(true);
+
+    result = vaultsManager.liquidateVault(wallet_1.address, "wstx-token");
+    result.expectErr().expectUint(920501);
+
+    result = vaultsManager.redeemVault(wallet_2, wallet_1.address, "wstx-token", 6000, wallet_1.address)
+    result.expectErr().expectUint(920501);
+
+    // Turn off shutdown
+    result = vaultsManager.setShutdownActivated(false);
+    result.expectOk().expectBool(true);
+
+    call = vaultsManager.getShutdownActivated();
+    call.result.expectBool(false);
+
+    result = vaultsManager.liquidateVault(wallet_1.address, "wstx-token");
+    result.expectErr().expectUint(920001);
+
+    result = vaultsManager.redeemVault(wallet_2, wallet_1.address, "wstx-token", 6000, wallet_1.address)
+    result.expectOk()
+  },
+});
 
 // ---------------------------------------------------------
 // Errors
 // ---------------------------------------------------------
 
 // TODO
+
+// (define-constant ERR_NOT_AUTHORIZED u920401)
+// (define-constant ERR_WRONG_TRAIT u920402)
+// (define-constant ERR_CAN_NOT_LIQUIDATE u920001)
+// (define-constant ERR_UNKNOWN_TOKEN u920002)
+// (define-constant ERR_NOT_FIRST_VAULT u920003)
+// (define-constant ERR_SHOULD_LIQUIDATE u920004)

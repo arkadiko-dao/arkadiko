@@ -21,6 +21,17 @@ class VaultsManager {
     this.deployer = deployer;
   }
 
+  getShutdownActivated() {
+    return this.chain.callReadOnlyFn("arkadiko-vaults-manager-v1-1", "get-shutdown-activated", [
+    ], this.deployer.address);
+  }
+
+  getRedemptionBlockLast(token: string) {
+    return this.chain.callReadOnlyFn("arkadiko-vaults-manager-v1-1", "get-redemption-block-last", [
+      types.principal(Utils.qualifiedName(token)),
+    ], this.deployer.address);
+  }
+
   liquidateVault(
     owner: string,
     token: string,
@@ -87,6 +98,15 @@ class VaultsManager {
       types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
       types.principal(Utils.qualifiedName(token)),
     ], this.deployer.address);
+  }
+
+  setShutdownActivated(activated: boolean ) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-vaults-manager-v1-1", "set-shutdown-activated", [
+        types.bool(activated),
+      ], this.deployer.address)
+    ]);
+    return block.receipts[0].result;
   }
 
 }

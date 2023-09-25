@@ -189,7 +189,7 @@ Clarinet.test({
 });
 
 // ---------------------------------------------------------
-// Errors
+// Admin
 // ---------------------------------------------------------
 
 Clarinet.test({
@@ -223,8 +223,14 @@ Clarinet.test({
 
     result = vaultsOperations.closeVault(wallet_1, "wstx-token")
     result.expectErr().expectUint(930501);
+
+    // TODO: turn shutdown off
   },
 });
+
+// ---------------------------------------------------------
+// Errors
+// ---------------------------------------------------------
 
 Clarinet.test({
   name: "vaults-operations: only dao owner can activate shutdown",
@@ -346,6 +352,7 @@ Clarinet.test({
     result.expectErr().expectUint(930005);
   },
 });
+
 
 
 // TODO: ERR_NOT_AUTHORIZED (wrong trait)
