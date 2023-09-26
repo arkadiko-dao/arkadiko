@@ -65,6 +65,10 @@
 ;; Getters
 ;; ---------------------------------------------------------
 
+(define-read-only (get-shutdown-activated) 
+  (var-get shutdown-activated)
+)
+
 (define-read-only (get-fragments-info)
   { per-token: (var-get fragments-per-token), total: (var-get fragments-total)}
 )
@@ -103,15 +107,9 @@
 (define-read-only (get-stake-of (staker principal))
   (let (
     (per-token (var-get fragments-per-token))
+    (user-fragments (get fragments (get-staker staker)))
   )
-    (if (is-eq per-token u0)
-      (ok u0)
-      (let (
-        (user-fragments (get fragments (get-staker staker)))
-      )
-        (ok (/ user-fragments per-token))
-      )
-    )
+    (ok (/ user-fragments per-token))
   )
 )
 
@@ -125,7 +123,10 @@
     (token-list (unwrap-panic (contract-call? vaults-tokens get-token-list)))
     (check-result (map is-same-token token-list reward-tokens))
   )
-    (ok (is-none (index-of? check-result false)))
+    (if (is-eq (len token-list) (len reward-tokens))
+      (ok (is-none (index-of? check-result false)))
+      (ok false)
+    )
   )
 )
 
@@ -225,7 +226,13 @@
     (staker tx-sender)
 
     ;; Add DIKO rewards
-    (result-diko-add (try! (add-diko-rewards)))
+    (add-diko-rewards-result (if (is-eq (contract-of token) .arkadiko-token)
+      (if (is-err (add-diko-rewards))
+        false
+        true
+      )
+      true
+    ))
 
     (staker-info (get-staker staker))
     (token-info (get-token (contract-of token)))
@@ -233,15 +240,15 @@
     (pending-rewards (unwrap-panic (get-pending-rewards staker (contract-of token))))
   )
     (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
+    (asserts! add-diko-rewards-result (err ERR_CLAIM_FAILED))
+
+    (map-set stakers-rewards { staker: staker, token: (contract-of token) }
+      { cumm-reward-per-fragment: (get cumm-reward-per-fragment token-info) }
+    )
 
     (if (> pending-rewards u0)
       (begin
         (unwrap! (as-contract (contract-call? token transfer pending-rewards tx-sender staker none)) (ok false))
-
-        (map-set stakers-rewards { staker: staker, token: (contract-of token) }
-          { cumm-reward-per-fragment: (get cumm-reward-per-fragment token-info) }
-        )
-
         (ok true)
       )
       (ok true)
@@ -298,7 +305,7 @@
     (new-cumm-rewards (calculate-cumm-reward-per-fragment (contract-of token) amount))
   )
     (asserts! (is-eq (contract-of vaults-tokens) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-tokens"))) (err ERR_WRONG_TRAIT))
-    (asserts! (or (is-some (index-of? token-list (contract-of token))) (is-eq (contract-of token) .arkadiko-token)) (err ERR_INVALID_REWARD_TOKEN))
+    (asserts! (is-some (index-of? token-list (contract-of token))) (err ERR_INVALID_REWARD_TOKEN))
 
     (try! (contract-call? token transfer amount tx-sender (as-contract tx-sender) none))
 

@@ -21,6 +21,11 @@ class VaultsPoolLiq {
     this.deployer = deployer;
   }
 
+  getShutdownActivated() {
+    return this.chain.callReadOnlyFn("arkadiko-vaults-pool-liq-v1-1", "get-shutdown-activated", [
+    ], this.deployer.address);
+  }
+
   getFragmentsInfo() {
     return this.chain.callReadOnlyFn("arkadiko-vaults-pool-liq-v1-1", "get-fragments-info", [
     ], this.deployer.address);
@@ -68,6 +73,7 @@ class VaultsPoolLiq {
           types.principal(Utils.qualifiedName('wstx-token')),
           types.principal(Utils.qualifiedName('ststx-token')),
           types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
+          types.principal(Utils.qualifiedName('auto-alex-v2')),
         ])
       ], caller.address)
     ]);
@@ -86,6 +92,7 @@ class VaultsPoolLiq {
           types.principal(Utils.qualifiedName('wstx-token')),
           types.principal(Utils.qualifiedName('ststx-token')),
           types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
+          types.principal(Utils.qualifiedName('auto-alex-v2')),
         ])
       ], caller.address)
     ]);
@@ -144,6 +151,33 @@ class VaultsPoolLiq {
       types.principal(Utils.qualifiedName(token)),
       types.uint(amount * 1000000)
     ], this.deployer.address);
+  }
+
+  burnUsda(caller: Account, amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-vaults-pool-liq-v1-1", "burn-usda", [
+        types.uint(amount * 1000000)
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  setDikoRewardsPercentage(caller: Account, percentage: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-vaults-pool-liq-v1-1", "set-diko-rewards-percentage", [
+        types.uint(percentage * 10000)
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  setShutdownActivated(caller: Account, activated: boolean) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-vaults-pool-liq-v1-1", "set-shutdown-activated", [
+        types.bool(activated)
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
   }
 }
 export { VaultsPoolLiq };
