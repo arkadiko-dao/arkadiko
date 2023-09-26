@@ -14,18 +14,6 @@ import {
 } from './models/arkadiko-tests-tokens.ts';
 
 import { 
-  VaultsOperations
-} from './models/arkadiko-tests-vaults-operations.ts';
-
-import { 
-  VaultsManager
-} from './models/arkadiko-tests-vaults-manager.ts';
-
-import { 
-  VaultsData
-} from './models/arkadiko-tests-vaults-data.ts';
-
-import { 
   VaultsPoolLiq
 } from './models/arkadiko-tests-vaults-pool-liq.ts';
 

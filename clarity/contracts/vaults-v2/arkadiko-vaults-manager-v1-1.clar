@@ -21,7 +21,6 @@
 (define-constant ERR_CAN_NOT_LIQUIDATE u920001)
 (define-constant ERR_UNKNOWN_TOKEN u920002)
 (define-constant ERR_NOT_FIRST_VAULT u920003)
-(define-constant ERR_SHOULD_LIQUIDATE u920004)
 
 (define-constant STATUS_ACTIVE u101)
 (define-constant STATUS_CLOSED_BY_LIQUIDATION u201)
@@ -158,12 +157,12 @@
     (vault (unwrap-panic (contract-call? vaults-data get-vault owner (contract-of token))))
     (token-list (unwrap-panic (contract-call? vaults-sorted get-token (contract-of token))))
 
-    (stability-fee (try! (contract-call? vaults-helpers get-stability-fee vaults-tokens vaults-data owner (contract-of token))))
-    (debt-total (+ (get debt vault) stability-fee))
-
     (collateral-info (unwrap! (contract-call? vaults-tokens get-token (contract-of token)) (err ERR_UNKNOWN_TOKEN)))
     (collateral-price (try! (contract-call? oracle fetch-price (get token-name collateral-info))))
     (collateral-value (/ (* (get collateral vault) (get last-price collateral-price)) (get decimals collateral-price)))
+
+    (stability-fee (try! (contract-call? vaults-helpers get-stability-fee vaults-tokens vaults-data owner (contract-of token))))
+    (debt-total (+ (get debt vault) stability-fee))
 
     (debt-payoff-used (if (>= debt-payoff debt-total)
       debt-total

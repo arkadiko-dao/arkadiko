@@ -91,41 +91,6 @@ class VaultsOperations {
     return block.receipts[0].result;
   }
 
-  getCollateralToDebt(
-    caller: Account, 
-    token: string,
-    collateral: number,
-    debt: number,
-  ) {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-operations-v1-1", "get-collateral-to-debt", [
-        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2')),
-        types.principal(caller.address),
-        types.principal(Utils.qualifiedName(token)),
-        types.uint(collateral * 1000000), 
-        types.uint(debt * 1000000),
-      ], caller.address)
-    ]);
-    return block.receipts[0].result;
-  }
-
-  getStabilityFee(
-    caller: Account, 
-    token: string,
-  ) {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-operations-v1-1", "get-stability-fee", [
-        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
-        types.principal(caller.address),
-        types.principal(Utils.qualifiedName(token))
-      ], caller.address)
-    ]);
-    return block.receipts[0].result;
-  }
-
   setShutdownActivated(caller: Account, activated: boolean) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vaults-operations-v1-1", "set-shutdown-activated", [

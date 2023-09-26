@@ -149,14 +149,14 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultsOperations = new VaultsOperations(chain, deployer);
 
-    // Set price
+    // Set prices
     oracleManager.updatePrice("STX", 0.5);   
     oracleManager.updatePrice("stSTX", 0.6);     
     oracleManager.updatePrice("xBTC", 25000);    
     oracleManager.updatePrice("atALEXv2", 0.05);    
 
     //
-    // Open vault
+    // Open vaults
     //
     let result = vaultsOperations.openVault(deployer, "wstx-token", 2000, 500, deployer.address)
     result.expectOk().expectBool(true);
@@ -171,9 +171,23 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     //
-    // Close vault
+    // Update vaults
     //
+    result = vaultsOperations.updateVault(deployer, "wstx-token", 3000, 600, deployer.address)
+    result.expectOk().expectBool(true);
 
+    result = vaultsOperations.updateVault(deployer, "ststx-token", 3000, 600, deployer.address)
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.updateVault(deployer, "Wrapped-Bitcoin", 1 * 10, 600, deployer.address)
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.updateVault(deployer, "auto-alex-v2", 30000 * 100, 600, deployer.address)
+    result.expectOk().expectBool(true);
+
+    //
+    // Close vaults
+    //
     result = vaultsOperations.closeVault(deployer, "wstx-token")
     result.expectOk().expectBool(true);
 
@@ -209,6 +223,7 @@ Clarinet.test({
     let call = vaultsOperations.getShutdownActivated();
     call.result.expectBool(false);
 
+    // Activate shutdown
     result = vaultsOperations.setShutdownActivated(deployer, true);
     result.expectOk().expectBool(true);
 
@@ -224,7 +239,21 @@ Clarinet.test({
     result = vaultsOperations.closeVault(wallet_1, "wstx-token")
     result.expectErr().expectUint(930501);
 
-    // TODO: turn shutdown off
+    // Disable shutdown
+    result = vaultsOperations.setShutdownActivated(deployer, false);
+    result.expectOk().expectBool(true);
+
+    call = vaultsOperations.getShutdownActivated();
+    call.result.expectBool(false);
+
+    result = vaultsOperations.openVault(wallet_1, "wstx-token", 2000, 500, wallet_1.address)
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.updateVault(wallet_1, "wstx-token", 2020, 520, wallet_1.address)
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.closeVault(wallet_1, "wstx-token")
+    result.expectOk().expectBool(true);
   },
 });
 
@@ -276,13 +305,19 @@ Clarinet.test({
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
+    let oracleManager = new OracleManager(chain, deployer);
     let vaultsOperations = new VaultsOperations(chain, deployer);
+
+    oracleManager.updatePrice("STX", 0.5);    
 
     let result = vaultsOperations.openVault(deployer, "arkadiko-token", 1000, 250, deployer.address)
     result.expectErr().expectUint(930002);
+    
+    result = vaultsOperations.openVault(deployer, "wstx-token", 2000, 500, deployer.address)
+    result.expectOk().expectBool(true);
 
     result = vaultsOperations.updateVault(deployer, "arkadiko-token", 2000, 500, deployer.address)
-    result.expectErr().expectUint(980001);
+    result.expectErr().expectUint(930002);
   },
 });
 
@@ -352,10 +387,3 @@ Clarinet.test({
     result.expectErr().expectUint(930005);
   },
 });
-
-
-
-// TODO: ERR_NOT_AUTHORIZED (wrong trait)
-// TODO: test all collateral types
-// TODO: test stability fee
-

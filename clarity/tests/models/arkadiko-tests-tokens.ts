@@ -316,7 +316,6 @@ class WstxToken {
     return block.receipts[0].result;
   }
 
-
   getTokenUri() {
     return this.chain.callReadOnlyFn("wstx-token", "get-token-uri", [
     ], this.deployer.address);

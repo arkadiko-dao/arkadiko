@@ -100,11 +100,11 @@ class VaultsManager {
     ], this.deployer.address);
   }
 
-  setShutdownActivated(activated: boolean ) {
+  setShutdownActivated(caller: Account, activated: boolean ) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vaults-manager-v1-1", "set-shutdown-activated", [
         types.bool(activated),
-      ], this.deployer.address)
+      ], caller.address)
     ]);
     return block.receipts[0].result;
   }

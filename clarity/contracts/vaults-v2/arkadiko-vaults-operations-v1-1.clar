@@ -109,9 +109,9 @@
 )
   (let (
     (owner tx-sender)
-    (stability-fee (try! (contract-call? vaults-helpers get-stability-fee vaults-tokens vaults-data owner (contract-of token))))
     (nicr (/ (* collateral u100000000) debt))
     (collateral-info (unwrap! (contract-call? vaults-tokens get-token (contract-of token)) (err ERR_UNKNOWN_TOKEN)))
+    (stability-fee (try! (contract-call? vaults-helpers get-stability-fee vaults-tokens vaults-data owner (contract-of token))))
     (vault (unwrap-panic (contract-call? vaults-data get-vault owner (contract-of token))))
     (total-debt (unwrap-panic (contract-call? vaults-data get-total-debt (contract-of token))))
     (coll-to-debt (try! (contract-call? vaults-helpers get-collateral-to-debt vaults-tokens vaults-data oracle owner (contract-of token) collateral debt)))

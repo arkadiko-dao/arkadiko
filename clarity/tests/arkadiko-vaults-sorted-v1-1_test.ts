@@ -10,6 +10,14 @@ import {
   VaultsSorted
 } from './models/arkadiko-tests-vaults-sorted.ts';
 
+import { 
+  OracleManager,
+} from './models/arkadiko-tests-tokens.ts';
+
+import { 
+  VaultsOperations
+} from './models/arkadiko-tests-vaults-operations.ts';
+
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 Clarinet.test({
@@ -271,7 +279,7 @@ Clarinet.test({
 });
 
 // ---------------------------------------------------------
-// Same NICR
+// NICR
 // ---------------------------------------------------------
 
 Clarinet.test({
@@ -297,6 +305,53 @@ Clarinet.test({
     result.expectOk().expectTuple()["first-owner"].expectSome().expectPrincipal(wallet_2.address);
     result.expectOk().expectTuple()["last-owner"].expectSome().expectPrincipal(deployer.address);
     result.expectOk().expectTuple()["total-vaults"].expectUint(3);  
+  },
+});
+
+Clarinet.test({
+  name: "vaults-sorted: nicr for different collateral types",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultsSorted = new VaultsSorted(chain, deployer);
+    let vaultsOperations = new VaultsOperations(chain, deployer);
+
+    // Set prices
+    oracleManager.updatePrice("STX", 0.5);   
+    oracleManager.updatePrice("stSTX", 0.6);     
+    oracleManager.updatePrice("xBTC", 25000);    
+    oracleManager.updatePrice("atALEXv2", 0.05);    
+    
+    //
+    // Open vaults
+    //
+    let result = vaultsOperations.openVault(deployer, "wstx-token", 2000, 500, deployer.address)
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.openVault(deployer, "ststx-token", 2000, 500, deployer.address)
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.openVault(deployer, "Wrapped-Bitcoin", 1, 1000, deployer.address) // 0.01 BTC
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.openVault(deployer, "auto-alex-v2", 20000 * 100, 500, deployer.address)
+    result.expectOk().expectBool(true);
+
+    //
+    // NICR
+    //
+    let call:any = vaultsSorted.getVault(deployer.address, "wstx-token");
+    call.result.expectSome().expectTuple()["nicr"].expectUintWithDecimals(400);
+
+    call = vaultsSorted.getVault(deployer.address, "ststx-token");
+    call.result.expectSome().expectTuple()["nicr"].expectUintWithDecimals(400);
+
+    call = vaultsSorted.getVault(deployer.address, "Wrapped-Bitcoin");
+    call.result.expectSome().expectTuple()["nicr"].expectUintWithDecimals(0.1);
+
+    call = vaultsSorted.getVault(deployer.address, "auto-alex-v2");
+    call.result.expectSome().expectTuple()["nicr"].expectUintWithDecimals(400000);
   },
 });
 

@@ -18,6 +18,11 @@ import {
   VaultsOperations
 } from './models/arkadiko-tests-vaults-operations.ts';
 
+import { 
+  WstxToken,
+  UsdaToken
+} from './models/arkadiko-tests-tokens.ts';
+
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 Clarinet.test({
@@ -60,6 +65,8 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultsHelpers = new VaultsHelpers(chain, deployer);
     let vaultsOperations = new VaultsOperations(chain, deployer);
+    let wstxToken = new WstxToken(chain, deployer);
+    let usdaToken = new UsdaToken(chain, deployer);
 
     // Set price
     oracleManager.updatePrice("STX", 0.5);    
@@ -67,12 +74,22 @@ Clarinet.test({
 
     chain.mineEmptyBlock(144);
 
+    let call = wstxToken.getStxBalance(deployer.address);
+    call.result.expectUintWithDecimals(100000000);
+    call = usdaToken.balanceOf(deployer.address);
+    call.result.expectOk().expectUintWithDecimals(1000000);
+
     // No vault yet
     let result = vaultsHelpers.getStabilityFee(deployer, "wstx-token");
     result.expectOk().expectUint(0);
 
     result = vaultsOperations.openVault(deployer, "wstx-token", 2000, 500, deployer.address)
     result.expectOk().expectBool(true);
+
+    call = wstxToken.getStxBalance(deployer.address);
+    call.result.expectUintWithDecimals(100000000 - 2000);
+    call = usdaToken.balanceOf(deployer.address);
+    call.result.expectOk().expectUintWithDecimals(1000000 + 500);
 
     chain.mineEmptyBlock(144);
 
@@ -84,6 +101,24 @@ Clarinet.test({
     // 500 * 4% = 20
     result = vaultsHelpers.getStabilityFee(deployer, "wstx-token");
     result.expectOk().expectUintWithDecimals(20.000761);
+
+    // Update vault
+    result = vaultsOperations.updateVault(deployer, "wstx-token", 2500, 600, deployer.address);
+    result.expectOk().expectBool(true);
+
+    call = wstxToken.getStxBalance(deployer.address);
+    call.result.expectUintWithDecimals(100000000 - 2500);
+    call = usdaToken.balanceOf(deployer.address);
+    call.result.expectOk().expectUintWithDecimals(1000000 + 600 - 20.001141); // fees paid
+
+    result = vaultsHelpers.getStabilityFee(deployer, "wstx-token");
+    result.expectOk().expectUintWithDecimals(0.000456);
+
+    chain.mineEmptyBlock(144 * 364);
+
+    // 600 * 4% = 24
+    result = vaultsHelpers.getStabilityFee(deployer, "wstx-token");
+    result.expectOk().expectUintWithDecimals(23.935159);
   },
 });
 
