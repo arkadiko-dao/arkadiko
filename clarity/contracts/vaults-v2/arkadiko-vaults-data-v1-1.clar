@@ -87,6 +87,8 @@
       { total: (+ (- (unwrap-panic (get-total-debt token)) (get debt current-vault)) debt) }
     )
 
+    (print { action: "vaults-set", owner: owner, token: token, status: status, collateral: collateral, debt: debt })
+
     (ok true)
   )
 )

@@ -224,7 +224,7 @@
       total-vaults: (+ (get total-vaults token-info) u1) 
     })
 
-    (print { action: "vault-insert", owner: owner, token: token, nicr: nicr, prev-owner: prev-owner, next-owner: next-owner })
+    (print { action: "vaults-list-insert", owner: owner, token: token, nicr: nicr, prev-owner: prev-owner, next-owner: next-owner })
 
     ;; Return token info
     (ok (unwrap-panic (get-token token)))
@@ -293,7 +293,7 @@
       )
     )
 
-    (print { action: "vault-remove", owner: owner, token: token })
+    (print { action: "vaults-list-remove", owner: owner, token: token })
 
     ;; Return token info
     (ok (unwrap-panic (get-token token)))

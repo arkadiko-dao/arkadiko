@@ -115,6 +115,12 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(150000 + 102.729446 * 2);
 
     //
+    // Burn USDA
+    //
+
+    // TODO: check stakeof
+
+    //
     // Unstake
     //
     
