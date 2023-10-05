@@ -7,7 +7,6 @@ import {
 } from "https://deno.land/x/clarinet/index.ts";
 
 import { 
-  OracleManager,
   WstxToken,
   UsdaToken,
   DikoToken
@@ -51,6 +50,10 @@ Clarinet.test({
     call = vaultsPoolLiquidation.getStakeOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(0);
 
+    // DIKO rewards per block = ~51
+    call = vaultsPoolLiquidation.getDikoRewardsToAdd();
+    call.result.expectUintWithDecimals(51.364723);
+
     //
     // Stake
     //
@@ -81,16 +84,17 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(30);
 
     call = vaultsPoolLiquidation.getDikoRewardsToAdd();
-    call.result.expectUintWithDecimals(102.729446);
+    call.result.expectUintWithDecimals(51.364723 * 2);
 
     result = vaultsPoolLiquidation.addDikoRewards();
-    result.expectOk().expectUintWithDecimals(102.729446);
+    result.expectOk().expectUintWithDecimals(51.364723 * 2);
 
     call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
     call.result.expectOk().expectUintWithDecimals(30);
 
     call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
-    call.result.expectOk().expectUintWithDecimals(102.729446);
+    call.result.expectOk().expectUintWithDecimals(51.364723 * 2);
+
 
     //
     // Claim Rewards
@@ -100,7 +104,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(30);
 
     call = vaultsPoolLiquidation.getPendingRewards(wallet_1.address, "arkadiko-token");
-    call.result.expectOk().expectUintWithDecimals(102.729446);
+    call.result.expectOk().expectUintWithDecimals(51.364723 * 2);
 
     result = vaultsPoolLiquidation.claimPendingRewards(wallet_1, "wstx-token");
     result.expectOk().expectBool(true)
@@ -112,23 +116,75 @@ Clarinet.test({
     call.result.expectUintWithDecimals(100000000 + 30);
 
     call = dikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(150000 + 102.729446 * 2);
+    call.result.expectOk().expectUintWithDecimals(150000 + 51.364723 * 4);
 
     //
     // Burn USDA
     //
 
-    // TODO: check stakeof
+    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(1000);
+
+    call = vaultsPoolLiquidation.getStakeOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(1000);
+
+    result = vaultsPoolLiquidation.burnUsda(deployer, 200);
+    result.expectOk().expectUintWithDecimals(200);
+
+    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(800);
+
+    call = vaultsPoolLiquidation.getStakeOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(800);
+
 
     //
-    // Unstake
+    // Add Rewards
     //
-    
-    result = vaultsPoolLiquidation.unstake(wallet_1, 1000);    
+
+    result = vaultsPoolLiquidation.addRewards(deployer, "wstx-token", 30);
+    result.expectOk().expectUintWithDecimals(30);
+
+    call = vaultsPoolLiquidation.getDikoRewardsToAdd();
+    call.result.expectUintWithDecimals(51.364723 * 3);
+
+    result = vaultsPoolLiquidation.addDikoRewards();
+    result.expectOk().expectUintWithDecimals(51.364723 * 3);
+
+    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(30);
+
+    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
+    call.result.expectOk().expectUintWithDecimals(51.364723 * 3);
+
+
+    //
+    // Unstake - will claim all rewards
+    //
+
+    call = vaultsPoolLiquidation.getPendingRewards(wallet_1.address, "wstx-token");
+    call.result.expectOk().expectUintWithDecimals(30);
+
+    // Small rounding error
+    call = vaultsPoolLiquidation.getPendingRewards(wallet_1.address, "arkadiko-token");
+    call.result.expectOk().expectUintWithDecimals(51.364723 * 3 - 0.000001);
+
+    result = vaultsPoolLiquidation.unstake(wallet_1, 800);    
     result.expectOk().expectBool(true);
 
+    // Lost 200 USDA due to burn
     call = usdaToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(1000000);
+    call.result.expectOk().expectUintWithDecimals(1000000 - 200);
+
+    call = wstxToken.getStxBalance(wallet_1.address);
+    call.result.expectUintWithDecimals(100000000 + 30 + 30);
+
+    // Claimed rewards for 4 blocks
+    // Added rewards for 3 blocks
+    // Unstake triggers adding rewards (1 block)
+    // Small rounding error
+    call = dikoToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(150000 + 51.364723 * 8 - 0.000001);
   },
 });
 
@@ -205,7 +261,6 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
     let wallet_2 = accounts.get("wallet_2")!;
-    let wallet_3 = accounts.get("wallet_3")!;
 
     let vaultsPoolLiquidation = new VaultsPoolLiq(chain, deployer);
 
@@ -371,7 +426,10 @@ Clarinet.test({
 
     let vaultsPoolLiquidation = new VaultsPoolLiq(chain, deployer);
 
-    let result = vaultsPoolLiquidation.burnUsda(wallet_1, 100);
+    let result = vaultsPoolLiquidation.stake(wallet_1, 1000);    
+    result.expectOk().expectBool(true);
+
+    result = vaultsPoolLiquidation.burnUsda(wallet_1, 100);
     result.expectErr().expectUint(950401);
   },
 });

@@ -344,7 +344,10 @@
 (define-public (burn-usda (amount uint))
   (let (
     (receiver tx-sender)
-    (fragments-removed (* amount (var-get fragments-per-token)))
+
+    (usda-balance (unwrap-panic (contract-call? .usda-token get-balance (as-contract tx-sender))))
+    (new-usda-balance (- usda-balance amount))
+    (new-fragments-per-token (/ (var-get fragments-total) new-usda-balance))
   )
     (asserts! (or
       (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-operations")))
@@ -352,7 +355,7 @@
       (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner))
     ) (err ERR_NOT_AUTHORIZED))
 
-    (var-set fragments-total (- (var-get fragments-total) fragments-removed))
+    (var-set fragments-per-token new-fragments-per-token)
 
     (try! (as-contract (contract-call? .arkadiko-dao burn-token .usda-token amount tx-sender)))
 
