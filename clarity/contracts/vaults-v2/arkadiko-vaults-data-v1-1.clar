@@ -70,6 +70,10 @@
 (define-public (set-vault (owner principal) (token principal) (status uint) (collateral uint) (debt uint))
   (let (
     (current-vault (unwrap-panic (get-vault owner token)))
+    (nicr (if (> debt u0)
+      (/ (* collateral u100000000) debt)
+      u0
+    ))
   )
     (asserts! (or
       (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-operations")))
@@ -87,7 +91,7 @@
       { total: (+ (- (unwrap-panic (get-total-debt token)) (get debt current-vault)) debt) }
     )
 
-    (print { action: "vaults-set", owner: owner, token: token, status: status, collateral: collateral, debt: debt, last-block: block-height, nicr: (/ (* collateral u100000000) debt) })
+    (print { action: "vaults-set", owner: owner, token: token, status: status, collateral: collateral, debt: debt, last-block: block-height, nicr: nicr })
 
     (ok true)
   )
