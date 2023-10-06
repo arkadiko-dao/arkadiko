@@ -209,6 +209,32 @@ Clarinet.test({
   },
 });
 
+Clarinet.test({
+  name: "vaults-manager: liquidate vault without enough USDA in liq pool",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultsOperations = new VaultsOperations(chain, deployer);
+    let vaultsManager = new VaultsManager(chain, deployer);
+
+    // Set price
+    oracleManager.updatePrice("STX", 0.5);    
+
+    // Open vault
+    let result = vaultsOperations.openVault(wallet_1, "wstx-token", 2000, 600, wallet_1.address)
+    result.expectOk().expectBool(true);
+
+    // Set price
+    oracleManager.updatePrice("STX", 0.35);  
+
+    // Liquidate vault
+    result = vaultsManager.liquidateVault(wallet_1.address, "wstx-token");
+    result.expectErr().expectUint(950004);
+  },
+});
+
 // ---------------------------------------------------------
 // Redemptions
 // ---------------------------------------------------------

@@ -16,6 +16,7 @@
 (define-constant ERR_WRONG_TOKENS u950001)
 (define-constant ERR_CLAIM_FAILED u950002)
 (define-constant ERR_INVALID_REWARD_TOKEN u950003)
+(define-constant ERR_INSUFFICIENT_USDA u950004)
 
 ;; ---------------------------------------------------------
 ;; Variables
@@ -346,8 +347,6 @@
     (receiver tx-sender)
 
     (usda-balance (unwrap-panic (contract-call? .usda-token get-balance (as-contract tx-sender))))
-    (new-usda-balance (- usda-balance amount))
-    (new-fragments-per-token (/ (var-get fragments-total) new-usda-balance))
   )
     (asserts! (or
       (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-operations")))
@@ -355,11 +354,18 @@
       (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner))
     ) (err ERR_NOT_AUTHORIZED))
 
-    (var-set fragments-per-token new-fragments-per-token)
+    (asserts! (>= usda-balance amount) (err ERR_INSUFFICIENT_USDA))
 
-    (try! (as-contract (contract-call? .arkadiko-dao burn-token .usda-token amount tx-sender)))
+    (let (
+      (new-usda-balance (- usda-balance amount))
+      (new-fragments-per-token (/ (var-get fragments-total) new-usda-balance))
+    )
+      (var-set fragments-per-token new-fragments-per-token)
 
-    (ok amount)
+      (try! (as-contract (contract-call? .arkadiko-dao burn-token .usda-token amount tx-sender)))
+
+      (ok amount)
+    )
   )
 )
 
