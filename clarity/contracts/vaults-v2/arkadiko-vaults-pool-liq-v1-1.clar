@@ -221,6 +221,18 @@
   )
 )
 
+(define-public (claim-all-pending-rewards (vaults-tokens <vaults-tokens-trait>) (reward-tokens (list 25 <ft-trait>)))
+  (let (
+    (result-diko-claim (claim-pending-rewards .arkadiko-token))
+    (claim-result (map claim-pending-rewards reward-tokens))
+  )
+    (asserts! (unwrap-panic (check-reward-tokens vaults-tokens reward-tokens)) (err ERR_WRONG_TOKENS))
+    (asserts! (is-eq result-diko-claim (ok true)) (err ERR_CLAIM_FAILED))
+    (asserts! (is-none (index-of? claim-result (ok false))) (err ERR_CLAIM_FAILED))
+    (ok true)
+  )
+)
+
 ;; Claim pending rewards for staker, for given token
 (define-public (claim-pending-rewards (token <ft-trait>))
   (let (

@@ -106,6 +106,21 @@ class VaultsPoolLiq {
     ], this.deployer.address);
   }
 
+  claimAllPendingRewards(caller: Account) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-vaults-pool-liq-v1-1", "claim-all-pending-rewards", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
+        types.list([
+          types.principal(Utils.qualifiedName('wstx-token')),
+          types.principal(Utils.qualifiedName('ststx-token')),
+          types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
+          types.principal(Utils.qualifiedName('auto-alex-v2')),
+        ])
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
   claimPendingRewards(
     caller: Account, 
     token: string,

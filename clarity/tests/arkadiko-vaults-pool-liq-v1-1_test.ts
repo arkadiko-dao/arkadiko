@@ -344,6 +344,66 @@ Clarinet.test({
   },
 });
 
+Clarinet.test({
+  name: "vaults-pool-liq: claim all rewards at once",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let vaultsPoolLiquidation = new VaultsPoolLiq(chain, deployer);
+    let wstxToken = new WstxToken(chain, deployer);
+    let dikoToken = new DikoToken(chain, deployer);
+
+    let result = vaultsPoolLiquidation.stake(wallet_1, 1000);    
+    result.expectOk().expectBool(true);
+
+    result = vaultsPoolLiquidation.stake(wallet_2, 9000);    
+    result.expectOk().expectBool(true);
+
+    // Add rewards
+    result = vaultsPoolLiquidation.addRewards(deployer, "wstx-token", 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    result = vaultsPoolLiquidation.addDikoRewards();
+    result.expectOk().expectUintWithDecimals(102.729446);
+
+    // Pending rewards
+    let call:any = vaultsPoolLiquidation.getPendingRewards(wallet_1.address, "wstx-token");
+    call.result.expectOk().expectUintWithDecimals(1000);
+
+    call = vaultsPoolLiquidation.getPendingRewards(wallet_1.address, "arkadiko-token");
+    call.result.expectOk().expectUintWithDecimals(61.637667);
+
+    // User balance
+    call = wstxToken.getStxBalance(wallet_1.address);
+    call.result.expectUintWithDecimals(100000000);
+
+    call = dikoToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(150000);
+
+    //
+    // Claim all
+    //
+    result = vaultsPoolLiquidation.claimAllPendingRewards(wallet_1);
+    result.expectOk().expectBool(true);
+
+    // Pending rewards
+    call = vaultsPoolLiquidation.getPendingRewards(wallet_1.address, "wstx-token");
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    call = vaultsPoolLiquidation.getPendingRewards(wallet_1.address, "arkadiko-token");
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    // User balance
+    call = wstxToken.getStxBalance(wallet_1.address);
+    call.result.expectUintWithDecimals(100000000 + 1000);
+
+    call = dikoToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(150000 + 66.774139);
+  },
+});
+
 // ---------------------------------------------------------
 // Admin
 // ---------------------------------------------------------

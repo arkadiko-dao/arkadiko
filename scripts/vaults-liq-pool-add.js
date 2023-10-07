@@ -38,8 +38,7 @@ async function stake(amount, publicKey, privateKey) {
 
 async function start() {
   console.log("Stake in liq pool..");
-  stake(1000 * 1000000, CONTRACT_ADDRESS, process.env.STACKS_PRIVATE_KEY);
-  stake(500 * 1000000, "ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5", "7287ba251d44a4d3fd9276c88ce34c5c52a038955511cccaf77e61068649c17801");
+  stake(20000 * 1000000, CONTRACT_ADDRESS, process.env.STACKS_PRIVATE_KEY);
 }
 
 start()
