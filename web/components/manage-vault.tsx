@@ -24,7 +24,6 @@ import { debtClass, VaultProps } from './vault';
 import { getPrice } from '@common/get-price';
 import { getLiquidationPrice, availableCoinsToMint } from '@common/vault-utils';
 import { Redirect } from 'react-router-dom';
-import { resolveReserveName } from '@common/vault-utils';
 import { getRPCClient } from '@common/utils';
 import { microToReadable, availableCollateralToWithdraw } from '@common/vault-utils';
 import { addMinutes } from 'date-fns';
@@ -83,35 +82,24 @@ export const ManageVault = ({ match }) => {
           isLiquidated: false,
           debt: data['debt'].value
         });
-        setReserveName(resolveReserveName(data['collateral-token'].value));
         setIsVaultOwner(data['owner'].value === senderAddress);
 
         const price = await getPrice(data['collateral-token'].value);
         setPrice(price);
 
-        const type = await callReadOnlyFunction({
-          contractAddress,
-          contractName: 'arkadiko-collateral-types-v3-1',
-          functionName: 'get-collateral-type-by-name',
-          functionArgs: [stringAsciiCV(data['collateral-type'].value)],
-          senderAddress: senderAddress || contractAddress,
-          network: network,
-        });
-
-        const json = cvToJSON(type.value);
-        setCollateralType({
-          name: json.value['name'].value,
-          token: json.value['token'].value,
-          tokenType: json.value['token-type'].value,
-          url: json.value['url'].value,
-          totalDebt: json.value['total-debt'].value,
-          collateralToDebtRatio: json.value['collateral-to-debt-ratio'].value,
-          liquidationPenalty: json.value['liquidation-penalty'].value / 100,
-          liquidationRatio: json.value['liquidation-ratio'].value,
-          maximumDebt: json.value['maximum-debt'].value,
-          stabilityFee: json.value['stability-fee'].value,
-          stabilityFeeApy: json.value['stability-fee-apy'].value,
-        });
+        // setCollateralType({
+        //   name: json.value['name'].value,
+        //   token: json.value['token'].value,
+        //   tokenType: json.value['token-type'].value,
+        //   url: json.value['url'].value,
+        //   totalDebt: json.value['total-debt'].value,
+        //   collateralToDebtRatio: json.value['collateral-to-debt-ratio'].value,
+        //   liquidationPenalty: json.value['liquidation-penalty'].value / 100,
+        //   liquidationRatio: json.value['liquidation-ratio'].value,
+        //   maximumDebt: json.value['maximum-debt'].value,
+        //   stabilityFee: json.value['stability-fee'].value,
+        //   stabilityFeeApy: json.value['stability-fee-apy'].value,
+        // });
         setLoadingVaultData(false);
       }
     };
@@ -140,7 +128,7 @@ export const ManageVault = ({ match }) => {
     const fetchFees = async () => {
       const feeCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-freddie-v1-1',
+        contractName: 'arkadiko-freddie-v1-1', // TODO
         functionName: 'get-stability-fee-for-vault',
         functionArgs: [
           uintCV(vault?.id),
@@ -257,7 +245,7 @@ export const ManageVault = ({ match }) => {
         match={match}
         vault={vault}
         reserveName={reserveName}
-        decimals={['xbtc-a'].includes(vault?.collateralType?.toLowerCase()) ? decimals * 100 : decimals}
+        decimals={['btc'].includes(collateralSymbol) ? decimals * 100 : decimals}
       />
 
       <VaultWithdrawModal
@@ -306,7 +294,7 @@ export const ManageVault = ({ match }) => {
                   <Placeholder className="py-2 w-[150px]" color={Placeholder.color.GRAY} />
                 ) : (
                   <>
-                    {vault?.collateralToken.toUpperCase()}/USDA — Vault #{match.params.id}
+                    {collateralSymbol} — Vault
                   </>
                 )}
               </h2>
@@ -410,7 +398,7 @@ export const ManageVault = ({ match }) => {
 
                   <div className="p-3 mt-auto rounded-md bg-gray-50 dark:bg-gray-200">
                     <p className="text-xs font-semibold leading-none text-gray-400 uppercase dark:text-gray-500">
-                      Current {vault?.collateralToken} price
+                      Current {collateralSymbol.toUpperCase()} price
                     </p>
                     <p className="mt-1 text-sm font-semibold text-gray-900">${price / decimals}</p>
                   </div>
@@ -427,7 +415,7 @@ export const ManageVault = ({ match }) => {
                             <Tooltip
                               className="ml-2"
                               shouldWrapChildren={true}
-                              label={`When the price of ${vault?.collateralToken.toUpperCase()} increases compared to when you created a vault, your collateral is bigger in dollar value so you can mint more.`}
+                              label={`When the price of ${collateralSymbol.toUpperCase()} increases compared to when you created a vault, your collateral is bigger in dollar value so you can mint more.`}
                             >
                               <StyledIcon
                                 as="InformationCircleIcon"
@@ -573,7 +561,7 @@ export const ManageVault = ({ match }) => {
                                 <Alert type={Alert.type.SUCCESS} title="Low liquidation risk">
                                   <p>
                                     Good job! Your vault looks quite healthy. Your liquidation price
-                                    ({vault?.collateralToken} below{' '}
+                                    ({collateralSymbol.toUpperCase()} below{' '}
                                     <span className="font-semibold">${liquidationPrice()}</span>) is
                                     still very far but keep in mind that you can pay back the
                                     outstanding debt or deposit extra collateral at any time anyway.
@@ -584,7 +572,7 @@ export const ManageVault = ({ match }) => {
                                 <Alert type={Alert.type.WARNING} title="Medium liquidation risk">
                                   <p>
                                     Be careful. You will be liquidated if the{' '}
-                                    {vault?.collateralToken} price drops below{' '}
+                                    {collateralSymbol.toUpperCase()} price drops below{' '}
                                     <span className="font-semibold">${liquidationPrice()} USD</span>
                                     . Pay back the outstanding debt or deposit extra collateral to
                                     keep your vault healthy.
@@ -594,7 +582,7 @@ export const ManageVault = ({ match }) => {
                                 <Alert type={Alert.type.ERROR} title="High liquidation risk">
                                   <p>
                                     You are very close to being liquidated. It will happen if the{' '}
-                                    {vault?.collateralToken} price drops below{' '}
+                                    {collateralSymbol.toUpperCase()} price drops below{' '}
                                     <span className="font-semibold">${liquidationPrice()} USD</span>
                                     . Pay back the outstanding debt or deposit extra collateral to
                                     keep your vault healthy.
@@ -681,41 +669,11 @@ export const ManageVault = ({ match }) => {
                         <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
                           {collateralLocked()}{' '}
                           <span className="text-sm font-normal">
-                            {vault?.collateralToken.toUpperCase()}
+                            {collateralSymbol.toUpperCase()}
                           </span>
                         </p>
                       </div>
                       <div className="flex items-center">
-                        {isVaultOwner &&
-                        vault?.stackedTokens > 0 &&
-                        vaultUnlockBurnHeight === 999999999999999 &&
-                        !loadingVaultData ? (
-                          <button
-                            type="button"
-                            className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md dark:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            onClick={() => unlockCollateral()}
-                          >
-                            <StyledIcon as="LockOpenIcon" size={4} className="-ml-0.5 mr-2" />
-                            Unstack for next cycle ({unlockBurnHeight})
-                          </button>
-                        ) : isVaultOwner && vault?.stackedTokens > 0 && vaultUnlockBurnHeight < burnBlockHeight ? (
-                          <button
-                            type="button"
-                            className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md dark:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            onClick={() => unlockVaultWithdrawals()}
-                          >
-                            <StyledIcon as="LockOpenIcon" size={4} className="-ml-0.5 mr-2" />
-                            Unlock
-                          </button>
-                        ) : isVaultOwner && vault?.stackedTokens > 0 && vaultUnlockBurnHeight > burnBlockHeight ? (
-                          <button
-                            type="button"
-                            className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md dark:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                          >
-                            Vault can be unlocked at Bitcoin height {vaultUnlockBurnHeight + 1}
-                          </button>
-                        ) : null}
-
                         {isVaultOwner && !loadingVaultData ? (
                           <button
                             type="button"
@@ -785,7 +743,7 @@ export const ManageVault = ({ match }) => {
                           <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
                             {maximumCollateralToWithdraw}{' '}
                             <span className="text-sm font-normal">
-                              {vault?.collateralToken.toUpperCase()}
+                              {collateralSymbol.toUpperCase()}
                             </span>
                           </p>
                         )}
