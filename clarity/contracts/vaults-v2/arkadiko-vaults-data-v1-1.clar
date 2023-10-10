@@ -78,7 +78,7 @@
     (asserts! (or
       (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-operations")))
       (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-manager")))
-      (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner))
+      (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner))
     ) (err ERR_NOT_AUTHORIZED))
 
     ;; Update vaults data

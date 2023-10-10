@@ -59,11 +59,11 @@
   (map-get? vaults { owner: owner, token: token })
 )
 
-(define-read-only (has-access (caller principal))
+(define-read-only (has-access)
   (or
-    (is-eq caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-operations")))
-    (is-eq caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-manager")))
-    (is-eq caller (contract-call? .arkadiko-dao get-dao-owner))
+    (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-operations")))
+    (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-manager")))
+    (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner))
   )
 )
 
@@ -194,7 +194,7 @@
     (prev-owner (get prev position-find))
     (next-owner (get next position-find))
   )
-    (asserts! (has-access contract-caller) (err ERR_NOT_AUTHORIZED))
+    (asserts! (has-access) (err ERR_NOT_AUTHORIZED))
     (asserts! (get correct position-find) (err ERR_WRONG_POSITION))
     (asserts! (is-none (get-vault owner token)) (err ERR_VAULT_ALREADY_INSERTED))
 
@@ -247,7 +247,7 @@
     (prev-owner (get prev-owner (unwrap! vault (err ERR_VAULT_UNKNOWN))))
     (next-owner (get next-owner (unwrap! vault (err ERR_VAULT_UNKNOWN))))
   )
-    (asserts! (has-access contract-caller) (err ERR_NOT_AUTHORIZED))
+    (asserts! (has-access) (err ERR_NOT_AUTHORIZED))
 
     ;; Update prev vault
     (if (is-some prev-owner)

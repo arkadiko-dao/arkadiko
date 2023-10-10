@@ -79,7 +79,7 @@
   (redemption-fee-block-rate uint)
 )
   (begin
-    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
 
     (if (is-some (index-of? (var-get token-list) token))
       ;; Token already in list
@@ -113,7 +113,7 @@
 ;; Remove token
 (define-public (remove-token (token principal))
   (begin
-    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
     (asserts! (is-some (index-of? (var-get token-list) token)) (err ERR_UNKNOWN_TOKEN))
 
     (var-set token-to-remove token)

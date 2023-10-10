@@ -127,7 +127,7 @@
 
 (define-public (set-protocol-addresses (addresses (list 20 principal)))
   (begin
-    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
 
     (var-set protocol-addresses addresses)
     (ok true)

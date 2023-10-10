@@ -234,7 +234,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "vaults-sorted: remove vaults",
+  name: "vaults-sorted: reinsert vaults",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;

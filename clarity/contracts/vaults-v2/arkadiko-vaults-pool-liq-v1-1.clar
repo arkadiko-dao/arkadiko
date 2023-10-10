@@ -136,6 +136,27 @@
 )
 
 ;; ---------------------------------------------------------
+;; Migration
+;; ---------------------------------------------------------
+
+(define-public (migrate-pool-liq (staker principal) (amount uint))
+  (let (
+    (staker-info (get-staker staker))
+    (fragments-added (* amount (var-get fragments-per-token)))
+  )
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+
+    ;; Stake for user
+    (map-set stakers { staker: staker }
+      { fragments: fragments-added }
+    )
+    (var-set fragments-total (+ (- (var-get fragments-total) (get fragments staker-info)) fragments-added))
+    
+    (ok true)
+  )
+)
+
+;; ---------------------------------------------------------
 ;; Stake / Unstake
 ;; ---------------------------------------------------------
 
@@ -363,7 +384,7 @@
     (asserts! (or
       (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-operations")))
       (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-manager")))
-      (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner))
+      (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner))
     ) (err ERR_NOT_AUTHORIZED))
 
     (asserts! (>= usda-balance amount) (err ERR_INSUFFICIENT_USDA))
@@ -385,9 +406,18 @@
 ;; Admin
 ;; ---------------------------------------------------------
 
+(define-public (migrate-token (token <ft-trait>) (receiver principal) (amount uint))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+
+    (try! (as-contract (contract-call? token transfer amount tx-sender receiver none)))
+    (ok true)
+  )
+)
+
 (define-public (set-diko-rewards-percentage (percentage uint))
   (begin
-    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
 
     (var-set diko-rewards-percentage percentage)
 
@@ -397,7 +427,7 @@
 
 (define-public (set-shutdown-activated (activated bool))
   (begin
-    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
 
     (var-set shutdown-activated activated)
 

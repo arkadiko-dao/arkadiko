@@ -20,7 +20,7 @@
     (receiver tx-sender)
     (balance (unwrap-panic (contract-call? token get-balance (as-contract tx-sender))))
   )
-    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
 
     (try! (as-contract (contract-call? token transfer balance tx-sender receiver none)))
     (ok balance)

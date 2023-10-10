@@ -15,11 +15,11 @@
 ;; Getters
 ;; ---------------------------------------------------------
 
-(define-read-only (has-access (caller principal))
+(define-read-only (has-access)
   (or
-    (is-eq caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-operations")))
-    (is-eq caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-manager")))
-    (is-eq caller (contract-call? .arkadiko-dao get-dao-owner))
+    (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-operations")))
+    (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-manager")))
+    (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner))
   )
 )
 
@@ -30,7 +30,7 @@
 ;; Deposit tokens to pool
 (define-public (deposit (token <ft-trait>) (sender principal) (amount uint))
   (begin
-    (asserts! (has-access contract-caller) (err ERR_NOT_AUTHORIZED))
+    (asserts! (has-access) (err ERR_NOT_AUTHORIZED))
 
     (try! (contract-call? token transfer amount sender (as-contract tx-sender) none))
     (ok true)
@@ -40,7 +40,7 @@
 ;; Withdraw tokens from pool
 (define-public (withdraw (token <ft-trait>) (receiver principal) (amount uint))
   (begin
-    (asserts! (has-access contract-caller) (err ERR_NOT_AUTHORIZED))
+    (asserts! (has-access) (err ERR_NOT_AUTHORIZED))
 
     (try! (as-contract (contract-call? token transfer amount tx-sender receiver none)))
     (ok true)
