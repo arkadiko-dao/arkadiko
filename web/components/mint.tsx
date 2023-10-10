@@ -43,7 +43,7 @@ export const Mint = () => {
     const fetchVaults = async () => {
       const vaults = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-vault-data-v1-1',
+        contractName: 'arkadiko-vault-data-v1-1', // TODO: fetch all vaults
         functionName: 'get-vault-entries',
         functionArgs: [standardPrincipalCV(address || '')],
         senderAddress: address || '',

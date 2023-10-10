@@ -13,6 +13,7 @@ import {
   AnchorMode,
   uintCV,
   stringAsciiCV,
+  standardPrincipalCV,
   contractPrincipalCV,
   cvToJSON,
   callReadOnlyFunction,
@@ -38,6 +39,8 @@ export const ManageVault = ({ match }) => {
   const senderAddress = useSTXAddress();
   const [state, setState] = useContext(AppContext);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const vaultOwner = match.params.owner;
+  const collateralSymbol = match.params.collateral;
 
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
@@ -57,10 +60,7 @@ export const ManageVault = ({ match }) => {
   const [totalDebt, setTotalDebt] = useState(0);
   const [unlockBurnHeight, setUnlockBurnHeight] = useState(0);
   const [vaultUnlockBurnHeight, setVaultUnlockBurnHeight] = useState(999999999999999);
-  const [enabledStacking, setEnabledStacking] = useState(true);
-  const [startedStacking, setStartedStacking] = useState(true);
   const [canWithdrawCollateral, setCanWithdrawCollateral] = useState(false);
-  const [canStackCollateral, setCanStackCollateral] = useState(false);
   const [decimals, setDecimals] = useState(1000000);
   const [stackingEndDate, setStackingEndDate] = useState('');
   const [poxYield, setPoxYield] = useState(0);
@@ -76,9 +76,9 @@ export const ManageVault = ({ match }) => {
     const fetchVault = async () => {
       const serializedVault = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-freddie-v1-1',
-        functionName: 'get-vault-by-id',
-        functionArgs: [uintCV(match.params.id)],
+        contractName: 'arkadiko-vaults-data-v1-1',
+        functionName: 'get-vault',
+        functionArgs: [standardPrincipalCV(vaultOwner), contractPrincipalCV(contractAddress, collateralSymbol)],
         senderAddress: senderAddress || contractAddress,
         network: network,
       });
@@ -135,7 +135,7 @@ export const ManageVault = ({ match }) => {
       }
     };
     fetchVault();
-  }, [match.params.id]);
+  }, [match.params.owner, match.params.collateral]);
 
   useEffect(() => {
     if (vault && collateralType?.collateralToDebtRatio) {
@@ -230,67 +230,6 @@ export const ManageVault = ({ match }) => {
       }
     };
 
-    const fetchStackerHeight = async () => {
-      if (vault?.stackedTokens == 0 && vault?.revokedStacking) {
-        setEnabledStacking(false);
-      }
-      const contractName = 'arkadiko-stacker-v3-1';
-
-      const call = await callReadOnlyFunction({
-        contractAddress,
-        contractName,
-        functionName: 'get-stacking-unlock-burn-height',
-        functionArgs: [],
-        senderAddress: contractAddress || '',
-        network: network,
-      });
-      const unlockBurnHeight = cvToJSON(call).value.value;
-      setUnlockBurnHeight(unlockBurnHeight);
-
-      const vaultUnlockCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-stacker-payer-v3-7',
-        functionName: 'get-vault-unlock',
-        functionArgs: [uintCV(vault?.id)],
-        senderAddress: contractAddress || '',
-        network: network,
-      });
-      const vaultUnlockBurnHeight = cvToJSON(vaultUnlockCall).value['unlocked-at-burn-height'].value;
-      setVaultUnlockBurnHeight(parseInt(vaultUnlockBurnHeight, 10));
-
-      const client = getRPCClient();
-      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
-      const data = await response.json();
-      const currentBurnHeight = data['burn_block_height'];
-
-      if (Number(unlockBurnHeight) === 0) {
-        setStartedStacking(false);
-        if (Number(vault?.stackedTokens) === 0) {
-          setCanWithdrawCollateral(true);
-        }
-        setLoadingStackerData(false);
-        return;
-      } else {
-        setStartedStacking(true);
-        if (Number(vault?.stackedTokens) === 0 || unlockBurnHeight < currentBurnHeight) {
-          setCanWithdrawCollateral(true);
-        } else {
-          setCanWithdrawCollateral(false);
-        }
-      }
-
-      if (unlockBurnHeight < currentBurnHeight) {
-        setStackingEndDate('');
-      } else {
-        const stackingBlocksLeft = unlockBurnHeight - currentBurnHeight;
-        const stackingMinutesLeft = stackingBlocksLeft * 10 + 1440; // stacking blocks left * 10 minutes/block + 1 day
-        const currentDate = new Date();
-        const endDate = addMinutes(currentDate, stackingMinutesLeft);
-        setStackingEndDate(endDate.toDateString());
-      }
-      setLoadingStackerData(false);
-    };
-
     if (vault?.id) {
       const collateralType = vault['collateralType'].toLowerCase();
       if (collateralType.includes('stx')) {
@@ -299,7 +238,6 @@ export const ManageVault = ({ match }) => {
       }
       setDecimals(['stx-a', 'stx-b', 'xbtc-a', 'btc'].includes(collateralType) ? 1000000 : 100000000);
       fetchFees();
-      fetchStackerHeight();
       fetchCollateralToDebtRatio();
       fetchStackingInfo();
     }
