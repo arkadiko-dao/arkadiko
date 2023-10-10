@@ -78,9 +78,9 @@ export const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="https://www.hiro.so/wallet" target="_blank" rel="noopener noreferrer" className="inline-flex text-base transition duration-300 hover:text-gray-700 dark:hover:text-zinc-300">
+                <a href="https://leather.io/" target="_blank" rel="noopener noreferrer" className="inline-flex text-base transition duration-300 hover:text-gray-700 dark:hover:text-zinc-300">
                   <svg className="flex-shrink-0 w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-300" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M17 8v-3a1 1 0 0 0 -1 -1h-10a2 2 0 0 0 0 4h12a1 1 0 0 1 1 1v3m0 4v3a1 1 0 0 1 -1 1h-12a2 2 0 0 1 -2 -2v-12" /><path d="M20 12v4h-4a2 2 0 0 1 0 -4h4" /></svg>
-                  Hiro Wallet
+                  Leather Wallet
                   <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-indigo-100 text-indigo-800">
                     Web
                   </span>
