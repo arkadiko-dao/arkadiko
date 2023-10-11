@@ -95,7 +95,7 @@ Clarinet.test({
     call.result.expectOk().expectUint(0)
 
     // 6 months, 30 days, 144 block per day 
-    chain.mineEmptyBlock((6*30*144)-2);
+    chain.mineEmptyBlockUntil((6*30*144)-2);
 
     // Get tokens
     call = chain.callReadOnlyFn("arkadiko-diko-init", "get-pending-founders-tokens", [], wallet_1.address);

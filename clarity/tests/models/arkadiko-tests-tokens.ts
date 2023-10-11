@@ -33,7 +33,7 @@ class OracleManager {
     }
 
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v1-1", "update-price-owner", [
+      Tx.contractCall("arkadiko-oracle-v2-2", "update-price-owner", [
         types.uint(tokenId),
         types.uint(price * 1000000),
         types.uint(decimals)
