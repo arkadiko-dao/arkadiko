@@ -51,20 +51,22 @@ const contracts: Contract[] = [
   // V2 contracts
   { name: 'arkadiko-vaults-data-trait-v1-1', file: 'vaults-v2/arkadiko-vaults-data-trait-v1-1' },
   { name: 'arkadiko-vaults-pool-active-trait-v1-1', file: 'vaults-v2/arkadiko-vaults-pool-active-trait-v1-1' },
+  { name: 'arkadiko-vaults-tokens-trait-v1-1', file: 'vaults-v2/arkadiko-vaults-tokens-trait-v1-1' },
+  { name: 'arkadiko-vaults-pool-liq-trait-v1-1', file: 'vaults-v2/arkadiko-vaults-pool-liq-trait-v1-1' },
+  { name: 'arkadiko-vaults-helpers-trait-v1-1', file: 'vaults-v2/arkadiko-vaults-helpers-trait-v1-1' },
+  { name: 'arkadiko-vaults-sorted-trait-v1-1', file: 'vaults-v2/arkadiko-vaults-sorted-trait-v1-1' },
 
   { name: 'arkadiko-vaults-data-v1-1', file: 'vaults-v2/arkadiko-vaults-data-v1-1' },
-  { name: 'arkadiko-vaults-helpers-trait-v1-1', file: 'vaults-v2/arkadiko-vaults-helpers-trait-v1-1' },
   { name: 'arkadiko-vaults-helpers-v1-1', file: 'vaults-v2/arkadiko-vaults-helpers-v1-1' },
   { name: 'arkadiko-vaults-manager-v1-1', file: 'vaults-v2/arkadiko-vaults-manager-v1-1' },
   { name: 'arkadiko-vaults-operations-v1-1', file: 'vaults-v2/arkadiko-vaults-operations-v1-1' },
   { name: 'arkadiko-vaults-pool-active-v1-1', file: 'vaults-v2/arkadiko-vaults-pool-active-v1-1' },
   { name: 'arkadiko-vaults-pool-fees-v1-1', file: 'vaults-v2/arkadiko-vaults-pool-fees-v1-1' },
-  { name: 'arkadiko-vaults-pool-liq-trait-v1-1', file: 'vaults-v2/arkadiko-vaults-pool-liq-trait-v1-1' },
   { name: 'arkadiko-vaults-pool-liq-v1-1', file: 'vaults-v2/arkadiko-vaults-pool-liq-v1-1' },
-  { name: 'arkadiko-vaults-sorted-trait-v1-1', file: 'vaults-v2/arkadiko-vaults-sorted-trait-v1-1' },
   { name: 'arkadiko-vaults-sorted-v1-1', file: 'vaults-v2/arkadiko-vaults-sorted-v1-1' },
-  { name: 'arkadiko-vaults-tokens-trait-v1-1', file: 'vaults-v2/arkadiko-vaults-tokens-trait-v1-1' },
   { name: 'arkadiko-vaults-tokens-v1-1', file: 'vaults-v2/arkadiko-vaults-tokens-v1-1' },
+
+  { name: 'arkadiko-vaults-migration-v1-1', file: 'vaults-v2/arkadiko-vaults-migration-v1-1' }
 ];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');
