@@ -67,7 +67,11 @@ const contracts: Contract[] = [
   { name: 'arkadiko-vaults-sorted-v1-1', file: 'vaults-v2/arkadiko-vaults-sorted-v1-1' },
   { name: 'arkadiko-vaults-tokens-v1-1', file: 'vaults-v2/arkadiko-vaults-tokens-v1-1' },
 
-  { name: 'arkadiko-vaults-migration-v1-1', file: 'vaults-v2/arkadiko-vaults-migration-v1-1' }
+  { name: 'arkadiko-vaults-migration-v1-1', file: 'vaults-v2/arkadiko-vaults-migration-v1-1' },
+
+  { name: 'ststx-token', file: 'tests/ststx/ststx-token' },
+  { name: 'wstx-token' },
+  { name: 'auto-alex-v2' }
 ];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');
