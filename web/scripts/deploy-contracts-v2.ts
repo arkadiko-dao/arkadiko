@@ -27,7 +27,6 @@ const contracts: Contract[] = [
   { name: 'arkadiko-vault-trait-v1', file: 'vaults/arkadiko-vault-trait-v1' },
   { name: 'arkadiko-collateral-types-trait-v1', file: 'vaults/arkadiko-collateral-types-trait-v1' },
   { name: 'arkadiko-vault-manager-trait-v1', file: 'vaults/arkadiko-vault-manager-trait-v1' },
-  { name: 'arkadiko-auction-engine-trait-v1', file: 'vaults/arkadiko-auction-engine-trait-v1' },
   { name: 'arkadiko-dao-token-trait-v1' },
   { name: 'arkadiko-stake-pool-diko-trait-v1', file: 'stake/arkadiko-stake-pool-diko-trait-v1' },
   { name: 'arkadiko-swap-trait-v1', file: 'swap/arkadiko-swap-trait-v1' },
