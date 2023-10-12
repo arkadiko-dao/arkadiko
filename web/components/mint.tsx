@@ -100,10 +100,9 @@ export const Mint = () => {
               </h3>
             </header>
 
-            {vaults.length &&
-            Object.keys(collateralTypes).length === state.definedCollateralTypes.length ? (
+            {vaults.length ? (
               <VaultGroup vaults={vaults} />
-            ) : loadingVaults === true ? (
+            ) : loadingVaults ? (
               <div className="min-w-full mt-4 overflow-hidden overflow-x-auto align-middle rounded-lg sm:shadow">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
                   <thead className="bg-gray-50 dark:bg-zinc-800 dark:bg-opacity-80">

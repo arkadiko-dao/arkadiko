@@ -30,33 +30,37 @@ export const getBalance = async (address: string) => {
   const welshContractAddress = process.env.WELSH_CONTRACT_ADDRESS || '';
   const ldnContractAddress = process.env.LDN_CONTRACT_ADDRESS || '';
   const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
+  let lpXusdUsdaBalance = 0;
+  let lpXusdUsdaBalance2 = 0;
 
-  // xUSD/USDA
-  // Need to fetch it via contract as extra token-id param needed
-  const call = await callReadOnlyFunction({
-    contractAddress: process.env.ATALEX_CONTRACT_ADDRESS!,
-    contractName: 'token-amm-swap-pool',
-    functionName: 'get-balance',
-    functionArgs: [
-      uintCV(1),
-      standardPrincipalCV(address),
-    ],
-    senderAddress: address || '',
-    network: network,
-  });
-  const lpXusdUsdaBalance = cvToJSON(call).value.value;
-  const call2 = await callReadOnlyFunction({
-    contractAddress: process.env.ATALEX_CONTRACT_ADDRESS!,
-    contractName: 'token-amm-swap-pool',
-    functionName: 'get-balance',
-    functionArgs: [
-      uintCV(4),
-      standardPrincipalCV(address),
-    ],
-    senderAddress: address || '',
-    network: network,
-  });
-  const lpXusdUsdaBalance2 = cvToJSON(call2).value.value;
+  try {
+    // xUSD/USDA
+    // Need to fetch it via contract as extra token-id param needed
+    const call = await callReadOnlyFunction({
+      contractAddress: process.env.ATALEX_CONTRACT_ADDRESS!,
+      contractName: 'token-amm-swap-pool',
+      functionName: 'get-balance',
+      functionArgs: [
+        uintCV(1),
+        standardPrincipalCV(address),
+      ],
+      senderAddress: address || '',
+      network: network,
+    });
+    lpXusdUsdaBalance = cvToJSON(call).value.value;
+    const call2 = await callReadOnlyFunction({
+      contractAddress: process.env.ATALEX_CONTRACT_ADDRESS!,
+      contractName: 'token-amm-swap-pool',
+      functionName: 'get-balance',
+      functionArgs: [
+        uintCV(4),
+        standardPrincipalCV(address),
+      ],
+      senderAddress: address || '',
+      network: network,
+    });
+    lpXusdUsdaBalance2 = cvToJSON(call2).value.value;
+  } catch (_e) {}
 
   const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
   const usdaBalance = data.fungible_tokens[`${contractAddress}.usda-token::usda`];
@@ -175,10 +179,9 @@ export const App: React.FC = () => {
         senderAddress: address,
         network: network,
       });
-      console.log(tokenParts, types);
       const json = cvToJSON(types.value);
-      console.log(json);
-      collTypes[address] = {
+      console.log('Got collateral type with:', json);
+      collTypes[json.value['token-name'].value] = {
         name: json.value['token-name'].value,
         collateralToDebtRatio: '110', // TODO?
         liquidationPenalty: json.value['liquidation-penalty'].value / 100,
