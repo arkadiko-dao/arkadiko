@@ -50,6 +50,18 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
         innerText: 'text-STX'
       }
     },
+    'stSTX': {
+      label: 'Keep stacking while borrowing',
+      logo: '/assets/tokens/stx.svg',
+      path: '/vaults/new#stx',
+      classes: {
+        wrapper: 'border-STX/5 hover:border-STX/10 shadow-STX/10 from-STX/5 to-STX/10',
+        tokenShadow: 'shadow-STX/10',
+        innerBg: 'bg-STX',
+        iconColor: 'text-STX/80',
+        innerText: 'text-STX'
+      }
+    },
     'xBTC': {
       label: 'Borrow against the hardest money',
       logo: '/assets/tokens/xbtc.svg',
@@ -62,8 +74,8 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
         innerText: 'text-xBTC'
       }
     },
-    'ATALEX': {
-      label: 'The auto-compounding ALEX governance token',
+    'atALEXv2': {
+      label: 'The ALEX governance token',
       logo: '/assets/tokens/atalex.svg',
       path: '/vaults/new?type=ATALEX-A&token=auto-alex',
       classes: {
@@ -101,22 +113,22 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
   return (
     <>
       {collateralItems.map((collateral) => (
-        <div key={collateral.name} className={`group border shadow-md ${collateral.classes.wrapper} flex flex-col col-span-1 bg-gradient-to-br divide-y divide-gray-200 rounded-md transition duration-700 ease-in-out sm:w-1/3`}>
+        <div key={collateral.name} className={`group border shadow-md ${collateral.classes?.wrapper} flex flex-col col-span-1 bg-gradient-to-br divide-y divide-gray-200 rounded-md transition duration-700 ease-in-out sm:w-1/3`}>
           <div className="flex flex-col flex-1 px-6 py-8">
             <div className="flex items-start justify-between">
               <div className="mr-6">
                 <h2 className="text-xl font-medium font-semibold leading-6 text-gray-700 dark:text-zinc-100">{collateral.name}</h2>
                 <p className="mt-1.5">{collateral.label}</p>
               </div>
-              <div className={`flex items-center justify-center w-20 h-20 shrink-0 origin-bottom bg-white/80 rounded-md shadow-2xl ${collateral.classes.tokenShadow} rotate-6 scale-[0.95] transition duration-700 ease-in-out group-hover:rotate-0 group-hover:scale-100 group-hover:-translate-y-1 border border-gray-400/30`}>
+              <div className={`flex items-center justify-center w-20 h-20 shrink-0 origin-bottom bg-white/80 rounded-md shadow-2xl ${collateral.classes?.tokenShadow} rotate-6 scale-[0.95] transition duration-700 ease-in-out group-hover:rotate-0 group-hover:scale-100 group-hover:-translate-y-1 border border-gray-400/30`}>
                 <img className="w-12 h-12" src={collateral.logo} alt="" />
               </div>
             </div>
 
-            <div className={`px-4 py-5 mt-8 mb-4 rounded-lg ${collateral.classes.innerBg} bg-opacity-[.08] flex items-center justify-center`}>
-              <StyledIcon as="SparklesIcon" size={6} className={`brightness-50 dark:brightness-100 ${collateral.classes.iconColor} mr-6 shrink-0`} />
+            <div className={`px-4 py-5 mt-8 mb-4 rounded-lg ${collateral.classes?.innerBg} bg-opacity-[.08] flex items-center justify-center`}>
+              <StyledIcon as="SparklesIcon" size={6} className={`brightness-50 dark:brightness-100 ${collateral.classes?.iconColor} mr-6 shrink-0`} />
               <div className="flex flex-col">
-                <p className={`text-sm font-semibold brightness-75 ${collateral.classes.innerText}`}>
+                <p className={`text-sm font-semibold brightness-75 ${collateral.classes?.innerText}`}>
                   With{' '}
                   {collateral.name === "STX" ?
                       state.userData && state.balance["stx"] > 0 ?
@@ -149,7 +161,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
                   <span className="text-xs">
                     {' '}{collateral.name}
                   </span>,</p>
-                <p className={`text-lg font-semibold ${collateral.classes.innerText} brightness-50 dark:brightness-100`}>
+                <p className={`text-lg font-semibold ${collateral.classes?.innerText} brightness-50 dark:brightness-100`}>
                   borrow up to {' '}
 
                   {collateral.name === "STX" ?

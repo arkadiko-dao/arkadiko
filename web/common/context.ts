@@ -53,6 +53,15 @@ export interface AppState {
   currentTxMessage: string;
 }
 
+export const VaultStatuses = () => {
+  return {
+    100: 'Inactive',
+    101: 'Active',
+    201: 'Liquidated',
+    202: 'Redeemed'
+  };
+}
+
 export const defaultBalance = () => {
   return {
     stx: 0,
@@ -88,8 +97,10 @@ export const defaultState = (): AppState => {
       balance: defaultBalance(),
       vaults: [],
       definedCollateralTypes: [
-        'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wstx-token', // TODO: make dynamic
-        'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin'
+        'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.wstx-token', // TODO: make dynamic
+        'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.Wrapped-Bitcoin',
+        'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.ststx-token',
+        'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.auto-alex-v2'
       ],
       collateralTypes: [],
       currentTxId: '',
@@ -104,8 +115,10 @@ export const defaultState = (): AppState => {
     balance: defaultBalance(),
     vaults: [],
     definedCollateralTypes: [
-      'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wstx-token',
-      'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin'
+      'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.wstx-token',
+      'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.Wrapped-Bitcoin',
+      'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.ststx-token',
+      'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.auto-alex-v2',
     ],
     collateralTypes: [],
     currentTxId: '',

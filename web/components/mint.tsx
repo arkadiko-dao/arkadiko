@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
-import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, uintCV } from '@stacks/transactions';
+import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { VaultGroup } from './vault-group';
 import { AppContext } from '@common/context';
 import { useEffect } from 'react';
@@ -21,19 +21,6 @@ export const Mint = () => {
   const [loadingVaults, setLoadingVaults] = useState(true);
 
   useEffect(() => {
-    const fetchVault = async (vaultId: number) => {
-      const vault = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-vault-data-v1-1',
-        functionName: 'get-vault-by-id',
-        functionArgs: [uintCV(vaultId)],
-        senderAddress: address || '',
-        network: network,
-      });
-      const json = cvToJSON(vault);
-      return json;
-    };
-
     async function asyncForEach(array: any, callback: any) {
       for (let index = 0; index < array.length; index++) {
         await callback(array[index], index, array);
@@ -41,41 +28,46 @@ export const Mint = () => {
     }
 
     const fetchVaults = async () => {
-      const vaults = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-vault-data-v1-1', // TODO: fetch all vaults
-        functionName: 'get-vault-entries',
-        functionArgs: [standardPrincipalCV(address || '')],
-        senderAddress: address || '',
-        network: network,
-      });
-      const json = cvToJSON(vaults);
-      const arr: VaultProps[] = [];
+      await asyncForEach(state.definedCollateralTypes, async tokenAddress => {
+        const tokenParts = tokenAddress.split('.');
 
-      await asyncForEach(json.value.ids.value, async (vaultId: any) => {
-        if (Number(vaultId.value) !== 0) {
-          const vault = await fetchVault(vaultId.value);
-          const data = vault.value;
-          arr.push({
-            key: data['id'].value,
-            id: data['id'].value,
-            owner: data['owner'].value,
-            collateral: data['collateral'].value,
-            collateralType: data['collateral-type'].value,
-            collateralToken: data['collateral-token'].value,
-            isLiquidated: data['is-liquidated'].value,
-            auctionEnded: data['auction-ended'].value,
-            leftoverCollateral: data['leftover-collateral'].value,
-            debt: data['debt'].value,
-            stackedTokens: data['stacked-tokens'].value,
-            collateralData: {},
-          });
-        }
+        const vault = await callReadOnlyFunction({
+          contractAddress,
+          contractName: 'arkadiko-vaults-data-v1-1',
+          functionName: 'get-vault',
+          functionArgs: [standardPrincipalCV(address || ''), contractPrincipalCV(tokenParts[0], tokenParts[1])],
+          senderAddress: address || '',
+          network: network,
+        });
+        const json = cvToJSON(vault);
+        const arr: VaultProps[] = [];
+        console.log('vault:', json);
       });
+
+      // await asyncForEach(json.value.ids.value, async (vaultId: any) => {
+      //   if (Number(vaultId.value) !== 0) {
+      //     const vault = await fetchVault(vaultId.value);
+      //     const data = vault.value;
+      //     arr.push({
+      //       key: data['id'].value,
+      //       id: data['id'].value,
+      //       owner: data['owner'].value,
+      //       collateral: data['collateral'].value,
+      //       collateralType: data['collateral-type'].value,
+      //       collateralToken: data['collateral-token'].value,
+      //       isLiquidated: data['is-liquidated'].value,
+      //       auctionEnded: data['auction-ended'].value,
+      //       leftoverCollateral: data['leftover-collateral'].value,
+      //       debt: data['debt'].value,
+      //       stackedTokens: data['stacked-tokens'].value,
+      //       collateralData: {},
+      //     });
+      //   }
+      // });
 
       setState(prevState => ({
         ...prevState,
-        vaults: arr,
+        vaults: [],
       }));
       setLoadingVaults(false);
     };
