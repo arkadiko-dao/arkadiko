@@ -70,7 +70,7 @@ const contracts: Contract[] = [
 
   { name: 'ststx-token', file: 'tests/ststx/ststx-token' },
   { name: 'wstx-token' },
-  { name: 'auto-alex-v2' }
+  { name: 'auto-alex-v2', file: 'tests/atalex/auto-alex-v2' }
 ];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');
