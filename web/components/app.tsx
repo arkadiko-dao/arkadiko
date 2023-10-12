@@ -9,7 +9,7 @@ import { SubHeader } from '@components/sub-header';
 import { Routes } from '@components/routes';
 import { getRPCClient } from '@common/utils';
 import { stacksNetwork as network } from '@common/utils';
-import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, stringAsciiCV, uintCV } from '@stacks/transactions';
+import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { resolveSTXAddress } from '@common/use-stx-address';
 import { TxStatus } from '@components/tx-status';
 import { TxSidebar } from '@components/tx-sidebar';
@@ -165,28 +165,27 @@ export const App: React.FC = () => {
 
   const fetchCollateralTypes = async (address: string) => {
     const collTypes = {};
-    ['STX-A', 'STX-B', 'XBTC-A', 'ATALEX-A'].forEach(async token => {
+    state.definedCollateralTypes.forEach(async tokenAddress => {
+      const tokenParts = tokenAddress.split('.');
       const types = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-collateral-types-v3-1',
-        functionName: 'get-collateral-type-by-name',
-        functionArgs: [stringAsciiCV(token)],
+        contractName: 'arkadiko-vaults-tokens-v1-1',
+        functionName: 'get-token',
+        functionArgs: [contractPrincipalCV(tokenParts[0], tokenParts[1])],
         senderAddress: address,
         network: network,
       });
+      console.log(tokenParts, types);
       const json = cvToJSON(types.value);
-      collTypes[token] = {
-        name: json.value['name'].value,
-        token: json.value['token'].value,
-        tokenType: json.value['token-type'].value,
-        url: json.value['url'].value,
-        totalDebt: json.value['total-debt'].value,
-        collateralToDebtRatio: json.value['collateral-to-debt-ratio'].value,
+      console.log(json);
+      collTypes[address] = {
+        name: json.value['token-name'].value,
+        collateralToDebtRatio: '110', // TODO?
         liquidationPenalty: json.value['liquidation-penalty'].value / 100,
         liquidationRatio: json.value['liquidation-ratio'].value,
-        maximumDebt: json.value['maximum-debt'].value,
+        maximumDebt: json.value['max-debt'].value,
         stabilityFee: json.value['stability-fee'].value,
-        stabilityFeeApy: json.value['stability-fee-apy'].value,
+        stabilityFeeApy: '9' // TODO?
       };
       setState(prevState => ({
         ...prevState,

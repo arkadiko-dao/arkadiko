@@ -87,7 +87,10 @@ export const defaultState = (): AppState => {
       userData: userSession.loadUserData(),
       balance: defaultBalance(),
       vaults: [],
-      definedCollateralTypes: ['STX-A', 'STX-B', 'XBTC-A', 'ATALEX-A'],
+      definedCollateralTypes: [
+        'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wstx-token', // TODO: make dynamic
+        'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin'
+      ],
       collateralTypes: [],
       currentTxId: '',
       currentTxStatus: '',
@@ -100,7 +103,10 @@ export const defaultState = (): AppState => {
     userData: null,
     balance: defaultBalance(),
     vaults: [],
-    definedCollateralTypes: ['STX-A', 'STX-B', 'XBTC-A', 'ATALEX-A'],
+    definedCollateralTypes: [
+      'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wstx-token',
+      'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin'
+    ],
     collateralTypes: [],
     currentTxId: '',
     currentTxStatus: '',

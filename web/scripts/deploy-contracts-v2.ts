@@ -44,7 +44,7 @@ const contracts: Contract[] = [
   { name: 'usda-token' },
   { name: 'xstx-token' },
   { name: 'stdiko-token' },
-  // { name: 'arkadiko-governance-v4-1' },
+  { name: 'arkadiko-governance-v4-1' },
   { name: 'wrapped-stx-token' },
   { name: 'Wrapped-Bitcoin', file: 'tests/xbtc/Wrapped-Bitcoin' },
 
