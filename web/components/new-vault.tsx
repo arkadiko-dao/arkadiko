@@ -9,7 +9,6 @@ import { useLocation } from 'react-router-dom';
 
 export const NewVault = () => {
   const search = useLocation().search;
-  const type = new URLSearchParams(search).get('type');
   const token = new URLSearchParams(search).get('token');
 
   const [step, setStep] = useState(0);
@@ -17,13 +16,11 @@ export const NewVault = () => {
     amounts: { stx: 0, usda: 0 },
     'collateral-to-debt-ratio': 0,
     'liquidation-price': 0,
-    'stack-pox': true,
-    'auto-payoff': true,
   });
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    if (type && token) {
+    if (token) {
       setStep(1);
     }
   }, []);

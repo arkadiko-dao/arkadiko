@@ -41,7 +41,7 @@ export const Mint = () => {
         });
         const json = cvToJSON(vault);
         const arr: VaultProps[] = [];
-        console.log('vault:', json);
+        console.log('vault', tokenAddress, json);
       });
 
       // await asyncForEach(json.value.ids.value, async (vaultId: any) => {

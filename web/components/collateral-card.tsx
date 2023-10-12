@@ -41,7 +41,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
     'STX': {
       label: 'Keep stacking while borrowing',
       logo: '/assets/tokens/stx.svg',
-      path: '/vaults/new#stx',
+      path: '/vaults/new?token=wstx',
       classes: {
         wrapper: 'border-STX/5 hover:border-STX/10 shadow-STX/10 from-STX/5 to-STX/10',
         tokenShadow: 'shadow-STX/10',
@@ -53,7 +53,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
     'stSTX': {
       label: 'Keep stacking while borrowing',
       logo: '/assets/tokens/stx.svg',
-      path: '/vaults/new#stx',
+      path: '/vaults/new?token=ststx',
       classes: {
         wrapper: 'border-STX/5 hover:border-STX/10 shadow-STX/10 from-STX/5 to-STX/10',
         tokenShadow: 'shadow-STX/10',
@@ -65,7 +65,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
     'xBTC': {
       label: 'Borrow against the hardest money',
       logo: '/assets/tokens/xbtc.svg',
-      path: '/vaults/new?type=xBTC-A&token=xBTC',
+      path: '/vaults/new?token=xBTC',
       classes: {
         wrapper: 'border-xBTC/5 hover:border-xBTC/10 shadow-xBTC/10 from-xBTC/5 to-xBTC/10',
         tokenShadow: 'shadow-xBTC/10',
@@ -77,7 +77,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
     'atALEXv2': {
       label: 'The ALEX governance token',
       logo: '/assets/tokens/atalex.svg',
-      path: '/vaults/new?type=ATALEX-A&token=auto-alex',
+      path: '/vaults/new?token=auto-alex',
       classes: {
         wrapper: 'border-atAlex/5 hover:border-atAlex/10 shadow-atAlex/10 from-atAlex/5 to-atAlex/10',
         tokenShadow: 'shadow-atAlex/10',
@@ -89,7 +89,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
   };
   Object.keys(types).forEach((tokenSymbol: string) => {
     const coll = types[tokenSymbol];
-    console.log(coll);
+    console.log('coll:', coll);
     collateralItems.push({
       name: coll['name'],
       token: coll['token'],
@@ -108,7 +108,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
       classes: collExtraInfo[tokenSymbol]?.['classes']
     });
   });
-  console.log(collateralItems);
+  console.log('collateral items:', collateralItems);
 
   return (
     <>
