@@ -25,7 +25,6 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   const [decimals, setDecimals] = useState(1000000);
 
   const search = useLocation().search;
-  const tokenType = new URLSearchParams(search).get('type');
   const tokenName = new URLSearchParams(search).get('token');
   const currentSection = 1;
 
@@ -37,7 +36,6 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
       'liquidation-ratio': liquidationRatio,
       'liquidation-penalty': liquidationPenalty,
       'stability-fee-apy': stabilityFeeApy,
-      'token-type': tokenType,
       'token-name': tokenName,
       'stack-pox': true,
       'auto-payoff': true,
@@ -58,10 +56,10 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   const [isLoading, setIsLoading] = useState(true);
 
   const maximumCoinsToMint = (value: string) => {
-    const collateralType = state.collateralTypes[tokenType?.toLocaleUpperCase()];
+    const collateralType = state.collateralTypes[tokenName?.toLocaleUpperCase()];
     if (collateralType) {
-      const minColl = collateralType['collateralToDebtRatio'];
-      const maxRatio = Math.max(minColl, parseInt(liquidationRatio, 10) + 30);
+      const minColl = 120;
+      const maxRatio = Math.max(minColl, parseInt(liquidationRatio / 100, 10) + 30);
       const uCollateralAmount = parseInt(value * 1000000, 10);
       setMaximumToMint(Math.floor((uCollateralAmount * price * 100) / maxRatio));
     }
@@ -69,11 +67,9 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
 
   useEffect(() => {
     const fetchPrice = async (tokenKey: string) => {
-      if (!tokenName) {
-        return;
-      }
+      if (!tokenName) return;
 
-      const price = await getPrice(tokenName);
+      const price = await getPrice(tokenName.toUpperCase());
       const decimals = tokenKey === 'auto-alex' ? 100000000 : 1000000;
       setPrice(price / decimals);
     };
@@ -161,12 +157,12 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   }, [price, tokenName, collateralAmount, coinAmount]);
 
   useEffect(() => {
-    if (tokenType && state.collateralTypes[tokenType.toUpperCase()]) {
-      setStabilityFeeApy(state.collateralTypes[tokenType.toUpperCase()].stabilityFeeApy);
-      setLiquidationPenalty(state.collateralTypes[tokenType.toUpperCase()].liquidationPenalty);
-      setLiquidationRatio(state.collateralTypes[tokenType.toUpperCase()].liquidationRatio);
+    if (tokenName && state.collateralTypes[tokenName.toUpperCase()]) {
+      setStabilityFeeApy(state.collateralTypes[tokenName.toUpperCase()].stabilityFeeApy);
+      setLiquidationPenalty(state.collateralTypes[tokenName.toUpperCase()].liquidationPenalty);
+      setLiquidationRatio(state.collateralTypes[tokenName.toUpperCase()].liquidationRatio);
     }
-  }, [tokenType, state.collateralTypes]);
+  }, [tokenName, state.collateralTypes]);
 
   return (
     <>

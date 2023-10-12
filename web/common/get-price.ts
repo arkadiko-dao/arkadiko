@@ -12,7 +12,7 @@ export const getPriceInfo = async (symbol: string) => {
     contractAddress,
     contractName: 'arkadiko-oracle-v2-2',
     functionName: 'get-price',
-    functionArgs: [stringAsciiCV(symbol || 'stx')],
+    functionArgs: [stringAsciiCV(symbol || 'STX')],
     senderAddress: contractAddress,
     network: network,
   });

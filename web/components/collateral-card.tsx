@@ -41,7 +41,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
     'STX': {
       label: 'Keep stacking while borrowing',
       logo: '/assets/tokens/stx.svg',
-      path: '/vaults/new?token=wstx',
+      path: '/vaults/new?token=stx',
       classes: {
         wrapper: 'border-STX/5 hover:border-STX/10 shadow-STX/10 from-STX/5 to-STX/10',
         tokenShadow: 'shadow-STX/10',
