@@ -148,7 +148,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
         ? collateralAmount * 100
         : collateralAmount;
       setLiquidationPrice(
-        getLiquidationPrice(liquidationRatio, parseFloat(coinAmount), parseFloat(amount), tokenName)
+        getLiquidationPrice(liquidationRatio / 100, parseFloat(coinAmount), parseFloat(amount), tokenName)
       );
       setCollateralToDebt(
         getCollateralToDebtRatio(price * 100, parseFloat(coinAmount), parseFloat(collateralAmount))
@@ -160,7 +160,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
     if (tokenName && state.collateralTypes[tokenName.toUpperCase()]) {
       setStabilityFeeApy(state.collateralTypes[tokenName.toUpperCase()].stabilityFeeApy);
       setLiquidationPenalty(state.collateralTypes[tokenName.toUpperCase()].liquidationPenalty);
-      setLiquidationRatio(state.collateralTypes[tokenName.toUpperCase()].liquidationRatio);
+      setLiquidationRatio(state.collateralTypes[tokenName.toUpperCase()].liquidationRatio / 100);
     }
   }, [tokenName, state.collateralTypes]);
 

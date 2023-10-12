@@ -8,6 +8,7 @@ import {
   trueCV,
   falseCV,
   tupleCV,
+  noneCV,
   makeStandardSTXPostCondition,
   makeStandardFungiblePostCondition,
   FungibleConditionCode,
@@ -28,34 +29,39 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
   const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
 
   const callCollateralizeAndMint = async () => {
-    const decimals = coinAmounts['token-type'].toLowerCase().includes('stx') ? 1000000 : 100000000;
+    const decimals = coinAmounts['token-name'].toLowerCase().includes('stx') ? 1000000 : 100000000;
     const token = tokenTraits[coinAmounts['token-name'].toLowerCase()]['name'];
     const tokenAddress = tokenTraits[coinAmounts['token-name'].toLowerCase()]['address'];
     const amount = uintCV(parseInt(coinAmounts['amounts']['collateral'] * decimals, 10));
     const args = [
-      amount,
-      uintCV(parseInt(coinAmounts['amounts']['usda'], 10) * 1000000),
-      tupleCV({
-        'stack-pox':
-          coinAmounts['stack-pox'] && coinAmounts['token-type'].toLowerCase().includes('stx')
-            ? trueCV()
-            : falseCV(),
-        'auto-payoff':
-          coinAmounts['auto-payoff'] && coinAmounts['token-type'].toLowerCase().includes('stx')
-            ? trueCV()
-            : falseCV(),
-      }),
-      stringAsciiCV(coinAmounts['token-type'].toUpperCase()),
       contractPrincipalCV(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
-        resolveReserveName(coinAmounts['token-name'].toUpperCase())
+        'arkadiko-vaults-tokens-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-data-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-sorted-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-pool-active-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-helpers-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-oracle-v2-2'
       ),
       contractPrincipalCV(tokenAddress, token),
-      contractPrincipalCV(
-        process.env.REACT_APP_CONTRACT_ADDRESS || '',
-        'arkadiko-collateral-types-v3-1'
-      ),
-      contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v2-2'),
+      amount,
+      uintCV(parseInt(coinAmounts['amounts']['usda'], 10) * 1000000),
+      noneCV()
     ];
 
     let postConditions: any[] = [];
@@ -97,8 +103,8 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       network,
       contractAddress,
       stxAddress: address,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'collateralize-and-mint',
+      contractName: 'arkadiko-vaults-operations-v1-1',
+      functionName: 'open-vault',
       functionArgs: args,
       postConditions,
       postConditionMode,

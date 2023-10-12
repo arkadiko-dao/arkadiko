@@ -188,7 +188,7 @@ export const App: React.FC = () => {
         liquidationRatio: json.value['liquidation-ratio'].value,
         maximumDebt: json.value['max-debt'].value,
         stabilityFee: json.value['stability-fee'].value,
-        stabilityFeeApy: '9' // TODO?
+        stabilityFeeApy: json.value['stability-fee'].value
       };
       setState(prevState => ({
         ...prevState,
