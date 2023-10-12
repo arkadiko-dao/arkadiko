@@ -34,6 +34,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-stake-pool-trait-v1', file: 'stake/arkadiko-stake-pool-trait-v1' },
   { name: 'arkadiko-liquidation-pool-trait-v1', file: 'vaults/arkadiko-liquidation-pool-trait-v1' },
   { name: 'arkadiko-liquidation-rewards-trait-v2', file: 'vaults/arkadiko-liquidation-rewards-trait-v2' },
+  { name: 'arkadiko-diko-guardian-v1-1', file: 'stake/arkadiko-diko-guardian-v1-1' },
 
   { name: 'restricted-token-trait', file: 'tests/xbtc/restricted-token-trait' },
 
