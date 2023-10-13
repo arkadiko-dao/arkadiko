@@ -83,7 +83,7 @@ export const Vault: React.FC<VaultProps> = ({
     // fetchFees();
   }, []);
 
-  let debtRatio = 0;
+  let debtRatio = 180;
   // TODO
   // if (id) {
   //   debtRatio = getCollateralToDebtRatio(id)?.collateralToDebt;
@@ -230,7 +230,7 @@ export const Vault: React.FC<VaultProps> = ({
                 className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
               >
                 <span className="absolute inset-0" aria-hidden="true"></span>
-                Manage
+                {parseInt(status, 10) === 101 ? 'Manage' : 'Open Vault'}
                 <StyledIcon as="ArrowRightIcon" size={5} className="ml-2 -rotate-45" />
               </RouterLink>
             )}
