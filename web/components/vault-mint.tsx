@@ -1,6 +1,4 @@
 import React, { useContext, useState, useRef } from 'react';
-import { Modal } from '@components/ui/modal';
-import { tokenList } from '@components/token-swap-list';
 import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
@@ -11,18 +9,14 @@ import { VaultProps } from './vault';
 import { availableCoinsToMint } from '@common/vault-utils';
 
 interface Props {
-  showMintModal: boolean;
-  setShowMintModal: (arg: boolean) => void;
   vault: VaultProps;
   reserveName: string;
   price: number;
   collateralType: any;
 }
 
-export const VaultMintModal: React.FC<Props> = ({
+export const VaultMint: React.FC<Props> = ({
   match,
-  showMintModal,
-  setShowMintModal,
   vault,
   reserveName,
   price,
@@ -101,31 +95,9 @@ export const VaultMintModal: React.FC<Props> = ({
   };
 
   return (
-    <Modal
-      open={showMintModal}
-      title="Mint extra USDA"
-      icon={<img className="w-10 h-10 rounded-full" src={tokenList[0].logo} alt="" />}
-      closeModal={() => setShowMintModal(false)}
-      buttonText="Mint"
-      buttonAction={() => callMint()}
-      initialFocus={inputRef}
-    >
-      <p className="text-sm text-center text-gray-500 dark:text-zinc-400">
-        Choose how much extra USDA you want to mint. You can mint a maximum of{' '}
-        <span className="font-semibold">
-          {availableCoinsToMint(
-            vault?.collateralToken === 'auto-alex' ? price / 100 : price,
-            collateralLocked(),
-            outstandingDebt(),
-            collateralType?.collateralToDebtRatio
-          ).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 6,
-          })}{' '}
-          USDA
-        </span>
-        .
-      </p>
+    <div>
+      <h3 className="text-base font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">Mint extra USDA</h3>
+      <p className="mt-2 text-sm text-gray-500 dark:text-zinc-400">When the price of {vault?.collateralToken.toUpperCase()} increases compared to when you created a vault, your collateral is bigger in dollar value so you can mint more.</p>
 
       <div className="mt-6">
         <InputAmount
@@ -148,6 +120,17 @@ export const VaultMintModal: React.FC<Props> = ({
           ref={inputRef}
         />
       </div>
-    </Modal>
+
+      <div>
+        <button
+          type="button"
+          className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          onClick={() => callMint()}
+        >
+          Mint
+        </button>
+      </div>
+
+    </div>
   );
 };

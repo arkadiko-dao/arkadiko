@@ -9,17 +9,19 @@ enum StatusType {
   WARNING,
   ERROR,
   SUCCESS,
+  NEUTRAL
 }
 
 type StatusTypeConfig = {
   wrapperClass: string;
-  icon: IconName;
+  icon?: IconName;
 };
 
 type Props = {
   type?: StatusType;
   label: string;
-  labelHover: string;
+  labelHover?: string;
+  hasHover?: boolean;
 };
 
 const configMap: Record<StatusType, StatusTypeConfig> = {
@@ -35,25 +37,32 @@ const configMap: Record<StatusType, StatusTypeConfig> = {
     wrapperClass: 'bg-green-100 text-green-800',
     icon: 'ShieldCheckIcon',
   },
+  [StatusType.NEUTRAL]: {
+    wrapperClass: 'bg-neutral-300/80 text-neutral-700',
+  },
 };
 
-export function Status({ type = StatusType.SUCCESS, label, labelHover }: Props) {
+export function Status({ type = StatusType.SUCCESS, label, labelHover, hasHover }: Props) {
   const status = configMap[type];
 
   return (
     <span className={classNames('overflow-hidden group inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold h-6', status.wrapperClass)}>
-      <StyledIcon as={status.icon} size={5} className="mr-2" />
+      {status.icon ?
+        <StyledIcon as={status.icon} size={5} className="mr-2" />
+      :null}
       {label}
-      <span className="flex items-center flex-shrink-0 invisible w-0 h-0 group-hover:w-full group-hover:visible group-hover:h-6">
-        <svg
-          className="w-1.5 h-1.5 mx-1 flex-shrink-0"
-          fill="currentColor"
-          viewBox="0 0 8 8"
-        >
-          <circle cx={4} cy={4} r={3} />
-        </svg>
-        <span className="flex-shrink-0">{labelHover}</span>
-      </span>
+      {hasHover ? (
+        <span className="flex items-center flex-shrink-0 invisible w-0 h-0 group-hover:w-full group-hover:visible group-hover:h-6">
+          <svg
+            className="w-1.5 h-1.5 mx-1 flex-shrink-0"
+            fill="currentColor"
+            viewBox="0 0 8 8"
+          >
+            <circle cx={4} cy={4} r={3} />
+          </svg>
+          <span className="flex-shrink-0">{labelHover}</span>
+        </span>
+      ) : null}
     </span>
   );
 }

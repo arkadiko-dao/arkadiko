@@ -1,6 +1,4 @@
 import React, { useContext, useState, useRef } from 'react';
-import { Modal } from '@components/ui/modal';
-import { tokenList } from '@components/token-swap-list';
 import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { Alert } from './ui/alert';
@@ -21,17 +19,13 @@ import { VaultProps } from './vault';
 import { tokenTraits } from '@common/vault-utils';
 
 interface Props {
-  showDepositModal: boolean;
-  setShowDepositModal: (arg: boolean) => void;
   vault: VaultProps;
   reserveName: string;
   decimals: number;
 }
 
-export const VaultDepositModal: React.FC<Props> = ({
+export const VaultDeposit: React.FC<Props> = ({
   match,
-  showDepositModal,
-  setShowDepositModal,
   vault,
   reserveName,
   decimals,
@@ -138,17 +132,10 @@ export const VaultDepositModal: React.FC<Props> = ({
   };
 
   return (
-    <Modal
-      open={showDepositModal}
-      title="Deposit Extra Collateral"
-      icon={<img className="w-10 h-10 rounded-full" src={tokenList[2].logo} alt="" />}
-      closeModal={() => setShowDepositModal(false)}
-      buttonText="Add deposit"
-      buttonAction={() => addDeposit()}
-      initialFocus={inputRef}
-    >
-      <p className="text-sm text-center text-gray-500 dark:text-zinc-400">
-        Choose how much extra collateral you want to post. You have a balance of{' '}
+    <div>
+      <h3 className="text-base font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">Deposit extra collateral</h3>
+      <p className="mt-2 text-sm text-gray-500 dark:text-zinc-400">
+        Choose how much extra collateral you want to deposit. You have a balance of{' '}
         <span className="font-semibold">
           {state.balance[vault?.collateralToken.toLowerCase()] / decimals}{' '}
           {vault?.collateralToken.toUpperCase()}
@@ -187,6 +174,16 @@ export const VaultDepositModal: React.FC<Props> = ({
           ref={inputRef}
         />
       </div>
-    </Modal>
+
+      <div>
+        <button
+          type="button"
+          className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          onClick={() => addDeposit()}
+        >
+          Deposit
+        </button>
+      </div>
+    </div>
   );
 };

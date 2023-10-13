@@ -154,7 +154,7 @@ export const Mint = () => {
               Borrow against your favorite assets now.
             </p>
           </header>
-          <div className="mt-4 space-y-8 sm:space-x-8 sm:flex sm:items-center sm:justify-center sm:space-y-0">
+          <div className="mt-4 space-y-8 sm:space-x-8 sm:flex sm:items-start sm:justify-center sm:space-y-0">
             {/* <div className="grid grid-cols-1 gap-8 mt-4 sm:grid-cols-3"> */}
               <CollateralCard types={collateralTypes} />
             {/* </div> */}

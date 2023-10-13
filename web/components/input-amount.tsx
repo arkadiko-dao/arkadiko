@@ -3,6 +3,7 @@ import React from 'react';
 interface InputAmountProps {
   balance: string;
   token: string;
+  inputHelper?: string;
   inputName: string;
   inputId: string;
   inputValue: string;
@@ -13,14 +14,16 @@ interface InputAmountProps {
 
 export const InputAmount = React.forwardRef<HTMLInputElement, InputAmountProps>(
   (
-    { balance, token, inputName, inputId, inputValue, inputLabel, onInputChange, onClickMax },
+    { balance, token, inputName, inputId, inputValue, inputLabel, inputHelper = "Available amount", onInputChange, onClickMax },
     ref
   ) => {
     return (
       <div className="relative flex flex-col">
-        <span className="text-xs text-left text-gray-600 dark:text-zinc-400">
-          Available amount {balance} {token}
-        </span>
+        {inputHelper ?
+          <span className="text-xs text-left text-gray-600 dark:text-zinc-400">
+            {inputHelper}: {balance} {token}
+          </span>
+        :null}
         <div className="inline-flex items-center w-full min-w-0 mt-2 mb-2 border border-gray-300 rounded-md focus-within:ring-indigo-500 focus-within:border-indigo-500 dark:bg-zinc-700 dark:border-zinc-500">
           <input
             type="text"

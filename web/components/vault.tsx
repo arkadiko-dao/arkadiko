@@ -164,7 +164,7 @@ export const Vault: React.FC<VaultProps> = ({
               {debtRatio != 0 ? (
                 debtClass(collateralData?.liquidationRatio, debtRatio) == 'text-green-500' ? (
                   <Status
-                    type={Status.type.SUCCESS }
+                    type={Status.type.SUCCESS}
                     label='Healthy'
                     labelHover='Low liquidation risk'
                   />
