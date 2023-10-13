@@ -69,6 +69,16 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
     if (coinAmounts['token-name'].toLowerCase() === 'stx') {
       postConditions = [
         makeStandardSTXPostCondition(address || '', FungibleConditionCode.Equal, amount.value),
+        makeStandardFungiblePostCondition(
+          address || '',
+          FungibleConditionCode.LessEqual,
+          amount.value,
+          createAssetInfo(
+          process.env.REACT_APP_CONTRACT_ADDRESS || '',
+            'wstx-token',
+            'wstx'
+          )
+        )
       ];
     } else if (coinAmounts['token-name'].toLowerCase() === 'xbtc') {
       postConditions = [
