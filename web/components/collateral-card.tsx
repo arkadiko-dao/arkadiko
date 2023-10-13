@@ -7,7 +7,6 @@ import { microToReadable } from '@common/vault-utils';
 import { getPrice } from '@common/get-price';
 import { useConnect } from '@stacks/connect-react';
 import { Status } from './ui/health-status';
-import { ShieldCheckIcon } from '@heroicons/react/solid';
 import { Tooltip } from '@blockstack/ui';
 
 export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
