@@ -77,7 +77,7 @@ export const tokenTraits: TokenTraits = {
   },
   stx: {
     address: contractAddress,
-    name: 'xstx-token',
+    name: 'wstx-token',
     swap: 'wrapped-stx-token',
     multihop: [],
     ft: 'stx',
