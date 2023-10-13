@@ -134,6 +134,21 @@ Clarinet.test({
 
     call = vaultsSorted.getVault(wallet_1.address, "wstx-token");
     call.result.expectNone();
+
+    // Open vault again
+    result = vaultsOperations.openVault(wallet_1, "wstx-token", 8000, 500, wallet_1.address)
+    result.expectOk().expectBool(true);
+
+    call = vaultsData.getVault(wallet_1.address, "wstx-token");
+    call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(8000);
+    call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(500);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(12);
+    call.result.expectOk().expectTuple()["status"].expectUint(101);
+
+    call = vaultsSorted.getVault(wallet_1.address, "wstx-token");
+    call.result.expectSome().expectTuple()["prev-owner"].expectNone();
+    call.result.expectSome().expectTuple()["next-owner"].expectNone(0);
+    call.result.expectSome().expectTuple()["nicr"].expectUintWithDecimals(1600);
   },
 });
 
