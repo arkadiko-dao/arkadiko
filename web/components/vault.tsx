@@ -158,7 +158,7 @@ export const Vault: React.FC<VaultProps> = ({
               </h2>
             </div>
             <>
-              {debtRatio != 0 ? (
+              {Number(status) === 101 && debtRatio != 0 ? (
                 debtClass(liquidationRatio, debtRatio) == 'text-green-500' ? (
                   <Status
                     type={Status.type.SUCCESS }

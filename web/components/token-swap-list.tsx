@@ -101,6 +101,26 @@ export const tokenList = [
     fullName: 'Wrapped-USD',
     decimals: 8,
   },
+  {
+    id: 10,
+    name: 'atALEXv2',
+    nameInPair: 'auto-alex',
+    logo: '/assets/tokens/atalex.png',
+    listed: false,
+    address: atAlexContractAddress,
+    fullName: 'auto-alex-v2',
+    decimals: 8
+  },
+  {
+    id: 11,
+    name: 'stSTX',
+    nameInPair: 'ststx',
+    logo: '/assets/tokens/ststx.jpg',
+    listed: false,
+    address: contractAddress,
+    fullName: 'ststx-token',
+    decimals: 6
+  }
 ];
 
 type Token = {

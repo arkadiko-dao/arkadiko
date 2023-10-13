@@ -13,6 +13,33 @@ import { Placeholder } from './ui/placeholder';
 import { Prices } from './prices';
 import { CollateralCard } from './collateral-card';
 
+// TODO: extract to utils
+const tokenToName = (token: string) => {
+  if (token === 'wrapped-stx-token') {
+    return 'STX';
+  } else if (token === 'arkadiko-token') {
+    return 'DIKO';
+  } else if (token === 'usda-token') {
+    return 'USDA';
+  } else if (token === 'Wrapped-Bitcoin') {
+    return 'xBTC';
+  } else if (token === 'welshcorgicoin-token') {
+    return 'WELSH';
+  } else if (token === 'wrapped-lydian-token') {
+    return 'wLDN';
+  } else if (token === 'lydian-token') {
+    return 'LDN';
+  } else if (token === 'wstx-token') {
+    return 'STX';
+  } else if (token === 'auto-alex-v2') {
+    return 'atALEXv2';
+  } else if (token === 'ststx-token') {
+    return 'stSTX';
+  } else {
+    return '';
+  }
+};
+
 export const Mint = () => {
   const address = useSTXAddress();
   const [state, setState] = useContext(AppContext);
@@ -43,7 +70,7 @@ export const Mint = () => {
         const json = cvToJSON(vaultCall);
         const vault = json.value.value;
         console.log('vault', tokenAddress, vault, tokenParts[1]);
-        const collateralToken = tokenParts[1] === 'wstx-token' ? 'STX' : tokenParts[1]; // TODO
+        const collateralToken = tokenToName(tokenParts[1]);
         arr.push({
           key: tokenAddress,
           owner: address,
