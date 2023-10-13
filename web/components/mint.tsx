@@ -28,10 +28,11 @@ export const Mint = () => {
     }
 
     const fetchVaults = async () => {
+      const arr: VaultProps[] = [];
       await asyncForEach(state.definedCollateralTypes, async tokenAddress => {
         const tokenParts = tokenAddress.split('.');
 
-        const vault = await callReadOnlyFunction({
+        const vaultCall = await callReadOnlyFunction({
           contractAddress,
           contractName: 'arkadiko-vaults-data-v1-1',
           functionName: 'get-vault',
@@ -39,35 +40,25 @@ export const Mint = () => {
           senderAddress: address || '',
           network: network,
         });
-        const json = cvToJSON(vault);
-        const arr: VaultProps[] = [];
-        console.log('vault', tokenAddress, json);
+        const json = cvToJSON(vaultCall);
+        const vault = json.value.value;
+        console.log('vault', tokenAddress, vault, tokenParts[1]);
+        const collateralToken = tokenParts[1] === 'wstx-token' ? 'STX' : tokenParts[1]; // TODO
+        arr.push({
+          key: tokenAddress,
+          owner: address,
+          collateral: vault['collateral'].value,
+          collateralToken: collateralToken,
+          status: vault['status'].value,
+          isLiquidated: vault['status'].value == 202, // TODO
+          debt: vault['debt'].value,
+          liquidationRatio: 110 // TODO
+        });
       });
-
-      // await asyncForEach(json.value.ids.value, async (vaultId: any) => {
-      //   if (Number(vaultId.value) !== 0) {
-      //     const vault = await fetchVault(vaultId.value);
-      //     const data = vault.value;
-      //     arr.push({
-      //       key: data['id'].value,
-      //       id: data['id'].value,
-      //       owner: data['owner'].value,
-      //       collateral: data['collateral'].value,
-      //       collateralType: data['collateral-type'].value,
-      //       collateralToken: data['collateral-token'].value,
-      //       isLiquidated: data['is-liquidated'].value,
-      //       auctionEnded: data['auction-ended'].value,
-      //       leftoverCollateral: data['leftover-collateral'].value,
-      //       debt: data['debt'].value,
-      //       stackedTokens: data['stacked-tokens'].value,
-      //       collateralData: {},
-      //     });
-      //   }
-      // });
 
       setState(prevState => ({
         ...prevState,
-        vaults: [],
+        vaults: arr,
       }));
       setLoadingVaults(false);
     };

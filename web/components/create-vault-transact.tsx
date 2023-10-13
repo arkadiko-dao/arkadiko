@@ -74,7 +74,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
           FungibleConditionCode.LessEqual,
           amount.value,
           createAssetInfo(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
+            process.env.REACT_APP_CONTRACT_ADDRESS || '',
             'wstx-token',
             'wstx'
           )

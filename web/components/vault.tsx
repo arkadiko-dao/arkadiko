@@ -30,9 +30,7 @@ export interface VaultProps {
   isLiquidated: boolean;
   auctionEnded: boolean;
   leftoverCollateral: number;
-  collateralData: object;
-  stackedTokens: number;
-  revokedStacking: boolean;
+  liquidationRatio: number;
 }
 
 export const debtClass = (liquidationRatio: number, ratio: number) => {
@@ -48,16 +46,13 @@ export const debtClass = (liquidationRatio: number, ratio: number) => {
 };
 
 export const Vault: React.FC<VaultProps> = ({
-  id,
+  owner,
   collateral,
-  collateralType,
   collateralToken,
+  status,
   debt,
   isLiquidated,
-  auctionEnded,
-  leftoverCollateral,
-  collateralData,
-  stackedTokens,
+  liquidationRatio
 }) => {
   const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -84,13 +79,15 @@ export const Vault: React.FC<VaultProps> = ({
       setStabilityFee(fee.value.value);
     };
 
-    fetchFees();
+    // TODO:
+    // fetchFees();
   }, []);
 
   let debtRatio = 0;
-  if (id) {
-    debtRatio = getCollateralToDebtRatio(id)?.collateralToDebt;
-  }
+  // TODO
+  // if (id) {
+  //   debtRatio = getCollateralToDebtRatio(id)?.collateralToDebt;
+  // }
 
   const callWithdrawLeftoverCollateral = async () => {
     const token = tokenTraits[collateralToken.toLowerCase()]['name'];
@@ -151,24 +148,24 @@ export const Vault: React.FC<VaultProps> = ({
 
   return (
     <>
-      <div className={`relative border rounded-md shadom-sm ${debtRatio != 0 ? (debtRatio < Number(collateralData?.liquidationRatio) ? 'bg-red-50/30 border-red-600/60' : 'bg-white dark:bg-zinc-800 border-gray-200/80 dark:border-zinc-800') : 'bg-white dark:bg-zinc-800 border-gray-200/80 dark:border-zinc-800'}`}>
+      <div className={`relative border rounded-md shadom-sm ${debtRatio != 0 ? (debtRatio < Number(liquidationRatio) ? 'bg-red-50/30 border-red-600/60' : 'bg-white dark:bg-zinc-800 border-gray-200/80 dark:border-zinc-800') : 'bg-white dark:bg-zinc-800 border-gray-200/80 dark:border-zinc-800'}`}>
         <div className="px-6 py-4 border-b border-gray-100 dark:border-zinc-600">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <img className="w-8 h-8 mr-3 rounded-full shrink-0" src={collateralListInfo?.logo} alt="" />
               <h2 className="text-xl font-medium font-semibold leading-6 text-gray-700 dark:text-zinc-100">
-                {collateralToken} &middot; <span className="text-sm font-normal">{collateralType.toUpperCase()}</span>
+                {collateralToken}
               </h2>
             </div>
             <>
               {debtRatio != 0 ? (
-                debtClass(collateralData?.liquidationRatio, debtRatio) == 'text-green-500' ? (
+                debtClass(liquidationRatio, debtRatio) == 'text-green-500' ? (
                   <Status
                     type={Status.type.SUCCESS }
                     label='Healthy'
                     labelHover='Low liquidation risk'
                   />
-                ) : debtClass(collateralData?.liquidationRatio, debtRatio) == 'text-orange-500' ? (
+                ) : debtClass(liquidationRatio, debtRatio) == 'text-orange-500' ? (
                   <Status
                     type={Status.type.WARNING}
                     label='Warning'
@@ -194,8 +191,8 @@ export const Vault: React.FC<VaultProps> = ({
                 </dt>
                 <dd className="text-lg font-semibold dark:text-white">
                   {item.label === "Health" ? (
-                    <span className={`${debtClass(collateralData?.liquidationRatio, debtRatio)}`}>
-                      {item.amount}{item.unit} <span className="text-sm">(&gt; {collateralData?.liquidationRatio}%)</span>
+                    <span className={`${debtClass(liquidationRatio, debtRatio)}`}>
+                      {item.amount}{item.unit} <span className="text-sm">(&gt; {liquidationRatio}%)</span>
                     </span>
                   )
                   :
@@ -228,7 +225,7 @@ export const Vault: React.FC<VaultProps> = ({
               )
             ) : (
               <RouterLink
-                to={`vaults/${id}`}
+                to={`vaults/${stxAddress}/${collateralToken}`}
                 exact
                 className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
               >
