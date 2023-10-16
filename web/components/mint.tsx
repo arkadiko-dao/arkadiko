@@ -164,9 +164,9 @@ export const Mint = () => {
             </p>
           </header>
           <div className="mt-4 space-y-8 sm:space-x-8 sm:flex sm:items-center sm:justify-center sm:space-y-0">
-            {/* <div className="grid grid-cols-1 gap-8 mt-4 sm:grid-cols-3"> */}
+            <div className="grid grid-cols-1 gap-8 mt-4 sm:grid-cols-2 w-full">
               <CollateralCard types={collateralTypes} />
-            {/* </div> */}
+            </div>
           </div>
         </section>
 
