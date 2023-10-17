@@ -32,7 +32,16 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
     const decimals = coinAmounts['token-name'].toLowerCase().includes('stx') ? 1000000 : 100000000;
     const token = tokenTraits[coinAmounts['token-name'].toLowerCase()]['name'];
     const tokenAddress = tokenTraits[coinAmounts['token-name'].toLowerCase()]['address'];
-    const amount = uintCV(parseInt(coinAmounts['amounts']['collateral'] * decimals, 10));
+    const collateralAmount = parseInt(coinAmounts['amounts']['collateral'] * decimals, 10);
+    const debtAmount = parseInt(coinAmounts['amounts']['usda'], 10) * 1000000;
+    const amount = uintCV(collateralAmount);
+
+    const BASE_URL = 'https://arkadiko-vaults-api-029bd7781bb7.herokuapp.com/api/hint' // TODO: add to .env
+    const url = BASE_URL + `?owner=${address}&token=${tokenAddress}.${token}&collateral=${collateralAmount}&debt=${debtAmount}`;
+    const response = await fetch(url);
+    const hint = await response.json();
+    console.log('got hint:', hint);
+
     const args = [
       contractPrincipalCV(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
@@ -60,8 +69,8 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       ),
       contractPrincipalCV(tokenAddress, token),
       amount,
-      uintCV(parseInt(coinAmounts['amounts']['usda'], 10) * 1000000),
-      noneCV()
+      uintCV(debtAmount),
+      principalCV(hint['prevOwner'])
     ];
 
     let postConditions: any[] = [];
