@@ -62,6 +62,7 @@ const collExtraInfo = {
 
 export const CollateralCard: React.FC<CollateralTypeProps> = () => {
   const [state, _] = useContext(AppContext);
+  const [startedLoading, setStartedLoading] = useState(false);
   const [{ collateralTypes }, _x] = useContext(AppContext);
   const { doOpenAuth } = useConnect();
   const stxAddress = useSTXAddress();
@@ -91,13 +92,13 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
     };
 
     const fetchData = async () => {
+      setStartedLoading(true);
+
       await fetchInfo();
       const items = [];
       await asyncForEach(Object.keys(collateralTypes), async (tokenSymbol: string) => {
-        console.log('symb:', tokenSymbol, state.vaults);
-
         const tokenParts = state.vaults[tokenSymbol]['key'].split('.');
-        const vaultCall = await callReadOnlyFunction({
+        const debtCall = await callReadOnlyFunction({
           contractAddress,
           contractName: 'arkadiko-vaults-data-v1-1',
           functionName: 'get-total-debt',
@@ -112,7 +113,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
           token: coll['token'],
           tokenType: coll['tokenType'],
           url: coll['url'],
-          totalDebt: coll['totalDebt'],
+          totalDebt: Number(debtCall.value.value),
           stabilityFee: coll['stabilityFee'],
           stabilityFeeApy: coll['stabilityFeeApy'],
           liquidationRatio: coll['liquidationRatio'],
@@ -125,11 +126,10 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
           classes: collExtraInfo[tokenSymbol]?.['classes']
         });
       });
-      console.log('collateral items:', items);
       setCollateralItems(items);
     }
 
-    if (Object.keys(state?.collateralTypes).length > 0) fetchData();
+    if (!startedLoading && Object.keys(state?.collateralTypes).length > 0) fetchData();
   }, [state.collateralTypes]);
 
   return (
