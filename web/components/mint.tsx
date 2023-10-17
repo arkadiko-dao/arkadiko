@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, asyncForEach } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { VaultGroup } from './vault-group';
@@ -47,12 +47,6 @@ export const Mint = () => {
   const [loadingVaults, setLoadingVaults] = useState(true);
 
   useEffect(() => {
-    async function asyncForEach(array: any, callback: any) {
-      for (let index = 0; index < array.length; index++) {
-        await callback(array[index], index, array);
-      }
-    }
-
     const fetchVaults = async () => {
       const vaults = {};
       await asyncForEach(state.definedCollateralTypes, async tokenAddress => {

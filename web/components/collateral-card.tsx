@@ -10,14 +10,64 @@ import { Status } from './ui/health-status';
 import { Tooltip } from '@blockstack/ui';
 import { useSTXAddress } from '@common/use-stx-address';
 import { getLiquidationPrice, getCollateralToDebtRatio } from '@common/vault-utils';
+import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, contractPrincipalCV, uintCV } from '@stacks/transactions';
+import { stacksNetwork as network, asyncForEach } from '@common/utils';
+
+const collExtraInfo = {
+  'STX': {
+    logo: '/assets/tokens/stx.svg',
+    path: '/vaults/new?token=stx',
+    classes: {
+      wrapper: 'border-STX/5 hover:border-STX/40 shadow-STX/10 from-STX/[.01] to-STX/5',
+      tokenShadow: 'shadow-STX/10',
+      innerBg: 'bg-STX',
+      iconColor: 'text-STX/80',
+      innerText: 'text-STX'
+    }
+  },
+  'stSTX': {
+    logo: '/assets/tokens/ststx.svg',
+    path: '/vaults/new?token=ststx',
+    classes: {
+      wrapper: 'border-zinc-500/5 hover:border-zinc-500/40 shadow-zinc-500/10 from-zinc-500/[.01] to-zinc-500/5',
+      tokenShadow: 'shadow-zinc-500/10',
+      innerBg: 'bg-zinc-500',
+      iconColor: 'text-zinc-500/80',
+      innerText: 'text-zinc-500'
+    }
+  },
+  'xBTC': {
+    logo: '/assets/tokens/xbtc.svg',
+    path: '/vaults/new?token=xBTC',
+    classes: {
+      wrapper: 'border-xBTC/5 hover:border-xBTC/40 shadow-xBTC/10 from-xBTC/[.01] to-xBTC/5',
+      tokenShadow: 'shadow-xBTC/10',
+      innerBg: 'bg-xBTC',
+      iconColor: 'text-xBTC/80',
+      innerText: 'text-xBTC'
+    }
+  },
+  'atALEXv2': {
+    logo: '/assets/tokens/atalex.svg',
+    path: '/vaults/new?token=auto-alex',
+    classes: {
+      wrapper: 'border-atAlex/5 hover:border-atAlex/40 shadow-atAlex/10 from-atAlex/[.01] to-atAlex/5',
+      tokenShadow: 'shadow-atAlex/10',
+      innerBg: 'bg-atAlex',
+      iconColor: 'text-atAlex/80',
+      innerText: 'text-atAlex'
+    }
+  }
+};
 
 export const CollateralCard: React.FC<CollateralTypeProps> = () => {
   const [state, _] = useContext(AppContext);
   const [{ collateralTypes }, _x] = useContext(AppContext);
   const { doOpenAuth } = useConnect();
   const stxAddress = useSTXAddress();
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
-  const collateralItems: CollateralTypeProps[] = [];
+  const [collateralItems, setCollateralItems]: CollateralTypeProps[] = useState([]);
   const [prices, setPrices] = useState({});
 
   useEffect(() => {
@@ -40,81 +90,51 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
       });
     };
 
-    fetchInfo();
-  }, []);
+    const fetchData = async () => {
+      await fetchInfo();
+      const items = [];
+      await asyncForEach(Object.keys(collateralTypes), async (tokenSymbol: string) => {
+        console.log('symb:', tokenSymbol, state.vaults);
 
-  const collExtraInfo = {
-    'STX': {
-      logo: '/assets/tokens/stx.svg',
-      path: '/vaults/new?token=stx',
-      classes: {
-        wrapper: 'border-STX/5 hover:border-STX/40 shadow-STX/10 from-STX/[.01] to-STX/5',
-        tokenShadow: 'shadow-STX/10',
-        innerBg: 'bg-STX',
-        iconColor: 'text-STX/80',
-        innerText: 'text-STX'
-      }
-    },
-    'stSTX': {
-      logo: '/assets/tokens/ststx.svg',
-      path: '/vaults/new?token=ststx',
-      classes: {
-        wrapper: 'border-zinc-500/5 hover:border-zinc-500/40 shadow-zinc-500/10 from-zinc-500/[.01] to-zinc-500/5',
-        tokenShadow: 'shadow-zinc-500/10',
-        innerBg: 'bg-zinc-500',
-        iconColor: 'text-zinc-500/80',
-        innerText: 'text-zinc-500'
-      }
-    },
-    'xBTC': {
-      logo: '/assets/tokens/xbtc.svg',
-      path: '/vaults/new?token=xBTC',
-      classes: {
-        wrapper: 'border-xBTC/5 hover:border-xBTC/40 shadow-xBTC/10 from-xBTC/[.01] to-xBTC/5',
-        tokenShadow: 'shadow-xBTC/10',
-        innerBg: 'bg-xBTC',
-        iconColor: 'text-xBTC/80',
-        innerText: 'text-xBTC'
-      }
-    },
-    'atALEXv2': {
-      logo: '/assets/tokens/atalex.svg',
-      path: '/vaults/new?token=auto-alex',
-      classes: {
-        wrapper: 'border-atAlex/5 hover:border-atAlex/40 shadow-atAlex/10 from-atAlex/[.01] to-atAlex/5',
-        tokenShadow: 'shadow-atAlex/10',
-        innerBg: 'bg-atAlex',
-        iconColor: 'text-atAlex/80',
-        innerText: 'text-atAlex'
-      }
+        const tokenParts = state.vaults[tokenSymbol]['key'].split('.');
+        const vaultCall = await callReadOnlyFunction({
+          contractAddress,
+          contractName: 'arkadiko-vaults-data-v1-1',
+          functionName: 'get-total-debt',
+          functionArgs: [contractPrincipalCV(tokenParts[0], tokenParts[1])],
+          senderAddress: stxAddress || '',
+          network: network,
+        });
+
+        const coll = collateralTypes[tokenSymbol];
+        items.push({
+          name: coll['name'],
+          token: coll['token'],
+          tokenType: coll['tokenType'],
+          url: coll['url'],
+          totalDebt: coll['totalDebt'],
+          stabilityFee: coll['stabilityFee'],
+          stabilityFeeApy: coll['stabilityFeeApy'],
+          liquidationRatio: coll['liquidationRatio'],
+          liquidationPenalty: coll['liquidationPenalty'],
+          collateralToDebtRatio: coll['collateralToDebtRatio'],
+          maximumDebt: coll['maximumDebt'],
+          label: collExtraInfo[tokenSymbol]?.['label'],
+          logo: collExtraInfo[tokenSymbol]?.['logo'],
+          path: collExtraInfo[tokenSymbol]?.['path'],
+          classes: collExtraInfo[tokenSymbol]?.['classes']
+        });
+      });
+      console.log('collateral items:', items);
+      setCollateralItems(items);
     }
-  };
-  Object.keys(collateralTypes).forEach((tokenSymbol: string) => {
-    console.log('symb:', tokenSymbol, state.vaults);
-    const coll = collateralTypes[tokenSymbol];
-    collateralItems.push({
-      name: coll['name'],
-      token: coll['token'],
-      tokenType: coll['tokenType'],
-      url: coll['url'],
-      totalDebt: coll['totalDebt'],
-      stabilityFee: coll['stabilityFee'],
-      stabilityFeeApy: coll['stabilityFeeApy'],
-      liquidationRatio: coll['liquidationRatio'],
-      liquidationPenalty: coll['liquidationPenalty'],
-      collateralToDebtRatio: coll['collateralToDebtRatio'],
-      maximumDebt: coll['maximumDebt'],
-      label: collExtraInfo[tokenSymbol]?.['label'],
-      logo: collExtraInfo[tokenSymbol]?.['logo'],
-      path: collExtraInfo[tokenSymbol]?.['path'],
-      classes: collExtraInfo[tokenSymbol]?.['classes']
-    });
-  });
-  console.log('collateral items:', collateralItems);
+
+    if (Object.keys(state?.collateralTypes).length > 0) fetchData();
+  }, [state.collateralTypes]);
 
   return (
     <>
-      {collateralItems.map((collateral) => (
+      {collateralItems.length > 0 && collateralItems.map((collateral) => (
         <div key={collateral.tokenType} className={`group border shadow-md ${collateral.classes?.wrapper} flex flex-col bg-gradient-to-br rounded-md transition duration-700 ease-in-out`}>
           <div className="flex flex-col flex-1 px-6 py-8">
             <div className="flex items-center">
