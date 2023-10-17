@@ -8,15 +8,17 @@ import { getPrice } from '@common/get-price';
 import { useConnect } from '@stacks/connect-react';
 import { Status } from './ui/health-status';
 import { Tooltip } from '@blockstack/ui';
+import { useSTXAddress } from '@common/use-stx-address';
+import { getLiquidationPrice, getCollateralToDebtRatio } from '@common/vault-utils';
 
-export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
+export const CollateralCard: React.FC<CollateralTypeProps> = () => {
   const [state, _] = useContext(AppContext);
+  const [{ collateralTypes }, _x] = useContext(AppContext);
   const { doOpenAuth } = useConnect();
+  const stxAddress = useSTXAddress();
 
   const collateralItems: CollateralTypeProps[] = [];
-  const [stxPrice, setStxPrice] = useState(0);
-  const [btcPrice, setBtcPrice] = useState(0);
-  const [atAlexPrice, setAtAlexPrice] = useState(0);
+  const [prices, setPrices] = useState({});
 
   useEffect(() => {
     const fetchInfo = async () => {
@@ -31,9 +33,11 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
         getPrice("auto-alex")
       ]);
 
-      setStxPrice(stxPrice / 1000000);
-      setBtcPrice(btcPrice / 1000000);
-      setAtAlexPrice(atAlexPrice / 100000000);
+      setPrices({
+        'STX': stxPrice / 1000000,
+        'xBTC': btcPrice / 1000000,
+        'atALEXv2': atAlexPrice / 100000000
+      });
     };
 
     fetchInfo();
@@ -85,9 +89,9 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
       }
     }
   };
-  Object.keys(types).forEach((tokenSymbol: string) => {
-    const coll = types[tokenSymbol];
-    console.log('coll:', coll);
+  Object.keys(collateralTypes).forEach((tokenSymbol: string) => {
+    console.log('symb:', tokenSymbol, state.vaults);
+    const coll = collateralTypes[tokenSymbol];
     collateralItems.push({
       name: coll['name'],
       token: coll['token'],
@@ -135,20 +139,19 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
               </div>
             </div>
 
-            {/* @TODO: Example, user has an open vault with STX collateral type */}
-            {collateral.name === "STX" ? (
+            {Number(state.vaults[collateral.name]['status']) === 101 ? (
               <div className={`px-4 py-5 mt-8 mb-4 rounded-lg ${collateral.classes.innerBg} bg-opacity-[.08] flex items-center`}>
                 <dl className="flex-1 space-y-1">
                   <div className="flex justify-between">
                     <dt className={`text-sm font-semibold brightness-85 ${collateral.classes.innerText}`}>Collateral</dt>
                     <dd className={`text-sm font-semibold ${collateral.classes.innerText} brightness-50 dark:brightness-100`}>
-                      <span className="flex-grow">27.390 STX</span>
+                      <span className="flex-grow">{state.vaults[collateral.name]['collateral'] / 1000000} STX</span>
                     </dd>
                   </div>
                   <div className="flex justify-between">
                     <dt className={`text-sm font-semibold brightness-85 ${collateral.classes.innerText}`}>Debt</dt>
                     <dd className={`text-sm font-semibold ${collateral.classes.innerText} brightness-50 dark:brightness-100`}>
-                      <span className="flex-grow">3.291 USDA</span>
+                      <span className="flex-grow">{state.vaults[collateral.name]['debt'] / 1000000} USDA</span>
                     </dd>
                   </div>
                   <div className="flex justify-between">
@@ -159,7 +162,15 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
                         <Status
                           type={Status.type.SUCCESS}
                         />
-                        <span className={`ml-2 text-sm font-semibold ${collateral.classes.innerText} brightness-50 dark:brightness-100`}>234%</span>
+                        <span className={`ml-2 text-sm font-semibold ${collateral.classes.innerText} brightness-50 dark:brightness-100`}>
+                          {
+                            getCollateralToDebtRatio(
+                              prices['STX'],
+                              state.vaults[collateral.name]['debt'],
+                              state.vaults[collateral.name]['collateral']
+                            ) * 100.0
+                          }%
+                        </span>
                       </span>
                     </dd>
                   </div>
@@ -207,36 +218,36 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
 
                     {collateral.name === "STX" ?
                       state.userData && state.balance["stx"] > 0 ?
-                        ((microToReadable(state.balance["stx"]) * stxPrice) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                        ((microToReadable(state.balance["stx"]) * prices['STX']) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
                           minimumFractionDigits: 0,
                           maximumFractionDigits: 0,
                         })
                       :
-                      ((2000 * stxPrice) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                      ((2000 * prices['STX']) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0,
                       })
                     :
                     collateral.name === "xBTC" ?
                       state.userData && (parseFloat(state.balance["xbtc"] !== '0.00')) ?
-                        (((parseFloat(state.balance["xbtc"]) / 100000000) * btcPrice) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                        (((parseFloat(state.balance["xbtc"]) / 100000000) * prices['xBTC']) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
                           minimumFractionDigits: 0,
                           maximumFractionDigits: 0,
                         })
                       :
-                      ((1 * btcPrice) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                      ((1 * prices['xBTC']) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0,
                       })
                     :
                     collateral.name === "auto-alex" ?
                       state.userData && (parseFloat(state.balance["atalex"] !== '0.00')) ?
-                        (((parseFloat(state.balance["atalex"]) / 100000000) * atAlexPrice) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                        (((parseFloat(state.balance["atalex"]) / 100000000) * prices['atALEXv2']) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
                           minimumFractionDigits: 0,
                           maximumFractionDigits: 0,
                         })
                       :
-                      ((50000 * atAlexPrice) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                      ((50000 * prices['atALEXv2']) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0,
                       })
@@ -250,13 +261,11 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
             )}
 
             <dl className="mt-4 mb-6 space-y-2">
-              {/* @TODO: Add vault status if applicable */}
               <div className="flex justify-between">
                 <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-400">Status</dt>
                 <dd className="flex text-xs font-semibold text-right text-gray-700/70">
                   <span className="flex items-center flex-grow border border-gray-200 dark:border-gray-600 px-2 py-0.5 rounded-xl bg-gray-100/80">
-                    {/* @TODO: User has an open vault with STX collateral type */}
-                    {collateral.name === "STX" ? (
+                    {Number(state.vaults[collateral.name]['status']) != 100 ? (
                       <>
                         {/* We need status and tooltip copy for:
                         - active
@@ -268,7 +277,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
                         <Tooltip
                           className="ml-2"
                           shouldWrapChildren={true}
-                          label={`Vault open and active: your are stacking your collateral.`}
+                          label={`Vault open`}
                         >
                           <StyledIcon
                             as="InformationCircleIcon"
@@ -299,7 +308,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
               <div className="flex justify-between">
                 <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-400">Liquidation ratio</dt>
                 <dd className="flex text-sm font-semibold text-right text-gray-700/70 dark:text-zinc-50/80">
-                  <span className="flex-grow">{collateral.liquidationRatio}%</span>
+                  <span className="flex-grow">{collateral.liquidationRatio / 100}%</span>
                 </dd>
               </div>
               <div className="flex justify-between">
@@ -322,32 +331,33 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
             </dl>
 
             {state.userData ? (
-              <RouterLink
-                to={collateral.path}
-                exact
-                className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md ${collateral.name === "STX" ? "text-indigo-700 bg-indigo-100 hover:bg-indigo-200 " : "text-white bg-indigo-600 hover:bg-indigo-700"} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-
-
-              >
-                {/* Example: User has an open vault with STX collateral type, we change the copy of the button, the style of the button and the icon */}
-                  {collateral.name === "STX" ? (
-                  <>
+              <>
+                {Number(state.vaults[collateral.name]['status']) === 101 ? (
+                  <RouterLink
+                    to={`vaults/${stxAddress}/${collateral.name}`}
+                    exact
+                    className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md ${collateral.name === "STX" ? "text-indigo-700 bg-indigo-100 hover:bg-indigo-200 " : "text-white bg-indigo-600 hover:bg-indigo-700"} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                  >
                     Manage
                     <StyledIcon
                       as="CogIcon"
                       size={4}
                     />
-                  </>
+                  </RouterLink>
                 ) : (
-                  <>
+                  <RouterLink
+                    to={collateral.path}
+                    exact
+                    className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md ${collateral.name === "STX" ? "text-indigo-700 bg-indigo-100 hover:bg-indigo-200 " : "text-white bg-indigo-600 hover:bg-indigo-700"} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                  >
                     Borrow
                     <StyledIcon
                       as="ArrowRightIcon"
                       size={4}
                     />
-                  </>
+                  </RouterLink>
                 )}
-              </RouterLink>
+              </>
             ) : (
               <button
                 type="button"

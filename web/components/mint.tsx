@@ -43,7 +43,6 @@ const tokenToName = (token: string) => {
 export const Mint = () => {
   const address = useSTXAddress();
   const [state, setState] = useContext(AppContext);
-  const [{ vaults, collateralTypes }, _x] = useContext(AppContext);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [loadingVaults, setLoadingVaults] = useState(true);
 
@@ -55,7 +54,7 @@ export const Mint = () => {
     }
 
     const fetchVaults = async () => {
-      const arr: VaultProps[] = [];
+      const vaults = {};
       await asyncForEach(state.definedCollateralTypes, async tokenAddress => {
         const tokenParts = tokenAddress.split('.');
 
@@ -71,21 +70,22 @@ export const Mint = () => {
         const vault = json.value.value;
         console.log('vault', tokenAddress, vault, tokenParts[1]);
         const collateralToken = tokenToName(tokenParts[1]);
-        arr.push({
+        vaults[collateralToken] = {
           key: tokenAddress,
           owner: address,
           collateral: vault['collateral'].value,
           collateralToken: collateralToken,
           status: vault['status'].value,
-          isLiquidated: vault['status'].value == 202, // TODO
+          isLiquidated: Number(vault['status'].value) == 201,
+          isRedeemed: Number(vault['status'].value) == 202,
           debt: vault['debt'].value,
           liquidationRatio: 110 // TODO
-        });
+        };
       });
 
       setState(prevState => ({
         ...prevState,
-        vaults: arr,
+        vaults: vaults,
       }));
       setLoadingVaults(false);
     };
@@ -102,17 +102,17 @@ export const Mint = () => {
       </Helmet>
 
       <main className="py-12">
-        {state.userData ? (
-          <section>
-            <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:items-end sm:justify-between">
-              <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
-                Your positions
-              </h3>
-            </header>
-
-            {vaults.length ? (
-              <VaultGroup vaults={vaults} />
-            ) : loadingVaults ? (
+        <section id="borrow">
+          <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
+            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
+              Start borrowing
+            </h3>
+            <p className="max-w-3xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
+              Borrow against your favorite assets now.
+            </p>
+          </header>
+          <div className="mt-4 space-y-8 sm:space-x-8 sm:flex sm:items-center sm:justify-center sm:space-y-0">
+            {loadingVaults ? (
               <div className="min-w-full mt-4 overflow-hidden overflow-x-auto align-middle rounded-lg sm:shadow">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
                   <thead className="bg-gray-50 dark:bg-zinc-800 dark:bg-opacity-80">
@@ -140,33 +140,10 @@ export const Mint = () => {
                 </table>
               </div>
             ) : (
-              <>
-                <EmptyState
-                  Icon={ArchiveIcon}
-                  title="You currently have no open positions."
-                >
-                  <p className="mt-2 text-base text-gray-500 dark:text-zinc-400 md:ml-8">
-                    Start creating <a className="text-indigo-500 underline decoration-1 dark:text-indigo-300 underline-offset-2 dark:hover:text-indigo-200 hover:text-indigo-700" href="#borrow">a new vault below</a> and unleash the power of self repaying-loans!
-                  </p>
-                </EmptyState>
-              </>
+              <div className="grid grid-cols-1 gap-8 mt-4 sm:grid-cols-2 w-full">
+                <CollateralCard />
+              </div>
             )}
-          </section>
-        ) : null}
-
-        <section className="mt-12" id="borrow">
-          <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
-            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
-              Start borrowing
-            </h3>
-            <p className="max-w-3xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
-              Borrow against your favorite assets now.
-            </p>
-          </header>
-          <div className="mt-4 space-y-8 sm:space-x-8 sm:flex sm:items-center sm:justify-center sm:space-y-0">
-            <div className="grid grid-cols-1 gap-8 mt-4 sm:grid-cols-2 w-full">
-              <CollateralCard types={collateralTypes} />
-            </div>
           </div>
         </section>
 

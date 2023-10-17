@@ -26,10 +26,10 @@ export const getLiquidationPrice = (
 
 export const getCollateralToDebtRatio = (
   price: number,
-  coinsMinted: number,
-  stxCollateral: number
+  usdaMinted: number,
+  collateral: number
 ) => {
-  return (stxCollateral * price) / coinsMinted;
+  return (collateral * price) / usdaMinted;
 };
 
 export const availableCollateralToWithdraw = (
