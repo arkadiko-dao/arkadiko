@@ -240,7 +240,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                         maximumFractionDigits: 0,
                       })
                     :
-                    collateral.name === "auto-alex" ?
+                    collateral.name === "atALEXv2" ?
                       state.userData && (parseFloat(state.balance["atalex"] !== '0.00')) ?
                         (((parseFloat(state.balance["atalex"]) / 100000000) * prices['atALEXv2']) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
                           minimumFractionDigits: 0,
