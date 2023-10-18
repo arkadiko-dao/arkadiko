@@ -26,6 +26,11 @@ class VaultsOperations {
     ], this.deployer.address);
   }
 
+  getMintFee() {
+    return this.chain.callReadOnlyFn("arkadiko-vaults-operations-v1-1", "get-mint-fee", [
+    ], this.deployer.address);
+  }
+
   openVault(
     caller: Account, 
     token: string,
@@ -95,6 +100,15 @@ class VaultsOperations {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vaults-operations-v1-1", "set-shutdown-activated", [
         types.bool(activated)
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  setMintFee(caller: Account, fee: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-vaults-operations-v1-1", "set-mint-fee", [
+        types.uint(fee * 10000)
       ], caller.address)
     ]);
     return block.receipts[0].result;

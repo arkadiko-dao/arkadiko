@@ -31,6 +31,7 @@
 ;; ---------------------------------------------------------
 
 (define-data-var shutdown-activated bool false)
+(define-data-var mint-fee uint u100)
 
 ;; ---------------------------------------------------------
 ;; Getters
@@ -38,6 +39,10 @@
 
 (define-read-only (get-shutdown-activated) 
   (var-get shutdown-activated)
+)
+
+(define-read-only (get-mint-fee) 
+  (var-get mint-fee)
 )
 
 ;; ---------------------------------------------------------
@@ -65,6 +70,7 @@
     (vault (unwrap-panic (contract-call? vaults-data get-vault owner (contract-of token))))
     (total-debt (unwrap-panic (contract-call? vaults-data get-total-debt (contract-of token))))
     (coll-to-debt (try! (contract-call? vaults-helpers get-collateral-to-debt vaults-tokens vaults-data oracle owner (contract-of token) collateral debt)))
+    (minting-fee (/ (* debt (get-mint-fee)) u10000))
   )
     (asserts! (is-eq (contract-of vaults-tokens) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-tokens"))) (err ERR_WRONG_TRAIT))
     (asserts! (is-eq (contract-of vaults-data) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-data"))) (err ERR_WRONG_TRAIT))
@@ -86,7 +92,7 @@
     (try! (contract-call? vaults-pool-active deposit token owner collateral))
 
     ;; Mint USDA
-    (try! (as-contract (contract-call? .arkadiko-dao mint-token .usda-token debt owner)))
+    (try! (as-contract (contract-call? .arkadiko-dao mint-token .usda-token (- debt minting-fee) owner)))
 
     (ok true)
   )
@@ -136,7 +142,11 @@
     (if (is-eq debt (get debt vault))
       false
       (if (> debt (get debt vault))
-        (try! (as-contract (contract-call? .arkadiko-dao mint-token .usda-token (- debt (get debt vault)) owner)))
+        (let (
+          (minting-fee (/ (* (- debt (get debt vault)) (get-mint-fee)) u10000))
+        )
+          (try! (as-contract (contract-call? .arkadiko-dao mint-token .usda-token (- debt (get debt vault) minting-fee) owner)))
+        )
         (try! (as-contract (contract-call? .arkadiko-dao burn-token .usda-token (- (get debt vault) debt) owner)))
       )
     )
@@ -204,6 +214,16 @@
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
 
     (var-set shutdown-activated activated)
+
+    (ok true)
+  )
+)
+
+(define-public (set-mint-fee (fee uint))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+
+    (var-set mint-fee fee)
 
     (ok true)
   )
