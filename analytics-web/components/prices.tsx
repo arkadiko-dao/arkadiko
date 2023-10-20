@@ -182,7 +182,7 @@ export const Prices: React.FC = () => {
                               <p>
                                 <span className="text-base font-medium text-gray-500">{asset.unit}</span>{' '}
                                 <span className="text-4xl font-extrabold text-gray-700 dark:text-zinc-100">
-                                  {stxUsdaPrice}
+                                  {stxUsdaPrice / 1000000}
                                 </span>
                               </p>
                             </div>
