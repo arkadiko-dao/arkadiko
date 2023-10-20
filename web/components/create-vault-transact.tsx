@@ -5,6 +5,7 @@ import {
   contractPrincipalCV,
   uintCV,
   stringAsciiCV,
+  standardPrincipalCV,
   trueCV,
   falseCV,
   tupleCV,
@@ -70,7 +71,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       contractPrincipalCV(tokenAddress, token),
       amount,
       uintCV(debtAmount),
-      principalCV(hint['prevOwner'])
+      standardPrincipalCV(hint['prevOwner'])
     ];
 
     let postConditions: any[] = [];
