@@ -40,7 +40,7 @@
     (vault (unwrap-panic (contract-call? vaults-data get-vault owner token)))
     (collateral-info (unwrap! (contract-call? vaults-tokens get-token token) (err ERR_UNKNOWN_TOKEN)))
 
-    (vault-blocks (- block-height (get last-block vault)))
+    (vault-blocks (- burn-block-height (get last-block vault)))
   )
     (ok (/ (* (/ (* (get stability-fee collateral-info) (get debt vault)) u10000) vault-blocks) (* u144 u365)))
   )

@@ -83,7 +83,7 @@
 
     ;; Update vaults data
     (map-set vaults { owner: owner, token: token }
-      { status: status, collateral: collateral, debt: debt, last-block: block-height }
+      { status: status, collateral: collateral, debt: debt, last-block: burn-block-height }
     )
 
     ;; Update total debt for token
@@ -91,7 +91,7 @@
       { total: (+ (- (unwrap-panic (get-total-debt token)) (get debt current-vault)) debt) }
     )
 
-    (print { action: "vaults-set", owner: owner, token: token, status: status, collateral: collateral, debt: debt, last-block: block-height, nicr: nicr })
+    (print { action: "vaults-set", owner: owner, token: token, status: status, collateral: collateral, debt: debt, last-block: burn-block-height, nicr: nicr })
 
     (ok true)
   )
