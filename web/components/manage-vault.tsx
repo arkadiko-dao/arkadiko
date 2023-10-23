@@ -904,7 +904,6 @@ export const ManageVault = ({ match }) => {
                     isVaultOwner &&
                     vault?.stackedTokens > 0 &&
                     !vault?.revokedStacking &&
-                    !startedStacking &&
                     !loadingVaultData ? (
                       // cycle not started, offer to opt-out
                       <button
