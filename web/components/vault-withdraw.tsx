@@ -1,6 +1,4 @@
 import React, { useContext, useState, useRef } from 'react';
-import { Modal } from '@components/ui/modal';
-import { tokenList } from '@components/token-swap-list';
 import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
@@ -11,17 +9,13 @@ import { VaultProps } from './vault';
 import { tokenTraits } from '@common/vault-utils';
 
 interface Props {
-  showWithdrawModal: boolean;
-  setShowWithdrawModal: (arg: boolean) => void;
   maximumCollateralToWithdraw: number;
   vault: VaultProps;
   reserveName: string;
 }
 
-export const VaultWithdrawModal: React.FC<Props> = ({
+export const VaultWithdraw: React.FC<Props> = ({
   match,
-  showWithdrawModal,
-  setShowWithdrawModal,
   maximumCollateralToWithdraw,
   vault,
   reserveName,
@@ -84,15 +78,8 @@ export const VaultWithdrawModal: React.FC<Props> = ({
   };
 
   return (
-    <Modal
-      open={showWithdrawModal}
-      title="Withdraw Collateral"
-      icon={<img className="w-10 h-10 rounded-full" src={tokenList[1].logo} alt="" />}
-      closeModal={() => setShowWithdrawModal(false)}
-      buttonText="Withdraw"
-      buttonAction={() => callWithdraw()}
-      initialFocus={inputRef}
-    >
+    <div>
+      <h3 className="text-base font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">Withdraw collateral</h3>
       <p className="text-sm text-center text-gray-500 dark:text-zinc-400">
         Choose how much collateral you want to withdraw. You can withdraw a maximum of{' '}
         <span className="font-semibold">
@@ -117,6 +104,16 @@ export const VaultWithdrawModal: React.FC<Props> = ({
           ref={inputRef}
         />
       </div>
-    </Modal>
+
+      <div>
+        <button
+          type="button"
+          className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          onClick={() => callWithdraw()}
+        >
+          Withdraw
+        </button>
+      </div>
+    </div>
   );
 };
