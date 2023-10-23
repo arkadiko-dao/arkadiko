@@ -501,7 +501,7 @@ export const ManageVault = ({ match }) => {
         unit: 'USDA'
       },
       {
-        label: 'Accrued Stability fee',
+        label: 'Stability fee',
         help: 'Yearly interest you pay on your USDA loan',
         data: stabilityFee / 1000000,
         unit: 'USDA'
@@ -560,7 +560,7 @@ export const ManageVault = ({ match }) => {
                       <img className="w-10 h-10" src="/assets/tokens/stx.svg" alt="" />
                     </div>
                     <div>
-                      <div className="mb-2">STX{' '}<span className="text-sm text-gray-600 dark:text-gray-200">#{match.params.id}</span></div>
+                      <div className="mb-2">STX</div>
                       {/* {debtRatio > 0 ? (
                         loadingVaultData ? (
                           <Placeholder
@@ -601,11 +601,11 @@ export const ManageVault = ({ match }) => {
           </header>
 
           <div className="mt-4" id="liquidation-status-alert">
-            <div className={`flex flex-col rounded-md border-STX/40 shadow-STX/5 bg-STX bg-opacity-[.08] group border shadow-md`}>
+            <div className={`flex flex-col rounded-md border-STX/20 bg-white dark:bg-zinc-800 border shadow`}>
               <h3 className="text-base font-normal leading-6 text-gray-900 sr-only font-headings dark:text-zinc-50">
                 Vault details
               </h3>
-              <div className="flex flex-col h-full px-4 py-5">
+              <div className="flex flex-col h-full p-4">
                 <div className="space-y-2 lg:grid md:items-center lg:grid-cols-2 lg:gap-4 lg:space-y-0">
                   <div className="flex flex-col h-full px-4 py-5 mb-4 sm:mb-0 rounded-lg bg-STX bg-opacity-[.08] flex items-center">
                     <dl className="flex-1 w-full space-y-1.5">
@@ -712,13 +712,11 @@ export const ManageVault = ({ match }) => {
                   </dl>
                 </div>
               </div>
-            </div>
 
-            {debtRatio > 0 ? (
-              <div className="mt-2 bg-white rounded-md shadow dark:bg-zinc-800">
-                <div className="px-4 py-5 lg:grid lg:grid-cols-3 md:p-6 lg:gap-4">
+              {/* {debtRatio > 0 ? ( */}
+                <div className="lg:grid lg:grid-cols-3 lg:gap-4 pt-0 px-4 pb-4">
                   <div className="md:col-span-2">
-                    {loadingVaultData ? (
+                    {/* {loadingVaultData ? (
                       <div className="p-4 border-l-4 border-gray-400 rounded-tr-md rounded-br-md bg-gray-50 dark:bg-gray-200">
                         <div className="flex">
                           <div className="w-5 h-5 bg-gray-300 rounded-full shrink-0" />
@@ -744,7 +742,7 @@ export const ManageVault = ({ match }) => {
                     ) : (
                       <>
                         {debtClass(collateralType?.liquidationRatio, debtRatio) ==
-                        'text-green-500' ? (
+                        'text-green-500' ? ( */}
                           <Alert type={Alert.type.SUCCESS} title="Low liquidation risk">
                             <p>
                               Good job! Your vault looks quite healthy. Your liquidation price
@@ -754,7 +752,7 @@ export const ManageVault = ({ match }) => {
                             </p>
                             <p>Feel free to pay back your debt or deposit extra collateral anytime.</p>
                           </Alert>
-                        ) : debtClass(collateralType?.liquidationRatio, debtRatio) ==
+                        {/* ) : debtClass(collateralType?.liquidationRatio, debtRatio) ==
                           'text-orange-500' ? (
                           <Alert type={Alert.type.WARNING} title="Medium liquidation risk">
                             <p>
@@ -781,18 +779,19 @@ export const ManageVault = ({ match }) => {
                           </Alert>
                         )}
                       </>
-                    )}
+                    )} */}
                   </div>
 
                   <div className="p-3 rounded-md bg-gray-50 dark:bg-gray-200">
-                    <p className="text-xs font-semibold leading-none text-gray-400 uppercase dark:text-gray-500">
+                    <p className="text-sm font-semibold leading-none text-gray-400 dark:text-gray-500">
                       Current {vault?.collateralToken} price
                     </p>
-                    <p className="mt-1 text-sm font-semibold text-gray-900">${price / decimals}</p>
+                    <p className="mt-1 text-base font-semibold text-gray-900">${price / decimals}</p>
                   </div>
                 </div>
-              </div>
-            ) : null}
+              {/* ) : null} */}
+            </div>
+
 
             <div className="mt-4">
               <div className="bg-white rounded-md shadow dark:bg-zinc-800">
@@ -826,22 +825,22 @@ export const ManageVault = ({ match }) => {
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <h3 className="text-lg font-bold leading-6 text-gray-900 font-headings dark:text-zinc-50">
-                  {canStackCollateral ? `Stacking` : `Manage`}
+                  Stacking
                 </h3>
 
-                {canStackCollateral && !loadingVaultData ? (
-                  enabledStacking ? (
+                {/* {canStackCollateral && !loadingVaultData ? (
+                  enabledStacking ? ( */}
                     <span className="ml-3 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-green-100 text-green-800">
                       <StyledIcon as="CheckCircleIcon" size={5} className="mr-2" />
                       Enabled
                     </span>
-                  ) : (
+                  {/* ) : (
                     <span className="ml-3 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-red-100 text-red-800">
                       <StyledIcon as="XCircleIcon" size={5} className="mr-2" />
                       Disabled
                     </span>
                   )
-                ) : null}
+                ) : null} */}
               </div>
 
               {canStackCollateral ? (
@@ -893,10 +892,10 @@ export const ManageVault = ({ match }) => {
             </div>
           </header>
 
-          <div className="mt-4">
-            <div className="bg-white rounded-md shadow dark:bg-zinc-800">
-              <div className="divide-x divide-gray-200 dark:divide-gray-700 lg:grid lg:grid-cols-2 lg:gap-4">
-                {isVaultOwner && !loadingVaultData ? (
+          {/* {isVaultOwner ? ( */}
+            <div className="mt-4">
+              <div className="bg-white rounded-md shadow dark:bg-zinc-800">
+                <div className="divide-x divide-gray-200 dark:divide-gray-700 lg:grid lg:grid-cols-2 lg:gap-4">
                   <div className="flex flex-col px-4 py-5 sm:p-6">
                     <VaultDeposit
                       match={match}
@@ -905,494 +904,154 @@ export const ManageVault = ({ match }) => {
                       decimals={['xbtc-a'].includes(vault?.collateralType?.toLowerCase()) ? decimals * 100 : decimals}
                     />
                   </div>
-                ) : null}
-                <div className="flex flex-col px-4 py-5 sm:p-6">
-                  <VaultWithdraw
-                    match={match}
-                    maximumCollateralToWithdraw={maximumCollateralToWithdraw}
-                    vault={vault}
-                    reserveName={reserveName}
-                  />
+                  <div className="flex flex-col px-4 py-5 sm:p-6">
+                    <VaultWithdraw
+                      match={match}
+                      maximumCollateralToWithdraw={maximumCollateralToWithdraw}
+                      vault={vault}
+                      reserveName={reserveName}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          {/* ) : null} */}
 
-          <div className="mt-4">
             <div className="grid grid-cols-1 gap-y-4 lg:gap-4 lg:grid-cols-3">
-              <section>
-                {canStackCollateral ? (
-                  <div className="relative">
-                    <div
-                      className="absolute w-full h-full dark:opacity-30"
-                      style={{
-                        backgroundImage: 'url(/assets/stacks-pattern.png)',
-                        backgroundSize: '20%',
-                      }}
-                    />
-
-                    <dl className="relative grid grid-cols-1 overflow-hidden bg-indigo-100 bg-opacity-50 border border-indigo-200 divide-y divide-indigo-200 rounded-lg shadow-sm dark:bg-zinc-700 dark:bg-opacity-95 dark:border-zinc-600 dark:divide-zinc-600">
-                      <div className="px-4 py-3">
-                        <dt className="text-xs font-semibold text-indigo-600 uppercase dark:text-indigo-100">
-                          Stacking Cycle #
-                        </dt>
-                        <dd className="flex items-baseline justify-between mt-1 md:block">
-                          <div className="flex items-baseline justify-between flex-1 text-lg font-semibold text-indigo-800 dark:text-indigo-200">
-                            {state.cycleNumber}
-                          </div>
-                        </dd>
-                      </div>
-                      <div className="px-4 py-3">
-                        <dt className="text-xs font-semibold text-indigo-600 uppercase dark:text-indigo-100">
-                          Days in cycle
-                        </dt>
-                        <dd className="flex items-baseline justify-between mt-1 md:block">
-                          <div className="flex items-baseline justify-between flex-1 text-lg font-semibold text-indigo-800 dark:text-indigo-200">
-                            <span>
-                              {state.daysPassed}{' '}
-                              <span className="text-xs opacity-80">(since {state.startDate})</span>
-                            </span>
-                            <a
-                              className="hover:underline"
-                              href={`https://mempool.space/block/${state.cycleStartHeight}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
+              <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-800 dark:divide-zinc-600 sm:rounded-md sm:overflow-hidden">
+                <div className="px-4 py-5 sm:p-6">
+                  {canStackCollateral ? (
+                    <>
+                      <div className="flex items-center justify-between mt-4">
+                        <div>
+                          <p className="text-base font-normal leading-6 text-gray-500 sm:flex sm:items-center dark:text-zinc-400">
+                            Rewards
+                            <Tooltip
+                              className="ml-2"
+                              shouldWrapChildren={true}
+                              label={`The amount of yield that your vault has earned so far`}
                             >
-                              <span className="text-xs">~#{state.cycleStartHeight}</span>
-                            </a>
-                          </div>
-                        </dd>
-                      </div>
-                      <div className="px-4 py-3">
-                        <dt className="text-xs font-semibold text-indigo-600 uppercase dark:text-indigo-100">
-                          Days left
-                        </dt>
-                        <dd className="flex items-baseline justify-between mt-1 md:block">
-                          <div className="flex items-baseline justify-between flex-1 text-lg font-semibold text-indigo-800 dark:text-indigo-200">
-                            <span>
-                              {state.daysLeft}{' '}
-                              <span className="text-xs opacity-80">(ends on {state.endDate})</span>
-                            </span>
-                            <a
-                              className="hover:underline"
-                              href="https://mempool.space/"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <span className="text-xs">~#{state.cycleEndHeight}</span>
-                            </a>
-                          </div>
-                        </dd>
-                      </div>
-                    </dl>
-                  </div>
-                ) : null}
-                <div className={canStackCollateral ? `mt-3` : ``}>
-                  <dl className="relative border border-gray-300 divide-y rounded-lg shadow-sm bg-zinc-200/30 dark:bg-gray-500 dark:border-gray-700">
-                    <div className="px-4 py-3">
-                      <dt className="text-xs font-semibold text-gray-500 uppercase dark:text-gray-300">
-                        Current Bitcoin block height
-                      </dt>
-                      <dd className="flex items-baseline justify-between mt-1 md:block lg:flex">
-                        <div className="justify-between font-semibold text-gray-600 dark:text-gray-50">
-                          <a
-                            className="hover:underline"
-                            href="https://mempool.space/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            #{burnBlockHeight}
-                          </a>
-                        </div>
-                      </dd>
-                    </div>
-                    <a
-                      className="absolute top-0 right-0 z-10 mt-2 mr-2 rounded-full"
-                      href="https://mempool.space/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <svg
-                        className="w-8 h-8"
-                        viewBox="0 0 120 120"
-                        aria-hidden="true"
-                      >
-                        <path
-                          fill="#F7931A"
-                          d="M118.2 74.52a59.98 59.98 0 0 1-72.72 43.68 59.98 59.98 0 1 1 72.72-43.68Z"
-                        />
-                        <path
-                          fill="#fff"
-                          d="M86.46 51.45c1.2-7.98-4.89-12.27-13.2-15.14l2.7-10.81-6.59-1.64-2.63 10.53c-1.73-.43-3.5-.84-5.27-1.24l2.64-10.6-6.58-1.64-2.69 10.8-13.28-3.28-1.75 7.03s4.88 1.12 4.78 1.19c2.67.67 3.15 2.43 3.07 3.83L40.27 70.1c-.33.8-1.15 2.02-3.02 1.56.07.1-4.78-1.2-4.78-1.2L29.2 78l13.26 3.35-2.73 10.94 6.58 1.64 2.7-10.82c1.8.49 3.54.94 5.25 1.36l-2.7 10.77 6.59 1.64 2.73-10.92C72.1 88.1 80.55 87.24 84.1 77.1c2.86-8.17-.14-12.89-6.05-15.96 4.3-1 7.54-3.83 8.4-9.67h.01Zm-15.05 21.1c-2.04 8.17-15.8 3.75-20.26 2.64l3.61-14.49c4.46 1.11 18.77 3.32 16.65 11.85Zm2.04-21.21C71.6 58.78 60.14 55 56.42 54.07l3.27-13.15c3.72.93 15.7 2.66 13.76 10.42"
-                        />
-                      </svg>
-                    </a>
-                  </dl>
-                </div>
-              </section>
-              <div className="sm:col-span-2">
-                <div className="bg-white rounded-md shadow dark:bg-zinc-800">
-                  <div className="px-4 py-5 sm:p-6">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="text-sm font-normal leading-6 text-gray-500 dark:text-zinc-400">
-                          Total Locked
-                        </p>
-                        <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
-                          {collateralLocked()}{' '}
-                          <span className="text-sm font-normal">
-                            {vault?.collateralToken.toUpperCase()}
-                          </span>
-                        </p>
-                      </div>
-                      <div className="flex items-center">
-                        {isVaultOwner &&
-                        vault?.stackedTokens > 0 &&
-                        vaultUnlockBurnHeight === 999999999999999 &&
-                        !loadingVaultData ? (
-                          <button
-                            type="button"
-                            className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md dark:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            onClick={() => unlockCollateral()}
-                          >
-                            <StyledIcon as="LockOpenIcon" size={4} className="-ml-0.5 mr-2" />
-                            Unstack for next cycle ({unlockBurnHeight})
-                          </button>
-                        ) : isVaultOwner && vault?.stackedTokens > 0 && vaultUnlockBurnHeight < burnBlockHeight ? (
-                          <button
-                            type="button"
-                            className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md dark:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            onClick={() => unlockVaultWithdrawals()}
-                          >
-                            <StyledIcon as="LockOpenIcon" size={4} className="-ml-0.5 mr-2" />
-                            Unlock
-                          </button>
-                        ) : isVaultOwner && vault?.stackedTokens > 0 && vaultUnlockBurnHeight > burnBlockHeight ? (
-                          <button
-                            type="button"
-                            className="inline-flex items-center px-3 py-2 text-sm font-semibold leading-4 text-indigo-700 border border-transparent rounded-md dark:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                          >
-                            Vault can be unlocked at Bitcoin height {vaultUnlockBurnHeight + 1}
-                          </button>
-                        ) : null}
-
-
-                      </div>
-                    </div>
-
-                    {canStackCollateral ? (
-                      <PoxTimeline
-                        unlockBurnHeight={unlockBurnHeight}
-                        vaultUnlockBurnHeight={vaultUnlockBurnHeight}
-                        currentBurnHeight={burnBlockHeight}
-                        isLoading={loadingStackerData}
-                      />
-                    ) : null}
-                  </div>
-                </div>
-
-                <div className="mt-4 bg-white divide-y divide-gray-200 shadow dark:bg-zinc-800 dark:divide-zinc-600 sm:rounded-md sm:overflow-hidden">
-                  <div className="px-4 py-5 sm:p-6">
-                    {loadingStackerData || loadingVaultData ? (
-                      <>
-                        <div className="flex justify-between flex-1 mt-3">
-                          <Placeholder
-                            color={Placeholder.color.GRAY}
-                            width={Placeholder.width.FULL}
-                          />
-                          <Placeholder
-                            className="justify-end"
-                            color={Placeholder.color.INDIGO}
-                            width={Placeholder.width.THIRD}
-                          />
-                        </div>
-                        <div className="flex justify-between flex-1 mt-4">
-                          <Placeholder
-                            color={Placeholder.color.GRAY}
-                            width={Placeholder.width.FULL}
-                          />
-                          <Placeholder
-                            className="justify-end"
-                            color={Placeholder.color.INDIGO}
-                            width={Placeholder.width.THIRD}
-                          />
-                        </div>
-                      </>
-                    ) : canStackCollateral ? (
-                      <div>
-                        <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                          <div className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
-                            {unlockBurnHeight == 0 ? (
-                              <>
-                                <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
-                                  Available for stacking
-                                </p>
-                                <Tooltip shouldWrapChildren={true} label={`...`}>
-                                  <StyledIcon
-                                    as="InformationCircleIcon"
-                                    size={5}
-                                    className="block ml-2 text-gray-400"
-                                  />
-                                </Tooltip>
-                              </>
-                            ) : (
-                              <>
-                                <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
-                                  Currently stacking
-                                </p>
-                                <Tooltip
-                                  shouldWrapChildren={true}
-                                  label={`The amount of STX that is currently stacking or will be stacking after your cooldown cycle`}
-                                >
-                                  <StyledIcon
-                                    as="InformationCircleIcon"
-                                    size={5}
-                                    className="block ml-2 text-gray-400"
-                                  />
-                                </Tooltip>
-                              </>
-                            )}
-                          </div>
-                          <div className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
-                            <p className="text-lg font-semibold leading-none">
-                              {enabledStacking ? (
-                                <span>{microToReadable(vault?.collateral)} </span>
-                              ) : (
-                                <span>0 </span>
-                              )}
-                              <span className="text-sm font-normal">
-                                {vault?.collateralToken.toUpperCase()}
-                              </span>
-                            </p>
-                          </div>
-                        </div>
-
-                        {enabledStacking && stackingEndDate != '' ? (
-                          <div className="mt-4 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                            <div className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
-                              <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
-                                End of stacking
-                              </p>
-                              <Tooltip
-                                shouldWrapChildren={true}
-                                label={`The yield on your vault is given when stacking ends. If you opt-out of stacking, you can withdraw your funds when stacking ends.`}
-                              >
-                                <StyledIcon
-                                  as="InformationCircleIcon"
-                                  size={5}
-                                  className="block ml-2 text-gray-400"
-                                />
-                              </Tooltip>
-                            </div>
-                            <div className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
-                              <p className="text-lg font-semibold leading-none">
-                                {stackingEndDate}
-                              </p>
-                            </div>
-                          </div>
-                        ) : unlockBurnHeight == 0 ? (
-                          <div className="mt-4 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto">
-                            <div className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
-                              <p className="text-base font-normal leading-6 text-gray-500 dark:text-zinc-400">
-                                Stacking starts in
-                              </p>
-                            </div>
-                            <div className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
-                              <p className="text-lg font-semibold leading-none">
-                                {state.daysLeft} days
-                              </p>
-                            </div>
-                          </div>
-                        ) : null}
-                      </div>
-                    ) : null}
-
-                    {canStackCollateral ? (
-                      <>
-                        <div className="flex items-center justify-between mt-4">
-                          <div>
-                            <p className="text-base font-normal leading-6 text-gray-500 sm:flex sm:items-center dark:text-zinc-400">
-                              Rewards
-                              <Tooltip
-                                className="ml-2"
-                                shouldWrapChildren={true}
-                                label={`The amount of yield that your vault has earned so far`}
-                              >
-                                <StyledIcon
-                                  as="InformationCircleIcon"
-                                  size={5}
-                                  className="block ml-2 text-gray-400"
-                                />
-                              </Tooltip>
-                            </p>
-                            {loadingPoxYieldData ? (
-                              <Placeholder
-                                className="py-2"
-                                color={Placeholder.color.INDIGO}
-                                width={Placeholder.width.THIRD}
+                              <StyledIcon
+                                as="InformationCircleIcon"
+                                size={5}
+                                className="block ml-2 text-gray-400"
                               />
-                            ) : (
-                              <>
-                                <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
-                                  {poxYield}{' '}
-                                  <span className="text-sm font-normal">
-                                    {vault?.collateralToken.toUpperCase()}
-                                  </span>
-                                </p>
-                                <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
-                                  {usdaYield}{' '}
-                                  <span className="text-sm font-normal">
-                                    USDA
-                                  </span>
-                                </p>
-                              </>
-                            )}
-                          </div>
-                          {poxYield != 0 || usdaYield != 0 ? (
-                            <div>
-                              {poxYield != 0 ? (
-                                <button
-                                  type="button"
-                                  className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                  onClick={() => claimYield()}
-                                >
-                                  Add as collateral
-                                </button>
-                              ) : null}
-                              {usdaYield != 0 ? (
-                                <button
-                                  type="button"
-                                  className="inline-flex items-center px-3 py-2 ml-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                  onClick={() => claimYieldPayDebt()}
-                                >
-                                  Claim USDA and burn debt
-                                </button>
-                              ) : null}
-                            </div>
-                          ) : null}
-                        </div>
-                      </>
-                    ) : null}
-
-                    <div
-                      className={
-                        canStackCollateral
-                          ? `flex items-center justify-between mt-4`
-                          : `flex items-center justify-between`
-                      }
-                    >
-                      <div>
-                        <p className="text-base font-normal leading-6 text-gray-500 sm:flex sm:items-center dark:text-zinc-400">
-                          Withdrawal
-                          <Tooltip
-                            className="ml-2"
-                            shouldWrapChildren={true}
-                            label={`The amount of collateral you are able to withdraw while keeping a healthy collateralization level`}
-                          >
-                            <StyledIcon
-                              as="InformationCircleIcon"
-                              size={5}
-                              className="block ml-2 text-gray-400"
+                            </Tooltip>
+                          </p>
+                          {loadingPoxYieldData ? (
+                            <Placeholder
+                              className="py-2"
+                              color={Placeholder.color.INDIGO}
+                              width={Placeholder.width.THIRD}
                             />
-                          </Tooltip>
-                        </p>
-                        {loadingVaultData ? (
-                          <Placeholder
-                            className="py-2"
-                            color={Placeholder.color.INDIGO}
-                            width={Placeholder.width.THIRD}
-                          />
+                          ) : (
+                            <>
+                              <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
+                                {poxYield}{' '}
+                                <span className="text-sm font-normal">
+                                  {vault?.collateralToken.toUpperCase()}
+                                </span>
+                              </p>
+                              <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
+                                {usdaYield}{' '}
+                                <span className="text-sm font-normal">
+                                  USDA
+                                </span>
+                              </p>
+                            </>
+                          )}
+                        </div>
+                        {poxYield != 0 || usdaYield != 0 ? (
+                          <div>
+                            {poxYield != 0 ? (
+                              <button
+                                type="button"
+                                className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                onClick={() => claimYield()}
+                              >
+                                Add as collateral
+                              </button>
+                            ) : null}
+                            {usdaYield != 0 ? (
+                              <button
+                                type="button"
+                                className="inline-flex items-center px-3 py-2 ml-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                onClick={() => claimYieldPayDebt()}
+                              >
+                                Claim USDA and burn debt
+                              </button>
+                            ) : null}
+                          </div>
+                        ) : null}
+                      </div>
+                    </>
+                  ) : null}
+
+                  {loadingVaultData ? (
+                    <div className="mt-6">
+                      <Alert>
+                        <Placeholder
+                          className="py-2"
+                          color={Placeholder.color.INDIGO}
+                          width={Placeholder.width.FULL}
+                        />
+                        <Placeholder
+                          className="py-2"
+                          color={Placeholder.color.INDIGO}
+                          width={Placeholder.width.FULL}
+                        />
+                      </Alert>
+                    </div>
+                  ) : canStackCollateral &&
+                    isVaultOwner &&
+                    vault?.stackedTokens > 0 &&
+                    !vault?.revokedStacking ? (
+                    // user has indicated they want to stack their tokens
+                    <div className="mt-6">
+                      <Alert>
+                        {startedStacking && burnBlockHeight > unlockBurnHeight ? (
+                          <p>
+                            You can stop stacking and withdraw your collateral by unlocking your
+                            vault with the above Unlock button.
+                          </p>
+                        ) : startedStacking ? (
+                          <p>
+                            You cannot withdraw your collateral since it is stacked until Bitcoin
+                            block {unlockBurnHeight}. We are currently at Bitcoin block{' '}
+                            {burnBlockHeight}. You can unstack your vault right now, and after Bitcoin block {unlockBurnHeight} gets mined,
+                            you will get access to your collateral.
+                          </p>
                         ) : (
-                          <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
-                            {maximumCollateralToWithdraw}{' '}
-                            <span className="text-sm font-normal">
-                              {vault?.collateralToken.toUpperCase()}
-                            </span>
+                          <p>
+                            The next stacking cycle has not started yet. You can still choose to
+                            opt-out of stacking your STX tokens. If you do so, you will not earn a
+                            yield on your vault.
                           </p>
                         )}
-                      </div>
-                      {isVaultOwner &&
-                      canWithdrawCollateral &&
-                      !loadingVaultData &&
-                      maximumCollateralToWithdraw > 0 &&
-                      totalDebt > 0 ? (
-                        <button
-                          type="button"
-                          className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                          onClick={() => setShowWithdrawModal(true)}
-                        >
-                          Withdraw
-                        </button>
-                      ) : null}
+                      </Alert>
                     </div>
-
-                    {loadingVaultData ? (
-                      <div className="mt-6">
-                        <Alert>
-                          <Placeholder
-                            className="py-2"
-                            color={Placeholder.color.INDIGO}
-                            width={Placeholder.width.FULL}
-                          />
-                          <Placeholder
-                            className="py-2"
-                            color={Placeholder.color.INDIGO}
-                            width={Placeholder.width.FULL}
-                          />
-                        </Alert>
-                      </div>
-                    ) : canStackCollateral &&
-                      isVaultOwner &&
-                      vault?.stackedTokens > 0 &&
-                      !vault?.revokedStacking ? (
-                      // user has indicated they want to stack their tokens
-                      <div className="mt-6">
-                        <Alert>
-                          {startedStacking && burnBlockHeight > unlockBurnHeight ? (
-                            <p>
-                              You can stop stacking and withdraw your collateral by unlocking your
-                              vault with the above Unlock button.
-                            </p>
-                          ) : startedStacking ? (
-                            <p>
-                              You cannot withdraw your collateral since it is stacked until Bitcoin
-                              block {unlockBurnHeight}. We are currently at Bitcoin block{' '}
-                              {burnBlockHeight}. You can unstack your vault right now, and after Bitcoin block {unlockBurnHeight} gets mined,
-                              you will get access to your collateral.
-                            </p>
-                          ) : (
-                            <p>
-                              The next stacking cycle has not started yet. You can still choose to
-                              opt-out of stacking your STX tokens. If you do so, you will not earn a
-                              yield on your vault.
-                            </p>
-                          )}
-                        </Alert>
-                      </div>
-                    ) : canStackCollateral &&
-                      isVaultOwner &&
-                      vault?.stackedTokens > 0 &&
-                      vault?.revokedStacking ? (
-                      <div className="mt-4">
-                        <Alert>
-                          <p>
-                            You have unstacked your collateral. It is still stacking in PoX until
-                            Bitcoin block {unlockBurnHeight}. Once that block is mined, you can unlock your vault.
-                          </p>
-                        </Alert>
-                      </div>
-                    ) : canStackCollateral && isVaultOwner ? (
-                      <div className="mt-4">
-                        <Alert>
-                          <p>You are not stacking your collateral.</p>
-                        </Alert>
-                      </div>
-                    ) : null}
-                  </div>
+                  ) : canStackCollateral &&
+                    isVaultOwner &&
+                    vault?.stackedTokens > 0 &&
+                    vault?.revokedStacking ? (
+                    <div className="mt-4">
+                      <Alert>
+                        <p>
+                          You have unstacked your collateral. It is still stacking in PoX until
+                          Bitcoin block {unlockBurnHeight}. Once that block is mined, you can unlock your vault.
+                        </p>
+                      </Alert>
+                    </div>
+                  ) : canStackCollateral && isVaultOwner ? (
+                    <div className="mt-4">
+                      <Alert>
+                        <p>You are not stacking your collateral.</p>
+                      </Alert>
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </div>
-          </div>
         </section>
       </main>
     </Container>
