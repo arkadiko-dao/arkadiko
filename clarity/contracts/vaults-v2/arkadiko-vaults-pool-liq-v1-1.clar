@@ -28,7 +28,7 @@
 (define-data-var fragments-total uint u0)
 
 (define-data-var diko-rewards-percentage uint u820) ;; 8.2% in bps
-(define-data-var diko-rewards-last-block uint block-height)
+(define-data-var diko-rewards-last-block uint burn-block-height)
 
 ;; ---------------------------------------------------------
 ;; Maps
@@ -299,7 +299,7 @@
   (let (
     (total-staking-rewards (contract-call? .arkadiko-diko-guardian-v1-1 get-staking-rewards-per-block))
     (total-pool-rewards (/ (* total-staking-rewards (var-get diko-rewards-percentage)) u10000))
-    (block-diff (- block-height (var-get diko-rewards-last-block)))
+    (block-diff (- burn-block-height (var-get diko-rewards-last-block)))
   )
     (* total-pool-rewards block-diff)
   )
@@ -312,7 +312,7 @@
     (new-cumm-rewards (calculate-cumm-reward-per-fragment .arkadiko-token amount))
   )
     ;; Update last block
-    (var-set diko-rewards-last-block block-height)
+    (var-set diko-rewards-last-block burn-block-height)
 
     (if (> (var-get fragments-total) u0)
       ;; Some USDA staked

@@ -175,8 +175,8 @@
 
     (fee (try! (get-redemption-fee vaults-tokens (contract-of token))))
     (fee-block-last (get block-last (get-redemption-block-last (contract-of token))))
-    (fee-block-last-cap (if (< fee-block-last (- block-height (get redemption-fee-block-interval collateral-info))) 
-      (- block-height (get redemption-fee-block-interval collateral-info)) 
+    (fee-block-last-cap (if (< fee-block-last (- burn-block-height (get redemption-fee-block-interval collateral-info))) 
+      (- burn-block-height (get redemption-fee-block-interval collateral-info)) 
       fee-block-last
     ))
     (fee-block-change (/ debt-payoff-used (get redemption-fee-block-rate collateral-info)))
@@ -241,7 +241,7 @@
     (collateral-info (unwrap! (contract-call? vaults-tokens get-token token) (err ERR_UNKNOWN_TOKEN)))
     (fee-info (get-redemption-block-last token))
     (fee-diff (- (get redemption-fee-max collateral-info) (get redemption-fee-min collateral-info)))
-    (block-diff (- block-height (get block-last fee-info)))
+    (block-diff (- burn-block-height (get block-last fee-info)))
     (fee-change (/ (* fee-diff block-diff) (get redemption-fee-block-interval collateral-info)))
     (current-fee (if (>= fee-change fee-diff)
       (get redemption-fee-min collateral-info)

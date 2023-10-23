@@ -89,7 +89,7 @@ Clarinet.test({
     call = wstxToken.getStxBalance(deployer.address);
     call.result.expectUintWithDecimals(100000000 - 2000);
     call = usdaToken.balanceOf(deployer.address);
-    call.result.expectOk().expectUintWithDecimals(1000000 + 500);
+    call.result.expectOk().expectUintWithDecimals(1000000 + 500 - 5);
 
     chain.mineEmptyBlock(144);
 
@@ -109,7 +109,7 @@ Clarinet.test({
     call = wstxToken.getStxBalance(deployer.address);
     call.result.expectUintWithDecimals(100000000 - 2500);
     call = usdaToken.balanceOf(deployer.address);
-    call.result.expectOk().expectUintWithDecimals(1000000 + 600 - 20.001141); // fees paid
+    call.result.expectOk().expectUintWithDecimals(1000000 + 600 - 20.001141 - 6); // fees paid
 
     result = vaultsHelpers.getStabilityFee(deployer, "wstx-token");
     result.expectOk().expectUintWithDecimals(0.000456);

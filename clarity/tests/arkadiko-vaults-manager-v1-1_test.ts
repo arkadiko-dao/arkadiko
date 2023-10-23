@@ -129,11 +129,26 @@ Clarinet.test({
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(0);
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(0);
-    call.result.expectOk().expectTuple()["last-block"].expectUint(11);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(10);
     call.result.expectOk().expectTuple()["status"].expectUint(201);
 
     call = vaultsSorted.getVault(wallet_1.address, "wstx-token");
     call.result.expectNone();
+
+    // Open vault again
+    result = vaultsOperations.openVault(wallet_1, "wstx-token", 8000, 500, wallet_1.address)
+    result.expectOk().expectBool(true);
+
+    call = vaultsData.getVault(wallet_1.address, "wstx-token");
+    call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(8000);
+    call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(500);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(11);
+    call.result.expectOk().expectTuple()["status"].expectUint(101);
+
+    call = vaultsSorted.getVault(wallet_1.address, "wstx-token");
+    call.result.expectSome().expectTuple()["prev-owner"].expectNone();
+    call.result.expectSome().expectTuple()["next-owner"].expectNone(0);
+    call.result.expectSome().expectTuple()["nicr"].expectUintWithDecimals(1600);
   },
 });
 
@@ -201,7 +216,7 @@ Clarinet.test({
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(0);
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(0);
-    call.result.expectOk().expectTuple()["last-block"].expectUint(11);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(10);
     call.result.expectOk().expectTuple()["status"].expectUint(201);
 
     call = vaultsSorted.getVault(wallet_1.address, "wstx-token");
@@ -262,7 +277,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     let call: any = vaultsManager.getRedemptionFee("wstx-token");
-    call.result.expectOk().expectTuple()["current-fee"].expectUint(0.0381 * 10000);
+    call.result.expectOk().expectTuple()["current-fee"].expectUint(0.0383 * 10000);
 
     // Move forward 1 day to reach min fee
     chain.mineEmptyBlock(144);
@@ -297,7 +312,7 @@ Clarinet.test({
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(1600);
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(300.055175);
-    call.result.expectOk().expectTuple()["last-block"].expectUint(152);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(151);
     call.result.expectOk().expectTuple()["status"].expectUint(101);
 
     call = vaultsSorted.getVault(wallet_1.address, "wstx-token");
@@ -326,7 +341,7 @@ Clarinet.test({
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(0);
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(0);
-    call.result.expectOk().expectTuple()["last-block"].expectUint(153);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(152);
     call.result.expectOk().expectTuple()["status"].expectUint(202);
 
     call = vaultsSorted.getVault(wallet_1.address, "wstx-token");
@@ -388,7 +403,7 @@ Clarinet.test({
     call.result.expectOk().expectTuple()["current-fee"].expectUint(0.0068 * 10000);
 
     call = vaultsManager.getRedemptionBlockLast("wstx-token");
-    call.result.expectTuple()["block-last"].expectUint(16);
+    call.result.expectTuple()["block-last"].expectUint(15);
 
     // 8000 collateral * 0.68% fee = 81.6
     result = vaultsManager.redeemVault(wallet_2, wallet_1.address, "wstx-token", 6000, wallet_1.address)
@@ -403,7 +418,7 @@ Clarinet.test({
     call.result.expectOk().expectTuple()["current-fee"].expectUint(0.0094 * 10000);
 
     call = vaultsManager.getRedemptionBlockLast("wstx-token");
-    call.result.expectTuple()["block-last"].expectUint(28);
+    call.result.expectTuple()["block-last"].expectUint(27);
   },
 });
 

@@ -46,8 +46,9 @@ Clarinet.test({
     let call:any = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"));
     call.result.expectOk().expectUintWithDecimals(2000);
 
+    // 500 minus minting fee
     call = usdaToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(1000000 + 500);
+    call.result.expectOk().expectUintWithDecimals(1000000 + 500 - 5);
 
     call = vaultsData.getTotalDebt("wstx-token");
     call.result.expectOk().expectUintWithDecimals(500);
@@ -55,7 +56,7 @@ Clarinet.test({
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(2000);
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(500);
-    call.result.expectOk().expectTuple()["last-block"].expectUint(7);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(6);
     call.result.expectOk().expectTuple()["status"].expectUint(101);
 
 
@@ -73,8 +74,9 @@ Clarinet.test({
     call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1"));
     call.result.expectOk().expectUintWithDecimals(0.000380);
 
+    // 10 minting fee
     call = usdaToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(1000000 + 1000 - 0.000380);
+    call.result.expectOk().expectUintWithDecimals(1000000 + 1000 - 0.000380 - 10);
 
     call = vaultsData.getTotalDebt("wstx-token");
     call.result.expectOk().expectUintWithDecimals(1000); 
@@ -82,7 +84,7 @@ Clarinet.test({
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(3000);
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(1000);
-    call.result.expectOk().expectTuple()["last-block"].expectUint(8);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(7);
     call.result.expectOk().expectTuple()["status"].expectUint(101);
 
 
@@ -101,7 +103,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(0.001141);
 
     call = usdaToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(1000000 + 500 - 0.000380 - 0.000761);
+    call.result.expectOk().expectUintWithDecimals(1000000 + 500 - 0.000380 - 0.000761 - 10);
 
     call = vaultsData.getTotalDebt("wstx-token");
     call.result.expectOk().expectUintWithDecimals(500); 
@@ -109,7 +111,7 @@ Clarinet.test({
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(1500);
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(500);
-    call.result.expectOk().expectTuple()["last-block"].expectUint(9);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(8);
     call.result.expectOk().expectTuple()["status"].expectUint(101);
 
 
@@ -128,7 +130,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(0.001521);
 
     call = usdaToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(1000000 - 0.000380 - 0.000761 - 0.000380);
+    call.result.expectOk().expectUintWithDecimals(1000000 - 0.000380 - 0.000761 - 0.000380 - 10);
 
     call = vaultsData.getTotalDebt("wstx-token");
     call.result.expectOk().expectUintWithDecimals(0); 
@@ -136,7 +138,7 @@ Clarinet.test({
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(0);
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(0);
-    call.result.expectOk().expectTuple()["last-block"].expectUint(10);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(9);
     call.result.expectOk().expectTuple()["status"].expectUint(102);
   },
 });
@@ -207,6 +209,47 @@ Clarinet.test({
 // ---------------------------------------------------------
 
 Clarinet.test({
+  name: "vaults-operations: set mint fee",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultsOperations = new VaultsOperations(chain, deployer);
+    let usdaToken = new UsdaToken(chain, deployer);
+
+    oracleManager.updatePrice("STX", 0.5);    
+
+    let result = vaultsOperations.openVault(wallet_1, "wstx-token", 2000, 500, wallet_1.address)
+    result.expectOk().expectBool(true);
+
+    let call = usdaToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(1000000 + 500 - 5);
+
+    // Set fee to 5%
+    result = vaultsOperations.setMintFee(deployer, 0.05);
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.updateVault(wallet_1, "wstx-token", 5000, 1000, wallet_1.address)
+    result.expectOk().expectBool(true);
+
+    call = usdaToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(1000000 + 1000 - 5 - 25 - 0.000761);
+
+    // Set fee to 0%
+    result = vaultsOperations.setMintFee(deployer, 0);
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.updateVault(wallet_1, "wstx-token", 5000, 1200, wallet_1.address)
+    result.expectOk().expectBool(true);
+
+    // No minting fee added, only stability fees
+    call = usdaToken.balanceOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(1000000 + 1200 - 5 - 25 - 0.000761 - 0.001522);
+  },
+});
+
+Clarinet.test({
   name: "vaults-operations: activate shutdown",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -262,7 +305,7 @@ Clarinet.test({
 // ---------------------------------------------------------
 
 Clarinet.test({
-  name: "vaults-operations: only dao owner can activate shutdown",
+  name: "vaults-operations: only dao owner can activate shutdown and set mint fee",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -270,6 +313,9 @@ Clarinet.test({
     let vaultsOperations = new VaultsOperations(chain, deployer);
 
     let result = vaultsOperations.setShutdownActivated(wallet_1, false);
+    result.expectErr().expectUint(930401);
+
+    result = vaultsOperations.setMintFee(wallet_1, 0.1);
     result.expectErr().expectUint(930401);
   },
 });

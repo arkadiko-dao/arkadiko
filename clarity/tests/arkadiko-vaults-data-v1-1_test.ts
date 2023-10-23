@@ -26,7 +26,7 @@ Clarinet.test({
     let call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(100);
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(20);
-    call.result.expectOk().expectTuple()["last-block"].expectUint(6);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(5);
     call.result.expectOk().expectTuple()["status"].expectUint(1);
 
     call = vaultsData.getTotalDebt("wstx-token");
