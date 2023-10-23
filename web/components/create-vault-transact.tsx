@@ -9,7 +9,7 @@ import {
   trueCV,
   falseCV,
   tupleCV,
-  noneCV,
+  someCV,
   makeStandardSTXPostCondition,
   makeStandardFungiblePostCondition,
   FungibleConditionCode,
@@ -71,7 +71,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       contractPrincipalCV(tokenAddress, token),
       amount,
       uintCV(debtAmount),
-      standardPrincipalCV(hint['prevOwner'])
+      someCV(standardPrincipalCV(hint['prevOwner']))
     ];
 
     let postConditions: any[] = [];

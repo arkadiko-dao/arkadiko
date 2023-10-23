@@ -32,7 +32,7 @@ async function start() {
   let nonce = await utils.getNonce(CONTRACT_ADDRESS);
 
   await Promise.all([
-    setPrice(1, 450000, 1000000, nonce),
+    setPrice(1, 4500000, 1000000, nonce),
     setPrice(2, 25000000000, 100000000, nonce+1),
     setPrice(3, 1000000, 1000000, nonce+2),
     setPrice(4, 1000000, 1000000, nonce+3),

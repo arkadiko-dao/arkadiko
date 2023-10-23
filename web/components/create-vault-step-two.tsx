@@ -65,11 +65,23 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
     }
   };
 
+  const tokenNameToTicker = (name: string) => {
+    if (name.toLowerCase() === 'stx') {
+      return 'STX';
+    } else if (name.toLowerCase() === 'xbtc') {
+      return 'xBTC';
+    } else if (name.toLowerCase() === 'ststx') {
+      return 'stSTX';
+    } else {
+      return 'atALEXv2';
+    }
+  };
+
   useEffect(() => {
     const fetchPrice = async (tokenKey: string) => {
       if (!tokenName) return;
 
-      const price = await getPrice(tokenName.toUpperCase());
+      const price = await getPrice(tokenNameToTicker(tokenName));
       const decimals = tokenKey === 'auto-alex' ? 100000000 : 1000000;
       setPrice(price / decimals);
     };
@@ -77,6 +89,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
     if (tokenName) {
       const tokenKey = tokenName.toLowerCase() as UserBalanceKeys;
       setTokenKey(tokenKey);
+      console.log(state.balance, tokenKey, tokenName);
       setDecimals(tokenKey === 'stx' ? 1000000 : 100000000);
       fetchPrice(tokenKey);
       setIsLoading(false);
