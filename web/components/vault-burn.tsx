@@ -1,6 +1,4 @@
 import React, { useContext, useState, useRef } from 'react';
-import { Modal } from '@components/ui/modal';
-import { tokenList } from '@components/token-swap-list';
 import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import {
@@ -18,18 +16,14 @@ import { VaultProps } from './vault';
 import { tokenTraits } from '@common/vault-utils';
 
 interface Props {
-  showBurnModal: boolean;
-  setShowBurnModal: (arg: boolean) => void;
   outstandingDebt: () => void;
   stabilityFee: number;
   vault: VaultProps;
   reserveName: string;
 }
 
-export const VaultBurnModal: React.FC<Props> = ({
+export const VaultBurn: React.FC<Props> = ({
   match,
-  showBurnModal,
-  setShowBurnModal,
   outstandingDebt,
   stabilityFee,
   vault,
@@ -110,16 +104,9 @@ export const VaultBurnModal: React.FC<Props> = ({
   };
 
   return (
-    <Modal
-      open={showBurnModal}
-      title="Burn USDA"
-      icon={<img className="w-10 h-10 rounded-full" src={tokenList[0].logo} alt="" />}
-      closeModal={() => setShowBurnModal(false)}
-      buttonText="Burn"
-      buttonAction={() => callBurn()}
-      initialFocus={inputRef}
-    >
-      <p className="text-sm text-center text-gray-500 dark:text-zinc-400">
+    <div>
+      <h3 className="text-base font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">Repay USDA debt</h3>
+      <p className="text-sm text-gray-500 dark:text-zinc-400">
         Choose how much USDA you want to burn. Burning will include a stability fee of{' '}
         <span className="font-semibold">{stabilityFee / 1000000} USDA</span>.
       </p>
@@ -140,6 +127,16 @@ export const VaultBurnModal: React.FC<Props> = ({
           ref={inputRef}
         />
       </div>
-    </Modal>
+
+      <div>
+        <button
+          type="button"
+          className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          onClick={() => callBurn()}
+        >
+          Repay
+        </button>
+      </div>
+    </div>
   );
 };
