@@ -211,6 +211,11 @@ module.exports = {
         test: /\.(jpg|jpeg|png|gif|svg)?$/,
       },
     ]),
+    // Work around for Buffer is undefined:
+    // https://github.com/webpack/changelog-v5/issues/10
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+    }),
     new webpack.DefinePlugin({
       'process.env.AUTH_ORIGIN': JSON.stringify(process.env.AUTH_ORIGIN),
       NODE_ENV: JSON.stringify(nodeEnv),

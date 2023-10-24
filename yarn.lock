@@ -1609,15 +1609,6 @@
     socket.io-client "4.4.0"
     ws "7.5.6"
 
-"@stacks/common@^4.3.0":
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/@stacks/common/-/common-4.3.0.tgz#add68aa8ab09da20c7ed7e3aad0c88cc4374de81"
-  integrity sha512-3/n3E9VGoE/cTPfdBUmFHNer33UZtCiugV0uodXfdUfNbHfILLgk0acTVMI04FufFkglhS3seiOD+R5Z2pBUYA==
-  dependencies:
-    "@types/bn.js" "^5.1.0"
-    "@types/node" "^14.14.43"
-    buffer "^6.0.3"
-
 "@stacks/common@^4.3.2":
   version "4.3.2"
   resolved "https://registry.yarnpkg.com/@stacks/common/-/common-4.3.2.tgz#c1577efe6bcdd98cf3d86344fe95d88a56c8ca63"
@@ -1691,12 +1682,12 @@
     ripemd160-min "^0.0.6"
     varuint-bitcoin "^1.1.2"
 
-"@stacks/network@^4.3.0":
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/@stacks/network/-/network-4.3.0.tgz#5d2815078d2baea7cccc45117b26a675de5d5908"
-  integrity sha512-X97IFfhJe5aZu8F1tOvYCzoIxPD5PH/NB24/WDZ+JH5Loho1D7zk1zZ6bOtQknaSfezDyi6wsZwKC/7Mxg959A==
+"@stacks/network@6.8.1", "@stacks/network@^6.1.1", "@stacks/network@^6.8.1":
+  version "6.8.1"
+  resolved "https://registry.yarnpkg.com/@stacks/network/-/network-6.8.1.tgz#87d19dee16066b3acc3582f790f88386ac998496"
+  integrity sha512-n8M25pPbLqpSBctabtsLOTBlmPvm9EPQpTI//x7HLdt5lEjDXxauEQt0XGSvDUZwecrmztqt9xNxlciiGApRBw==
   dependencies:
-    "@stacks/common" "^4.3.0"
+    "@stacks/common" "^6.8.1"
     cross-fetch "^3.1.5"
 
 "@stacks/network@^4.3.2":
@@ -1705,14 +1696,6 @@
   integrity sha512-8QgsGjAHwRwCDIzbE+nmqD2Kk589svmDLHNm1PJWL5EGpZyJK5su/y36ZgmTMVDvQwNfr9/8GFoaAbBlArvZyw==
   dependencies:
     "@stacks/common" "^4.3.2"
-    cross-fetch "^3.1.5"
-
-"@stacks/network@^6.1.1", "@stacks/network@^6.8.1":
-  version "6.8.1"
-  resolved "https://registry.yarnpkg.com/@stacks/network/-/network-6.8.1.tgz#87d19dee16066b3acc3582f790f88386ac998496"
-  integrity sha512-n8M25pPbLqpSBctabtsLOTBlmPvm9EPQpTI//x7HLdt5lEjDXxauEQt0XGSvDUZwecrmztqt9xNxlciiGApRBw==
-  dependencies:
-    "@stacks/common" "^6.8.1"
     cross-fetch "^3.1.5"
 
 "@stacks/profile@^4.3.2":
