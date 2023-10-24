@@ -135,25 +135,13 @@ export const VaultDeposit: React.FC<Props> = ({
     <div>
       <h3 className="text-base font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">Deposit extra collateral</h3>
       <p className="text-sm text-gray-500 dark:text-zinc-400">
-        Choose how much extra collateral you want to post. You have a balance of{' '}
+        You have a balance of{' '}
         <span className="font-semibold">
           {state.balance[vault?.collateralToken.toLowerCase()] / decimals}{' '}
           {vault?.collateralToken.toUpperCase()}
         </span>
         .
       </p>
-
-      {vault && vault['collateralToken'] && vault['collateralToken'].toLowerCase() === 'stx' ? (
-        <div className="my-4">
-          <Alert>
-            <p>
-              When depositing in a vault that is already stacking, keep in mind that your extra
-              collateral will be <span className="font-semibold">locked but not stacked</span>. You
-              won't be able to stack these STX until the cooldown cycle!
-            </p>
-          </Alert>
-        </div>
-      ) : null}
 
       <div className="mt-6">
         <InputAmount

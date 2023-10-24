@@ -72,19 +72,22 @@ export const ManageVault = ({ match }) => {
         network: network,
       });
 
-      const data = cvToJSON(serializedVault).value;
+      const data = cvToJSON(serializedVault).value.value;
+      console.log(data);
 
-      if (data['id'].value !== 0) {
+      if (data['status'] !== 0) {
         setVault({
           owner: vaultOwner,
           collateral: data['collateral'].value,
           collateralToken: collateralSymbol,
+          collateralType: collateralSymbol,
           isLiquidated: false,
           debt: data['debt'].value
         });
-        setIsVaultOwner(data['owner'].value === senderAddress);
+        console.log('lollzz', data);
+        setIsVaultOwner(vaultOwner === senderAddress);
 
-        const price = await getPrice(data['collateral-token'].value);
+        const price = await getPrice(collateralSymbol);
         setPrice(price);
 
         // setCollateralType({
@@ -558,77 +561,6 @@ export const ManageVault = ({ match }) => {
         </section>
 
         <section className="mt-12">
-          <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <h3 className="text-lg font-bold leading-6 text-gray-900 font-headings dark:text-zinc-50">
-                  Stacking
-                </h3>
-
-                {canStackCollateral && !loadingVaultData ? (
-                  enabledStacking ? (
-                    <span className="ml-3 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-green-100 text-green-800">
-                      <StyledIcon as="CheckCircleIcon" size={5} className="mr-2" />
-                      Enabled
-                    </span>
-                ) : (
-                    <span className="ml-3 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-red-100 text-red-800">
-                      <StyledIcon as="XCircleIcon" size={5} className="mr-2" />
-                      Disabled
-                    </span>
-                  )
-                ) : null}
-              </div>
-
-              {canStackCollateral ? (
-                <div className="flex items-start justify-between">
-                  <div>
-                    {canStackCollateral &&
-                    isVaultOwner &&
-                    vault?.stackedTokens > 0 &&
-                    !vault?.revokedStacking &&
-                    !startedStacking &&
-                    !loadingVaultData ? (
-                      // cycle not started, offer to opt-out
-                      <button
-                        type="button"
-                        className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        onClick={() => callToggleStacking()}
-                      >
-                        Unstack
-                      </button>
-                    ) : canStackCollateral &&
-                      isVaultOwner &&
-                      vault?.stackedTokens > 0 &&
-                      vault?.revokedStacking &&
-                      !loadingVaultData ? (
-                      // user has unstacked collateral, offer to stack again
-                      <button
-                        type="button"
-                        className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        onClick={() => callToggleStacking()}
-                      >
-                        Restack
-                      </button>
-                    ) : canStackCollateral &&
-                      vault?.stackedTokens == 0 &&
-                      isVaultOwner &&
-                      !loadingVaultData ? (
-                      // user is not stacking
-                      <button
-                        type="button"
-                        className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        onClick={() => stackCollateral()}
-                      >
-                        Stack
-                      </button>
-                    ) : null}
-                  </div>
-                </div>
-              ) : null}
-            </div>
-          </header>
-
           {isVaultOwner ? (
             <div className="mt-4">
               <div className="bg-white rounded-md shadow dark:bg-zinc-800">
