@@ -69,7 +69,7 @@ module.exports = {
     publicPath: '/',
   },
   resolve: {
-    extensions: ['.js', '.ts', '.tsx', '.json'],
+    extensions: ['*', '.mjs', '.js', '.ts', '.tsx', '.json'],
     plugins: [new TsconfigPathsPlugin()],
     alias: aliases,
   },
@@ -134,6 +134,12 @@ module.exports = {
   },
   module: {
     rules: [
+      {
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: "javascript/auto",
+        use: 'ts-loader'
+      },
       {
         test: /\.(ts|tsx)?$/,
         exclude: /node_modules/,
