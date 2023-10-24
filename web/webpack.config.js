@@ -72,6 +72,9 @@ module.exports = {
     extensions: ['.js', '.ts', '.tsx', '.json'],
     plugins: [new TsconfigPathsPlugin()],
     alias: aliases,
+    fallback: {
+      "buffer": require.resolve("buffer")
+    }
   },
   optimization: {
     minimize: !isDevelopment,
