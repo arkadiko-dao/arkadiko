@@ -18,6 +18,7 @@ async function sendDiko(address, amount, nonce) {
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
+    fee: new BN(10000, 10),
     nonce: new BN(nonce, 10),
     network
   };
@@ -27,7 +28,7 @@ async function sendDiko(address, amount, nonce) {
   return utils.processing(result, transaction.txid(), 0);
 }
 
-let nonce = 3199;
+let nonce = 3372;
 const tokens = {
   'SP3TF26QFS3YMYHC9N3ZZTZQKCM4AFYMVW1WMFRTT': 44270833333,
   'SPF6GBC7XRM16XE7GSNF87GSYS703XZHFHRM1XYR': 3750000000,
