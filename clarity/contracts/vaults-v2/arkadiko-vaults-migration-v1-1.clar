@@ -1,6 +1,9 @@
 ;; Vaults Migration 
 ;; Migrate V1 to V2
 ;;
+;; Vaults system V1 is stopped, after which the data is stored off chain.
+;; Data is added to V2 via this contract.
+;;
 
 ;; ---------------------------------------------------------
 ;; Constants

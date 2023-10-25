@@ -1,5 +1,6 @@
 ;; Vaults Pool Liquidation 
-;; USDA to use in liquidations, receive collateral rewards
+;; USDA to use in liquidations
+;; Stakers receive collateral rewards from liquidations, and continuous DIKO rewards
 ;;
 
 (impl-trait .arkadiko-vaults-pool-liq-trait-v1-1.vaults-pool-liq-trait)

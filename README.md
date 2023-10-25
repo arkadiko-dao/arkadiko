@@ -1,80 +1,72 @@
+
 # Arkadiko
-https://www.arkadiko.finance/
+Arkadiko is a decentralized, non-custodial liquidity protocol on the Stacks network, allowing users to collateralize their assets and mint a stablecoin known as USDA. This empowers depositors to access enhanced liquidity through a soft-pegged US Dollar stablecoin while retaining their initial asset exposure.
 
-Arkadiko implements a stablecoin soft-pegged to 1 USD called USDA and a Governance Token DIKO that create the foundational primitives for a lending/borrowing platform.
+Explore our website: [https://www.arkadiko.finance/](https://www.arkadiko.finance/) 
+Stay updated with us on Twitter: [https://twitter.com/ArkadikoFinance](https://twitter.com/ArkadikoFinance) 
+Access our documentation here: [https://docs.arkadiko.finance](https://docs.arkadiko.finance/)
 
-The Arkadiko protocol trustlessly provides stable loans backed by Stacks Tokens (STX), known as USDA. In order to mint USDA, you need to over-collateralise Stacks (STX) tokens into an Arkadiko Stacks Vault. In other words, USDA is a stablecoin, existing to maintain relative price stability in volatile markets. People repay their loans by returning USDA plus a little more to cover the fixed interest on the loan (called the stability fee). The loan can be paid back anytime, as there is no repayment schedule. The protocol enforces the price by selling off a person's STX if its total value falls below 150 percent (liquidation ratio) of however much STX the user borrowed. All STX will be sold through auctions to stackers who are registered with the protocol.
+## USDA
+USDA is a soft-pegged stablecoin on the Stacks network. Users can mint USDA by locking collateral in a vault. Since the vaults are always over-collateralized, there is perpetually more value within the system than the outstanding debt in USDA.
 
-No more and no less USDA exist in the world than loans made in it at that time. Every single USDA is some piece of someone’s STX, locked up on the Arkadiko protocol until the person who put in their STX pays the USDA back. When USDA goes into the system to repay a loan, it just gets burnt and disappears forever. Only the interest (i.e. stability fee) remains for Arkadiko to use to reward DIKO holders or cover expenses for the protocol.
+## Vaults
+Vaults represent a fundamental concept in Arkadiko. When a user establishes a vault, they specify the quantity of collateral tokens to be locked and the amount of USDA debt to be incurred. The collateral and debt for a vault can be adjusted at any time, or the owner can choose to close the vault entirely.
 
-When STX are posted as collateral to mint stablecoins, the STX tokens will automatically be used to stack natively on the Stacks protocol (either autonomously or through a delegation pool).
+### Fees
+The system permits the configuration of a stability fee and/or minting fee. The stability fee is an annual percentage assessed on the outstanding debt and is paid when updating, closing, liquidating, or redeeming a vault. The minting fee is a percentage levied when minting additional USDA.
 
-For more information, please read our [documentation](https://docs.arkadiko.finance).
+### Collateral tokens
+Each wallet is capable of creating a single vault for each collateral token. Every collateral token is associated with a predefined set of risk parameters:
 
-## Architecture
+-   `max-debt` = the maximum total debt allowed in the system.
+-   `vault-min-debt` = the minimum debt requirement for a vault.
+-   `stability-fee` = the annual stability fee, determined based on the amount of debt.
+-   `liquidation-ratio` = the threshold collateral-to-debt ratio, triggering vault liquidation if breached.
+-   `liquidation-penalty` = the additional collateral the vault owner will forfeit upon liquidation.
+-   `redemption-fee-min` = the minimum redemption fee.
+-   `redemption-fee-max` = the maximum redemption fee.
+-   `redemption-fee-block-interval` = the number of blocks required for the fee to decay from the maximum to the minimum.
+-   `redemption-fee-block-rate` = for every X USDA redeemed, decrease the last block by 1 to increase the fee.
 
-A high-level architecture would look as follows:
+Any SIP-010 token can be included as a collateral token, provided that the token's price is added to the oracle.
 
-![Architecture](https://github.com/philipdesmedt/arkadiko-dao/blob/master/docs/architecture-high-level.png?raw=true)
+### Liquidation
+If the collateral-to-debt ratio falls below the liquidation threshold, the vault will undergo liquidation. During this process, USDA from the liquidation pool is employed to settle the vault's debt. In exchange, the liquidation pool acquires collateral tokens equivalent in value to the debt settled, along with additional collateral tokens as a liquidation penalty.
 
+Users have the option to stake USDA in the liquidation pool, and the collateral tokens recovered from liquidations will be distributed proportionally among the stakers. Additionally, continuous DIKO rewards are provided to stakers.
 
-## USDA: Arkadiko Stablecoin
+### Redemption
+The redemption mechanism provides USDA holders with the option to redeem their USDA at its face value, converting it into the corresponding underlying collateral at any given moment. This process ensures that redemptions are consistently fulfilled, with 1 USDA being equivalent to $1 worth of collateral (excluding the prevailing redemption fee). In essence, redemptions serve to settle the debt of the riskiest vault in exchange for its collateral.
 
-Whenever new USDA is minted, debt (as collateral) is created in the network. With every type of collateral (in principle only $STX will be accepted as collateral), a set of Risk parameters will be decided on by the community. These parameters can be voted on through the DIKO governance token. Each token has 1 vote.
+Here's how it works:
+-   An individual initiates the redemption of their USDA.
+-   All vaults are arranged in ascending order, from those with the lowest collateral ratio (the riskiest) to those with the highest collateral ratio (the least risky).
+-   The redeemed USDA is utilized to clear the debt of the riskiest vault, which, in turn, releases its collateral.
+-   The remaining collateral in the vault is left for the owner to claim. Importantly, vault owners subject to redemptions do not experience a net loss in the process.
 
-### Stablecoin Risk Parameters
+### Sorted list
+To facilitate redemptions, it is essential to maintain a well-ordered list of vaults per token on the blockchain. Sorting an unsorted list on-the-fly is impractical, and using a basic list type lacks scalability. This led to the development of a dedicated list contract.
 
-- Debt​ ​Ceiling:​ A Debt Ceiling is the maximum amount of debt that can be created by a single collateral type. Arkadiko Governance assigns every collateral type a Debt Ceiling, which is used to ensure sufficient diversification of the Arkadiko Protocol collateral portfolio. Once a collateral type has reached its Debt Ceiling, it becomes impossible to create more debt unless some existing users pay back all or a portion of their Reserve debt.
+For each list, this contract stores references to the first and last elements, while each list item maintains references to the preceding and succeeding elements. Whenever a new vault is created or an existing one is updated, the vault's position in the sorted list changes and requires immediate adjustment to ensure the accuracy of the sorted list.
 
-- Stability​ ​Fee:​ The Stability Fee is an annual percentage yield calculated on top of how much USDA has been generated against a Reserve's collateral. The fee is paid in $STX, and then sent into the Arkadiko Buffer.
+Methods responsible for updating the vault's collateral ratio necessitate the inclusion of a `hint` parameter. This parameter denotes the expected position of the vault after the update and references the vault that will precede the updated vault in the list. An off-chain component keeps track of all the vaults within the system, enabling it to calculate the new position during vault updates. Although the `hint` is calculated off-chain, it is cross-verified on-chain to ensure its accuracy, preserving the integrity of the sorted list. 
 
-- Liquidation​ ​Ratio:​ ​A low Liquidation Ratio means Arkadiko Governance expects low price volatility of the collateral; a high Liquidation Ratio means high volatility is expected.
+## DAO
+The protocol is overseen by a Decentralized Autonomous Organization (DAO). The community holds the power to initiate and vote on proposals aimed at altering various aspects of the protocol. These proposals can encompass a wide range of actions, including:
 
-- Liquidation Penalty:​ The Liquidation Penalty is a fee added to a Reserve's total outstanding generated USDA when a Liquidation occurs. The Liquidation Penalty is used to encourage USDA owners to keep appropriate collateral levels.
+-   Incorporating a new collateral token and defining its risk parameters.
+-   Adjusting the risk parameters of an already existing collateral token.
+-   Determining token emissions.
+-   Initiating an emergency shutdown, if necessary.
+-   Implementing updates to enhance the protocol's functionality.
 
+### Arkadiko Token
+The DIKO governance token functions as voting authority within the DAO, with each token equating to a single vote.
 
-## Arkadiko Governance Token
+## Stake
 
-The DIKO governance token is used to manage and vote on proposals put forward by the community.
+### stDIKO
+DIKO holders have the opportunity to lock their DIKO tokens in a staking mechanism to earn additional DIKO. Through this staking process, users receive stDIKO, which mirrors the combined amount of staked DIKO tokens along with the rewards from staking. stDIKO can then be utilized for engaging in governance activities.
 
-- Add a​ ​new​ ​collateral asset ​type with a unique set of Risk Parameters.
-- Change the Risk Parameters of one or more existing collateral asset types
-- Set the percentage threshold to distribute BTC earnings
-- Trigger Emergency Shutdown
-- Regulate Stacks stacking & payouts
-
-## Roadmap
-
-See https://trello.com/b/Qem9bJZK/public-roadmap
-
-## Tests and Mocking
-
-All tests are written using Clarinet, in the `tests` folder.
-
-Some of the smart contracts (such as PoX and fungible token trait) are mocked contracts/traits. These should not be deployed to mainnet when a production-ready version is ready to be deployed.
-
-## Error Handling
-
-All errors thrown by the smart contracts are unsigned integers. The format used is the following <SMART_CONTRACT_PREFIX><ERROR_CODE>, where the smart contract prefix is denoted as follows:
-
-```
-1 - arkadiko-token
-2 - auction-engine
-3 - dao
-4 - freddie
-5 - liquidator
-6 - 
-7 - 
-8 - oracle
-9 - sip10-reserve
-11 - stx-reserve
-12 - 
-13 - xstx-token
-14 - usda-token
-16 - diko-staker
-17 - collateral-types
-18 - 
-19 - stacker
-20 - swap
-21 - swap-token-diko-usda
-```
+### LP Tokens
+Users who provide liquidity are compensated with DIKO tokens in return for their liquidity contributions. Upon supplying liquidity, the user is granted LP tokens, which can subsequently be staked to cultivate rewards.

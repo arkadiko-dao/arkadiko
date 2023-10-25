@@ -1,5 +1,5 @@
 ;; Vaults Helpers 
-;; External operations on vaults
+;; Helper methods used by multiple contracts (manager, operations)
 ;;
 
 (impl-trait .arkadiko-vaults-helpers-trait-v1-1.vaults-helpers-trait)
