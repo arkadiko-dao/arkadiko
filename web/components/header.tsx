@@ -38,10 +38,8 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
   const address = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [isVotingOpen, setisVotingOpen] = useState(false);
-  const [showConnectModal, setShowConnectModal] = useState(false);
   const [pendingTransactions, setPendingTransactions] = useState<MempoolContractCallTransaction[]>([]);
   const [showChooseWalletModal, setShowChooseWalletModal] = useState(false);
-
 
   const showModalOrConnectWallet = async () => {
     const provider = resolveProvider();
@@ -458,86 +456,10 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   </div>
                   <div className="p-3 border-t border-gray-200 dark:border-zinc-600">
                     {showWallet ? (
-<<<<<<< HEAD
-                      <div>
-                        <button
-                          type="button"
-                          className="relative inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 "
-                          onClick={() => showModalOrConnectWallet()}
-                        >
-                          <span>Connect Wallet</span>
-                        </button>
-                      </div>
-                    ) : null}
-
-                    <ColorThemeToggle />
-                  </div>
-                )}
-              </div>
-              <div className="flex items-center -mr-2 lg:hidden">
-                <Disclosure.Button className="inline-flex items-center justify-center p-2 text-gray-400 rounded-md hover:text-gray-500 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700">
-                  <span className="sr-only">Open main menu</span>
-                  {open ? (
-                    <StyledIcon as="XIcon" size={6} solid={false} className="block" />
-                  ) : (
-                    <StyledIcon as="MenuIcon" size={6} solid={false} className="block" />
-                  )}
-                </Disclosure.Button>
-              </div>
-            </div>
-          </div>
-
-          <Disclosure.Panel className="lg:hidden">
-            {state.userData ? (
-              <div>
-                <div className="pt-2 pb-3 space-y-1">
-                  <Disclosure.Button
-                    as={RouterLink}
-                    to="/swap"
-                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
-                    activeClassName="border-indigo-500 text-gray-900"
-                  >
-                    Swap
-                  </Disclosure.Button>
-
-                  <Disclosure.Button
-                    as={RouterLink}
-                    to="/vaults"
-                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
-                    activeClassName="border-indigo-500 text-gray-900"
-                  >
-                    Borrow
-                  </Disclosure.Button>
-
-                  <Disclosure.Button
-                    as={RouterLink}
-                    to="/stake"
-                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
-                    activeClassName="border-indigo-500 text-gray-900"
-                  >
-                    Stake
-                  </Disclosure.Button>
-
-                  <Disclosure.Button
-                    as={RouterLink}
-                    to="/liquidations"
-                    className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
-                    activeClassName="border-indigo-500 text-gray-900"
-                  >
-                    Liquidations
-                  </Disclosure.Button>
-
-                  <Disclosure.Button
-                    as={RouterLink}
-                    to="/governance"
-                    className="flex items-center flex-1 py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
-                    activeClassName="border-indigo-500 text-gray-900"
-                  >
-                    {isVotingOpen ? (
-                      <Tooltip
-                        label="A vote is in progress. Check it out and have a say in the future of the protocol!"
-                        shouldWrapChildren={true}
-                        className="z-50"
+                      <button
+                        type="button"
+                        className="relative inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        onClick={() => doOpenAuth(true, undefined, provider)}
                       >
                         <span>Connect Wallet</span>
                       </button>

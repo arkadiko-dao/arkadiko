@@ -74,6 +74,7 @@ export function ChooseWalletModal({
                         </svg>
                       </span>
                       <span>Leather Wallet</span>
+                      <span>Not installed</span>
                     </button>
 
                     <button type="button" className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4">
