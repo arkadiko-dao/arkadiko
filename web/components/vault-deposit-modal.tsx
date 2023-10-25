@@ -14,7 +14,7 @@ import {
   createAssetInfo
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import BN from 'bn.js';
 import { VaultProps } from './vault';
@@ -119,7 +119,7 @@ export const VaultDepositModal: React.FC<Props> = ({
         setShowDepositModal(false);
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const depositMaxAmount = () => {
