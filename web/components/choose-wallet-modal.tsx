@@ -5,7 +5,7 @@ import { StyledIcon } from '../components/ui/styled-icon';
 type Props = {
   open: boolean;
   closeModal: () => void;
-  onProviderChosen: () => void;
+  onProviderChosen: (arg0: string) => void;
 };
 
 export function ChooseWalletModal({
@@ -54,7 +54,7 @@ export function ChooseWalletModal({
             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
-            <div className="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl dark:bg-zinc-800 sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+            <div className="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl dark:bg-zinc-800 sm:my-8 sm:align-middle sm:max-w-lg w-full sm:p-6">
               <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
                 <button
                   type="button"
@@ -75,7 +75,7 @@ export function ChooseWalletModal({
                     Choose wallet
                   </Dialog.Title>
                   <div className="mt-6 space-y-2">
-                    <button onClick={() => { onProviderChosen('leather'); }} type="button" disabled={!window.LeatherProvider && !window.HiroWalletProvider} className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4">
+                    <button onClick={() => { onProviderChosen('leather'); }} type="button" disabled={!window.LeatherProvider && !window.HiroWalletProvider} className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:hover:border-gray-200 disabled:dark:bg-zinc-700">
                       <span>
                       <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="48" height="48" rx="6" fill="black"/>
@@ -85,12 +85,12 @@ export function ChooseWalletModal({
                       <span className="flex flex-col text-left">
                         <span>Leather Wallet</span>
                         {!window.LeatherProvider && !window.HiroWalletProvider && (
-                          <span className="text-sm text-gray-600 dark:text-zinc-500">Not installed</span>
+                          <span className="text-sm text-gray-600 dark:text-zinc-400">Not installed</span>
                         )}
                       </span>
                     </button>
 
-                    <button type="button" onClick={() => { onProviderChosen('xverse'); }} disabled={!xVerseInstalled} className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4">
+                    <button type="button" onClick={() => { onProviderChosen('xverse'); }} disabled={!xVerseInstalled} className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:hover:border-gray-200 disabled:dark:bg-zinc-700">
                       <span>
                         <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <rect width="48" height="48" rx="6" fill="#060606"/>
@@ -106,7 +106,7 @@ export function ChooseWalletModal({
                       </span>
                     </button>
 
-                    <button type="button" onClick={() => { onProviderChosen('asigna'); }} disabled={!window.AsignaProvider} className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4">
+                    <button type="button" onClick={() => { onProviderChosen('asigna'); }} disabled={!window.AsignaProvider} className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:hover:border-gray-200 disabled:dark:bg-zinc-700">
                       <span>
                         <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <g clipPath="url(#clip0_2402_17)">
