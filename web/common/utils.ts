@@ -67,6 +67,6 @@ export const resolveProvider = () => {
   } else if (window.HiroWalletProvider) {
     return window.HiroWalletProvider;
   } else {
-    return null;
+    return window.StacksProvider;
   }
 };
