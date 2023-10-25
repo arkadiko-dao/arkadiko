@@ -73,8 +73,10 @@ export function ChooseWalletModal({
                         <path d="M29.1471 18.8085C32.3424 18.312 36.9634 14.9362 36.9634 12.305C36.9634 11.5106 36.3244 10.9645 35.3903 10.9645C33.6206 10.9645 30.6218 13.6454 29.1471 18.8085ZM14.35 31.8653C10.1714 31.8653 9.82725 36.0355 14.0058 36.0355C15.8739 36.0355 18.1353 35.2908 19.315 33.9503C17.5945 32.461 16.1688 31.8653 14.35 31.8653ZM40.9453 30.0781C41.1912 37.0781 37.6517 41 31.6542 41C28.1147 41 26.3449 39.6596 22.5596 37.1773C20.5932 39.3617 16.8571 41 13.76 41C3.09238 41 3.53481 27.3475 14.3991 27.3475C16.6604 27.3475 18.5777 27.9432 21.0357 29.4823L22.658 23.773C15.9722 21.9361 12.6294 16.773 15.9231 9.37588H21.2323C18.2828 14.2908 20.2983 18.3617 24.0344 18.8085C26.05 11.6099 30.3761 6 36.1277 6C39.3723 6 41.9286 8.13475 41.9286 12.0071C41.9286 18.2128 33.8664 23.2766 27.7706 23.773L25.2634 32.6596C28.1147 35.9858 36.0294 39.2128 36.0294 30.0781H40.9453Z" fill="#F5F1ED"/>
                         </svg>
                       </span>
-                      <span>Leather Wallet</span>
-                      <span>Not installed</span>
+                      <span className="flex flex-col text-left">
+                        <span>Leather Wallet</span>
+                        <span className="text-sm text-gray-600 dark:text-zinc-500">Not installed</span>
+                      </span>
                     </button>
 
                     <button type="button" disabled={!window.XVerseProviders?.StacksProvider} className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4">
