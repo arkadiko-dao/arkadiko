@@ -6,7 +6,7 @@ import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { AnchorMode, contractPrincipalCV, uintCV, trueCV, falseCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { microToReadable, tokenTraits, buildSwapPostConditions } from '@common/vault-utils';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
@@ -379,34 +379,37 @@ export const Swap: React.FC = () => {
     let tokenZ = tokenList.filter((tokenInfo) => (tokenInfo.fullName == tokenYTrait))[0];
     let postConditions = buildSwapPostConditions(stxAddress || '', amount.value, minimumReceived, tokenX, tokenY, tokenZ);
 
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-multi-hop-swap-v1-1',
-      functionName: 'swap-x-for-z',
-      functionArgs: [
-        principalX,
-        principalY,
-        principalZ,
-        amount,
-        uintCV((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
-        inverseDirectionX ? trueCV() : falseCV(),
-        inverseDirectionY ? trueCV() : falseCV()
-      ],
-      postConditions,
-      onFinish: data => {
-        console.log('finished multihop swap!', data);
-        setState(prevState => ({
-          ...prevState,
-          showTxModal: true,
-          currentTxMessage: '',
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
+    await doContractCall(
+      {
+        network,
+        contractAddress,
+        stxAddress,
+        contractName: 'arkadiko-multi-hop-swap-v1-1',
+        functionName: 'swap-x-for-z',
+        functionArgs: [
+          principalX,
+          principalY,
+          principalZ,
+          amount,
+          uintCV((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
+          inverseDirectionX ? trueCV() : falseCV(),
+          inverseDirectionY ? trueCV() : falseCV()
+        ],
+        postConditions,
+        onFinish: data => {
+          console.log('finished multihop swap!', data);
+          setState(prevState => ({
+            ...prevState,
+            showTxModal: true,
+            currentTxMessage: '',
+            currentTxId: data.txId,
+            currentTxStatus: 'pending',
+          }));
+        },
+        anchorMode: AnchorMode.Any,
       },
-      anchorMode: AnchorMode.Any,
-    });
+      resolveProvider() || window.StacksProvider
+    );
   };
 
   const swapTokens = async () => {
@@ -435,31 +438,34 @@ export const Swap: React.FC = () => {
     }
     let postConditions = buildSwapPostConditions(stxAddress || '', amount.value, minimumReceived, tokenX, tokenY);
 
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-swap-v2-1',
-      functionName: contractName,
-      functionArgs: [
-        principalX,
-        principalY,
-        amount,
-        uintCV((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
-      ],
-      postConditions,
-      onFinish: data => {
-        console.log('finished swap!', data);
-        setState(prevState => ({
-          ...prevState,
-          showTxModal: true,
-          currentTxMessage: '',
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
+    await doContractCall(
+      {
+        network,
+        contractAddress,
+        stxAddress,
+        contractName: 'arkadiko-swap-v2-1',
+        functionName: contractName,
+        functionArgs: [
+          principalX,
+          principalY,
+          amount,
+          uintCV((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
+        ],
+        postConditions,
+        onFinish: data => {
+          console.log('finished swap!', data);
+          setState(prevState => ({
+            ...prevState,
+            showTxModal: true,
+            currentTxMessage: '',
+            currentTxId: data.txId,
+            currentTxStatus: 'pending',
+          }));
+        },
+        anchorMode: AnchorMode.Any,
       },
-      anchorMode: AnchorMode.Any,
-    });
+      resolveProvider() || window.StacksProvider
+    );
   };
 
   let tabs = [];

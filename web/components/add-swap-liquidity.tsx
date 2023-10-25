@@ -15,7 +15,7 @@ import {
   createAssetInfo,
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { tokenTraits } from '@common/vault-utils';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
@@ -346,8 +346,8 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
           currentTxStatus: 'pending',
         }));
       },
-      anchorMode: AnchorMode.Any,
-    });
+      anchorMode: AnchorMode.Any
+    }, resolveProvider() || window.StacksProvider);
   };
 
   return (

@@ -3,7 +3,7 @@ import { AppContext } from '@common/context';
 import { Helmet } from 'react-helmet';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import {
   AnchorMode,
   callReadOnlyFunction,
@@ -694,7 +694,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const claimDikoUsdaLpPendingRewards = async () => {
@@ -716,7 +716,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const claimStxUsdaLpPendingRewards = async () => {
@@ -738,7 +738,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const claimStxDikoLpPendingRewards = async () => {
@@ -760,7 +760,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const stakeDikoUsdaLpPendingRewards = async () => {
@@ -785,7 +785,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const claimStxXbtcLpPendingRewards = async () => {
@@ -807,7 +807,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const stakeStxXbtcLpPendingRewards = async () => {
@@ -832,7 +832,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const claimXbtcUsdaLpPendingRewards = async () => {
@@ -854,7 +854,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const claimXusdUsdaLpPendingRewards = async () => {
@@ -875,7 +875,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const claimXusdUsda2LpPendingRewards = async () => {
@@ -896,7 +896,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const stakeXbtcUsdaLpPendingRewards = async () => {
@@ -921,7 +921,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const stakeXusdUsdaLpPendingRewards = async () => {
@@ -945,7 +945,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const stakeXusdUsda2LpPendingRewards = async () => {
@@ -969,7 +969,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const stakeStxUsdaLpPendingRewards = async () => {
@@ -994,7 +994,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const stakeStxDikoLpPendingRewards = async () => {
@@ -1019,7 +1019,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const getEpochInfo = async () => {
