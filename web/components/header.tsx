@@ -8,7 +8,7 @@ import { ColorThemeToggle } from './color-theme-toggle';
 import { StyledIcon } from './ui/styled-icon';
 import { Tooltip } from '@blockstack/ui';
 import { callReadOnlyFunction, cvToJSON } from '@stacks/transactions';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { getPendingTransactions } from '@common/transactions';
 import { MempoolContractCallTransaction } from '@blockstack/stacks-blockchain-api-types';
 import { useSTXAddress } from '@common/use-stx-address';
@@ -37,11 +37,19 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
   const address = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [isVotingOpen, setisVotingOpen] = useState(false);
+  const [showConnectModal, setShowConnectModal] = useState(false);
   const [pendingTransactions, setPendingTransactions] = useState<MempoolContractCallTransaction[]>([]);
 
-  const provider = window.XverseProviders?.StacksProvider;
-  console.log('LOADED!!!');
-  console.log(window.XverseProviders?.StacksProvider, window.LeatherProvider);
+  const showModalOrConnectWallet = async () => {
+    const provider = resolveProvider();
+    if (provider) {
+      await doOpenAuth(true, undefined, provider);
+    } else {
+      // TODO: show modal and select provider
+      // setShowConnectModal(true);
+      await doOpenAuth(true, undefined, window.LeatherProvider || window.HiroProvider);
+    }
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -270,7 +278,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                         <button
                           type="button"
                           className="relative inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 "
-                          onClick={() => doOpenAuth(true, undefined, provider)}
+                          onClick={() => showModalOrConnectWallet()}
                         >
                           <span>Connect Wallet</span>
                         </button>
@@ -443,7 +451,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                     <button
                       type="button"
                       className="relative inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                      onClick={() => doOpenAuth(true, undefined, provider)}
+                      onClick={() => showModalOrConnectWallet()}
                     >
                       <span>Connect Wallet</span>
                     </button>

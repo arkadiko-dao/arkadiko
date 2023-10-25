@@ -29,7 +29,6 @@ export const stacksNetwork = env === 'mainnet' ? new StacksMainnet() : new Stack
 stacksNetwork.coreApiUrl = coreApiUrl;
 
 export const blocksToTime = (blocks:number) => {
-
   const minutesPerBlock = 10;
   const minutesLeft = blocks * minutesPerBlock;
   const hoursLeft = Math.floor(minutesLeft / 60);
@@ -53,4 +52,19 @@ export const blocksToTime = (blocks:number) => {
     return days + "d, " + hours + "h";;
   }
   return days + "d, " + hours + "h, " + minutes + "m";
+};
+
+export const resolveProvider = () => {
+  const providerName = localStorage.getItem('sign-provider');
+  if (!providerName) return null;
+
+  if (providerName === 'xverse' && window.XverseProviders?.StacksProvider) {
+    return window.XverseProviders?.StacksProvider;
+  } else if (providerName === 'asigna' && window.AsignaProvider) {
+    return window.AsignaProvider;
+  } else if (window.LeatherProvider) {
+    return window.LeatherProvider;
+  } else {
+    return window.HiroProvider;
+  }
 };
