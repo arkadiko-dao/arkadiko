@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { StyledIcon } from '../components/ui/styled-icon';
 
@@ -11,6 +11,13 @@ export function ChooseWalletModal({
   open,
   closeModal,
 }: Props) {
+  const [xVerseInstalled, setXVerseInstalled] = useState(false);
+
+  useEffect(() => {
+    if (window.XVerseProviders?.StacksProvider) {
+      setXVerseInstalled(true);
+    }
+  }, [window.XVerseProviders]);
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -75,11 +82,13 @@ export function ChooseWalletModal({
                       </span>
                       <span className="flex flex-col text-left">
                         <span>Leather Wallet</span>
-                        <span className="text-sm text-gray-600 dark:text-zinc-500">Not installed</span>
+                        {!window.LeatherProvider && !window.HiroProvider && (
+                          <span className="text-sm text-gray-600 dark:text-zinc-500">Not installed</span>
+                        )}
                       </span>
                     </button>
 
-                    <button type="button" disabled={!window.XVerseProviders?.StacksProvider} className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4">
+                    <button type="button" disabled={!xVerseInstalled} className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4">
                       <span>
                         <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <rect width="48" height="48" rx="6" fill="#060606"/>
@@ -87,7 +96,12 @@ export function ChooseWalletModal({
                           <path d="M27.5837 14.7122H33.1279C33.4579 14.7122 33.7219 14.9762 33.7219 15.3062V20.8503C33.7219 21.3783 34.3819 21.6423 34.7119 21.2463L42.302 13.6562C42.4341 13.5242 42.5001 13.3922 42.5001 13.2602V6.59403C42.5001 6.264 42.2362 6 41.9062 6H35.174C35.0419 6 34.844 6.066 34.778 6.198L27.1877 13.7222C26.7917 14.0522 27.0557 14.7122 27.5837 14.7122Z" fill="#EE7A30"/>
                         </svg>
                       </span>
-                      <span>Xverse Wallet</span>
+                      <span className="flex flex-col text-left">
+                        <span>Xverse Wallet</span>
+                        {!xVerseInstalled && (
+                          <span className="text-sm text-gray-600 dark:text-zinc-500">Not installed</span>
+                        )}
+                      </span>
                     </button>
 
                     <button type="button" disabled={!window.AsignaProvider} className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4">
@@ -143,7 +157,12 @@ export function ChooseWalletModal({
                           </defs>
                         </svg>
                       </span>
-                      <span>Asigna Wallet</span>
+                      <span className="flex flex-col text-left">
+                        <span>Asigna Wallet</span>
+                        {!window.AsignaProvider && (
+                          <span className="text-sm text-gray-600 dark:text-zinc-500">Not installed</span>
+                        )}
+                      </span>
                     </button>
                   </div>
                 </div>
