@@ -272,9 +272,6 @@ export const App: React.FC = () => {
 
   React.useEffect(() => {
     void handleRedirectAuth();
-
-    // TODO: make dynamic
-    localStorage.setItem('sign-provider', 'xverse');
   }, []);
 
   const authOptions: AuthOptions = {

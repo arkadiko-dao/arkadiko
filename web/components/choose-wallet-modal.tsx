@@ -66,7 +66,7 @@ export function ChooseWalletModal({
                     Choose wallet
                   </Dialog.Title>
                   <div className="mt-6 space-y-2">
-                    <button type="button" className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4">
+                    <button type="button" disabled={!window.LeatherProvider && !window.HiroProvider} className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4">
                       <span>
                       <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="48" height="48" rx="6" fill="black"/>
@@ -77,7 +77,7 @@ export function ChooseWalletModal({
                       <span>Not installed</span>
                     </button>
 
-                    <button type="button" className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4">
+                    <button type="button" disabled={!window.XVerseProviders?.StacksProvider} className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4">
                       <span>
                         <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <rect width="48" height="48" rx="6" fill="#060606"/>
@@ -88,7 +88,7 @@ export function ChooseWalletModal({
                       <span>Xverse Wallet</span>
                     </button>
 
-                    <button type="button" className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4">
+                    <button type="button" disabled={!window.AsignaProvider} className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4">
                       <span>
                         <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <g clipPath="url(#clip0_2402_17)">

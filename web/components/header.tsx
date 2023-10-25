@@ -46,10 +46,16 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
     if (provider) {
       await doOpenAuth(true, undefined, provider);
     } else {
-      // TODO: show modal and select provider
-      // setShowConnectModal(true);
-      await doOpenAuth(true, undefined, window.LeatherProvider || window.HiroProvider);
+      setShowChooseWalletModal(true);
     }
+  };
+
+  const onProviderChosen = async (providerString: string) => {
+    localStorage.setItem('sign-provider', providerString);
+    setShowChooseWalletModal(false);
+
+    const provider = resolveProvider();
+    await doOpenAuth(true, undefined, provider);
   };
 
   useEffect(() => {
@@ -285,8 +291,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                           <button
                             type="button"
                             className="relative inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 "
-                            // onClick={() => doOpenAuth(true, undefined, provider)}
-                            onClick={() => setShowChooseWalletModal(true)}
+                            onClick={() => showModalOrConnectWallet()}
                           >
                             <span>Connect Wallet</span>
                           </button>
@@ -459,7 +464,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                       <button
                         type="button"
                         className="relative inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        onClick={() => doOpenAuth(true, undefined, provider)}
+                        onClick={() => showModalOrConnectWallet()}
                       >
                         <span>Connect Wallet</span>
                       </button>
