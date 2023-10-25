@@ -58,6 +58,11 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
     await doOpenAuth(true, undefined, provider);
   };
 
+  const onSignOut = () => {
+    localStorage.removeItem('sign-provider');
+    signOut();
+  }
+
   useEffect(() => {
     let mounted = true;
 
@@ -101,6 +106,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
       <ChooseWalletModal
         open={showChooseWalletModal}
         closeModal={() => setShowChooseWalletModal(false)}
+        onProviderChosen={onProviderChosen}
       />
 
       <Disclosure as="nav" className="relative sticky top-0 z-50 bg-white shadow dark:bg-zinc-900">
@@ -242,7 +248,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                               <Menu.Item>
                                 {({ active }) => (
                                   <button
-                                  onClick={() => { signOut(); }}
+                                  onClick={() => { onSignOut(); }}
                                     className={`${
                                       active ? 'bg-indigo-500 text-white dark:text-zinc-100' : 'text-gray-900 dark:text-zinc-100'
                                     } group flex w-full items-center text-left rounded-md px-2 py-2 text-sm`}
@@ -420,7 +426,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                         type="button"
                         className="block w-full px-4 py-2 text-base font-medium text-left text-indigo-500 hover:text-indigo-800 hover:bg-indigo-100 sm:px-6"
                         onClick={() => {
-                          signOut();
+                          onSignOut();
                         }}
                       >
                         Sign out
