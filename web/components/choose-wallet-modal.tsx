@@ -14,10 +14,10 @@ export function ChooseWalletModal({
   const [xVerseInstalled, setXVerseInstalled] = useState(false);
 
   useEffect(() => {
-    if (window.XVerseProviders?.StacksProvider) {
+    if (window.XverseProviders?.StacksProvider) {
       setXVerseInstalled(true);
     }
-  }, [window.XVerseProviders]);
+  }, [window.XverseProviders]);
 
   return (
     <Transition.Root show={open} as={Fragment}>

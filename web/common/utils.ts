@@ -64,7 +64,9 @@ export const resolveProvider = () => {
     return window.AsignaProvider;
   } else if (window.LeatherProvider) {
     return window.LeatherProvider;
+  } else if (window.HiroWalletProvider) {
+    return window.HiroWalletProvider;
   } else {
-    return window.HiroProvider;
+    return null;
   }
 };
