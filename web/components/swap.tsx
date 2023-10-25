@@ -379,37 +379,34 @@ export const Swap: React.FC = () => {
     let tokenZ = tokenList.filter((tokenInfo) => (tokenInfo.fullName == tokenYTrait))[0];
     let postConditions = buildSwapPostConditions(stxAddress || '', amount.value, minimumReceived, tokenX, tokenY, tokenZ);
 
-    await doContractCall(
-      {
-        network,
-        contractAddress,
-        stxAddress,
-        contractName: 'arkadiko-multi-hop-swap-v1-1',
-        functionName: 'swap-x-for-z',
-        functionArgs: [
-          principalX,
-          principalY,
-          principalZ,
-          amount,
-          uintCV((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
-          inverseDirectionX ? trueCV() : falseCV(),
-          inverseDirectionY ? trueCV() : falseCV()
-        ],
-        postConditions,
-        onFinish: data => {
-          console.log('finished multihop swap!', data);
-          setState(prevState => ({
-            ...prevState,
-            showTxModal: true,
-            currentTxMessage: '',
-            currentTxId: data.txId,
-            currentTxStatus: 'pending',
-          }));
-        },
-        anchorMode: AnchorMode.Any,
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-multi-hop-swap-v1-1',
+      functionName: 'swap-x-for-z',
+      functionArgs: [
+        principalX,
+        principalY,
+        principalZ,
+        amount,
+        uintCV((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
+        inverseDirectionX ? trueCV() : falseCV(),
+        inverseDirectionY ? trueCV() : falseCV()
+      ],
+      postConditions,
+      onFinish: data => {
+        console.log('finished multihop swap!', data);
+        setState(prevState => ({
+          ...prevState,
+          showTxModal: true,
+          currentTxMessage: '',
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      resolveProvider() || window.StacksProvider
-    );
+      anchorMode: AnchorMode.Any,
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const swapTokens = async () => {
@@ -438,34 +435,31 @@ export const Swap: React.FC = () => {
     }
     let postConditions = buildSwapPostConditions(stxAddress || '', amount.value, minimumReceived, tokenX, tokenY);
 
-    await doContractCall(
-      {
-        network,
-        contractAddress,
-        stxAddress,
-        contractName: 'arkadiko-swap-v2-1',
-        functionName: contractName,
-        functionArgs: [
-          principalX,
-          principalY,
-          amount,
-          uintCV((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
-        ],
-        postConditions,
-        onFinish: data => {
-          console.log('finished swap!', data);
-          setState(prevState => ({
-            ...prevState,
-            showTxModal: true,
-            currentTxMessage: '',
-            currentTxId: data.txId,
-            currentTxStatus: 'pending',
-          }));
-        },
-        anchorMode: AnchorMode.Any,
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'arkadiko-swap-v2-1',
+      functionName: contractName,
+      functionArgs: [
+        principalX,
+        principalY,
+        amount,
+        uintCV((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
+      ],
+      postConditions,
+      onFinish: data => {
+        console.log('finished swap!', data);
+        setState(prevState => ({
+          ...prevState,
+          showTxModal: true,
+          currentTxMessage: '',
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
       },
-      resolveProvider() || window.StacksProvider
-    );
+      anchorMode: AnchorMode.Any,
+    }, resolveProvider() || window.StacksProvider);
   };
 
   let tabs = [];
