@@ -56,7 +56,7 @@ export const blocksToTime = (blocks:number) => {
 
 export const resolveProvider = () => {
   const providerName = localStorage.getItem('sign-provider');
-  if (!providerName) return null;
+  if (!providerName) return window.LeatherProvider || window.HiroWalletProvider || window.StacksProvider;
 
   if (providerName === 'xverse' && window.XverseProviders?.StacksProvider) {
     return window.XverseProviders?.StacksProvider;
