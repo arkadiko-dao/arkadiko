@@ -106,7 +106,7 @@ export function ChooseWalletModal({
                       </span>
                     </button>
 
-                    <button type="button" onClick={() => { onProviderChosen('asigna'); }} disabled={!window.AsignaProvider} className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:hover:border-gray-200 disabled:dark:bg-zinc-700">
+                    {/*<button type="button" onClick={() => { onProviderChosen('asigna'); }} disabled={!window.AsignaProvider} className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:hover:border-gray-200 disabled:dark:bg-zinc-700">
                       <span>
                         <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <g clipPath="url(#clip0_2402_17)">
@@ -165,7 +165,7 @@ export function ChooseWalletModal({
                           <span className="text-sm text-gray-600 dark:text-zinc-500">Not installed</span>
                         )}
                       </span>
-                    </button>
+                    </button>*/}
                   </div>
                 </div>
               </div>
