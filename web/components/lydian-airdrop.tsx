@@ -2,7 +2,7 @@ import React, { useEffect, useContext, useState } from 'react';
 import { AppContext } from '@common/context';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { useSTXAddress } from '@common/use-stx-address';
 import { Placeholder } from '../../web/components/ui/placeholder';
@@ -139,7 +139,7 @@ export const LydianAirdrop = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const claim2 = async () => {
@@ -160,7 +160,7 @@ export const LydianAirdrop = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const claim3 = async () => {
@@ -181,7 +181,7 @@ export const LydianAirdrop = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   return (

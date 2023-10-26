@@ -72,6 +72,9 @@ module.exports = {
     extensions: ['.js', '.ts', '.tsx', '.json'],
     plugins: [new TsconfigPathsPlugin()],
     alias: aliases,
+    fallback: {
+      "buffer": require.resolve("buffer")
+    }
   },
   optimization: {
     minimize: !isDevelopment,
@@ -173,20 +176,23 @@ module.exports = {
         test: /\.(woff|ttf|otf|eot|woff2|svg)$/i,
         loader: 'file-loader',
       },
+      {
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: "javascript/auto",
+      },
     ],
   },
   devServer: {
     historyApiFallback: true,
-    disableHostCheck: true,
-    contentBase: './dist',
+    // disableHostCheck: true,
+    // contentBase: './dist',
     port: process.env.PORT ? parseInt(process.env.PORT) : 9000,
   },
   devtool: getSourceMap(),
   watch: false,
   plugins: [
     new Dotenv(),
-    new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/),
-    new webpack.HashedModuleIdsPlugin(),
     new CheckerPlugin(),
     new MiniCssExtractPlugin({
       filename: 'styles.css',
@@ -208,6 +214,11 @@ module.exports = {
         test: /\.(jpg|jpeg|png|gif|svg)?$/,
       },
     ]),
+    // Work around for Buffer is undefined:
+    // https://github.com/webpack/changelog-v5/issues/10
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+    }),
     new webpack.DefinePlugin({
       'process.env.AUTH_ORIGIN': JSON.stringify(process.env.AUTH_ORIGIN),
       NODE_ENV: JSON.stringify(nodeEnv),

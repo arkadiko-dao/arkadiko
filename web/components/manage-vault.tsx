@@ -6,7 +6,7 @@ import { VaultWithdrawModal } from '@components/vault-withdraw-modal';
 import { VaultMintModal } from '@components/vault-mint-modal';
 import { VaultBurnModal } from '@components/vault-burn-modal';
 import { VaultCloseModal } from '@components/vault-close-modal';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
 import {
@@ -359,7 +359,7 @@ export const ManageVault = ({ match }) => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const stackCollateral = async () => {
@@ -379,7 +379,7 @@ export const ManageVault = ({ match }) => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const unlockVaultWithdrawals = async () => {
@@ -398,7 +398,7 @@ export const ManageVault = ({ match }) => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const unlockCollateral = async () => {
@@ -417,7 +417,7 @@ export const ManageVault = ({ match }) => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const claimYield = async () => {
@@ -446,7 +446,7 @@ export const ManageVault = ({ match }) => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const claimYieldPayDebt = async () => {
@@ -474,7 +474,7 @@ export const ManageVault = ({ match }) => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const vaultDetails = [
