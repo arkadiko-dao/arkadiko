@@ -1,5 +1,5 @@
 ;; Vaults Manager 
-;; External operations on vaults
+;; External operations on vaults (liquidation & redemption)
 ;;
 
 (use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)

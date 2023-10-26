@@ -6,7 +6,7 @@ import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { AnchorMode, contractPrincipalCV, uintCV, trueCV, falseCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { microToReadable, tokenTraits, buildSwapPostConditions } from '@common/vault-utils';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
@@ -17,6 +17,7 @@ import { Placeholder } from './ui/placeholder';
 import { SwapLoadingPlaceholder } from './swap-loading-placeholder';
 import axios from 'axios';
 import { StyledIcon } from './ui/styled-icon';
+import { ChooseWalletModal } from './choose-wallet-modal';
 
 export const Swap: React.FC = () => {
   const [state, setState] = useContext(AppContext);
@@ -53,6 +54,24 @@ export const Swap: React.FC = () => {
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const { doContractCall, doOpenAuth } = useConnect();
+  const [showChooseWalletModal, setShowChooseWalletModal] = useState(false);
+
+  const showModalOrConnectWallet = async () => {
+    const provider = resolveProvider();
+    if (provider) {
+      await doOpenAuth(true, undefined, provider);
+    } else {
+      setShowChooseWalletModal(true);
+    }
+  };
+
+  const onProviderChosen = async (providerString: string) => {
+    localStorage.setItem('sign-provider', providerString);
+    setShowChooseWalletModal(false);
+
+    const provider = resolveProvider();
+    await doOpenAuth(true, undefined, provider);
+  };
 
   useEffect(() => {
     const fetchPairs = async () => {
@@ -406,7 +425,7 @@ export const Swap: React.FC = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const swapTokens = async () => {
@@ -459,7 +478,7 @@ export const Swap: React.FC = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   let tabs = [];
@@ -477,6 +496,12 @@ export const Swap: React.FC = () => {
       <Helmet>
         <title>Swap</title>
       </Helmet>
+
+      <ChooseWalletModal
+        open={showChooseWalletModal}
+        closeModal={() => setShowChooseWalletModal(false)}
+        onProviderChosen={onProviderChosen}
+      />
 
       <Container>
         <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
@@ -730,7 +755,7 @@ export const Swap: React.FC = () => {
                     ) : (
                       <button
                         type="button"
-                        onClick={() => doOpenAuth()}
+                        onClick={() => showModalOrConnectWallet()}
                         className="inline-flex items-center justify-center w-full px-4 py-3 mt-4 text-xl font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                       >
                         Connect Wallet

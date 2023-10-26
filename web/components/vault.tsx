@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { getCollateralToDebtRatio } from '@common/get-collateral-to-debt-ratio';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { AppContext } from '@common/context';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import {
   AnchorMode,
@@ -119,7 +119,7 @@ export const Vault: React.FC<VaultProps> = ({
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const positionData = [

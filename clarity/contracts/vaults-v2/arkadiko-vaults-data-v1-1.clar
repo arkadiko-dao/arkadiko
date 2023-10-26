@@ -1,5 +1,5 @@
 ;; Vaults Data 
-;; Store vault data
+;; Store vault data, indexed by owner + token
 ;;
 
 (impl-trait .arkadiko-vaults-data-trait-v1-1.vaults-data-trait)

@@ -3,7 +3,7 @@ import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { VaultProps } from './vault';
 import { availableCoinsToMint } from '@common/vault-utils';
@@ -57,7 +57,7 @@ export const VaultMint: React.FC<Props> = ({
         setShowMintModal(false);
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const collateralLocked = () => {

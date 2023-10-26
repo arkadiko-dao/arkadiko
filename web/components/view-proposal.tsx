@@ -12,7 +12,7 @@ import {
   makeStandardFungiblePostCondition,
   standardPrincipalCV,
 } from '@stacks/transactions';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
 import { AppContext } from '@common/context';
@@ -184,7 +184,7 @@ export const ViewProposal = ({ match }) => {
         setShowVoteDikoModal(false);
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const addVoteDikoAgainst = async () => {
@@ -221,7 +221,7 @@ export const ViewProposal = ({ match }) => {
         setShowVoteDikoModal(false);
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const returnDiko = async () => {
@@ -245,7 +245,7 @@ export const ViewProposal = ({ match }) => {
       },
       anchorMode: AnchorMode.Any,
       postConditionMode: 0x01,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const returnStDiko = async () => {
@@ -269,7 +269,7 @@ export const ViewProposal = ({ match }) => {
       },
       anchorMode: AnchorMode.Any,
       postConditionMode: 0x01,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const onInputDikoChange = event => {
@@ -311,7 +311,7 @@ export const ViewProposal = ({ match }) => {
         setShowVoteStdikoModal(false);
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const addVoteStdikoAgainst = async () => {
@@ -348,7 +348,7 @@ export const ViewProposal = ({ match }) => {
         setShowVoteStdikoModal(false);
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const onInputStdikoChange = event => {

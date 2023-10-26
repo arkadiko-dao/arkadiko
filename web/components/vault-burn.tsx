@@ -10,7 +10,7 @@ import {
   makeStandardFungiblePostCondition,
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { VaultProps } from './vault';
 import { tokenTraits } from '@common/vault-utils';
@@ -86,7 +86,7 @@ export const VaultBurn: React.FC<Props> = ({
         setShowBurnModal(false);
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const burnMaxAmount = () => {

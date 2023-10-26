@@ -9,7 +9,7 @@ import {
   createAssetInfo,
   FungibleConditionCode,
 } from '@stacks/transactions';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { AppContext } from '@common/context';
 import { useSTXAddress } from '@common/use-stx-address';
@@ -107,7 +107,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeig
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   return (

@@ -1,5 +1,5 @@
 ;; Vaults Operations 
-;; User operations on vaults
+;; User operations on vaults (create, update, close)
 ;;
 
 (use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
@@ -50,7 +50,7 @@
 ;; ---------------------------------------------------------
 
 ;; Open a new vault
-;; Need hints to know where to insert vault in sorted list
+;; Need hint to know where to insert vault in sorted list
 (define-public (open-vault 
   (vaults-tokens <vaults-tokens-trait>)
   (vaults-data <vaults-data-trait>)
@@ -100,7 +100,7 @@
 
 ;; Update vault
 ;; Can change collateral and/or debt
-;; Need hints to know where to insert vault in sorted list
+;; Need hint to know where to insert vault in sorted list
 (define-public (update-vault 
   (vaults-tokens <vaults-tokens-trait>)
   (vaults-data <vaults-data-trait>)
@@ -167,6 +167,7 @@
   )
 )
 
+;; Close vault
 (define-public (close-vault 
   (vaults-tokens <vaults-tokens-trait>) 
   (vaults-data <vaults-data-trait>) 

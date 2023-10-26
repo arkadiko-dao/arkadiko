@@ -6,7 +6,7 @@ import { VaultWithdraw } from '@components/vault-withdraw';
 import { VaultMint } from '@components/vault-mint';
 import { VaultBurn } from '@components/vault-burn';
 import { VaultCloseModal } from '@components/vault-close-modal';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import { useConnect } from '@stacks/connect-react';
 import {
@@ -266,7 +266,7 @@ export const ManageVault = ({ match }) => {
         unit: '%'
       }
     ]
-  }
+  };
 
   return (
     <Container>
